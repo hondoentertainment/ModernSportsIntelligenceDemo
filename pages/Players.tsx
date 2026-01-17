@@ -128,7 +128,11 @@ const Players: React.FC = () => {
               </div>
             </div>
           </Link>
-        ))}
+        )) : (
+          <div className="col-span-full py-12 text-center bg-slate-900/50 rounded-[2.5rem] border border-slate-800">
+            <p className="text-brand-muted">No players found matching your criteria.</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ const Trends: React.FC = () => {
             </div>
           </div>
           <p className="text-slate-300 leading-relaxed">
-            A new pattern is emerging: Players with &lt;20% usage but >60% TS% who see a sudden +5% volume spike are currently seeing a 4x card market multiplier within 14 days. 
+            A new pattern is emerging: Players with &lt;20% usage but &gt;60% TS% who see a sudden +5% volume spike are currently seeing a 4x card market multiplier within 14 days.
           </p>
           <div className="h-48 bg-slate-900 rounded-3xl border border-slate-800 flex items-center justify-center relative overflow-hidden">
              <div className="absolute inset-0 bg-gradient-to-t from-brand-green/10 to-transparent"></div>
