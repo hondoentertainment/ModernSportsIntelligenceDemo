@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { 
-  LayoutDashboard, 
-  Layers, 
-  Target, 
-  TrendingUp, 
-  Trophy, 
-  Star, 
+import {
+  LayoutDashboard,
+  Layers,
+  Target,
+  TrendingUp,
+  Trophy,
+  Star,
   Search,
   Settings,
   CreditCard,
@@ -17,6 +17,7 @@ import {
   Bell
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
+import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY } from './prepopulatedCards.ts';
 
 export const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
@@ -37,44 +38,7 @@ export const SPORTS: Sport[] = ['Baseball', 'Basketball', 'Football', 'Hockey', 
 
 export const GRADING_COMPANIES = ['PSA', 'BGS', 'SGC', 'CSG', 'HGA', 'Other'];
 
-export const MOCK_CARDS: CardInventory[] = [
-  {
-    id: '1',
-    player: 'Adley Rutschman',
-    year: 2022,
-    manufacturer: 'Topps',
-    cardNumber: '660',
-    set: 'Series 2',
-    sport: 'Baseball',
-    isAutographed: false,
-    condition: 'Near Mint',
-    isGraded: true,
-    gradingCompany: 'PSA',
-    grade: '10',
-    purchasePrice: 125,
-    purchaseDate: '2023-10-15',
-    currentValue: 185,
-    lastValuationDate: '2024-02-10',
-    image: 'https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=300'
-  },
-  {
-    id: '2',
-    player: 'Elly De La Cruz',
-    year: 2023,
-    manufacturer: 'Bowman',
-    cardNumber: 'BCP-50',
-    set: 'Chrome',
-    sport: 'Baseball',
-    isAutographed: true,
-    condition: 'Mint',
-    isGraded: false,
-    purchasePrice: 450,
-    purchaseDate: '2023-11-20',
-    currentValue: 520,
-    lastValuationDate: '2024-02-12',
-    image: 'https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=300'
-  }
-];
+export const MOCK_CARDS: CardInventory[] = PREPOPULATED_CARDS;
 
 export const MOCK_PLAYERS = [
   {
@@ -159,36 +123,17 @@ export const MOCK_GAMES = [
   }
 ];
 
-export const MOCK_INVENTORY_SUMMARY = {
-  totalCost: 4500.00,
-  marketValue: 7890.50,
-  roi: 75.3,
-  totalGain: 3390.50,
-  realizedProfit: 1250.00,
-  realizedSold: 3500.00,
-  realizedCogs: 2250.00
-};
+export const MOCK_INVENTORY_SUMMARY = PREPOPULATED_SUMMARY;
 
-export const MOCK_INVENTORY_ITEMS = [
-  {
-    id: '1',
-    image: 'https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=300',
-    cardName: '2023 Bowman Chrome Elly De La Cruz',
-    status: 'Graded',
-    quantity: 1,
-    marketValue: 520,
-    purchasePrice: 450
-  },
-  {
-    id: '2',
-    image: 'https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=300',
-    cardName: '2022 Topps Adley Rutschman',
-    status: 'Graded',
-    quantity: 1,
-    marketValue: 185,
-    purchasePrice: 125
-  }
-];
+export const MOCK_INVENTORY_ITEMS = PREPOPULATED_CARDS.slice(0, 5).map(card => ({
+  id: card.id,
+  image: card.image,
+  cardName: `${card.year} ${card.manufacturer} ${card.player}`,
+  status: card.isGraded ? 'Graded' : 'Raw',
+  quantity: 1,
+  marketValue: card.currentValue,
+  purchasePrice: card.purchasePrice
+}));
 
 export const MOCK_ACQUISITION_TARGETS = [
   {

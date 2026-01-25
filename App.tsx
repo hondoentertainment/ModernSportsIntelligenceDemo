@@ -26,10 +26,10 @@ const App: React.FC = () => {
       <div className="flex min-h-screen bg-brand-charcoal text-slate-100 font-sans selection:bg-brand-lime/30">
         {/* Desktop Sidebar */}
         <Sidebar isOpen={isSidebarOpen} toggle={() => setIsSidebarOpen(!isSidebarOpen)} />
-        
+
         <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
           <Header />
-          
+
           <main className="flex-1 p-4 md:p-8 page-container overflow-y-auto">
             <Routes>
               <Route path="/" element={<Dashboard />} />
@@ -48,7 +48,7 @@ const App: React.FC = () => {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
-          
+
           {/* Mobile Navigation */}
           <MobileNav />
         </div>
