@@ -3,6 +3,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import { NAV_ITEMS } from '../constants.tsx';
+import { useAlerts } from '../lib/useAlerts.ts';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -11,9 +12,10 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
   const location = useLocation();
+  const { unreadCount } = useAlerts();
 
   return (
-    <aside 
+    <aside
       className={`fixed top-0 left-0 h-full z-40 bg-brand-charcoal border-r border-slate-800 transition-all duration-300 hidden md:flex flex-col
       ${isOpen ? 'w-64' : 'w-20'}`}
     >
@@ -24,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
           </div>
           <span className="font-bebas text-2xl tracking-wider whitespace-nowrap text-white">CardX</span>
         </div>
-        <button 
+        <button
           onClick={toggle}
           className="p-1.5 rounded-lg bg-brand-slate border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
         >
@@ -34,19 +36,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
 
       <nav className="flex-1 px-3 space-y-1.5 mt-4">
         {NAV_ITEMS.map((item) => {
-          const isActive = location.pathname === item.path || 
-                          (item.path !== '/' && location.pathname.startsWith(item.path));
+          const isActive = location.pathname === item.path ||
+            (item.path !== '/' && location.pathname.startsWith(item.path));
           return (
             <Link
               key={item.id}
               to={item.path}
               className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all group relative
-                ${isActive 
-                  ? 'bg-brand-lime text-brand-charcoal font-bold' 
+                ${isActive
+                  ? 'bg-brand-lime text-brand-charcoal font-bold'
                   : 'text-brand-muted hover:bg-brand-slate hover:text-slate-100'}`}
             >
-              <div className={`${isActive ? 'text-brand-charcoal' : 'text-brand-muted group-hover:text-brand-lime transition-colors'}`}>
+              <div className={`relative ${isActive ? 'text-brand-charcoal' : 'text-brand-muted group-hover:text-brand-lime transition-colors'}`}>
                 {item.icon}
+                {item.id === 'alerts' && unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-brand-red text-white text-[9px] font-black flex items-center justify-center rounded-full px-1 shadow-lg">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
               </div>
               {isOpen && <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>}
               {!isOpen && (
@@ -67,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
             <span className="text-brand-lime text-xs font-bold">78%</span>
           </div>
           <div className="h-1 bg-brand-charcoal rounded-full overflow-hidden">
-             <div className="h-full bg-brand-lime w-[78%]"></div>
+            <div className="h-full bg-brand-lime w-[78%]"></div>
           </div>
         </div>
       </div>

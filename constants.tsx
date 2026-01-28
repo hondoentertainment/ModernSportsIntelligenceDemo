@@ -17,7 +17,7 @@ import {
   Bell
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
-import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY } from './prepopulatedCards.ts';
+import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
 
 export const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
@@ -34,18 +34,20 @@ export const NAV_ITEMS = [
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];
 
+export const LEAGUES = ['MLB', 'MiLB', 'NBA', 'NFL', 'Other'];
 export const SPORTS: Sport[] = ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
 
 export const GRADING_COMPANIES = ['PSA', 'BGS', 'SGC', 'CSG', 'HGA', 'Other'];
 
 export const MOCK_CARDS: CardInventory[] = PREPOPULATED_CARDS;
 
-export const MOCK_PLAYERS = [
+const INITIAL_MOCK_PLAYERS = [
   {
     id: '1',
     name: 'Victor Wembanyama',
     team: 'San Antonio Spurs',
     position: 'Center',
+    league: 'NBA',
     image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=300',
     breakoutScore: 94,
     trend: 12,
@@ -63,6 +65,7 @@ export const MOCK_PLAYERS = [
     name: 'Tyrese Haliburton',
     team: 'Indiana Pacers',
     position: 'Guard',
+    league: 'NBA',
     image: 'https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=300',
     breakoutScore: 82,
     trend: 5,
@@ -77,34 +80,133 @@ export const MOCK_PLAYERS = [
   }
 ];
 
+export const MOCK_PLAYERS = [
+  ...INITIAL_MOCK_PLAYERS,
+  ...INVENTORY_PLAYERS.filter(p => !INITIAL_MOCK_PLAYERS.some(mp => mp.name.toLowerCase() === p.name.toLowerCase()))
+];
+
 export const MOCK_TEAMS = [
+  // NBA
   {
-    id: '1',
+    id: 'nba-okc',
     name: 'Oklahoma City Thunder',
-    logo: 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/5/5d/Oklahoma_City_Thunder.svg/1200px-Oklahoma_City_Thunder.svg.png',
     league: 'NBA',
-    conference: 'Western',
-    division: 'Northwest',
     form: 'hot',
     score: 92,
-    summary: 'League-leading defensive rotation speed paired with elite spacing.',
-    offense: 88,
-    defense: 94,
-    momentum: 'up'
+    offense: 96,
+    defense: 94
   },
   {
-    id: '2',
+    id: 'nba-bos',
     name: 'Boston Celtics',
-    logo: 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8f/Boston_Celtics.svg/1200px-Boston_Celtics.svg.png',
     league: 'NBA',
-    conference: 'Eastern',
-    division: 'Atlantic',
     form: 'hot',
     score: 95,
-    summary: 'Historic efficiency metrics across both starting and bench units.',
     offense: 98,
-    defense: 92,
-    momentum: 'stable'
+    defense: 92
+  },
+  {
+    id: 'nba-den',
+    name: 'Denver Nuggets',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/76/Denver_Nuggets.svg/1200px-Denver_Nuggets.svg.png',
+    league: 'NBA',
+    form: 'variable',
+    score: 89,
+    offense: 95,
+    defense: 88
+  },
+  {
+    id: 'nba-min',
+    name: 'Minnesota Wolves',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Minnesota_Timberwolves_logo.svg/1200px-Minnesota_Timberwolves_logo.svg.png',
+    league: 'NBA',
+    form: 'stable',
+    score: 91,
+    offense: 89,
+    defense: 97
+  },
+  {
+    id: 'nba-lal',
+    name: 'LA Lakers',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Los_Angeles_Lakers_logo.svg/1200px-Los_Angeles_Lakers_logo.svg.png',
+    league: 'NBA',
+    form: 'cold',
+    score: 85,
+    offense: 91,
+    defense: 84
+  },
+  {
+    id: 'nba-ny',
+    name: 'NY Knicks',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/2/25/New_York_Knicks_logo.svg/1200px-New_York_Knicks_logo.svg.png',
+    league: 'NBA',
+    form: 'hot',
+    score: 88,
+    offense: 90,
+    defense: 93
+  },
+  // MLB
+  {
+    id: 'mlb-lad',
+    name: 'LA Dodgers',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c7/Los_Angeles_Dodgers_logo.svg/1200px-Los_Angeles_Dodgers_logo.svg.png',
+    league: 'MLB',
+    form: 'hot',
+    score: 97,
+    offense: 99,
+    defense: 91
+  },
+  {
+    id: 'mlb-atl',
+    name: 'Atlanta Braves',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Atlanta_Braves.svg/1200px-Atlanta_Braves.svg.png',
+    league: 'MLB',
+    form: 'stable',
+    score: 94,
+    offense: 96,
+    defense: 93
+  },
+  {
+    id: 'mlb-bal',
+    name: 'Baltimore Orioles',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/75/Baltimore_Orioles_cap.svg/1200px-Baltimore_Orioles_cap.svg.png',
+    league: 'MLB',
+    form: 'hot',
+    score: 93,
+    offense: 94,
+    defense: 90
+  },
+  {
+    id: 'mlb-nyy',
+    name: 'NY Yankees',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/2/25/New_York_Yankees_logo.svg/1200px-New_York_Yankees_logo.svg.png',
+    league: 'MLB',
+    form: 'variable',
+    score: 91,
+    offense: 95,
+    defense: 88
+  },
+  {
+    id: 'mlb-tex',
+    name: 'Texas Rangers',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Texas_Rangers.svg/1200px-Texas_Rangers.svg.png',
+    league: 'MLB',
+    form: 'cold',
+    score: 86,
+    offense: 92,
+    defense: 85
+  },
+  {
+    id: 'mlb-phi',
+    name: 'Philadelphia Phillies',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0e/Philadelphia_Phillies_Logo.svg/1200px-Philadelphia_Phillies_Logo.svg.png',
+    league: 'MLB',
+    form: 'stable',
+    score: 90,
+    offense: 91,
+    defense: 89
   }
 ];
 
@@ -140,6 +242,7 @@ export const MOCK_ACQUISITION_TARGETS = [
     id: '1',
     name: 'Jackson Holliday',
     team: 'BAL',
+    league: 'MiLB',
     focus: 'Prospect',
     marketTrend: 'rising',
     confidence: 92,

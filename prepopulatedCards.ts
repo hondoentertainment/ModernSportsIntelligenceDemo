@@ -9,6 +9,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCP-33",
     "set": "Paper",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -26,6 +27,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCP-33",
     "set": "Paper",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -43,6 +45,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCP-33",
     "set": "Paper",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -60,6 +63,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCP-33",
     "set": "Paper",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -77,6 +81,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCP-33",
     "set": "Paper",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -94,6 +99,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-JP",
     "set": "Speckle /299",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -111,6 +117,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-CA",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -128,6 +135,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCP-33",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -145,6 +153,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCP-33",
     "set": "Chrome",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -162,6 +171,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-RG",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -181,6 +191,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-LA",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -198,6 +209,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-EPE",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -215,6 +227,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-JS",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -232,6 +245,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BSPA-JR",
     "set": "Paper",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -249,6 +263,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BSPA-JR",
     "set": "Paper",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -260,12 +275,13 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
   },
   {
     "id": "47",
-    "player": "Liover Peguero ",
+    "player": "Liover Peguero",
     "year": 2021,
     "manufacturer": "Bowman Chrome",
     "cardNumber": "BCP-52",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -283,6 +299,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BDC-95",
     "set": "Refractor",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -300,6 +317,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BDC-95",
     "set": "Refractor",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -317,6 +335,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-JK",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -334,6 +353,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-ML",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -351,6 +371,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-JLA",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -368,6 +389,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "N/A",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -385,6 +407,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-MM",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -402,6 +425,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-WJ",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -421,6 +445,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "N/A",
     "set": "Gold /50",
     "sport": "Baseball",
+    "league": "MLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -432,12 +457,13 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
   },
   {
     "id": "1",
-    "player": "Gunnar Henderson ",
+    "player": "Gunnar Henderson",
     "year": 2019,
     "manufacturer": "Bowman Draft Chrome",
     "cardNumber": "CDA-GH",
     "set": "Blue /150",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -455,6 +481,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-JD",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -474,6 +501,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-ED",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -493,6 +521,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-CC",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -510,6 +539,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCPA-TF",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -527,6 +557,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCP204",
     "set": "Chrome",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -544,6 +575,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BD-119",
     "set": "Chrome",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -561,6 +593,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BD-119",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -578,6 +611,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BD-119",
     "set": "Blue /150",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -595,6 +629,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "197",
     "set": "Chrome",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -612,6 +647,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-JA",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -629,6 +665,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-MV",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -646,6 +683,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-ED",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -663,6 +701,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-ED",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -680,6 +719,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-ED",
     "set": "Green /99",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -697,6 +737,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BDC-47",
     "set": "Refractor",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -708,12 +749,13 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
   },
   {
     "id": "35",
-    "player": "Corbin Carroll ",
+    "player": "Corbin Carroll",
     "year": 2019,
     "manufacturer": "Bowman Chrome",
     "cardNumber": "BDC-125",
     "set": "Refractor",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -731,6 +773,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BDC-1",
     "set": "Refractor",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -748,6 +791,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-SHI",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -765,6 +809,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-LDR",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -782,6 +827,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-FA",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -801,6 +847,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-JW",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -818,6 +865,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-OP",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -835,6 +883,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-TL",
     "set": "Green /99",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -854,6 +903,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCA-KHA",
     "set": "Chrome",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -873,6 +923,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-XE",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -890,6 +941,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-NH",
     "set": "Green /99",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -909,6 +961,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-JD",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -926,6 +979,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-BL",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -943,6 +997,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCAP-OC",
     "set": "Chrome",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -960,6 +1015,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-NMA",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -977,6 +1033,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-GK",
     "set": "Gold /50",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -996,6 +1053,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-JS",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1013,6 +1071,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCP-110",
     "set": "Speckle /299",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1030,6 +1089,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCP-CH",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -1049,6 +1109,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BDC-1",
     "set": "Refractor",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1066,6 +1127,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-MJM",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1083,6 +1145,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-GA",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1100,6 +1163,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-AB",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1117,6 +1181,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA- BD",
     "set": "Speckle /299",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1134,6 +1199,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-LP",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1151,6 +1217,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-GM",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1168,6 +1235,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-NP",
     "set": "Chrome",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1185,6 +1253,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-HG",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1202,6 +1271,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-GF",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1219,6 +1289,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-CS",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1230,12 +1301,13 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
   },
   {
     "id": "81",
-    "player": "Carlos Colmenarez ",
+    "player": "Carlos Colmenarez",
     "year": 2021,
     "manufacturer": "Bowman Chrome",
     "cardNumber": "CPA-CC",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1253,6 +1325,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-LP",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1270,6 +1343,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-VR",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1287,6 +1361,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-AR",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1304,6 +1379,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-DCA",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1321,6 +1397,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-OM",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1338,6 +1415,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "SRA-VG",
     "set": "Gold /50",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1355,6 +1433,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCAP-RD",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1372,6 +1451,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-AB",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1389,6 +1469,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-KA",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1406,6 +1487,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-JR",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1423,6 +1505,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-JJ",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -1442,6 +1525,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-DH",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1459,6 +1543,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-WB",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1476,6 +1561,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-KW",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1493,6 +1579,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-GV",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1510,6 +1597,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-EF",
     "set": "Blue /150",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1521,12 +1609,13 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
   },
   {
     "id": "101",
-    "player": "Jordan Lawlar ",
+    "player": "Jordan Lawlar",
     "year": 2021,
     "manufacturer": "Bowman Chrome",
     "cardNumber": "N/A",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1544,6 +1633,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "N/A",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1561,6 +1651,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "N/A",
     "set": "Paper",
     "sport": "Baseball",
+    "league": "MLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1578,6 +1669,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-MM",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1595,6 +1687,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "N/A",
     "set": "Base",
     "sport": "Baseball",
+    "league": "MLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1612,6 +1705,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "N/A",
     "set": "Base",
     "sport": "Baseball",
+    "league": "MLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1629,6 +1723,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "N/A",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1646,6 +1741,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "N/A",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1663,6 +1759,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "N/A",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1680,6 +1777,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-MH",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -1699,6 +1797,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-EJ",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1716,6 +1815,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "N/A",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1733,6 +1833,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-BJ",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -1752,6 +1853,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-RA",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -1771,6 +1873,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "RA-JW",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1788,6 +1891,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-JB",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1805,6 +1909,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-YFZ",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -1824,6 +1929,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-XI",
     "set": "Speckle /299",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -1843,6 +1949,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-LM",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -1862,6 +1969,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-CC",
     "set": "Gold /50",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -1881,6 +1989,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-FC",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -1900,6 +2009,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-JF",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1911,12 +2021,13 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
   },
   {
     "id": "128",
-    "player": "Devon Witherspoon ",
+    "player": "Devon Witherspoon",
     "year": 2023,
     "manufacturer": "Unknown",
     "cardNumber": "99",
     "set": "Base",
     "sport": "Baseball",
+    "league": "MLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1934,6 +2045,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "157",
     "set": "Chrome",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1951,6 +2063,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "PA-JB",
     "set": "Paper",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1968,6 +2081,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCA-JG",
     "set": "Refractor",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -1985,6 +2099,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-JL",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2002,6 +2117,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "PA-BWJ",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2019,6 +2135,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-CW",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2036,6 +2153,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-CR",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2053,6 +2171,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-TC",
     "set": "Green /99",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2070,6 +2189,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-ED",
     "set": "Refractor",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2087,6 +2207,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-OM",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2104,6 +2225,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "RA-BL",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2121,6 +2243,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "N/A",
     "set": "Purple /250",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2138,6 +2261,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BCAP-OC",
     "set": "Chrome",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2155,6 +2279,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-KR",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -2174,6 +2299,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "RA-RAR",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": true,
@@ -2193,6 +2319,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-EO",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2210,6 +2337,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CPA-EO",
     "set": "Gold /50",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2227,6 +2355,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "CDA-BRR",
     "set": "Silver /499",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2244,6 +2373,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "BD-121",
     "set": "Refractor",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": false,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2261,6 +2391,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "cardNumber": "B24-JCA",
     "set": "Blue /150",
     "sport": "Baseball",
+    "league": "MiLB",
     "isAutographed": true,
     "condition": "Near Mint",
     "isGraded": false,
@@ -2281,3 +2412,3186 @@ export const PREPOPULATED_SUMMARY = {
   "realizedSold": 3500,
   "realizedCogs": 2250
 };
+
+export const INVENTORY_PLAYERS = [
+  {
+    "id": "p-julio-rodriguez",
+    "name": "Julio Rodriguez",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 93,
+    "trend": -3,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Julio Rodriguez is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jairo-pomares",
+    "name": "Jairo Pomares",
+    "team": "Hondo",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 84,
+    "trend": 7,
+    "intelligenceScore": 90,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jairo Pomares is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-cj-abrams",
+    "name": "CJ Abrams",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 73,
+    "trend": 5,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "CJ Abrams is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-julio-rodriquez",
+    "name": "Julio Rodriquez",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 75,
+    "trend": -5,
+    "intelligenceScore": 90,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Julio Rodriquez is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-riley-greene",
+    "name": "Riley Greene",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 71,
+    "trend": 7,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Riley Greene is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-luisangel-acuna",
+    "name": "Luisangel Acuna",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 83,
+    "trend": 3,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Luisangel Acuna is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-erick-pena",
+    "name": "Erick Pena",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 70,
+    "trend": 0,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Erick Pena is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-josh-smith",
+    "name": "Josh Smith",
+    "team": "Shotgun",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 91,
+    "trend": -3,
+    "intelligenceScore": 87,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Josh Smith is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-liover-peguero",
+    "name": "Liover Peguero",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 85,
+    "trend": 1,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Liover Peguero is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jake-mangum",
+    "name": "Jake Mangum",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 80,
+    "trend": 3,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jake Mangum is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jared-kelenic",
+    "name": "Jared Kelenic",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 76,
+    "trend": 5,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jared Kelenic is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-marco-luciano",
+    "name": "Marco Luciano",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 72,
+    "trend": 4,
+    "intelligenceScore": 85,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Marco Luciano is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jordan-lawlar",
+    "name": "Jordan Lawlar",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 80,
+    "trend": 8,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jordan Lawlar is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jackson-holiday",
+    "name": "Jackson Holiday",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 76,
+    "trend": 6,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jackson Holiday is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-marcelo-mayer",
+    "name": "Marcelo Mayer",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 72,
+    "trend": 7,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Marcelo Mayer is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-walker-jenkins",
+    "name": "Walker Jenkins",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 76,
+    "trend": -5,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Walker Jenkins is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-justin-herbert",
+    "name": "Justin Herbert",
+    "team": "Team",
+    "position": "Player",
+    "league": "MLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 77,
+    "trend": -1,
+    "intelligenceScore": 85,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Justin Herbert is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-gunnar-henderson",
+    "name": "Gunnar Henderson",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 88,
+    "trend": 7,
+    "intelligenceScore": 93,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Gunnar Henderson is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jasson-dominguez",
+    "name": "Jasson Dominguez",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 93,
+    "trend": 7,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jasson Dominguez is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-elly-de-la-cruz",
+    "name": "Elly de la Cruz",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 72,
+    "trend": 2,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Elly de la Cruz is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-corbin-carrol",
+    "name": "Corbin Carrol",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 85,
+    "trend": 5,
+    "intelligenceScore": 90,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Corbin Carrol is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-tyler-freeman",
+    "name": "Tyler Freeman",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 76,
+    "trend": 4,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Tyler Freeman is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-o'neal-cruz",
+    "name": "O'Neal Cruz",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 76,
+    "trend": -5,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "O'Neal Cruz is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-tyler-soderstrom",
+    "name": "Tyler Soderstrom",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 73,
+    "trend": -1,
+    "intelligenceScore": 92,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Tyler Soderstrom is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jake-cronenworth",
+    "name": "Jake Cronenworth",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 72,
+    "trend": 3,
+    "intelligenceScore": 85,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jake Cronenworth is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jordyn-adams",
+    "name": "Jordyn Adams",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 75,
+    "trend": 0,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jordyn Adams is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-miguel-vargas",
+    "name": "Miguel Vargas",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 80,
+    "trend": 9,
+    "intelligenceScore": 93,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Miguel Vargas is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-ezequiel-duran",
+    "name": "Ezequiel Duran",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 80,
+    "trend": 6,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Ezequiel Duran is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-brennen-davis",
+    "name": "Brennen Davis",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 73,
+    "trend": 4,
+    "intelligenceScore": 93,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Brennen Davis is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-corbin-carroll",
+    "name": "Corbin Carroll",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 89,
+    "trend": -2,
+    "intelligenceScore": 90,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Corbin Carroll is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-adley-rutschman",
+    "name": "Adley Rutschman",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 90,
+    "trend": -4,
+    "intelligenceScore": 93,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Adley Rutschman is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-sam-hillard",
+    "name": "Sam Hillard",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 87,
+    "trend": 4,
+    "intelligenceScore": 87,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Sam Hillard is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-logan-driscoll",
+    "name": "Logan Driscoll",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 86,
+    "trend": 9,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Logan Driscoll is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-francisco-alvarez",
+    "name": "Francisco Alvarez",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 85,
+    "trend": 2,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Francisco Alvarez is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jordan-westburg",
+    "name": "Jordan Westburg",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 93,
+    "trend": 5,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jordan Westburg is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-oswald-peraza",
+    "name": "Oswald Peraza",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 75,
+    "trend": 1,
+    "intelligenceScore": 85,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Oswald Peraza is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-trevor-larnach",
+    "name": "Trevor Larnach",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 77,
+    "trend": 2,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Trevor Larnach is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-kebryan-hayes",
+    "name": "KeBryan Hayes",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 77,
+    "trend": 3,
+    "intelligenceScore": 92,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "KeBryan Hayes is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-xavier-edwards",
+    "name": "Xavier Edwards",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 79,
+    "trend": -2,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Xavier Edwards is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-niko-hulsizer",
+    "name": "Niko Hulsizer",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 86,
+    "trend": 6,
+    "intelligenceScore": 93,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Niko Hulsizer is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jarren-duran",
+    "name": "Jarren Duran",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 84,
+    "trend": 8,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jarren Duran is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-brandon-lewis",
+    "name": "Brandon Lewis",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 73,
+    "trend": -3,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Brandon Lewis is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-noelvi-marte",
+    "name": "Noelvi Marte",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 81,
+    "trend": 7,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Noelvi Marte is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-george-kirby",
+    "name": "George Kirby",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 85,
+    "trend": 6,
+    "intelligenceScore": 90,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "George Kirby is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jose-salas",
+    "name": "Jose Salas",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 85,
+    "trend": -5,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jose Salas is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-cristian-hernandez",
+    "name": "Cristian Hernandez",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 86,
+    "trend": 7,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Cristian Hernandez is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-harry-ford",
+    "name": "Harry Ford",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 78,
+    "trend": -1,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Harry Ford is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-mj-melendez",
+    "name": "MJ Melendez",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 80,
+    "trend": 1,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "MJ Melendez is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-gabriel-arias",
+    "name": "Gabriel Arias",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 86,
+    "trend": -4,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Gabriel Arias is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-alex-binelas",
+    "name": "Alex Binelas",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 80,
+    "trend": 4,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Alex Binelas is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-gabriel-moreno",
+    "name": "Gabriel Moreno",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 91,
+    "trend": -2,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Gabriel Moreno is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-nick-pratto",
+    "name": "Nick Pratto",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 92,
+    "trend": -2,
+    "intelligenceScore": 85,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Nick Pratto is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-hunter-greene",
+    "name": "Hunter Greene",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 72,
+    "trend": 9,
+    "intelligenceScore": 87,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Hunter Greene is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-grayson-rodriguez",
+    "name": "Grayson Rodriguez",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 81,
+    "trend": -3,
+    "intelligenceScore": 93,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Grayson Rodriguez is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-cristian-santana",
+    "name": "Cristian Santana",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 87,
+    "trend": 1,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Cristian Santana is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-carlos-colmenarez",
+    "name": "Carlos Colmenarez",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 72,
+    "trend": 0,
+    "intelligenceScore": 90,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Carlos Colmenarez is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-victor-robles",
+    "name": "Victor Robles",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 93,
+    "trend": -3,
+    "intelligenceScore": 85,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Victor Robles is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-diego-cartaya",
+    "name": "Diego Cartaya",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 92,
+    "trend": 5,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Diego Cartaya is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-orelvis-martinez",
+    "name": "Orelvis Martinez",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 89,
+    "trend": 1,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Orelvis Martinez is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-vladimir-guerrero-jr",
+    "name": "Vladimir Guerrero Jr",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 75,
+    "trend": 8,
+    "intelligenceScore": 85,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Vladimir Guerrero Jr is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-rafael-devers",
+    "name": "Rafael Devers",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 91,
+    "trend": 7,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Rafael Devers is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-alec-bohm",
+    "name": "Alec Bohm",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 80,
+    "trend": 7,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Alec Bohm is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-kevin-alcantara",
+    "name": "Kevin Alcantara",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 89,
+    "trend": 1,
+    "intelligenceScore": 87,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Kevin Alcantara is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jose-ramos",
+    "name": "Jose Ramos",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 88,
+    "trend": -2,
+    "intelligenceScore": 85,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jose Ramos is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-josh-jung",
+    "name": "Josh Jung",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 86,
+    "trend": -1,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Josh Jung is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-dustin-harris",
+    "name": "Dustin Harris",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 84,
+    "trend": 3,
+    "intelligenceScore": 92,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Dustin Harris is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-warming-bernabel",
+    "name": "Warming Bernabel",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 87,
+    "trend": 0,
+    "intelligenceScore": 93,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Warming Bernabel is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-kahlil-watson",
+    "name": "Kahlil Watson",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 70,
+    "trend": -1,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Kahlil Watson is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-george-valera",
+    "name": "George Valera",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 93,
+    "trend": -4,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "George Valera is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-estevan-florial",
+    "name": "Estevan Florial",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 89,
+    "trend": -1,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Estevan Florial is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-averson-arteaga",
+    "name": "Averson Arteaga",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 79,
+    "trend": 3,
+    "intelligenceScore": 85,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Averson Arteaga is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-trey-lance",
+    "name": "Trey Lance",
+    "team": "Team",
+    "position": "Player",
+    "league": "MLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 88,
+    "trend": 2,
+    "intelligenceScore": 87,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Trey Lance is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-kyle-trask",
+    "name": "Kyle Trask",
+    "team": "Team",
+    "position": "Player",
+    "league": "MLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 82,
+    "trend": -4,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Kyle Trask is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-trevor-lawrence",
+    "name": "Trevor Lawrence",
+    "team": "Team",
+    "position": "Player",
+    "league": "MLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 78,
+    "trend": -3,
+    "intelligenceScore": 92,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Trevor Lawrence is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-jackson-merrill",
+    "name": "Jackson Merrill",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 89,
+    "trend": -4,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Jackson Merrill is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-ceddanne-rafaela",
+    "name": "Ceddanne Rafaela",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 86,
+    "trend": 0,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Ceddanne Rafaela is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-samuel-munoz",
+    "name": "Samuel Munoz",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 71,
+    "trend": 4,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Samuel Munoz is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-michael-harris",
+    "name": "Michael Harris",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 89,
+    "trend": 9,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Michael Harris is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-eloy-jimenez",
+    "name": "Eloy Jimenez",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 72,
+    "trend": 6,
+    "intelligenceScore": 90,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Eloy Jimenez is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-elijah-green",
+    "name": "Elijah Green",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 90,
+    "trend": 3,
+    "intelligenceScore": 93,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Elijah Green is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-blaze-jordan",
+    "name": "Blaze Jordan",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 83,
+    "trend": -5,
+    "intelligenceScore": 92,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Blaze Jordan is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-roderick-arias",
+    "name": "Roderick Arias",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 82,
+    "trend": 2,
+    "intelligenceScore": 87,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Roderick Arias is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-joey-wiemer",
+    "name": "Joey Wiemer",
+    "team": "Team",
+    "position": "Player",
+    "league": "MLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 92,
+    "trend": -2,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Joey Wiemer is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-juan-brito",
+    "name": "Juan Brito",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 90,
+    "trend": 3,
+    "intelligenceScore": 93,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Juan Brito is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-yanquiel-fernandez",
+    "name": "Yanquiel Fernandez",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 74,
+    "trend": 5,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Yanquiel Fernandez is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-xavier-isaac",
+    "name": "Xavier Isaac",
+    "team": "Bus/Shotgun",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 91,
+    "trend": 9,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Xavier Isaac is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-lazaro-montes",
+    "name": "Lazaro Montes",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 72,
+    "trend": 6,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Lazaro Montes is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-cole-carrigg",
+    "name": "Cole Carrigg",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 81,
+    "trend": -5,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Cole Carrigg is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-felnin-celesten",
+    "name": "Felnin Celesten",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 94,
+    "trend": -4,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Felnin Celesten is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-johnny-farmelo",
+    "name": "Johnny Farmelo",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 77,
+    "trend": 3,
+    "intelligenceScore": 85,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Johnny Farmelo is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-devon-witherspoon",
+    "name": "Devon Witherspoon",
+    "team": "Team",
+    "position": "Player",
+    "league": "MLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 93,
+    "trend": 4,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Devon Witherspoon is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-austin-riley",
+    "name": "Austin Riley",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 85,
+    "trend": 2,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Austin Riley is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-joey-bart",
+    "name": "Joey Bart",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 77,
+    "trend": -4,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Joey Bart is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-joey-gallo",
+    "name": "Joey Gallo",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 88,
+    "trend": 9,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Joey Gallo is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-joshua-lowe",
+    "name": "Joshua Lowe",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 91,
+    "trend": 5,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Joshua Lowe is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-bobby-witt",
+    "name": "Bobby Witt",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 87,
+    "trend": 4,
+    "intelligenceScore": 91,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Bobby Witt is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-carson-williams",
+    "name": "Carson Williams",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 84,
+    "trend": 0,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Carson Williams is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-cal-raleigh",
+    "name": "Cal Raleigh",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 73,
+    "trend": 3,
+    "intelligenceScore": 85,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Cal Raleigh is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-triston-casas",
+    "name": "Triston Casas",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 71,
+    "trend": 7,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Triston Casas is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-brandon-lowe",
+    "name": "Brandon Lowe",
+    "team": "Team",
+    "position": "Player",
+    "league": "MLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 77,
+    "trend": 0,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Brandon Lowe is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-kumar-rocker",
+    "name": "Kumar Rocker",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 83,
+    "trend": -3,
+    "intelligenceScore": 86,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Kumar Rocker is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-randy-arozarena",
+    "name": "Randy Arozarena",
+    "team": "Team",
+    "position": "Player",
+    "league": "MLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 73,
+    "trend": 5,
+    "intelligenceScore": 90,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Randy Arozarena is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-edward-olivares",
+    "name": "Edward Olivares",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 78,
+    "trend": -3,
+    "intelligenceScore": 89,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Edward Olivares is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-bryan-reynolds",
+    "name": "Bryan Reynolds",
+    "team": "Bus",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1519766304817-4f37bda74a26?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 75,
+    "trend": -3,
+    "intelligenceScore": 88,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Bryan Reynolds is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-spencer-torkelson",
+    "name": "Spencer Torkelson",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1504450758481-7338eba7524a?auto=format&fit=crop&q=80&w=100",
+    "breakoutScore": 82,
+    "trend": -4,
+    "intelligenceScore": 90,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Spencer Torkelson is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  },
+  {
+    "id": "p-junior-caminero",
+    "name": "Junior Caminero",
+    "team": "Team",
+    "position": "Player",
+    "league": "MiLB",
+    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600",
+    "breakoutScore": 93,
+    "trend": 8,
+    "intelligenceScore": 94,
+    "stats": [
+      {
+        "label": "Market Value",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volume",
+        "value": "N/A",
+        "change": "0%"
+      },
+      {
+        "label": "Volatility",
+        "value": "Low",
+        "change": "0%"
+      }
+    ],
+    "summary": "Junior Caminero is a key asset in your current inventory with multiple card positions.",
+    "marketContext": "Market is currently pricing this asset based on historical stability."
+  }
+];

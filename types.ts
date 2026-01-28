@@ -1,5 +1,6 @@
 
 export type Sport = 'Baseball' | 'Basketball' | 'Football' | 'Hockey' | 'Soccer';
+export type League = 'MLB' | 'MiLB' | 'NBA' | 'NFL' | 'Other';
 
 export interface CardInventory {
   id: string;
@@ -9,6 +10,7 @@ export interface CardInventory {
   cardNumber: string;
   set: string;
   sport: Sport;
+  league: League;
   isAutographed: boolean;
   condition: string;
   isGraded: boolean;
@@ -29,8 +31,13 @@ export interface TargetWatchlist {
   cardDescription: string;
   priority: 'High' | 'Medium' | 'Low';
   targetPrice: number;
+  currentMarketPrice?: number;
   notes?: string;
   sport: Sport;
+  league: League;
+  status: 'active' | 'acquired' | 'expired';
+  createdAt: string;
+  image?: string;
 }
 
 export interface MiLBProspect {
@@ -43,6 +50,9 @@ export interface MiLBProspect {
   change24h: number; // percentage
   trendDirection: 'up' | 'down' | 'stable';
   history7d: number[];
+  breakoutScore: number; // 0-100
+  summary: string;
+  image: string;
 }
 
 export interface MLBPlayer {
@@ -67,3 +77,19 @@ export interface PricingAnalysis {
   salesCount: number;
   lastUpdated: string;
 }
+
+export type AlertType = 'price_target' | 'sync_complete' | 'trend' | 'momentum' | 'warning' | 'system';
+
+export interface Alert {
+  id: string;
+  type: AlertType;
+  title: string;
+  description: string;
+  timestamp: string;
+  isRead: boolean;
+  priority: 'high' | 'medium' | 'low';
+  actionUrl?: string;
+  relatedId?: string; // Target ID, Card ID, etc.
+  metadata?: Record<string, any>;
+}
+

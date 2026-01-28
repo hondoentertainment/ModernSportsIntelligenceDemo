@@ -38,11 +38,13 @@ const MLBStats: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-12">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-bebas tracking-tight text-white mb-2">MLB Intelligence Hub</h1>
-          <p className="text-brand-muted max-w-2xl">Real-time stats, live game tracking, and player scouting analytics.</p>
+    <div className="space-y-12 animate-in fade-in duration-700 pb-20">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-2">
+          <h1 className="text-5xl md:text-7xl font-bebas tracking-tight text-white leading-none">
+            MLB <span className="text-brand-lime">Intelligence Hub</span>
+          </h1>
+          <p className="text-brand-muted max-w-2xl font-medium">Real-time stats, live game tracking, and player scouting analytics.</p>
         </div>
       </div>
 
@@ -108,7 +110,7 @@ const MLBStats: React.FC = () => {
                   <div className="space-y-3">
                     {record.teamRecords.slice(0, 5).map((team: any, j: number) => (
                       <div key={j} className="flex items-center justify-between text-sm">
-                        <span className="font-bold text-slate-200">{j+1}. {team.team.name}</span>
+                        <span className="font-bold text-slate-200">{j + 1}. {team.team.name}</span>
                         <span className="font-mono text-xs font-bold text-brand-muted">{team.wins}-{team.losses}</span>
                       </div>
                     ))}
@@ -127,15 +129,15 @@ const MLBStats: React.FC = () => {
             </h2>
             <div className="space-y-4">
               <div className="relative">
-                <input 
-                  type="text" 
-                  placeholder="Lookup active player..." 
+                <input
+                  type="text"
+                  placeholder="Lookup active player..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   className="w-full bg-brand-slate border border-slate-800 rounded-2xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:ring-1 focus:ring-brand-lime"
                 />
-                <button 
+                <button
                   onClick={handleSearch}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-brand-lime text-brand-charcoal rounded-xl"
                 >
