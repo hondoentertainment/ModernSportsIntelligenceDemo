@@ -16,13 +16,15 @@ import {
   Target,
   Edit3,
   CheckCircle2,
-  Clock
+  Clock,
+  Star
 } from 'lucide-react';
 import { CardInventory, TargetWatchlist, League } from '../types.ts';
 import { getEbayCardPrice } from '../lib/gemini.ts';
 import { LEAGUES } from '../constants.tsx';
 import { useInventory } from '../lib/useInventory.ts';
 import { useTargets } from '../lib/useTargets.ts';
+import { useFavorites } from '../lib/useFavorites.ts';
 import AddTargetModal from '../components/AddTargetModal.tsx';
 import AddAssetModal from '../components/AddAssetModal.tsx';
 import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
@@ -34,6 +36,9 @@ const Collection: React.FC = () => {
 
   // Shared inventory state - synced with Dashboard
   const { inventory, setInventory, addCard, deleteCard: removeCard, initializeFullInventory } = useInventory();
+
+  // Favorites/Watchlist state
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   // Targets state
   const { targets, addTarget, updateTarget, deleteTarget, markAcquired } = useTargets();
@@ -262,6 +267,15 @@ const Collection: React.FC = () => {
                         >
                           <Edit3 size={20} />
                         </button>
+                        <button
+                          onClick={(e) => { e.preventDefault(); toggleFavorite(card); }}
+                          className={`absolute top-6 right-[8.5rem] p-3 rounded-xl transition-all backdrop-blur-md ${isFavorite(card.id)
+                              ? 'bg-amber-500/20 text-amber-400 opacity-100'
+                              : 'bg-brand-charcoal/30 text-white opacity-0 group-hover:opacity-100 hover:bg-amber-500/20 hover:text-amber-400'
+                            }`}
+                        >
+                          <Star size={20} fill={isFavorite(card.id) ? 'currentColor' : 'none'} />
+                        </button>
                       </div>
 
                       <div className="p-8 space-y-6 flex-1">
@@ -330,6 +344,12 @@ const Collection: React.FC = () => {
                         <td className="px-8 py-4 text-right font-mono text-sm text-brand-lime">${card.currentValue?.toLocaleString() || '—'}</td>
                         <td className="px-8 py-4 text-center text-[10px] font-black uppercase">{card.isGraded ? `${card.gradingCompany} ${card.grade}` : 'Raw'}</td>
                         <td className="px-8 py-4 text-right flex justify-end gap-2">
+                          <button
+                            onClick={() => toggleFavorite(card)}
+                            className={`p-2 transition-colors ${isFavorite(card.id) ? 'text-amber-400' : 'text-slate-500 hover:text-amber-400 opacity-0 group-hover:opacity-100'}`}
+                          >
+                            <Star size={16} fill={isFavorite(card.id) ? 'currentColor' : 'none'} />
+                          </button>
                           <button onClick={() => { setEditingAsset(card); setIsAssetModalOpen(true); }} className="p-2 text-slate-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
                             <Edit3 size={16} />
                           </button>
