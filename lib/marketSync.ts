@@ -21,6 +21,14 @@ export interface SyncResult {
 const CONCURRENT_LIMIT = 3; // Process 3 cards at a time to avoid rate limits
 const STORAGE_KEY = 'cardx_inventory';
 const SYNC_META_KEY = 'cardx_sync_meta';
+const HISTORY_KEY = 'cardx_sync_history';
+const MAX_HISTORY = 30; // Keep 30 snapshots
+
+export interface PortfolioSnapshot {
+    timestamp: string;
+    totalValue: number;
+    assetCount: number;
+}
 
 /**
  * Throttled parallel execution - processes items in batches
@@ -120,6 +128,22 @@ export async function syncPortfolio(
         totalValue,
         assetCount: updatedInventory.length
     }));
+
+    // Update history snapshots
+    try {
+        const history: PortfolioSnapshot[] = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        const newSnapshot: PortfolioSnapshot = {
+            timestamp: syncTime,
+            totalValue,
+            assetCount: updatedInventory.length
+        };
+
+        // Add new snapshot and prune
+        const updatedHistory = [newSnapshot, ...history].slice(0, MAX_HISTORY);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(updatedHistory));
+    } catch (e) {
+        console.warn('Failed to update sync history', e);
+    }
 
     progress.status = 'complete';
     progress.lastSyncTime = syncTime;

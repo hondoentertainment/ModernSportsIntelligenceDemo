@@ -38,6 +38,7 @@
             --brand-orange: oklch(0.75 0.18 45);
             --brand-slate: oklch(0.20 0.01 240);
             --brand-teal: oklch(0.75 0.15 180);
+            scroll-behavior: smooth;
         }
 
         html,
@@ -51,6 +52,8 @@
             background-color: var(--brand-charcoal);
             color: #ffffff;
             overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         h1,
@@ -64,16 +67,44 @@
             font-family: 'Fira Code', monospace;
         }
 
+        /* Generic scrollbar for all scrollable containers */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: oklch(0.88 0.20 127 / 0.1) transparent;
+        }
+
+        /* Webkit specific scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: oklch(0.88 0.20 127 / 0.1);
+            border-radius: 20px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: oklch(0.88 0.20 127 / 0.3);
+            background-clip: content-box;
+        }
+
         .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
+            width: 6px;
         }
 
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #0f172a;
+            background: transparent;
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: oklch(0.88 0.20 127 / 0.3);
+            background: oklch(0.88 0.20 127 / 0.2);
             border-radius: 10px;
         }
 
@@ -90,6 +121,37 @@
         .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
+        }
+
+        /* Section Reveal Animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reveal-section {
+            animation: slideInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(400%);
+            }
+        }
+
+        .animate-scan {
+            animation: scan 3s linear infinite;
         }
     </style>
 </head>

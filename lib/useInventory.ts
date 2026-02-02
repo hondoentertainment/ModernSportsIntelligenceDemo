@@ -1,9 +1,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { CardInventory } from '../types.ts';
+import { CardInventory, TargetWatchlist } from '../types.ts';
 import { MOCK_CARDS } from '../constants.tsx';
 
 const STORAGE_KEY = 'cardx_inventory';
+const TARGETS_KEY = 'cardx_targets';
 const SYNC_META_KEY = 'cardx_sync_meta';
 
 export interface SyncMeta {
@@ -26,11 +27,21 @@ export function useInventory() {
                     return parsed;
                 }
             }
-            // Otherwise initialize with full MOCK_CARDS
-            return MOCK_CARDS;
+            // Otherwise initialize with empty array for first-time onboarding experience
+            return [];
         } catch (e) {
             console.warn('Failed to parse inventory from localStorage', e);
-            return MOCK_CARDS;
+            return [];
+        }
+    });
+
+    const [targets, setTargets] = useState<TargetWatchlist[]>(() => {
+        try {
+            const saved = localStorage.getItem(TARGETS_KEY);
+            return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            console.warn('Failed to parse targets', e);
+            return [];
         }
     });
 
@@ -49,6 +60,7 @@ export function useInventory() {
     // Persist inventory changes to localStorage
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(inventory));
+        localStorage.setItem(TARGETS_KEY, JSON.stringify(targets));
 
         // Update sync meta
         const totalValue = inventory.reduce((sum, c) => sum + (c.currentValue || 0), 0);
@@ -59,7 +71,7 @@ export function useInventory() {
         };
         localStorage.setItem(SYNC_META_KEY, JSON.stringify(meta));
         setSyncMeta(meta);
-    }, [inventory]);
+    }, [inventory, targets]);
 
     // Listen for storage events from other tabs/components
     useEffect(() => {
@@ -114,14 +126,26 @@ export function useInventory() {
         }
     }, [inventory.length]);
 
+    const addTarget = useCallback((target: TargetWatchlist) => {
+        setTargets(prev => [target, ...prev]);
+    }, []);
+
+    const updateTarget = useCallback((id: string, updates: Partial<TargetWatchlist>) => {
+        setTargets(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+    }, []);
+
     return {
         inventory,
         setInventory,
+        targets,
+        setTargets,
         syncMeta,
         setSyncMeta,
         updateCard,
         addCard,
         deleteCard,
+        addTarget,
+        updateTarget,
         refreshFromStorage,
         initializeFullInventory,
         totalCards: inventory.length
@@ -133,11 +157,15 @@ export function useInventory() {
  */
 export function calculateStats(inventory: CardInventory[]) {
     const totalValue = inventory.reduce((sum, c) => sum + (c.currentValue || 0), 0);
-    const totalCost = inventory.reduce((sum, c) => sum + (c.purchasePrice || 0), 0);
+    const grossCost = inventory.reduce((sum, c) => sum + (c.purchasePrice || 0), 0);
+    const totalFees = inventory.reduce((sum, c) => sum + (c.gradingFees || 0) + (c.shippingFees || 0), 0);
+    const totalCost = grossCost + totalFees;
 
     return {
         totalValue,
         totalCost,
+        grossCost,
+        totalFees,
         cardCount: inventory.length,
         profit: totalValue - totalCost,
         roi: totalCost > 0 ? ((totalValue - totalCost) / totalCost) * 100 : 0

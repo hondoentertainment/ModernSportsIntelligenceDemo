@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, Sun, TrendingUp, TrendingDown, ArrowUpRight, Zap } from 'lucide-react';
+import { X, Sun, TrendingUp, TrendingDown, ArrowUpRight, Zap, History } from 'lucide-react';
 import { CardInventory } from '../types.ts';
+import { getHistoricalDelta, getMarketInsight } from '../lib/marketHistory.ts';
 
 interface MorningBriefingModalProps {
     isOpen: boolean;
@@ -10,42 +11,22 @@ interface MorningBriefingModalProps {
 }
 
 const MorningBriefingModal: React.FC<MorningBriefingModalProps> = ({ isOpen, onClose, inventory }) => {
-    // Simulated daily stats
-    const [stats, setStats] = useState({
-        overnightGain: 0,
-        topMover: { player: '', percent: 0 },
-        marketTrend: '',
-        marketTrendDirection: 'up' as 'up' | 'down' | 'flat'
-    });
+    const [delta, setDelta] = useState<any>(null);
+    const [insight, setInsight] = useState('');
+    const [isFirstSync, setIsFirstSync] = useState(false);
 
     useEffect(() => {
-        if (isOpen && inventory.length > 0) {
-            // Calculate simulated overnight gain (0.5% - 2.5%)
-            const gainPercent = 0.5 + Math.random() * 2;
-            const totalValue = inventory.reduce((sum, c) => sum + (c.currentValue || 0), 0);
-            const gainValue = totalValue * (gainPercent / 100);
+        if (isOpen) {
+            const historicalDelta = getHistoricalDelta(24);
+            const marketInsight = getMarketInsight(inventory);
 
-            // Find a random "top mover"
-            const randomCard = inventory[Math.floor(Math.random() * inventory.length)];
+            setDelta(historicalDelta);
+            setInsight(marketInsight);
 
-            // Random trend
-            const trends = [
-                { text: "Vintage Baseball is heating up", dir: 'up' },
-                { text: "Modern Basketball liquidity tightening", dir: 'flat' },
-                { text: "NFL Off-season buy window open", dir: 'up' },
-                { text: "Prospect market showing volatility", dir: 'down' }
-            ] as const;
-            const trend = trends[Math.floor(Math.random() * trends.length)];
-
-            setStats({
-                overnightGain: gainValue,
-                topMover: {
-                    player: randomCard.player,
-                    percent: 2 + Math.random() * 8
-                },
-                marketTrend: trend.text,
-                marketTrendDirection: trend.dir
-            });
+            // If no delta, it means we only have 1 or 0 snapshots
+            if (!historicalDelta && inventory.length > 0) {
+                setIsFirstSync(true);
+            }
         }
     }, [isOpen, inventory]);
 
@@ -78,19 +59,34 @@ const MorningBriefingModal: React.FC<MorningBriefingModalProps> = ({ isOpen, onC
                     <div className="grid grid-cols-2 gap-4">
                         <div className="p-5 bg-brand-charcoal/50 border border-slate-800 rounded-2xl">
                             <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Overnight Change</p>
-                            <div className="flex items-center gap-2">
-                                <span className="text-2xl font-mono font-bold text-brand-lime">
-                                    +${Math.round(stats.overnightGain).toLocaleString()}
-                                </span>
-                                <TrendingUp size={16} className="text-brand-lime" />
-                            </div>
+                            {delta ? (
+                                <div className="flex items-center gap-2">
+                                    <span className={`text-2xl font-mono font-bold ${delta.isPositive ? 'text-brand-lime' : 'text-red-400'}`}>
+                                        {delta.isPositive ? '+' : '-'}${Math.abs(Math.round(delta.gainValue)).toLocaleString()}
+                                    </span>
+                                    {delta.isPositive ? <TrendingUp size={16} className="text-brand-lime" /> : <TrendingDown size={16} className="text-red-400" />}
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2 text-slate-500">
+                                    <History size={16} className="animate-pulse" />
+                                    <span className="text-sm font-bold uppercase tracking-widest">Awaiting Delta</span>
+                                </div>
+                            )}
                         </div>
                         <div className="p-5 bg-brand-charcoal/50 border border-slate-800 rounded-2xl">
-                            <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Top Mover</p>
-                            <div className="truncate">
-                                <div className="text-sm font-bold text-white truncate">{stats.topMover.player}</div>
-                                <div className="text-xs font-mono font-bold text-brand-green">+{stats.topMover.percent.toFixed(1)}%</div>
-                            </div>
+                            <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Portfolio Delta</p>
+                            {delta ? (
+                                <div>
+                                    <div className={`text-xl font-mono font-bold ${delta.isPositive ? 'text-brand-green' : 'text-red-400'}`}>
+                                        {delta.isPositive ? '+' : ''}{delta.gainPercent.toFixed(1)}%
+                                    </div>
+                                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">vs Previous Sync</p>
+                                </div>
+                            ) : (
+                                <div className="text-[10px] text-slate-500 font-medium">
+                                    {isFirstSync ? 'Next sync will trigger comparison.' : 'Deploy assets to start tracking.'}
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -99,7 +95,7 @@ const MorningBriefingModal: React.FC<MorningBriefingModalProps> = ({ isOpen, onC
                         <div>
                             <p className="text-[10px] font-black text-brand-lime uppercase tracking-widest mb-1">Market Insight</p>
                             <p className="text-sm text-slate-200 font-medium leading-relaxed">
-                                {stats.marketTrend}
+                                {insight}
                             </p>
                         </div>
                     </div>
@@ -110,6 +106,12 @@ const MorningBriefingModal: React.FC<MorningBriefingModalProps> = ({ isOpen, onC
                     >
                         Access Dashboard <ArrowUpRight size={16} strokeWidth={3} />
                     </button>
+
+                    {isFirstSync && (
+                        <p className="text-[9px] text-center text-slate-500 uppercase tracking-widest font-black animate-pulse">
+                            System Calibration in Progress...
+                        </p>
+                    )}
                 </div>
             </div>
         </div>

@@ -44,6 +44,7 @@ const Collection: React.FC = () => {
   const { targets, addTarget, updateTarget, deleteTarget, markAcquired } = useTargets();
   const [isTargetModalOpen, setIsTargetModalOpen] = useState(false);
   const [editingTarget, setEditingTarget] = useState<TargetWatchlist | null>(null);
+  const [initialTargetData, setInitialTargetData] = useState<Partial<TargetWatchlist> | null>(null);
 
   // Asset Modal state
   const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
@@ -57,6 +58,19 @@ const Collection: React.FC = () => {
 
   const [isPricing, setIsPricing] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleAddToWatchlist = (card: CardInventory) => {
+    setInitialTargetData({
+      player: card.player,
+      cardDescription: `${card.year} ${card.manufacturer} ${card.set} #${card.cardNumber}`,
+      sport: card.sport,
+      league: card.league,
+      targetPrice: card.currentValue || card.purchasePrice,
+      notes: `Based on asset in collection acquired on ${new Date(card.purchaseDate).toLocaleDateString()}`
+    });
+    setEditingTarget(null);
+    setIsTargetModalOpen(true);
+  };
 
 
   const handleAddCard = (card: CardInventory) => {
@@ -270,11 +284,18 @@ const Collection: React.FC = () => {
                         <button
                           onClick={(e) => { e.preventDefault(); toggleFavorite(card); }}
                           className={`absolute top-6 right-[8.5rem] p-3 rounded-xl transition-all backdrop-blur-md ${isFavorite(card.id)
-                              ? 'bg-amber-500/20 text-amber-400 opacity-100'
-                              : 'bg-brand-charcoal/30 text-white opacity-0 group-hover:opacity-100 hover:bg-amber-500/20 hover:text-amber-400'
+                            ? 'bg-amber-500/20 text-amber-400 opacity-100'
+                            : 'bg-brand-charcoal/30 text-white opacity-0 group-hover:opacity-100 hover:bg-amber-500/20 hover:text-amber-400'
                             }`}
                         >
                           <Star size={20} fill={isFavorite(card.id) ? 'currentColor' : 'none'} />
+                        </button>
+                        <button
+                          onClick={(e) => { e.preventDefault(); handleAddToWatchlist(card); }}
+                          className="absolute top-6 right-[12rem] p-3 bg-brand-charcoal/30 text-white rounded-xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-brand-charcoal hover:text-brand-lime backdrop-blur-md"
+                          title="Add to Watchlist"
+                        >
+                          <Target size={20} />
                         </button>
                       </div>
 
@@ -355,6 +376,9 @@ const Collection: React.FC = () => {
                           </button>
                           <button onClick={() => deleteCard(card.id)} className="p-2 text-slate-500 hover:text-brand-red transition-colors opacity-0 group-hover:opacity-100">
                             <Trash2 size={16} />
+                          </button>
+                          <button onClick={() => handleAddToWatchlist(card)} className="p-2 text-slate-500 hover:text-brand-lime transition-colors opacity-0 group-hover:opacity-100" title="Add to Watchlist">
+                            <Target size={16} />
                           </button>
                         </td>
                       </tr>
@@ -497,9 +521,10 @@ const Collection: React.FC = () => {
         {/* Add/Edit Target Modal */}
         <AddTargetModal
           isOpen={isTargetModalOpen}
-          onClose={() => { setIsTargetModalOpen(false); setEditingTarget(null); }}
+          onClose={() => { setIsTargetModalOpen(false); setEditingTarget(null); setInitialTargetData(null); }}
           onAdd={addTarget}
           editTarget={editingTarget}
+          initialData={initialTargetData}
           onUpdate={updateTarget}
         />
 

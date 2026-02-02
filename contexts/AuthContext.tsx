@@ -65,6 +65,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const signUp = async (email: string, password: string, username?: string) => {
+        if (isDemoMode) {
+            demoLogin();
+            return { error: null };
+        }
         const { error } = await supabase.auth.signUp({
             email,
             password,

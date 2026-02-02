@@ -15,7 +15,9 @@ import {
   Package,
   RefreshCw,
   CheckCircle2,
-  Clock
+  Clock,
+  Camera,
+  Share2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
@@ -29,23 +31,57 @@ import {
   Pie,
   Cell,
   BarChart,
-  Bar
+  Bar,
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis
 } from 'recharts';
+import { calculateAlphaScore, getCollectorTier, getPortfolioDNA } from '../lib/analytics.ts';
+import { generatePortfolioSentiment } from '../lib/gemini.ts';
+import { detectSignals } from '../lib/signals.ts';
 import { MOCK_CARDS, MOCK_INVENTORY_SUMMARY } from '../constants.tsx';
 import { syncPortfolio, SyncProgress } from '../lib/marketSync.ts';
 import { useInventory, calculateStats } from '../lib/useInventory.ts';
 import { useAlerts } from '../lib/useAlerts.ts';
 import ReportModal from '../components/ReportModal.tsx';
 import MorningBriefingModal from '../components/MorningBriefingModal.tsx';
+import ShareAlphaModal from '../components/ShareAlphaModal.tsx';
+import OCRIngestionModal from '../components/OCRIngestionModal.tsx';
 import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
+import { getHistoricalDelta } from '../lib/marketHistory.ts';
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
-  const { inventory, setInventory, syncMeta, setSyncMeta, initializeFullInventory } = useInventory();
+  const {
+    inventory,
+    targets,
+    setInventory,
+    syncMeta,
+    setSyncMeta,
+    initializeFullInventory
+  } = useInventory();
   const [syncProgress, setSyncProgress] = useState<SyncProgress | null>(null);
-  const { syncComplete: createSyncAlert } = useAlerts();
+  const { syncComplete: createSyncAlert, portfolioMomentum: createMomentumAlert } = useAlerts();
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [showBriefing, setShowBriefing] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isScanOpen, setIsScanOpen] = useState(false);
+
+  // Identity Metrics
+  const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
+  const tier = useMemo(() => getCollectorTier(alphaScore), [alphaScore]);
+  const dnaData = useMemo(() => getPortfolioDNA(inventory), [inventory]);
+  const signals = useMemo(() => detectSignals(targets, inventory), [targets, inventory]);
+  const [marketSentiment, setMarketSentiment] = useState('Analyzing portfolio alpha signals...');
+
+  // Fetch Sentiment
+  useEffect(() => {
+    if (inventory.length > 0) {
+      generatePortfolioSentiment(inventory).then(setMarketSentiment);
+    }
+  }, [inventory]);
 
   // Morning Briefing Logic
   useEffect(() => {
@@ -77,6 +113,12 @@ const Dashboard: React.FC = () => {
 
     // Create alert for sync completion
     createSyncAlert(result.updatedCount, result.totalValue, result.duration);
+
+    // Check for significant delta to trigger momentum alert
+    const delta = getHistoricalDelta();
+    if (delta && Math.abs(delta.gainPercent) > 0.1) {
+      createMomentumAlert(delta.gainValue, delta.gainPercent, delta.isPositive);
+    }
 
     // Reset progress after a delay
     setTimeout(() => setSyncProgress(null), 3000);
@@ -147,63 +189,72 @@ const Dashboard: React.FC = () => {
   return (
     <div className="space-y-12 animate-in fade-in duration-700 pb-12">
       {inventory.length === 0 ? (
-        /* Onboarding Hero State */
-        <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-8">
-          <div className="p-8 bg-brand-lime/10 rounded-full animate-pulse ring-4 ring-brand-lime/5">
-            <Sparkles size={64} className="text-brand-lime" />
-          </div>
-          <div className="space-y-4 max-w-2xl">
-            <h1 className="text-5xl md:text-7xl font-bebas tracking-tight text-white leading-none">
-              Initialize <span className="text-brand-lime">Portfolio</span>
-            </h1>
-            <p className="text-xl text-brand-muted font-medium leading-relaxed">
-              Your intelligence hub is ready. Begin by adding your first asset to unlock real-time valuation, trend analysis, and liquidity alerts.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Link to="/collection" className="px-10 py-5 bg-brand-lime hover:bg-white text-brand-charcoal font-black rounded-2xl transition-all shadow-2xl shadow-brand-lime/20 flex items-center gap-3 uppercase tracking-widest text-sm active:scale-95 group">
-              <Package size={20} strokeWidth={3} />
-              Add First Asset
-              <ArrowUpRight size={20} strokeWidth={3} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            </Link>
-            <button
-              onClick={() => initializeFullInventory()}
-              className="px-10 py-5 bg-brand-charcoal hover:bg-slate-800 border border-slate-700 text-white font-black rounded-2xl transition-all flex items-center gap-3 uppercase tracking-widest text-sm active:scale-95"
-            >
-              <Zap size={20} /> Load Demo Data
-            </button>
-          </div>
+        /* Compact HUD Initialization State */
+        <div className="min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden py-12">
+          {/* Background Decorative Elements */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-lime/5 blur-[100px] rounded-full animate-pulse"></div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl mt-12 opacity-50 pointer-events-none grayscale">
-            {/* Placeholders to show what's coming */}
-            <div className="h-40 bg-brand-slate border border-slate-800 rounded-3xl p-6 flex flex-col justify-between">
-              <div className="w-10 h-10 bg-brand-charcoal rounded-xl"></div>
+          <div className="relative z-10 w-full max-w-4xl space-y-8 text-center reveal-section">
+            <div className="inline-flex flex-col items-center gap-4">
+              <div className="relative group">
+                <div className="absolute -inset-2 bg-gradient-to-r from-brand-lime to-brand-teal rounded-full blur-md opacity-25 group-hover:opacity-50 transition duration-1000 animate-pulse"></div>
+                <div className="relative p-6 bg-brand-charcoal border border-slate-800 rounded-full shadow-2xl">
+                  <Activity size={48} className="text-brand-lime animate-pulse" />
+                </div>
+                {/* Scanning Line Effect */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-lime to-transparent opacity-50 animate-scan pointer-events-none"></div>
+              </div>
+
               <div className="space-y-2">
-                <div className="h-2 w-1/3 bg-brand-charcoal rounded-full"></div>
-                <div className="h-8 w-1/2 bg-brand-charcoal rounded-xl"></div>
+                <h1 className="text-5xl md:text-7xl font-bebas tracking-tighter text-white leading-none">
+                  SYSTEM <span className="text-brand-lime">INITIALIZATION</span>
+                </h1>
+                <p className="text-lg text-brand-muted font-medium max-w-xl mx-auto leading-tight">
+                  Intelligence engine active. Deploy your first asset to calibrate market tracking.
+                </p>
               </div>
             </div>
-            <div className="h-40 bg-brand-slate border border-slate-800 rounded-3xl p-6 flex flex-col justify-between">
-              <div className="w-10 h-10 bg-brand-charcoal rounded-xl"></div>
-              <div className="space-y-2">
-                <div className="h-2 w-1/3 bg-brand-charcoal rounded-full"></div>
-                <div className="h-8 w-2/3 bg-brand-charcoal rounded-xl"></div>
-              </div>
+
+            <div className="flex flex-wrap gap-4 justify-center pt-2">
+              <Link to="/collection" className="px-10 py-5 bg-brand-lime hover:bg-white text-brand-charcoal font-black rounded-2xl transition-all shadow-2xl shadow-brand-lime/20 flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group">
+                <Package size={18} strokeWidth={3} />
+                Deploy First Asset
+                <ChevronRight size={18} strokeWidth={3} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <button
+                onClick={() => initializeFullInventory()}
+                className="px-10 py-5 bg-brand-charcoal hover:bg-slate-800 border border-slate-700 text-white font-black rounded-2xl transition-all flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group"
+              >
+                <RefreshCw size={18} className="group-hover:rotate-180 transition-transform duration-500" />
+                Initialize Demo Sync
+              </button>
             </div>
-            <div className="h-40 bg-brand-slate border border-slate-800 rounded-3xl p-6 flex flex-col justify-between">
-              <div className="w-10 h-10 bg-brand-charcoal rounded-xl"></div>
-              <div className="space-y-2">
-                <div className="h-2 w-1/3 bg-brand-charcoal rounded-full"></div>
-                <div className="h-8 w-1/2 bg-brand-charcoal rounded-xl"></div>
-              </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 opacity-80 scale-95">
+              {[
+                { icon: <TrendingUp size={18} />, title: 'Market Pulse', desc: 'Real-time liquidity' },
+                { icon: <Zap size={18} />, title: 'Gemini Insight', desc: 'AI valuation' },
+                { icon: <Trophy size={18} />, title: 'Asset Alpha', desc: 'League analytics' }
+              ].map((feature, i) => (
+                <div key={i} className="bg-brand-slate/40 backdrop-blur-md border border-slate-800 p-6 rounded-[1.5rem] space-y-2 group hover:border-brand-lime/30 transition-all">
+                  <div className="w-10 h-10 bg-brand-charcoal rounded-xl flex items-center justify-center text-brand-lime mb-1 group-hover:scale-110 transition-transform">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-lg font-bebas tracking-wide text-white">{feature.title}</h3>
+                  <p className="text-[10px] text-brand-muted font-bold uppercase tracking-widest leading-none">{feature.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-6">
+              <p className="text-[9px] font-black text-brand-muted/60 uppercase tracking-[0.6em] animate-pulse">Awaiting Data Ingestion...</p>
             </div>
           </div>
-          <p className="text-xs font-black text-brand-muted uppercase tracking-widest mt-4">Unlocking Analytics Engine...</p>
         </div>
       ) : (
         <>
           {/* Hero Financial Summary */}
-          <section className="relative overflow-hidden bg-brand-charcoal border border-slate-800 rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-brand-lime/5">
+          <section className="reveal-section relative overflow-hidden bg-brand-charcoal border border-slate-800 rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-brand-lime/5">
             <div className="absolute top-0 right-0 -mt-24 -mr-24 w-96 h-96 bg-brand-lime/10 blur-[120px] rounded-full animate-pulse"></div>
             <div className="relative flex flex-col lg:flex-row gap-12 items-center justify-between">
               <div className="flex-1 space-y-6 text-center lg:text-left">
@@ -245,6 +296,18 @@ const Dashboard: React.FC = () => {
                   >
                     <Package size={18} /> Performance Report
                   </button>
+                  <button
+                    onClick={() => setIsScanOpen(true)}
+                    className="px-10 py-4 bg-brand-charcoal hover:bg-slate-800 border border-brand-lime text-brand-lime font-black rounded-2xl transition-all uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95 shadow-lg shadow-brand-lime/10"
+                  >
+                    <Camera size={18} /> AI Scan Asset
+                  </button>
+                  <button
+                    onClick={() => setIsShareOpen(true)}
+                    className="px-6 py-4 bg-brand-blue/10 hover:bg-brand-blue/20 border border-brand-blue/30 text-brand-blue font-black rounded-2xl transition-all uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95"
+                  >
+                    <Share2 size={18} />
+                  </button>
                 </div>
                 {syncMeta.lastSyncTime && (
                   <div className="flex items-center gap-2 text-[10px] font-black text-brand-muted uppercase tracking-widest pt-2">
@@ -279,8 +342,138 @@ const Dashboard: React.FC = () => {
             </div>
           </section>
 
+          {/* Portfolio Identity HUD */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-200">
+            <div className="lg:col-span-1 bg-brand-slate border border-slate-800 rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl shadow-brand-lime/5">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-lime/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-brand-lime/10 transition-colors"></div>
+
+              <div className="relative z-10 flex flex-col h-full justify-between gap-8">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-2xl bg-brand-charcoal border border-slate-800 flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform duration-500">
+                      {tier.icon}
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black text-brand-lime uppercase tracking-widest mb-1">MSI Rank</p>
+                      <h2 className="text-3xl font-bebas tracking-wide text-white leading-none">{tier.title}</h2>
+                    </div>
+                  </div>
+                  <p className="text-sm text-brand-muted font-medium leading-relaxed">
+                    {tier.description}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-end mb-1">
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Alpha Score</span>
+                    <span className="text-2xl font-mono font-bold text-brand-lime">{alphaScore}<span className="text-xs text-slate-700">/100</span></span>
+                  </div>
+                  <div className="h-2 w-full bg-brand-charcoal rounded-full overflow-hidden p-0.5 border border-slate-800">
+                    <div
+                      className="h-full bg-gradient-to-r from-brand-lime to-brand-teal rounded-full transition-all duration-1000 ease-out"
+                      style={{ width: `${alphaScore}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-2 bg-brand-slate border border-slate-800 rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl shadow-brand-teal/5">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-xl font-bebas tracking-wide text-white mb-1">Portfolio DNA</h3>
+                  <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Investment Signature</p>
+                </div>
+                <div className="flex gap-4">
+                  {dnaData.map((point, i) => (
+                    <div key={i} className="flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-brand-lime/40 group-hover:bg-brand-lime transition-colors"></div>
+                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">{point.subject}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="h-[220px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={dnaData}>
+                    <PolarGrid stroke="#1e293b" />
+                    <PolarAngleAxis
+                      dataKey="subject"
+                      tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }}
+                    />
+                    <Radar
+                      name="DNA"
+                      dataKey="A"
+                      stroke="#BEF264"
+                      fill="#BEF264"
+                      fillOpacity={0.15}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* Strategic Signals Feed */}
+          <div className="reveal-section bg-brand-charcoal/50 border border-slate-800 rounded-[2.5rem] p-8 overflow-hidden relative shadow-2xl shadow-brand-blue/5 animate-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: '400ms' }}>
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-brand-blue/10 rounded-xl text-brand-blue">
+                  <Activity size={20} />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bebas tracking-wide text-white">Strategic Signals</h3>
+                  <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest leading-none">Market Opportunity Analysis</p>
+                </div>
+              </div>
+              <div className="px-3 py-1 bg-brand-charcoal border border-slate-800 rounded-full text-[10px] font-black text-brand-blue uppercase tracking-widest">
+                {signals.length} Active {signals.length === 1 ? 'Signal' : 'Signals'}
+              </div>
+            </div>
+
+            {signals.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {signals.map((signal, i) => (
+                  <div key={signal.id} className="p-6 bg-brand-slate border border-slate-800 rounded-2xl relative overflow-hidden group hover:border-brand-blue/40 transition-all">
+                    <div className={`absolute top-0 right-0 w-16 h-16 blur-3xl opacity-10 rounded-full -mr-8 -mt-8 ${signal.type === 'buy' ? 'bg-brand-lime' : 'bg-brand-teal'}`}></div>
+                    <div className="relative z-10 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-tighter ${signal.type === 'buy' ? 'bg-brand-lime/10 text-brand-lime' : 'bg-brand-teal/10 text-brand-teal'}`}>
+                          {signal.type === 'buy' ? 'Liquidity Inbound' : 'Asset Maturity'}
+                        </div>
+                        {signal.impact === 'high' && (
+                          <div className="flex items-center gap-1 text-[9px] font-black text-brand-orange uppercase animate-pulse">
+                            <Zap size={10} /> High Impact
+                          </div>
+                        )}
+                      </div>
+                      <h4 className="text-white font-bold leading-tight">{signal.title}</h4>
+                      <p className="text-xs text-brand-muted leading-relaxed font-medium">
+                        {signal.description}
+                      </p>
+                      <button className="flex items-center gap-2 text-[10px] font-black text-brand-blue uppercase tracking-widest pt-2 group-hover:text-white transition-colors">
+                        Execute Action <ArrowUpRight size={12} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 flex flex-col items-center justify-center text-center space-y-4 bg-brand-slate/20 rounded-3xl border border-dashed border-slate-800">
+                <div className="w-12 h-12 bg-slate-800/50 rounded-full flex items-center justify-center text-slate-600">
+                  <Layers size={24} />
+                </div>
+                <div>
+                  <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">Awaiting Alpha Breakouts</p>
+                  <p className="text-[10px] text-slate-500 font-medium">No active entry/exit signals detected in current market cycle.</p>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* League Intelligence Hub */}
-          <section className="bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 md:p-12">
+          <section className="reveal-section bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 md:p-12" style={{ animationDelay: '200ms' }}>
             <div className="flex flex-col lg:flex-row gap-12">
               <div className="w-full lg:w-1/3 space-y-8">
                 <div>
@@ -305,14 +498,14 @@ const Dashboard: React.FC = () => {
 
                 <div className="p-6 bg-brand-charcoal rounded-[2rem] border border-slate-800 space-y-4">
                   <div>
-                    <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Market Sentiment</p>
-                    <p className="text-sm text-slate-200 leading-relaxed italic">
-                      "{leagueInsights[activeLeague as keyof typeof leagueInsights] || 'Stable market conditions observed.'}"
+                    <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">AI Market Sentiment</p>
+                    <p className="text-sm text-slate-200 leading-relaxed">
+                      {marketSentiment}
                     </p>
                   </div>
                   <div className="pt-4 border-t border-slate-800 flex justify-between items-center text-[10px] font-black uppercase text-brand-lime">
-                    <span>Signal: Accumulate</span>
-                    <Activity size={12} />
+                    <span>Signal: {alphaScore > 70 ? 'Institutional Hold' : 'Accumulate Alpha'}</span>
+                    <Sparkles size={12} className="animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -413,7 +606,7 @@ const Dashboard: React.FC = () => {
           </section>
 
           {/* Main Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="reveal-section grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" style={{ animationDelay: '400ms' }}>
             <div className="bg-brand-slate border border-slate-800 p-8 rounded-[2rem] group hover:border-brand-lime/30 transition-all">
               <div className="w-12 h-12 bg-brand-lime/10 rounded-2xl flex items-center justify-center text-brand-lime mb-4 group-hover:scale-110 transition-transform">
                 <TrendingUp size={24} />
@@ -447,7 +640,7 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Recents Section */}
-          <section>
+          <section className="reveal-section" style={{ animationDelay: '600ms' }}>
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-4xl font-bebas tracking-wider flex items-center gap-4">
                 <Activity className="text-brand-lime" size={32} />
@@ -503,6 +696,29 @@ const Dashboard: React.FC = () => {
         isOpen={showBriefing}
         onClose={() => setShowBriefing(false)}
         inventory={inventory}
+      />
+
+      <ShareAlphaModal
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        alphaScore={alphaScore}
+        roi={syncMeta.totalValue > 0 ? ((syncMeta.totalValue - 12000) / 12000) * 100 : 0}
+        portfolioName="My Alpha HUD"
+      />
+
+      <OCRIngestionModal
+        isOpen={isScanOpen}
+        onClose={() => setIsScanOpen(false)}
+        onSuccess={(card) => {
+          const newCard = {
+            id: `card-${Date.now()}`,
+            purchasePrice: 0,
+            purchaseDate: new Date().toISOString(),
+            condition: 'Ungraded',
+            ...card
+          } as any;
+          setInventory(prev => [newCard, ...prev]);
+        }}
       />
     </div>
   );

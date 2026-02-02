@@ -23,6 +23,10 @@ export interface CardInventory {
   valuationConfidence?: number;
   notes?: string;
   image?: string;
+  // Professional Grade Fields
+  taxBasis?: number;
+  gradingFees?: number;
+  shippingFees?: number;
 }
 
 export interface TargetWatchlist {

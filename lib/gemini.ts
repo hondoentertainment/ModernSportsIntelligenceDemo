@@ -152,3 +152,71 @@ export async function simulateLeagueTrends(league: string): Promise<any[]> {
     return MOCK_PROSPECTS[league] || MOCK_PROSPECTS.MiLB;
   }
 }
+
+export async function generatePortfolioSentiment(inventory: CardInventory[]): Promise<string> {
+  if (inventory.length === 0) return "Awaiting data ingestion to generate market signals.";
+
+  const inventorySummary = inventory.map(c =>
+    `${c.year} ${c.player} ${c.set} (${c.league})`
+  ).join(", ");
+
+  const prompt = `Act as a senior sports asset market maker. Analyze the following portfolio mix and provide a 1st-person, high-contrast investment sentiment summary (max 2 sentences).
+  Portfolio Mix: ${inventorySummary}
+  
+  Focus on: Liquidity, seasonal timing, or specific league strength. Use terms like 'Overweight', 'Liquidity tightening', 'Alpha signal'.`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt
+    });
+
+    return response.text || "Stable market conditions observed across all sectors.";
+  } catch (error) {
+    console.error("Gemini Sentiment Error:", error);
+    return "Market volatility detected. Institutional hold signals recommended.";
+  }
+}
+
+/**
+ * AI Vision: Parses a card image into structured data.
+ * imageBase64: Base64 string of the image (no prefix)
+ * mimeType: e.g. "image/jpeg"
+ */
+export async function parseCardImage(imageBase64: string, mimeType: string = "image/jpeg"): Promise<Partial<CardInventory> | null> {
+  const prompt = `Act as a professional card grader and cataloger. Analyze this image of a sports card and extract the following details in JSON format:
+  - player (Full name)
+  - year (YYYY)
+  - manufacturer (e.g. Topps, Panini, Upper Deck)
+  - set (e.g. Chrome, Prizm, Series 1)
+  - cardNumber (e.g. #123)
+  - sport (Baseline: Baseball, Basketball, Football, Hockey, Soccer)
+  - league (Baseline: MLB, MiLB, NBA, NFL, Other)
+  - isGraded (Boolean)
+  - gradingCompany (if graded: PSA, BGS, SGC, etc.)
+  - grade (if graded: e.g. 10, 9.5)
+  - isAutographed (Boolean)
+  
+  Only return valid JSON. If you are unsure, provide your best estimate based on the visual evidence.`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-1.5-flash",
+      contents: [{
+        role: "user",
+        parts: [
+          { text: prompt },
+          { inlineData: { data: imageBase64, mimeType } }
+        ]
+      }]
+    });
+
+    const text = response.text || "";
+    // Clean JSON if it has markdown blocks
+    const cleanJson = text.replace(/```json|```/g, "").trim();
+    return JSON.parse(cleanJson);
+  } catch (error) {
+    console.error("Gemini Vision Error:", error);
+    return null;
+  }
+}

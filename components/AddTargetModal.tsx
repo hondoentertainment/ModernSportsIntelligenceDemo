@@ -8,6 +8,7 @@ interface AddTargetModalProps {
     onClose: () => void;
     onAdd: (target: Omit<TargetWatchlist, 'id' | 'createdAt' | 'status'>) => void;
     editTarget?: TargetWatchlist | null;
+    initialData?: Partial<TargetWatchlist> | null;
     onUpdate?: (id: string, updates: Partial<TargetWatchlist>) => void;
 }
 
@@ -15,14 +16,14 @@ const SPORTS: Sport[] = ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer
 const LEAGUES: League[] = ['MLB', 'MiLB', 'NBA', 'NFL', 'Other'];
 const PRIORITIES: ('High' | 'Medium' | 'Low')[] = ['High', 'Medium', 'Low'];
 
-const AddTargetModal: React.FC<AddTargetModalProps> = ({ isOpen, onClose, onAdd, editTarget, onUpdate }) => {
-    const [player, setPlayer] = useState(editTarget?.player || '');
-    const [cardDescription, setCardDescription] = useState(editTarget?.cardDescription || '');
-    const [targetPrice, setTargetPrice] = useState(editTarget?.targetPrice?.toString() || '');
-    const [priority, setPriority] = useState<'High' | 'Medium' | 'Low'>(editTarget?.priority || 'Medium');
-    const [sport, setSport] = useState<Sport>(editTarget?.sport || 'Baseball');
-    const [league, setLeague] = useState<League>(editTarget?.league || 'MLB');
-    const [notes, setNotes] = useState(editTarget?.notes || '');
+const AddTargetModal: React.FC<AddTargetModalProps> = ({ isOpen, onClose, onAdd, editTarget, initialData, onUpdate }) => {
+    const [player, setPlayer] = useState(editTarget?.player || initialData?.player || '');
+    const [cardDescription, setCardDescription] = useState(editTarget?.cardDescription || initialData?.cardDescription || '');
+    const [targetPrice, setTargetPrice] = useState(editTarget?.targetPrice?.toString() || initialData?.targetPrice?.toString() || '');
+    const [priority, setPriority] = useState<'High' | 'Medium' | 'Low'>(editTarget?.priority || initialData?.priority || 'Medium');
+    const [sport, setSport] = useState<Sport>(editTarget?.sport || initialData?.sport || 'Baseball');
+    const [league, setLeague] = useState<League>(editTarget?.league || initialData?.league || 'MLB');
+    const [notes, setNotes] = useState(editTarget?.notes || initialData?.notes || '');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

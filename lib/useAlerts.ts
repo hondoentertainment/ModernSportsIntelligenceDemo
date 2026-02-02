@@ -117,6 +117,16 @@ export function useAlerts() {
 
         systemMessage: (title: string, message: string) => {
             addAlert('system', title, message, 'low');
+        },
+
+        portfolioMomentum: (gainValue: number, gainPercent: number, isPositive: boolean) => {
+            const absPercent = Math.abs(gainPercent).toFixed(1);
+            addAlert(
+                isPositive ? 'momentum' : 'warning',
+                `${isPositive ? '🚀' : '⚠️'} Portfolio Momentum`,
+                `Your total portfolio value ${isPositive ? 'increased' : 'decreased'} by ${absPercent}% ($${Math.abs(Math.round(gainValue)).toLocaleString()}) since the last sync.`,
+                Math.abs(gainPercent) > 5 ? 'high' : 'medium'
+            );
         }
     };
 
