@@ -129,7 +129,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
   },
   {
     "id": "28",
-    "player": "Julio Rodriquez",
+    "player": "Julio Rodriguez",
     "year": 2019,
     "manufacturer": "Bowman Chrome",
     "cardNumber": "BCP-33",
@@ -143,7 +143,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "purchaseDate": "2021-07-05",
     "currentValue": 1200,
     "lastValuationDate": "2026-01-25",
-    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600"
+    "image": "C:/Users/kyle/.gemini/antigravity/brain/19a627cc-0ff5-4066-bc35-415dec26f7cc/julio_rodriguez_hero_card_1769998796559.png"
   },
   {
     "id": "10",
@@ -471,7 +471,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "purchaseDate": "2021-05-25",
     "currentValue": 515,
     "lastValuationDate": "2026-01-25",
-    "image": "https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600"
+    "image": "C:/Users/kyle/.gemini/antigravity/brain/19a627cc-0ff5-4066-bc35-415dec26f7cc/gunnar_henderson_hero_card_1769998814134.png"
   },
   {
     "id": "111",
@@ -781,7 +781,7 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "purchaseDate": "2021-07-01",
     "currentValue": 54.4,
     "lastValuationDate": "2026-01-25",
-    "image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600"
+    "image": "C:/Users/kyle/.gemini/antigravity/brain/19a627cc-0ff5-4066-bc35-415dec26f7cc/adley_rutschman_hero_card_1769998827503.png"
   },
   {
     "id": "40",

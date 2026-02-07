@@ -247,6 +247,7 @@ export const MOCK_ACQUISITION_TARGETS = [
     marketTrend: 'rising',
     confidence: 92,
     reason: 'Underlying contact metrics suggest elite MLB transition floor.',
-    targetPrice: 250
+    targetPrice: 250,
+    image: 'https://img.mlbstatic.com/mlb-photos/person/702616.jpg'
   }
 ];

@@ -171,3 +171,7 @@ export function calculateStats(inventory: CardInventory[]) {
         roi: totalCost > 0 ? ((totalValue - totalCost) / totalCost) * 100 : 0
     };
 }
+
+// Re-export Supabase-aware hook for gradual migration
+export { useSupabaseInventory } from './useSupabaseInventory';
+

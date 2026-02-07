@@ -23,6 +23,7 @@ export interface CardInventory {
   valuationConfidence?: number;
   notes?: string;
   image?: string;
+  searchUrl?: string;
   // Professional Grade Fields
   taxBasis?: number;
   gradingFees?: number;
@@ -42,6 +43,7 @@ export interface TargetWatchlist {
   status: 'active' | 'acquired' | 'expired';
   createdAt: string;
   image?: string;
+  searchUrl?: string;
 }
 
 export interface MiLBProspect {
@@ -80,6 +82,7 @@ export interface PricingAnalysis {
   confidence: number;
   salesCount: number;
   lastUpdated: string;
+  searchUrl?: string; // Deep link to eBay for manual verification
 }
 
 export type AlertType = 'price_target' | 'sync_complete' | 'trend' | 'momentum' | 'warning' | 'system';

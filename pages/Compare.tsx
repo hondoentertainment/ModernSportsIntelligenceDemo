@@ -1,18 +1,58 @@
 
-import React, { useState, useMemo } from 'react';
-import { GitCompare, ArrowRightLeft, TrendingUp, TrendingDown, DollarSign, Trophy, Star, ChevronDown } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { GitCompare, ArrowRightLeft, TrendingUp, TrendingDown, DollarSign, Trophy, Star, ChevronDown, Sparkles, Share2, Check, Loader2 } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useInventory } from '../lib/useInventory.ts';
 import { CardInventory } from '../types.ts';
+import { generateCompareAnalysis } from '../lib/compareAnalysis.ts';
 
 const Compare: React.FC = () => {
   const { inventory } = useInventory();
-  const [card1Id, setCard1Id] = useState<string | null>(null);
-  const [card2Id, setCard2Id] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Initialize from URL params if present
+  const [card1Id, setCard1Id] = useState<string | null>(searchParams.get('card1'));
+  const [card2Id, setCard2Id] = useState<string | null>(searchParams.get('card2'));
   const [dropdown1Open, setDropdown1Open] = useState(false);
   const [dropdown2Open, setDropdown2Open] = useState(false);
 
+  // AI Analysis State
+  const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+
   const card1 = useMemo(() => inventory.find(c => c.id === card1Id), [inventory, card1Id]);
   const card2 = useMemo(() => inventory.find(c => c.id === card2Id), [inventory, card2Id]);
+
+  // Update URL params when selections change
+  useEffect(() => {
+    const params: Record<string, string> = {};
+    if (card1Id) params.card1 = card1Id;
+    if (card2Id) params.card2 = card2Id;
+    setSearchParams(params, { replace: true });
+  }, [card1Id, card2Id, setSearchParams]);
+
+  // Generate mock historical data for chart
+  const historicalData = useMemo(() => {
+    if (!card1 || !card2) return [];
+    const months = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'];
+    return months.map((month, i) => {
+      const progress = i / (months.length - 1);
+      const card1Start = card1.purchasePrice || 100;
+      const card1End = card1.currentValue || card1Start;
+      const card2Start = card2.purchasePrice || 100;
+      const card2End = card2.currentValue || card2Start;
+      // Simulate some volatility
+      const noise1 = 1 + (Math.sin(i * 1.5) * 0.05);
+      const noise2 = 1 + (Math.cos(i * 1.8) * 0.05);
+      return {
+        month,
+        [card1.player]: Math.round((card1Start + (card1End - card1Start) * progress) * noise1),
+        [card2.player]: Math.round((card2Start + (card2End - card2Start) * progress) * noise2),
+      };
+    });
+  }, [card1, card2]);
 
   const getROI = (card: CardInventory) => {
     if (!card.purchasePrice || !card.currentValue) return null;
@@ -24,6 +64,22 @@ const Compare: React.FC = () => {
     const card1Better = higherIsBetter ? val1 > val2 : val1 < val2;
     const card2Better = higherIsBetter ? val2 > val1 : val2 < val1;
     return { winner: card1Better ? 1 : card2Better ? 2 : null, card1Better, card2Better };
+  };
+
+  const handleGenerateAnalysis = async () => {
+    if (!card1 || !card2) return;
+    setIsAnalyzing(true);
+    setAiAnalysis(null);
+    const analysis = await generateCompareAnalysis(card1, card2);
+    setAiAnalysis(analysis);
+    setIsAnalyzing(false);
+  };
+
+  const handleShareComparison = () => {
+    const url = `${window.location.origin}${window.location.pathname}#/compare?card1=${card1Id}&card2=${card2Id}`;
+    navigator.clipboard.writeText(url);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
   };
 
   const CardSelector = ({
@@ -219,6 +275,38 @@ const Compare: React.FC = () => {
             </div>
           </div>
 
+          {/* Historical Trend Chart */}
+          <div className="bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8">
+            <h2 className="text-2xl font-bebas tracking-widest text-white mb-6 flex items-center gap-3">
+              <TrendingUp className="text-brand-lime" size={24} />
+              Price History (Simulated)
+            </h2>
+            <ResponsiveContainer width="100%" height={280}>
+              <AreaChart data={historicalData}>
+                <defs>
+                  <linearGradient id="colorCard1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#D9F99D" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#D9F99D" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorCard2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#38BDF8" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#38BDF8" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="month" stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#64748B" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `$${val}`} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1E293B', border: '1px solid #334155', borderRadius: '12px' }}
+                  labelStyle={{ color: '#94A3B8' }}
+                  itemStyle={{ fontWeight: 'bold' }}
+                />
+                <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                <Area type="monotone" dataKey={card1.player} stroke="#D9F99D" strokeWidth={3} fillOpacity={1} fill="url(#colorCard1)" />
+                <Area type="monotone" dataKey={card2.player} stroke="#38BDF8" strokeWidth={3} fillOpacity={1} fill="url(#colorCard2)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
           {/* Metrics Comparison */}
           <div className="bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8">
             <h2 className="text-2xl font-bebas tracking-widest text-white mb-6 flex items-center gap-3">
@@ -233,32 +321,37 @@ const Compare: React.FC = () => {
             <ComparisonRow label="Graded" val1={card1.isGraded ? 'Yes' : 'No'} val2={card2.isGraded ? 'Yes' : 'No'} />
           </div>
 
-          {/* Recommendation */}
+          {/* AI Recommendation */}
           <div className="bg-brand-lime/5 border border-brand-lime/10 rounded-[2.5rem] p-8">
-            <h2 className="text-2xl font-bebas tracking-widest text-white mb-4 flex items-center gap-3">
-              <Star className="text-brand-lime" size={24} />
-              Intelligence Recommendation
-            </h2>
-            {(() => {
-              const roi1 = getROI(card1);
-              const roi2 = getROI(card2);
-              if (roi1 != null && roi2 != null) {
-                const better = roi1 > roi2 ? card1 : card2;
-                const worse = roi1 > roi2 ? card2 : card1;
-                return (
-                  <div className="space-y-4">
-                    <p className="text-slate-300 leading-relaxed">
-                      Based on current performance, <strong className="text-brand-lime">{better.player}</strong> ({better.set})
-                      shows stronger ROI at <span className="font-mono text-brand-lime">{Math.max(roi1, roi2).toFixed(1)}%</span>.
-                    </p>
-                    <p className="text-sm text-slate-400 italic">
-                      Consider holding {better.player} and evaluating {worse.player} for potential liquidation if capital reallocation is needed.
-                    </p>
-                  </div>
-                );
-              }
-              return <p className="text-slate-400">Run a Market Sync to populate current values for comparison recommendations.</p>;
-            })()}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bebas tracking-widest text-white flex items-center gap-3">
+                <Sparkles className="text-brand-lime" size={24} />
+                AI Investment Analysis
+              </h2>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleShareComparison}
+                  className="px-4 py-2 bg-brand-slate border border-slate-700 rounded-xl text-xs font-black uppercase tracking-widest text-white hover:border-brand-lime/50 transition-all flex items-center gap-2"
+                >
+                  {linkCopied ? <Check size={14} className="text-brand-lime" /> : <Share2 size={14} />}
+                  {linkCopied ? 'Copied!' : 'Share'}
+                </button>
+                <button
+                  onClick={handleGenerateAnalysis}
+                  disabled={isAnalyzing}
+                  className="px-6 py-2 bg-brand-lime text-brand-charcoal rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white transition-all flex items-center gap-2 disabled:opacity-50"
+                >
+                  {isAnalyzing ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                  {isAnalyzing ? 'Analyzing...' : 'Generate Analysis'}
+                </button>
+              </div>
+            </div>
+
+            {aiAnalysis ? (
+              <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{aiAnalysis}</p>
+            ) : (
+              <p className="text-slate-400 italic">Click "Generate Analysis" to get an AI-powered investment recommendation comparing these two assets.</p>
+            )}
           </div>
         </div>
       ) : (
@@ -279,3 +372,4 @@ const Compare: React.FC = () => {
 };
 
 export default Compare;
+

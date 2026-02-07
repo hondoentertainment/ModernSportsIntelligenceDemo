@@ -17,8 +17,10 @@ import {
   CheckCircle2,
   Clock,
   Camera,
-  Share2
+  Share2,
+  FileDown
 } from 'lucide-react';
+
 import { Link } from 'react-router-dom';
 import {
   AreaChart,
@@ -51,6 +53,9 @@ import ShareAlphaModal from '../components/ShareAlphaModal.tsx';
 import OCRIngestionModal from '../components/OCRIngestionModal.tsx';
 import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
 import { getHistoricalDelta } from '../lib/marketHistory.ts';
+import { StatsService } from '../lib/statsService.ts';
+import { generatePortfolioReport } from '../lib/pdfExport.ts';
+import { getPortfolioNAVHistory } from '../lib/priceHistory.ts';
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
@@ -62,6 +67,22 @@ const Dashboard: React.FC = () => {
     setSyncMeta,
     initializeFullInventory
   } = useInventory();
+
+  const [realMlbStats, setRealMlbStats] = useState<any[]>([]);
+
+  // Fetch real stats for top MLB assets
+  useEffect(() => {
+    const fetchRealStats = async () => {
+      const mlbCards = inventory.filter(c => c.league === 'MLB').slice(0, 3);
+      const statsPromises = mlbCards.map(c => StatsService.getPlayerPerformance(c.player));
+      const results = await Promise.all(statsPromises);
+      setRealMlbStats(results.filter(Boolean));
+    };
+
+    if (inventory.length > 0) {
+      fetchRealStats();
+    }
+  }, [inventory]);
   const [syncProgress, setSyncProgress] = useState<SyncProgress | null>(null);
   const { syncComplete: createSyncAlert, portfolioMomentum: createMomentumAlert } = useAlerts();
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -127,13 +148,21 @@ const Dashboard: React.FC = () => {
   const isSyncing = syncProgress?.status === 'syncing';
   const syncComplete = syncProgress?.status === 'complete';
 
-  const chartData = [
-    { name: 'Oct', val: 12500 },
-    { name: 'Nov', val: 13800 },
-    { name: 'Dec', val: 14200 },
-    { name: 'Jan', val: 15900 },
-    { name: 'Feb', val: MOCK_INVENTORY_SUMMARY.marketValue },
-  ];
+  // Portfolio NAV history - use real data if available, fallback to mock
+  const chartData = useMemo(() => {
+    const realHistory = getPortfolioNAVHistory(5);
+    if (realHistory.length >= 2) {
+      return realHistory;
+    }
+    // Fallback to mock data for new users
+    return [
+      { name: 'Oct', val: 12500 },
+      { name: 'Nov', val: 13800 },
+      { name: 'Dec', val: 14200 },
+      { name: 'Jan', val: 15900 },
+      { name: 'Feb', val: MOCK_INVENTORY_SUMMARY.marketValue },
+    ];
+  }, [syncMeta.lastSyncTime]);
 
   const recentCards = inventory.slice(-3).reverse();
 
@@ -297,11 +326,18 @@ const Dashboard: React.FC = () => {
                     <Package size={18} /> Performance Report
                   </button>
                   <button
+                    onClick={() => generatePortfolioReport(inventory, 'Collector')}
+                    className="px-10 py-4 bg-brand-charcoal hover:bg-slate-800 border border-slate-700 text-white font-black rounded-2xl transition-all uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95"
+                  >
+                    <FileDown size={18} /> Export PDF
+                  </button>
+                  <button
                     onClick={() => setIsScanOpen(true)}
                     className="px-10 py-4 bg-brand-charcoal hover:bg-slate-800 border border-brand-lime text-brand-lime font-black rounded-2xl transition-all uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95 shadow-lg shadow-brand-lime/10"
                   >
                     <Camera size={18} /> AI Scan Asset
                   </button>
+
                   <button
                     onClick={() => setIsShareOpen(true)}
                     className="px-6 py-4 bg-brand-blue/10 hover:bg-brand-blue/20 border border-brand-blue/30 text-brand-blue font-black rounded-2xl transition-all uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95"
@@ -599,10 +635,40 @@ const Dashboard: React.FC = () => {
                     <span className="text-4xl font-bebas text-brand-green">84.2</span>
                     <TrendingUp className="text-brand-green animate-pulse" size={24} />
                   </div>
-                  <p className="text-[10px] text-brand-muted font-bold mt-2 leading-tight">Optimal liquidity window predicted in 14 days.</p>
                 </div>
               </div>
             </div>
+
+            {/* Real-time MLB Stats Integration */}
+            {activeLeague === 'MLB' && realMlbStats.length > 0 && (
+              <div className="mt-12 animate-in slide-in-from-bottom-4 duration-500">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-1.5 bg-brand-lime/10 rounded-lg text-brand-lime">
+                    <Trophy size={18} />
+                  </div>
+                  <h3 className="text-xl font-bebas tracking-wide text-white">Live Performance Hydration</h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {realMlbStats.map((player, idx) => (
+                    <div key={idx} className="bg-brand-charcoal/40 border border-slate-800 rounded-2xl p-6 hover:border-brand-lime/30 transition-all group">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-[10px] font-black text-brand-lime uppercase tracking-widest">#{player.primaryNumber}</span>
+                        <div className="w-2 h-2 bg-brand-lime rounded-full animate-pulse"></div>
+                      </div>
+                      <h4 className="text-white font-bold mb-4">{player.fullName}</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        {player.stats.map((stat: any, sIdx: number) => (
+                          <div key={sIdx}>
+                            <p className="text-[9px] font-black text-brand-muted uppercase tracking-tighter mb-1">{stat.label}</p>
+                            <p className="text-sm font-mono font-black text-slate-200">{stat.value}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </section>
 
           {/* Main Stats Grid */}
@@ -652,6 +718,7 @@ const Dashboard: React.FC = () => {
               {recentCards.map(card => {
                 const tier = getRarityTier(card);
                 const styles = getTierStyles(tier);
+
                 return (
                   <div key={card.id} className={`group bg-brand-slate border ${styles.border} rounded-[2rem] p-6 hover:shadow-xl transition-all flex items-center gap-6 relative overflow-hidden`}>
                     <div className={`absolute inset-0 bg-gradient-to-r ${styles.glow || 'from-transparent'} via-transparent to-transparent opacity-30`}></div>
@@ -682,7 +749,8 @@ const Dashboard: React.FC = () => {
             </div>
           </section>
         </>
-      )}
+      )
+      }
 
       {/* Report Modal */}
       <ReportModal
@@ -720,7 +788,7 @@ const Dashboard: React.FC = () => {
           setInventory(prev => [newCard, ...prev]);
         }}
       />
-    </div>
+    </div >
   );
 };
 

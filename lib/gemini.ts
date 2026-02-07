@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { CardInventory, PricingAnalysis } from "../types.ts";
+import { CardInventory, PricingAnalysis, TargetWatchlist } from "../types.ts";
 
 const apiKey = (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) ? process.env.VITE_GEMINI_API_KEY : "";
 const ai = new GoogleGenAI({ apiKey });
@@ -88,12 +88,68 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
     });
 
     const data = JSON.parse(response.text || "{}");
+
+    // Generate grounded eBay Search URL
+    const searchQuery = encodeURIComponent(`${card.year} ${card.manufacturer} ${card.player} ${card.cardNumber} ${card.set}${card.isGraded ? ` ${card.gradingCompany} ${card.grade}` : ''} sold`);
+    const searchUrl = `https://www.ebay.com/sch/i.html?_from=R40&_nkw=${searchQuery}&_sacat=0&rt=nc&LH_Sold=1&LH_Complete=1`;
+
     return {
       ...data,
+      searchUrl,
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {
     console.error("Gemini Pricing Error:", error);
+    return null;
+  }
+}
+
+/**
+ * AI-powered pricing for watchlist acquisition targets.
+ * Uses the target's player name and card description to estimate current market value.
+ */
+export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<PricingAnalysis | null> {
+  const prompt = `Analyze current eBay sold listings for the following sports card and provide an accurate market value analysis:
+  Player: ${target.player}
+  Card Description: ${target.cardDescription}
+  Sport: ${target.sport}
+  League: ${target.league}
+
+  Provide a detailed breakdown including the estimated current market value, low/high/average ranges from recent sales, a confidence score (0-1), and the number of recent sales used for the calculation.`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            estimatedValue: { type: Type.NUMBER },
+            low: { type: Type.NUMBER },
+            high: { type: Type.NUMBER },
+            avg: { type: Type.NUMBER },
+            confidence: { type: Type.NUMBER },
+            salesCount: { type: Type.INTEGER },
+          },
+          required: ["estimatedValue", "low", "high", "avg", "confidence", "salesCount"],
+        },
+      },
+    });
+
+    const data = JSON.parse(response.text || "{}");
+
+    const searchQuery = encodeURIComponent(`${target.player} ${target.cardDescription} sold`);
+    const searchUrl = `https://www.ebay.com/sch/i.html?_from=R40&_nkw=${searchQuery}&_sacat=0&rt=nc&LH_Sold=1&LH_Complete=1`;
+
+    return {
+      ...data,
+      searchUrl,
+      lastUpdated: new Date().toISOString(),
+    };
+  } catch (error) {
+    console.error("Gemini Watchlist Pricing Error:", error);
     return null;
   }
 }

@@ -28,6 +28,8 @@ import { useFavorites } from '../lib/useFavorites.ts';
 import AddTargetModal from '../components/AddTargetModal.tsx';
 import AddAssetModal from '../components/AddAssetModal.tsx';
 import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
+import Sparkline from '../components/Sparkline.tsx';
+import { getSparklineData, getPriceTrend } from '../lib/priceHistory.ts';
 
 const Collection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inventory' | 'targets'>('inventory');
@@ -84,7 +86,12 @@ const Collection: React.FC = () => {
     if (analysis) {
       setInventory(prev => prev.map(c =>
         c.id === card.id
-          ? { ...c, currentValue: analysis.estimatedValue, lastValuationDate: analysis.lastUpdated }
+          ? {
+            ...c,
+            currentValue: analysis.estimatedValue,
+            lastValuationDate: analysis.lastUpdated,
+            searchUrl: analysis.searchUrl
+          }
           : c
       ));
     }
@@ -318,6 +325,22 @@ const Collection: React.FC = () => {
                           </div>
                         </div>
 
+                        {/* Price History Sparkline */}
+                        <div className="bg-brand-charcoal/30 border border-slate-800/30 rounded-xl p-3">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[9px] font-black text-brand-muted uppercase tracking-tighter">Price Trend</span>
+                            {(() => {
+                              const trend = getPriceTrend(card.id);
+                              return trend !== 'stable' && (
+                                <span className={`text-[9px] font-black uppercase ${trend === 'up' ? 'text-brand-green' : 'text-brand-red'}`}>
+                                  {trend === 'up' ? '↑' : '↓'}
+                                </span>
+                              );
+                            })()}
+                          </div>
+                          <Sparkline data={getSparklineData(card.id)} showTrend={true} height={32} />
+                        </div>
+
                         <button
                           onClick={() => handleUpdatePrice(card)}
                           disabled={isPricing === card.id}
@@ -330,6 +353,18 @@ const Collection: React.FC = () => {
                           )}
                           Intelligence Check
                         </button>
+
+                        {card.searchUrl && (
+                          <a
+                            href={card.searchUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime transition-all"
+                          >
+                            <Search size={16} />
+                            Verify on eBay
+                          </a>
+                        )}
                       </div>
                     </div>
                   );
