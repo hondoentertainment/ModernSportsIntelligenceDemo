@@ -45,7 +45,7 @@ import { generatePortfolioSentiment } from '../lib/gemini.ts';
 import { detectSignals } from '../lib/signals.ts';
 import { MOCK_CARDS, MOCK_INVENTORY_SUMMARY } from '../constants.tsx';
 import { syncPortfolio, SyncProgress } from '../lib/marketSync.ts';
-import { useInventory, calculateStats } from '../lib/useInventory.ts';
+import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
 import { useAlerts } from '../lib/useAlerts.ts';
 import ReportModal from '../components/ReportModal.tsx';
 import MorningBriefingModal from '../components/MorningBriefingModal.tsx';
@@ -55,7 +55,8 @@ import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
 import { getHistoricalDelta } from '../lib/marketHistory.ts';
 import { StatsService } from '../lib/statsService.ts';
 import { generatePortfolioReport } from '../lib/pdfExport.ts';
-import { getPortfolioNAVHistory } from '../lib/priceHistory.ts';
+import { AggregationService } from '../lib/aggregationService.ts';
+import { Cloud, CloudOff } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
@@ -65,8 +66,10 @@ const Dashboard: React.FC = () => {
     setInventory,
     syncMeta,
     setSyncMeta,
-    initializeFullInventory
-  } = useInventory();
+    initializeFullInventory,
+    isCloudSynced,
+    loading
+  } = useSupabaseInventory();
 
   const [realMlbStats, setRealMlbStats] = useState<any[]>([]);
 
@@ -148,21 +151,14 @@ const Dashboard: React.FC = () => {
   const isSyncing = syncProgress?.status === 'syncing';
   const syncComplete = syncProgress?.status === 'complete';
 
-  // Portfolio NAV history - use real data if available, fallback to mock
+  // Portfolio metrics from aggregation service
+  const portfolioMetrics = useMemo(() => AggregationService.calculatePortfolioMetrics(inventory), [inventory]);
+  const growthComparison = useMemo(() => AggregationService.getComparisonMetrics(inventory, '30d'), [inventory]);
+
+  // Use real aggregated trend data for the chart
   const chartData = useMemo(() => {
-    const realHistory = getPortfolioNAVHistory(5);
-    if (realHistory.length >= 2) {
-      return realHistory;
-    }
-    // Fallback to mock data for new users
-    return [
-      { name: 'Oct', val: 12500 },
-      { name: 'Nov', val: 13800 },
-      { name: 'Dec', val: 14200 },
-      { name: 'Jan', val: 15900 },
-      { name: 'Feb', val: MOCK_INVENTORY_SUMMARY.marketValue },
-    ];
-  }, [syncMeta.lastSyncTime]);
+    return AggregationService.getAggregatedTrendData(inventory, 14); // 14 day view for dash
+  }, [inventory, syncMeta.lastSyncTime]);
 
   const recentCards = inventory.slice(-3).reverse();
 
@@ -287,19 +283,34 @@ const Dashboard: React.FC = () => {
             <div className="absolute top-0 right-0 -mt-24 -mr-24 w-96 h-96 bg-brand-lime/10 blur-[120px] rounded-full animate-pulse"></div>
             <div className="relative flex flex-col lg:flex-row gap-12 items-center justify-between">
               <div className="flex-1 space-y-6 text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-lime/10 border border-brand-lime/20 text-brand-lime text-[10px] font-black uppercase tracking-[0.2em]">
-                  <Sparkles size={14} />
-                  Portfolio Intelligence Active
+                <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-lime/10 border border-brand-lime/20 text-brand-lime text-[10px] font-black uppercase tracking-[0.2em]">
+                    <Sparkles size={14} />
+                    Portfolio Intelligence Active
+                  </div>
+                  <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] transition-all ${isCloudSynced ? 'bg-brand-blue/10 border-brand-blue/20 text-brand-blue' : 'bg-slate-800 border-slate-700 text-brand-muted'}`}>
+                    {isCloudSynced ? (
+                      <>
+                        <Cloud size={14} />
+                        MSI Cloud Synced
+                      </>
+                    ) : (
+                      <>
+                        <CloudOff size={14} />
+                        Local Terminal Mode
+                      </>
+                    )}
+                  </div>
                 </div>
                 <h1 className="text-5xl md:text-8xl font-bebas tracking-tight text-white leading-[0.85]">
                   Net Asset <span className="text-brand-lime">Value</span>
                 </h1>
                 <div className="flex flex-col items-center lg:items-start">
                   <span className="text-5xl md:text-6xl font-mono font-bold text-white mb-2">
-                    ${MOCK_INVENTORY_SUMMARY.marketValue.toLocaleString()}
+                    ${portfolioMetrics.totalValue.toLocaleString()}
                   </span>
                   <p className="text-brand-muted text-lg leading-relaxed max-w-xl font-medium">
-                    Your portfolio holds <span className="text-brand-green font-bold">{MOCK_CARDS.length} unique assets</span> with a total ROI of <span className="text-brand-green font-bold">{MOCK_INVENTORY_SUMMARY.roi}%</span>.
+                    Your portfolio holds <span className="text-brand-green font-bold">{inventory.length} unique assets</span> with a total ROI of <span className="text-brand-green font-bold">{portfolioMetrics.totalROIPercent.toFixed(1)}%</span>.
                   </p>
                 </div>
                 <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
@@ -352,10 +363,28 @@ const Dashboard: React.FC = () => {
                 )}
               </div>
 
+              <div className="flex items-center gap-3 bg-brand-charcoal/40 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/5 shadow-2xl">
+                <div className="flex items-center gap-2 pr-3 border-r border-slate-800">
+                  {isCloudSynced ? (
+                    <Cloud size={14} className="text-brand-lime" />
+                  ) : (
+                    <CloudOff size={14} className="text-slate-500" />
+                  )}
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${isCloudSynced ? 'text-brand-lime' : 'text-slate-500'}`}>
+                    {isCloudSynced ? 'MSI Cloud Synced' : 'Local Only'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>
+                  <span className="text-[10px] font-black text-brand-blue uppercase tracking-widest">eBay Live Feed</span>
+                </div>
+              </div>
               <div className="w-full lg:w-[480px] bg-brand-slate/40 backdrop-blur-xl rounded-[2rem] border border-white/5 p-8">
                 <div className="flex justify-between items-center mb-6">
                   <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Growth Velocity</p>
-                  <span className="text-[10px] font-black text-brand-green uppercase tracking-widest">+12.4% MONTHLY</span>
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${growthComparison.deltaPercent >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
+                    {growthComparison.deltaPercent >= 0 ? '+' : ''}{growthComparison.deltaPercent.toFixed(1)}% MONTHLY
+                  </span>
                 </div>
                 <div className="h-48 w-full">
                   <ResponsiveContainer width="100%" height="100%">
@@ -370,7 +399,7 @@ const Dashboard: React.FC = () => {
                         contentStyle={{ backgroundColor: '#0A0A0A', border: '1px solid #1A1A1A', borderRadius: '16px', fontSize: '12px' }}
                         itemStyle={{ color: '#D9F99D' }}
                       />
-                      <Area type="monotone" dataKey="val" stroke="#D9F99D" fillOpacity={1} fill="url(#colorVal)" strokeWidth={4} />
+                      <Area type="monotone" dataKey="value" stroke="#D9F99D" fillOpacity={1} fill="url(#colorVal)" strokeWidth={4} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -678,14 +707,18 @@ const Dashboard: React.FC = () => {
                 <TrendingUp size={24} />
               </div>
               <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Total ROI</p>
-              <p className="text-3xl font-mono font-bold text-brand-green">+{MOCK_INVENTORY_SUMMARY.roi}%</p>
+              <p className={`text-3xl font-mono font-bold ${portfolioMetrics.totalROIPercent >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
+                {portfolioMetrics.totalROIPercent >= 0 ? '+' : ''}{portfolioMetrics.totalROIPercent.toFixed(1)}%
+              </p>
             </div>
             <div className="bg-brand-slate border border-slate-800 p-8 rounded-[2rem] group hover:border-brand-lime/30 transition-all">
               <div className="w-12 h-12 bg-brand-orange/10 rounded-2xl flex items-center justify-center text-brand-orange mb-4 group-hover:scale-110 transition-transform">
                 <CreditCard size={24} />
               </div>
               <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Paper Gains</p>
-              <p className="text-3xl font-mono font-bold text-white">${MOCK_INVENTORY_SUMMARY.totalGain.toLocaleString()}</p>
+              <p className={`text-3xl font-mono font-bold ${portfolioMetrics.totalROI >= 0 ? 'text-white' : 'text-brand-red'}`}>
+                ${portfolioMetrics.totalROI.toLocaleString()}
+              </p>
             </div>
             <div className="bg-brand-slate border border-slate-800 p-8 rounded-[2rem] group hover:border-brand-lime/30 transition-all">
               <div className="w-12 h-12 bg-brand-lime/10 rounded-2xl flex items-center justify-center text-brand-lime mb-4 group-hover:scale-110 transition-transform">
@@ -700,7 +733,7 @@ const Dashboard: React.FC = () => {
               </div>
               <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Avg. Asset Value</p>
               <p className="text-3xl font-mono font-bold text-white">
-                ${Math.round(MOCK_INVENTORY_SUMMARY.marketValue / MOCK_CARDS.length).toLocaleString()}
+                ${Math.round(portfolioMetrics.totalValue / inventory.length).toLocaleString()}
               </p>
             </div>
           </div>
@@ -712,7 +745,7 @@ const Dashboard: React.FC = () => {
                 <Activity className="text-brand-lime" size={32} />
                 Recently Ingested
               </h2>
-              <Link to="/collection" className="text-xs font-black text-brand-lime uppercase tracking-widest border-b border-brand-lime/30 hover:border-brand-lime pb-1 transition-all">View All 131 Cards</Link>
+              <Link to="/collection" className="text-xs font-black text-brand-lime uppercase tracking-widest border-b border-brand-lime/30 hover:border-brand-lime pb-1 transition-all">View All {inventory.length} Assets</Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {recentCards.map(card => {
