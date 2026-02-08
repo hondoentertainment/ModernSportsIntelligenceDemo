@@ -1,6 +1,7 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 import { CardInventory, PricingAnalysis, TargetWatchlist } from "../types.ts";
+import { getEbayCardPricing as getEbayApiPricing, getEbayWatchlistPricing, isEbayConfigured } from "./ebayApi.ts";
 
 const apiKey = (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) ? process.env.VITE_GEMINI_API_KEY : "";
 const ai = new GoogleGenAI({ apiKey });
@@ -54,6 +55,30 @@ const MOCK_PROSPECTS: Record<string, any[]> = {
 };
 
 export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnalysis | null> {
+  // Try eBay API first if configured
+  if (isEbayConfigured()) {
+    try {
+      const ebayResult = await getEbayApiPricing(
+        card.player,
+        card.year,
+        card.manufacturer,
+        card.cardNumber,
+        card.set,
+        card.isGraded,
+        card.gradingCompany,
+        card.grade
+      );
+
+      if (ebayResult) {
+        console.log('Using eBay API pricing for:', card.player);
+        return ebayResult;
+      }
+    } catch (error) {
+      console.warn('eBay API pricing failed, falling back to AI:', error);
+    }
+  }
+
+  // Fallback to AI pricing
   const prompt = `Analyze current eBay sold listings for the following sports card and provide an accurate market value analysis:
   Player: ${card.player}
   Year: ${card.year}
@@ -107,8 +132,27 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
 /**
  * AI-powered pricing for watchlist acquisition targets.
  * Uses the target's player name and card description to estimate current market value.
+ * Tries eBay API first, falls back to AI analysis.
  */
 export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<PricingAnalysis | null> {
+  // Try eBay API first if configured
+  if (isEbayConfigured()) {
+    try {
+      const ebayResult = await getEbayWatchlistPricing(
+        target.player,
+        target.cardDescription
+      );
+
+      if (ebayResult) {
+        console.log('Using eBay API pricing for watchlist:', target.player);
+        return ebayResult;
+      }
+    } catch (error) {
+      console.warn('eBay API pricing failed for watchlist, falling back to AI:', error);
+    }
+  }
+
+  // Fallback to AI pricing
   const prompt = `Analyze current eBay sold listings for the following sports card and provide an accurate market value analysis:
   Player: ${target.player}
   Card Description: ${target.cardDescription}
