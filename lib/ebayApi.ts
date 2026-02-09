@@ -131,7 +131,7 @@ async function searchSoldListings(
 /**
  * Analyze eBay sold listings to determine market value
  */
-function analyzeListings(listings: EbaySoldListing[]): EbayPricingAnalysis {
+function analyzeListings(listings: EbaySoldListing[], query: string): EbayPricingAnalysis {
     if (listings.length === 0) {
         return {
             estimatedValue: 0,
@@ -140,13 +140,13 @@ function analyzeListings(listings: EbaySoldListing[]): EbayPricingAnalysis {
             avg: 0,
             confidence: 0,
             salesCount: 0,
-            searchUrl: '',
+            searchUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(query)}&LH_Sold=1&LH_Complete=1`,
             lastUpdated: new Date().toISOString(),
         };
     }
 
     const prices = listings.map(l => l.price.value);
-    const sortedPrices = prices.sort((a, b) => a - b);
+    const sortedPrices = [...prices].sort((a, b) => a - b);
 
     // Remove outliers (top and bottom 10%)
     const trimCount = Math.max(1, Math.floor(prices.length * 0.1));
@@ -156,15 +156,26 @@ function analyzeListings(listings: EbaySoldListing[]): EbayPricingAnalysis {
     const high = trimmedPrices[trimmedPrices.length - 1];
     const avg = trimmedPrices.reduce((sum, p) => sum + p, 0) / trimmedPrices.length;
 
-    // Weighted average favoring recent sales
+    // Weighted average favoring recent sales (assuming listings are returned newest first)
     const weightedSum = listings.reduce((sum, l, i) => {
-        const recencyWeight = 1 - (i / listings.length) * 0.5; // More recent = higher weight
+        const recencyWeight = 1 - (i / listings.length) * 0.4; // Newer = 1.0, Older = 0.6
         return sum + l.price.value * recencyWeight;
     }, 0);
-    const estimatedValue = weightedSum / listings.length;
 
-    // Confidence based on number of sales
-    const confidence = Math.min(1, listings.length / 10);
+    let totalWeight = 0;
+    for (let i = 0; i < listings.length; i++) {
+        totalWeight += (1 - (i / listings.length) * 0.4);
+    }
+
+    const estimatedValue = weightedSum / totalWeight;
+
+    // Institutional Confidence Scoring
+    // Factors: Volume, Volatility (Spread), and Data Recency
+    const volumeFactor = Math.min(1, listings.length / 15);
+    const spread = high - low;
+    const volatilityFactor = spread > 0 ? Math.max(0, 1 - (spread / avg)) : 1;
+
+    const confidence = (volumeFactor * 0.6) + (volatilityFactor * 0.4);
 
     return {
         estimatedValue: Math.round(estimatedValue * 100) / 100,
@@ -224,7 +235,7 @@ export async function getEbayCardPricing(
         );
     }
 
-    const analysis = analyzeListings(filteredListings);
+    const analysis = analyzeListings(filteredListings, query);
 
     return {
         ...analysis,
@@ -253,7 +264,7 @@ export async function getEbayWatchlistPricing(
         return null;
     }
 
-    const analysis = analyzeListings(result.itemSummaries);
+    const analysis = analyzeListings(result.itemSummaries, query);
 
     return {
         ...analysis,

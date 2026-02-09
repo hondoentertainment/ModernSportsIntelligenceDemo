@@ -72,6 +72,7 @@ export interface MLBPlayer {
   primaryPosition: { code: string; name: string };
   batSide: { code: string; description: string };
   pitchHand: { code: string; description: string };
+  image?: string;
 }
 
 export interface PricingAnalysis {

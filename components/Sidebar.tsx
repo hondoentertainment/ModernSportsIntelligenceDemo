@@ -16,7 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
 
   return (
     <aside
-      className={`fixed top-0 left-0 h-full z-40 bg-brand-charcoal border-r border-slate-800 transition-all duration-300 hidden md:flex flex-col
+      className={`fixed top-0 left-0 h-full z-40 glass-sidebar transition-all duration-300 hidden md:flex flex-col
       ${isOpen ? 'w-64' : 'w-20'}`}
     >
       <div className="p-6 flex items-center justify-between">

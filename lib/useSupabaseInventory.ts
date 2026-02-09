@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { isDemoMode } from './supabase';
 import { fetchCards, fetchTargets, upsertCard, deleteCard as deleteCardFromDb, upsertTarget, deleteTarget as deleteTargetFromDb, bulkUpsertCards } from './supabaseData';
 import { MOCK_CARDS } from '../constants';
+import { migrateToSupabase, needsMigration } from './migration';
 
 const STORAGE_KEY = 'cardx_inventory';
 const TARGETS_KEY = 'cardx_targets';
@@ -19,6 +20,7 @@ export interface SyncMeta {
  * Supabase-aware inventory hook
  * - Uses Supabase for authenticated users
  * - Falls back to localStorage for demo/guest mode
+ * - Automatically migrates local data to cloud on first login
  */
 export function useSupabaseInventory() {
     const { user } = useAuth();
@@ -28,6 +30,7 @@ export function useSupabaseInventory() {
     const [inventory, setInventory] = useState<CardInventory[]>([]);
     const [targets, setTargets] = useState<TargetWatchlist[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isMigrating, setIsMigrating] = useState(false);
     const [syncMeta, setSyncMeta] = useState<SyncMeta>({
         lastSyncTime: null,
         totalValue: 0,
@@ -40,7 +43,17 @@ export function useSupabaseInventory() {
             setLoading(true);
 
             if (isAuthenticated && userId) {
-                // Fetch from Supabase
+                // 1. Check if we need to migrate local data first
+                if (needsMigration()) {
+                    setIsMigrating(true);
+                    const migrationResult = await migrateToSupabase(userId);
+                    if (migrationResult.success) {
+                        console.log('Migration successful:', migrationResult);
+                    }
+                    setIsMigrating(false);
+                }
+
+                // 2. Fetch from Supabase
                 const [cards, watchlist] = await Promise.all([
                     fetchCards(userId),
                     fetchTargets(userId)
@@ -148,6 +161,10 @@ export function useSupabaseInventory() {
         }
     }, [isAuthenticated]);
 
+    const markAcquired = useCallback((id: string) => {
+        updateTarget(id, { status: 'acquired' });
+    }, [updateTarget]);
+
     // === Bulk Operations ===
 
     const initializeFullInventory = useCallback(async () => {
@@ -181,6 +198,7 @@ export function useSupabaseInventory() {
         targets,
         setTargets,
         loading,
+        isMigrating,
         syncMeta,
         setSyncMeta,
         isCloudSynced: isAuthenticated,
@@ -190,6 +208,7 @@ export function useSupabaseInventory() {
         addTarget,
         updateTarget,
         deleteTarget: removeTarget,
+        markAcquired,
         refreshFromStorage,
         initializeFullInventory,
         totalCards: inventory.length

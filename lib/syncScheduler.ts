@@ -188,6 +188,8 @@ export class SyncScheduler {
      */
     start(inventory: CardInventory[], targets: TargetWatchlist[]): void {
         this.stop(); // Clear any existing interval
+        this.inventory = inventory;
+        this.targets = targets;
 
         if (this.config.interval === 'manual') {
             console.log('Sync scheduler: Manual mode, not starting automatic sync');
@@ -216,6 +218,14 @@ export class SyncScheduler {
         }, intervalMs);
 
         console.log(`Sync scheduler: Started with ${this.config.interval} interval`);
+    }
+
+    /**
+     * Update the data used for syncing without restarting the interval
+     */
+    updateData(inventory: CardInventory[], targets: TargetWatchlist[]): void {
+        this.inventory = inventory;
+        this.targets = targets;
     }
 
     /**

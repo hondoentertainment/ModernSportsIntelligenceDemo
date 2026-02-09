@@ -57,6 +57,7 @@ import { StatsService } from '../lib/statsService.ts';
 import { generatePortfolioReport } from '../lib/pdfExport.ts';
 import { AggregationService } from '../lib/aggregationService.ts';
 import { Cloud, CloudOff } from 'lucide-react';
+import CardImage from '../components/CardImage.tsx';
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
@@ -279,137 +280,105 @@ const Dashboard: React.FC = () => {
       ) : (
         <>
           {/* Hero Financial Summary */}
-          <section className="reveal-section relative overflow-hidden bg-brand-charcoal border border-slate-800 rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-brand-lime/5">
-            <div className="absolute top-0 right-0 -mt-24 -mr-24 w-96 h-96 bg-brand-lime/10 blur-[120px] rounded-full animate-pulse"></div>
-            <div className="relative flex flex-col lg:flex-row gap-12 items-center justify-between">
-              <div className="flex-1 space-y-6 text-center lg:text-left">
-                <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-lime/10 border border-brand-lime/20 text-brand-lime text-[10px] font-black uppercase tracking-[0.2em]">
-                    <Sparkles size={14} />
-                    Portfolio Intelligence Active
-                  </div>
-                  <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] transition-all ${isCloudSynced ? 'bg-brand-blue/10 border-brand-blue/20 text-brand-blue' : 'bg-slate-800 border-slate-700 text-brand-muted'}`}>
-                    {isCloudSynced ? (
-                      <>
-                        <Cloud size={14} />
-                        MSI Cloud Synced
-                      </>
-                    ) : (
-                      <>
-                        <CloudOff size={14} />
-                        Local Terminal Mode
-                      </>
-                    )}
-                  </div>
-                </div>
-                <h1 className="text-5xl md:text-8xl font-bebas tracking-tight text-white leading-[0.85]">
-                  Net Asset <span className="text-brand-lime">Value</span>
-                </h1>
-                <div className="flex flex-col items-center lg:items-start">
-                  <span className="text-5xl md:text-6xl font-mono font-bold text-white mb-2">
-                    ${portfolioMetrics.totalValue.toLocaleString()}
-                  </span>
-                  <p className="text-brand-muted text-lg leading-relaxed max-w-xl font-medium">
-                    Your portfolio holds <span className="text-brand-green font-bold">{inventory.length} unique assets</span> with a total ROI of <span className="text-brand-green font-bold">{portfolioMetrics.totalROIPercent.toFixed(1)}%</span>.
-                  </p>
-                </div>
-                <div className="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
-                  <Link to="/collection" className="px-10 py-4 bg-brand-lime hover:bg-white text-brand-charcoal font-black rounded-2xl transition-all shadow-xl shadow-brand-lime/20 flex items-center gap-3 uppercase tracking-widest text-xs active:scale-95">
-                    Manage Inventory <ArrowUpRight size={18} strokeWidth={3} />
-                  </Link>
-                  <button
-                    onClick={handleSync}
-                    disabled={isSyncing}
-                    className={`px-10 py-4 border font-black rounded-2xl transition-all uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95 ${isSyncing ? 'bg-brand-slate border-brand-lime/50 text-brand-lime cursor-wait' : syncComplete ? 'bg-brand-green/20 border-brand-green text-brand-green' : 'bg-brand-slate hover:bg-slate-800 border-slate-700 text-white'}`}
-                  >
-                    {isSyncing ? (
-                      <><RefreshCw size={18} className="animate-spin" /> Syncing {syncProgress?.current}/{syncProgress?.total}...</>
-                    ) : syncComplete ? (
-                      <><CheckCircle2 size={18} /> Sync Complete</>
-                    ) : (
-                      <><RefreshCw size={18} /> Trigger Market Sync</>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => setIsReportOpen(true)}
-                    className="px-10 py-4 bg-brand-slate hover:bg-slate-800 border border-slate-700 text-white font-black rounded-2xl transition-all uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95"
-                  >
-                    <Package size={18} /> Performance Report
-                  </button>
-                  <button
-                    onClick={() => generatePortfolioReport(inventory, 'Collector')}
-                    className="px-10 py-4 bg-brand-charcoal hover:bg-slate-800 border border-slate-700 text-white font-black rounded-2xl transition-all uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95"
-                  >
-                    <FileDown size={18} /> Export PDF
-                  </button>
-                  <button
-                    onClick={() => setIsScanOpen(true)}
-                    className="px-10 py-4 bg-brand-charcoal hover:bg-slate-800 border border-brand-lime text-brand-lime font-black rounded-2xl transition-all uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95 shadow-lg shadow-brand-lime/10"
-                  >
-                    <Camera size={18} /> AI Scan Asset
-                  </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Main NAV Mega-Widget */}
+            <div className="md:col-span-2 lg:col-span-2 luminous-card rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group shadow-2xl shadow-brand-lime/5 flex flex-col justify-between">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-brand-lime/10 blur-[120px] rounded-full animate-pulse -mr-24 -mt-24 pointer-events-none"></div>
 
-                  <button
-                    onClick={() => setIsShareOpen(true)}
-                    className="px-6 py-4 bg-brand-blue/10 hover:bg-brand-blue/20 border border-brand-blue/30 text-brand-blue font-black rounded-2xl transition-all uppercase tracking-widest text-xs flex items-center gap-3 active:scale-95"
-                  >
-                    <Share2 size={18} />
-                  </button>
-                </div>
-                {syncMeta.lastSyncTime && (
-                  <div className="flex items-center gap-2 text-[10px] font-black text-brand-muted uppercase tracking-widest pt-2">
-                    <Clock size={12} /> Last Sync: {new Date(syncMeta.lastSyncTime).toLocaleString()}
+              <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] transition-all ${isCloudSynced ? 'bg-brand-blue/10 border-brand-blue/20 text-brand-blue' : 'bg-slate-800 border-slate-700 text-brand-muted'}`}>
+                      {isCloudSynced ? <><Cloud size={12} /> Cloud Synced</> : <><CloudOff size={12} /> Local Mode</>}
+                    </div>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-lime/10 border border-brand-lime/20 text-brand-lime text-[10px] font-black uppercase tracking-[0.2em]">
+                      <Sparkles size={12} /> Live
+                    </div>
                   </div>
-                )}
-              </div>
 
-              <div className="flex items-center gap-3 bg-brand-charcoal/40 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/5 shadow-2xl">
-                <div className="flex items-center gap-2 pr-3 border-r border-slate-800">
-                  {isCloudSynced ? (
-                    <Cloud size={14} className="text-brand-lime" />
-                  ) : (
-                    <CloudOff size={14} className="text-slate-500" />
-                  )}
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${isCloudSynced ? 'text-brand-lime' : 'text-slate-500'}`}>
-                    {isCloudSynced ? 'MSI Cloud Synced' : 'Local Only'}
-                  </span>
+                  <div>
+                    <h1 className="text-4xl md:text-6xl font-bebas tracking-tight text-white leading-none mb-1">
+                      Net Asset <span className="text-brand-lime">Value</span>
+                    </h1>
+                    <span className="text-5xl md:text-7xl font-mono font-bold text-white tracking-tighter">
+                      ${portfolioMetrics.totalValue.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <button onClick={handleSync} disabled={isSyncing} className={`px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2 transition-all active:scale-95 ${isSyncing ? 'bg-slate-800 text-brand-lime cursor-wait' : 'bg-brand-lime text-brand-charcoal hover:bg-white'}`}>
+                      {isSyncing ? <RefreshCw size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                      {isSyncing ? 'Syncing...' : 'Sync Market'}
+                    </button>
+                    <Link to="/collection" className="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-black uppercase tracking-widest text-[10px] flex items-center gap-2 transition-all border border-slate-700">
+                      Manage Assets <ArrowUpRight size={14} />
+                    </Link>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>
-                  <span className="text-[10px] font-black text-brand-blue uppercase tracking-widest">eBay Live Feed</span>
-                </div>
-              </div>
-              <div className="w-full lg:w-[480px] bg-brand-slate/40 backdrop-blur-xl rounded-[2rem] border border-white/5 p-8">
-                <div className="flex justify-between items-center mb-6">
-                  <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Growth Velocity</p>
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${growthComparison.deltaPercent >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
-                    {growthComparison.deltaPercent >= 0 ? '+' : ''}{growthComparison.deltaPercent.toFixed(1)}% MONTHLY
-                  </span>
-                </div>
-                <div className="h-48 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData}>
-                      <defs>
-                        <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#D9F99D" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#D9F99D" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <Tooltip
-                        contentStyle={{ backgroundColor: '#0A0A0A', border: '1px solid #1A1A1A', borderRadius: '16px', fontSize: '12px' }}
-                        itemStyle={{ color: '#D9F99D' }}
-                      />
-                      <Area type="monotone" dataKey="value" stroke="#D9F99D" fillOpacity={1} fill="url(#colorVal)" strokeWidth={4} />
-                    </AreaChart>
-                  </ResponsiveContainer>
+
+                <div className="w-full md:w-[280px] h-[160px] bg-slate-900/50 rounded-2xl border border-white/5 p-4 backdrop-blur-sm">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">30d Momentum</span>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${growthComparison.deltaPercent >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
+                      {growthComparison.deltaPercent >= 0 ? '+' : ''}{growthComparison.deltaPercent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="h-[100px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={chartData}>
+                        <defs>
+                          <linearGradient id="colorValMini" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#D9F99D" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#D9F99D" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <Area type="monotone" dataKey="value" stroke="#D9F99D" strokeWidth={2} fillOpacity={1} fill="url(#colorValMini)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
             </div>
-          </section>
+
+            {/* Right Column Stack */}
+            <div className="space-y-6">
+              {/* Status Card */}
+              <div className="luminous-card rounded-[2rem] p-6 flex flex-col justify-center gap-4 min-h-[160px]">
+                <div className="flex justify-between items-start">
+                  <div className="p-3 bg-brand-charcoal rounded-xl border border-slate-800 text-brand-blue">
+                    <Activity size={20} />
+                  </div>
+                  <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest"> eBay Feed Active</span>
+                </div>
+                <div>
+                  <p className="text-3xl font-mono font-bold text-white mb-1">{inventory.length}</p>
+                  <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Total Assets Tracked</p>
+                </div>
+              </div>
+
+              {/* ROI Card */}
+              <div className="luminous-card rounded-[2rem] p-6 flex flex-col justify-center gap-4 min-h-[160px]">
+                <div className="flex justify-between items-start">
+                  <div className="p-3 bg-brand-charcoal rounded-xl border border-slate-800 text-brand-green">
+                    <TrendingUp size={20} />
+                  </div>
+                  <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Lifetime ROI</span>
+                </div>
+                <div>
+                  <p className={`text-3xl font-mono font-bold ${portfolioMetrics.totalROIPercent >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
+                    {portfolioMetrics.totalROIPercent >= 0 ? '+' : ''}{portfolioMetrics.totalROIPercent.toFixed(1)}%
+                  </p>
+                  <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
+                    ${portfolioMetrics.totalROI >= 0 ? '+' : ''}{portfolioMetrics.totalROI.toLocaleString()} Net
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Portfolio Identity HUD */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-200">
-            <div className="lg:col-span-1 bg-brand-slate border border-slate-800 rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl shadow-brand-lime/5">
+            <div className="lg:col-span-1 luminous-card rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl shadow-brand-lime/5">
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-lime/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-brand-lime/10 transition-colors"></div>
 
               <div className="relative z-10 flex flex-col h-full justify-between gap-8">
@@ -443,7 +412,7 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
 
-            <div className="lg:col-span-2 bg-brand-slate border border-slate-800 rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl shadow-brand-teal/5">
+            <div className="lg:col-span-2 luminous-card rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl shadow-brand-teal/5">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-xl font-bebas tracking-wide text-white mb-1">Portfolio DNA</h3>
@@ -500,7 +469,7 @@ const Dashboard: React.FC = () => {
             {signals.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {signals.map((signal, i) => (
-                  <div key={signal.id} className="p-6 bg-brand-slate border border-slate-800 rounded-2xl relative overflow-hidden group hover:border-brand-blue/40 transition-all">
+                  <div key={signal.id} className="p-6 luminous-card rounded-2xl relative overflow-hidden group hover:border-brand-blue/40 transition-all">
                     <div className={`absolute top-0 right-0 w-16 h-16 blur-3xl opacity-10 rounded-full -mr-8 -mt-8 ${signal.type === 'buy' ? 'bg-brand-lime' : 'bg-brand-teal'}`}></div>
                     <div className="relative z-10 space-y-3">
                       <div className="flex justify-between items-start">
@@ -538,7 +507,7 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* League Intelligence Hub */}
-          <section className="reveal-section bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 md:p-12" style={{ animationDelay: '200ms' }}>
+          <section className="reveal-section luminous-card rounded-[2.5rem] p-8 md:p-12" style={{ animationDelay: '200ms' }}>
             <div className="flex flex-col lg:flex-row gap-12">
               <div className="w-full lg:w-1/3 space-y-8">
                 <div>
@@ -700,43 +669,6 @@ const Dashboard: React.FC = () => {
             )}
           </section>
 
-          {/* Main Stats Grid */}
-          <div className="reveal-section grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" style={{ animationDelay: '400ms' }}>
-            <div className="bg-brand-slate border border-slate-800 p-8 rounded-[2rem] group hover:border-brand-lime/30 transition-all">
-              <div className="w-12 h-12 bg-brand-lime/10 rounded-2xl flex items-center justify-center text-brand-lime mb-4 group-hover:scale-110 transition-transform">
-                <TrendingUp size={24} />
-              </div>
-              <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Total ROI</p>
-              <p className={`text-3xl font-mono font-bold ${portfolioMetrics.totalROIPercent >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
-                {portfolioMetrics.totalROIPercent >= 0 ? '+' : ''}{portfolioMetrics.totalROIPercent.toFixed(1)}%
-              </p>
-            </div>
-            <div className="bg-brand-slate border border-slate-800 p-8 rounded-[2rem] group hover:border-brand-lime/30 transition-all">
-              <div className="w-12 h-12 bg-brand-orange/10 rounded-2xl flex items-center justify-center text-brand-orange mb-4 group-hover:scale-110 transition-transform">
-                <CreditCard size={24} />
-              </div>
-              <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Paper Gains</p>
-              <p className={`text-3xl font-mono font-bold ${portfolioMetrics.totalROI >= 0 ? 'text-white' : 'text-brand-red'}`}>
-                ${portfolioMetrics.totalROI.toLocaleString()}
-              </p>
-            </div>
-            <div className="bg-brand-slate border border-slate-800 p-8 rounded-[2rem] group hover:border-brand-lime/30 transition-all">
-              <div className="w-12 h-12 bg-brand-lime/10 rounded-2xl flex items-center justify-center text-brand-lime mb-4 group-hover:scale-110 transition-transform">
-                <Layers size={24} />
-              </div>
-              <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Portfolio Deepness</p>
-              <p className="text-3xl font-mono font-bold text-white">{MOCK_CARDS.length} Assets</p>
-            </div>
-            <div className="bg-brand-slate border border-slate-800 p-8 rounded-[2rem] group hover:border-brand-lime/30 transition-all">
-              <div className="w-12 h-12 bg-brand-green/10 rounded-2xl flex items-center justify-center text-brand-green mb-4 group-hover:scale-110 transition-transform">
-                <Package size={24} />
-              </div>
-              <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Avg. Asset Value</p>
-              <p className="text-3xl font-mono font-bold text-white">
-                ${Math.round(portfolioMetrics.totalValue / inventory.length).toLocaleString()}
-              </p>
-            </div>
-          </div>
 
           {/* Recents Section */}
           <section className="reveal-section" style={{ animationDelay: '600ms' }}>
@@ -757,7 +689,13 @@ const Dashboard: React.FC = () => {
                     <div className={`absolute inset-0 bg-gradient-to-r ${styles.glow || 'from-transparent'} via-transparent to-transparent opacity-30`}></div>
 
                     <div className={`w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden border-2 border-slate-800 ${styles.border !== 'border-slate-800' ? styles.border : ''} transition-colors relative z-10`}>
-                      <img src={card.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      <CardImage
+                        src={card.image}
+                        playerName={card.player}
+                        year={card.year}
+                        manufacturer={card.manufacturer}
+                        className="w-full h-full"
+                      />
                     </div>
                     <div className="flex-1 min-w-0 relative z-10">
                       <div className="flex items-center gap-2 mb-1">

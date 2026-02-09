@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft, Info, TrendingUp, BarChart, Shield, Target, Flame, CreditCard, ArrowUpRight, Minus } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { MOCK_PLAYERS } from '../constants.tsx';
+import { getAthleteHeadshotUrl } from '../lib/mlbApi.ts';
 
 const PlayerDetail: React.FC = () => {
   const { id } = useParams();
@@ -27,9 +28,13 @@ const PlayerDetail: React.FC = () => {
 
       <section className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center relative overflow-hidden">
         <div className={`absolute top-0 right-0 p-8 opacity-5 transition-opacity ${player.breakoutScore > 80 ? 'text-brand-green opacity-10' : 'text-slate-100'}`}>
-           <Flame size={120} />
+          <Flame size={120} />
         </div>
-        <img src={player.image} alt={player.name} className="w-40 h-40 rounded-3xl object-cover border-4 border-slate-800 z-10" />
+        <img
+          src={player.id.startsWith('mlb-') ? getAthleteHeadshotUrl(parseInt(player.id.replace('mlb-', ''))) : player.image}
+          alt={player.name}
+          className="w-40 h-40 rounded-3xl object-cover border-4 border-slate-800 z-10 bg-slate-950"
+        />
         <div className="flex-1 space-y-4 text-center md:text-left z-10">
           <div>
             <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
@@ -62,14 +67,14 @@ const PlayerDetail: React.FC = () => {
                 Breakout IQ vs. Usage
               </h2>
               <div className="flex gap-4">
-                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-brand-lime"></div>
-                    <span className="text-[10px] font-bold text-brand-muted uppercase">Intelligence</span>
-                 </div>
-                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                    <span className="text-[10px] font-bold text-brand-muted uppercase">Usage %</span>
-                 </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-brand-lime"></div>
+                  <span className="text-[10px] font-bold text-brand-muted uppercase">Intelligence</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                  <span className="text-[10px] font-bold text-brand-muted uppercase">Usage %</span>
+                </div>
               </div>
             </div>
             <div className="h-[300px] w-full">
@@ -78,7 +83,7 @@ const PlayerDetail: React.FC = () => {
                   <XAxis dataKey="name" stroke="#475569" fontSize={10} tickLine={false} axisLine={false} />
                   <YAxis yAxisId="left" hide />
                   <YAxis yAxisId="right" hide />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px' }}
                     itemStyle={{ fontWeight: 'bold' }}
                   />
@@ -93,17 +98,17 @@ const PlayerDetail: React.FC = () => {
         <div className="space-y-8">
           <section className="bg-brand-lime/5 border border-brand-lime/20 rounded-3xl p-6">
             <div className="flex items-center gap-3 mb-6">
-               <CreditCard className="text-brand-lime" size={24} />
-               <h2 className="text-lg font-bold">Market Intelligence</h2>
+              <CreditCard className="text-brand-lime" size={24} />
+              <h2 className="text-lg font-bold">Market Intelligence</h2>
             </div>
             <div className="space-y-6">
               <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl">
-                 <p className="text-[10px] font-black uppercase text-brand-muted mb-2 tracking-widest">Collector Intelligence</p>
-                 <p className="text-sm text-slate-300 italic leading-relaxed">
-                   "{player.marketContext}"
-                 </p>
+                <p className="text-[10px] font-black uppercase text-brand-muted mb-2 tracking-widest">Collector Intelligence</p>
+                <p className="text-sm text-slate-300 italic leading-relaxed">
+                  "{player.marketContext}"
+                </p>
               </div>
-              
+
               <Link to="/collection" className="block w-full py-3 bg-brand-lime hover:bg-lime-400 text-brand-charcoal text-center font-bold rounded-xl transition-all shadow-lg shadow-brand-lime/20 text-xs">
                 Add to Watchlist
               </Link>

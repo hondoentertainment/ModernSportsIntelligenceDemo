@@ -11,6 +11,8 @@ interface AuthContextType {
     signUp: (email: string, password: string, username?: string) => Promise<{ error: AuthError | null }>;
     signInWithGoogle: () => Promise<{ error: AuthError | null }>;
     signOut: () => Promise<void>;
+    resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
+    updatePassword: (password: string) => Promise<{ error: AuthError | null }>;
     demoLogin: () => void;
 }
 
@@ -98,6 +100,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await supabase.auth.signOut();
     };
 
+    const resetPassword = async (email: string) => {
+        if (isDemoMode) return { error: null };
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/#/reset-password`,
+        });
+        return { error };
+    };
+
+    const updatePassword = async (password: string) => {
+        if (isDemoMode) return { error: null };
+        const { error } = await supabase.auth.updateUser({ password });
+        return { error };
+    };
+
     const demoLogin = () => {
         localStorage.setItem('msi_demo_session', 'true');
         setUser({ id: 'demo-user', email: 'demo@sportsintel.io' } as User);
@@ -113,6 +129,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             signUp,
             signInWithGoogle,
             signOut,
+            resetPassword,
+            updatePassword,
             demoLogin
         }}>
             {children}

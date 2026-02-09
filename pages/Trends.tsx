@@ -106,8 +106,8 @@ const Trends: React.FC = () => {
               key={tf}
               onClick={() => setTimeframe(tf)}
               className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${timeframe === tf
-                  ? 'bg-brand-lime text-brand-charcoal shadow-lg shadow-brand-lime/20'
-                  : 'text-brand-muted hover:text-white'
+                ? 'bg-brand-lime text-brand-charcoal shadow-lg shadow-brand-lime/20'
+                : 'text-brand-muted hover:text-white'
                 }`}
             >
               {tf}
@@ -148,7 +148,7 @@ const Trends: React.FC = () => {
             color: 'text-white'
           },
         ].map((stat, i) => (
-          <div key={i} className="bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 relative overflow-hidden group">
+          <div key={i} className="luminous-card rounded-[2.5rem] p-8 relative overflow-hidden group">
             <div className={`absolute top-0 right-0 w-24 h-24 blur-3xl opacity-5 rounded-full -mr-12 -mt-12 transition-all group-hover:opacity-10 ${stat.color.includes('green') ? 'bg-brand-green' : 'bg-brand-lime'}`}></div>
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-4">
@@ -165,7 +165,7 @@ const Trends: React.FC = () => {
       </div>
 
       {/* Main Temporal Chart */}
-      <section className="bg-brand-charcoal border border-slate-800 rounded-[3rem] p-8 md:p-12 relative overflow-hidden shadow-2xl shadow-brand-lime/5">
+      <section className="luminous-card rounded-[3rem] p-8 md:p-12 relative overflow-hidden shadow-2xl shadow-brand-lime/5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
             <h2 className="text-3xl font-bebas tracking-wider text-white mb-2">Portfolio <span className="text-brand-lime">Valuation Flow</span></h2>
@@ -227,7 +227,7 @@ const Trends: React.FC = () => {
       {/* Performance Split Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Top Performers */}
-        <section className="bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-8">
+        <section className="luminous-card rounded-[2.5rem] p-8 space-y-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-brand-green/10 rounded-2xl text-brand-green">
@@ -242,7 +242,7 @@ const Trends: React.FC = () => {
 
           <div className="space-y-4">
             {metrics.topPerformers.map((item, i) => (
-              <div key={i} className="flex items-center gap-6 p-5 bg-brand-charcoal border border-slate-800/50 rounded-2xl group hover:border-brand-green/30 transition-all">
+              <div key={i} className="flex items-center gap-6 p-5 luminous-card rounded-2xl group hover:border-brand-green/30 transition-all">
                 <span className="text-3xl font-bebas text-brand-green/30 group-hover:text-brand-green transition-colors w-6">0{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-white text-lg truncate leading-none mb-1">{item.player}</p>
@@ -258,7 +258,7 @@ const Trends: React.FC = () => {
         </section>
 
         {/* Distribution Breakdown */}
-        <section className="bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-8">
+        <section className="luminous-card rounded-[2.5rem] p-8 space-y-8">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-brand-lime/10 rounded-2xl text-brand-lime">
               <BarChart size={24} />

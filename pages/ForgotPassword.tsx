@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase, isDemoMode } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import { Mail, ArrowLeft, Loader2, Check, TrendingUp } from 'lucide-react';
 
 const ForgotPassword: React.FC = () => {
@@ -9,23 +9,14 @@ const ForgotPassword: React.FC = () => {
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
 
+    const { resetPassword, isDemoMode } = useAuth();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
-        if (isDemoMode) {
-            // Simulate success in demo mode
-            setTimeout(() => {
-                setSuccess(true);
-                setLoading(false);
-            }, 1000);
-            return;
-        }
-
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${window.location.origin}/#/reset-password`,
-        });
+        const { error } = await resetPassword(email);
 
         if (error) {
             setError(error.message);

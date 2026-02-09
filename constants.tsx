@@ -22,7 +22,9 @@ import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './p
 export const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
   { id: 'collection', label: 'Collection', icon: <Layers size={20} />, path: '/collection' },
-  { id: 'mlbstats', label: 'MLB Stats', icon: <Trophy size={20} />, path: '/mlb-stats' },
+  { id: 'deepsearch', label: 'Deep Intelligence', icon: <Search size={20} />, path: '/deep-search' },
+  { id: 'audit', label: 'Portfolio Audit', icon: <GitCompare size={20} />, path: '/audit' },
+  { id: 'mlbstats', label: 'PressBox Hub', icon: <Trophy size={20} />, path: '/mlb-stats' },
   { id: 'prospects', label: 'Prospect Trends', icon: <TrendingUp size={20} />, path: '/prospects' },
   { id: 'favorites', label: 'Watchlist', icon: <Star size={20} />, path: '/favorites' },
   { id: 'players', label: 'Players', icon: <Search size={20} />, path: '/players' },

@@ -18,7 +18,7 @@ const Header: React.FC = () => {
   const displayEmail = user?.email || 'demo@sportsintel.io';
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-8 bg-brand-charcoal/80 backdrop-blur-md border-b border-slate-800">
+    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-8 glass-header">
       <div className="flex-1 max-w-xl">
         <div className="relative group">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted group-focus-within:text-brand-lime transition-colors" size={18} />

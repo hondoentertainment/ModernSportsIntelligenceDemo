@@ -194,6 +194,21 @@ export async function upsertTarget(target: TargetWatchlist, userId: string): Pro
     return true;
 }
 
+export async function bulkUpsertTargets(targets: TargetWatchlist[], userId: string): Promise<boolean> {
+    if (isDemoMode) return true;
+
+    const rows = targets.map(t => targetToDb(t, userId));
+    const { error } = await supabase
+        .from('targets')
+        .upsert(rows, { onConflict: 'id' });
+
+    if (error) {
+        console.error('Error bulk upserting targets:', error);
+        return false;
+    }
+    return true;
+}
+
 export async function deleteTarget(targetId: string): Promise<boolean> {
     if (isDemoMode) return true;
 

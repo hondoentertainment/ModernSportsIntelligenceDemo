@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Settings, Heart, History, Shield, LogOut, Save, Bell, Eye, Palette, Check } from 'lucide-react';
+import { User, Settings, Heart, History, Shield, LogOut, Save, Bell, Eye, Palette, Check, Zap } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface UserSettings {
@@ -96,8 +96,8 @@ const Profile: React.FC = () => {
         <button
           onClick={handleSave}
           className={`px-6 py-3 rounded-2xl font-bold transition-all text-sm flex items-center gap-2 ${saved
-              ? 'bg-brand-lime text-brand-charcoal'
-              : 'bg-slate-900 border border-slate-800 hover:bg-slate-800'
+            ? 'bg-brand-lime text-brand-charcoal'
+            : 'bg-slate-900 border border-slate-800 hover:bg-slate-800'
             }`}
         >
           {saved ? <Check size={18} /> : <Save size={18} />}
@@ -118,8 +118,8 @@ const Profile: React.FC = () => {
                 key={league}
                 onClick={() => toggleLeague(league)}
                 className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${settings.favoriteLeagues.includes(league)
-                    ? 'bg-brand-lime/10 border-brand-lime/30 text-white'
-                    : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
+                  ? 'bg-brand-lime/10 border-brand-lime/30 text-white'
+                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700'
                   }`}
               >
                 <span className="font-bold">{league}</span>
@@ -147,8 +147,8 @@ const Profile: React.FC = () => {
                     key={opt}
                     onClick={() => setSettings(s => ({ ...s, insightDepth: opt }))}
                     className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold uppercase transition-all ${settings.insightDepth === opt
-                        ? 'bg-brand-teal text-white'
-                        : 'bg-slate-900 border border-slate-800 text-slate-500 hover:text-white'
+                      ? 'bg-brand-teal text-white'
+                      : 'bg-slate-900 border border-slate-800 text-slate-500 hover:text-white'
                       }`}
                   >
                     {opt === 'context' ? 'Context Heavy' : opt === 'balanced' ? 'Balanced' : 'Data Only'}
@@ -165,8 +165,8 @@ const Profile: React.FC = () => {
                     key={lv}
                     onClick={() => setSettings(s => ({ ...s, alertSensitivity: lv }))}
                     className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold uppercase transition-all ${settings.alertSensitivity === lv
-                        ? 'bg-brand-teal text-white'
-                        : 'bg-slate-900 border border-slate-800 text-slate-500 hover:text-white'
+                      ? 'bg-brand-teal text-white'
+                      : 'bg-slate-900 border border-slate-800 text-slate-500 hover:text-white'
                       }`}
                   >
                     {lv}
@@ -201,8 +201,8 @@ const Profile: React.FC = () => {
                   notifications: { ...s.notifications, [key]: !s.notifications[key as keyof typeof s.notifications] }
                 }))}
                 className={`w-12 h-7 rounded-full transition-all relative ${settings.notifications[key as keyof typeof settings.notifications]
-                    ? 'bg-brand-lime'
-                    : 'bg-slate-700'
+                  ? 'bg-brand-lime'
+                  : 'bg-slate-700'
                   }`}
               >
                 <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${settings.notifications[key as keyof typeof settings.notifications] ? 'left-6' : 'left-1'
@@ -210,6 +210,107 @@ const Profile: React.FC = () => {
               </button>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* External Connections */}
+      <section className="bg-slate-950 border border-slate-800 rounded-3xl p-8">
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+          <Shield className="text-brand-teal" size={20} />
+          API Connectivity
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 bg-slate-900 rounded-2xl border border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-brand-blue/10 flex items-center justify-center text-brand-blue font-black italic">
+                e
+              </div>
+              <div>
+                <p className="font-bold text-sm">eBay Official API</p>
+                <p className="text-[10px] text-brand-muted font-bold uppercase tracking-widest">Market Feed (Sold Listings)</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-brand-lime animate-pulse"></div>
+              <span className="text-[10px] font-black text-brand-lime uppercase tracking-widest">Live</span>
+            </div>
+          </div>
+
+          <div className="p-4 bg-slate-900 rounded-2xl border border-slate-800 flex items-center justify-between opacity-50 grayscale">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center text-brand-orange font-black">
+                P
+              </div>
+              <div>
+                <p className="font-bold text-sm">PSA Direct</p>
+                <p className="text-[10px] text-brand-muted font-bold uppercase tracking-widest">Population Report Data</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Disabled</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Sync Scheduler Section */}
+      <section className="bg-slate-950 border border-slate-800 rounded-3xl p-8 space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold flex items-center gap-3">
+            <History className="text-brand-teal" size={20} />
+            Market Intelligence Sync
+          </h2>
+          <div className="px-3 py-1 bg-brand-lime/10 border border-brand-lime/20 rounded-full">
+            <span className="text-[10px] font-black text-brand-lime uppercase tracking-widest">Auto-Refresh Active</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div>
+              <p className="font-bold text-sm mb-2">Refesh Interval</p>
+              <div className="flex flex-wrap gap-2">
+                {['manual', 'hourly', 'daily', 'weekly'].map((interval) => (
+                  <button
+                    key={interval}
+                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border
+                          ${interval === 'daily'
+                        ? 'bg-brand-lime border-brand-lime text-brand-charcoal'
+                        : 'bg-slate-900 border-slate-800 text-brand-muted hover:border-slate-700'}`}
+                  >
+                    {interval}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-4 bg-slate-900/50 border border-slate-800 rounded-2xl">
+              <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-2">Next Scheduled Sync</p>
+              <div className="flex items-center gap-3">
+                <Zap size={16} className="text-brand-lime" />
+                <span className="text-xl font-mono font-bold text-white">04:22:18</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-slate-900 rounded-2xl border border-slate-800">
+              <div>
+                <p className="font-bold text-sm">Sync on Startup</p>
+                <p className="text-[10px] text-brand-muted uppercase">Refresh NAV when app launches</p>
+              </div>
+              <div className="w-12 h-7 bg-brand-lime rounded-full relative">
+                <div className="absolute top-1 right-1 w-5 h-5 bg-white rounded-full"></div>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-slate-900 rounded-2xl border border-slate-800">
+              <div>
+                <p className="font-bold text-sm">Push Notifications</p>
+                <p className="text-[10px] text-brand-muted uppercase">Notify on major price shifts</p>
+              </div>
+              <div className="w-12 h-7 bg-brand-lime rounded-full relative">
+                <div className="absolute top-1 right-1 w-5 h-5 bg-white rounded-full"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

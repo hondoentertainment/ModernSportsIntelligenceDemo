@@ -82,6 +82,20 @@ export async function getProbablePitchers(date: string = new Date().toISOString(
   return data.dates?.[0]?.games || [];
 }
 
+/**
+ * Get the official MLB headshot URL for a player
+ * @param playerId The MLB player ID
+ * @param size The size of the image (66x90, 213x320, or 426x640)
+ */
+export function getAthleteHeadshotUrl(playerId: number, size: 'small' | 'medium' | 'large' = 'medium'): string {
+  const sizeMap = {
+    small: '66x90',
+    medium: '213x320',
+    large: '426x640'
+  };
+  return `https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png/w_426,q_auto:best/v1/people/${playerId}/headshot/67/current`;
+}
+
 // PressBox API Integration
 const PRESSBOX_BASE_URL = 'https://api.pressbox.com/v1';
 const PRESSBOX_API_KEY = import.meta.env.VITE_PRESSBOX_API_KEY || '';

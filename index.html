@@ -153,6 +153,86 @@
         .animate-scan {
             animation: scan 3s linear infinite;
         }
+
+        /* Luminous Depth Styles */
+        .luminous-container {
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+            --glow-color: oklch(0.88 0.20 127); /* Default lime */
+        }
+
+        .luminous-card {
+            position: relative;
+            background: oklch(0.20 0.01 240 / 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid oklch(1 0 0 / 0.05);
+            transition: border-color 0.3s ease, transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .luminous-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(
+                800px circle at var(--mouse-x) var(--mouse-y),
+                oklch(from var(--glow-color) l c h / 0.08),
+                transparent 40%
+            );
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .luminous-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: radial-gradient(
+                400px circle at var(--mouse-x) var(--mouse-y),
+                oklch(from var(--glow-color) l c h / 0.3),
+                transparent 40%
+            );
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .luminous-card:hover::after {
+            opacity: 1;
+        }
+
+        .ambient-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: radial-gradient(
+                circle at 50% -20%,
+                oklch(from var(--glow-color) l c h / 0.1),
+                transparent 70%
+            );
+            transition: background 1s ease;
+        }
+
+        .glass-sidebar {
+            background: oklch(0.15 0.01 240 / 0.4);
+            backdrop-filter: blur(40px) saturate(1.5);
+            border-right: 1px solid oklch(1 0 0 / 0.03);
+        }
+
+        .glass-header {
+            background: oklch(0.15 0.01 240 / 0.3);
+            backdrop-filter: blur(40px) saturate(1.5);
+            border-bottom: 1px solid oklch(1 0 0 / 0.03);
+        }
     </style>
 </head>
 

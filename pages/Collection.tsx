@@ -22,36 +22,48 @@ import {
 import { CardInventory, TargetWatchlist, League } from '../types.ts';
 import { getEbayCardPrice } from '../lib/gemini.ts';
 import { LEAGUES } from '../constants.tsx';
-import { useInventory } from '../lib/useInventory.ts';
-import { useTargets } from '../lib/useTargets.ts';
+import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
 import { useFavorites } from '../lib/useFavorites.ts';
 import AddTargetModal from '../components/AddTargetModal.tsx';
 import AddAssetModal from '../components/AddAssetModal.tsx';
 import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
 import Sparkline from '../components/Sparkline.tsx';
 import { getSparklineData, getPriceTrend } from '../lib/priceHistory.ts';
+import { Loader2, Cloud, CloudOff } from 'lucide-react';
+import CardImage from '../components/CardImage.tsx';
 
 const Collection: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inventory' | 'targets'>('inventory');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filterLeague, setFilterLeague] = useState<League | 'All'>('All');
 
-  // Shared inventory state - synced with Dashboard
-  const { inventory, setInventory, addCard, deleteCard: removeCard, initializeFullInventory } = useInventory();
+  // Unified Supabase-aware state
+  const {
+    inventory,
+    setInventory,
+    addCard,
+    deleteCard: removeCard,
+    updateCard,
+    initializeFullInventory,
+    targets,
+    addTarget,
+    updateTarget,
+    deleteTarget,
+    markAcquired,
+    isCloudSynced,
+    isMigrating,
+    loading
+  } = useSupabaseInventory();
 
-  // Favorites/Watchlist state
+  // Favorites state
   const { isFavorite, toggleFavorite } = useFavorites();
 
-  // Targets state
-  const { targets, addTarget, updateTarget, deleteTarget, markAcquired } = useTargets();
+  // Modal states
   const [isTargetModalOpen, setIsTargetModalOpen] = useState(false);
   const [editingTarget, setEditingTarget] = useState<TargetWatchlist | null>(null);
   const [initialTargetData, setInitialTargetData] = useState<Partial<TargetWatchlist> | null>(null);
-
-  // Asset Modal state
   const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<CardInventory | null>(null);
-  const { updateCard } = useInventory();
 
   // Ensure full inventory is loaded on mount
   useEffect(() => {
@@ -126,13 +138,46 @@ const Collection: React.FC = () => {
   }, [inventory]);
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-700 pb-20">
+    <div className="space-y-12 animate-in fade-in duration-700 pb-20 relative">
+      {/* Migration / Sync Overlay */}
+      {(loading || isMigrating) && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-500">
+          <div className="relative">
+            <div className="w-24 h-24 border-4 border-brand-lime/20 border-t-brand-lime rounded-full animate-spin"></div>
+            <Cloud className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-brand-lime animate-pulse" size={32} />
+          </div>
+          <div className="mt-8 text-center space-y-2">
+            <h2 className="font-bebas text-4xl tracking-widest text-white">
+              {isMigrating ? 'SEQUENCING CLOUD MIGRATION' : 'HYDRATING REPOSITORY'}
+            </h2>
+            <p className="text-brand-muted font-mono text-xs uppercase tracking-[0.3em]">
+              {isMigrating ? 'Transferring local assets to secure cloud terminal...' : 'Establishing encrypted handshake with MSI database...'}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="space-y-2">
-          <h1 className="text-5xl md:text-7xl font-bebas tracking-tight text-white leading-none">
-            Asset <span className="text-brand-lime">Repository</span>
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-5xl md:text-7xl font-bebas tracking-tight text-white leading-none">
+              Asset <span className="text-brand-lime">Repository</span>
+            </h1>
+            <div className={`mt-4 px-3 py-1 rounded-full border flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all ${isCloudSynced ? 'bg-brand-lime/10 border-brand-lime/30 text-brand-lime' : 'bg-slate-800 border-slate-700 text-brand-muted'}`}>
+              {isCloudSynced ? (
+                <>
+                  <Cloud size={12} />
+                  Cloud Synced
+                </>
+              ) : (
+                <>
+                  <CloudOff size={12} />
+                  Local Terminal
+                </>
+              )}
+            </div>
+          </div>
           <p className="text-brand-muted max-w-2xl font-medium">Professional grade inventory management and market liquidity tracking.</p>
         </div>
         <div className="flex items-center gap-4">
@@ -247,7 +292,13 @@ const Collection: React.FC = () => {
                   return (
                     <div key={card.id} className={`group bg-brand-slate border ${styles.border} rounded-[2.5rem] overflow-hidden transition-all flex flex-col active:scale-[0.98] relative`}>
                       <div className="aspect-[4/5] bg-slate-950 relative overflow-hidden group">
-                        <img src={card.image || 'https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600'} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                        <CardImage
+                          src={card.image}
+                          playerName={card.player}
+                          year={card.year}
+                          manufacturer={card.manufacturer}
+                          className="w-full h-full"
+                        />
 
                         {/* Premium Overlays */}
                         <div className={`absolute inset-0 bg-gradient-to-t ${styles.glow || 'from-black/80'} via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity`}></div>
@@ -389,7 +440,13 @@ const Collection: React.FC = () => {
                       <tr key={card.id} className="hover:bg-brand-lime/5 transition-colors group">
                         <td className="px-8 py-4">
                           <div className="flex items-center gap-4">
-                            <img src={card.image} className="w-10 h-10 rounded-lg object-cover bg-slate-900" />
+                            <CardImage
+                              src={card.image}
+                              playerName={card.player}
+                              year={card.year}
+                              manufacturer={card.manufacturer}
+                              className="w-10 h-10 rounded-lg"
+                            />
                             <span className="font-bold text-white">{card.player}</span>
                           </div>
                         </td>

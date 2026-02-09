@@ -320,3 +320,60 @@ export async function parseCardImage(imageBase64: string, mimeType: string = "im
     return null;
   }
 }
+
+/**
+ * Deep Search: Finds cards or players similar to the input using AI reasoning.
+ */
+export async function findSimilarCards(query: string, inventory: CardInventory[] = []): Promise<any[]> {
+  const prompt = `Act as an expert sports card scout and market analyst. 
+  Perform a deep similarity search for: "${query}"
+  
+  CONTEXT:
+  - If a player is mentioned, find other players with similar career trajectories, playing styles, or market hype.
+  - If a specific card is mentioned, find cards that share aesthetic, rarity, or era similarities.
+  - If a "Vibe" is mentioned (e.g. 'Flashy guards from the 90s'), find matching assets.
+  
+  Provide a list of 5-6 similar assets. For each, include:
+  - name (Asset/Player Name)
+  - team
+  - reason (The AI logic for why this is similar)
+  - similarityScore (0-100)
+  - estimatedValue (Current market estimate)
+  - image (A high-quality Unsplash URL related to the sport)
+  - league (MLB, NBA, NFL, etc.)
+  
+  Return valid JSON array.`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              id: { type: Type.STRING },
+              name: { type: Type.STRING },
+              team: { type: Type.STRING },
+              reason: { type: Type.STRING },
+              similarityScore: { type: Type.NUMBER },
+              estimatedValue: { type: Type.NUMBER },
+              image: { type: Type.STRING },
+              league: { type: Type.STRING },
+            },
+            required: ["name", "team", "reason", "similarityScore", "estimatedValue", "image", "league"]
+          }
+        }
+      }
+    });
+
+    const text = response.text || "[]";
+    return JSON.parse(text);
+  } catch (error) {
+    console.error("Gemini Deep Search Error:", error);
+    return [];
+  }
+}
