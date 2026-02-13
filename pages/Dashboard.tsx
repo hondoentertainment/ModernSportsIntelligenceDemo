@@ -248,6 +248,13 @@ const Dashboard: React.FC = () => {
                 <ChevronRight size={18} strokeWidth={3} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <button
+                onClick={() => setIsScanOpen(true)}
+                className="px-10 py-5 bg-brand-charcoal hover:bg-slate-800 border border-brand-lime/30 text-brand-lime font-black rounded-2xl transition-all shadow-2xl flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group"
+              >
+                <Sparkles size={18} className="group-hover:animate-pulse" />
+                AI Alpha Scan
+              </button>
+              <button
                 onClick={() => initializeFullInventory()}
                 className="px-10 py-5 bg-brand-charcoal hover:bg-slate-800 border border-slate-700 text-white font-black rounded-2xl transition-all flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group"
               >
@@ -309,6 +316,13 @@ const Dashboard: React.FC = () => {
                     <button onClick={handleSync} disabled={isSyncing} className={`px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2 transition-all active:scale-95 ${isSyncing ? 'bg-slate-800 text-brand-lime cursor-wait' : 'bg-brand-lime text-brand-charcoal hover:bg-white'}`}>
                       {isSyncing ? <RefreshCw size={14} className="animate-spin" /> : <RefreshCw size={14} />}
                       {isSyncing ? 'Syncing...' : 'Sync Market'}
+                    </button>
+                    <button
+                      onClick={() => setIsScanOpen(true)}
+                      className="px-6 py-3 rounded-xl bg-brand-charcoal hover:bg-slate-800 border border-brand-lime/20 text-brand-lime font-black uppercase tracking-widest text-[10px] flex items-center gap-2 transition-all active:scale-95"
+                    >
+                      <Sparkles size={14} />
+                      Alpha Scan
                     </button>
                     <Link to="/collection" className="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-black uppercase tracking-widest text-[10px] flex items-center gap-2 transition-all border border-slate-700">
                       Manage Assets <ArrowUpRight size={14} />

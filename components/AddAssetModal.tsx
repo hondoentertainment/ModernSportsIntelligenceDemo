@@ -8,6 +8,7 @@ interface AddAssetModalProps {
     onClose: () => void;
     onAdd: (card: CardInventory) => void;
     editCard?: CardInventory | null;
+    initialData?: Partial<CardInventory> | null;
     onUpdate?: (id: string, updates: Partial<CardInventory>) => void;
 }
 
@@ -16,7 +17,7 @@ const LEAGUES: League[] = ['MLB', 'MiLB', 'NBA', 'NFL', 'Other'];
 const CONDITIONS = ['Gem Mint', 'Mint', 'Near Mint', 'Excellent', 'Very Good', 'Good', 'Fair', 'Poor'];
 const GRADERS = ['PSA', 'BGS', 'SGC', 'CGC', 'TAG', 'Raw'];
 
-const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, editCard, onUpdate }) => {
+const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, editCard, initialData, onUpdate }) => {
     // Form State
     const [player, setPlayer] = useState('');
     const [year, setYear] = useState(new Date().getFullYear().toString());
@@ -33,7 +34,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
     const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
     const [notes, setNotes] = useState('');
 
-    // Load edit data when modal opens with an editCard
+    // Load edit data or initial data when modal opens
     useEffect(() => {
         if (editCard) {
             setPlayer(editCard.player);
@@ -49,6 +50,20 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             setIsAutographed(editCard.isAutographed);
             setPurchasePrice(editCard.purchasePrice.toString());
             setPurchaseDate(editCard.purchaseDate || new Date().toISOString().split('T')[0]);
+        } else if (initialData) {
+            setPlayer(initialData.player || '');
+            setYear(initialData.year?.toString() || new Date().getFullYear().toString());
+            setManufacturer(initialData.manufacturer || '');
+            setSet(initialData.set || '');
+            setCardNumber(initialData.cardNumber || '');
+            setSport(initialData.sport || 'Baseball');
+            setLeague(initialData.league || 'MLB');
+            setIsGraded(initialData.isGraded || false);
+            setGradingCompany(initialData.gradingCompany || 'PSA');
+            setGrade(initialData.grade || '10');
+            setIsAutographed(initialData.isAutographed || false);
+            setPurchasePrice('');
+            setPurchaseDate(new Date().toISOString().split('T')[0]);
         } else {
             // Reset form for new add
             setPlayer('');
@@ -66,7 +81,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             setPurchaseDate(new Date().toISOString().split('T')[0]);
             setNotes('');
         }
-    }, [editCard, isOpen]);
+    }, [editCard, initialData, isOpen]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

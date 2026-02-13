@@ -26,6 +26,7 @@ import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
 import { useFavorites } from '../lib/useFavorites.ts';
 import AddTargetModal from '../components/AddTargetModal.tsx';
 import AddAssetModal from '../components/AddAssetModal.tsx';
+import OCRIngestionModal from '../components/OCRIngestionModal.tsx';
 import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
 import Sparkline from '../components/Sparkline.tsx';
 import { getSparklineData, getPriceTrend } from '../lib/priceHistory.ts';
@@ -64,6 +65,8 @@ const Collection: React.FC = () => {
   const [initialTargetData, setInitialTargetData] = useState<Partial<TargetWatchlist> | null>(null);
   const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<CardInventory | null>(null);
+  const [initialAssetData, setInitialAssetData] = useState<Partial<CardInventory> | null>(null);
+  const [isOCRModalOpen, setIsOCRModalOpen] = useState(false);
 
   // Ensure full inventory is loaded on mount
   useEffect(() => {
@@ -89,6 +92,14 @@ const Collection: React.FC = () => {
 
   const handleAddCard = (card: CardInventory) => {
     addCard(card);
+    setInitialAssetData(null); // Clear after adding
+  };
+
+  const handleVisionSuccess = (cardData: Partial<CardInventory>) => {
+    setInitialAssetData(cardData);
+    setEditingAsset(null);
+    setIsAssetModalOpen(true);
+    setIsOCRModalOpen(false);
   };
 
 
@@ -182,7 +193,14 @@ const Collection: React.FC = () => {
         </div>
         <div className="flex items-center gap-4">
           <button
-            onClick={() => { setEditingAsset(null); setIsAssetModalOpen(true); }}
+            onClick={() => setIsOCRModalOpen(true)}
+            className="flex items-center gap-3 px-6 py-4 bg-brand-charcoal border border-brand-lime/30 text-brand-lime font-black rounded-2xl transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[10px] group"
+          >
+            <Sparkles size={16} className="group-hover:animate-pulse" />
+            AI Alpha Scan
+          </button>
+          <button
+            onClick={() => { setEditingAsset(null); setInitialAssetData(null); setIsAssetModalOpen(true); }}
             className="flex items-center gap-3 px-10 py-4 bg-brand-lime hover:bg-white text-brand-charcoal font-black rounded-2xl transition-all shadow-xl shadow-brand-lime/20 active:scale-95 uppercase tracking-widest text-xs"
           >
             <Plus size={18} strokeWidth={4} />
@@ -623,10 +641,17 @@ const Collection: React.FC = () => {
         {/* Add/Edit Asset Modal */}
         <AddAssetModal
           isOpen={isAssetModalOpen}
-          onClose={() => { setIsAssetModalOpen(false); setEditingAsset(null); }}
+          onClose={() => { setIsAssetModalOpen(false); setEditingAsset(null); setInitialAssetData(null); }}
           onAdd={handleAddCard}
           editCard={editingAsset}
+          initialData={initialAssetData}
           onUpdate={updateCard}
+        />
+
+        <OCRIngestionModal
+          isOpen={isOCRModalOpen}
+          onClose={() => setIsOCRModalOpen(false)}
+          onSuccess={handleVisionSuccess}
         />
       </div>
     </div>
