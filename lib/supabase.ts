@@ -19,6 +19,9 @@ const createMockClient = (): SupabaseClient => {
         signUp: () => Promise.resolve({ data: { user: null, session: null }, error: { message: 'Demo mode - use Enter Demo Mode button' } }),
         signInWithOAuth: () => Promise.resolve({ data: { url: null, provider: 'google' }, error: { message: 'Demo mode - OAuth not available' } }),
         signOut: () => Promise.resolve({ error: null }),
+        resetPasswordForEmail: () => Promise.resolve({ data: {}, error: null }),
+        updateUser: () => Promise.resolve({ data: { user: null }, error: null }),
+        refreshSession: () => Promise.resolve({ data: { session: null, user: null }, error: null }),
     };
     return { auth: mockAuth } as unknown as SupabaseClient;
 };

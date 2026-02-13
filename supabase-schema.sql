@@ -55,14 +55,26 @@ CREATE TABLE IF NOT EXISTS targets (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Price history snapshots (per-card valuation over time)
+CREATE TABLE IF NOT EXISTS price_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users NOT NULL,
+  card_id TEXT NOT NULL,
+  value NUMERIC NOT NULL,
+  recorded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS cards_user_id_idx ON cards(user_id);
 CREATE INDEX IF NOT EXISTS targets_user_id_idx ON targets(user_id);
+CREATE INDEX IF NOT EXISTS price_history_user_card_idx ON price_history(user_id, card_id);
+CREATE INDEX IF NOT EXISTS price_history_recorded_at_idx ON price_history(recorded_at DESC);
 
 -- Enable Row Level Security
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE targets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE price_history ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for profiles
 CREATE POLICY "Users can view their own profile" ON profiles
@@ -80,6 +92,10 @@ CREATE POLICY "Users can CRUD their own cards" ON cards
 
 -- RLS Policies for targets
 CREATE POLICY "Users can CRUD their own targets" ON targets
+  FOR ALL USING (auth.uid() = user_id);
+
+-- RLS Policies for price_history
+CREATE POLICY "Users can CRUD their own price_history" ON price_history
   FOR ALL USING (auth.uid() = user_id);
 
 -- Auto-create profile on signup

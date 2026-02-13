@@ -1,5 +1,6 @@
 import { supabase, isDemoMode } from './supabase';
 import { CardInventory, TargetWatchlist } from '../types';
+import type { PriceSnapshot } from './priceHistory';
 
 // Transform database row to CardInventory type
 function dbToCard(row: any): CardInventory {
@@ -222,4 +223,128 @@ export async function deleteTarget(targetId: string): Promise<boolean> {
         return false;
     }
     return true;
+}
+
+// === PRICE HISTORY OPERATIONS ===
+
+/**
+ * Fetch all price history for a user, grouped by card_id.
+ * Returns a map of card_id -> PriceSnapshot[] (newest first).
+ */
+export async function fetchAllPriceHistory(userId: string): Promise<Record<string, PriceSnapshot[]>> {
+    if (isDemoMode) return {};
+
+    const { data, error } = await supabase
+        .from('price_history')
+        .select('card_id, value, recorded_at')
+        .eq('user_id', userId)
+        .order('recorded_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching price history:', error);
+        return {};
+    }
+
+    // Group by card_id
+    const grouped: Record<string, PriceSnapshot[]> = {};
+    for (const row of data || []) {
+        const cardId = row.card_id;
+        if (!grouped[cardId]) grouped[cardId] = [];
+        grouped[cardId].push({
+            timestamp: row.recorded_at,
+            value: Number(row.value),
+        });
+    }
+
+    return grouped;
+}
+
+/**
+ * Insert a single price snapshot.
+ */
+export async function insertPriceSnapshot(
+    userId: string,
+    cardId: string,
+    value: number,
+    timestamp: string
+): Promise<boolean> {
+    if (isDemoMode) return true;
+
+    const { error } = await supabase
+        .from('price_history')
+        .insert({
+            user_id: userId,
+            card_id: cardId,
+            value,
+            recorded_at: timestamp,
+        });
+
+    if (error) {
+        console.error('Error inserting price snapshot:', error);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Insert multiple price snapshots in a single batch.
+ */
+export async function insertBatchPriceSnapshots(
+    userId: string,
+    snapshots: { cardId: string; value: number; timestamp: string }[]
+): Promise<boolean> {
+    if (isDemoMode) return true;
+    if (snapshots.length === 0) return true;
+
+    const rows = snapshots.map(s => ({
+        user_id: userId,
+        card_id: s.cardId,
+        value: s.value,
+        recorded_at: s.timestamp,
+    }));
+
+    const { error } = await supabase
+        .from('price_history')
+        .insert(rows);
+
+    if (error) {
+        console.error('Error batch inserting price snapshots:', error);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Prune old price history, keeping only the most recent N snapshots per card.
+ * This prevents unbounded growth in the database.
+ */
+export async function prunePriceHistory(userId: string, keepPerCard: number = 30): Promise<void> {
+    if (isDemoMode) return;
+
+    // Fetch all snapshots ordered newest-first, then delete extras
+    const { data, error } = await supabase
+        .from('price_history')
+        .select('id, card_id, recorded_at')
+        .eq('user_id', userId)
+        .order('recorded_at', { ascending: false });
+
+    if (error || !data) return;
+
+    // Group and find IDs to delete
+    const counts: Record<string, number> = {};
+    const idsToDelete: string[] = [];
+
+    for (const row of data) {
+        counts[row.card_id] = (counts[row.card_id] || 0) + 1;
+        if (counts[row.card_id] > keepPerCard) {
+            idsToDelete.push(row.id);
+        }
+    }
+
+    if (idsToDelete.length > 0) {
+        await supabase
+            .from('price_history')
+            .delete()
+            .in('id', idsToDelete);
+    }
 }
