@@ -6,11 +6,18 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:desktop": "playwright test --project=chromium",
+    "test:e2e:mobile": "playwright test --project=Mobile Chrome"
   },
   "dependencies": {
     "@google/genai": "^1.37.0",
     "@supabase/supabase-js": "^2.94.0",
+    "@tanstack/react-virtual": "^3.13.18",
     "jspdf": "^4.1.0",
     "lucide-react": "0.474.0",
     "react": "19.0.0",
@@ -19,10 +26,18 @@
     "recharts": "2.15.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "@vitest/ui": "^4.0.18",
+    "jsdom": "^28.0.0",
+    "playwright": "^1.58.2",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
+    "vitest": "^4.0.18",
     "xlsx": "^0.18.5"
   }
 }

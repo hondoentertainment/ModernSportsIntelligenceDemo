@@ -3,9 +3,11 @@ import React, { useState, useCallback } from 'react';
 import { Search, Sparkles, Target, Zap, ArrowRight, ShieldCheck, Info, Loader2 } from 'lucide-react';
 import { findSimilarCards } from '../lib/gemini.ts';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
+import { useToast } from '../contexts/ToastContext.tsx';
 
 const DeepSearch: React.FC = () => {
     const { inventory } = useSupabaseInventory();
+    const { addToast } = useToast();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState(false);
@@ -18,12 +20,16 @@ const DeepSearch: React.FC = () => {
         try {
             const searchResults = await findSimilarCards(query, inventory);
             setResults(searchResults);
+            if (searchResults.length === 0) {
+                addToast('info', 'No similar cards found. Try a different query.');
+            }
         } catch (error) {
             console.error('Deep search failed:', error);
+            addToast('error', 'Deep search failed. Check your connection.', { dedupeKey: 'deepsearch_page' });
         } finally {
             setIsSearching(false);
         }
-    }, [query, inventory]);
+    }, [query, inventory, addToast]);
 
     const suggestions = [
         "The next Victor Wembanyama",

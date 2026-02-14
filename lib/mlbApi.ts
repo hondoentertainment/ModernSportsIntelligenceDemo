@@ -1,4 +1,6 @@
 
+import { showToast } from './toast.ts';
+
 const BASE_URL = 'https://statsapi.mlb.com/api/v1';
 
 export async function getLiveGames() {
@@ -126,12 +128,14 @@ export async function getPressBoxPlayerMetrics(playerId: number): Promise<any> {
 
     if (!response.ok) {
       console.error('PressBox API error:', response.status, response.statusText);
+      showToast('warning', 'PressBox player metrics unavailable.', { dedupeKey: 'pressbox_metrics' });
       return null;
     }
 
     return await response.json();
   } catch (error) {
     console.error('Failed to fetch PressBox player metrics:', error);
+    showToast('warning', 'PressBox player metrics unavailable.', { dedupeKey: 'pressbox_metrics' });
     return null;
   }
 }
@@ -155,6 +159,7 @@ export async function getPressBoxProspectRankings(league: 'MLB' | 'MiLB' = 'MiLB
 
     if (!response.ok) {
       console.error('PressBox API error:', response.status, response.statusText);
+      showToast('warning', 'PressBox prospect rankings unavailable.', { dedupeKey: 'pressbox_rankings' });
       return [];
     }
 
@@ -162,6 +167,7 @@ export async function getPressBoxProspectRankings(league: 'MLB' | 'MiLB' = 'MiLB
     return data.rankings || [];
   } catch (error) {
     console.error('Failed to fetch PressBox prospect rankings:', error);
+    showToast('warning', 'PressBox prospect rankings unavailable.', { dedupeKey: 'pressbox_rankings' });
     return [];
   }
 }

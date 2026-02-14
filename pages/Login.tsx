@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { getFriendlyAuthMessage } from '../lib/authErrors';
 import { Eye, EyeOff, Loader2, TrendingUp, Zap, Shield } from 'lucide-react';
 
 const Login: React.FC = () => {
@@ -21,7 +22,7 @@ const Login: React.FC = () => {
         const { error } = await signIn(email, password);
 
         if (error) {
-            setError(error.message);
+            setError(getFriendlyAuthMessage(error));
             setLoading(false);
         } else {
             navigate('/');
@@ -32,7 +33,7 @@ const Login: React.FC = () => {
         setError('');
         const { error } = await signInWithGoogle();
         if (error) {
-            setError(error.message);
+            setError(getFriendlyAuthMessage(error));
         }
     };
 

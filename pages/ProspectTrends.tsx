@@ -139,6 +139,12 @@ const ProspectTrends: React.FC = () => {
                   <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Velocity</p>
                   <span className="text-3xl font-bebas text-brand-green">+{topProspect.change24h}%</span>
                 </div>
+                {(topProspect as any).stats && (
+                  <div className="pl-6 border-l border-slate-800">
+                    <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">{(topProspect as any).stats.label}</p>
+                    <span className="text-3xl font-bebas text-white">{(topProspect as any).stats.primary}</span>
+                  </div>
+                )}
               </div>
             </div>
             <div className="h-64 bg-slate-900/50 rounded-3xl border border-slate-800 p-6">
@@ -227,6 +233,19 @@ const ProspectTrends: React.FC = () => {
                 </div>
               </div>
 
+              {(p as any).stats && (
+                <div className="flex items-center justify-between p-4 mb-6 bg-brand-lime/5 border border-brand-lime/10 rounded-2xl">
+                  <div className="flex items-center gap-2">
+                    <Activity size={14} className="text-brand-lime" />
+                    <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">{(p as any).stats.label} Engine</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-lg font-bebas text-white">{(p as any).stats.primary}</span>
+                    <span className="text-[10px] font-bold text-brand-muted ml-2">{(p as any).stats.secondary}</span>
+                  </div>
+                </div>
+              )}
+
               <div className="flex-1 space-y-6">
                 <div className="bg-slate-900/40 p-5 rounded-2xl border border-slate-800/30">
                   <p className="text-[10px] font-black text-brand-lime mb-2 uppercase tracking-widest flex items-center gap-2">
@@ -260,6 +279,11 @@ const ProspectTrends: React.FC = () => {
                   <BarChart3 size={12} className="text-brand-lime" />
                   <span className="text-[10px] font-black text-white">{p.breakoutScore}% <span className="text-brand-muted">Breakout</span></span>
                 </div>
+                {p.trendScore < 85 && p.breakoutScore > 90 && (
+                  <div className="absolute top-4 right-4 animate-bounce">
+                    <div className="px-2 py-1 bg-brand-red text-white text-[8px] font-black uppercase tracking-tighter rounded shadow-lg">Lagging Alpha</div>
+                  </div>
+                )}
               </div>
             </div>
           ))}

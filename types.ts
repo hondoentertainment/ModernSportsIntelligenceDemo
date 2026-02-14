@@ -28,6 +28,13 @@ export interface CardInventory {
   taxBasis?: number;
   gradingFees?: number;
   shippingFees?: number;
+  status?: 'active' | 'sold';
+  salePrice?: number;
+  saleDate?: string;
+  // Scarcity Data
+  popCount?: number;
+  popHigher?: number;
+  scarcityIndex?: number; // 0-100
 }
 
 export interface TargetWatchlist {
@@ -101,3 +108,25 @@ export interface Alert {
   metadata?: Record<string, any>;
 }
 
+
+export interface UserProfile {
+  id: string;
+  username: string;
+  displayName?: string;
+  bio?: string;
+  avatarUrl?: string;
+  isPublic: boolean;
+  twitterHandle?: string;
+  instagramHandle?: string;
+  joinedAt: string;
+  alphaScore: number;
+  portfolioValue: number;
+  roi: number;
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  user: UserProfile;
+  alphaScore: number;
+  change24h: number;
+}

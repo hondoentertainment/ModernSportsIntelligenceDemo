@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { getFriendlyAuthMessage } from '../lib/authErrors';
 import { Mail, ArrowLeft, Loader2, Check, TrendingUp } from 'lucide-react';
 
 const ForgotPassword: React.FC = () => {
@@ -19,7 +20,7 @@ const ForgotPassword: React.FC = () => {
         const { error } = await resetPassword(email);
 
         if (error) {
-            setError(error.message);
+            setError(getFriendlyAuthMessage(error));
         } else {
             setSuccess(true);
         }

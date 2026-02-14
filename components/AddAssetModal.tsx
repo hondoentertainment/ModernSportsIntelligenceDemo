@@ -32,6 +32,9 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
     const [isAutographed, setIsAutographed] = useState(false);
     const [purchasePrice, setPurchasePrice] = useState('');
     const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
+    const [status, setStatus] = useState<'active' | 'sold'>('active');
+    const [salePrice, setSalePrice] = useState('');
+    const [saleDate, setSaleDate] = useState(new Date().toISOString().split('T')[0]);
     const [notes, setNotes] = useState('');
 
     // Load edit data or initial data when modal opens
@@ -50,6 +53,10 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             setIsAutographed(editCard.isAutographed);
             setPurchasePrice(editCard.purchasePrice.toString());
             setPurchaseDate(editCard.purchaseDate || new Date().toISOString().split('T')[0]);
+            setStatus(editCard.status || 'active');
+            setSalePrice(editCard.salePrice?.toString() || '');
+            setSaleDate(editCard.saleDate || new Date().toISOString().split('T')[0]);
+            setNotes(editCard.notes || '');
         } else if (initialData) {
             setPlayer(initialData.player || '');
             setYear(initialData.year?.toString() || new Date().getFullYear().toString());
@@ -64,6 +71,10 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             setIsAutographed(initialData.isAutographed || false);
             setPurchasePrice('');
             setPurchaseDate(new Date().toISOString().split('T')[0]);
+            setStatus(initialData.status || 'active');
+            setSalePrice(initialData.salePrice?.toString() || '');
+            setSaleDate(initialData.saleDate || new Date().toISOString().split('T')[0]);
+            setNotes(initialData.notes || '');
         } else {
             // Reset form for new add
             setPlayer('');
@@ -79,6 +90,9 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             setIsAutographed(false);
             setPurchasePrice('');
             setPurchaseDate(new Date().toISOString().split('T')[0]);
+            setStatus('active');
+            setSalePrice('');
+            setSaleDate(new Date().toISOString().split('T')[0]);
             setNotes('');
         }
     }, [editCard, initialData, isOpen]);
@@ -104,6 +118,10 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             isAutographed,
             purchasePrice: parseFloat(purchasePrice) || 0,
             purchaseDate,
+            status,
+            salePrice: status === 'sold' ? parseFloat(salePrice) || 0 : undefined,
+            saleDate: status === 'sold' ? saleDate : undefined,
+            notes: notes.trim(),
             image: editCard?.image || 'https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600'
         };
 
@@ -298,6 +316,81 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                             <Star size={16} className={isAutographed ? 'text-amber-400' : 'text-slate-600'} />
                             <span className={`text-sm font-bold ${isAutographed ? 'text-white' : 'text-slate-400'}`}>Autographed / Signed</span>
                         </div>
+                    </div>
+
+                    {/* Status Toggle */}
+                    <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl space-y-6">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <Tag size={18} className={status === 'sold' ? 'text-brand-lime' : 'text-slate-600'} />
+                                <span className={`font-bold ${status === 'sold' ? 'text-white' : 'text-slate-500'}`}>Asset Status</span>
+                            </div>
+                            <div className="flex p-1 bg-brand-charcoal rounded-xl border border-slate-800">
+                                <button
+                                    type="button"
+                                    onClick={() => setStatus('active')}
+                                    className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${status === 'active' ? 'bg-brand-lime text-brand-charcoal' : 'text-brand-muted hover:text-white'}`}
+                                >
+                                    Active
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setStatus('sold')}
+                                    className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${status === 'sold' ? 'bg-brand-red text-white' : 'text-brand-muted hover:text-white'}`}
+                                >
+                                    Sold
+                                </button>
+                            </div>
+                        </div>
+
+                        {status === 'sold' && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest flex items-center gap-2">
+                                        <DollarSign size={12} /> Sale Price
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-5 top-1/2 -translate-y-1/2 text-brand-red font-bold">$</span>
+                                        <input
+                                            type="number"
+                                            value={salePrice}
+                                            onChange={(e) => setSalePrice(e.target.value)}
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 pl-10 pr-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red/30 transition-all font-mono font-bold text-white placeholder:text-slate-600"
+                                            required={status === 'sold'}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest flex items-center gap-2">
+                                        <Calendar size={12} /> Sale Date
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={saleDate}
+                                        onChange={(e) => setSaleDate(e.target.value)}
+                                        className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red/30 transition-all font-mono font-medium text-white appearance-none"
+                                        required={status === 'sold'}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Notes */}
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest flex items-center gap-2">
+                            <FileText size={12} /> Notes & Intelligence
+                        </label>
+                        <textarea
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder="Add strategic context, provenance, or liquidity notes..."
+                            rows={3}
+                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600 resize-none"
+                        />
                     </div>
 
                     {/* Financials */}

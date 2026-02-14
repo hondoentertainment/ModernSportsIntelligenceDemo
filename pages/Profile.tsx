@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Settings, Heart, History, Shield, LogOut, Save, Bell, Eye, Palette, Check, Zap } from 'lucide-react';
+import { User, Settings, Heart, History, Shield, LogOut, Save, Bell, Eye, Palette, Check, Zap, Share2, Copy, Globe } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { MOCK_TEAMS, SPORTS } from '../constants';
 
 interface UserSettings {
   insightDepth: 'context' | 'balanced' | 'data';
@@ -14,6 +15,8 @@ interface UserSettings {
     weeklyDigest: boolean;
   };
   theme: 'dark' | 'auto';
+  favoriteTeam: string;
+  primarySport: string;
 }
 
 const defaultSettings: UserSettings = {
@@ -26,6 +29,8 @@ const defaultSettings: UserSettings = {
     weeklyDigest: false,
   },
   theme: 'dark',
+  favoriteTeam: 'Baltimore Orioles',
+  primarySport: 'Baseball',
 };
 
 const Profile: React.FC = () => {
@@ -105,6 +110,46 @@ const Profile: React.FC = () => {
         </button>
       </section>
 
+      {/* Public Profile & Sharing */}
+      <section className="bg-slate-950 border border-slate-800 rounded-3xl p-8 space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold flex items-center gap-3">
+            <Globe className="text-brand-teal" size={20} />
+            Public Profile
+          </h2>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-slate-400">Public Visibility</span>
+            <button className="w-12 h-7 bg-brand-lime rounded-full relative">
+              <div className="absolute top-1 right-1 w-5 h-5 bg-white rounded-full"></div>
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 flex flex-col md:flex-row items-center gap-6">
+          <div className="p-4 bg-brand-charcoal rounded-full border border-slate-800">
+            <Share2 size={32} className="text-brand-lime" />
+          </div>
+          <div className="flex-1 text-center md:text-left">
+            <h3 className="text-lg font-bold text-white mb-1">Share your Collection</h3>
+            <p className="text-slate-400 text-sm">Allow others to view your portfolio and track your Alpha Score.</p>
+          </div>
+          <div className="flex gap-2 w-full md:w-auto">
+            <button onClick={() => {
+              window.navigator.clipboard.writeText(`${window.location.origin}/#/p/${user?.user_metadata?.username || 'demo_user'}`);
+              setSaved(true);
+              setTimeout(() => setSaved(false), 2000);
+            }} className="flex-1 md:flex-none px-6 py-3 bg-brand-charcoal hover:bg-slate-800 border border-slate-700 rounded-xl text-white font-bold flex items-center justify-center gap-2 transition-all">
+              {saved ? <Check size={18} /> : <Copy size={18} />}
+              {saved ? 'Copied' : 'Copy Link'}
+            </button>
+            <a href={`/#/p/${user?.user_metadata?.username || 'demo_user'}`} target="_blank" rel="noopener noreferrer" className="flex-1 md:flex-none px-6 py-3 bg-brand-lime text-brand-charcoal rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-brand-green transition-all">
+              <Eye size={18} />
+              View
+            </a>
+          </div>
+        </div>
+      </section>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Favorite Leagues */}
         <section className="bg-slate-950 border border-slate-800 rounded-3xl p-8 space-y-6">
@@ -135,12 +180,40 @@ const Profile: React.FC = () => {
         <section className="bg-slate-950 border border-slate-800 rounded-3xl p-8 space-y-6">
           <h2 className="text-xl font-bold flex items-center gap-3">
             <Settings className="text-brand-teal" size={20} />
-            Intelligence Preferences
+            Collector Identity
           </h2>
           <div className="space-y-6">
             <div>
+              <p className="font-bold text-sm mb-2">Primary Sport</p>
+              <div className="flex flex-wrap gap-2">
+                {SPORTS.map(sport => (
+                  <button
+                    key={sport}
+                    onClick={() => setSettings(s => ({ ...s, primarySport: sport }))}
+                    className={`px-3 py-2 rounded-xl text-xs font-bold uppercase transition-all ${settings.primarySport === sport
+                      ? 'bg-brand-teal text-white'
+                      : 'bg-slate-900 border border-slate-800 text-slate-500 hover:text-white'
+                      }`}
+                  >
+                    {sport}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="font-bold text-sm mb-2">Favorite Team</p>
+              <select
+                value={settings.favoriteTeam}
+                onChange={(e) => setSettings(s => ({ ...s, favoriteTeam: e.target.value }))}
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-brand-teal transition-all"
+              >
+                {MOCK_TEAMS.map(team => (
+                  <option key={team.id} value={team.name}>{team.name} ({team.league})</option>
+                ))}
+              </select>
+            </div>
+            <div>
               <p className="font-bold text-sm mb-2">Insight Depth</p>
-              <p className="text-xs text-brand-muted mb-3">Balance between raw data and narrative.</p>
               <div className="flex gap-2">
                 {(['context', 'balanced', 'data'] as const).map(opt => (
                   <button
@@ -151,25 +224,7 @@ const Profile: React.FC = () => {
                       : 'bg-slate-900 border border-slate-800 text-slate-500 hover:text-white'
                       }`}
                   >
-                    {opt === 'context' ? 'Context Heavy' : opt === 'balanced' ? 'Balanced' : 'Data Only'}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="font-bold text-sm mb-2">Alert Sensitivity</p>
-              <p className="text-xs text-brand-muted mb-3">Threshold for push notifications.</p>
-              <div className="flex gap-2">
-                {(['low', 'med', 'high'] as const).map(lv => (
-                  <button
-                    key={lv}
-                    onClick={() => setSettings(s => ({ ...s, alertSensitivity: lv }))}
-                    className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold uppercase transition-all ${settings.alertSensitivity === lv
-                      ? 'bg-brand-teal text-white'
-                      : 'bg-slate-900 border border-slate-800 text-slate-500 hover:text-white'
-                      }`}
-                  >
-                    {lv}
+                    {opt === 'context' ? 'Context' : opt === 'balanced' ? 'Balanced' : 'Data'}
                   </button>
                 ))}
               </div>

@@ -2,6 +2,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { CardInventory, PricingAnalysis, TargetWatchlist } from "../types.ts";
 import { getEbayCardPricing as getEbayApiPricing, getEbayWatchlistPricing, isEbayConfigured } from "./ebayApi.ts";
+import { showToast } from "./toast.ts";
 
 const apiKey = (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) ? process.env.VITE_GEMINI_API_KEY : "";
 const ai = new GoogleGenAI({ apiKey });
@@ -75,6 +76,7 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
       }
     } catch (error) {
       console.warn('eBay API pricing failed, falling back to AI:', error);
+      showToast('warning', `eBay unavailable for ${card.player} — using AI estimate.`, { dedupeKey: 'ebay_fallback' });
     }
   }
 
@@ -125,6 +127,7 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
     };
   } catch (error) {
     console.error("Gemini Pricing Error:", error);
+    showToast('error', `AI valuation failed for ${card.player}. Try again later.`, { dedupeKey: `gemini_price_${card.id}` });
     return null;
   }
 }
@@ -149,6 +152,7 @@ export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<Pr
       }
     } catch (error) {
       console.warn('eBay API pricing failed for watchlist, falling back to AI:', error);
+      showToast('warning', `eBay unavailable for ${target.player} — using AI estimate.`, { dedupeKey: 'ebay_fallback' });
     }
   }
 
@@ -194,6 +198,7 @@ export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<Pr
     };
   } catch (error) {
     console.error("Gemini Watchlist Pricing Error:", error);
+    showToast('error', `AI valuation failed for watchlist item "${target.player}".`, { dedupeKey: `gemini_wl_${target.id}` });
     return null;
   }
 }
@@ -211,6 +216,7 @@ export async function simulateLeagueTrends(league: string): Promise<any[]> {
   - 7-day historical trend data (array of 7 numbers)
   - Breakout Score (0-100 indicating likelihood of a mass-market breakout or promotion)
   - Summary (1-sentence intelligence summary)
+  - Stats (Object with 'primary', 'secondary', and 'label' e.g. {primary: '0.980 OPS', secondary: '.290 AVG', label: 'Hitting'})
   - Image (A high-quality Unsplash URL related to ${league} or sports)
 
   Make the data diverse and realistic based on current (simulated)hype levels.`;
@@ -237,6 +243,15 @@ export async function simulateLeagueTrends(league: string): Promise<any[]> {
               history7d: { type: Type.ARRAY, items: { type: Type.NUMBER } },
               breakoutScore: { type: Type.NUMBER },
               summary: { type: Type.STRING },
+              stats: {
+                type: Type.OBJECT,
+                properties: {
+                  primary: { type: Type.STRING },
+                  secondary: { type: Type.STRING },
+                  label: { type: Type.STRING },
+                },
+                required: ["primary", "secondary", "label"]
+              },
               image: { type: Type.STRING },
             },
             required: ["name", "team", "position", "league", "trendScore", "change24h", "trendDirection", "history7d", "breakoutScore", "summary", "image"]
@@ -249,6 +264,7 @@ export async function simulateLeagueTrends(league: string): Promise<any[]> {
     return data.length > 0 ? data : (MOCK_PROSPECTS[league] || MOCK_PROSPECTS.MiLB);
   } catch (error) {
     console.error("Gemini Trend Error:", error);
+    showToast('warning', `Live ${league} trends unavailable — showing cached data.`, { dedupeKey: `trend_${league}` });
     return MOCK_PROSPECTS[league] || MOCK_PROSPECTS.MiLB;
   }
 }
@@ -274,6 +290,7 @@ export async function generatePortfolioSentiment(inventory: CardInventory[]): Pr
     return response.text || "Stable market conditions observed across all sectors.";
   } catch (error) {
     console.error("Gemini Sentiment Error:", error);
+    showToast('warning', 'AI sentiment analysis unavailable.', { dedupeKey: 'sentiment' });
     return "Market volatility detected. Institutional hold signals recommended.";
   }
 }
@@ -284,18 +301,25 @@ export async function generatePortfolioSentiment(inventory: CardInventory[]): Pr
  * mimeType: e.g. "image/jpeg"
  */
 export async function parseCardImage(imageBase64: string, mimeType: string = "image/jpeg"): Promise<Partial<CardInventory> | null> {
-  const prompt = `Act as a professional card grader and cataloger. Analyze this image of a sports card and extract the following details in JSON format:
+  const prompt = `Act as a professional card grader and cataloger. Analyze this image of a sports card and extract the following details in JSON format. 
+  
+  SPECIAL FOCUS: If this is a baseball card, look for Minor League (MiLB) indicators such as "1st Bowman", "Pro Debut", "Heritage Minor League", or "Draft".
+  
+  Fields to extract:
   - player (Full name)
   - year (YYYY)
   - manufacturer (e.g. Topps, Panini, Upper Deck)
   - set (e.g. Chrome, Prizm, Series 1)
   - cardNumber (e.g. #123)
   - sport (Baseline: Baseball, Basketball, Football, Hockey, Soccer)
-  - league (Baseline: MLB, MiLB, NBA, NFL, Other)
+  - league (Baseline: MLB, MiLB, NBA, NFL, Other. Strictly use MiLB if the card features a minor league team or Prospect logo)
+  - team (Current team shown on card)
+  - parentTeam (For MiLB players, the MLB affiliate if identifiable)
   - isGraded (Boolean)
   - gradingCompany (if graded: PSA, BGS, SGC, etc.)
   - grade (if graded: e.g. 10, 9.5)
   - isAutographed (Boolean)
+  - isProspectCard (Boolean - True if it's a 1st Bowman, Pro Debut, or clearly a prospect-focused card)
   
   Only return valid JSON. If you are unsure, provide your best estimate based on the visual evidence.`;
 
@@ -317,6 +341,7 @@ export async function parseCardImage(imageBase64: string, mimeType: string = "im
     return JSON.parse(cleanJson);
   } catch (error) {
     console.error("Gemini Vision Error:", error);
+    showToast('error', 'Card scan failed. Check your connection and try again.', { dedupeKey: 'vision' });
     return null;
   }
 }
@@ -374,6 +399,7 @@ export async function findSimilarCards(query: string, inventory: CardInventory[]
     return JSON.parse(text);
   } catch (error) {
     console.error("Gemini Deep Search Error:", error);
+    showToast('error', 'Deep search failed. Check your connection.', { dedupeKey: 'deepsearch' });
     return [];
   }
 }

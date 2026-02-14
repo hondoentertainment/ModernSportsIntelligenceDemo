@@ -3,6 +3,8 @@
  * Integrates with eBay Browse API for real-time sold listings data
  */
 
+import { showToast } from './toast.ts';
+
 export interface EbaySoldListing {
     itemId: string;
     title: string;
@@ -77,6 +79,7 @@ async function getAccessToken(): Promise<string | null> {
         return data.access_token || null;
     } catch (error) {
         console.error('Failed to get eBay access token:', error);
+        showToast('error', 'eBay authentication failed. Using AI pricing.', { dedupeKey: 'ebay_auth' });
         return null;
     }
 }
@@ -118,12 +121,14 @@ async function searchSoldListings(
 
         if (!response.ok) {
             console.error('eBay API error:', response.status, response.statusText);
+            showToast('warning', `eBay search returned ${response.status}. Falling back to AI.`, { dedupeKey: 'ebay_search_err' });
             return null;
         }
 
         return await response.json();
     } catch (error) {
         console.error('Failed to search eBay listings:', error);
+        showToast('warning', 'eBay search failed. Using AI pricing.', { dedupeKey: 'ebay_search_err' });
         return null;
     }
 }

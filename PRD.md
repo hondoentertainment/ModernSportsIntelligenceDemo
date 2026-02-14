@@ -1,15 +1,15 @@
 # Product Requirements Document (PRD): Modern Sports Intelligence
 
 ## 1. Executive Summary
-**Modern Sports Intelligence** is a premium analytics platform designed for sports card collectors, analysts, and fans. It combines real-time sports data with advanced financial tracking and AI-powered market insights to provide a comprehensive view of "sports as an asset class."
+**Modern Sports Intelligence** is a premium analytics platform designed for sports card collectors, analysts, and fans. It combines real-time sports data with advanced financial tracking and AI-powered market insights to provide a comprehensive view of "sports as an asset class." The platform now features a professional-grade Investment Tracking engine with realized P/L analysis and an "Alpha Correlation" discovery system.
 
 ## 2. Project Vision & Objectives
 ### 2.1 Vision
 To become the definitive source of truth for sports asset valuation, bridging the gap between on-field performance metrics and off-field market liquidity across all major professional ecosystems.
 
 ### 2.2 Strategic Objectives
-- Provide real-time transparency into multi-league portfolio value.
-- leverage Generative AI to automate cross-league market research.
+- Provide real-time transparency into multi-league portfolio value (Realized + Unrealized).
+- Leverage Generative AI to automate cross-league market research and identify "Alpha Divergence."
 - Create a "Stock Market for Sports" experience through a unified, premium UI/UX.
 
 ## 3. Target Audience
@@ -20,59 +20,82 @@ To become the definitive source of truth for sports asset valuation, bridging th
 ## 4. Feature Specifications
 
 ### 4.1 League Intelligence Dashboard (NAV Central)
-- **Net Asset Value (NAV)**: Dynamic calculation of portfolio worth grouped by professional league (MLB, NBA, NFL, MiLB).
-- **League Intelligence HUD**: A specialized analytics interface for switching between major market hubs with league-specific ROI and sentiment tracking.
-- **Growth Metrics**: ROI tracking, realized vs. unrealized gains, and monthly valuation trends.
+- **Net Asset Value (NAV)**: Dynamic calculation of portfolio worth grouped by professional league.
+- **Financial Intelligence**: Realized P/L, Total Portfolio Gain, and ROI tracking for active and sold assets.
+- **League Intelligence HUD**: A specialized analytics interface for switching between major market hubs.
 
-### 4.2 Automated Ingestion & Categorization
-- **Intelligent Mapping**: Automated classification of assets into professional leagues based on set, manufacturer, and athlete metadata.
-- **Grading Support**: Integrated fields for PSA, BGS, SGC, etc., with automatic valuation adjustments based on grade.
-- **Mass Processing**: Support for high-density inventory lists (100+ assets) with instant league-based filtering.
+### 4.2 Automated Ingestion & Inventory Management
+- **Intelligent Mapping**: Automated classification of assets into professional leagues.
+- **Sold Vault**: Targeted view for tracking historical performance of exited positions.
+- **Grading Support**: Integrated fields for PSA, BGS, SGC, with automatic valuation adjustments.
 
 ### 4.3 Market Intelligence (Market Pulse)
 - **Sentiment Analysis**: Tracking "Hype" vs. "Utility" for top-tier cards.
-- **Liquidity Monitoring**: Real-time signals on off-season vs. in-season trading volumes.
-- **Scarcity Tracking**: PSA 10 population reports and historical supply trends.
+- **Alpha Correlation**: Overlaying on-field performance stats (OPS, ERA) with market price trends to identify undervalued assets.
+- **Lagging Alpha Alerts**: Automated signals when performance outpaces price action.
 
 ### 4.4 AI Discovery Engine (Gemini 1.5 Integration)
-- **Automated Valuation**: Analyzing eBay sold listings through natural language processing to determine "Fair Market Value."
-- **Live Market Sync**: A batch-processing engine that updates all portfolio assets with live AI-powered valuations on-demand.
-- **Prospect Discovery**: Simulating future trend scores for MiLB players using current performance data and search interest.
-- **Contextual Insights**: Generating human-readable summaries of player performance and market impact.
+- **Automated Valuation**: Analyzing eBay sold listings via NLP to determine "Fair Market Value."
+- **Live Market Sync**: Batch-processing engine for on-demand portfolio updates.
+- **Prospect Discovery**: Simulating trend scores for MiLB players using performance data.
 
 ### 4.5 Watchlist & Comparison
 - **Target Price Alerts**: Notifications when a watched asset reaches a buy/sell threshold.
-- **Comparative Analysis**: Side-by-side performance overlays for two or more players/assets.
+- **comparative Analysis**: Side-by-side performance overlays.
 
 ## 5. Technical Architecture
-
 ### 5.1 Technology Stack
 - **Frontend**: React 19, Vite, TypeScript.
-- **Styling**: Vanilla CSS with a custom design system (Brand Charcoal, Brand Lime).
+- **Styling**: Vanilla CSS with "Legacy of the Void" design system.
 - **Intelligence**: Google GenAI (Gemini 1.5 Flash).
 - **Data Visualization**: Recharts (Customized with brand gradients).
 - **Icons**: Lucide React.
-- **Routing**: React Router (HashRouter).
 
-### 5.2 Deployment & Infrastructure
+### 5.2 Deployment
 - **Hosting**: Vercel (Production environments).
-- **CI/CD**: Automatic deployments on git-push.
-- **Environment**: Secure `.env` management for API keys.
+- **Environment**: Secure `.env` management.
 
 ## 6. Design & UX Principles
-- **Terminal Aesthetic**: High-contrast, dark-mode design using `font-bebas` and a "Deep Slate" palette for a premium financial terminal feel.
-- **UI Component Standardization**: Unified button components, typography hierarchy, and entry animations across all 14 platform screens.
-- **Spatial HUD Stability**: Zero-overlap layout philosophy ensuring high-density financial data integrity on any viewport.
-- **Micro-Animations**: Subtle page transitions and hover-triggered radial glows to improve engagement.
+- **Terminal Aesthetic**: High-contrast, dark-mode design using `font-bebas` and a "Deep Slate" palette.
+- **UI Component Standardization**: Unified button components and typography.
+- **Spatial HUD Stability**: Zero-overlap layout philosophy.
 
 ## 7. User Stories
 - *As a fund manager*, I want to see my realized profit from card sales so I can report on annual performance.
-- *As a scout*, I want to see which AAA players are trending in search so I can identify potential call-ups.
+- *As a scout*, I want to see which AAA players have high performance stats but low market trend scores ("Lagging Alpha").
 - *As a user*, I want to compare a raw card vs. a PSA 10 counterpart to determine the "grading premium."
 
 ## 8. Roadmap & Future Scope
-- **Phase 1 (COMPLETE)**: Multi-League Support (NBA, NFL, MLB, MiLB) and Automated Categorization Engine.
-- **Phase 2**: Real-time integration with MLB PressBox and eBay APIs.
-- **Phase 3**: User Authentication and multi-tenant portfolio support.
-- **Phase 4**: OCR-based card recognition for instant cataloging.
-- **Phase 5**: Marketplace integration for direct buying/selling.
+
+### Completed Phases (1-12)
+- **Foundation**: Multi-League Support, Automated Classification.
+- **Core Features**: Auth System, Data Migration, Automated Sync Scheduler.
+- **Advanced Analytics**: Investment Tracking, Realized P/L, Sold Vault.
+- **Discovery**: Alpha Scanner (Vision), Alpha Correlation (Stats vs Price).
+
+### Phase 13: Scarcity Intelligence (Next Priority)
+- **Objective**: Integrate population reports to refine scarcity metrics.
+- **Key Features**:
+    - PSA/BGS Population Report integration (or simulated data).
+    - "Pop 1" and low-pop alerts.
+    - Scarcity-weighted Alpha Score adjustments.
+
+### Phase 14: Social & Community
+- **Objective**: Enable social sharing and competitive analytics.
+- **Key Features**:
+    - Public Portfolio Links (Read-only view).
+    - "Alpha Leaderboards" comparing user ROI.
+    - Community "Buy/Sell" voting on trending prospects.
+
+### Phase 15: Mobile Native Experience
+- **Objective**: Optimize for on-the-go scouting.
+- **Key Features**:
+    - PWA Manifest and Service Workers for offline access.
+    - Native Push Notifications for price alerts.
+    - Mobile-optimized camera flow for the Alpha Scanner.
+
+### Phase 16: Agentic Negotiation
+- **Objective**: AI agents that can negotiate deals on behalf of the user.
+- **Key Features**:
+    - "Buy It Now" automation (simulated).
+    - Trade proposal generation based on portfolio gaps.

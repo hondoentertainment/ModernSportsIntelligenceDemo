@@ -65,11 +65,12 @@ const Dashboard: React.FC = () => {
     inventory,
     targets,
     setInventory,
-    syncMeta,
     setSyncMeta,
+    syncMeta,
     initializeFullInventory,
     isCloudSynced,
-    loading
+    loading,
+    persistSyncToCloud
   } = useSupabaseInventory();
 
   const [realMlbStats, setRealMlbStats] = useState<any[]>([]);
@@ -100,6 +101,16 @@ const Dashboard: React.FC = () => {
   const dnaData = useMemo(() => getPortfolioDNA(inventory), [inventory]);
   const signals = useMemo(() => detectSignals(targets, inventory), [targets, inventory]);
   const [marketSentiment, setMarketSentiment] = useState('Analyzing portfolio alpha signals...');
+
+  // Personalization State
+  const [userSettings, setUserSettings] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem('msi_user_settings');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
 
   // Fetch Sentiment
   useEffect(() => {
@@ -135,6 +146,13 @@ const Dashboard: React.FC = () => {
       (progress) => setSyncProgress(progress)
     );
     setInventory(updatedInventory);
+    setSyncMeta({
+      lastSyncTime: new Date().toISOString(),
+      totalValue: result.totalValue,
+      assetCount: updatedInventory.length,
+    });
+
+    await persistSyncToCloud(updatedInventory);
 
     // Create alert for sync completion
     createSyncAlert(result.updatedCount, result.totalValue, result.duration);
@@ -147,7 +165,7 @@ const Dashboard: React.FC = () => {
 
     // Reset progress after a delay
     setTimeout(() => setSyncProgress(null), 3000);
-  }, [inventory, setInventory, createSyncAlert]);
+  }, [inventory, setInventory, setSyncMeta, persistSyncToCloud, createSyncAlert]);
 
   const isSyncing = syncProgress?.status === 'syncing';
   const syncComplete = syncProgress?.status === 'complete';
@@ -184,7 +202,12 @@ const Dashboard: React.FC = () => {
 
   const COLORS = ['#D9F99D', '#22C55E', '#10B981', '#059669', '#047857'];
 
-  const [activeLeague, setActiveLeague] = React.useState<string>('MLB');
+  const [activeLeague, setActiveLeague] = React.useState<string>(() => {
+    if (userSettings?.primarySport === 'Baseball') return 'MLB';
+    if (userSettings?.primarySport === 'Basketball') return 'NBA';
+    if (userSettings?.primarySport === 'Football') return 'NFL';
+    return 'MLB';
+  });
 
   const leagueData = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -305,7 +328,7 @@ const Dashboard: React.FC = () => {
 
                   <div>
                     <h1 className="text-4xl md:text-6xl font-bebas tracking-tight text-white leading-none mb-1">
-                      Net Asset <span className="text-brand-lime">Value</span>
+                      {userSettings?.favoriteTeam ? `${userSettings.favoriteTeam.split(' ').pop()} Hub` : 'Net Asset'} <span className="text-brand-lime">{userSettings?.favoriteTeam ? 'Intelligence' : 'Value'}</span>
                     </h1>
                     <span className="text-5xl md:text-7xl font-mono font-bold text-white tracking-tighter">
                       ${portfolioMetrics.totalValue.toLocaleString()}
@@ -376,14 +399,21 @@ const Dashboard: React.FC = () => {
                   <div className="p-3 bg-brand-charcoal rounded-xl border border-slate-800 text-brand-green">
                     <TrendingUp size={20} />
                   </div>
-                  <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Lifetime ROI</span>
+                  <div className="text-right">
+                    <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest block">Total Portfolio Gain</span>
+                    {portfolioMetrics.soldCount > 0 && (
+                      <span className="text-[8px] font-black text-brand-lime uppercase tracking-widest">{portfolioMetrics.soldCount} Assets Realized</span>
+                    )}
+                  </div>
                 </div>
                 <div>
-                  <p className={`text-3xl font-mono font-bold ${portfolioMetrics.totalROIPercent >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
-                    {portfolioMetrics.totalROIPercent >= 0 ? '+' : ''}{portfolioMetrics.totalROIPercent.toFixed(1)}%
+                  <p className={`text-3xl font-mono font-bold ${portfolioMetrics.totalGain >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
+                    ${portfolioMetrics.totalGain >= 0 ? '+' : ''}{portfolioMetrics.totalGain.toLocaleString()}
                   </p>
                   <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
-                    ${portfolioMetrics.totalROI >= 0 ? '+' : ''}{portfolioMetrics.totalROI.toLocaleString()} Net
+                    Realized P/L: <span className={portfolioMetrics.realizedProfit >= 0 ? 'text-brand-lime' : 'text-brand-red'}>
+                      ${portfolioMetrics.realizedProfit >= 0 ? '+' : ''}{portfolioMetrics.realizedProfit.toLocaleString()}
+                    </span>
                   </p>
                 </div>
               </div>

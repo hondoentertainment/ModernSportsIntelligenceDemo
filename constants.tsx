@@ -31,6 +31,7 @@ export const NAV_ITEMS = [
   { id: 'teams', label: 'Teams', icon: <Target size={20} />, path: '/teams' },
   { id: 'games', label: 'Games', icon: <Activity size={20} />, path: '/games' },
   { id: 'trends', label: 'Trends', icon: <TrendingUp size={20} />, path: '/trends' },
+  { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={20} />, path: '/leaderboard' },
   { id: 'compare', label: 'Compare', icon: <GitCompare size={20} />, path: '/compare' },
   { id: 'alerts', label: 'Alerts', icon: <Bell size={20} />, path: '/alerts' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },

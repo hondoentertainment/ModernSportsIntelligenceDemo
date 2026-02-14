@@ -3,13 +3,17 @@ import { CardInventory } from '../types';
 import { getCardHistory, PriceSnapshot } from './priceHistory';
 
 export interface PortfolioMetrics {
-    totalValue: number;
-    totalCostBasis: number;
-    totalROI: number;
-    totalROIPercent: number;
+    totalValue: number;         // Current market value of active assets
+    totalCostBasis: number;     // Cost of active assets
+    totalROI: number;           // Unrealized gain/loss
+    totalROIPercent: number;    // Unrealized %
+    realizedProfit: number;     // Profit from sold assets
+    realizedROI: number;        // Realized ROI %
+    totalGain: number;          // totalValue + realizedProfit - totalCostBasis
     trend7d: number;
     trend30d: number;
-    assetCount: number;
+    assetCount: number;         // Active assets
+    soldCount: number;          // Sold assets
     topPerformers: Array<{ player: string; roi: number; roiPercent: number }>;
     underPerformers: Array<{ player: string; roi: number; roiPercent: number }>;
 }
@@ -33,7 +37,10 @@ export const AggregationService = {
             };
         }
 
-        const metrics = inventory.reduce((acc, card) => {
+        const activeInventory = inventory.filter(c => c.status !== 'sold');
+        const soldInventory = inventory.filter(c => c.status === 'sold');
+
+        const activeMetrics = activeInventory.reduce((acc, card) => {
             const cost = card.purchasePrice + (card.gradingFees || 0) + (card.shippingFees || 0);
             const current = card.currentValue || 0;
 
@@ -44,10 +51,25 @@ export const AggregationService = {
             return acc;
         }, { totalValue: 0, totalCostBasis: 0, assetCount: 0 });
 
-        const totalROI = metrics.totalValue - metrics.totalCostBasis;
-        const totalROIPercent = metrics.totalCostBasis > 0
-            ? (totalROI / metrics.totalCostBasis) * 100
+        const realizedMetrics = soldInventory.reduce((acc, card) => {
+            const cost = card.purchasePrice + (card.gradingFees || 0) + (card.shippingFees || 0);
+            const sale = card.salePrice || 0;
+            acc.profit += (sale - cost);
+            acc.costBasis += cost;
+            acc.count += 1;
+            return acc;
+        }, { profit: 0, costBasis: 0, count: 0 });
+
+        const totalROI = activeMetrics.totalValue - activeMetrics.totalCostBasis;
+        const totalROIPercent = activeMetrics.totalCostBasis > 0
+            ? (totalROI / activeMetrics.totalCostBasis) * 100
             : 0;
+
+        const realizedROI = realizedMetrics.costBasis > 0
+            ? (realizedMetrics.profit / realizedMetrics.costBasis) * 100
+            : 0;
+
+        const totalGain = totalROI + realizedMetrics.profit;
 
         // Calculate trends (comparing current value vs snapshots from history)
         const now = new Date();
@@ -95,9 +117,13 @@ export const AggregationService = {
         const underPerformers = sorted.reverse().slice(0, 3);
 
         return {
-            ...metrics,
+            ...activeMetrics,
             totalROI,
             totalROIPercent,
+            realizedProfit: realizedMetrics.profit,
+            realizedROI,
+            totalGain,
+            soldCount: realizedMetrics.count,
             trend7d,
             trend30d,
             topPerformers,

@@ -9,6 +9,7 @@ import { useAlerts } from '../lib/useAlerts.ts';
 import { syncWatchlistPrices } from '../lib/marketSync.ts';
 import WatchlistPriceCard from '../components/WatchlistPriceCard.tsx';
 import AddTargetModal from '../components/AddTargetModal.tsx';
+import { useToast } from '../contexts/ToastContext.tsx';
 
 const Favorites: React.FC = () => {
   // MLB Player favorites (existing)
@@ -21,6 +22,8 @@ const Favorites: React.FC = () => {
       return [];
     }
   });
+
+  const { addToast } = useToast();
 
   // Card favorites
   const { favorites: cardFavorites, removeFavorite: removeCardFavorite } = useFavorites();
@@ -100,6 +103,7 @@ const Favorites: React.FC = () => {
       }
     } catch (e) {
       console.error('Watchlist sync failed:', e);
+      addToast('error', 'Watchlist sync failed. Try again later.');
     } finally {
       setIsSyncing(false);
     }

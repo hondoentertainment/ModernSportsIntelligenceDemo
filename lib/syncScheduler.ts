@@ -4,7 +4,7 @@
  */
 
 import { CardInventory, TargetWatchlist } from '../types.ts';
-import { syncPortfolio, SyncProgress, isSyncStale, getSyncMeta } from './marketSync';
+import { syncPortfolio, SyncProgress, SyncResult, isSyncStale, getSyncMeta, syncWatchlistPrices, WatchlistSyncResult } from './marketSync';
 
 export type SyncInterval = 'manual' | 'hourly' | 'daily' | 'weekly';
 
@@ -169,18 +169,23 @@ export class SyncScheduler {
     private inventory: CardInventory[] = [];
     private targets: TargetWatchlist[] = [];
     private onProgress?: (progress: SyncProgress) => void;
-    private onComplete?: (result: any) => void;
+    private onComplete?: (result: SyncCompleteResult) => void;
 
     constructor(
         config?: Partial<SyncSchedulerConfig>,
         callbacks?: {
             onProgress?: (progress: SyncProgress) => void;
-            onComplete?: (result: any) => void;
+            onComplete?: (result: SyncCompleteResult) => void;
         }
     ) {
         this.config = { ...DEFAULT_CONFIG, ...config };
         this.onProgress = callbacks?.onProgress;
         this.onComplete = callbacks?.onComplete;
+    }
+
+    setCallbacks(callbacks?: { onProgress?: (progress: SyncProgress) => void; onComplete?: (result: SyncCompleteResult) => void }) {
+        if (callbacks?.onProgress) this.onProgress = callbacks.onProgress;
+        if (callbacks?.onComplete) this.onComplete = callbacks.onComplete;
     }
 
     /**
@@ -247,13 +252,12 @@ export class SyncScheduler {
             console.log('Sync scheduler: Performing sync...');
 
             // Sync portfolio
-            const { result: portfolioResult } = await syncPortfolio(
+            const { inventory: updatedInventory, result: portfolioResult } = await syncPortfolio(
                 this.inventory,
                 this.onProgress
             );
 
             // Sync watchlist
-            const { syncWatchlistPrices } = await import('./marketSync');
             const watchlistResult = await syncWatchlistPrices(
                 this.targets,
                 (current, total) => {
@@ -269,18 +273,35 @@ export class SyncScheduler {
                 }
             );
 
+            // Merge updated targets (watchlistResult.updatedTargets is the full list)
+            const updatedTargets = watchlistResult.updatedTargets;
+
             // Update schedule
             const schedule = getSyncSchedule();
             schedule.lastSync = new Date().toISOString();
             schedule.nextSync = calculateNextSync(this.config.interval, schedule.lastSync);
             setSyncSchedule(schedule);
 
-            // Notify on complete
+            // Update internal state for next sync cycle
+            this.inventory = updatedInventory;
+            this.targets = updatedTargets;
+
+            // Notify on complete (includes data for cloud persistence)
             if (this.onComplete) {
                 this.onComplete({
                     portfolio: portfolioResult,
                     watchlist: watchlistResult,
+                    inventory: updatedInventory,
+                    targets: updatedTargets,
                 });
+            }
+
+            // Target price alerts: notify when watchlist items hit their target
+            if (watchlistResult.priceHits.length > 0 && 'Notification' in window) {
+                for (const hit of watchlistResult.priceHits) {
+                    const msg = `${hit.player}: $${hit.currentMarketPrice} ≤ $${hit.targetPrice} target`;
+                    this.showNotification('Target Price Hit', msg);
+                }
             }
 
             // Browser notification if enabled
@@ -338,6 +359,13 @@ export function getScheduler(): SyncScheduler {
     return schedulerInstance;
 }
 
+export interface SyncCompleteResult {
+    portfolio: SyncResult;
+    watchlist: WatchlistSyncResult;
+    inventory: CardInventory[];
+    targets: TargetWatchlist[];
+}
+
 /**
  * Initialize scheduler with inventory and targets
  */
@@ -346,12 +374,13 @@ export function initializeScheduler(
     targets: TargetWatchlist[],
     callbacks?: {
         onProgress?: (progress: SyncProgress) => void;
-        onComplete?: (result: any) => void;
+        onComplete?: (result: SyncCompleteResult) => void;
     }
 ): SyncScheduler {
     const scheduler = getScheduler();
     scheduler.updateConfig(getSyncConfig());
     scheduler.start(inventory, targets);
+    scheduler.setCallbacks(callbacks);
     return scheduler;
 }
 

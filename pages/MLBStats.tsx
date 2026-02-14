@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Trophy, Activity, Search, ChevronRight, User, TrendingUp, Zap, Newspaper, Target, MapPin, Radio } from 'lucide-react';
 import { getLiveGames, getStandings, searchMLBPlayers, getProbablePitchers, getAthleteHeadshotUrl } from '../lib/mlbApi.ts';
+import { useToast } from '../contexts/ToastContext.tsx';
 
 const MLBStats: React.FC = () => {
   const [games, setGames] = useState<any[]>([]);
@@ -11,6 +12,7 @@ const MLBStats: React.FC = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeGameIndex, setActiveGameIndex] = useState(0);
+  const { addToast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,20 +27,25 @@ const MLBStats: React.FC = () => {
         setProbables(probablesData);
       } catch (error) {
         console.error("MLB API Error:", error);
+        addToast('error', 'MLB data unavailable. Check back later.', { dedupeKey: 'mlb_api' });
       } finally {
         setIsLoading(false);
       }
     };
     fetchData();
 
-    const interval = setInterval(fetchData, 60000); // 1 minute refresh
+    const interval = setInterval(fetchData, 60000);
     return () => clearInterval(interval);
   }, []);
 
   const handleSearch = async () => {
     if (!searchQuery) return;
-    const results = await searchMLBPlayers(searchQuery);
-    setSearchResults(results);
+    try {
+      const results = await searchMLBPlayers(searchQuery);
+      setSearchResults(results);
+    } catch (error) {
+      addToast('error', 'Player search failed. Try again.', { dedupeKey: 'mlb_search' });
+    }
   };
 
   const activeGame = useMemo(() => games[activeGameIndex] || null, [games, activeGameIndex]);

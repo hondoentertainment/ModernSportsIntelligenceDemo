@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isDemoMode } from '../lib/supabase';
+import { migrateToSupabase, needsMigration } from '../lib/migration';
 
 interface AuthContextType {
     user: User | null;
@@ -8,6 +9,7 @@ interface AuthContextType {
     loading: boolean;
     isDemoMode: boolean;
     recoveryMode: boolean;
+    isMigrating: boolean;
     signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
     signUp: (email: string, password: string, username?: string) => Promise<{ error: AuthError | null }>;
     signInWithGoogle: () => Promise<{ error: AuthError | null }>;
@@ -41,6 +43,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
     const [recoveryMode, setRecoveryMode] = useState(false);
+    const [isMigrating, setIsMigrating] = useState(false);
     const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     // Proactive session refresh to prevent token expiry
@@ -113,6 +116,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 case 'SIGNED_IN':
                     setRecoveryMode(false);
                     startSessionRefreshTimer();
+
+                    // Handle data migration if needed
+                    if (session?.user && needsMigration()) {
+                        setIsMigrating(true);
+                        migrateToSupabase(session.user.id).then((result) => {
+                            if (result.success) {
+                                console.log('[Auth] Migration successful:', result);
+                            } else {
+                                console.error('[Auth] Migration failed:', result.errors);
+                            }
+                            setIsMigrating(false);
+                        });
+                    }
                     break;
 
                 case 'SIGNED_OUT':
@@ -229,7 +245,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             updatePassword,
             refreshSession,
             clearRecoveryMode,
-            demoLogin
+            demoLogin,
+            isMigrating
         }}>
             {children}
         </AuthContext.Provider>

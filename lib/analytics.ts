@@ -42,8 +42,14 @@ export function calculateAlphaScore(inventory: CardInventory[]): number {
 
     let scarcityScore = 0;
     inventory.forEach(card => {
-        const tier = getRarityTier(card);
-        scarcityScore += (tierWeights[tier] || 0.05);
+        // Use Scarcity Index if available (new logic), otherwise fallback to Rarity Tier (legacy)
+        if (card.scarcityIndex !== undefined) {
+            // 0-100 scale, normalized to contribution
+            scarcityScore += (card.scarcityIndex / 100);
+        } else {
+            const tier = getRarityTier(card);
+            scarcityScore += (tierWeights[tier] || 0.05);
+        }
     });
     // Normalize sparsity (max 10 cards worth of weight)
     const normalizedScarcity = Math.min((scarcityScore / 5) * 40, 40);
@@ -58,9 +64,13 @@ export function calculateAlphaScore(inventory: CardInventory[]): number {
     const leagues = new Set(inventory.map(c => c.league)).size;
     const sports = new Set(inventory.map(c => c.sport)).size;
     const divFactor = (leagues * 4) + (sports * 2);
-    const normalizedDiv = Math.min((divFactor / 20) * 30, 30);
+    const normalizedDiv = Math.min((divFactor / 20) * 20, 20);
 
-    return Math.round(normalizedScarcity + normalizedValue + normalizedDiv);
+    // 4. Realized Alpha Component (10 pts)
+    const realizedProfit = inventory.filter(c => c.status === 'sold').reduce((sum, c) => sum + ((c.salePrice || 0) - (c.purchasePrice || 0)), 0);
+    const realizedAlpha = Math.min(Math.max(realizedProfit / 1000, 0) * 10, 10);
+
+    return Math.round(normalizedScarcity + normalizedValue + normalizedDiv + realizedAlpha);
 }
 
 /**

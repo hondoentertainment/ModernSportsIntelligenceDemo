@@ -192,6 +192,16 @@ export function useSupabaseInventory() {
         }
     }, [isAuthenticated]);
 
+    const persistSyncToCloud = useCallback(async (cards: CardInventory[], updatedTargets?: TargetWatchlist[]) => {
+        if (isAuthenticated && userId) {
+            await bulkUpsertCards(cards, userId);
+            if (updatedTargets && updatedTargets.length > 0) {
+                const { bulkUpsertTargets } = await import('./supabaseData');
+                await bulkUpsertTargets(updatedTargets, userId);
+            }
+        }
+    }, [isAuthenticated, userId]);
+
     return {
         inventory,
         setInventory,
@@ -211,6 +221,7 @@ export function useSupabaseInventory() {
         markAcquired,
         refreshFromStorage,
         initializeFullInventory,
+        persistSyncToCloud,
         totalCards: inventory.length
     };
 }

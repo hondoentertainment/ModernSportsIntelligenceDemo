@@ -56,6 +56,8 @@ const CardImage: React.FC<CardImageProps> = ({ src, playerName, year, manufactur
                 <img
                     src={src}
                     alt={playerName}
+                    loading="lazy"
+                    decoding="async"
                     className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
                     onLoad={() => setIsLoading(false)}
                     onError={() => {

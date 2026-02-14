@@ -2,6 +2,7 @@
 import { CardInventory, PricingAnalysis, TargetWatchlist } from "../types.ts";
 import { getEbayCardPrice, getWatchlistItemPrice } from "./gemini.ts";
 import { recordBatchSnapshots } from "./priceHistory.ts";
+import { showToast } from "./toast.ts";
 
 export interface SyncProgress {
     total: number;
@@ -157,6 +158,13 @@ export async function syncPortfolio(
     progress.errors = errors;
     if (onProgress) onProgress(progress);
 
+    // Surface sync results to the user
+    if (errors.length > 0) {
+        showToast('warning', `Portfolio sync done — ${errors.length} card${errors.length > 1 ? 's' : ''} failed to update.`, { dedupeKey: 'sync_partial' });
+    } else {
+        showToast('success', `Portfolio synced — ${updatedCount} cards updated.`, { dedupeKey: 'sync_done' });
+    }
+
     return {
         inventory: updatedInventory,
         result: {
@@ -236,6 +244,7 @@ export async function syncWatchlistPrices(
                 return target;
             } catch (e) {
                 console.warn(`Failed to sync watchlist target ${target.id}:`, e);
+                showToast('warning', `Watchlist update failed for "${target.player}".`, { dedupeKey: `wl_sync_${target.id}` });
                 failedCount++;
                 return target;
             }
