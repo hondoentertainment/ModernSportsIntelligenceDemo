@@ -403,3 +403,74 @@ export async function findSimilarCards(query: string, inventory: CardInventory[]
     return [];
   }
 }
+
+/**
+ * Gemini-powered negotiation: Analyzes user offer and returns seller response.
+ * Phase 16: Sentiment analysis + counter-proposal engine.
+ */
+export interface NegotiationSellerResponse {
+  action: 'accept' | 'counter' | 'reject';
+  sentiment: 'positive' | 'neutral' | 'negative' | 'aggressive';
+  message: string;
+  counterAmount?: number;
+}
+
+export async function getNegotiationResponse(
+  itemName: string,
+  listingPrice: number,
+  userOffer: number,
+  maxWillingToPay: number,
+  sellerCurrentAsk: number,
+  recentMessages: string[]
+): Promise<NegotiationSellerResponse | null> {
+  const prompt = `You are simulating a sports card seller in a negotiation. 
+  
+ITEM: ${itemName}
+LISTING PRICE: $${listingPrice}
+SELLER CURRENT ASK: $${sellerCurrentAsk}
+BUYER'S LATEST OFFER: $${userOffer}
+BUYER'S MAX BUDGET: $${maxWillingToPay} (seller does NOT know this)
+
+Recent exchange:
+${recentMessages.slice(-4).join('\n')}
+
+Decide the seller's response based on:
+- If user offer is within 8% of seller ask → likely ACCEPT
+- If user offer is 40%+ below ask → COUNTER firmly or REJECT
+- Otherwise → COUNTER with a price between user offer and seller ask
+- Counter amount should be influenced by how reasonable the offer seems (never exceed listing price)
+- Generate a short, natural seller message (1-2 sentences)
+
+Return JSON with: action (accept|counter|reject), sentiment (positive|neutral|negative|aggressive), message, counterAmount (only if action is counter, number between userOffer and sellerAsk).`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-1.5-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            action: { type: Type.STRING },
+            sentiment: { type: Type.STRING },
+            message: { type: Type.STRING },
+            counterAmount: { type: Type.NUMBER },
+          },
+          required: ["action", "sentiment", "message"],
+        },
+      },
+    });
+
+    const data = JSON.parse(response.text || "{}");
+    return {
+      action: data.action || "counter",
+      sentiment: data.sentiment || "neutral",
+      message: data.message || "Let me think about it.",
+      counterAmount: data.counterAmount,
+    };
+  } catch (error) {
+    console.error("Gemini Negotiation Error:", error);
+    return null;
+  }
+}

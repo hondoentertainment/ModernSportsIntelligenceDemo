@@ -1,6 +1,7 @@
 
 import { CardInventory } from '../types.ts';
 import { getRarityTier } from './rarity.ts';
+import { generatePopData } from './scarcityService.ts';
 
 export interface CollectorTier {
     title: string;
@@ -25,12 +26,24 @@ export const TIERS: CollectorTier[] = [
 ];
 
 /**
+ * Enriches card with scarcity data for Alpha Score if missing.
+ */
+function withScarcity(card: CardInventory): CardInventory & { popCount: number; scarcityIndex: number } {
+    if (card.scarcityIndex !== undefined) {
+        return card as CardInventory & { popCount: number; scarcityIndex: number };
+    }
+    const pop = generatePopData(card);
+    return { ...card, ...pop };
+}
+
+/**
  * Calculates a 0-100 Alpha Score based on portfolio stats.
+ * Phase 13: Scarcity-weighted with Pop 1 premium.
  */
 export function calculateAlphaScore(inventory: CardInventory[]): number {
     if (inventory.length === 0) return 0;
 
-    // 1. Scarcity Component (40 pts)
+    // 1. Scarcity Component (40 pts) — Pop 1 gets 1.5x weight
     const tierWeights: Record<string, number> = {
         'One-of-One': 1.0,
         'Grail': 0.8,
@@ -42,14 +55,17 @@ export function calculateAlphaScore(inventory: CardInventory[]): number {
 
     let scarcityScore = 0;
     inventory.forEach(card => {
-        // Use Scarcity Index if available (new logic), otherwise fallback to Rarity Tier (legacy)
-        if (card.scarcityIndex !== undefined) {
-            // 0-100 scale, normalized to contribution
-            scarcityScore += (card.scarcityIndex / 100);
+        const enriched = withScarcity(card);
+        let weight: number;
+        if (enriched.scarcityIndex !== undefined) {
+            weight = enriched.scarcityIndex / 100;
+            // Pop 1 premium: 1.5x scarcity contribution
+            if (enriched.popCount === 1) weight *= 1.5;
         } else {
             const tier = getRarityTier(card);
-            scarcityScore += (tierWeights[tier] || 0.05);
+            weight = tierWeights[tier] || 0.05;
         }
+        scarcityScore += Math.min(weight, 1.5);
     });
     // Normalize sparsity (max 10 cards worth of weight)
     const normalizedScarcity = Math.min((scarcityScore / 5) * 40, 40);

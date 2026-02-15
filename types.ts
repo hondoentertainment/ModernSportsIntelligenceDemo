@@ -130,3 +130,31 @@ export interface LeaderboardEntry {
   alphaScore: number;
   change24h: number;
 }
+
+export type NegotiationStatus = 'active' | 'accepted' | 'rejected' | 'countered';
+
+export interface NegotiationMessage {
+  id: string;
+  sender: 'user' | 'agent' | 'seller';
+  content: string;
+  offerAmount?: number;
+  timestamp: string;
+  sentiment?: 'positive' | 'neutral' | 'negative' | 'aggressive';
+}
+
+export interface NegotiationSession {
+  id: string;
+  targetItem: {
+    id: string;
+    name: string;
+    price: number; // Listing Price
+    image: string;
+  };
+  currentUserOffer: number;
+  sellerAsk: number;
+  maxWillingToPay: number;
+  status: NegotiationStatus;
+  messages: NegotiationMessage[];
+  createdAt: string;
+  updatedAt: string;
+}

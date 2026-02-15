@@ -30,12 +30,15 @@ import SyncSchedulerInitializer from './components/SyncSchedulerInitializer.tsx'
 import LuminousTracker from './components/LuminousTracker.tsx';
 import PublicPortfolio from './pages/PublicPortfolio.tsx';
 import Leaderboard from './pages/Leaderboard.tsx';
+import { MigrationProvider } from './contexts/MigrationContext.tsx';
+import MigrationBanner from './components/MigrationBanner.tsx';
 
 const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
     <AuthProvider>
+      <MigrationProvider>
       <ToastProvider>
         <Router>
           <Routes>
@@ -57,6 +60,7 @@ const App: React.FC = () => {
 
                     <div className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
                       <Header />
+                      <MigrationBanner />
 
                       <main className="flex-1 p-4 md:p-8 page-container overflow-y-auto">
                         <Routes>
@@ -90,6 +94,7 @@ const App: React.FC = () => {
           </Routes>
         </Router>
       </ToastProvider>
+      </MigrationProvider>
     </AuthProvider>
   );
 };

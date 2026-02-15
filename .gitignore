@@ -27,3 +27,4 @@ dist-ssr
 # Test output
 playwright-report/
 test-results/
+test_output.txt

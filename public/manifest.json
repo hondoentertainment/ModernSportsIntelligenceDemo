@@ -1,48 +1,23 @@
 {
-    "name": "Modern Sports Intelligence",
-    "short_name": "SportsIntel",
-    "description": "Premium sports analytics and portfolio management.",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#1e1e24",
-    "theme_color": "#d9f99d",
-    "orientation": "portrait",
-    "icons": [
-        {
-            "src": "pwa-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "pwa-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ],
-    "shortcuts": [
-        {
-            "name": "Scan Card",
-            "short_name": "Scan",
-            "description": "Scan a new card for your collection",
-            "url": "/collection?action=scan",
-            "icons": [
-                {
-                    "src": "pwa-192x192.png",
-                    "sizes": "192x192"
-                }
-            ]
-        },
-        {
-            "name": "Check Alerts",
-            "short_name": "Alerts",
-            "description": "View latest price alerts",
-            "url": "/alerts",
-            "icons": [
-                {
-                    "src": "pwa-192x192.png",
-                    "sizes": "192x192"
-                }
-            ]
-        }
-    ]
+  "name": "Modern Sports Intelligence",
+  "short_name": "SportsIntel",
+  "description": "Premium sports analytics and portfolio management.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "background_color": "#1e1e24",
+  "theme_color": "#d9f99d",
+  "orientation": "portrait-primary",
+  "categories": ["finance", "sports", "utilities"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "pwa-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "pwa-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Scan Card", "short_name": "Scan", "description": "Scan a new card", "url": "/#/collection?action=scan", "icons": [{ "src": "pwa-192x192.png", "sizes": "192x192" }] },
+    { "name": "Check Alerts", "short_name": "Alerts", "description": "View price alerts", "url": "/#/alerts", "icons": [{ "src": "pwa-192x192.png", "sizes": "192x192" }] },
+    { "name": "Dashboard", "short_name": "Portfolio", "description": "Portfolio overview", "url": "/#/", "icons": [{ "src": "pwa-192x192.png", "sizes": "192x192" }] }
+  ]
 }

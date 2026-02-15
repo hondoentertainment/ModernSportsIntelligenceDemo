@@ -9,16 +9,17 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 ### 1.1 Complete Supabase Auth Flow
 **Rationale:** Ensure users can securely manage their portfolios across devices.
 - **Actions:**
-    - Implement `ForgotPassword.tsx` and the corresponding Supabase password reset flow.
-    - Add robust error handling to `Login.tsx` and `Signup.tsx` (e.g., rate limiting messages).
-    - Verify `ProtectedRoute` logic for sub-routes like `/inventory` and `/watchlist`.
+    - **Password Reset:** Implement `ForgotPassword.tsx` and the corresponding `auth.resetPasswordForEmail` flow.
+    - **Error Handling:** Add robust error state UI for `Login.tsx` and `Signup.tsx` (e.g., handling "Email already in use", "Invalid credentials", and Rate Limiting).
+    - **Route Protection:** Audit `ProtectedRoute` logic to handle asynchronous session loading without "flicker."
 - **Status:** Foundations in place; UI/UX refinement needed.
 
 ### 1.2 Multi-Tenant Data Migration
 **Rationale:** Ensure `localStorage` data is seamlessly synced to Supabase when a user signs up.
 - **Actions:**
-    - Create a migration utility that checks for local data on first login.
-    - Update `useSupabaseInventory` to handle the "initial sync" event.
+    - **Detection Logic:** Create a `MigrationProvider` that checks for `msi_inventory` in `localStorage` on successful login.
+    - **Batch Upload:** Implementation of a "Sync Now" trigger that pushes local data to the Supabase `inventory` table.
+    - **Conflict Resolution:** Define logic for handling duplicate items between local and cloud states.
 - **Status:** Hook logic exists; automated migration trigger pending.
 
 ---
@@ -28,50 +29,80 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 ### 2.1 Official API Integrations
 **Rationale:** Move beyond AI-based price estimation to verified market data.
 - **Actions:**
-    - **eBay API:** Replace or supplement the Gemini scraper with official "Sold Listings" data via the eBay Browse API.
-    - **MLB Stats API:** Integrate real-time performance data to power "Performance vs. Price" correlation charts.
+    - **eBay API:** Integrate with the eBay Browse API to fetch "Completed/Sold" listings for more accurate FMV (Fair Market Value).
+    - **MLB Stats API:** Map player IDs to performance endpoints to power "Performance vs. Price" correlation charts.
 - **Status:** Research phase.
 
 ### 2.2 Automated Market Sync Scheduler
 **Rationale:** Keep portfolio values fresh without manual intervention.
 - **Actions:**
-    - Implement a "Price Heartbeat" that checks for significant market moves in the background.
-    - Add push notification triggers when watched assets hit target prices.
+    - **Background Sync:** Implement the `SyncScheduler` heartbeat to trigger price updates every 24 hours.
+    - **Price Alerts:** Add browser push notification triggers when a "Watchlist" item drops below its target acquisition price.
 - **Status:** UI logic exists; backend scheduling pending.
 
 ---
 
-## Priority 3: Feature Expansion
+## Priority 3: Scarcity & Quality Intelligence (Phase 13)
 
-### 3.1 Scarcity & Quality Metrics
-**Rationale:** Valuation in the hobby is driven by "Pop Reports" (Population).
+### 3.1 Pop Report Integration
+**Rationale:** Valuation is driven by scarcity (Population).
 - **Actions:**
-    - Integrate PSA/SGC population report data into the card detail view.
-    - Implement a "Grading Premium" calculator to show the potential ROI of grading a raw card.
+    - **Data Mapping:** Add `popReport` fields to `CardInventory` type.
+    - **Scarcity Weighting:** Update the Alpha Score algorithm to factor in low-pop counts (e.g., "Pop 1" premium).
 - **Status:** Strategic planning.
 
-### 3.2 Advanced Sentiment Tracking
-**Rationale:** Identify "Hype" vs. "Utility" using AI-driven social listening.
+### 3.2 Grading Premium Calculator
+**Rationale:** Help users decide whether to invest in grading raw cards.
 - **Actions:**
-    - Use Gemini to analyze sports news and social sentiment for key athletes.
-    - Display a "Hype Score" on the Intelligence HUD.
+    - **ROI Simulation:** Build a tool that compares the user's raw card estimated value vs. current PSA 9/10 market prices.
+    - **Service Recommendations:** Link to PSA/SGC submission guidelines based on card value brackets.
 - **Status:** Conceptual.
 
 ---
 
-## Priority 4: Performance & Quality
+## Priority 4: Agentic Marketplace (Phase 16)
 
-### 4.1 Automated Testing Suite
+### 4.1 Negotiation Arena Evolution
+**Rationale:** Automate the acquisition process through AI negotiation.
+- **Actions:**
+    - **Gemini Strategy:** Replace mock negotiation logic with Gemini-driven sentiment analysis (detecting seller firmness).
+    - **Counter-Proposal Engine:** Implement logic that generates counter-offers based on the user's "Max Willing to Pay" and market FMV.
+    - **Arena UI:** Enhance `NegotiationModal` with "Agent Thinking" animations and sentiment indicators.
+- **Status:** Prototype in test (`negotiation.spec.ts`).
+
+### 4.2 Trade Proposal Logic
+**Rationale:** Facilitate portfolio optimization through smart swaps.
+- **Actions:**
+    - **Portfolio Delta:** Identify over-concentrated leagues/players in the user's portfolio.
+    - **Proposal Generation:** Suggest "Card A for Card B + Cash" trades based on user needs vs. marketplace availability.
+- **Status:** R&D.
+
+---
+
+## Priority 5: Portfolio Intelligence Reporting
+
+### 5.1 Enhanced PDF Exports
+**Rationale:** Professional-grade reporting for tax or sharing purposes.
+- **Actions:**
+    - **Morning Briefing:** Automate the `generateBriefingReport` trigger for a daily summary.
+    - **Visual Fidelity:** Improve `pdfExport.ts` with custom charts (using PDF shapes) for league allocation.
+- **Status:** Basic export functional; formatting pending.
+
+---
+
+## Priority 6: Performance & Scaling
+
+### 6.1 Automated Testing Suite
 **Rationale:** Prevent regressions in complex financial calculations.
 - **Actions:**
-    - Set up `Vitest` for core logic testing (NAV calculations, ROI tracking).
-    - Implement E2E tests for the "Add Card" and "Market Sync" flows.
+    - **Vitest:** Implement unit tests for NAV and ROI math in `lib/portfolioUtils.ts`.
+    - **E2E:** Expand Playwright coverage to include the full "Scout-to-Acquire" flow.
 
-### 4.2 Optimized UI Renderers
-**Rationale:** Support "Whale" accounts with 500+ assets.
+### 6.2 Data Virtualization
+**Rationale:** Support "Whale" accounts with 1000+ assets.
 - **Actions:**
-    - Implement virtual scrolling for the Inventory and Watchlist hubs.
-    - Optimize image lazy-loading to maintain 60fps scrolling on mobile.
+    - **Virtual Lists:** Implement `react-window` or similar for high-density inventory tables.
+    - **State Management:** Optimize Zustand stores for partial updates.
 
 ---
 
@@ -79,3 +110,4 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 - **Sync Reliability:** 100% data parity between local and cloud state.
 - **Valuation Accuracy:** Prices within 5% of recent eBay sold listings.
 - **App Performance:** < 100ms interaction latency on high-density data tables.
+- **Negotiation Success:** > 70% deal completion rate within user's "Max Willing to Pay."

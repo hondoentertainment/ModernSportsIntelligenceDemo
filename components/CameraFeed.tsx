@@ -7,6 +7,8 @@ interface CameraFeedProps {
     isActive: boolean;
 }
 
+const isMobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
 const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -26,11 +28,12 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive }) => {
     const startCamera = async () => {
         try {
             setError(null);
+            const mobile = isMobile();
             const mediaStream = await navigator.mediaDevices.getUserMedia({
                 video: {
-                    facingMode,
-                    width: { ideal: 1920 },
-                    height: { ideal: 1080 }
+                    facingMode: mobile ? 'environment' : facingMode,
+                    width: { ideal: mobile ? 1280 : 1920 },
+                    height: { ideal: mobile ? 720 : 1080 }
                 },
                 audio: false
             });
@@ -106,18 +109,22 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive }) => {
                 </div>
             </div>
 
-            {/* Controls Overlay */}
+            {/* Controls Overlay - touch-friendly on mobile */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-6">
-                <button
-                    onClick={toggleFacingMode}
-                    className="p-4 bg-black/40 backdrop-blur-md rounded-full border border-white/10 text-white hover:bg-black/60 transition-all active:scale-90"
-                >
-                    <RefreshCw size={24} />
-                </button>
+                {!isMobile() && (
+                    <button
+                        onClick={toggleFacingMode}
+                        className="p-4 bg-black/40 backdrop-blur-md rounded-full border border-white/10 text-white hover:bg-black/60 transition-all active:scale-90 touch-manipulation"
+                        aria-label="Switch camera"
+                    >
+                        <RefreshCw size={24} />
+                    </button>
+                )}
 
                 <button
                     onClick={captureFrame}
-                    className="w-20 h-20 bg-brand-lime rounded-full border-[6px] border-white/20 shadow-2xl flex items-center justify-center hover:scale-110 active:scale-90 transition-all group"
+                    className="w-20 h-20 min-h-[80px] min-w-[80px] bg-brand-lime rounded-full border-[6px] border-white/20 shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group touch-manipulation"
+                    aria-label="Capture card"
                 >
                     <div className="w-16 h-16 rounded-full border-2 border-brand-charcoal/20 flex items-center justify-center">
                         <Camera size={32} className="text-brand-charcoal" />

@@ -17,6 +17,9 @@ const FRIENDLY_MESSAGES: Record<string, string> = {
     provider_disabled: 'Sign in with this provider is currently unavailable. Try email/password instead.',
     otp_expired: 'Your sign-in link has expired. Please request a new one.',
     session_expired: 'Your session has expired. Please sign in again.',
+    // Password reset
+    email_rate_limit_exceeded: 'Too many password reset emails sent. Please wait an hour before trying again.',
+    email_not_found: 'No account found with this email address.',
 };
 
 export function getFriendlyAuthMessage(error: AuthError | null): string {
@@ -43,6 +46,12 @@ export function getFriendlyAuthMessage(error: AuthError | null): string {
     }
     if (message.includes('password')) {
         return FRIENDLY_MESSAGES.weak_password;
+    }
+    if ((message.includes('email') && message.includes('rate')) || message.includes('rate limit')) {
+        return FRIENDLY_MESSAGES.over_email_send_rate_limit;
+    }
+    if (message.includes('user not found') || message.includes('no user')) {
+        return FRIENDLY_MESSAGES.email_not_found;
     }
 
     return error.message;

@@ -56,8 +56,9 @@ import { getHistoricalDelta } from '../lib/marketHistory.ts';
 import { StatsService } from '../lib/statsService.ts';
 import { generatePortfolioReport } from '../lib/pdfExport.ts';
 import { AggregationService } from '../lib/aggregationService.ts';
-import { Cloud, CloudOff } from 'lucide-react';
+import { Cloud, CloudOff, Gavel } from 'lucide-react';
 import CardImage from '../components/CardImage.tsx';
+import NegotiationModal from '../components/NegotiationModal.tsx';
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
@@ -94,6 +95,8 @@ const Dashboard: React.FC = () => {
   const [showBriefing, setShowBriefing] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isScanOpen, setIsScanOpen] = useState(false);
+  const [isNegotiationOpen, setIsNegotiationOpen] = useState(false);
+  const [negotiationTarget, setNegotiationTarget] = useState<any>(null);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -550,6 +553,91 @@ const Dashboard: React.FC = () => {
             )}
           </div>
 
+          {/* Negotiation / Marketplace Teaser */}
+          <div className="reveal-section mt-8 mb-12" style={{ animationDelay: '500ms' }}>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-brand-orange/10 rounded-xl text-brand-orange">
+                  <Gavel size={20} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bebas tracking-wide text-white">Agentic Marketplace</h3>
+                  <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Live Negotiations</p>
+                </div>
+              </div>
+              <div className="px-3 py-1 bg-brand-charcoal border border-slate-800 rounded-full flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-brand-lime animate-pulse"></div>
+                <span className="text-[10px] font-black text-white uppercase tracking-widest">Simulation Active</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-brand-charcoal/50 border border-slate-800 rounded-2xl p-6 flex gap-6 hover:border-brand-orange/30 transition-all group cursor-pointer"
+                onClick={() => {
+                  setNegotiationTarget({
+                    id: 'market-1',
+                    player: 'Elly De La Cruz',
+                    year: 2024,
+                    manufacturer: 'Topps Chrome',
+                    price: 450,
+                    image: 'https://m.media-amazon.com/images/I/71R2o5C2HNL._AC_UF1000,1000_QL80_.jpg'
+                  });
+                  setIsNegotiationOpen(true);
+                }}
+              >
+                <div className="w-24 h-32 bg-slate-900 rounded-xl overflow-hidden relative">
+                  <img src="https://m.media-amazon.com/images/I/71R2o5C2HNL._AC_UF1000,1000_QL80_.jpg" alt="Card" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute top-2 right-2 bg-brand-charcoal/80 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-black text-white border border-white/10">PSA 10</div>
+                </div>
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-bold text-lg text-white group-hover:text-brand-orange transition-colors">Elly De La Cruz</h4>
+                    <p className="text-xs text-brand-muted mb-2">2024 Topps Chrome #15</p>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xl font-mono font-bold text-white">$450</span>
+                      <span className="text-xs text-brand-red line-through opacity-50">$525</span>
+                    </div>
+                  </div>
+                  <button className="w-full py-2 bg-brand-charcoal border border-slate-700 text-white text-[10px] font-black uppercase tracking-widest rounded-lg group-hover:bg-brand-orange group-hover:border-brand-orange group-hover:text-brand-charcoal transition-all">
+                    Launch Agent
+                  </button>
+                </div>
+              </div>
+
+              <div className="bg-brand-charcoal/50 border border-slate-800 rounded-2xl p-6 flex gap-6 hover:border-brand-orange/30 transition-all group cursor-pointer"
+                onClick={() => {
+                  setNegotiationTarget({
+                    id: 'market-2',
+                    player: 'Anthony Edwards',
+                    year: 2020,
+                    manufacturer: 'Panini Prizm',
+                    price: 850,
+                    image: 'https://i.ebayimg.com/images/g/Y~QAAOSw~dVl~u~g/s-l1200.jpg'
+                  });
+                  setIsNegotiationOpen(true);
+                }}
+              >
+                <div className="w-24 h-32 bg-slate-900 rounded-xl overflow-hidden relative">
+                  <img src="https://i.ebayimg.com/images/g/Y~QAAOSw~dVl~u~g/s-l1200.jpg" alt="Card" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute top-2 right-2 bg-brand-charcoal/80 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-black text-white border border-white/10">BGS 9.5</div>
+                </div>
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-bold text-lg text-white group-hover:text-brand-orange transition-colors">Anthony Edwards</h4>
+                    <p className="text-xs text-brand-muted mb-2">2020 Panini Prizm #258</p>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xl font-mono font-bold text-white">$850</span>
+                      <span className="text-xs text-brand-red line-through opacity-50">$980</span>
+                    </div>
+                  </div>
+                  <button className="w-full py-2 bg-brand-charcoal border border-slate-700 text-white text-[10px] font-black uppercase tracking-widest rounded-lg group-hover:bg-brand-orange group-hover:border-brand-orange group-hover:text-brand-charcoal transition-all">
+                    Launch Agent
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* League Intelligence Hub */}
           <section className="reveal-section luminous-card rounded-[2.5rem] p-8 md:p-12" style={{ animationDelay: '200ms' }}>
             <div className="flex flex-col lg:flex-row gap-12">
@@ -803,7 +891,17 @@ const Dashboard: React.FC = () => {
           setInventory(prev => [newCard, ...prev]);
         }}
       />
-    </div >
+
+      <NegotiationModal
+        isOpen={isNegotiationOpen}
+        onClose={() => setIsNegotiationOpen(false)}
+        targetItem={negotiationTarget}
+        onSuccess={(finalPrice) => {
+          // Add to inventory logic here if desired
+          console.log('Acquired for', finalPrice);
+        }}
+      />
+    </div>
   );
 };
 

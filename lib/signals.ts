@@ -1,5 +1,6 @@
 
-import { TargetWatchlist, CardInventory, Alert } from '../types.ts';
+import { TargetWatchlist, CardInventory } from '../types.ts';
+import { generatePopData } from './scarcityService.ts';
 
 export interface Signal {
     id: string;
@@ -11,7 +12,19 @@ export interface Signal {
 }
 
 /**
+ * Enriches a card with scarcity data if missing (for Alpha Score and signals).
+ */
+function withScarcity(card: CardInventory): CardInventory & { popCount: number; popHigher: number; scarcityIndex: number } {
+    if (card.popCount !== undefined && card.scarcityIndex !== undefined) {
+        return card as CardInventory & { popCount: number; popHigher: number; scarcityIndex: number };
+    }
+    const pop = generatePopData(card);
+    return { ...card, ...pop };
+}
+
+/**
  * Detects trade signals based on current market data vs. user targets.
+ * Includes Pop 1 / low-pop scarcity alerts.
  */
 export function detectSignals(watchlist: TargetWatchlist[], inventory: CardInventory[]): Signal[] {
     const signals: Signal[] = [];
@@ -31,7 +44,7 @@ export function detectSignals(watchlist: TargetWatchlist[], inventory: CardInven
         }
     });
 
-    // 2. Sell Signals (Simulated take-profit opportunities for now)
+    // 2. Sell Signals (Simulated take-profit opportunities)
     inventory.forEach(card => {
         if (card.currentValue && card.purchasePrice && card.currentValue > (card.purchasePrice * 1.5)) {
             const gain = ((card.currentValue - card.purchasePrice) / card.purchasePrice) * 100;
@@ -41,6 +54,30 @@ export function detectSignals(watchlist: TargetWatchlist[], inventory: CardInven
                 title: 'High ROI Alert',
                 description: `${card.player} (${card.year}) has reached a +${Math.round(gain)}% ROI. Consider locking in profits.`,
                 impact: gain > 100 ? 'high' : 'low',
+                targetId: card.id
+            });
+        }
+    });
+
+    // 3. Scarcity Signals: Pop 1 and low-pop alerts (Phase 13)
+    inventory.forEach(card => {
+        const enriched = withScarcity(card);
+        if (enriched.popCount === 1) {
+            signals.push({
+                id: `signal-scarcity-pop1-${card.id}`,
+                type: 'scarcity',
+                title: 'Pop 1 Alert',
+                description: `${card.player} (${card.year} ${card.set}) is a Pop 1 — none higher. Ultra-rare scarcity premium.`,
+                impact: 'high',
+                targetId: card.id
+            });
+        } else if (enriched.popCount <= 5 && enriched.scarcityIndex >= 85) {
+            signals.push({
+                id: `signal-scarcity-lowpop-${card.id}`,
+                type: 'scarcity',
+                title: 'Low Population',
+                description: `${card.player} (${card.year}) has Pop ${enriched.popCount} — scarcity index ${enriched.scarcityIndex}.`,
+                impact: 'medium',
                 targetId: card.id
             });
         }
