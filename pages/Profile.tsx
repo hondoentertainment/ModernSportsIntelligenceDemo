@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Settings, Heart, History, Shield, LogOut, Save, Bell, Eye, Palette, Check, Zap, Share2, Copy, Globe } from 'lucide-react';
+import { User, Settings, Heart, History, Shield, LogOut, Save, Bell, Eye, Palette, Check, Zap, Share2, Copy, Globe, Smartphone } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { MOCK_TEAMS, SPORTS } from '../constants';
+import { requestNotificationPermission, sendLocalNotification } from '../lib/notifications';
 
 interface UserSettings {
   insightDepth: 'context' | 'balanced' | 'data';
@@ -251,10 +252,18 @@ const Profile: React.FC = () => {
                 <p className="text-xs text-brand-muted">{desc}</p>
               </div>
               <button
-                onClick={() => setSettings(s => ({
-                  ...s,
-                  notifications: { ...s.notifications, [key]: !s.notifications[key as keyof typeof s.notifications] }
-                }))}
+                onClick={async () => {
+                  if (!settings.notifications[key as keyof typeof settings.notifications]) {
+                    const granted = await requestNotificationPermission();
+                    if (granted && key === 'priceAlerts') {
+                      sendLocalNotification('Notifications Active', { body: 'You will now receive price alerts.' });
+                    }
+                  }
+                  setSettings(s => ({
+                    ...s,
+                    notifications: { ...s.notifications, [key]: !s.notifications[key as keyof typeof s.notifications] }
+                  }))
+                }}
                 className={`w-12 h-7 rounded-full transition-all relative ${settings.notifications[key as keyof typeof settings.notifications]
                   ? 'bg-brand-lime'
                   : 'bg-slate-700'
@@ -265,6 +274,11 @@ const Profile: React.FC = () => {
               </button>
             </div>
           ))}
+          <div className="flex justify-end pt-2">
+            <button onClick={() => sendLocalNotification('Test Alert', { body: 'This is a test notification from Modern Sports Intelligence.' })} className="text-xs font-bold text-brand-lime hover:underline flex items-center gap-1">
+              <Smartphone size={12} /> Test Push Notification
+            </button>
+          </div>
         </div>
       </section>
 

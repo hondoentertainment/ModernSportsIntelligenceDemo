@@ -122,7 +122,7 @@ const OCRIngestionModal: React.FC<OCRIngestionModalProps> = ({ isOpen, onClose, 
                     {!previewUrl ? (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                             {mode === 'camera' ? (
-                                <CameraFeed isActive={isOpen} onCapture={handleCapture} />
+                                <CameraFeed isActive={isOpen} onCapture={handleCapture} facingMode="environment" />
                             ) : (
                                 <div
                                     onClick={() => fileInputRef.current?.click()}
