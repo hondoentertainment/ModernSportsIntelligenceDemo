@@ -1,8 +1,9 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, DollarSign, CheckCircle2, ShoppingBag, Loader2, ThumbsUp, ThumbsDown, Minus, Zap } from 'lucide-react';
-import { NegotiationSession, NegotiationMessage } from '../types';
+import { NegotiationSession } from '../types';
 import { NegotiationService } from '../lib/negotiationService';
+import CardImage from './CardImage.tsx';
+import ImageLightbox from './ImageLightbox.tsx';
 
 interface NegotiationModalProps {
     isOpen: boolean;
@@ -24,6 +25,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
     const [maxWilling, setMaxWilling] = useState<string>('');
     const [step, setStep] = useState<'config' | 'arena' | 'result'>('config');
     const [agentThinking, setAgentThinking] = useState(false);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -32,6 +34,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
             setSession(null);
             setOfferInput('');
             setMaxWilling('');
+            setLightboxOpen(false);
         }
     }, [isOpen, targetItem]);
 
@@ -126,7 +129,15 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                     {step === 'config' && (
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
                             <div className="flex items-center gap-6 p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
-                                <img src={targetItem.image} alt={targetItem.name} className="w-20 h-20 rounded-xl object-cover" />
+                                <CardImage
+                                    src={targetItem.image}
+                                    playerName={targetItem.player || targetItem.name || 'Card'}
+                                    year={targetItem.year}
+                                    manufacturer={targetItem.manufacturer}
+                                    className="w-20 h-20 rounded-xl shrink-0"
+                                    enableLightbox={true}
+                                    onImageClick={() => setLightboxOpen(true)}
+                                />
                                 <div>
                                     <h3 className="font-bold text-lg text-white">{targetItem.player || targetItem.name}</h3>
                                     <p className="text-brand-muted text-sm">{targetItem.year} {targetItem.manufacturer}</p>
@@ -264,6 +275,14 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                     )}
                 </div>
             </div>
+
+            <ImageLightbox
+                isOpen={lightboxOpen}
+                onClose={() => setLightboxOpen(false)}
+                src={targetItem.image}
+                alt={targetItem.player || targetItem.name || 'Card'}
+                caption={targetItem.player || targetItem.name ? `${targetItem.player || targetItem.name} • ${targetItem.year || ''} ${targetItem.manufacturer || ''}`.trim() : undefined}
+            />
         </div>
     );
 };

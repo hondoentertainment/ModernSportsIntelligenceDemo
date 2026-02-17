@@ -20,6 +20,9 @@ const FRIENDLY_MESSAGES: Record<string, string> = {
     // Password reset
     email_rate_limit_exceeded: 'Too many password reset emails sent. Please wait an hour before trying again.',
     email_not_found: 'No account found with this email address.',
+    // Supabase-specific codes
+    sign_in_required: 'Please sign in to continue.',
+    mfa_challenge_required: 'Additional verification is required.',
 };
 
 export function getFriendlyAuthMessage(error: AuthError | null): string {

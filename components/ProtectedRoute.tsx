@@ -7,8 +7,8 @@ interface ProtectedRouteProps {
     children: React.ReactNode;
 }
 
-const DEFER_SHOW_MS = 120;
-const MIN_DISPLAY_MS = 300;
+const DEFER_SHOW_MS = 80;
+const MIN_DISPLAY_MS = 250;
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const { user, loading } = useAuth();
