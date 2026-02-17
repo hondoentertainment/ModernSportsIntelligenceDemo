@@ -1,7 +1,14 @@
 # Product Requirements Document (PRD): Modern Sports Intelligence
 
 ## 1. Executive Summary
-**Modern Sports Intelligence** is a premium analytics platform designed for sports card collectors, analysts, and fans. It combines real-time sports data with advanced financial tracking and AI-powered market insights to provide a comprehensive view of "sports as an asset class." The platform now features a professional-grade Investment Tracking engine with realized P/L analysis and an "Alpha Correlation" discovery system.
+**Modern Sports Intelligence** is a premium analytics platform designed for sports card collectors, analysts, and fans. It combines real-time sports data with advanced financial tracking and AI-powered market insights to provide a comprehensive view of "sports as an asset class." The platform now features a professional-grade Investment Tracking engine with realized P/L analysis, an "Alpha Correlation" discovery system, AI-powered negotiation capabilities, and a comprehensive subscription billing system.
+
+## 1.1 Key Recent Additions
+- **AI-Powered Negotiation Arena**: Real-time negotiating with AI sellers using Gemini-powered responses
+- **Deep Search Intelligence**: Semantic search engine for finding cards by "vibe" and trajectory
+- **Image Lightbox Component**: Professional image viewing experience with ESC key support
+- **Stripe Billing Integration**: Multi-tier subscription system with usage-based pricing
+- **NegotiationService**: Complete negotiation logic with sentiment analysis and fallback systems
 
 ## 2. Project Vision & Objectives
 ### 2.1 Vision
@@ -43,6 +50,26 @@ To become the definitive source of truth for sports asset valuation, bridging th
 - **Target Price Alerts**: Notifications when a watched asset reaches a buy/sell threshold.
 - **comparative Analysis**: Side-by-side performance overlays.
 
+### 4.6 AI Negotiation Arena (NEW)
+- **Real-time Negotiation**: Live chat-based negotiation with AI sellers using Gemini 1.5 Flash.
+- **Sentiment Analysis**: Seller sentiment tracking (positive, neutral, negative, aggressive).
+- **Auto-Negotiation**: Automated negotiation agent that negotiates on behalf of users.
+- **Negotiation Configuration**: Users set maximum willing price and walk-away parameters.
+- **Deal Securing**: Complete transaction flow with portfolio integration.
+
+### 4.7 Deep Search Intelligence (NEW)
+- **Semantic Search**: AI-powered search by "vibe", era, trajectory, or specific card similarity.
+- **Similarity Scoring**: Percentage-based matching system with institutional-grade results.
+- **Natural Language Queries**: Search using conversational language and investment thesis.
+- **Alpha Rationale**: AI-generated explanations for why cards are similar or recommended.
+- **Smart Suggestions**: Pre-built search queries for common scouting scenarios.
+
+### 4.8 Image Viewing Experience (NEW)
+- **Professional Lightbox**: Full-screen image viewing with ESC key support and background blur.
+- **Responsive Design**: Mobile-optimized viewing up to 90vw/90vh constraints.
+- **Accessibility Support**: ARIA labels, keyboard navigation, and focus management.
+- **Caption Display**: Contextual information overlays with player and card details.
+
 ## 5. Technical Architecture
 ### 5.1 Technology Stack
 - **Frontend**: React 19, Vite, TypeScript.
@@ -50,6 +77,8 @@ To become the definitive source of truth for sports asset valuation, bridging th
 - **Intelligence**: Google GenAI (Gemini 1.5 Flash).
 - **Data Visualization**: Recharts (Customized with brand gradients).
 - **Icons**: Lucide React.
+- **Billing**: Stripe integration with Supabase Edge Functions.
+- **State Management**: React hooks with custom context providers.
 
 ### 5.2 Deployment
 - **Hosting**: Vercel (Production environments).
