@@ -28,6 +28,8 @@ function dbToCard(row: any): CardInventory {
         taxBasis: row.tax_basis,
         gradingFees: row.grading_fees,
         shippingFees: row.shipping_fees,
+        group: row.card_group,
+        groupOrder: row.group_order,
     };
 }
 
@@ -58,6 +60,8 @@ function cardToDb(card: CardInventory, userId: string): any {
         tax_basis: card.taxBasis,
         grading_fees: card.gradingFees,
         shipping_fees: card.shippingFees,
+        card_group: card.group,
+        group_order: card.groupOrder,
     };
 }
 

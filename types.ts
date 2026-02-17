@@ -31,6 +31,9 @@ export interface CardInventory {
   status?: 'active' | 'sold';
   salePrice?: number;
   saleDate?: string;
+  // Portfolio Builder Groups
+  group?: string;
+  groupOrder?: number;
   // Scarcity Data
   popCount?: number;
   popHigher?: number;
