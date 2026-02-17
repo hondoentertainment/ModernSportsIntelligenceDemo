@@ -7,13 +7,17 @@ interface CardImageProps {
     year?: number;
     manufacturer?: string;
     className?: string;
+    /** When true, clicking the image triggers onImageClick (e.g. for lightbox) */
+    enableLightbox?: boolean;
+    onImageClick?: () => void;
 }
 
-const CardImage: React.FC<CardImageProps> = ({ src, playerName, year, manufacturer, className = "" }) => {
+const CardImage: React.FC<CardImageProps> = ({ src, playerName, year, manufacturer, className = "", enableLightbox, onImageClick }) => {
     const [hasError, setHasError] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     const isPlaceholder = !src || src.includes('unsplash.com') || hasError;
+    const canOpenLightbox = enableLightbox && onImageClick && src && !hasError && !isPlaceholder;
 
     return (
         <div className={`relative overflow-hidden bg-slate-950 group ${className}`}>
@@ -53,18 +57,25 @@ const CardImage: React.FC<CardImageProps> = ({ src, playerName, year, manufactur
                     <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-brand-blue/10 blur-[60px] rounded-full" />
                 </div>
             ) : (
-                <img
-                    src={src}
-                    alt={playerName}
-                    loading="lazy"
-                    decoding="async"
-                    className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-                    onLoad={() => setIsLoading(false)}
-                    onError={() => {
-                        setHasError(true);
-                        setIsLoading(false);
-                    }}
-                />
+                <div
+                    className={`w-full h-full ${canOpenLightbox ? 'cursor-zoom-in' : ''}`}
+                    onClick={canOpenLightbox ? onImageClick : undefined}
+                    role={canOpenLightbox ? 'button' : undefined}
+                    aria-label={canOpenLightbox ? 'View full size' : undefined}
+                >
+                    <img
+                        src={src}
+                        alt={playerName}
+                        loading="lazy"
+                        decoding="async"
+                        className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${isLoading ? 'opacity-0' : 'opacity-100'} pointer-events-none`}
+                        onLoad={() => setIsLoading(false)}
+                        onError={() => {
+                            setHasError(true);
+                            setIsLoading(false);
+                        }}
+                    />
+                </div>
             )}
         </div>
     );
