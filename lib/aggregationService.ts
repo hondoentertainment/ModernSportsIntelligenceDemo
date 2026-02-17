@@ -29,6 +29,10 @@ export const AggregationService = {
                 totalCostBasis: 0,
                 totalROI: 0,
                 totalROIPercent: 0,
+                realizedProfit: 0,
+                realizedROI: 0,
+                totalGain: 0,
+                soldCount: 0,
                 trend7d: 0,
                 trend30d: 0,
                 assetCount: 0,
@@ -96,8 +100,8 @@ export const AggregationService = {
             value30d += snap30d.value;
         });
 
-        const trend7d = value7d > 0 ? ((metrics.totalValue - value7d) / value7d) * 100 : 0;
-        const trend30d = value30d > 0 ? ((metrics.totalValue - value30d) / value30d) * 100 : 0;
+        const trend7d = value7d > 0 ? ((activeMetrics.totalValue - value7d) / value7d) * 100 : 0;
+        const trend30d = value30d > 0 ? ((activeMetrics.totalValue - value30d) / value30d) * 100 : 0;
 
         // Identify Top/Under Performers
         const individualPerformance = inventory.map(card => {
