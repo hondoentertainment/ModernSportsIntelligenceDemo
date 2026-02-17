@@ -30,6 +30,8 @@ import SyncSchedulerInitializer from './components/SyncSchedulerInitializer.tsx'
 import LuminousTracker from './components/LuminousTracker.tsx';
 import PublicPortfolio from './pages/PublicPortfolio.tsx';
 import Leaderboard from './pages/Leaderboard.tsx';
+import PortfolioBuilder from './pages/PortfolioBuilder.tsx';
+import Billing from './pages/Billing.tsx';
 import { MigrationProvider } from './contexts/MigrationContext.tsx';
 import MigrationBanner from './components/MigrationBanner.tsx';
 
@@ -77,6 +79,8 @@ const App: React.FC = () => {
                           <Route path="/teams" element={<Teams />} />
                           <Route path="/games" element={<Games />} />
                           <Route path="/trends" element={<Trends />} />
+                          <Route path="/builder" element={<PortfolioBuilder />} />
+                          <Route path="/billing" element={<Billing />} />
                           <Route path="/compare" element={<Compare />} />
                           <Route path="/alerts" element={<Alerts />} />
                           <Route path="/leaderboard" element={<Leaderboard />} />

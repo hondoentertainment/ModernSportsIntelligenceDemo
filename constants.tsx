@@ -14,7 +14,8 @@ import {
   Activity,
   Zap,
   GitCompare,
-  Bell
+  Bell,
+  Kanban
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -22,6 +23,7 @@ import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './p
 export const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
   { id: 'collection', label: 'Collection', icon: <Layers size={20} />, path: '/collection' },
+  { id: 'builder', label: 'Portfolio Builder', icon: <Kanban size={20} />, path: '/builder' },
   { id: 'deepsearch', label: 'Deep Intelligence', icon: <Search size={20} />, path: '/deep-search' },
   { id: 'audit', label: 'Portfolio Audit', icon: <GitCompare size={20} />, path: '/audit' },
   { id: 'mlbstats', label: 'PressBox Hub', icon: <Trophy size={20} />, path: '/mlb-stats' },
@@ -34,6 +36,7 @@ export const NAV_ITEMS = [
   { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={20} />, path: '/leaderboard' },
   { id: 'compare', label: 'Compare', icon: <GitCompare size={20} />, path: '/compare' },
   { id: 'alerts', label: 'Alerts', icon: <Bell size={20} />, path: '/alerts' },
+  { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];
 

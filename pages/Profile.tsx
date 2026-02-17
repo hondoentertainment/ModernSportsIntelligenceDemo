@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Settings, Heart, History, Shield, LogOut, Save, Bell, Eye, Palette, Check, Zap, Share2, Copy, Globe, Smartphone } from 'lucide-react';
+import { User, Settings, Heart, History, Shield, LogOut, Save, Bell, Eye, Palette, Check, Zap, Share2, Copy, Globe, Smartphone, CreditCard, ChevronRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { MOCK_TEAMS, SPORTS } from '../constants';
 import { requestNotificationPermission, sendLocalNotification } from '../lib/notifications';
+import { Link } from 'react-router-dom';
 
 interface UserSettings {
   insightDepth: 'context' | 'balanced' | 'data';
@@ -109,6 +110,26 @@ const Profile: React.FC = () => {
           {saved ? <Check size={18} /> : <Save size={18} />}
           {saved ? 'Saved!' : 'Save Changes'}
         </button>
+      </section>
+
+      {/* Subscription & Billing */}
+      <section className="bg-slate-950 border border-slate-800 rounded-3xl p-8">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold flex items-center gap-3">
+            <CreditCard className="text-brand-teal" size={20} />
+            Subscription & Billing
+          </h2>
+          <Link
+            to="/billing"
+            className="px-6 py-3 bg-brand-lime text-brand-charcoal rounded-xl font-bold text-sm hover:bg-brand-green transition-all flex items-center gap-2"
+          >
+            Manage Plan
+            <ChevronRight size={18} />
+          </Link>
+        </div>
+        <p className="mt-4 text-slate-400 text-sm">
+          Upgrade your plan for more cards, AI valuations, and premium features. Manage payment methods and view usage.
+        </p>
       </section>
 
       {/* Public Profile & Sharing */}
