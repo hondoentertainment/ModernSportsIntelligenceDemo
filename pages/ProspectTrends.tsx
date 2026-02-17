@@ -24,12 +24,15 @@ import {
 } from 'recharts';
 import { simulateLeagueTrends } from '../lib/gemini.ts';
 import { MiLBProspect } from '../types.ts';
+import CardImage from '../components/CardImage.tsx';
+import ImageLightbox from '../components/ImageLightbox.tsx';
 
 const ProspectTrends: React.FC = () => {
   const [prospects, setProspects] = useState<MiLBProspect[]>([]);
   const [activeLeague, setActiveLeague] = useState<string>('MiLB');
   const [isLoading, setIsLoading] = useState(false);
   const [activeView, setActiveView] = useState<'hottest' | 'movers' | 'all'>('hottest');
+  const [lightboxProspect, setLightboxProspect] = useState<MiLBProspect | null>(null);
 
   const fetchTrends = async (leagueOverride?: string) => {
     setIsLoading(true);
@@ -206,7 +209,13 @@ const ProspectTrends: React.FC = () => {
               <div className="flex justify-between items-start mb-8">
                 <div className="flex items-center gap-4">
                   <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-slate-800 group-hover:border-brand-lime/50 transition-colors">
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <CardImage
+                      src={p.image}
+                      playerName={p.name}
+                      className="w-full h-full"
+                      enableLightbox={true}
+                      onImageClick={() => setLightboxProspect(p)}
+                    />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-white mb-0.5 group-hover:text-brand-lime transition-colors">{p.name}</h3>
@@ -289,6 +298,14 @@ const ProspectTrends: React.FC = () => {
           ))}
         </div>
       )}
+
+      <ImageLightbox
+        isOpen={!!lightboxProspect}
+        onClose={() => setLightboxProspect(null)}
+        src={lightboxProspect?.image}
+        alt={lightboxProspect?.name ?? ''}
+        caption={lightboxProspect ? `${lightboxProspect.name} • ${lightboxProspect.team} • ${lightboxProspect.league}` : undefined}
+      />
     </div>
   );
 };

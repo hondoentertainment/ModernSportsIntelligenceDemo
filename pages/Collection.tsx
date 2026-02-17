@@ -33,6 +33,7 @@ import Sparkline from '../components/Sparkline.tsx';
 import { getSparklineData, getPriceTrend } from '../lib/priceHistory.ts';
 import { Loader2, Cloud, CloudOff } from 'lucide-react';
 import CardImage from '../components/CardImage.tsx';
+import ImageLightbox from '../components/ImageLightbox.tsx';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 const VIRTUAL_THRESHOLD = 24;
@@ -54,6 +55,7 @@ interface CardGridItemProps {
   isPricing: string | null;
   getSparklineData: (id: string, limit?: number) => number[];
   getPriceTrend: (id: string) => string;
+  onOpenLightbox?: (card: CardInventory) => void;
   key?: React.Key;
 }
 
@@ -72,6 +74,7 @@ function CardGridItem({
   isPricing,
   getSparklineData,
   getPriceTrend,
+  onOpenLightbox,
 }: CardGridItemProps) {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
@@ -84,6 +87,8 @@ function CardGridItem({
           year={card.year}
           manufacturer={card.manufacturer}
           className="w-full h-full"
+          enableLightbox={!!onOpenLightbox}
+          onImageClick={onOpenLightbox ? () => onOpenLightbox(card) : undefined}
         />
         <div className={`absolute inset-0 bg-gradient-to-t ${styles.glow || 'from-black/80'} via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity`}></div>
         <div className="absolute top-6 left-6 flex flex-col gap-2">
@@ -189,6 +194,7 @@ function VirtualizedGrid({
   isPricing,
   getSparklineData,
   getPriceTrend,
+  onOpenLightbox,
 }: {
   items: CardInventory[];
   columns: number;
@@ -206,6 +212,7 @@ function VirtualizedGrid({
   isPricing: string | null;
   getSparklineData: (id: string, limit?: number) => number[];
   getPriceTrend: (id: string) => string;
+  onOpenLightbox?: (card: CardInventory) => void;
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
   const rowCount = Math.ceil(items.length / columns);
@@ -252,6 +259,7 @@ function VirtualizedGrid({
                   isPricing={isPricing}
                   getSparklineData={getSparklineData}
                   getPriceTrend={getPriceTrend}
+                  onOpenLightbox={onOpenLightbox}
                 />
               ))}
             </div>
@@ -314,6 +322,7 @@ const Collection: React.FC = () => {
   const [editingAsset, setEditingAsset] = useState<CardInventory | null>(null);
   const [initialAssetData, setInitialAssetData] = useState<Partial<CardInventory> | null>(null);
   const [isOCRModalOpen, setIsOCRModalOpen] = useState(false);
+  const [lightboxCard, setLightboxCard] = useState<CardInventory | null>(null);
 
   // Ensure full inventory is loaded on mount
   useEffect(() => {
@@ -570,6 +579,7 @@ const Collection: React.FC = () => {
                   isPricing={isPricing}
                   getSparklineData={getSparklineData}
                   getPriceTrend={getPriceTrend}
+                  onOpenLightbox={(c) => setLightboxCard(c)}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -589,6 +599,7 @@ const Collection: React.FC = () => {
                       isPricing={isPricing}
                       getSparklineData={getSparklineData}
                       getPriceTrend={getPriceTrend}
+                      onOpenLightbox={(c) => setLightboxCard(c)}
                     />
                   ))}
                 </div>
@@ -618,6 +629,8 @@ const Collection: React.FC = () => {
                               year={card.year}
                               manufacturer={card.manufacturer}
                               className="w-10 h-10 rounded-lg"
+                              enableLightbox={true}
+                              onImageClick={() => setLightboxCard(card)}
                             />
                             <span className="font-bold text-white">{card.player}</span>
                           </div>
@@ -806,6 +819,14 @@ const Collection: React.FC = () => {
           isOpen={isOCRModalOpen}
           onClose={() => setIsOCRModalOpen(false)}
           onSuccess={handleVisionSuccess}
+        />
+
+        <ImageLightbox
+          isOpen={!!lightboxCard}
+          onClose={() => setLightboxCard(null)}
+          src={lightboxCard?.image}
+          alt={lightboxCard?.player ?? ''}
+          caption={lightboxCard ? `${lightboxCard.player} • ${lightboxCard.year} ${lightboxCard.manufacturer}` : undefined}
         />
       </div>
     </div>

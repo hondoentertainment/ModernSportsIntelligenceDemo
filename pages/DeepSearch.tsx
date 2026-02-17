@@ -4,6 +4,8 @@ import { Search, Sparkles, Target, Zap, ArrowRight, ShieldCheck, Info, Loader2 }
 import { findSimilarCards } from '../lib/gemini.ts';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
 import { useToast } from '../contexts/ToastContext.tsx';
+import CardImage from '../components/CardImage.tsx';
+import ImageLightbox from '../components/ImageLightbox.tsx';
 
 const DeepSearch: React.FC = () => {
     const { inventory } = useSupabaseInventory();
@@ -12,6 +14,7 @@ const DeepSearch: React.FC = () => {
     const [results, setResults] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
+    const [lightboxResult, setLightboxResult] = useState<{ image?: string; name: string; team?: string; league?: string } | null>(null);
 
     const handleDeepSearch = useCallback(async () => {
         if (!query.trim()) return;
@@ -124,7 +127,13 @@ const DeepSearch: React.FC = () => {
                             {results.map((result, i) => (
                                 <div key={i} className="group bg-brand-slate border border-slate-800 rounded-[2.5rem] overflow-hidden hover:border-brand-blue/50 transition-all flex flex-col relative">
                                     <div className="h-48 relative overflow-hidden">
-                                        <img src={result.image} alt={result.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                        <CardImage
+                                            src={result.image}
+                                            playerName={result.name}
+                                            className="w-full h-full"
+                                            enableLightbox={true}
+                                            onImageClick={() => setLightboxResult(result)}
+                                        />
                                         <div className="absolute inset-0 bg-gradient-to-t from-brand-slate via-transparent to-transparent opacity-60"></div>
                                         <div className="absolute top-4 right-4 px-3 py-1 bg-brand-charcoal/80 backdrop-blur-md rounded-full border border-white/5 flex items-center gap-1.5 shadow-xl">
                                             <ShieldCheck size={12} className="text-brand-blue" />
@@ -186,6 +195,14 @@ const DeepSearch: React.FC = () => {
                     </p>
                 </div>
             )}
+
+            <ImageLightbox
+                isOpen={!!lightboxResult}
+                onClose={() => setLightboxResult(null)}
+                src={lightboxResult?.image}
+                alt={lightboxResult?.name ?? ''}
+                caption={lightboxResult ? `${lightboxResult.name}${lightboxResult.team ? ` • ${lightboxResult.team}` : ''}${lightboxResult.league ? ` • ${lightboxResult.league}` : ''}` : undefined}
+            />
         </div>
     );
 };

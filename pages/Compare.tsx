@@ -6,6 +6,8 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } f
 import { useInventory } from '../lib/useInventory.ts';
 import { CardInventory } from '../types.ts';
 import { generateCompareAnalysis } from '../lib/compareAnalysis.ts';
+import CardImage from '../components/CardImage.tsx';
+import ImageLightbox from '../components/ImageLightbox.tsx';
 
 const Compare: React.FC = () => {
   const { inventory } = useInventory();
@@ -21,6 +23,7 @@ const Compare: React.FC = () => {
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [lightboxCard, setLightboxCard] = useState<CardInventory | null>(null);
 
   const card1 = useMemo(() => inventory.find(c => c.id === card1Id), [inventory, card1Id]);
   const card2 = useMemo(() => inventory.find(c => c.id === card2Id), [inventory, card2Id]);
@@ -104,10 +107,12 @@ const Compare: React.FC = () => {
       >
         {selectedCard ? (
           <div className="flex items-center gap-4">
-            <img
-              src={selectedCard.image || 'https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600'}
-              alt=""
-              className="w-12 h-12 rounded-xl object-cover"
+            <CardImage
+              src={selectedCard.image}
+              playerName={selectedCard.player}
+              year={selectedCard.year}
+              manufacturer={selectedCard.manufacturer}
+              className="w-12 h-12 rounded-xl shrink-0"
             />
             <div className="text-left">
               <p className="font-bold text-white">{selectedCard.player}</p>
@@ -128,10 +133,12 @@ const Compare: React.FC = () => {
               onClick={() => { onSelect(card.id); setIsOpen(false); }}
               className="w-full px-4 py-3 flex items-center gap-4 hover:bg-brand-charcoal transition-colors border-b border-slate-800/50 last:border-0"
             >
-              <img
-                src={card.image || 'https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600'}
-                alt=""
-                className="w-10 h-10 rounded-lg object-cover"
+              <CardImage
+                src={card.image}
+                playerName={card.player}
+                year={card.year}
+                manufacturer={card.manufacturer}
+                className="w-10 h-10 rounded-lg shrink-0"
               />
               <div className="text-left flex-1">
                 <p className="font-bold text-white text-sm">{card.player}</p>
@@ -239,11 +246,17 @@ const Compare: React.FC = () => {
           {/* Cards Display */}
           <div className="grid grid-cols-1 lg:grid-cols-7 gap-8">
             <div className="lg:col-span-3 bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 text-center">
-              <img
-                src={card1.image || 'https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600'}
-                alt=""
-                className="w-32 h-40 rounded-2xl object-cover border-2 border-slate-800 mx-auto mb-4"
-              />
+              <div className="w-32 h-40 rounded-2xl border-2 border-slate-800 mx-auto mb-4 overflow-hidden">
+                <CardImage
+                  src={card1.image}
+                  playerName={card1.player}
+                  year={card1.year}
+                  manufacturer={card1.manufacturer}
+                  className="w-full h-full"
+                  enableLightbox={true}
+                  onImageClick={() => setLightboxCard(card1)}
+                />
+              </div>
               <h3 className="text-2xl font-bold text-white">{card1.player}</h3>
               <p className="text-[10px] text-brand-muted font-black uppercase tracking-widest mt-1">{card1.year} {card1.manufacturer}</p>
               <p className="text-sm text-slate-400 mt-2">{card1.set}</p>
@@ -259,11 +272,17 @@ const Compare: React.FC = () => {
             </div>
 
             <div className="lg:col-span-3 bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 text-center">
-              <img
-                src={card2.image || 'https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600'}
-                alt=""
-                className="w-32 h-40 rounded-2xl object-cover border-2 border-slate-800 mx-auto mb-4"
-              />
+              <div className="w-32 h-40 rounded-2xl border-2 border-slate-800 mx-auto mb-4 overflow-hidden">
+                <CardImage
+                  src={card2.image}
+                  playerName={card2.player}
+                  year={card2.year}
+                  manufacturer={card2.manufacturer}
+                  className="w-full h-full"
+                  enableLightbox={true}
+                  onImageClick={() => setLightboxCard(card2)}
+                />
+              </div>
               <h3 className="text-2xl font-bold text-white">{card2.player}</h3>
               <p className="text-[10px] text-brand-muted font-black uppercase tracking-widest mt-1">{card2.year} {card2.manufacturer}</p>
               <p className="text-sm text-slate-400 mt-2">{card2.set}</p>
@@ -367,6 +386,14 @@ const Compare: React.FC = () => {
           </div>
         </div>
       )}
+
+      <ImageLightbox
+        isOpen={!!lightboxCard}
+        onClose={() => setLightboxCard(null)}
+        src={lightboxCard?.image}
+        alt={lightboxCard?.player ?? ''}
+        caption={lightboxCard ? `${lightboxCard.player} • ${lightboxCard.year} ${lightboxCard.manufacturer}` : undefined}
+      />
     </div>
   );
 };
