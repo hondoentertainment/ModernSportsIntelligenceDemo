@@ -57,18 +57,18 @@ export function calculateAlphaScore(inventory: CardInventory[]): number {
     inventory.forEach(card => {
         const enriched = withScarcity(card);
         let weight: number;
-        if (enriched.scarcityIndex !== undefined) {
-            weight = enriched.scarcityIndex / 100;
-            // Pop 1 premium: 1.5x scarcity contribution
-            if (enriched.popCount === 1) weight *= 1.5;
-        } else {
-            const tier = getRarityTier(card);
-            weight = tierWeights[tier] || 0.05;
-        }
-        scarcityScore += Math.min(weight, 1.5);
+
+        // Dynamic weighting based on Scarcity Index
+        weight = (enriched.scarcityIndex || 10) / 100;
+
+        // Apex Scarcity Bonus
+        if (enriched.popCount === 1) weight *= 2.0;
+        else if (enriched.popCount < 50) weight *= 1.5;
+
+        scarcityScore += weight;
     });
-    // Normalize sparsity (max 10 cards worth of weight)
-    const normalizedScarcity = Math.min((scarcityScore / 5) * 40, 40);
+    // Scale scarcity (max 40 pts)
+    const normalizedScarcity = Math.min((scarcityScore / 2) * 40, 40);
 
     // 2. Value Density Component (30 pts)
     const totalValue = inventory.reduce((sum, c) => sum + (c.currentValue || c.purchasePrice), 0);

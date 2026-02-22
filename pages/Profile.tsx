@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Settings, Heart, History, Shield, LogOut, Save, Bell, Eye, Palette, Check, Zap, Share2, Copy, Globe, Smartphone, CreditCard, ChevronRight } from 'lucide-react';
+import { User, Settings, Heart, History, Shield, LogOut, Save, Bell, Eye, Palette, Check, Zap, Share2, Copy, Globe, Smartphone, CreditCard, ChevronRight, Cloud, Database, RefreshCw } from 'lucide-react';
+import { useMigration } from '../contexts/MigrationContext';
 import { useAuth } from '../contexts/AuthContext';
 import { MOCK_TEAMS, SPORTS } from '../constants';
 import { requestNotificationPermission, sendLocalNotification } from '../lib/notifications';
@@ -37,6 +38,7 @@ const defaultSettings: UserSettings = {
 
 const Profile: React.FC = () => {
   const { user, signOut, isDemoMode } = useAuth();
+  const { triggerMigration, isMigrating } = useMigration();
   const navigate = useNavigate();
   const [settings, setSettings] = useState<UserSettings>(() => {
     try {
@@ -255,49 +257,116 @@ const Profile: React.FC = () => {
         </section>
       </div>
 
-      {/* Notifications */}
-      <section className="bg-slate-950 border border-slate-800 rounded-3xl p-8">
-        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
-          <Bell className="text-brand-teal" size={20} />
-          Notification Settings
-        </h2>
-        <div className="space-y-4">
-          {[
-            { key: 'priceAlerts', label: 'Price Alerts', desc: 'Get notified when card values change significantly' },
-            { key: 'gameUpdates', label: 'Game Updates', desc: 'Live updates from your favorite teams' },
-            { key: 'weeklyDigest', label: 'Weekly Digest', desc: 'Summary of portfolio performance every Sunday' },
-          ].map(({ key, label, desc }) => (
-            <div key={key} className="flex items-center justify-between p-4 bg-slate-900 rounded-2xl border border-slate-800">
-              <div>
-                <p className="font-bold">{label}</p>
-                <p className="text-xs text-brand-muted">{desc}</p>
-              </div>
-              <button
-                onClick={async () => {
-                  if (!settings.notifications[key as keyof typeof settings.notifications]) {
-                    const granted = await requestNotificationPermission();
-                    if (granted && key === 'priceAlerts') {
-                      sendLocalNotification('Notifications Active', { body: 'You will now receive price alerts.' });
-                    }
-                  }
+      {/* Native Experience & Notifications */}
+      <section className="bg-slate-950 border border-slate-800 rounded-3xl p-8 space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold flex items-center gap-3">
+            <Smartphone className="text-brand-teal" size={20} />
+            Native Experience
+          </h2>
+          <div className="px-3 py-1 bg-brand-charcoal border border-slate-800 rounded-full">
+            <span className="text-[10px] font-black text-brand-lime uppercase tracking-widest">PWA Ready</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-6 bg-slate-900 rounded-2xl border border-slate-800 flex flex-col justify-between gap-4">
+            <div>
+              <p className="font-bold mb-1">Push Notifications</p>
+              <p className="text-xs text-brand-muted">Receive Alpha Alerts directly on your home screen.</p>
+            </div>
+            <button
+              onClick={async () => {
+                const granted = await requestNotificationPermission();
+                if (granted) {
                   setSettings(s => ({
                     ...s,
-                    notifications: { ...s.notifications, [key]: !s.notifications[key as keyof typeof s.notifications] }
-                  }))
-                }}
-                className={`w-12 h-7 rounded-full transition-all relative ${settings.notifications[key as keyof typeof settings.notifications]
-                  ? 'bg-brand-lime'
-                  : 'bg-slate-700'
-                  }`}
-              >
-                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${settings.notifications[key as keyof typeof settings.notifications] ? 'left-6' : 'left-1'
-                  }`} />
-              </button>
+                    notifications: { ...s.notifications, priceAlerts: true }
+                  }));
+                  sendLocalNotification('Notifications Enabled!', { body: 'You will now receive institutional price alerts.' });
+                }
+              }}
+              className={`w-full py-3 rounded-xl font-bold text-xs uppercase transition-all ${settings.notifications.priceAlerts ? 'bg-brand-lime/10 border border-brand-lime/30 text-brand-lime' : 'bg-brand-lime text-brand-charcoal'}`}
+            >
+              {settings.notifications.priceAlerts ? 'Permissions Active' : 'Enable Push Alerts'}
+            </button>
+          </div>
+
+          <div className="p-6 bg-slate-900 rounded-2xl border border-slate-800 flex flex-col justify-between gap-4">
+            <div>
+              <p className="font-bold mb-1">Install Application</p>
+              <p className="text-xs text-brand-muted">Add MSI to your home screen for full-screen analytics.</p>
             </div>
-          ))}
-          <div className="flex justify-end pt-2">
-            <button onClick={() => sendLocalNotification('Test Alert', { body: 'This is a test notification from Modern Sports Intelligence.' })} className="text-xs font-bold text-brand-lime hover:underline flex items-center gap-1">
-              <Smartphone size={12} /> Test Push Notification
+            <button
+              className="w-full py-3 bg-brand-charcoal hover:bg-slate-800 border border-slate-700 rounded-xl text-white font-bold text-xs uppercase transition-all"
+              onClick={() => {
+                // Simulated install prompt logic
+                sendLocalNotification('Installation Note', { body: 'To install, use your browser menu and "Add to Home Screen".' });
+              }}
+            >
+              Check Install Status
+            </button>
+          </div>
+        </div>
+
+        <div className="pt-4 border-t border-slate-800">
+          <h3 className="text-xs font-black text-brand-muted uppercase tracking-widest mb-4">Notification Channels</h3>
+          <div className="space-y-3">
+            {[
+              { key: 'gameUpdates', label: 'Market Sentiment Shifts', desc: 'Alerts when Gemini detects high-hype divergence.' },
+              { key: 'weeklyDigest', label: 'Weekly Alpha Report', desc: 'Full performance breakdown every Monday.' },
+            ].map(({ key, label, desc }) => (
+              <div key={key} className="flex items-center justify-between p-4 bg-slate-900/50 rounded-xl border border-slate-800">
+                <div>
+                  <p className="text-sm font-bold">{label}</p>
+                  <p className="text-[10px] text-brand-muted">{desc}</p>
+                </div>
+                <button
+                  onClick={() => setSettings(s => ({
+                    ...s,
+                    notifications: { ...s.notifications, [key]: !s.notifications[key as keyof typeof s.notifications] }
+                  }))}
+                  className={`w-10 h-6 rounded-full transition-all relative ${settings.notifications[key as keyof typeof settings.notifications] ? 'bg-brand-lime' : 'bg-slate-700'}`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${settings.notifications[key as keyof typeof settings.notifications] ? 'left-5' : 'left-1'}`} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Data Management (Migration Fallback) */}
+      <section className="bg-slate-950 border border-slate-800 rounded-3xl p-8">
+        <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
+          <Cloud className="text-brand-teal" size={20} />
+          Data Management
+        </h2>
+        <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 flex flex-col md:flex-row items-center gap-6">
+          <div className="p-4 bg-brand-charcoal rounded-full border border-slate-800">
+            <Database className="text-brand-lime" size={32} />
+          </div>
+          <div className="flex-1 text-center md:text-left">
+            <h3 className="text-lg font-bold text-white mb-1">Sync Local Data</h3>
+            <p className="text-lg font-bold text-white mb-1">Sync Local Data</p>
+            <p className="text-slate-400 text-sm">
+              Manually push your local portfolio data (from Demo Mode) to the cloud.
+              Use this if your data isn't appearing on other devices.
+            </p>
+          </div>
+          <div className="flex gap-2 w-full md:w-auto">
+            <button
+              onClick={async () => {
+                const result = await triggerMigration();
+                if (result.success) {
+                  window.location.reload();
+                }
+              }}
+              disabled={isMigrating}
+              className="flex-1 md:flex-none px-6 py-3 bg-brand-teal/20 hover:bg-brand-teal/30 border border-brand-teal/30 rounded-xl text-brand-teal font-bold flex items-center justify-center gap-2 transition-all uppercase tracking-wider text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <RefreshCw size={16} className={isMigrating ? "animate-spin" : ""} />
+              {isMigrating ? 'Syncing...' : 'Force Sync'}
             </button>
           </div>
         </div>

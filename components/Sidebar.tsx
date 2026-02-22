@@ -15,70 +15,92 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
   const { unreadCount } = useAlerts();
 
   return (
-    <aside
-      className={`fixed top-0 left-0 h-full z-40 glass-sidebar transition-all duration-300 hidden md:flex flex-col
+    <>
+      <aside
+        className={`fixed top-0 left-0 h-full z-40 glass-sidebar transition-all duration-300 hidden md:flex flex-col
       ${isOpen ? 'w-64' : 'w-20'}`}
-    >
-      <div className="p-6 flex items-center justify-between">
-        <div className={`flex items-center gap-3 transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-          <div className="bg-brand-lime p-1.5 rounded-lg shadow-lg shadow-brand-lime/20">
-            <Zap className="text-brand-charcoal fill-current" size={20} />
+      >
+        <div className="p-6 flex items-center justify-between">
+          <div className={`flex items-center gap-3 transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+            <div className="bg-brand-lime p-1.5 rounded-lg shadow-lg shadow-brand-lime/20">
+              <Zap className="text-brand-charcoal fill-current" size={20} />
+            </div>
+            <span className="font-bebas text-2xl tracking-wider whitespace-nowrap text-white">CardX</span>
           </div>
-          <span className="font-bebas text-2xl tracking-wider whitespace-nowrap text-white">CardX</span>
+          <button
+            onClick={toggle}
+            className="p-1.5 rounded-lg bg-brand-slate border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          >
+            {isOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+          </button>
         </div>
-        <button
-          onClick={toggle}
-          className="p-1.5 rounded-lg bg-brand-slate border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-        >
-          {isOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-        </button>
-      </div>
 
-      <nav className="flex-1 px-3 space-y-1.5 mt-4">
-        {NAV_ITEMS.map((item) => {
+        <nav className="flex-1 px-3 space-y-1.5 mt-4">
+          {NAV_ITEMS.map((item) => {
+            const isActive = location.pathname === item.path ||
+              (item.path !== '/' && location.pathname.startsWith(item.path));
+            return (
+              <Link
+                key={item.id}
+                to={item.path}
+                className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all group relative
+                ${isActive
+                    ? 'bg-brand-lime text-brand-charcoal font-bold'
+                    : 'text-brand-muted hover:bg-brand-slate hover:text-slate-100'}`}
+              >
+                <div className={`relative ${isActive ? 'text-brand-charcoal' : 'text-brand-muted group-hover:text-brand-lime transition-colors'}`}>
+                  {item.icon}
+                  {item.id === 'alerts' && unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-brand-red text-white text-[9px] font-black flex items-center justify-center rounded-full px-1 shadow-lg">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </div>
+                {isOpen && <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>}
+                {!isOpen && (
+                  <div className="absolute left-full ml-4 px-3 py-1 bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                    {item.label}
+                  </div>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="p-6">
+          <div className={`p-5 rounded-2xl bg-brand-slate border border-slate-800 transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 overflow-hidden'}`}>
+            <p className="text-[10px] text-brand-muted font-black uppercase mb-3 tracking-widest">Portfolio Health</p>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-bold">Good</span>
+              <span className="text-brand-lime text-xs font-bold">78%</span>
+            </div>
+            <div className="h-1 bg-brand-charcoal rounded-full overflow-hidden">
+              <div className="h-full bg-brand-lime w-[78%]"></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-brand-charcoal/90 backdrop-blur-xl border-t border-slate-800 md:hidden flex justify-around items-center p-2 pb-6">
+        {NAV_ITEMS.filter(item => ['dashboard', 'collection', 'alerts', 'profile'].includes(item.id)).map((item) => {
           const isActive = location.pathname === item.path ||
             (item.path !== '/' && location.pathname.startsWith(item.path));
           return (
             <Link
               key={item.id}
               to={item.path}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all group relative
-                ${isActive
-                  ? 'bg-brand-lime text-brand-charcoal font-bold'
-                  : 'text-brand-muted hover:bg-brand-slate hover:text-slate-100'}`}
+              className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${isActive ? 'text-brand-lime' : 'text-slate-500'}`}
             >
-              <div className={`relative ${isActive ? 'text-brand-charcoal' : 'text-brand-muted group-hover:text-brand-lime transition-colors'}`}>
+              <div className={`${isActive ? 'scale-110' : ''} transition-transform`}>
                 {item.icon}
-                {item.id === 'alerts' && unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-brand-red text-white text-[9px] font-black flex items-center justify-center rounded-full px-1 shadow-lg">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
-                )}
               </div>
-              {isOpen && <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>}
-              {!isOpen && (
-                <div className="absolute left-full ml-4 px-3 py-1 bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
-                  {item.label}
-                </div>
-              )}
+              <span className="text-[9px] font-black uppercase tracking-tighter">{item.label}</span>
             </Link>
           );
         })}
       </nav>
-
-      <div className="p-6">
-        <div className={`p-5 rounded-2xl bg-brand-slate border border-slate-800 transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 overflow-hidden'}`}>
-          <p className="text-[10px] text-brand-muted font-black uppercase mb-3 tracking-widest">Portfolio Health</p>
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-xs font-bold">Good</span>
-            <span className="text-brand-lime text-xs font-bold">78%</span>
-          </div>
-          <div className="h-1 bg-brand-charcoal rounded-full overflow-hidden">
-            <div className="h-full bg-brand-lime w-[78%]"></div>
-          </div>
-        </div>
-      </div>
-    </aside>
+    </>
   );
 };
 

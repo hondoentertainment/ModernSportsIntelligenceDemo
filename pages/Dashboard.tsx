@@ -59,6 +59,7 @@ import { AggregationService } from '../lib/aggregationService.ts';
 import { Cloud, CloudOff, Gavel } from 'lucide-react';
 import CardImage from '../components/CardImage.tsx';
 import NegotiationModal from '../components/NegotiationModal.tsx';
+import HypeFeed from '../components/HypeFeed.tsx';
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
@@ -424,7 +425,7 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Portfolio Identity HUD */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-200">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-200 order-3 lg:order-2">
             <div className="lg:col-span-1 luminous-card rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl shadow-brand-lime/5">
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-lime/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-brand-lime/10 transition-colors"></div>
 
@@ -459,45 +460,51 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
 
-            <div className="lg:col-span-2 luminous-card rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl shadow-brand-teal/5">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-xl font-bebas tracking-wide text-white mb-1">Portfolio DNA</h3>
-                  <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Investment Signature</p>
+            <div className="lg:col-span-2 luminous-card rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl shadow-brand-teal/5 flex flex-col lg:flex-row gap-8">
+              <div className="flex-1">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-xl font-bebas tracking-wide text-white mb-1">Portfolio DNA</h3>
+                    <p className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">Investment Signature</p>
+                  </div>
+                  <div className="flex gap-4">
+                    {dnaData.map((point, i) => (
+                      <div key={i} className="flex items-center gap-1.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-brand-lime/40 group-hover:bg-brand-lime transition-colors"></div>
+                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">{point.subject}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex gap-4">
-                  {dnaData.map((point, i) => (
-                    <div key={i} className="flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-brand-lime/40 group-hover:bg-brand-lime transition-colors"></div>
-                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-tighter">{point.subject}</span>
-                    </div>
-                  ))}
+
+                <div className="h-[220px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={dnaData}>
+                      <PolarGrid stroke="#1e293b" />
+                      <PolarAngleAxis
+                        dataKey="subject"
+                        tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }}
+                      />
+                      <Radar
+                        name="DNA"
+                        dataKey="A"
+                        stroke="#BEF264"
+                        fill="#BEF264"
+                        fillOpacity={0.15}
+                      />
+                    </RadarChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
 
-              <div className="h-[220px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={dnaData}>
-                    <PolarGrid stroke="#1e293b" />
-                    <PolarAngleAxis
-                      dataKey="subject"
-                      tick={{ fill: '#64748b', fontSize: 10, fontWeight: 700 }}
-                    />
-                    <Radar
-                      name="DNA"
-                      dataKey="A"
-                      stroke="#BEF264"
-                      fill="#BEF264"
-                      fillOpacity={0.15}
-                    />
-                  </RadarChart>
-                </ResponsiveContainer>
+              <div className="w-full lg:w-72 h-[320px] lg:h-auto border-t lg:border-t-0 lg:border-l border-slate-800 pt-8 lg:pt-0 lg:pl-8">
+                <HypeFeed />
               </div>
             </div>
           </div>
 
           {/* Strategic Signals Feed */}
-          <div className="reveal-section bg-brand-charcoal/50 border border-slate-800 rounded-[2.5rem] p-8 overflow-hidden relative shadow-2xl shadow-brand-blue/5 animate-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: '400ms' }}>
+          <div className="reveal-section bg-brand-charcoal/50 border border-slate-800 rounded-[2.5rem] p-8 overflow-hidden relative shadow-2xl shadow-brand-blue/5 animate-in slide-in-from-bottom-8 duration-700 order-1 lg:order-3" style={{ animationDelay: '400ms' }}>
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-brand-blue/10 rounded-xl text-brand-blue">

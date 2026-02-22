@@ -125,6 +125,7 @@ export interface UserProfile {
   alphaScore: number;
   portfolioValue: number;
   roi: number;
+  tier?: string;
 }
 
 export interface LeaderboardEntry {

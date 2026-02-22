@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Loader2 } from 'lucide-react';
+import { Loader2, TrendingUp } from 'lucide-react';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -42,10 +42,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
     if (displayLoader) {
         return (
-            <div className="min-h-screen bg-brand-charcoal flex items-center justify-center" role="status" aria-label="Loading">
-                <div className="text-center">
-                    <Loader2 className="w-12 h-12 text-brand-lime animate-spin mx-auto mb-4" aria-hidden />
-                    <p className="text-slate-400 font-bebas text-xl tracking-wider">INITIALIZING...</p>
+            <div className="min-h-screen bg-brand-charcoal flex items-center justify-center overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-charcoal via-slate-900 to-brand-charcoal" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-lime/5 via-transparent to-transparent opacity-50" />
+
+                <div className="relative z-10 text-center flex flex-col items-center animate-in fade-in zoom-in-95 duration-500">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-lime to-brand-teal flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(190,242,100,0.2)]">
+                        <TrendingUp className="w-8 h-8 text-brand-charcoal" />
+                    </div>
+                    <h1 className="font-bebas text-3xl tracking-[0.2em] text-white mb-2">MODERN SPORTS INTELLIGENCE</h1>
+                    <div className="flex items-center gap-3">
+                        <Loader2 className="w-4 h-4 text-brand-lime animate-spin" />
+                        <p className="text-slate-500 font-mono text-xs uppercase tracking-widest">Secure Uplink...</p>
+                    </div>
                 </div>
             </div>
         );

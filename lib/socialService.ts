@@ -14,7 +14,8 @@ const MOCK_USERS: UserProfile[] = [
         alphaScore: 92,
         portfolioValue: 145000,
         roi: 24.5,
-        avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop'
+        avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop',
+        tier: 'Whale'
     },
     {
         id: 'user-2',
@@ -26,7 +27,8 @@ const MOCK_USERS: UserProfile[] = [
         alphaScore: 88,
         portfolioValue: 89000,
         roi: 18.2,
-        avatarUrl: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop'
+        avatarUrl: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop',
+        tier: 'Shark'
     },
     {
         id: 'user-3',
@@ -38,7 +40,8 @@ const MOCK_USERS: UserProfile[] = [
         alphaScore: 75,
         portfolioValue: 210000,
         roi: -2.4,
-        avatarUrl: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop'
+        avatarUrl: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop',
+        tier: 'Collector'
     }
 ];
 

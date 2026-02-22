@@ -9,6 +9,8 @@
 - **Image Lightbox Component**: Professional image viewing experience with ESC key support
 - **Stripe Billing Integration**: Multi-tier subscription system with usage-based pricing
 - **NegotiationService**: Complete negotiation logic with sentiment analysis and fallback systems
+- **Phase 13: Scarcity Intelligence**: Integrated population reporting and "Pop 1" alerts
+- **Phase 14: Social Alpha Elite**: Live Hype Feed and institutional collector tiers
 
 ## 2. Project Vision & Objectives
 ### 2.1 Vision
@@ -96,25 +98,13 @@ To become the definitive source of truth for sports asset valuation, bridging th
 
 ## 8. Roadmap & Future Scope
 
-### Completed Phases (1-12)
+### Completed Phases (1-14)
 - **Foundation**: Multi-League Support, Automated Classification.
 - **Core Features**: Auth System, Data Migration, Automated Sync Scheduler.
 - **Advanced Analytics**: Investment Tracking, Realized P/L, Sold Vault.
 - **Discovery**: Alpha Scanner (Vision), Alpha Correlation (Stats vs Price).
-
-### Phase 13: Scarcity Intelligence (Next Priority)
-- **Objective**: Integrate population reports to refine scarcity metrics.
-- **Key Features**:
-    - PSA/BGS Population Report integration (or simulated data).
-    - "Pop 1" and low-pop alerts.
-    - Scarcity-weighted Alpha Score adjustments.
-
-### Phase 14: Social & Community
-- **Objective**: Enable social sharing and competitive analytics.
-- **Key Features**:
-    - Public Portfolio Links (Read-only view).
-    - "Alpha Leaderboards" comparing user ROI.
-    - Community "Buy/Sell" voting on trending prospects.
+- **Intelligence (Phase 13)**: Scarcity Intelligence with badge logic and Pop 1 alerts.
+- **Social (Phase 14)**: Social Alpha Elite with Hype Feed & Investor Tiers.
 
 ### Phase 15: Mobile Native Experience
 - **Objective**: Optimize for on-the-go scouting.
@@ -128,3 +118,15 @@ To become the definitive source of truth for sports asset valuation, bridging th
 - **Key Features**:
     - "Buy It Now" automation (simulated).
     - Trade proposal generation based on portfolio gaps.
+
+### Phase 17: Institutional Liquidity Pool (RECOMMENDED)
+- **Objective**: Create an internal marketplace where users can sell assets instantly to the "MSI House" at a slight discount.
+- **Key Features**:
+    - AI-driven "Instant Buy" valuations.
+    - Liquidity score for every asset in the portfolio.
+
+### Phase 18: Predictive Alpha Engine (RECOMMENDED)
+- **Objective**: Move from tracking to forecasting.
+- **Key Features**:
+    - Gemini-powered "Price Trajectory" based on MiLB stats.
+    - "Breakout Probability" score for prospect cards.

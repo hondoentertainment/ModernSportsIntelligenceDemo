@@ -22,7 +22,7 @@ import {
   Tooltip,
   XAxis
 } from 'recharts';
-import { simulateLeagueTrends } from '../lib/gemini.ts';
+import { getRealTimeLeagueTrends } from '../lib/gemini.ts';
 import { MiLBProspect } from '../types.ts';
 import CardImage from '../components/CardImage.tsx';
 import ImageLightbox from '../components/ImageLightbox.tsx';
@@ -37,7 +37,7 @@ const ProspectTrends: React.FC = () => {
   const fetchTrends = async (leagueOverride?: string) => {
     setIsLoading(true);
     const leagueToFetch = leagueOverride || activeLeague;
-    const data = await simulateLeagueTrends(leagueToFetch);
+    const data = await getRealTimeLeagueTrends(leagueToFetch);
     if (data && data.length > 0) {
       setProspects(data);
       localStorage.setItem(`cardx_trends_${leagueToFetch}`, JSON.stringify(data));

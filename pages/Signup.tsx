@@ -157,7 +157,17 @@ const Signup: React.FC = () => {
 
                     {error && (
                         <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
-                            <p className="text-red-400 text-sm">{error}</p>
+                            <div className="flex items-start gap-3">
+                                <Shield className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                                <div className="text-sm">
+                                    <p className="text-red-400">{error}</p>
+                                    {(error.includes('already exists') || error.includes('registered')) && (
+                                        <Link to="/login" className="text-brand-lime hover:underline mt-1 block text-xs font-bold uppercase tracking-wider">
+                                            Sign In Instead?
+                                        </Link>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     )}
 

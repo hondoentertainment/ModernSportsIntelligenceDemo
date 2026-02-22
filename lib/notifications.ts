@@ -1,37 +1,39 @@
+export class NotificationService {
+    static async requestPermission(): Promise<boolean> {
+        if (!('Notification' in window)) {
+            console.warn('This browser does not support desktop notification');
+            return false;
+        }
 
-export async function requestNotificationPermission(): Promise<boolean> {
-    if (!('Notification' in window)) {
-        console.log("This browser does not support desktop notification");
-        return false;
+        const permission = await Notification.requestPermission();
+        return permission === 'granted';
     }
 
-    let permission = Notification.permission;
+    static async notify(title: string, options?: NotificationOptions) {
+        if (!('Notification' in window) || Notification.permission !== 'granted') {
+            return;
+        }
 
-    if (permission === "granted") {
-        return true;
-    } else if (permission !== "denied") {
-        permission = await Notification.requestPermission();
-        return permission === "granted";
-    }
-
-    return false;
-}
-
-export function sendLocalNotification(title: string, options?: NotificationOptions) {
-    if (Notification.permission === "granted") {
-        // Check if service worker is ready for "mobile-like" notification
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.ready.then(registration => {
-                registration.showNotification(title, {
-                    icon: '/pwa-192x192.png',
-                    badge: '/pwa-192x192.png',
-                    vibrate: [200, 100, 200],
-                    ...options
-                });
+        const registration = await navigator.serviceWorker.ready;
+        if (registration) {
+            registration.showNotification(title, {
+                icon: '/pwa-192x192.png',
+                badge: '/pwa-192x192.png',
+                ...options
             });
         } else {
-            // Fallback to standard web notification
             new Notification(title, options);
         }
     }
+
+    static async sendPriceAlert(player: string, currentPrice: number, targetPrice: number) {
+        this.notify(`Target Hit: ${player}`, {
+            body: `Current market price is $${currentPrice.toLocaleString()}, reaching your target of $${targetPrice.toLocaleString()}.`,
+            tag: `price-alert-${player}`,
+            data: { url: '/#/alerts' }
+        });
+    }
 }
+
+export const requestNotificationPermission = () => NotificationService.requestPermission();
+export const sendLocalNotification = (title: string, options?: NotificationOptions) => NotificationService.notify(title, options);

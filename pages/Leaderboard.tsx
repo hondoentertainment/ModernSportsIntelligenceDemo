@@ -69,7 +69,17 @@ const Leaderboard: React.FC = () => {
                                             className="w-12 h-12 rounded-full border-2 border-slate-700 group-hover:border-brand-lime transition-colors object-cover"
                                         />
                                         <div>
-                                            <p className="font-bold text-white text-lg group-hover:text-brand-lime transition-colors">{entry.user.displayName}</p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-bold text-white text-lg group-hover:text-brand-lime transition-colors">{entry.user.displayName}</p>
+                                                {entry.user.tier && (
+                                                    <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border ${entry.user.tier === 'Whale' ? 'bg-amber-500/10 border-amber-500 text-amber-500' :
+                                                            entry.user.tier === 'Shark' ? 'bg-brand-blue/10 border-brand-blue text-brand-blue' :
+                                                                'bg-brand-teal/10 border-brand-teal text-brand-teal'
+                                                        }`}>
+                                                        {entry.user.tier}
+                                                    </span>
+                                                )}
+                                            </div>
                                             <p className="text-xs text-slate-500 font-mono">@{entry.user.username}</p>
                                         </div>
                                     </Link>

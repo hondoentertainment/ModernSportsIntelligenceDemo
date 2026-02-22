@@ -1,7 +1,6 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { CardInventory, PricingAnalysis, TargetWatchlist } from "../types.ts";
-import { getEbayCardPricing as getEbayApiPricing, getEbayWatchlistPricing, isEbayConfigured } from "./ebayApi.ts";
+import { ebayApi } from "./ebayApi.ts";
 import { showToast } from "./toast.ts";
 
 const apiKey = (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) ? process.env.VITE_GEMINI_API_KEY : "";
@@ -57,22 +56,27 @@ const MOCK_PROSPECTS: Record<string, any[]> = {
 
 export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnalysis | null> {
   // Try eBay API first if configured
-  if (isEbayConfigured()) {
+  if (ebayApi.config) {
     try {
-      const ebayResult = await getEbayApiPricing(
-        card.player,
-        card.year,
-        card.manufacturer,
-        card.cardNumber,
-        card.set,
-        card.isGraded,
-        card.gradingCompany,
-        card.grade
-      );
+      const ebayResult = await ebayApi.getMarketValue({
+        playerName: card.player,
+        cardYear: card.year.toString(),
+        cardSet: card.set,
+        cardNumber: card.cardNumber
+      });
 
-      if (ebayResult) {
+      if (ebayResult && ebayResult.totalListings > 0) {
         console.log('Using eBay API pricing for:', card.player);
-        return ebayResult;
+        return {
+          estimatedValue: ebayResult.averagePrice,
+          low: ebayResult.priceRange.min,
+          high: ebayResult.priceRange.max,
+          avg: ebayResult.averagePrice,
+          confidence: 1.0,
+          salesCount: ebayResult.totalListings,
+          searchUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(`${card.year} ${card.player} ${card.set}`)}&LH_Sold=1&LH_Complete=1`,
+          lastUpdated: new Date().toISOString(),
+        };
       }
     } catch (error) {
       console.warn('eBay API pricing failed, falling back to AI:', error);
@@ -139,16 +143,25 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
  */
 export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<PricingAnalysis | null> {
   // Try eBay API first if configured
-  if (isEbayConfigured()) {
+  if (ebayApi.config) {
     try {
-      const ebayResult = await getEbayWatchlistPricing(
-        target.player,
-        target.cardDescription
-      );
+      const ebayResult = await ebayApi.getMarketValue({
+        playerName: target.player,
+        cardSet: target.cardDescription
+      });
 
-      if (ebayResult) {
+      if (ebayResult && ebayResult.totalListings > 0) {
         console.log('Using eBay API pricing for watchlist:', target.player);
-        return ebayResult;
+        return {
+          estimatedValue: ebayResult.averagePrice,
+          low: ebayResult.priceRange.min,
+          high: ebayResult.priceRange.max,
+          avg: ebayResult.averagePrice,
+          confidence: 1.0,
+          salesCount: ebayResult.totalListings,
+          searchUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(`${target.player} ${target.cardDescription}`)}&LH_Sold=1&LH_Complete=1`,
+          lastUpdated: new Date().toISOString(),
+        };
       }
     } catch (error) {
       console.warn('eBay API pricing failed for watchlist, falling back to AI:', error);
@@ -203,36 +216,42 @@ export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<Pr
   }
 }
 
-export async function simulateLeagueTrends(league: string): Promise<any[]> {
-  const prompt = `Generate a realistic daily trend simulation for 50 top ${league} athletes/prospects.
-  For each athlete, provide:
-  - Name
-  - Team
-  - Position
-  - League (Must be ${league})
-  - Trend Score (0-100 based on search interest simulation)
-  - 24h Change percentage (-60 to +150)
-  - Trend Direction (up, down, stable)
-  - 7-day historical trend data (array of 7 numbers)
-  - Breakout Score (0-100 indicating likelihood of a mass-market breakout or promotion)
-  - Summary (1-sentence intelligence summary)
-  - Stats (Object with 'primary', 'secondary', and 'label' e.g. {primary: '0.980 OPS', secondary: '.290 AVG', label: 'Hitting'})
-  - Image (A high-quality Unsplash URL related to ${league} or sports)
+export async function getRealTimeLeagueTrends(league: string): Promise<any[]> {
+  const prompt = `Perform a live search for the top 50 athletes/prospects in the ${league} as of today.
+  
+  For each athlete, identify:
+  1. Real-time news (promotions, injuries, breakout games, viral moments).
+  2. Latest stats from their most recent games.
+  3. Market hype trajectory (Trending Up/Down based on current search volume and social chatter).
 
-  Make the data diverse and realistic based on current (simulated)hype levels.`;
+  Provide the data in a JSON array with:
+  - name
+  - team
+  - position
+  - league (Must be ${league})
+  - trendScore (0-100 based on recent news intensity)
+  - change24h (percentage based on recent performance peaks)
+  - trendDirection (up, down, stable)
+  - history7d (simulated array reflecting recent news cycle)
+  - breakoutScore (0-100)
+  - summary (1-sentence intelligence summary mentioning a SPECIFIC recent event found in your search)
+  - stats (Object with 'primary', 'secondary', and 'label')
+  - image (high-quality Unsplash URL)
+
+  IMPORTANT: Use real-world events from your search to justify the trend scores.`;
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+    const response = await (ai as any).models.generateContent({
+      model: "gemini-1.5-flash",
       contents: prompt,
       config: {
+        tools: [{ google_search_retrieval: {} }],
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.ARRAY,
           items: {
             type: Type.OBJECT,
             properties: {
-              id: { type: Type.STRING },
               name: { type: Type.STRING },
               team: { type: Type.STRING },
               position: { type: Type.STRING },
@@ -263,7 +282,7 @@ export async function simulateLeagueTrends(league: string): Promise<any[]> {
     const data = JSON.parse(response.text || "[]");
     return data.length > 0 ? data : (MOCK_PROSPECTS[league] || MOCK_PROSPECTS.MiLB);
   } catch (error) {
-    console.error("Gemini Trend Error:", error);
+    console.error("Gemini Real-time Trend Error:", error);
     showToast('warning', `Live ${league} trends unavailable — showing cached data.`, { dedupeKey: `trend_${league}` });
     return MOCK_PROSPECTS[league] || MOCK_PROSPECTS.MiLB;
   }
@@ -471,6 +490,75 @@ Return JSON with: action (accept|counter|reject), sentiment (positive|neutral|ne
     };
   } catch (error) {
     console.error("Gemini Negotiation Error:", error);
+    return null;
+  }
+}
+
+/**
+ * Agentic Negotiation: Gemini acts as the user's agent to make a smart offer.
+ */
+export interface AgenticOfferResponse {
+  offerAmount: number;
+  message: string;
+  reasoning: string;
+}
+
+export async function getAgenticOffer(
+  itemName: string,
+  listingPrice: number,
+  sellerCurrentAsk: number,
+  userMaxBudget: number,
+  userCurrentOffer: number,
+  recentMessages: string[]
+): Promise<AgenticOfferResponse | null> {
+  const prompt = `You are an expert sports card investment agent negotiating ON BEHALF of your client (the user).
+  
+ITEM: ${itemName}
+LISTING PRICE: $${listingPrice}
+SELLER'S CURRENT ASK: $${sellerCurrentAsk}
+CLIENT'S MAX BUDGET: $${userMaxBudget}
+YOUR LAST OFFER: $${userCurrentOffer}
+
+Recent exchange:
+${recentMessages.slice(-4).join('\n')}
+
+GOAL: Secure the item for as low as possible without offending the seller or exceeding the budget.
+
+DIRECTIONS:
+1. If seller ask is already below budget, you can move closer to close the deal.
+2. If seller is aggressive, be firm but polite.
+3. If seller is flexible, use incremental increases (e.g., 5-10% of the gap).
+4. Never exceed $${userMaxBudget}.
+5. If the gap is too large and the seller isn't budging, warn the user in the reasoning.
+
+Return JSON with: offerAmount (number), message (string for the seller), reasoning (short summary for the user).`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-1.5-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            offerAmount: { type: Type.NUMBER },
+            message: { type: Type.STRING },
+            reasoning: { type: Type.STRING },
+          },
+          required: ["offerAmount", "message", "reasoning"],
+        },
+      },
+    });
+
+    const data = JSON.parse(response.text || "{}");
+    return {
+      offerAmount: Math.min(data.offerAmount || userCurrentOffer, userMaxBudget),
+      message: data.message || "I'd like to make another offer.",
+      reasoning: data.reasoning || "Incremental step to reach a deal.",
+    };
+  } catch (error) {
+    console.error("Gemini Agentic Offer Error:", error);
     return null;
   }
 }

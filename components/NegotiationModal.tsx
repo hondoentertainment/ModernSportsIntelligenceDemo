@@ -78,21 +78,27 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
     };
 
     const handleAutoAgent = async () => {
-        if (!session) return;
-        const nextOffer = Math.min(session.maxWillingToPay, Math.floor(session.currentUserOffer + (session.sellerAsk - session.currentUserOffer) * 0.5));
+        if (!session || session.status !== 'active') return;
 
         setAgentThinking(true);
         try {
-            const updatedSession = await NegotiationService.processUserOfferWithGemini(session, {
-                amount: nextOffer,
-                content: `[AUTO-AGENT] I'm authorized to offer $${nextOffer}. This is a fair market valuation.`
-            });
+            // Artificial delay to make it feel like the agent is "working"
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            const updatedSession = await NegotiationService.autoNegotiateRound(session);
             setSession(updatedSession);
-            if (updatedSession.status === 'accepted') setStep('result');
-        } catch {
+
+            if (updatedSession.status === 'accepted') {
+                setStep('result');
+            } else if (updatedSession.status === 'active') {
+                // If the user wants to keep going, they can click again, 
+                // or we can add a toggle for "Full Auto"
+            }
+        } catch (error) {
+            console.error("Auto-Agent failure:", error);
             const fallback = NegotiationService.processUserOffer(session, {
-                amount: nextOffer,
-                content: `[AUTO-AGENT] I offer $${nextOffer}.`
+                amount: Math.min(session.maxWillingToPay, session.sellerAsk),
+                content: `Let's close this at $${Math.min(session.maxWillingToPay, session.sellerAsk)}.`
             });
             setSession(fallback);
             if (fallback.status === 'accepted') setStep('result');
@@ -181,10 +187,9 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                                             : 'bg-slate-800 text-slate-200 rounded-bl-none border border-slate-700'
                                             }`}>
                                             {msg.sender === 'seller' && msg.sentiment && (
-                                                <div className={`flex items-center gap-1 mb-1.5 text-[10px] font-bold uppercase tracking-wider ${
-                                                    msg.sentiment === 'positive' ? 'text-green-400' :
+                                                <div className={`flex items-center gap-1 mb-1.5 text-[10px] font-bold uppercase tracking-wider ${msg.sentiment === 'positive' ? 'text-green-400' :
                                                     msg.sentiment === 'negative' || msg.sentiment === 'aggressive' ? 'text-amber-400' : 'text-slate-400'
-                                                }`}>
+                                                    }`}>
                                                     {SENTIMENT_ICONS[msg.sentiment as keyof typeof SENTIMENT_ICONS] || SENTIMENT_ICONS.neutral}
                                                     <span>{msg.sentiment}</span>
                                                 </div>
@@ -244,6 +249,14 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                                         Ask: ${session.sellerAsk} | Your Max: ${session.maxWillingToPay}
                                     </span>
                                 </div>
+                                {agentThinking && session.messages.some(m => m.content.includes('[AGENT]')) && (
+                                    <div className="bg-brand-blue/5 border border-brand-blue/10 p-3 rounded-xl animate-in fade-in slide-in-from-bottom-2">
+                                        <p className="text-[9px] font-black uppercase tracking-widest text-brand-blue mb-1">Agent Strategy</p>
+                                        <p className="text-[10px] text-slate-400 leading-relaxed italic">
+                                            Comparing seller ask against market velocity. Staying within budget while maintaining deal momentum.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

@@ -121,8 +121,24 @@ const Login: React.FC = () => {
                     )}
 
                     {error && (
-                        <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
-                            <p className="text-red-400 text-sm text-center">{error}</p>
+                        <div className={`mb-6 p-4 rounded-2xl border ${error.includes('wait') ? 'bg-amber-500/10 border-amber-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
+                            <div className="flex items-start gap-3">
+                                {error.includes('wait') ? (
+                                    <Zap className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                                ) : (
+                                    <Shield className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                                )}
+                                <div className="text-sm">
+                                    <p className={error.includes('wait') ? 'text-amber-400' : 'text-red-400'}>
+                                        {error}
+                                    </p>
+                                    {error.includes('Invalid email') && (
+                                        <Link to="/forgot-password" className="text-brand-lime hover:underline mt-1 block text-xs font-bold uppercase tracking-wider">
+                                            Reset Password?
+                                        </Link>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     )}
 

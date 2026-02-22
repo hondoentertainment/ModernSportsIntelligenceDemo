@@ -9,7 +9,6 @@ interface AuthContextType {
     loading: boolean;
     isDemoMode: boolean;
     recoveryMode: boolean;
-    isMigrating: boolean;
     signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
     signUp: (email: string, password: string, username?: string) => Promise<{ error: AuthError | null }>;
     signInWithGoogle: () => Promise<{ error: AuthError | null }>;
@@ -43,7 +42,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
     const [recoveryMode, setRecoveryMode] = useState(false);
-    const [isMigrating, setIsMigrating] = useState(false);
     const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     // Proactive session refresh to prevent token expiry
@@ -74,6 +72,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }, []);
 
     useEffect(() => {
+        let mounted = true;
+
         // Check for demo mode session
         const demoSession = localStorage.getItem('msi_demo_session');
         if (isDemoMode && demoSession) {
@@ -82,68 +82,60 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return;
         }
 
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
+        // Initialize session
+        const initSession = async () => {
+            try {
+                const { data: { session: initialSession } } = await supabase.auth.getSession();
 
-            // Start refresh timer if we have a session
-            if (session) {
-                startSessionRefreshTimer();
+                if (mounted) {
+                    setSession(initialSession);
+                    setUser(initialSession?.user ?? null);
+                    if (initialSession) startSessionRefreshTimer();
+                }
+            } catch (error) {
+                console.error('Error initializing session:', error);
+            } finally {
+                if (mounted) setLoading(false);
             }
-        });
+        };
 
-        // Listen for auth state changes with event-specific handling
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            setSession(session);
-            setUser(session?.user ?? null);
-            setLoading(false);
+        initSession();
 
-            switch (event) {
-                case 'PASSWORD_RECOVERY':
-                    // User clicked the password reset link in their email.
-                    // Set recovery mode so ResetPassword page knows it has a valid session.
-                    setRecoveryMode(true);
-                    // Navigate to the reset-password page (using hash router)
-                    window.location.hash = '/reset-password';
-                    break;
+        // Listen for auth state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+            if (mounted) {
+                setSession(currentSession);
+                setUser(currentSession?.user ?? null);
 
-                case 'TOKEN_REFRESHED':
-                    console.log('[Auth] Session token refreshed');
-                    break;
+                // Only change loading if it was somehow true (e.g. during a sign-in process that triggered this)
+                // But generally initSession handles the initial load.
+                // We keep it strictly coordinated.
 
-                case 'SIGNED_IN':
-                    setRecoveryMode(false);
-                    startSessionRefreshTimer();
-
-                    // Handle data migration if needed
-                    if (session?.user && needsMigration()) {
-                        setIsMigrating(true);
-                        migrateToSupabase(session.user.id).then((result) => {
-                            if (result.success) {
-                                console.log('[Auth] Migration successful:', result);
-                            } else {
-                                console.error('[Auth] Migration failed:', result.errors);
-                            }
-                            setIsMigrating(false);
-                        });
-                    }
-                    break;
-
-                case 'SIGNED_OUT':
-                    setRecoveryMode(false);
-                    stopSessionRefreshTimer();
-                    break;
-
-                case 'USER_UPDATED':
-                    // Password was successfully changed or profile updated
-                    setRecoveryMode(false);
-                    break;
+                switch (event) {
+                    case 'PASSWORD_RECOVERY':
+                        setRecoveryMode(true);
+                        window.location.hash = '/reset-password';
+                        break;
+                    case 'TOKEN_REFRESHED':
+                        console.log('[Auth] Session token refreshed');
+                        break;
+                    case 'SIGNED_IN':
+                        setRecoveryMode(false);
+                        startSessionRefreshTimer();
+                        break;
+                    case 'SIGNED_OUT':
+                        setRecoveryMode(false);
+                        stopSessionRefreshTimer();
+                        break;
+                    case 'USER_UPDATED':
+                        setRecoveryMode(false);
+                        break;
+                }
             }
         });
 
         return () => {
+            mounted = false;
             subscription.unsubscribe();
             stopSessionRefreshTimer();
         };
@@ -245,8 +237,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             updatePassword,
             refreshSession,
             clearRecoveryMode,
-            demoLogin,
-            isMigrating
+            demoLogin
         }}>
             {children}
         </AuthContext.Provider>

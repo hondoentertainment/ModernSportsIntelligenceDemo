@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
 import { useAuth } from '../contexts/AuthContext.tsx';
+import { useMigration } from '../contexts/MigrationContext.tsx';
 import { initializeScheduler, stopScheduler } from '../lib/syncScheduler.ts';
 import { initPriceHistory, teardownPriceHistory, isPriceHistoryInitialized } from '../lib/priceHistory.ts';
 import { bulkUpsertCards, bulkUpsertTargets } from '../lib/supabaseData.ts';
@@ -11,7 +12,8 @@ import type { CardInventory, TargetWatchlist } from '../types.ts';
 
 const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { inventory, targets, setInventory, setTargets, setSyncMeta } = useSupabaseInventory();
-    const { user, isMigrating } = useAuth();
+    const { user } = useAuth();
+    const { isMigrating } = useMigration();
 
     // Hydrate price history from Supabase on login
     useEffect(() => {

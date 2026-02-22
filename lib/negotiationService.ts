@@ -1,5 +1,5 @@
 import { NegotiationSession, NegotiationMessage } from '../types';
-import { getNegotiationResponse } from './gemini';
+import { getNegotiationResponse, getAgenticOffer } from './gemini';
 
 // Mock responses for the simulated seller (fallback when Gemini unavailable)
 const SELLER_RESPONSES = {
@@ -190,6 +190,33 @@ export class NegotiationService {
 
     // Auto-Agent logic: The "Agent" negotiates on behalf of the user
     static async autoNegotiateRound(session: NegotiationSession): Promise<NegotiationSession> {
-        return session;
+        if (session.status !== 'active') return session;
+
+        const agentOffer = await getAgenticOffer(
+            session.targetItem.name,
+            session.targetItem.price || 100,
+            session.sellerAsk,
+            session.maxWillingToPay,
+            session.currentUserOffer,
+            session.messages.map(m => `${m.sender}: ${m.content}`)
+        );
+
+        if (!agentOffer) {
+            // Fallback: simple increment
+            const nextOffer = Math.min(
+                session.maxWillingToPay,
+                Math.floor(session.currentUserOffer + (session.sellerAsk - session.currentUserOffer) * 0.3)
+            );
+            return this.processUserOfferWithGemini(session, {
+                amount: nextOffer,
+                content: `I'm authorized to offer $${nextOffer}.`
+            });
+        }
+
+        // Apply Agent's message and offer
+        return this.processUserOfferWithGemini(session, {
+            amount: agentOffer.offerAmount,
+            content: `[AGENT] ${agentOffer.message}`
+        });
     }
 }
