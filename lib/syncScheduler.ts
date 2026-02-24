@@ -206,23 +206,15 @@ export class SyncScheduler {
             this.performSync();
         }
 
-        // Calculate interval in milliseconds
-        const intervals = {
-            hourly: 60 * 60 * 1000,
-            daily: 24 * 60 * 60 * 1000,
-            weekly: 7 * 24 * 60 * 60 * 1000,
-        };
-
-        const intervalMs = intervals[this.config.interval];
-
-        // Set up periodic sync
+        // Set up periodic sync heartbeat (watchdog)
+        // Check every 60 seconds if a sync is due. This is more robust than a single long interval.
         this.intervalId = window.setInterval(() => {
             if (isSyncDue()) {
                 this.performSync();
             }
-        }, intervalMs);
+        }, 60 * 1000); // 1 minute heartbeat
 
-        console.log(`Sync scheduler: Started with ${this.config.interval} interval`);
+        console.log(`Sync scheduler: Started watchdog with 60s heartbeat (${this.config.interval} check)`);
     }
 
     /**

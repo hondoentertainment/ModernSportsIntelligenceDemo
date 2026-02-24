@@ -1,6 +1,8 @@
 
 import { CardInventory } from '../types';
 import { getCardHistory, PriceSnapshot } from './priceHistory';
+import { LiquidityService } from './LiquidityService';
+import { CorrelationService } from './CorrelationService';
 
 export interface PortfolioMetrics {
     totalValue: number;         // Current market value of active assets
@@ -16,6 +18,8 @@ export interface PortfolioMetrics {
     soldCount: number;          // Sold assets
     topPerformers: Array<{ player: string; roi: number; roiPercent: number }>;
     underPerformers: Array<{ player: string; roi: number; roiPercent: number }>;
+    avgLiquidity: number;       // Average liquidity score (0-100)
+    diversificationScore: number; // Portfolio balance/diversity score (0-100)
 }
 
 export const AggregationService = {
@@ -37,7 +41,9 @@ export const AggregationService = {
                 trend30d: 0,
                 assetCount: 0,
                 topPerformers: [],
-                underPerformers: []
+                underPerformers: [],
+                avgLiquidity: 0,
+                diversificationScore: 0
             };
         }
 
@@ -51,9 +57,10 @@ export const AggregationService = {
             acc.totalValue += current;
             acc.totalCostBasis += cost;
             acc.assetCount += 1;
+            acc.totalLiquidity += LiquidityService.calculateLiquidityScore(card);
 
             return acc;
-        }, { totalValue: 0, totalCostBasis: 0, assetCount: 0 });
+        }, { totalValue: 0, totalCostBasis: 0, assetCount: 0, totalLiquidity: 0 });
 
         const realizedMetrics = soldInventory.reduce((acc, card) => {
             const cost = card.purchasePrice + (card.gradingFees || 0) + (card.shippingFees || 0);
@@ -131,7 +138,9 @@ export const AggregationService = {
             trend7d,
             trend30d,
             topPerformers,
-            underPerformers
+            underPerformers,
+            avgLiquidity: activeMetrics.assetCount > 0 ? Math.round(activeMetrics.totalLiquidity / activeMetrics.assetCount) : 0,
+            diversificationScore: CorrelationService.calculateDiversificationScore(inventory)
         };
     },
 

@@ -36,6 +36,9 @@ export function useSupabaseInventory() {
         totalValue: 0,
         assetCount: 0
     });
+    const [lastSyncError, setLastSyncError] = useState<string | null>(null);
+
+    const syncStatus = loading ? 'loading' : isMigrating ? 'migrating' : (isAuthenticated ? 'synced' : 'local');
 
     // Load data on mount or auth change
     useEffect(() => {
@@ -46,20 +49,31 @@ export function useSupabaseInventory() {
                 // 1. Check if we need to migrate local data first
                 if (needsMigration()) {
                     setIsMigrating(true);
-                    const migrationResult = await migrateToSupabase(userId);
-                    if (migrationResult.success) {
-                        console.log('Migration successful:', migrationResult);
+                    try {
+                        const migrationResult = await migrateToSupabase(userId);
+                        if (migrationResult.success) {
+                            console.log('Migration successful:', migrationResult);
+                        } else {
+                            setLastSyncError(migrationResult.errors.join(', '));
+                        }
+                    } catch (e) {
+                        setLastSyncError('System error during migration');
+                        console.error('Migration error:', e);
                     }
                     setIsMigrating(false);
                 }
 
                 // 2. Fetch from Supabase
-                const [cards, watchlist] = await Promise.all([
-                    fetchCards(userId),
-                    fetchTargets(userId)
-                ]);
-                setInventory(cards);
-                setTargets(watchlist);
+                try {
+                    const [cards, watchlist] = await Promise.all([
+                        fetchCards(userId),
+                        fetchTargets(userId)
+                    ]);
+                    setInventory(cards);
+                    setTargets(watchlist);
+                } catch (e) {
+                    setLastSyncError('Failed to fetch data from cloud');
+                }
             } else {
                 // Load from localStorage (demo mode)
                 try {
@@ -111,7 +125,8 @@ export function useSupabaseInventory() {
     const addCard = useCallback(async (card: CardInventory) => {
         setInventory(prev => [card, ...prev]);
         if (isAuthenticated && userId) {
-            await upsertCard(card, userId);
+            const success = await upsertCard(card, userId);
+            if (!success) setLastSyncError('Failed to save card to cloud');
         }
     }, [isAuthenticated, userId]);
 
@@ -121,7 +136,11 @@ export function useSupabaseInventory() {
             // Sync to Supabase
             if (isAuthenticated && userId) {
                 const card = updated.find(c => c.id === id);
-                if (card) upsertCard(card, userId);
+                if (card) {
+                    upsertCard(card, userId).then(success => {
+                        if (!success) setLastSyncError('Failed to update card in cloud');
+                    });
+                }
             }
             return updated;
         });
@@ -130,7 +149,8 @@ export function useSupabaseInventory() {
     const removeCard = useCallback(async (id: string) => {
         setInventory(prev => prev.filter(c => c.id !== id));
         if (isAuthenticated) {
-            await deleteCardFromDb(id);
+            const success = await deleteCardFromDb(id);
+            if (!success) setLastSyncError('Failed to delete card from cloud');
         }
     }, [isAuthenticated]);
 
@@ -139,7 +159,8 @@ export function useSupabaseInventory() {
     const addTarget = useCallback(async (target: TargetWatchlist) => {
         setTargets(prev => [target, ...prev]);
         if (isAuthenticated && userId) {
-            await upsertTarget(target, userId);
+            const success = await upsertTarget(target, userId);
+            if (!success) setLastSyncError('Failed to save target to cloud');
         }
     }, [isAuthenticated, userId]);
 
@@ -148,7 +169,11 @@ export function useSupabaseInventory() {
             const updated = prev.map(t => t.id === id ? { ...t, ...updates } : t);
             if (isAuthenticated && userId) {
                 const target = updated.find(t => t.id === id);
-                if (target) upsertTarget(target, userId);
+                if (target) {
+                    upsertTarget(target, userId).then(success => {
+                        if (!success) setLastSyncError('Failed to update target in cloud');
+                    });
+                }
             }
             return updated;
         });
@@ -157,7 +182,8 @@ export function useSupabaseInventory() {
     const removeTarget = useCallback(async (id: string) => {
         setTargets(prev => prev.filter(t => t.id !== id));
         if (isAuthenticated) {
-            await deleteTargetFromDb(id);
+            const success = await deleteTargetFromDb(id);
+            if (!success) setLastSyncError('Failed to delete target from cloud');
         }
     }, [isAuthenticated]);
 
@@ -171,7 +197,8 @@ export function useSupabaseInventory() {
         if (inventory.length === 0 || inventory.length < MOCK_CARDS.length) {
             setInventory(MOCK_CARDS);
             if (isAuthenticated && userId) {
-                await bulkUpsertCards(MOCK_CARDS, userId);
+                const success = await bulkUpsertCards(MOCK_CARDS, userId);
+                if (!success) setLastSyncError('Failed to initialize cloud inventory');
             } else {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_CARDS));
             }
@@ -194,10 +221,13 @@ export function useSupabaseInventory() {
 
     const persistSyncToCloud = useCallback(async (cards: CardInventory[], updatedTargets?: TargetWatchlist[]) => {
         if (isAuthenticated && userId) {
-            await bulkUpsertCards(cards, userId);
+            const success = await bulkUpsertCards(cards, userId);
+            if (!success) setLastSyncError('Failed to sync cards to cloud');
+
             if (updatedTargets && updatedTargets.length > 0) {
                 const { bulkUpsertTargets } = await import('./supabaseData');
-                await bulkUpsertTargets(updatedTargets, userId);
+                const targetSuccess = await bulkUpsertTargets(updatedTargets, userId);
+                if (!targetSuccess) setLastSyncError('Failed to sync targets to cloud');
             }
         }
     }, [isAuthenticated, userId]);
@@ -209,6 +239,8 @@ export function useSupabaseInventory() {
         setTargets,
         loading,
         isMigrating,
+        syncStatus,
+        lastSyncError,
         syncMeta,
         setSyncMeta,
         isCloudSynced: isAuthenticated,

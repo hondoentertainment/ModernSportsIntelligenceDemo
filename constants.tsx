@@ -35,6 +35,7 @@ export const NAV_ITEMS = [
   { id: 'trends', label: 'Trends', icon: <TrendingUp size={20} />, path: '/trends' },
   { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={20} />, path: '/leaderboard' },
   { id: 'compare', label: 'Compare', icon: <GitCompare size={20} />, path: '/compare' },
+  { id: 'warroom', label: 'Analyst War Room', icon: <Activity size={20} />, path: '/war-room' },
   { id: 'alerts', label: 'Alerts', icon: <Bell size={20} />, path: '/alerts' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },

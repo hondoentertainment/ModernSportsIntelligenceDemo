@@ -1,5 +1,5 @@
 
-import { CardInventory } from '../types.ts';
+import { CardInventory } from '../types';
 
 export type RarityTier = 'Common' | 'Uncommon' | 'Rare' | 'Ultra Rare' | 'Grail' | 'OneOfOne';
 

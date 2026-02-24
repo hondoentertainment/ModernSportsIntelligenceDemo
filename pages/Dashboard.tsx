@@ -18,7 +18,8 @@ import {
   Clock,
   Camera,
   Share2,
-  FileDown
+  FileDown,
+  Terminal
 } from 'lucide-react';
 
 import { Link } from 'react-router-dom';
@@ -60,6 +61,10 @@ import { Cloud, CloudOff, Gavel } from 'lucide-react';
 import CardImage from '../components/CardImage.tsx';
 import NegotiationModal from '../components/NegotiationModal.tsx';
 import HypeFeed from '../components/HypeFeed.tsx';
+import MarketPulseTable from '../components/MarketPulseTable.tsx';
+import DeepDiverReport from '../components/DeepDiverReport.tsx';
+import { CorrelationTerminal } from '../components/CorrelationTerminal.tsx';
+import { HedgeAdvisor } from '../components/HedgeAdvisor.tsx';
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
@@ -98,6 +103,7 @@ const Dashboard: React.FC = () => {
   const [isScanOpen, setIsScanOpen] = useState(false);
   const [isNegotiationOpen, setIsNegotiationOpen] = useState(false);
   const [negotiationTarget, setNegotiationTarget] = useState<any>(null);
+  const [isTerminalMode, setIsTerminalMode] = useState(false);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -240,7 +246,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-700 pb-12">
+    <div className={`space-y-12 animate-in fade-in duration-700 pb-12 ${isTerminalMode ? 'px-2' : ''}`}>
       {inventory.length === 0 ? (
         /* Compact HUD Initialization State */
         <div className="min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden py-12">
@@ -312,15 +318,15 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       ) : (
-        <>
+        <div className={isTerminalMode ? 'grid grid-cols-12 gap-4' : 'space-y-12'}>
           {/* Hero Financial Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={isTerminalMode ? 'col-span-12 grid grid-cols-1 md:grid-cols-4 gap-4' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
             {/* Main NAV Mega-Widget */}
-            <div className="md:col-span-2 lg:col-span-2 luminous-card rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group shadow-2xl shadow-brand-lime/5 flex flex-col justify-between">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-brand-lime/10 blur-[120px] rounded-full animate-pulse -mr-24 -mt-24 pointer-events-none"></div>
+            <div className={isTerminalMode ? 'md:col-span-2 luminous-card rounded-2xl p-6 relative overflow-hidden group shadow-xl flex flex-col justify-between' : 'md:col-span-2 lg:col-span-2 luminous-card rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group shadow-2xl shadow-brand-lime/5 flex flex-col justify-between'}>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-brand-lime/5 blur-[100px] rounded-full -mr-16 -mt-16 pointer-events-none"></div>
 
-              <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-                <div className="space-y-6">
+              <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] transition-all ${isCloudSynced ? 'bg-brand-blue/10 border-brand-blue/20 text-brand-blue' : 'bg-slate-800 border-slate-700 text-brand-muted'}`}>
                       {isCloudSynced ? <><Cloud size={12} /> Cloud Synced</> : <><CloudOff size={12} /> Local Mode</>}
@@ -328,28 +334,33 @@ const Dashboard: React.FC = () => {
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-lime/10 border border-brand-lime/20 text-brand-lime text-[10px] font-black uppercase tracking-[0.2em]">
                       <Sparkles size={12} /> Live
                     </div>
+                    <button
+                      onClick={() => setIsTerminalMode(!isTerminalMode)}
+                      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-[0.2em] transition-all ${isTerminalMode ? 'bg-brand-lime text-brand-charcoal border-brand-lime' : 'bg-slate-800 border-slate-700 text-brand-muted hover:text-white'}`}
+                    >
+                      <Terminal size={12} /> {isTerminalMode ? 'Terminal Active' : 'Enter Terminal'}
+                    </button>
                   </div>
 
                   <div>
-                    <h1 className="text-4xl md:text-6xl font-bebas tracking-tight text-white leading-none mb-1">
+                    <h1 className={isTerminalMode ? "text-2xl font-bebas tracking-tight text-white leading-none mb-1" : "text-4xl md:text-6xl font-bebas tracking-tight text-white leading-none mb-1"}>
                       {userSettings?.favoriteTeam ? `${userSettings.favoriteTeam.split(' ').pop()} Hub` : 'Net Asset'} <span className="text-brand-lime">{userSettings?.favoriteTeam ? 'Intelligence' : 'Value'}</span>
                     </h1>
-                    <span className="text-5xl md:text-7xl font-mono font-bold text-white tracking-tighter">
+                    <span className={isTerminalMode ? "text-4xl font-mono font-bold text-white tracking-tighter" : "text-5xl md:text-7xl font-mono font-bold text-white tracking-tighter"}>
                       ${portfolioMetrics.totalValue.toLocaleString()}
                     </span>
                   </div>
 
-                  <div className="flex flex-wrap gap-3 pt-2">
-                    <button onClick={handleSync} disabled={isSyncing} className={`px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2 transition-all active:scale-95 ${isSyncing ? 'bg-slate-800 text-brand-lime cursor-wait' : 'bg-brand-lime text-brand-charcoal hover:bg-white'}`}>
-                      {isSyncing ? <RefreshCw size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <button onClick={handleSync} disabled={isSyncing} className={`px-4 py-2 rounded-lg font-black uppercase tracking-widest text-[9px] flex items-center gap-2 transition-all active:scale-95 ${isSyncing ? 'bg-slate-800 text-brand-lime cursor-wait' : 'bg-brand-lime text-brand-charcoal hover:bg-white'}`}>
+                      {isSyncing ? <RefreshCw size={12} className="animate-spin" /> : <RefreshCw size={12} />}
                       {isSyncing ? 'Syncing...' : 'Sync Market'}
                     </button>
                     <button
                       onClick={() => setIsScanOpen(true)}
-                      className="px-6 py-3 rounded-xl bg-brand-charcoal hover:bg-slate-800 border border-brand-lime/20 text-brand-lime font-black uppercase tracking-widest text-[10px] flex items-center gap-2 transition-all active:scale-95"
+                      className="px-4 py-2 rounded-lg bg-brand-charcoal hover:bg-slate-800 border border-brand-lime/20 text-brand-lime font-black uppercase tracking-widest text-[9px] flex items-center gap-2 transition-all active:scale-95"
                     >
-                      <Sparkles size={14} />
-                      Alpha Scan
+                      <Sparkles size={12} /> Alpha
                     </button>
                     <Link to="/collection" className="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-black uppercase tracking-widest text-[10px] flex items-center gap-2 transition-all border border-slate-700">
                       Manage Assets <ArrowUpRight size={14} />
@@ -357,72 +368,92 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="w-full md:w-[280px] h-[160px] bg-slate-900/50 rounded-2xl border border-white/5 p-4 backdrop-blur-sm">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">30d Momentum</span>
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${growthComparison.deltaPercent >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
-                      {growthComparison.deltaPercent >= 0 ? '+' : ''}{growthComparison.deltaPercent.toFixed(1)}%
-                    </span>
+                {!isTerminalMode && (
+                  <div className="w-full md:w-[280px] h-[160px] bg-slate-900/50 rounded-2xl border border-white/5 p-4 backdrop-blur-sm">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">30d Momentum</span>
+                      <span className={`text-[10px] font-black uppercase tracking-widest ${growthComparison.deltaPercent >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
+                        {growthComparison.deltaPercent >= 0 ? '+' : ''}{growthComparison.deltaPercent.toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="h-[100px] w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={chartData}>
+                          <defs>
+                            <linearGradient id="colorValMini" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#D9F99D" stopOpacity={0.3} />
+                              <stop offset="95%" stopColor="#D9F99D" stopOpacity={0} />
+                            </linearGradient>
+                          </defs>
+                          <Area type="monotone" dataKey="value" stroke="#D9F99D" strokeWidth={2} fillOpacity={1} fill="url(#colorValMini)" />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
                   </div>
-                  <div className="h-[100px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={chartData}>
-                        <defs>
-                          <linearGradient id="colorValMini" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#D9F99D" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#D9F99D" stopOpacity={0} />
-                          </linearGradient>
-                        </defs>
-                        <Area type="monotone" dataKey="value" stroke="#D9F99D" strokeWidth={2} fillOpacity={1} fill="url(#colorValMini)" />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
 
-            {/* Right Column Stack */}
-            <div className="space-y-6">
-              {/* Status Card */}
-              <div className="luminous-card rounded-[2rem] p-6 flex flex-col justify-center gap-4 min-h-[160px]">
-                <div className="flex justify-between items-start">
-                  <div className="p-3 bg-brand-charcoal rounded-xl border border-slate-800 text-brand-blue">
-                    <Activity size={20} />
-                  </div>
-                  <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest"> eBay Feed Active</span>
+            {/* Right Column Stack / Terminal Grid Items */}
+            <div className={isTerminalMode ? 'md:col-span-1 luminous-card rounded-2xl p-4 flex flex-col justify-center gap-2 min-h-[100px]' : 'luminous-card rounded-[2rem] p-6 flex flex-col justify-center gap-4 min-h-[160px]'}>
+              <div className="flex justify-between items-start">
+                <div className="p-2 bg-brand-charcoal rounded-lg border border-slate-800 text-brand-blue">
+                  <Activity size={16} />
                 </div>
-                <div>
-                  <p className="text-3xl font-mono font-bold text-white mb-1">{inventory.length}</p>
-                  <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Total Assets Tracked</p>
+                <span className="text-[9px] font-black text-brand-muted uppercase tracking-widest"> eBay Feed</span>
+              </div>
+              <div>
+                <p className="text-2xl font-mono font-bold text-white leading-none">{inventory.length}</p>
+                <p className="text-[9px] font-black text-brand-muted uppercase tracking-widest mt-1">Total Assets</p>
+              </div>
+            </div>
+
+            {/* ROI Card */}
+            <div className={isTerminalMode ? 'md:col-span-1 luminous-card rounded-2xl p-4 flex flex-col justify-center gap-2 min-h-[100px]' : 'luminous-card rounded-[2rem] p-6 flex flex-col justify-center gap-4 min-h-[160px]'}>
+              <div className="flex justify-between items-start">
+                <div className="p-2 bg-brand-charcoal rounded-lg border border-slate-800 text-brand-green">
+                  <TrendingUp size={16} />
+                </div>
+                <div className="text-right">
+                  <span className="text-[9px] font-black text-brand-muted uppercase tracking-widest block"> Gain/Loss</span>
+                  {portfolioMetrics.soldCount > 0 && (
+                    <span className="text-[8px] font-black text-brand-lime uppercase tracking-widest">{portfolioMetrics.soldCount} Assets Realized</span>
+                  )}
                 </div>
               </div>
-
-              {/* ROI Card */}
-              <div className="luminous-card rounded-[2rem] p-6 flex flex-col justify-center gap-4 min-h-[160px]">
-                <div className="flex justify-between items-start">
-                  <div className="p-3 bg-brand-charcoal rounded-xl border border-slate-800 text-brand-green">
-                    <TrendingUp size={20} />
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest block">Total Portfolio Gain</span>
-                    {portfolioMetrics.soldCount > 0 && (
-                      <span className="text-[8px] font-black text-brand-lime uppercase tracking-widest">{portfolioMetrics.soldCount} Assets Realized</span>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <p className={`text-3xl font-mono font-bold ${portfolioMetrics.totalGain >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
-                    ${portfolioMetrics.totalGain >= 0 ? '+' : ''}{portfolioMetrics.totalGain.toLocaleString()}
-                  </p>
-                  <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
-                    Realized P/L: <span className={portfolioMetrics.realizedProfit >= 0 ? 'text-brand-lime' : 'text-brand-red'}>
-                      ${portfolioMetrics.realizedProfit >= 0 ? '+' : ''}{portfolioMetrics.realizedProfit.toLocaleString()}
-                    </span>
-                  </p>
-                </div>
+              <div>
+                <p className={`text-2xl font-mono font-bold leading-none ${portfolioMetrics.totalGain >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
+                  ${portfolioMetrics.totalGain >= 0 ? '+' : ''}{portfolioMetrics.totalGain.toLocaleString()}
+                </p>
+                <p className="text-[9px] font-black text-brand-muted uppercase tracking-widest mt-1">
+                  Portfolio P/L
+                </p>
               </div>
             </div>
           </div>
+
+          {/* Terminal Mode Market Pulse Table & Analyst Desk */}
+          {isTerminalMode && (
+            <>
+              <div className="col-span-12 lg:col-span-8 animate-in slide-in-from-left duration-500">
+                <div className="flex items-center justify-between mb-4 px-2">
+                  <div className="flex items-center gap-3">
+                    <div className="p-1.5 bg-brand-lime/10 rounded-lg text-brand-lime">
+                      <Activity size={16} />
+                    </div>
+                    <h3 className="text-lg font-bebas tracking-wide text-white">Live Market Quotes</h3>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="px-2 py-0.5 rounded bg-brand-charcoal border border-slate-800 text-[9px] font-black text-slate-500 uppercase tracking-widest">Streaming</span>
+                  </div>
+                </div>
+                <MarketPulseTable items={inventory.slice(0, 8)} />
+              </div>
+              <div className="col-span-12 lg:col-span-4 animate-in slide-in-from-right duration-500">
+                <DeepDiverReport cardName={inventory[0]?.player ? `${inventory[0].year} ${inventory[0].manufacturer} ${inventory[0].player}` : undefined} />
+              </div>
+            </>
+          )}
 
           {/* Portfolio Identity HUD */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-200 order-3 lg:order-2">
@@ -558,6 +589,16 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Asset Correlation & Hedge Advisor (Phase 21) */}
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-500 order-last" style={{ animationDelay: '600ms' }}>
+            <div className="xl:col-span-3">
+              <CorrelationTerminal inventory={inventory} />
+            </div>
+            <div className="xl:col-span-2">
+              <HedgeAdvisor inventory={inventory} />
+            </div>
           </div>
 
           {/* Negotiation / Marketplace Teaser */}
@@ -858,9 +899,8 @@ const Dashboard: React.FC = () => {
               })}
             </div>
           </section>
-        </>
-      )
-      }
+        </div>
+      )}
 
       {/* Report Modal */}
       <ReportModal

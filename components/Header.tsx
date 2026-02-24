@@ -1,13 +1,18 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, ChevronDown, User, LogOut, Settings } from 'lucide-react';
+import { Search, Bell, ChevronDown, User, LogOut, Settings, Terminal, Zap, Shield, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useSupabaseInventory } from '../lib/useSupabaseInventory';
 
 const Header: React.FC = () => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { user, signOut, isDemoMode } = useAuth();
+  const { syncStatus, lastSyncError } = useSupabaseInventory();
   const navigate = useNavigate();
+
+  const isCommand = searchQuery.startsWith('/');
 
   const handleLogout = async () => {
     await signOut();
@@ -18,15 +23,28 @@ const Header: React.FC = () => {
   const displayEmail = user?.email || 'demo@sportsintel.io';
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-8 glass-header">
+    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-8 glass-header border-b border-slate-800/50">
       <div className="flex-1 max-w-xl">
         <div className="relative group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted group-focus-within:text-brand-lime transition-colors" size={18} />
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            {isCommand ? (
+              <Terminal className="text-brand-lime animate-pulse" size={16} />
+            ) : (
+              <Search className="text-brand-muted group-focus-within:text-brand-lime transition-colors" size={18} />
+            )}
+          </div>
           <input
             type="text"
-            placeholder="Global search across collection & MLB database..."
-            className="w-full bg-brand-slate border border-slate-800 rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-brand-lime transition-all placeholder:text-slate-500"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={isCommand ? "Enter terminal command (e.g. /scan, /buy, /compare)..." : "MSI Intel: Search card populations, market caps, or trajectories..."}
+            className={`w-full bg-brand-slate border rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 transition-all placeholder:text-slate-500 font-medium ${isCommand ? 'border-brand-lime/50 ring-brand-lime/20 text-brand-lime font-mono' : 'border-slate-800 focus:ring-brand-lime'}`}
           />
+          {isCommand && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 rounded bg-brand-lime/10 border border-brand-lime/30 text-[9px] font-black text-brand-lime uppercase tracking-widest animate-pulse">
+              Terminal Active
+            </div>
+          )}
         </div>
       </div>
 
@@ -35,6 +53,18 @@ const Header: React.FC = () => {
           <Bell size={20} />
           <span className="absolute top-2 right-2 w-2 h-2 bg-brand-lime rounded-full"></span>
         </button>
+
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-charcoal border border-slate-800 rounded-full group cursor-help transition-all hover:bg-brand-slate" title={syncStatus === 'synced' ? 'Cloud Sync Active' : syncStatus === 'migrating' ? 'Migrating Data...' : 'Local Storage Mode'}>
+          <div className={`w-1.5 h-1.5 rounded-full ${syncStatus === 'synced' ? 'bg-brand-lime animate-pulse' : syncStatus === 'migrating' ? 'bg-brand-blue animate-bounce' : 'bg-slate-600'}`}></div>
+          <span className={`text-[9px] font-black uppercase tracking-[0.15em] ${syncStatus === 'synced' ? 'text-brand-lime' : syncStatus === 'migrating' ? 'text-brand-blue' : 'text-slate-500'}`}>
+            {syncStatus}
+          </span>
+          {lastSyncError && (
+            <div className="w-4 h-4 rounded-full bg-red-500/20 flex items-center justify-center" title={lastSyncError}>
+              <span className="text-[8px] text-red-500 font-bold">!</span>
+            </div>
+          )}
+        </div>
 
         <div className="h-6 w-px bg-slate-800 hidden md:block"></div>
 

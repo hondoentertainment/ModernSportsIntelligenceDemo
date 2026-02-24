@@ -19,21 +19,25 @@ import {
   Clock,
   Star
 } from 'lucide-react';
-import { CardInventory, TargetWatchlist, League } from '../types.ts';
-import { getEbayCardPrice } from '../lib/gemini.ts';
-import { LEAGUES } from '../constants.tsx';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
-import { useFavorites } from '../lib/useFavorites.ts';
-import AddTargetModal from '../components/AddTargetModal.tsx';
-import AddAssetModal from '../components/AddAssetModal.tsx';
-import OCRIngestionModal from '../components/OCRIngestionModal.tsx';
-import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
-import { generatePopData } from '../lib/scarcityService.ts';
-import Sparkline from '../components/Sparkline.tsx';
-import { getSparklineData, getPriceTrend } from '../lib/priceHistory.ts';
+import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
+import { getEbayCardPrice } from '../lib/gemini';
+import { LEAGUES } from '../constants';
+import { useSupabaseInventory } from '../lib/useSupabaseInventory';
+import { useFavorites } from '../lib/useFavorites';
+import AddTargetModal from '../components/AddTargetModal';
+import AddAssetModal from '../components/AddAssetModal';
+import OCRIngestionModal from '../components/OCRIngestionModal';
+import { getRarityTier, getTierStyles } from '../lib/rarity';
+import { generatePopData, ScarcityService } from '../lib/scarcityService';
+import Sparkline from '../components/Sparkline';
+import { getPriceTrend, getSparklineData } from '../lib/priceHistory';
 import { Loader2, Cloud, CloudOff } from 'lucide-react';
-import CardImage from '../components/CardImage.tsx';
-import ImageLightbox from '../components/ImageLightbox.tsx';
+import CardImage from '../components/CardImage';
+import ImageLightbox from '../components/ImageLightbox';
+import ScarcityBadge from '../components/ScarcityBadge';
+import { LiquidityBadge } from '../components/LiquidityBadge';
+import { ExitStrategyModal } from '../components/ExitStrategyModal';
+import { LiquidityService } from '../lib/LiquidityService';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 const VIRTUAL_THRESHOLD = 24;
@@ -56,6 +60,7 @@ interface CardGridItemProps {
   getSparklineData: (id: string, limit?: number) => number[];
   getPriceTrend: (id: string) => string;
   onOpenLightbox?: (card: CardInventory) => void;
+  onOpenExitStrategy?: (card: CardInventory) => void;
   key?: React.Key;
 }
 
@@ -75,6 +80,7 @@ function CardGridItem({
   getSparklineData,
   getPriceTrend,
   onOpenLightbox,
+  onOpenExitStrategy,
 }: CardGridItemProps) {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
@@ -142,20 +148,30 @@ function CardGridItem({
             <p className="text-sm font-mono font-black text-brand-lime">{card.currentValue ? `$${Math.round(card.currentValue).toLocaleString()}` : '—'}</p>
           </div>
         </div>
-        {card.popCount !== undefined && (
-          <div className="flex items-center justify-between p-3 bg-brand-charcoal/30 border border-slate-800/30 rounded-xl">
+        {(card.popReport || card.popCount !== undefined) && (
+          <div className="flex items-center justify-between p-4 bg-brand-charcoal/30 border border-slate-800/30 rounded-2xl">
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${card.scarcityIndex && card.scarcityIndex > 80 ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 'bg-slate-600'}`}></div>
-              <span className="text-[9px] font-black text-brand-muted uppercase tracking-tighter">Pop Report</span>
+              <span className="text-[9px] font-black text-brand-muted uppercase tracking-tighter">Pop Intelligence</span>
             </div>
-            <div className="text-right">
-              <span className="text-xs font-black text-white">Pop {card.popCount}</span>
-              {card.popHigher !== undefined && card.popHigher < 5 && (
-                <span className="text-[9px] font-bold text-brand-muted ml-1">({card.popHigher === 0 ? 'None' : card.popHigher} Higher)</span>
-              )}
-            </div>
+            <ScarcityBadge report={card.popReport} />
+            {!card.popReport && card.popCount !== undefined && (
+              <div className="text-right">
+                <span className="text-xs font-black text-white">Pop {card.popCount}</span>
+                {card.popHigher !== undefined && card.popHigher < 5 && (
+                  <span className="text-[9px] font-bold text-brand-muted ml-1">({card.popHigher === 0 ? 'None' : card.popHigher} Higher)</span>
+                )}
+              </div>
+            )}
           </div>
         )}
+        <div className="flex items-center justify-between p-4 bg-brand-charcoal/30 border border-slate-800/30 rounded-2xl cursor-pointer hover:bg-brand-charcoal/50 transition-colors" onClick={() => onOpenExitStrategy?.(card)}>
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${(card.liquidityScore || 0) > 70 ? 'bg-brand-green shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-600'}`}></div>
+            <span className="text-[9px] font-black text-brand-muted uppercase tracking-tighter">Market Depth</span>
+          </div>
+          <LiquidityBadge score={card.liquidityScore || LiquidityService.calculateLiquidityScore(card)} size="sm" />
+        </div>
         <div className="bg-brand-charcoal/30 border border-slate-800/30 rounded-xl p-3">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[9px] font-black text-brand-muted uppercase tracking-tighter">Price Trend</span>
@@ -195,6 +211,7 @@ function VirtualizedGrid({
   getSparklineData,
   getPriceTrend,
   onOpenLightbox,
+  onOpenExitStrategy,
 }: {
   items: CardInventory[];
   columns: number;
@@ -213,6 +230,7 @@ function VirtualizedGrid({
   getSparklineData: (id: string, limit?: number) => number[];
   getPriceTrend: (id: string) => string;
   onOpenLightbox?: (card: CardInventory) => void;
+  onOpenExitStrategy?: (card: CardInventory) => void;
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
   const rowCount = Math.ceil(items.length / columns);
@@ -260,6 +278,7 @@ function VirtualizedGrid({
                   getSparklineData={getSparklineData}
                   getPriceTrend={getPriceTrend}
                   onOpenLightbox={onOpenLightbox}
+                  onOpenExitStrategy={onOpenExitStrategy}
                 />
               ))}
             </div>
@@ -297,19 +316,31 @@ const Collection: React.FC = () => {
   // Hydrate local inventory with Scarcity Data if missing
   useEffect(() => {
     if (inventory.length > 0) {
-      let hydratedCount = 0;
-      inventory.forEach(card => {
-        if (card.popCount === undefined && card.isGraded) {
+      let hydrated = false;
+      const updatedInventory = inventory.map(card => {
+        if (!card.popReport && card.isGraded) {
           const popData = generatePopData(card);
-          Object.assign(card, popData);
-          hydratedCount++;
+          hydrated = true;
+          // Synchronous fallback for display, but simulate a report
+          const popReport: any = {
+            popAtGrade: popData.popCount,
+            popTotal: Math.floor(popData.popCount * 2.5),
+            popHigher: card.grade === '10' ? 0 : Math.floor(popData.popCount * 0.15),
+            lastChecked: new Date().toISOString(),
+            source: 'simulated',
+            badge: ScarcityService.getBadgeType(popData.popCount, card.grade === '10' ? 0 : 5)
+          };
+          return { ...card, ...popData, popReport };
         }
+        return card;
       });
-      if (hydratedCount > 0) {
-        console.log(`Hydrated ${hydratedCount} cards with scarcity data.`);
+
+      if (hydrated) {
+        setInventory(updatedInventory);
+        console.log(`Hydrated cards with scarcity data.`);
       }
     }
-  }, [inventory]);
+  }, [inventory, setInventory]);
 
   // Favorites state
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -323,6 +354,8 @@ const Collection: React.FC = () => {
   const [initialAssetData, setInitialAssetData] = useState<Partial<CardInventory> | null>(null);
   const [isOCRModalOpen, setIsOCRModalOpen] = useState(false);
   const [lightboxCard, setLightboxCard] = useState<CardInventory | null>(null);
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
+  const [exitStrategyCard, setExitStrategyCard] = useState<CardInventory | null>(null);
 
   // Ensure full inventory is loaded on mount
   useEffect(() => {
@@ -375,6 +408,15 @@ const Collection: React.FC = () => {
       ));
     }
     setIsPricing(null);
+  };
+
+  const handleSaveExitStrategy = (cardId: string, exitPlan: ExitPlan) => {
+    updateCard({
+      id: cardId,
+      exitPlan,
+      exitPlanId: exitPlan.id,
+      liquidityScore: LiquidityService.calculateLiquidityScore(inventory.find(c => c.id === cardId)!)
+    } as any);
   };
 
   const deleteCard = (id: string) => {
@@ -580,6 +622,7 @@ const Collection: React.FC = () => {
                   getSparklineData={getSparklineData}
                   getPriceTrend={getPriceTrend}
                   onOpenLightbox={(c) => setLightboxCard(c)}
+                  onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -600,6 +643,7 @@ const Collection: React.FC = () => {
                       getSparklineData={getSparklineData}
                       getPriceTrend={getPriceTrend}
                       onOpenLightbox={(c) => setLightboxCard(c)}
+                      onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
                     />
                   ))}
                 </div>
@@ -615,6 +659,7 @@ const Collection: React.FC = () => {
                       <th className="px-8 py-4 text-right">P-Price</th>
                       <th className="px-8 py-4 text-right">Market</th>
                       <th className="px-8 py-4 text-center">Grade</th>
+                      <th className="px-8 py-4 text-center">Liquidity</th>
                       <th className="px-8 py-4"></th>
                     </tr>
                   </thead>
@@ -641,6 +686,9 @@ const Collection: React.FC = () => {
                         <td className="px-8 py-4 text-right font-mono text-sm">${card.purchasePrice.toLocaleString()}</td>
                         <td className="px-8 py-4 text-right font-mono text-sm text-brand-lime">${card.currentValue?.toLocaleString() || '—'}</td>
                         <td className="px-8 py-4 text-center text-[10px] font-black uppercase">{card.isGraded ? `${card.gradingCompany} ${card.grade}` : 'Raw'}</td>
+                        <td className="px-8 py-4 text-center">
+                          <LiquidityBadge score={card.liquidityScore || LiquidityService.calculateLiquidityScore(card)} size="sm" />
+                        </td>
                         <td className="px-8 py-4 text-right flex justify-end gap-2">
                           <button
                             onClick={() => toggleFavorite(card)}
@@ -828,6 +876,15 @@ const Collection: React.FC = () => {
           alt={lightboxCard?.player ?? ''}
           caption={lightboxCard ? `${lightboxCard.player} • ${lightboxCard.year} ${lightboxCard.manufacturer}` : undefined}
         />
+
+        {exitStrategyCard && (
+          <ExitStrategyModal
+            isOpen={isExitModalOpen}
+            onClose={() => { setIsExitModalOpen(false); setExitStrategyCard(null); }}
+            card={exitStrategyCard}
+            onSave={handleSaveExitStrategy}
+          />
+        )}
       </div>
     </div>
   );

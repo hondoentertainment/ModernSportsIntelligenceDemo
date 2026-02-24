@@ -106,27 +106,51 @@ To become the definitive source of truth for sports asset valuation, bridging th
 - **Intelligence (Phase 13)**: Scarcity Intelligence with badge logic and Pop 1 alerts.
 - **Social (Phase 14)**: Social Alpha Elite with Hype Feed & Investor Tiers.
 
-### Phase 15: Mobile Native Experience
+### Phase 15: Mobile Native Experience (IN PROGRESS)
 - **Objective**: Optimize for on-the-go scouting.
 - **Key Features**:
     - PWA Manifest and Service Workers for offline access.
     - Native Push Notifications for price alerts.
     - Mobile-optimized camera flow for the Alpha Scanner.
 
-### Phase 16: Agentic Negotiation
+### Phase 16: Agentic Negotiation (PLANNED)
 - **Objective**: AI agents that can negotiate deals on behalf of the user.
 - **Key Features**:
-    - "Buy It Now" automation (simulated).
+    - Gemin-driven sentiment analysis for firmness detection.
     - Trade proposal generation based on portfolio gaps.
 
-### Phase 17: Institutional Liquidity Pool (RECOMMENDED)
+### Phase 17: Institutional Liquidity Pool (PLANNED)
 - **Objective**: Create an internal marketplace where users can sell assets instantly to the "MSI House" at a slight discount.
 - **Key Features**:
     - AI-driven "Instant Buy" valuations.
     - Liquidity score for every asset in the portfolio.
 
-### Phase 18: Predictive Alpha Engine (RECOMMENDED)
+### Phase 18: Predictive Alpha Engine (PLANNED)
 - **Objective**: Move from tracking to forecasting.
 - **Key Features**:
     - Gemini-powered "Price Trajectory" based on MiLB stats.
     - "Breakout Probability" score for prospect cards.
+
+### Phase 19: Multi-Agent Intelligence (RECOMMENDED)
+- **Objective**: Deploy specialized agents for autonomous portfolio management.
+- **Key Features**:
+    - Synthetic Analyst Team (Scout, Market, Risk, Negotiator).
+    - Multi-agent collaboration on investment thesis.
+
+### Phase 20: Liquidity Intelligence (RECOMMENDED)
+- **Objective**: Institutional-grade market depth analysis.
+- **Key Features**:
+    - MSI Liquidity Score for every asset.
+    - Exit strategy planning based on volume.
+
+### Phase 21: Cross-Asset Correlation (RECOMMENDED)
+- **Objective**: Hedge strategies across sport ecosystems.
+
+### Phase 22: Fiscal Intelligence (RECOMMENDED)
+- **Objective**: Automated tax and cost-basis tracking.
+
+### Phase 23: Visual Audit Simulation (RECOMMENDED)
+- **Objective**: AI-powered grading predictions using high-fidelity vision.
+
+### Phase 24: Macro-Sentinel Monitoring (RECOMMENDED)
+- **Objective**: Early warning system for global market shifts affecting luxury assets.

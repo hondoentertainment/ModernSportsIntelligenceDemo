@@ -158,23 +158,25 @@ export async function migrateToSupabase(userId: string): Promise<MigrationResult
     try {
         // Migrate cards
         const cards = getLocalStorageData<CardInventory[]>(STORAGE_KEYS.INVENTORY) || [];
-        for (const card of cards) {
-            const success = await migrateCard(card, userId);
-            if (success) {
-                result.cardsMigrated++;
+        if (cards.length > 0) {
+            const { bulkUpsertCards } = await import('./supabaseData');
+            const cardSuccess = await bulkUpsertCards(cards, userId);
+            if (cardSuccess) {
+                result.cardsMigrated = cards.length;
             } else {
-                result.errors.push(`Failed to migrate card: ${card.player} (${card.year})`);
+                result.errors.push(`Failed to migrate ${cards.length} cards`);
             }
         }
 
         // Migrate targets
         const targets = getLocalStorageData<TargetWatchlist[]>(STORAGE_KEYS.TARGETS) || [];
-        for (const target of targets) {
-            const success = await migrateTarget(target, userId);
-            if (success) {
-                result.targetsMigrated++;
+        if (targets.length > 0) {
+            const { bulkUpsertTargets } = await import('./supabaseData');
+            const targetSuccess = await bulkUpsertTargets(targets, userId);
+            if (targetSuccess) {
+                result.targetsMigrated = targets.length;
             } else {
-                result.errors.push(`Failed to migrate target: ${target.player}`);
+                result.errors.push(`Failed to migrate ${targets.length} targets`);
             }
         }
 

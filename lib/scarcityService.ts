@@ -1,13 +1,4 @@
-import { CardInventory } from '../types';
-
-export interface PopReport {
-    popHigher: number;
-    popTotal: number;
-    popAtGrade: number;
-    lastChecked: string;
-    source: 'simulated' | 'psa' | 'bgs';
-    badge?: 'Apex' | 'Low Pop' | 'Standard';
-}
+import { CardInventory, PopReport } from '../types';
 
 export class ScarcityService {
     /**
@@ -78,19 +69,50 @@ export class ScarcityService {
     }
 
     /**
+     * Calculates the ROI of grading this card.
+     */
+    static calculateGradingRoi(card: CardInventory): number {
+        if (!card.purchasePrice) return 0;
+
+        const totalBasis = (card.purchasePrice || 0) + (card.gradingFees || 0) + (card.shippingFees || 0);
+        if (totalBasis === 0) return 0;
+
+        const currentVal = card.currentValue || 0;
+        if (currentVal === 0) return 0;
+
+        return ((currentVal - totalBasis) / totalBasis) * 100;
+    }
+
+    /**
      * Synchronous estimator for analytics engine.
      */
     static generatePopData(card: CardInventory) {
         const basePop = this.calculateBasePop(card);
         const gradeImpact = this.getGradeImpact(card.grade || '10');
         const popCount = Math.max(1, Math.floor(basePop * gradeImpact));
-        const scarcityIndex = Math.min(100, Math.max(0, 100 - (popCount / 10)));
+        const scarcityIndex = this.calculateScarcityIndex(popCount, card.grade === '10' ? 0 : 5);
+        const gradingRoi = this.calculateGradingRoi(card);
 
         return {
             popCount,
-            scarcityIndex
+            scarcityIndex,
+            gradingRoi
         };
+    }
+
+    /**
+     * Calculates a scarcity score from 0-100.
+     */
+    static calculateScarcityIndex(popAtGrade: number, popHigher: number): number {
+        if (popAtGrade <= 0) return 0;
+
+        // Base logic: higher pop = lower index, higher "pop higher" = much lower index
+        const popPenalty = Math.min(60, popAtGrade / 10);
+        const higherPenalty = Math.min(40, popHigher * 2);
+
+        return Math.max(0, Math.round(100 - popPenalty - higherPenalty));
     }
 }
 
 export const generatePopData = (card: CardInventory) => ScarcityService.generatePopData(card);
+export const calculateScarcityIndex = (popAtGrade: number, popHigher: number) => ScarcityService.calculateScarcityIndex(popAtGrade, popHigher);

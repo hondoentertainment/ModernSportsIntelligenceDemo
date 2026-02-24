@@ -2,6 +2,24 @@
 export type Sport = 'Baseball' | 'Basketball' | 'Football' | 'Hockey' | 'Soccer';
 export type League = 'MLB' | 'MiLB' | 'NBA' | 'NFL' | 'Other';
 
+export interface ExitPlan {
+  id: string;
+  targetPrice: number;
+  timeframe: 'Short (3m)' | 'Medium (6-12m)' | 'Long (1-3y)' | 'Held (3y+)';
+  strategy: 'Take Profit' | 'Cut Loss' | 'Institutional Hold';
+  notes?: string;
+  createdAt: string;
+}
+
+export interface PopReport {
+  popHigher: number;
+  popTotal: number;
+  popAtGrade: number;
+  lastChecked: string;
+  source: 'simulated' | 'psa' | 'bgs';
+  badge?: 'Apex' | 'Low Pop' | 'Standard';
+}
+
 export interface CardInventory {
   id: string;
   player: string;
@@ -38,6 +56,12 @@ export interface CardInventory {
   popCount?: number;
   popHigher?: number;
   scarcityIndex?: number; // 0-100
+  popReport?: PopReport;
+  gradingRoi?: number; // Percentage gain/loss
+  // Liquidity Intelligence (Phase 20)
+  liquidityScore?: number; // 0-100
+  exitPlan?: ExitPlan;
+  exitPlanId?: string;
 }
 
 export interface TargetWatchlist {
@@ -136,6 +160,25 @@ export interface LeaderboardEntry {
 }
 
 export type NegotiationStatus = 'active' | 'accepted' | 'rejected' | 'countered';
+
+export interface AgentInsight {
+  agentId: string;
+  agentName: string;
+  persona: string;
+  insight: string;
+  sentiment: 'positive' | 'neutral' | 'negative';
+  confidence: number;
+}
+
+export interface CollaborativeThesis {
+  id: string;
+  summary: string;
+  keyTakeaways: string[];
+  riskAssessment: string;
+  recommendedAction: string;
+  agents: AgentInsight[];
+  createdAt: string;
+}
 
 export interface NegotiationMessage {
   id: string;

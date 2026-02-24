@@ -11,7 +11,7 @@ import { showToast } from '../lib/toast.ts';
 import type { CardInventory, TargetWatchlist } from '../types.ts';
 
 const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { inventory, targets, setInventory, setTargets, setSyncMeta } = useSupabaseInventory();
+    const { inventory, targets, setInventory, setTargets, setSyncMeta, persistSyncToCloud } = useSupabaseInventory();
     const { user } = useAuth();
     const { isMigrating } = useMigration();
 
@@ -49,8 +49,7 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
                     });
 
                     if (user?.id && !isDemoMode) {
-                        await bulkUpsertCards(updatedInventory as CardInventory[], user.id);
-                        await bulkUpsertTargets(updatedTargets as TargetWatchlist[], user.id);
+                        await persistSyncToCloud(updatedInventory as CardInventory[], updatedTargets as TargetWatchlist[]);
                     }
 
                     if (watchlist.priceHits.length > 0) {
