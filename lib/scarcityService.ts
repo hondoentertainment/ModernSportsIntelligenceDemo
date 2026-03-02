@@ -85,16 +85,23 @@ export class ScarcityService {
 
     /**
      * Synchronous estimator for analytics engine.
+     * Uses actual card.popCount / card.popHigher when already populated
+     * (e.g. from a previous live pop-report fetch) to avoid overwriting
+     * real data with simulated values.
      */
     static generatePopData(card: CardInventory) {
         const basePop = this.calculateBasePop(card);
         const gradeImpact = this.getGradeImpact(card.grade || '10');
-        const popCount = Math.max(1, Math.floor(basePop * gradeImpact));
-        const scarcityIndex = this.calculateScarcityIndex(popCount, card.grade === '10' ? 0 : 5);
+        const estimatedPop = Math.max(1, Math.floor(basePop * gradeImpact));
+
+        const popCount = card.popCount ?? estimatedPop;
+        const popHigher = card.popHigher ?? (card.grade === '10' ? 0 : Math.floor(popCount * 0.15));
+        const scarcityIndex = this.calculateScarcityIndex(popCount, popHigher);
         const gradingRoi = this.calculateGradingRoi(card);
 
         return {
             popCount,
+            popHigher,
             scarcityIndex,
             gradingRoi
         };

@@ -26,6 +26,7 @@ import { getPriceTrend, getSparklineData } from '../lib/priceHistory';
 import { Loader2, Cloud, CloudOff } from 'lucide-react';
 import ImageLightbox from '../components/ImageLightbox';
 import { ExitStrategyModal } from '../components/ExitStrategyModal';
+import GradingCalculatorModal from '../components/GradingCalculatorModal';
 import CardGridItem from '../components/collection/CardGridItem';
 import VirtualizedGrid from '../components/collection/VirtualizedGrid';
 
@@ -71,10 +72,10 @@ const Collection: React.FC = () => {
           const popReport: any = {
             popAtGrade: popData.popCount,
             popTotal: Math.floor(popData.popCount * 2.5),
-            popHigher: card.grade === '10' ? 0 : Math.floor(popData.popCount * 0.15),
+            popHigher: popData.popHigher,
             lastChecked: new Date().toISOString(),
             source: 'simulated',
-            badge: ScarcityService.getBadgeType(popData.popCount, card.grade === '10' ? 0 : 5)
+            badge: ScarcityService.getBadgeType(popData.popCount, popData.popHigher)
           };
           return { ...card, ...popData, popReport };
         }
@@ -102,6 +103,8 @@ const Collection: React.FC = () => {
   const [lightboxCard, setLightboxCard] = useState<CardInventory | null>(null);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [exitStrategyCard, setExitStrategyCard] = useState<CardInventory | null>(null);
+  const [isGradingCalcOpen, setIsGradingCalcOpen] = useState(false);
+  const [gradingCalcCard, setGradingCalcCard] = useState<CardInventory | null>(null);
 
   // Ensure full inventory is loaded on mount
   useEffect(() => {
@@ -369,6 +372,7 @@ const Collection: React.FC = () => {
                   getPriceTrend={getPriceTrend}
                   onOpenLightbox={(c) => setLightboxCard(c)}
                   onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
+                  onOpenGradingCalc={(c) => { setGradingCalcCard(c); setIsGradingCalcOpen(true); }}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -390,6 +394,7 @@ const Collection: React.FC = () => {
                       getPriceTrend={getPriceTrend}
                       onOpenLightbox={(c) => setLightboxCard(c)}
                       onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
+                      onOpenGradingCalc={(c) => { setGradingCalcCard(c); setIsGradingCalcOpen(true); }}
                     />
                   ))}
                 </div>
@@ -629,6 +634,14 @@ const Collection: React.FC = () => {
             onClose={() => { setIsExitModalOpen(false); setExitStrategyCard(null); }}
             card={exitStrategyCard}
             onSave={handleSaveExitStrategy}
+          />
+        )}
+
+        {gradingCalcCard && (
+          <GradingCalculatorModal
+            isOpen={isGradingCalcOpen}
+            onClose={() => { setIsGradingCalcOpen(false); setGradingCalcCard(null); }}
+            card={gradingCalcCard}
           />
         )}
       </div>
