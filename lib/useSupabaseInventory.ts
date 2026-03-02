@@ -52,7 +52,7 @@ export function useSupabaseInventory() {
                     try {
                         const migrationResult = await migrateToSupabase(userId);
                         if (migrationResult.success) {
-                            console.log('Migration successful:', migrationResult);
+                            if (import.meta.env.DEV) console.warn('Migration successful:', migrationResult);
                         } else {
                             setLastSyncError(migrationResult.errors.join(', '));
                         }

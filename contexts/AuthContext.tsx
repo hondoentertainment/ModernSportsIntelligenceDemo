@@ -117,7 +117,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                         window.location.hash = '/reset-password';
                         break;
                     case 'TOKEN_REFRESHED':
-                        console.log('[Auth] Session token refreshed');
+                        if (import.meta.env.DEV) console.warn('[Auth] Session token refreshed');
                         break;
                     case 'SIGNED_IN':
                         setRecoveryMode(false);

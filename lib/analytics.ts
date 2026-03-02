@@ -44,15 +44,6 @@ export function calculateAlphaScore(inventory: CardInventory[]): number {
     if (inventory.length === 0) return 0;
 
     // 1. Scarcity Component (40 pts) — Pop 1 gets 1.5x weight
-    const tierWeights: Record<string, number> = {
-        'One-of-One': 1.0,
-        'Grail': 0.8,
-        'Ultra Rare': 0.6,
-        'Rare': 0.3,
-        'Uncommon': 0.1,
-        'Common': 0.05
-    };
-
     let scarcityScore = 0;
     inventory.forEach(card => {
         const enriched = withScarcity(card);
@@ -126,8 +117,18 @@ export function getPortfolioDNA(inventory: CardInventory[]): DNAPoint[] {
     // Volume Calc (Asset Count)
     const volumeVal = Math.min((inventory.length / 50) * 100, 100);
 
-    // Momentum (Randomized for now, until Phase 1 deltas are more pervasive)
-    const momentumVal = 40 + Math.random() * 40;
+    // Momentum — average gain % across cards with both purchase and current value
+    const cardsWithDelta = inventory.filter(c => c.currentValue && c.purchasePrice > 0);
+    let momentumVal: number;
+    if (cardsWithDelta.length > 0) {
+        const avgGainPct = cardsWithDelta.reduce((sum, c) => {
+            return sum + ((c.currentValue! - c.purchasePrice) / c.purchasePrice) * 100;
+        }, 0) / cardsWithDelta.length;
+        // Map [-50%, +100%] gain range → [0, 100] momentum score
+        momentumVal = Math.min(Math.max(((avgGainPct + 50) / 150) * 100, 0), 100);
+    } else {
+        momentumVal = 40; // neutral default when no delta data is available
+    }
 
     return [
         { subject: 'Scarcity', A: Math.round(scarcityVal), fullMark: 100 },

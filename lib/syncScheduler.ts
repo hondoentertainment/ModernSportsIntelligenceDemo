@@ -197,7 +197,7 @@ export class SyncScheduler {
         this.targets = targets;
 
         if (this.config.interval === 'manual') {
-            console.log('Sync scheduler: Manual mode, not starting automatic sync');
+            if (import.meta.env.DEV) console.warn('Sync scheduler: Manual mode, not starting automatic sync');
             return;
         }
 
@@ -214,7 +214,7 @@ export class SyncScheduler {
             }
         }, 60 * 1000); // 1 minute heartbeat
 
-        console.log(`Sync scheduler: Started watchdog with 60s heartbeat (${this.config.interval} check)`);
+        if (import.meta.env.DEV) console.warn(`Sync scheduler: Started watchdog with 60s heartbeat (${this.config.interval} check)`);
     }
 
     /**
@@ -232,7 +232,7 @@ export class SyncScheduler {
         if (this.intervalId !== null) {
             clearInterval(this.intervalId);
             this.intervalId = null;
-            console.log('Sync scheduler: Stopped');
+            if (import.meta.env.DEV) console.warn('Sync scheduler: Stopped');
         }
     }
 
@@ -241,7 +241,7 @@ export class SyncScheduler {
      */
     private async performSync(): Promise<void> {
         try {
-            console.log('Sync scheduler: Performing sync...');
+            if (import.meta.env.DEV) console.warn('Sync scheduler: Performing sync...');
 
             // Sync portfolio
             const { inventory: updatedInventory, result: portfolioResult } = await syncPortfolio(
