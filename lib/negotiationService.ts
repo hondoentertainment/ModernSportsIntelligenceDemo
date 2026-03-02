@@ -1,4 +1,4 @@
-import { NegotiationSession, NegotiationMessage } from '../types';
+import { NegotiationSession, NegotiationMessage, NegotiableItem } from '../types';
 import { getNegotiationResponse, getAgenticOffer } from './gemini';
 
 // Mock responses for the simulated seller (fallback when Gemini unavailable)
@@ -26,7 +26,7 @@ const SELLER_RESPONSES = {
 };
 
 export class NegotiationService {
-    static startNegotiation(targetItem: any, maxWillingToPay: number): NegotiationSession {
+    static startNegotiation(targetItem: NegotiableItem, maxWillingToPay: number): NegotiationSession {
         return {
             id: crypto.randomUUID(),
             targetItem: {

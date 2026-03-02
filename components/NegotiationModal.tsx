@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, Bot, DollarSign, CheckCircle2, ShoppingBag, Loader2, ThumbsUp, ThumbsDown, Minus, Zap } from 'lucide-react';
-import { NegotiationSession } from '../types';
+import { NegotiationSession, NegotiableItem } from '../types';
 import { NegotiationService } from '../lib/negotiationService';
 import CardImage from './CardImage.tsx';
 import ImageLightbox from './ImageLightbox.tsx';
@@ -8,7 +8,7 @@ import ImageLightbox from './ImageLightbox.tsx';
 interface NegotiationModalProps {
     isOpen: boolean;
     onClose: () => void;
-    targetItem: any; // Using any for flexibility with mock data
+    targetItem: NegotiableItem | null;
     onSuccess: (finalPrice: number) => void;
 }
 

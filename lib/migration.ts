@@ -192,7 +192,7 @@ export async function migrateToSupabase(userId: string): Promise<MigrationResult
         if (result.success) {
             localStorage.removeItem(STORAGE_KEYS.INVENTORY);
             localStorage.removeItem(STORAGE_KEYS.TARGETS);
-            console.log('Migration complete, cleared localStorage data');
+            if (import.meta.env.DEV) console.warn('Migration complete, cleared localStorage data');
         }
 
     } catch (e) {
@@ -206,7 +206,7 @@ export async function migrateToSupabase(userId: string): Promise<MigrationResult
  * Backup localStorage data before migration
  */
 export function backupLocalStorage(): string {
-    const backup: Record<string, any> = {};
+    const backup: Record<string, string> = {};
 
     Object.values(STORAGE_KEYS).forEach(key => {
         const data = localStorage.getItem(key);
@@ -223,10 +223,10 @@ export function backupLocalStorage(): string {
  */
 export function restoreLocalStorage(backupJson: string): boolean {
     try {
-        const backup = JSON.parse(backupJson);
+        const backup: Record<string, string> = JSON.parse(backupJson);
 
         Object.entries(backup).forEach(([key, value]) => {
-            localStorage.setItem(key, value as string);
+            localStorage.setItem(key, value);
         });
 
         return true;

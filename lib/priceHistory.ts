@@ -130,7 +130,7 @@ export async function initPriceHistory(userId: string): Promise<void> {
         saveAllHistory(merged);
         _initialized = true;
 
-        console.log(`[PriceHistory] Initialized for user ${userId.slice(0, 8)}... — ${Object.keys(merged).length} cards hydrated`);
+        if (import.meta.env.DEV) console.warn(`[PriceHistory] Initialized for user ${userId.slice(0, 8)}... — ${Object.keys(merged).length} cards hydrated`);
     } catch (e) {
         console.warn('[PriceHistory] Initialization failed, falling back to localStorage', e);
         _initialized = true;

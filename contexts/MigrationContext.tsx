@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback, useState } from 'react';
+import React, { createContext, useContext, useCallback, useState, useEffect, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { isDemoMode } from '../lib/supabase';
 import { migrateToSupabase, needsMigration, MigrationResult } from '../lib/migration';
@@ -26,6 +26,8 @@ export const MigrationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const { user } = useAuth();
     const [isMigrating, setIsMigrating] = useState(false);
     const [lastResult, setLastResult] = useState<MigrationResult | null>(null);
+    // Prevent double-triggering when user object changes reference but userId stays the same
+    const autoTriggeredForRef = useRef<string | null>(null);
 
     const migrationAvailable = !!user && !isDemoMode && needsMigration();
 
@@ -43,6 +45,14 @@ export const MigrationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             setIsMigrating(false);
         }
     }, [user]);
+
+    // Auto-trigger migration on login when local data exists
+    useEffect(() => {
+        if (!user || isDemoMode || !needsMigration()) return;
+        if (autoTriggeredForRef.current === user.id) return;
+        autoTriggeredForRef.current = user.id;
+        triggerMigration();
+    }, [user, triggerMigration]);
 
     return (
         <MigrationContext.Provider value={{ isMigrating, lastResult, triggerMigration, migrationAvailable }}>

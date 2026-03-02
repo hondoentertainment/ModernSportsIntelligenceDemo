@@ -1,24 +1,13 @@
 
 import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import {
-  CreditCard,
   TrendingUp,
   ArrowUpRight,
   Activity,
   Trophy,
-  Zap,
-  Layers,
   Sparkles,
-  PieChart as PieChartIcon,
-  ChevronRight,
   BarChart3,
-  Package,
   RefreshCw,
-  CheckCircle2,
-  Clock,
-  Camera,
-  Share2,
-  FileDown,
   Terminal
 } from 'lucide-react';
 
@@ -52,19 +41,22 @@ import ReportModal from '../components/ReportModal.tsx';
 import MorningBriefingModal from '../components/MorningBriefingModal.tsx';
 import ShareAlphaModal from '../components/ShareAlphaModal.tsx';
 import OCRIngestionModal from '../components/OCRIngestionModal.tsx';
-import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
 import { getHistoricalDelta } from '../lib/marketHistory.ts';
 import { StatsService } from '../lib/statsService.ts';
 import { generatePortfolioReport } from '../lib/pdfExport.ts';
 import { AggregationService } from '../lib/aggregationService.ts';
 import { Cloud, CloudOff, Gavel } from 'lucide-react';
-import CardImage from '../components/CardImage.tsx';
+
 import NegotiationModal from '../components/NegotiationModal.tsx';
 import HypeFeed from '../components/HypeFeed.tsx';
 import MarketPulseTable from '../components/MarketPulseTable.tsx';
 import DeepDiverReport from '../components/DeepDiverReport.tsx';
 import { CorrelationTerminal } from '../components/CorrelationTerminal.tsx';
 import { HedgeAdvisor } from '../components/HedgeAdvisor.tsx';
+import DashboardEmptyState from '../components/dashboard/DashboardEmptyState.tsx';
+import StrategicSignalsFeed from '../components/dashboard/StrategicSignalsFeed.tsx';
+import RecentlyIngested from '../components/dashboard/RecentlyIngested.tsx';
+import { NegotiableItem } from '../types.ts';
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
@@ -80,7 +72,9 @@ const Dashboard: React.FC = () => {
     persistSyncToCloud
   } = useSupabaseInventory();
 
-  const [realMlbStats, setRealMlbStats] = useState<any[]>([]);
+  interface MlbPlayerStat { label: string; value: string | number }
+  interface MlbPlayerData { primaryNumber: string; fullName: string; stats: MlbPlayerStat[] }
+  const [realMlbStats, setRealMlbStats] = useState<MlbPlayerData[]>([]);
 
   // Fetch real stats for top MLB assets
   useEffect(() => {
@@ -102,7 +96,7 @@ const Dashboard: React.FC = () => {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isScanOpen, setIsScanOpen] = useState(false);
   const [isNegotiationOpen, setIsNegotiationOpen] = useState(false);
-  const [negotiationTarget, setNegotiationTarget] = useState<any>(null);
+  const [negotiationTarget, setNegotiationTarget] = useState<NegotiableItem | null>(null);
   const [isTerminalMode, setIsTerminalMode] = useState(false);
 
   // Identity Metrics
@@ -113,7 +107,8 @@ const Dashboard: React.FC = () => {
   const [marketSentiment, setMarketSentiment] = useState('Analyzing portfolio alpha signals...');
 
   // Personalization State
-  const [userSettings, setUserSettings] = useState<any>(() => {
+  interface UserSettings { favoriteTeam?: string; primarySport?: string }
+  const [userSettings, setUserSettings] = useState<UserSettings | null>(() => {
     try {
       const saved = localStorage.getItem('msi_user_settings');
       return saved ? JSON.parse(saved) : null;
@@ -189,7 +184,6 @@ const Dashboard: React.FC = () => {
     return AggregationService.getAggregatedTrendData(inventory, 14); // 14 day view for dash
   }, [inventory, syncMeta.lastSyncTime]);
 
-  const recentCards = inventory.slice(-3).reverse();
 
   const sportData = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -248,75 +242,10 @@ const Dashboard: React.FC = () => {
   return (
     <div className={`space-y-12 animate-in fade-in duration-700 pb-12 ${isTerminalMode ? 'px-2' : ''}`}>
       {inventory.length === 0 ? (
-        /* Compact HUD Initialization State */
-        <div className="min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden py-12">
-          {/* Background Decorative Elements */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-lime/5 blur-[100px] rounded-full animate-pulse"></div>
-
-          <div className="relative z-10 w-full max-w-4xl space-y-8 text-center reveal-section">
-            <div className="inline-flex flex-col items-center gap-4">
-              <div className="relative group">
-                <div className="absolute -inset-2 bg-gradient-to-r from-brand-lime to-brand-teal rounded-full blur-md opacity-25 group-hover:opacity-50 transition duration-1000 animate-pulse"></div>
-                <div className="relative p-6 bg-brand-charcoal border border-slate-800 rounded-full shadow-2xl">
-                  <Activity size={48} className="text-brand-lime animate-pulse" />
-                </div>
-                {/* Scanning Line Effect */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-lime to-transparent opacity-50 animate-scan pointer-events-none"></div>
-              </div>
-
-              <div className="space-y-2">
-                <h1 className="text-5xl md:text-7xl font-bebas tracking-tighter text-white leading-none">
-                  SYSTEM <span className="text-brand-lime">INITIALIZATION</span>
-                </h1>
-                <p className="text-lg text-brand-muted font-medium max-w-xl mx-auto leading-tight">
-                  Intelligence engine active. Deploy your first asset to calibrate market tracking.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-4 justify-center pt-2">
-              <Link to="/collection" className="px-10 py-5 bg-brand-lime hover:bg-white text-brand-charcoal font-black rounded-2xl transition-all shadow-2xl shadow-brand-lime/20 flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group">
-                <Package size={18} strokeWidth={3} />
-                Deploy First Asset
-                <ChevronRight size={18} strokeWidth={3} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <button
-                onClick={() => setIsScanOpen(true)}
-                className="px-10 py-5 bg-brand-charcoal hover:bg-slate-800 border border-brand-lime/30 text-brand-lime font-black rounded-2xl transition-all shadow-2xl flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group"
-              >
-                <Sparkles size={18} className="group-hover:animate-pulse" />
-                AI Alpha Scan
-              </button>
-              <button
-                onClick={() => initializeFullInventory()}
-                className="px-10 py-5 bg-brand-charcoal hover:bg-slate-800 border border-slate-700 text-white font-black rounded-2xl transition-all flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group"
-              >
-                <RefreshCw size={18} className="group-hover:rotate-180 transition-transform duration-500" />
-                Initialize Demo Sync
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 opacity-80 scale-95">
-              {[
-                { icon: <TrendingUp size={18} />, title: 'Market Pulse', desc: 'Real-time liquidity' },
-                { icon: <Zap size={18} />, title: 'Gemini Insight', desc: 'AI valuation' },
-                { icon: <Trophy size={18} />, title: 'Asset Alpha', desc: 'League analytics' }
-              ].map((feature, i) => (
-                <div key={i} className="bg-brand-slate/40 backdrop-blur-md border border-slate-800 p-6 rounded-[1.5rem] space-y-2 group hover:border-brand-lime/30 transition-all">
-                  <div className="w-10 h-10 bg-brand-charcoal rounded-xl flex items-center justify-center text-brand-lime mb-1 group-hover:scale-110 transition-transform">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-lg font-bebas tracking-wide text-white">{feature.title}</h3>
-                  <p className="text-[10px] text-brand-muted font-bold uppercase tracking-widest leading-none">{feature.desc}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="pt-6">
-              <p className="text-[9px] font-black text-brand-muted/60 uppercase tracking-[0.6em] animate-pulse">Awaiting Data Ingestion...</p>
-            </div>
-          </div>
-        </div>
+        <DashboardEmptyState
+          onScanOpen={() => setIsScanOpen(true)}
+          onInitialize={initializeFullInventory}
+        />
       ) : (
         <div className={isTerminalMode ? 'grid grid-cols-12 gap-4' : 'space-y-12'}>
           {/* Hero Financial Summary */}
@@ -535,61 +464,7 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Strategic Signals Feed */}
-          <div className="reveal-section bg-brand-charcoal/50 border border-slate-800 rounded-[2.5rem] p-8 overflow-hidden relative shadow-2xl shadow-brand-blue/5 animate-in slide-in-from-bottom-8 duration-700 order-1 lg:order-3" style={{ animationDelay: '400ms' }}>
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-brand-blue/10 rounded-xl text-brand-blue">
-                  <Activity size={20} />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bebas tracking-wide text-white">Strategic Signals</h3>
-                  <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest leading-none">Market Opportunity Analysis</p>
-                </div>
-              </div>
-              <div className="px-3 py-1 bg-brand-charcoal border border-slate-800 rounded-full text-[10px] font-black text-brand-blue uppercase tracking-widest">
-                {signals.length} Active {signals.length === 1 ? 'Signal' : 'Signals'}
-              </div>
-            </div>
-
-            {signals.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {signals.map((signal, i) => (
-                  <div key={signal.id} className="p-6 luminous-card rounded-2xl relative overflow-hidden group hover:border-brand-blue/40 transition-all">
-                    <div className={`absolute top-0 right-0 w-16 h-16 blur-3xl opacity-10 rounded-full -mr-8 -mt-8 ${signal.type === 'buy' ? 'bg-brand-lime' : 'bg-brand-teal'}`}></div>
-                    <div className="relative z-10 space-y-3">
-                      <div className="flex justify-between items-start">
-                        <div className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-tighter ${signal.type === 'buy' ? 'bg-brand-lime/10 text-brand-lime' : 'bg-brand-teal/10 text-brand-teal'}`}>
-                          {signal.type === 'buy' ? 'Liquidity Inbound' : 'Asset Maturity'}
-                        </div>
-                        {signal.impact === 'high' && (
-                          <div className="flex items-center gap-1 text-[9px] font-black text-brand-orange uppercase animate-pulse">
-                            <Zap size={10} /> High Impact
-                          </div>
-                        )}
-                      </div>
-                      <h4 className="text-white font-bold leading-tight">{signal.title}</h4>
-                      <p className="text-xs text-brand-muted leading-relaxed font-medium">
-                        {signal.description}
-                      </p>
-                      <button className="flex items-center gap-2 text-[10px] font-black text-brand-blue uppercase tracking-widest pt-2 group-hover:text-white transition-colors">
-                        Execute Action <ArrowUpRight size={12} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-12 flex flex-col items-center justify-center text-center space-y-4 bg-brand-slate/20 rounded-3xl border border-dashed border-slate-800">
-                <div className="w-12 h-12 bg-slate-800/50 rounded-full flex items-center justify-center text-slate-600">
-                  <Layers size={24} />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">Awaiting Alpha Breakouts</p>
-                  <p className="text-[10px] text-slate-500 font-medium">No active entry/exit signals detected in current market cycle.</p>
-                </div>
-              </div>
-            )}
-          </div>
+          <StrategicSignalsFeed signals={signals} />
 
           {/* Asset Correlation & Hedge Advisor (Phase 21) */}
           <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-500 order-last" style={{ animationDelay: '600ms' }}>
@@ -835,7 +710,7 @@ const Dashboard: React.FC = () => {
                       </div>
                       <h4 className="text-white font-bold mb-4">{player.fullName}</h4>
                       <div className="grid grid-cols-2 gap-4">
-                        {player.stats.map((stat: any, sIdx: number) => (
+                        {player.stats.map((stat, sIdx: number) => (
                           <div key={sIdx}>
                             <p className="text-[9px] font-black text-brand-muted uppercase tracking-tighter mb-1">{stat.label}</p>
                             <p className="text-sm font-mono font-black text-slate-200">{stat.value}</p>
@@ -851,54 +726,7 @@ const Dashboard: React.FC = () => {
 
 
           {/* Recents Section */}
-          <section className="reveal-section" style={{ animationDelay: '600ms' }}>
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-4xl font-bebas tracking-wider flex items-center gap-4">
-                <Activity className="text-brand-lime" size={32} />
-                Recently Ingested
-              </h2>
-              <Link to="/collection" className="text-xs font-black text-brand-lime uppercase tracking-widest border-b border-brand-lime/30 hover:border-brand-lime pb-1 transition-all">View All {inventory.length} Assets</Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {recentCards.map(card => {
-                const tier = getRarityTier(card);
-                const styles = getTierStyles(tier);
-
-                return (
-                  <div key={card.id} className={`group bg-brand-slate border ${styles.border} rounded-[2rem] p-6 hover:shadow-xl transition-all flex items-center gap-6 relative overflow-hidden`}>
-                    <div className={`absolute inset-0 bg-gradient-to-r ${styles.glow || 'from-transparent'} via-transparent to-transparent opacity-30`}></div>
-
-                    <div className={`w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden border-2 border-slate-800 ${styles.border !== 'border-slate-800' ? styles.border : ''} transition-colors relative z-10`}>
-                      <CardImage
-                        src={card.image}
-                        playerName={card.player}
-                        year={card.year}
-                        manufacturer={card.manufacturer}
-                        className="w-full h-full"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0 relative z-10">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className={`font-bold text-lg truncate ${styles.text}`}>{card.player}</h4>
-                        {tier !== 'Common' && tier !== 'Uncommon' && (
-                          <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${styles.badge}`}>
-                            {tier === 'OneOfOne' ? '1/1' : tier}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[10px] text-brand-muted font-black uppercase tracking-widest mb-3 truncate">{card.year} {card.manufacturer} {card.set}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-mono font-black text-slate-100">${card.purchasePrice.toLocaleString()}</span>
-                        <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-tighter ${card.isGraded ? 'bg-brand-lime/10 text-brand-lime border border-brand-lime/20' : 'bg-slate-800 text-brand-muted'}`}>
-                          {card.isGraded ? `${card.gradingCompany} ${card.grade}` : 'Raw'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+          <RecentlyIngested inventory={inventory} />
         </div>
       )}
 
@@ -945,7 +773,7 @@ const Dashboard: React.FC = () => {
         targetItem={negotiationTarget}
         onSuccess={(finalPrice) => {
           // Add to inventory logic here if desired
-          console.log('Acquired for', finalPrice);
+          if (import.meta.env.DEV) console.warn('Acquired for', finalPrice);
         }}
       />
     </div>

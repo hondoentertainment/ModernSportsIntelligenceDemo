@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, GoogleSearchRetrieval } from "@google/genai";
 import { CardInventory, PricingAnalysis, TargetWatchlist } from "../types.ts";
 import { ebayApi } from "./ebayApi.ts";
 import { showToast } from "./toast.ts";
@@ -6,7 +6,33 @@ import { showToast } from "./toast.ts";
 const apiKey = (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) ? process.env.VITE_GEMINI_API_KEY : "";
 const ai = new GoogleGenAI({ apiKey });
 
-const MOCK_PROSPECTS: Record<string, any[]> = {
+export interface ProspectData {
+  name: string;
+  team: string;
+  position: string;
+  league: string;
+  trendScore: number;
+  change24h: number;
+  trendDirection: 'up' | 'down' | 'stable';
+  history7d: number[];
+  breakoutScore: number;
+  summary: string;
+  stats?: { primary: string; secondary: string; label: string };
+  image: string;
+}
+
+export interface SimilarCardResult {
+  id?: string;
+  name: string;
+  team: string;
+  reason: string;
+  similarityScore: number;
+  estimatedValue: number;
+  image: string;
+  league: string;
+}
+
+const MOCK_PROSPECTS: Record<string, ProspectData[]> = {
   MiLB: [
     {
       name: "Jackson Holliday",
@@ -54,7 +80,7 @@ const MOCK_PROSPECTS: Record<string, any[]> = {
   ]
 };
 
-export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnalysis | null> {
+export async function getEbayCardPrice(card: CardInventory, signal?: AbortSignal): Promise<PricingAnalysis | null> {
   // Try eBay API first if configured
   if (ebayApi.config) {
     try {
@@ -66,7 +92,7 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
       });
 
       if (ebayResult && ebayResult.totalListings > 0) {
-        console.log('Using eBay API pricing for:', card.player);
+        if (import.meta.env.DEV) console.warn('Using eBay API pricing for:', card.player);
         return {
           estimatedValue: ebayResult.averagePrice,
           low: ebayResult.priceRange.min,
@@ -101,6 +127,7 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
+      abortSignal: signal,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -130,6 +157,7 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') return null;
     console.error("Gemini Pricing Error:", error);
     showToast('error', `AI valuation failed for ${card.player}. Try again later.`, { dedupeKey: `gemini_price_${card.id}` });
     return null;
@@ -141,7 +169,7 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
  * Uses the target's player name and card description to estimate current market value.
  * Tries eBay API first, falls back to AI analysis.
  */
-export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<PricingAnalysis | null> {
+export async function getWatchlistItemPrice(target: TargetWatchlist, signal?: AbortSignal): Promise<PricingAnalysis | null> {
   // Try eBay API first if configured
   if (ebayApi.config) {
     try {
@@ -151,7 +179,7 @@ export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<Pr
       });
 
       if (ebayResult && ebayResult.totalListings > 0) {
-        console.log('Using eBay API pricing for watchlist:', target.player);
+        if (import.meta.env.DEV) console.warn('Using eBay API pricing for watchlist:', target.player);
         return {
           estimatedValue: ebayResult.averagePrice,
           low: ebayResult.priceRange.min,
@@ -182,6 +210,7 @@ export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<Pr
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
+      abortSignal: signal,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -210,13 +239,14 @@ export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<Pr
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') return null;
     console.error("Gemini Watchlist Pricing Error:", error);
     showToast('error', `AI valuation failed for watchlist item "${target.player}".`, { dedupeKey: `gemini_wl_${target.id}` });
     return null;
   }
 }
 
-export async function getRealTimeLeagueTrends(league: string): Promise<any[]> {
+export async function getRealTimeLeagueTrends(league: string, signal?: AbortSignal): Promise<ProspectData[]> {
   const prompt = `Perform a live search for the top 50 athletes/prospects in the ${league} as of today.
   
   For each athlete, identify:
@@ -241,11 +271,12 @@ export async function getRealTimeLeagueTrends(league: string): Promise<any[]> {
   IMPORTANT: Use real-world events from your search to justify the trend scores.`;
 
   try {
-    const response = await (ai as any).models.generateContent({
+    const response = await ai.models.generateContent({
       model: "gemini-1.5-flash",
       contents: prompt,
+      abortSignal: signal,
       config: {
-        tools: [{ google_search_retrieval: {} }],
+        tools: [{ googleSearchRetrieval: {} as GoogleSearchRetrieval }],
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.ARRAY,
@@ -279,16 +310,17 @@ export async function getRealTimeLeagueTrends(league: string): Promise<any[]> {
       },
     });
 
-    const data = JSON.parse(response.text || "[]");
+    const data: ProspectData[] = JSON.parse(response.text || "[]");
     return data.length > 0 ? data : (MOCK_PROSPECTS[league] || MOCK_PROSPECTS.MiLB);
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') return [];
     console.error("Gemini Real-time Trend Error:", error);
     showToast('warning', `Live ${league} trends unavailable — showing cached data.`, { dedupeKey: `trend_${league}` });
     return MOCK_PROSPECTS[league] || MOCK_PROSPECTS.MiLB;
   }
 }
 
-export async function generatePortfolioSentiment(inventory: CardInventory[]): Promise<string> {
+export async function generatePortfolioSentiment(inventory: CardInventory[], signal?: AbortSignal): Promise<string> {
   if (inventory.length === 0) return "Awaiting data ingestion to generate market signals.";
 
   const inventorySummary = inventory.map(c =>
@@ -303,11 +335,13 @@ export async function generatePortfolioSentiment(inventory: CardInventory[]): Pr
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: prompt
+      contents: prompt,
+      abortSignal: signal,
     });
 
     return response.text || "Stable market conditions observed across all sectors.";
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') return "Market analysis cancelled.";
     console.error("Gemini Sentiment Error:", error);
     showToast('warning', 'AI sentiment analysis unavailable.', { dedupeKey: 'sentiment' });
     return "Market volatility detected. Institutional hold signals recommended.";
@@ -319,7 +353,7 @@ export async function generatePortfolioSentiment(inventory: CardInventory[]): Pr
  * imageBase64: Base64 string of the image (no prefix)
  * mimeType: e.g. "image/jpeg"
  */
-export async function parseCardImage(imageBase64: string, mimeType: string = "image/jpeg"): Promise<Partial<CardInventory> | null> {
+export async function parseCardImage(imageBase64: string, mimeType: string = "image/jpeg", signal?: AbortSignal): Promise<Partial<CardInventory> | null> {
   const prompt = `Act as a professional card grader and cataloger. Analyze this image of a sports card and extract the following details in JSON format. 
   
   SPECIAL FOCUS: If this is a baseball card, look for Minor League (MiLB) indicators such as "1st Bowman", "Pro Debut", "Heritage Minor League", or "Draft".
@@ -345,6 +379,7 @@ export async function parseCardImage(imageBase64: string, mimeType: string = "im
   try {
     const response = await ai.models.generateContent({
       model: "gemini-1.5-flash",
+      abortSignal: signal,
       contents: [{
         role: "user",
         parts: [
@@ -359,6 +394,7 @@ export async function parseCardImage(imageBase64: string, mimeType: string = "im
     const cleanJson = text.replace(/```json|```/g, "").trim();
     return JSON.parse(cleanJson);
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') return null;
     console.error("Gemini Vision Error:", error);
     showToast('error', 'Card scan failed. Check your connection and try again.', { dedupeKey: 'vision' });
     return null;
@@ -368,7 +404,7 @@ export async function parseCardImage(imageBase64: string, mimeType: string = "im
 /**
  * Deep Search: Finds cards or players similar to the input using AI reasoning.
  */
-export async function findSimilarCards(query: string, inventory: CardInventory[] = []): Promise<any[]> {
+export async function findSimilarCards(query: string, inventory: CardInventory[] = [], signal?: AbortSignal): Promise<SimilarCardResult[]> {
   const prompt = `Act as an expert sports card scout and market analyst. 
   Perform a deep similarity search for: "${query}"
   
@@ -392,6 +428,7 @@ export async function findSimilarCards(query: string, inventory: CardInventory[]
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
+      abortSignal: signal,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -415,8 +452,9 @@ export async function findSimilarCards(query: string, inventory: CardInventory[]
     });
 
     const text = response.text || "[]";
-    return JSON.parse(text);
+    return JSON.parse(text) as SimilarCardResult[];
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') return [];
     console.error("Gemini Deep Search Error:", error);
     showToast('error', 'Deep search failed. Check your connection.', { dedupeKey: 'deepsearch' });
     return [];
@@ -440,7 +478,8 @@ export async function getNegotiationResponse(
   userOffer: number,
   maxWillingToPay: number,
   sellerCurrentAsk: number,
-  recentMessages: string[]
+  recentMessages: string[],
+  signal?: AbortSignal
 ): Promise<NegotiationSellerResponse | null> {
   const prompt = `You are simulating a sports card seller in a negotiation. 
   
@@ -466,6 +505,7 @@ Return JSON with: action (accept|counter|reject), sentiment (positive|neutral|ne
     const response = await ai.models.generateContent({
       model: "gemini-1.5-flash",
       contents: prompt,
+      abortSignal: signal,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -489,6 +529,7 @@ Return JSON with: action (accept|counter|reject), sentiment (positive|neutral|ne
       counterAmount: data.counterAmount,
     };
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') return null;
     console.error("Gemini Negotiation Error:", error);
     return null;
   }
@@ -509,7 +550,8 @@ export async function getAgenticOffer(
   sellerCurrentAsk: number,
   userMaxBudget: number,
   userCurrentOffer: number,
-  recentMessages: string[]
+  recentMessages: string[],
+  signal?: AbortSignal
 ): Promise<AgenticOfferResponse | null> {
   const prompt = `You are an expert sports card investment agent negotiating ON BEHALF of your client (the user).
   
@@ -537,6 +579,7 @@ Return JSON with: offerAmount (number), message (string for the seller), reasoni
     const response = await ai.models.generateContent({
       model: "gemini-1.5-flash",
       contents: prompt,
+      abortSignal: signal,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -558,6 +601,7 @@ Return JSON with: offerAmount (number), message (string for the seller), reasoni
       reasoning: data.reasoning || "Incremental step to reach a deal.",
     };
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') return null;
     console.error("Gemini Agentic Offer Error:", error);
     return null;
   }

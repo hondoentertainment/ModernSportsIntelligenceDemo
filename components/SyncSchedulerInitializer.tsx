@@ -29,11 +29,11 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
 
     useEffect(() => {
         if (inventory.length > 0 && !isMigrating) {
-            console.log('Initializing Automated Sync Scheduler...');
+            if (import.meta.env.DEV) console.warn('Initializing Automated Sync Scheduler...');
             const scheduler = initializeScheduler(inventory, targets, {
                 onProgress: (p) => {
-                    if (p.status === 'complete') {
-                        console.log('Automatic sync complete');
+                    if (p.status === 'complete' && import.meta.env.DEV) {
+                        console.warn('Automatic sync complete');
                     }
                 },
                 onComplete: async (result) => {
@@ -61,7 +61,7 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
             });
 
             return () => {
-                console.log('Stopping Automated Sync Scheduler...');
+                if (import.meta.env.DEV) console.warn('Stopping Automated Sync Scheduler...');
                 stopScheduler();
             };
         }

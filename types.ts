@@ -189,6 +189,18 @@ export interface NegotiationMessage {
   sentiment?: 'positive' | 'neutral' | 'negative' | 'aggressive';
 }
 
+/** Minimal shape accepted by the negotiation flow from any card/target/mock source */
+export interface NegotiableItem {
+  id?: string;
+  player?: string;
+  name?: string;
+  price?: number;
+  currentValue?: number;
+  currentMarketPrice?: number;
+  image?: string;
+  cardDescription?: string;
+}
+
 export interface NegotiationSession {
   id: string;
   targetItem: {
