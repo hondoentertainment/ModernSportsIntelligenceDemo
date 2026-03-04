@@ -131,19 +131,24 @@ export function useSupabaseInventory() {
     }, [isAuthenticated, userId]);
 
     const updateCard = useCallback(async (id: string, updates: Partial<CardInventory>) => {
+        let updatedCard: CardInventory | undefined;
         setInventory(prev => {
-            const updated = prev.map(c => c.id === id ? { ...c, ...updates } : c);
-            // Sync to Supabase
-            if (isAuthenticated && userId) {
-                const card = updated.find(c => c.id === id);
-                if (card) {
-                    upsertCard(card, userId).then(success => {
-                        if (!success) setLastSyncError('Failed to update card in cloud');
-                    });
-                }
-            }
-            return updated;
+            return prev.map(c => {
+                if (c.id !== id) return c;
+                updatedCard = { ...c, ...updates };
+                return updatedCard;
+            });
         });
+        if (isAuthenticated && userId && updatedCard) {
+            upsertCard(updatedCard, userId)
+                .then(success => {
+                    if (!success) setLastSyncError('Failed to update card in cloud');
+                })
+                .catch(err => {
+                    console.error('Card update sync error:', err);
+                    setLastSyncError('Network error while updating card');
+                });
+        }
     }, [isAuthenticated, userId]);
 
     const removeCard = useCallback(async (id: string) => {
@@ -165,18 +170,24 @@ export function useSupabaseInventory() {
     }, [isAuthenticated, userId]);
 
     const updateTarget = useCallback(async (id: string, updates: Partial<TargetWatchlist>) => {
+        let updatedTarget: TargetWatchlist | undefined;
         setTargets(prev => {
-            const updated = prev.map(t => t.id === id ? { ...t, ...updates } : t);
-            if (isAuthenticated && userId) {
-                const target = updated.find(t => t.id === id);
-                if (target) {
-                    upsertTarget(target, userId).then(success => {
-                        if (!success) setLastSyncError('Failed to update target in cloud');
-                    });
-                }
-            }
-            return updated;
+            return prev.map(t => {
+                if (t.id !== id) return t;
+                updatedTarget = { ...t, ...updates };
+                return updatedTarget;
+            });
         });
+        if (isAuthenticated && userId && updatedTarget) {
+            upsertTarget(updatedTarget, userId)
+                .then(success => {
+                    if (!success) setLastSyncError('Failed to update target in cloud');
+                })
+                .catch(err => {
+                    console.error('Target update sync error:', err);
+                    setLastSyncError('Network error while updating target');
+                });
+        }
     }, [isAuthenticated, userId]);
 
     const removeTarget = useCallback(async (id: string) => {
