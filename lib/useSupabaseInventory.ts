@@ -90,7 +90,19 @@ export function useSupabaseInventory() {
                         if (Array.isArray(parsed)) setTargets(parsed);
                     }
                     if (savedMeta) {
-                        setSyncMeta(JSON.parse(savedMeta));
+                        const parsedMeta: unknown = JSON.parse(savedMeta);
+                        if (
+                            parsedMeta !== null &&
+                            typeof parsedMeta === 'object' &&
+                            'totalValue' in parsedMeta &&
+                            'assetCount' in parsedMeta &&
+                            typeof (parsedMeta as Record<string, unknown>).totalValue === 'number' &&
+                            typeof (parsedMeta as Record<string, unknown>).assetCount === 'number'
+                        ) {
+                            setSyncMeta(parsedMeta as SyncMeta);
+                        } else {
+                            console.warn('Discarding malformed syncMeta from localStorage');
+                        }
                     }
                 } catch (e) {
                     console.warn('Failed to load from localStorage', e);

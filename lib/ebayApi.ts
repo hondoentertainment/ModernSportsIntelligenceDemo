@@ -5,6 +5,26 @@ export interface EbayConfig {
   sandbox: boolean;
 }
 
+export interface EbayPrice {
+  value: string;
+  currency: string;
+}
+
+export interface EbayItemSummary {
+  itemId?: string;
+  title?: string;
+  price?: EbayPrice;
+  condition?: string;
+  itemCreationDate?: string;
+}
+
+export interface EbaySearchResponse {
+  itemSummaries?: EbayItemSummary[];
+  total?: number;
+  href?: string;
+  next?: string;
+}
+
 export const ebayApi = {
   // Initialize eBay API configuration
   config: null as EbayConfig | null,
@@ -60,7 +80,7 @@ export const ebayApi = {
     condition?: string;
     maxPrice?: number;
     limit?: number;
-  }): Promise<any> {
+  }): Promise<EbaySearchResponse> {
     const token = await this.getAccessToken();
     const baseUrl = this.getBaseUrl();
     
@@ -150,7 +170,7 @@ export const ebayApi = {
     const prices: number[] = [];
     const sales = [];
 
-    searchResults.itemSummaries.forEach((item: any) => {
+    searchResults.itemSummaries.forEach((item: EbayItemSummary) => {
       if (item.price && item.price.value) {
         const price = parseFloat(item.price.value);
         prices.push(price);
@@ -197,7 +217,7 @@ export const ebayApi = {
   },
 
   // Get item details by item ID
-  async getItemDetails(itemId: string): Promise<any> {
+  async getItemDetails(itemId: string): Promise<EbayItemSummary> {
     const token = await this.getAccessToken();
     const baseUrl = this.getBaseUrl();
     
