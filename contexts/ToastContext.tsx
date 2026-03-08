@@ -49,7 +49,12 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const duration = options?.duration ?? DEFAULT_DURATIONS[type];
         const dismissible = options?.dismissible ?? true;
 
-        const toast: Toast = { id, type, message, duration, dismissible };
+        const toast: Toast = { id, type, message, duration, dismissible, onUndo: options?.onUndo, undoLabel: options?.undoLabel };
+
+        // Undo toasts get extended duration
+        if (options?.onUndo && duration < 8000) {
+            toast.duration = 8000;
+        }
 
         setToasts(prev => {
             // Enforce max visible — remove oldest if at limit
@@ -85,6 +90,17 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             timersRef.current.clear();
         };
     }, []);
+
+    // Escape key dismisses most recent toast
+    useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && toasts.length > 0) {
+                removeToast(toasts[toasts.length - 1].id);
+            }
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [toasts, removeToast]);
 
     return (
         <ToastContext.Provider value={{ addToast, removeToast }}>
@@ -155,9 +171,19 @@ const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onDismiss }) =>
                         <span className={`mt-0.5 flex-shrink-0 ${colors.icon}`}>
                             {ICON_MAP[toast.type]}
                         </span>
-                        <p className={`text-sm font-medium leading-snug flex-1 ${colors.text}`}>
-                            {toast.message}
-                        </p>
+                        <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-medium leading-snug ${colors.text}`}>
+                                {toast.message}
+                            </p>
+                            {toast.onUndo && (
+                                <button
+                                    onClick={() => { toast.onUndo?.(); onDismiss(toast.id); }}
+                                    className="mt-1.5 text-xs font-black uppercase tracking-widest text-white hover:text-brand-lime transition-colors underline underline-offset-2"
+                                >
+                                    {toast.undoLabel || 'Undo'}
+                                </button>
+                            )}
+                        </div>
                         {toast.dismissible && (
                             <button
                                 onClick={() => onDismiss(toast.id)}

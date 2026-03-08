@@ -54,6 +54,7 @@ import DeepDiverReport from '../components/DeepDiverReport.tsx';
 import { CorrelationTerminal } from '../components/CorrelationTerminal.tsx';
 import { HedgeAdvisor } from '../components/HedgeAdvisor.tsx';
 import DashboardEmptyState from '../components/dashboard/DashboardEmptyState.tsx';
+import { DashboardSkeleton } from '../components/SkeletonLoader.tsx';
 import StrategicSignalsFeed from '../components/dashboard/StrategicSignalsFeed.tsx';
 import RecentlyIngested from '../components/dashboard/RecentlyIngested.tsx';
 import { NegotiableItem } from '../types.ts';
@@ -241,7 +242,9 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className={`space-y-12 animate-in fade-in duration-700 pb-12 ${isTerminalMode ? 'px-2' : ''}`}>
-      {inventory.length === 0 ? (
+      {loading ? (
+        <DashboardSkeleton />
+      ) : inventory.length === 0 ? (
         <DashboardEmptyState
           onScanOpen={() => setIsScanOpen(true)}
           onInitialize={initializeFullInventory}

@@ -16,6 +16,8 @@ export interface Toast {
     message: string;
     duration?: number; // ms, 0 = persistent
     dismissible?: boolean;
+    onUndo?: () => void;
+    undoLabel?: string;
 }
 
 export interface ToastOptions {
@@ -23,6 +25,10 @@ export interface ToastOptions {
     dismissible?: boolean;
     /** Dedupe key — if set, prevents duplicate toasts with the same key within 10s */
     dedupeKey?: string;
+    /** Undo callback — shows "Undo" button on toast, extends duration to 8s */
+    onUndo?: () => void;
+    /** Label for the undo action (default: "Undo") */
+    undoLabel?: string;
 }
 
 type ToastHandler = (type: ToastType, message: string, options?: ToastOptions) => void;

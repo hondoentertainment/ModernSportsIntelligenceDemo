@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   Plus,
   Search,
@@ -9,28 +9,52 @@ import {
   Grid,
   List,
   SortAsc,
+  SortDesc,
   CheckCircle2,
   Clock,
+  XCircle,
+  CheckSquare,
+  Square,
+  Trash2,
+  Download,
+  Sparkles,
+  Loader2,
+  Cloud,
+  CloudOff,
+  Star,
+  Edit3,
+  Target,
+  Trophy,
 } from 'lucide-react';
 import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
 import { getEbayCardPrice } from '../lib/gemini';
 import { LEAGUES } from '../constants';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory';
 import { useFavorites } from '../lib/useFavorites';
+import { useToast } from '../contexts/ToastContext';
 import AddTargetModal from '../components/AddTargetModal';
 import AddAssetModal from '../components/AddAssetModal';
 import OCRIngestionModal from '../components/OCRIngestionModal';
 import { getRarityTier, getTierStyles } from '../lib/rarity';
 import { generatePopData, ScarcityService } from '../lib/scarcityService';
 import { getPriceTrend, getSparklineData } from '../lib/priceHistory';
-import { Loader2, Cloud, CloudOff } from 'lucide-react';
+import { LiquidityService } from '../lib/LiquidityService';
+import { LiquidityBadge } from '../components/LiquidityBadge';
+import CardImage from '../components/CardImage';
 import ImageLightbox from '../components/ImageLightbox';
 import { ExitStrategyModal } from '../components/ExitStrategyModal';
 import GradingCalculatorModal from '../components/GradingCalculatorModal';
 import BreakEvenModal from '../components/BreakEvenModal';
+import ConfirmDialog from '../components/ConfirmDialog';
+import CommandPalette from '../components/CommandPalette';
+import { CardGridSkeleton } from '../components/SkeletonLoader';
 import CardGridItem from '../components/collection/CardGridItem';
 import SwipeableCard from '../components/collection/SwipeableCard';
 import VirtualizedGrid from '../components/collection/VirtualizedGrid';
+import { useKeyboardShortcuts } from '../lib/useKeyboardShortcuts';
+
+type SortField = 'player' | 'value' | 'purchasePrice' | 'date' | 'roi' | 'league';
+type SortDir = 'asc' | 'desc';
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -110,6 +134,26 @@ const Collection: React.FC = () => {
   const [isBreakEvenOpen, setIsBreakEvenOpen] = useState(false);
   const [breakEvenCard, setBreakEvenCard] = useState<CardInventory | null>(null);
 
+  // Sort state
+  const [sortField, setSortField] = useState<SortField>('player');
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
+  const [showSortMenu, setShowSortMenu] = useState(false);
+
+  // Bulk selection state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkMode, setBulkMode] = useState(false);
+
+  // Confirm dialog state
+  const [confirmState, setConfirmState] = useState<{ open: boolean; title: string; message: string; onConfirm: () => void }>({ open: false, title: '', message: '', onConfirm: () => {} });
+
+  // Command palette
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+
+  // Search ref for keyboard shortcut focus
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const { addToast } = useToast();
+
   // Ensure full inventory is loaded on mount
   useEffect(() => {
     initializeFullInventory();
@@ -147,18 +191,30 @@ const Collection: React.FC = () => {
 
   const handleUpdatePrice = async (card: CardInventory) => {
     setIsPricing(card.id);
-    const analysis = await getEbayCardPrice(card);
-    if (analysis) {
-      setInventory(prev => prev.map(c =>
-        c.id === card.id
-          ? {
-            ...c,
-            currentValue: analysis.estimatedValue,
-            lastValuationDate: analysis.lastUpdated,
-            searchUrl: analysis.searchUrl
-          }
-          : c
-      ));
+    const oldValue = card.currentValue || card.purchasePrice;
+    try {
+      const analysis = await getEbayCardPrice(card);
+      if (analysis) {
+        setInventory(prev => prev.map(c =>
+          c.id === card.id
+            ? {
+              ...c,
+              currentValue: analysis.estimatedValue,
+              lastValuationDate: analysis.lastUpdated,
+              searchUrl: analysis.searchUrl
+            }
+            : c
+        ));
+        const delta = analysis.estimatedValue - oldValue;
+        const sign = delta >= 0 ? '+' : '';
+        addToast(delta >= 0 ? 'success' : 'warning',
+          `${card.player}: $${oldValue.toLocaleString()} → $${analysis.estimatedValue.toLocaleString()} (${sign}$${Math.round(delta).toLocaleString()})`
+        );
+      } else {
+        addToast('error', `Failed to update price for ${card.player}. Try again.`);
+      }
+    } catch {
+      addToast('error', `Price update failed for ${card.player}. Check your connection.`);
     }
     setIsPricing(null);
   };
@@ -173,23 +229,123 @@ const Collection: React.FC = () => {
   };
 
   const deleteCard = (id: string) => {
-    if (confirm('Are you sure you want to remove this asset from your collection?')) {
-      removeCard(id);
+    const card = inventory.find(c => c.id === id);
+    if (!card) return;
+    setConfirmState({
+      open: true,
+      title: 'Remove Asset',
+      message: `Remove "${card.player} (${card.year} ${card.set})" from your collection? This can be undone for 8 seconds.`,
+      onConfirm: () => {
+        removeCard(id);
+        setConfirmState(prev => ({ ...prev, open: false }));
+        addToast('success', `${card.player} removed from collection.`, {
+          onUndo: () => { addCard(card); },
+          undoLabel: 'Undo Remove'
+        });
+      }
+    });
+  };
+
+  // Bulk delete
+  const handleBulkDelete = () => {
+    if (selectedIds.size === 0) return;
+    const cards = inventory.filter(c => selectedIds.has(c.id));
+    setConfirmState({
+      open: true,
+      title: `Remove ${selectedIds.size} Assets`,
+      message: `Remove ${selectedIds.size} selected assets from your collection?`,
+      onConfirm: () => {
+        cards.forEach(c => removeCard(c.id));
+        setConfirmState(prev => ({ ...prev, open: false }));
+        setSelectedIds(new Set());
+        setBulkMode(false);
+        addToast('success', `${cards.length} assets removed.`, {
+          onUndo: () => { cards.forEach(c => addCard(c)); }
+        });
+      }
+    });
+  };
+
+  // Bulk export to JSON
+  const handleBulkExport = () => {
+    const cards = bulkMode && selectedIds.size > 0
+      ? inventory.filter(c => selectedIds.has(c.id))
+      : inventory.filter(c => c.status !== 'sold');
+    const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `msi_collection_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    addToast('success', `Exported ${cards.length} cards to JSON.`);
+  };
+
+  // Toggle bulk selection
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  // Select all visible cards
+  const selectAll = () => {
+    if (selectedIds.size === filteredInventory.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredInventory.map(c => c.id)));
     }
   };
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts([
+    { key: '/', description: 'Focus search', action: () => searchRef.current?.focus() },
+    { key: 'k', ctrl: true, description: 'Command palette', action: () => setIsPaletteOpen(true) },
+    { key: 'n', description: 'Add new card', action: () => { setEditingAsset(null); setInitialAssetData(null); setIsAssetModalOpen(true); } },
+    { key: 'Escape', description: 'Clear search / close', global: true, action: () => {
+      if (searchQuery) setSearchQuery('');
+      else if (bulkMode) { setBulkMode(false); setSelectedIds(new Set()); }
+    }},
+  ]);
+
   const filteredInventory = useMemo(() => {
-    return inventory.filter(c => {
-      const matchesSearch = c.player.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.set.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.manufacturer.toLowerCase().includes(searchQuery.toLowerCase());
+    let result = inventory.filter(c => {
+      const q = searchQuery.toLowerCase();
+      const matchesSearch = !q || c.player.toLowerCase().includes(q) ||
+        c.set.toLowerCase().includes(q) ||
+        c.manufacturer.toLowerCase().includes(q) ||
+        (c.cardNumber && c.cardNumber.toLowerCase().includes(q));
       const matchesLeague = filterLeague === 'All' || c.league === filterLeague;
 
       if (activeTab === 'inventory') return matchesSearch && matchesLeague && c.status !== 'sold';
       if (activeTab === 'vault') return matchesSearch && matchesLeague && c.status === 'sold';
       return matchesSearch && matchesLeague;
     });
-  }, [inventory, searchQuery, filterLeague, activeTab]);
+
+    // Sort
+    result.sort((a, b) => {
+      let cmp = 0;
+      switch (sortField) {
+        case 'player': cmp = a.player.localeCompare(b.player); break;
+        case 'value': cmp = (a.currentValue || 0) - (b.currentValue || 0); break;
+        case 'purchasePrice': cmp = a.purchasePrice - b.purchasePrice; break;
+        case 'date': cmp = new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime(); break;
+        case 'roi': {
+          const roiA = a.purchasePrice > 0 ? ((a.currentValue || 0) - a.purchasePrice) / a.purchasePrice : 0;
+          const roiB = b.purchasePrice > 0 ? ((b.currentValue || 0) - b.purchasePrice) / b.purchasePrice : 0;
+          cmp = roiA - roiB;
+          break;
+        }
+        case 'league': cmp = a.league.localeCompare(b.league); break;
+      }
+      return sortDir === 'desc' ? -cmp : cmp;
+    });
+
+    return result;
+  }, [inventory, searchQuery, filterLeague, activeTab, sortField, sortDir]);
 
   const stats = useMemo(() => {
     const totalValue = inventory.reduce((sum, c) => sum + (c.currentValue || 0), 0);
@@ -326,19 +482,38 @@ const Collection: React.FC = () => {
               <div className="relative flex-1 group">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted group-focus-within:text-brand-lime transition-colors" size={20} />
                 <input
+                  ref={searchRef}
                   type="text"
-                  placeholder="Query collection players, manufacturers, or sets..."
+                  placeholder="Search players, sets, manufacturers... (press /)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-brand-slate border border-slate-800 rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium"
+                  className="w-full bg-brand-slate border border-slate-800 rounded-2xl py-4 pl-12 pr-20 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium"
+                  aria-label="Search collection"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-muted hover:text-white transition-colors"
+                    aria-label="Clear search"
+                  >
+                    <XCircle size={18} />
+                  </button>
+                )}
               </div>
 
-              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 w-full lg:w-auto">
+              {/* Result count */}
+              {searchQuery && (
+                <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest whitespace-nowrap">
+                  {filteredInventory.length} result{filteredInventory.length !== 1 ? 's' : ''}
+                </span>
+              )}
+
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 w-full lg:w-auto" role="group" aria-label="Filter by league">
                 {['All', ...LEAGUES].map((s) => (
                   <button
                     key={s}
                     onClick={() => setFilterLeague(s as any)}
+                    aria-pressed={filterLeague === s}
                     className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border
                       ${filterLeague === s
                         ? 'bg-brand-lime border-brand-lime text-brand-charcoal shadow-lg shadow-brand-lime/20'
@@ -349,10 +524,105 @@ const Collection: React.FC = () => {
                 ))}
               </div>
 
-              <button className="flex items-center gap-2 px-6 py-4 bg-brand-slate border border-slate-800 rounded-2xl text-xs font-black uppercase tracking-widest text-brand-muted hover:text-white transition-all shadow-xl">
-                <SortAsc size={18} /> Sort
+              {/* Sort dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowSortMenu(!showSortMenu)}
+                  className="flex items-center gap-2 px-6 py-4 bg-brand-slate border border-slate-800 rounded-2xl text-xs font-black uppercase tracking-widest text-brand-muted hover:text-white transition-all shadow-xl"
+                  aria-haspopup="listbox"
+                  aria-expanded={showSortMenu}
+                >
+                  {sortDir === 'asc' ? <SortAsc size={18} /> : <SortDesc size={18} />}
+                  Sort
+                </button>
+                {showSortMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-52 bg-brand-slate border border-slate-700 rounded-2xl shadow-2xl z-50 py-2 animate-in fade-in zoom-in-95 duration-150" role="listbox">
+                    {([
+                      { field: 'player' as SortField, label: 'Name' },
+                      { field: 'value' as SortField, label: 'Market Value' },
+                      { field: 'purchasePrice' as SortField, label: 'Purchase Price' },
+                      { field: 'date' as SortField, label: 'Date Added' },
+                      { field: 'roi' as SortField, label: 'ROI' },
+                      { field: 'league' as SortField, label: 'League' },
+                    ]).map(opt => (
+                      <button
+                        key={opt.field}
+                        role="option"
+                        aria-selected={sortField === opt.field}
+                        onClick={() => {
+                          if (sortField === opt.field) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+                          else { setSortField(opt.field); setSortDir('asc'); }
+                          setShowSortMenu(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-4 py-2.5 text-xs font-medium transition-colors ${sortField === opt.field ? 'text-brand-lime bg-brand-charcoal/50' : 'text-slate-300 hover:bg-brand-charcoal/30'}`}
+                      >
+                        <span>{opt.label}</span>
+                        {sortField === opt.field && (
+                          <span className="text-[9px] text-brand-muted">{sortDir === 'asc' ? 'A→Z' : 'Z→A'}</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Bulk mode toggle */}
+              <button
+                onClick={() => { setBulkMode(!bulkMode); setSelectedIds(new Set()); }}
+                className={`flex items-center gap-2 px-4 py-4 rounded-2xl border text-xs font-black uppercase tracking-widest transition-all ${bulkMode ? 'bg-brand-lime/10 border-brand-lime/30 text-brand-lime' : 'bg-brand-slate border-slate-800 text-brand-muted hover:text-white'}`}
+                aria-pressed={bulkMode}
+              >
+                <CheckSquare size={18} />
               </button>
             </div>
+
+            {/* Bulk action bar */}
+            {bulkMode && (
+              <div className="flex items-center gap-4 p-4 bg-brand-slate border border-slate-800 rounded-2xl animate-in slide-in-from-top-2 duration-200">
+                <button onClick={selectAll} className="text-xs font-black text-brand-muted hover:text-white transition-colors uppercase tracking-widest">
+                  {selectedIds.size === filteredInventory.length ? 'Deselect All' : 'Select All'}
+                </button>
+                <span className="text-[10px] font-mono text-brand-muted">{selectedIds.size} selected</span>
+                <div className="flex-1" />
+                <button
+                  onClick={handleBulkExport}
+                  disabled={selectedIds.size === 0}
+                  className="flex items-center gap-2 px-4 py-2 bg-brand-charcoal border border-slate-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand-muted hover:text-white disabled:opacity-30 transition-all"
+                >
+                  <Download size={14} /> Export
+                </button>
+                <button
+                  onClick={handleBulkDelete}
+                  disabled={selectedIds.size === 0}
+                  className="flex items-center gap-2 px-4 py-2 bg-brand-red/10 border border-brand-red/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand-red hover:bg-brand-red hover:text-white disabled:opacity-30 transition-all"
+                >
+                  <Trash2 size={14} /> Delete
+                </button>
+              </div>
+            )}
+
+            {/* Empty state for no results */}
+            {filteredInventory.length === 0 && !loading && (
+              <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
+                <Search size={48} className="text-brand-muted/30" />
+                <h3 className="text-xl font-bold text-brand-muted">
+                  {searchQuery ? 'No cards match your search' : 'No cards in collection yet'}
+                </h3>
+                <p className="text-sm text-brand-muted/60 max-w-md">
+                  {searchQuery
+                    ? `Try adjusting your search or clearing filters.`
+                    : `Add your first card to start tracking your portfolio.`}
+                </p>
+                {searchQuery && (
+                  <button
+                    onClick={() => { setSearchQuery(''); setFilterLeague('All'); }}
+                    className="px-6 py-3 bg-brand-lime/10 border border-brand-lime/30 text-brand-lime text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-brand-lime/20 transition-all"
+                  >
+                    Clear Filters
+                  </button>
+                )}
+              </div>
+            )}
 
             {/* Assets Grid */}
             {viewMode === 'grid' ? (
@@ -663,6 +933,23 @@ const Collection: React.FC = () => {
             card={breakEvenCard}
           />
         )}
+
+        <ConfirmDialog
+          isOpen={confirmState.open}
+          title={confirmState.title}
+          message={confirmState.message}
+          confirmLabel="Remove"
+          variant="danger"
+          onConfirm={confirmState.onConfirm}
+          onCancel={() => setConfirmState(prev => ({ ...prev, open: false }))}
+        />
+
+        <CommandPalette
+          isOpen={isPaletteOpen}
+          onClose={() => setIsPaletteOpen(false)}
+          onAddCard={() => { setEditingAsset(null); setInitialAssetData(null); setIsAssetModalOpen(true); }}
+          onOpenScanner={() => setIsOCRModalOpen(true)}
+        />
       </div>
     </div>
   );

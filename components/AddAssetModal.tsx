@@ -142,7 +142,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="add-asset-title">
             {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/80 backdrop-blur-sm"
@@ -161,7 +161,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                 <Layers className="text-brand-lime" size={24} />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-bebas tracking-widest text-white">
+                                <h2 id="add-asset-title" className="text-2xl font-bebas tracking-widest text-white">
                                     {editCard ? 'Edit Asset' : 'Add New Asset'}
                                 </h2>
                                 <p className="text-xs text-brand-muted font-medium">Enter detailed specifications for accurate valuation.</p>
@@ -170,6 +170,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
 
                         <button
                             onClick={onClose}
+                            aria-label="Close modal"
                             className="p-3 bg-brand-charcoal hover:bg-slate-800 rounded-xl transition-colors"
                         >
                             <X size={20} className="text-brand-muted" />

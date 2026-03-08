@@ -219,3 +219,19 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - Log individual card pulls with estimated values and "hit" flags.
     - Automatic ROI and profit calculation per break.
     - Aggregate stats: total spent, win rate, avg ROI, best/worst break, total hits.
+
+### Phase 32: Usability & Accessibility Overhaul (COMPLETE)
+- **Objective**: Enhance UX by 50%+ through comprehensive usability improvements across the platform.
+- **Key Features**:
+    - **Keyboard Shortcuts System**: Global shortcuts (`/` focus search, `Ctrl+K` command palette, `n` new card, `Esc` clear) via reusable `useKeyboardShortcuts` hook.
+    - **Command Palette**: Searchable command launcher (Ctrl+K) with arrow key navigation, 10 navigation routes, and contextual actions. Uses focus trap and full ARIA support.
+    - **Confirm Dialog**: Replaced browser `confirm()` with branded modal dialogs (danger/warning/info variants) with focus trap and ARIA attributes.
+    - **Undo-capable Toasts**: Toast notifications with undo button support (auto-extends to 8s), escape key dismiss, deduplication.
+    - **Collection Sort**: Full sort functionality with 6 fields (value, price, player, year, sport, league) and direction toggle.
+    - **Bulk Operations**: Select mode with select-all, bulk delete (with undo), and JSON export.
+    - **Search Enhancements**: Result count display, clear button, ref-based focus, empty state with filter clear action.
+    - **Price Update Feedback**: Shows old→new value delta toast with error handling on market price updates.
+    - **Skeleton Loaders**: `CardSkeleton`, `StatSkeleton`, `ChartSkeleton`, `DashboardSkeleton` components integrated into loading states.
+    - **Focus Trap Hook**: Reusable `useFocusTrap` for modal accessibility (Tab wrapping, focus restore).
+    - **ARIA Accessibility**: Added `aria-label`, `aria-haspopup`, `aria-expanded`, `aria-current`, `aria-modal`, `role="dialog"`, `role="menu"` across Header, Sidebar, AddAssetModal, CommandPalette, and ConfirmDialog.
+    - **Swipeable Cards**: Touch gesture support for mobile card triage (right=watchlist, left=mark for sale) with haptic feedback.
