@@ -27,7 +27,9 @@ import { Loader2, Cloud, CloudOff } from 'lucide-react';
 import ImageLightbox from '../components/ImageLightbox';
 import { ExitStrategyModal } from '../components/ExitStrategyModal';
 import GradingCalculatorModal from '../components/GradingCalculatorModal';
+import BreakEvenModal from '../components/BreakEvenModal';
 import CardGridItem from '../components/collection/CardGridItem';
+import SwipeableCard from '../components/collection/SwipeableCard';
 import VirtualizedGrid from '../components/collection/VirtualizedGrid';
 
 const VIRTUAL_THRESHOLD = 24;
@@ -105,6 +107,8 @@ const Collection: React.FC = () => {
   const [exitStrategyCard, setExitStrategyCard] = useState<CardInventory | null>(null);
   const [isGradingCalcOpen, setIsGradingCalcOpen] = useState(false);
   const [gradingCalcCard, setGradingCalcCard] = useState<CardInventory | null>(null);
+  const [isBreakEvenOpen, setIsBreakEvenOpen] = useState(false);
+  const [breakEvenCard, setBreakEvenCard] = useState<CardInventory | null>(null);
 
   // Ensure full inventory is loaded on mount
   useEffect(() => {
@@ -373,29 +377,36 @@ const Collection: React.FC = () => {
                   onOpenLightbox={(c) => setLightboxCard(c)}
                   onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
                   onOpenGradingCalc={(c) => { setGradingCalcCard(c); setIsGradingCalcOpen(true); }}
+                  onOpenBreakEven={(c) => { setBreakEvenCard(c); setIsBreakEvenOpen(true); }}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
                   {filteredInventory.map((card) => (
-                    <CardGridItem
+                    <SwipeableCard
                       key={card.id}
-                      card={card}
-                      getRarityTier={getRarityTier}
-                      getTierStyles={getTierStyles}
-                      isFavorite={isFavorite}
-                      toggleFavorite={toggleFavorite}
-                      deleteCard={deleteCard}
-                      setEditingAsset={setEditingAsset}
-                      setIsAssetModalOpen={setIsAssetModalOpen}
-                      handleAddToWatchlist={handleAddToWatchlist}
-                      handleUpdatePrice={handleUpdatePrice}
-                      isPricing={isPricing}
-                      getSparklineData={getSparklineData}
-                      getPriceTrend={getPriceTrend}
-                      onOpenLightbox={(c) => setLightboxCard(c)}
-                      onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
-                      onOpenGradingCalc={(c) => { setGradingCalcCard(c); setIsGradingCalcOpen(true); }}
-                    />
+                      onSwipeRight={() => handleAddToWatchlist(card)}
+                      onSwipeLeft={() => { setEditingAsset({ ...card, status: 'sold' }); setIsAssetModalOpen(true); }}
+                    >
+                      <CardGridItem
+                        card={card}
+                        getRarityTier={getRarityTier}
+                        getTierStyles={getTierStyles}
+                        isFavorite={isFavorite}
+                        toggleFavorite={toggleFavorite}
+                        deleteCard={deleteCard}
+                        setEditingAsset={setEditingAsset}
+                        setIsAssetModalOpen={setIsAssetModalOpen}
+                        handleAddToWatchlist={handleAddToWatchlist}
+                        handleUpdatePrice={handleUpdatePrice}
+                        isPricing={isPricing}
+                        getSparklineData={getSparklineData}
+                        getPriceTrend={getPriceTrend}
+                        onOpenLightbox={(c) => setLightboxCard(c)}
+                        onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
+                        onOpenGradingCalc={(c) => { setGradingCalcCard(c); setIsGradingCalcOpen(true); }}
+                        onOpenBreakEven={(c) => { setBreakEvenCard(c); setIsBreakEvenOpen(true); }}
+                      />
+                    </SwipeableCard>
                   ))}
                 </div>
               )
@@ -642,6 +653,14 @@ const Collection: React.FC = () => {
             isOpen={isGradingCalcOpen}
             onClose={() => { setIsGradingCalcOpen(false); setGradingCalcCard(null); }}
             card={gradingCalcCard}
+          />
+        )}
+
+        {breakEvenCard && (
+          <BreakEvenModal
+            isOpen={isBreakEvenOpen}
+            onClose={() => { setIsBreakEvenOpen(false); setBreakEvenCard(null); }}
+            card={breakEvenCard}
           />
         )}
       </div>

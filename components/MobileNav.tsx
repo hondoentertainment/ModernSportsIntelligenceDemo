@@ -1,12 +1,16 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Download } from 'lucide-react';
 import { NAV_ITEMS } from '../constants.tsx';
+import { usePWAInstall } from '../lib/usePWAInstall';
 
 const MobileNav: React.FC = () => {
   const location = useLocation();
+  const { isInstallable, promptInstall } = usePWAInstall();
+
   // Filter for key mobile items using updated IDs from CardX
-  const mobileItems = NAV_ITEMS.filter(item => 
+  const mobileItems = NAV_ITEMS.filter(item =>
     ['dashboard', 'collection', 'mlbstats', 'prospects', 'favorites'].includes(item.id)
   );
 
@@ -26,6 +30,16 @@ const MobileNav: React.FC = () => {
           </Link>
         );
       })}
+      {isInstallable && (
+        <button
+          onClick={promptInstall}
+          className="flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl text-brand-lime animate-pulse"
+          aria-label="Install App"
+        >
+          <Download size={20} />
+          <span className="text-[10px] font-medium tracking-tight uppercase">Install</span>
+        </button>
+      )}
     </nav>
   );
 };
