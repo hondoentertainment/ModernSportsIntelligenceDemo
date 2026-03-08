@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap, Users } from 'lucide-react';
+import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap, Users, BarChart3 } from 'lucide-react';
 import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import ScarcityBadge from '../ScarcityBadge';
@@ -28,6 +28,7 @@ export interface CardGridItemProps {
   onInstantBuy?: (card: CardInventory) => void;
   onOpenPredictive?: (card: CardInventory) => void;
   onOpenThesis?: (card: CardInventory) => void;
+  onOpenMarketDepth?: (card: CardInventory) => void;
 }
 
 /** Renders a single card — shared between virtualized and static grid */
@@ -52,6 +53,7 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
   onInstantBuy,
   onOpenPredictive,
   onOpenThesis,
+  onOpenMarketDepth,
 }) => {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
@@ -257,6 +259,15 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
           >
             <Users size={16} className="text-brand-blue" />
             Agent Thesis
+          </button>
+        )}
+        {onOpenMarketDepth && (
+          <button
+            onClick={() => onOpenMarketDepth(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <BarChart3 size={16} className="text-brand-green" />
+            Market Depth
           </button>
         )}
         {!card.isGraded && onOpenGradingCalc && (

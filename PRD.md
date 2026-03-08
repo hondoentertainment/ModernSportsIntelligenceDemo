@@ -166,11 +166,18 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - AgentThesisModal: Per-card 4-agent deep-dive with consensus banner, individual analyses, data points, and key points.
     - "Agent Thesis" button on every card in the collection grid.
 
-### Phase 20: Liquidity Intelligence (RECOMMENDED)
-- **Objective**: Institutional-grade market depth analysis.
+### Phase 20: Liquidity Intelligence (COMPLETE)
+- **Objective**: Institutional-grade market depth analysis and portfolio liquidity visualization.
 - **Key Features**:
-    - MSI Liquidity Score for every asset.
-    - Exit strategy planning based on volume.
+    - Simulated Order Book: Bid/ask levels with cumulative volumes, spread calculation, buy pressure percentage.
+    - Market Impact Analysis: Slippage estimates for selling 1/3/5/10 units based on order book depth.
+    - Volume Velocity Metrics: Daily/weekly/monthly volume, velocity classification (very fast → very slow), avg days to sell, sell-through rate.
+    - Recent Comparable Sales: Price consensus scoring from simulated market data.
+    - Portfolio Liquidity Report: Liquid/moderate/illiquid value breakdown, avg liquidity score, estimated days to liquidate.
+    - Liquidity Heatmap Widget: Color-coded distribution bar with 5 liquidity buckets, stuck inventory warnings, illiquid concentration risk alerts.
+    - MarketDepthModal: Per-card deep-dive with spread, buy pressure, velocity, order book visualization, market impact grid, and comparable sales.
+    - "Market Depth" button on every card in the collection grid.
+    - Dashboard integration with LiquidityHeatmap widget and MarketDepthModal click-through.
 
 ### Phase 21: Cross-Asset Correlation (RECOMMENDED)
 - **Objective**: Hedge strategies across sport ecosystems.

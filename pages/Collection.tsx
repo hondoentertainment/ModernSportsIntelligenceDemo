@@ -48,6 +48,7 @@ import BreakEvenModal from '../components/BreakEvenModal';
 import InstantBuyModal from '../components/InstantBuyModal';
 import PredictiveAlphaModal from '../components/PredictiveAlphaModal';
 import AgentThesisModal from '../components/AgentThesisModal';
+import MarketDepthModal from '../components/MarketDepthModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import CommandPalette from '../components/CommandPalette';
 import { CardGridSkeleton } from '../components/SkeletonLoader';
@@ -142,6 +143,8 @@ const Collection: React.FC = () => {
   const [predictiveCard, setPredictiveCard] = useState<CardInventory | null>(null);
   const [isThesisOpen, setIsThesisOpen] = useState(false);
   const [thesisCard, setThesisCard] = useState<CardInventory | null>(null);
+  const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false);
+  const [marketDepthCard, setMarketDepthCard] = useState<CardInventory | null>(null);
 
   // Sort state
   const [sortField, setSortField] = useState<SortField>('player');
@@ -660,6 +663,7 @@ const Collection: React.FC = () => {
                   onInstantBuy={(c) => { setInstantBuyCard(c); setIsInstantBuyOpen(true); }}
                   onOpenPredictive={(c) => { setPredictiveCard(c); setIsPredictiveOpen(true); }}
                   onOpenThesis={(c) => { setThesisCard(c); setIsThesisOpen(true); }}
+                  onOpenMarketDepth={(c) => { setMarketDepthCard(c); setIsMarketDepthOpen(true); }}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -972,6 +976,14 @@ const Collection: React.FC = () => {
             onClose={() => { setIsThesisOpen(false); setThesisCard(null); }}
             card={thesisCard}
             portfolio={inventory}
+          />
+        )}
+
+        {marketDepthCard && (
+          <MarketDepthModal
+            isOpen={isMarketDepthOpen}
+            onClose={() => { setIsMarketDepthOpen(false); setMarketDepthCard(null); }}
+            card={marketDepthCard}
           />
         )}
 

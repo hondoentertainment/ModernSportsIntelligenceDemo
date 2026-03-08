@@ -63,6 +63,8 @@ import AgentInsightsPanel from '../components/AgentInsightsPanel.tsx';
 import AgentThesisModal from '../components/AgentThesisModal.tsx';
 import InstantBuyModal from '../components/InstantBuyModal.tsx';
 import PredictiveAlphaModal from '../components/PredictiveAlphaModal.tsx';
+import LiquidityHeatmap from '../components/LiquidityHeatmap.tsx';
+import MarketDepthModal from '../components/MarketDepthModal.tsx';
 import { NegotiableItem, CardInventory } from '../types.ts';
 
 const Dashboard: React.FC = () => {
@@ -111,6 +113,8 @@ const Dashboard: React.FC = () => {
   const [predictiveCard, setPredictiveCard] = useState<CardInventory | null>(null);
   const [isThesisOpen, setIsThesisOpen] = useState(false);
   const [thesisCard, setThesisCard] = useState<CardInventory | null>(null);
+  const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false);
+  const [marketDepthCard, setMarketDepthCard] = useState<CardInventory | null>(null);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -752,6 +756,12 @@ const Dashboard: React.FC = () => {
             onCardClick={(card) => { setThesisCard(card); setIsThesisOpen(true); }}
           />
 
+          {/* Liquidity Intelligence */}
+          <LiquidityHeatmap
+            inventory={inventory}
+            onCardClick={(card) => { setMarketDepthCard(card); setIsMarketDepthOpen(true); }}
+          />
+
           {/* Liquidity Pool */}
           <LiquidityPoolWidget
             inventory={inventory}
@@ -835,6 +845,14 @@ const Dashboard: React.FC = () => {
           onClose={() => { setIsThesisOpen(false); setThesisCard(null); }}
           card={thesisCard}
           portfolio={inventory}
+        />
+      )}
+
+      {marketDepthCard && (
+        <MarketDepthModal
+          isOpen={isMarketDepthOpen}
+          onClose={() => { setIsMarketDepthOpen(false); setMarketDepthCard(null); }}
+          card={marketDepthCard}
         />
       )}
     </div>
