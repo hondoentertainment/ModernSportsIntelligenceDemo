@@ -57,7 +57,9 @@ import DashboardEmptyState from '../components/dashboard/DashboardEmptyState.tsx
 import { DashboardSkeleton } from '../components/SkeletonLoader.tsx';
 import StrategicSignalsFeed from '../components/dashboard/StrategicSignalsFeed.tsx';
 import RecentlyIngested from '../components/dashboard/RecentlyIngested.tsx';
-import { NegotiableItem } from '../types.ts';
+import LiquidityPoolWidget from '../components/LiquidityPoolWidget.tsx';
+import InstantBuyModal from '../components/InstantBuyModal.tsx';
+import { NegotiableItem, CardInventory } from '../types.ts';
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
@@ -99,6 +101,8 @@ const Dashboard: React.FC = () => {
   const [isNegotiationOpen, setIsNegotiationOpen] = useState(false);
   const [negotiationTarget, setNegotiationTarget] = useState<NegotiableItem | null>(null);
   const [isTerminalMode, setIsTerminalMode] = useState(false);
+  const [isInstantBuyOpen, setIsInstantBuyOpen] = useState(false);
+  const [instantBuyCard, setInstantBuyCard] = useState<CardInventory | null>(null);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -728,6 +732,12 @@ const Dashboard: React.FC = () => {
           </section>
 
 
+          {/* Liquidity Pool */}
+          <LiquidityPoolWidget
+            inventory={inventory}
+            onInstantBuy={(card) => { setInstantBuyCard(card); setIsInstantBuyOpen(true); }}
+          />
+
           {/* Recents Section */}
           <RecentlyIngested inventory={inventory} />
         </div>
@@ -779,6 +789,17 @@ const Dashboard: React.FC = () => {
           if (import.meta.env.DEV) console.warn('Acquired for', finalPrice);
         }}
       />
+
+      {instantBuyCard && (
+        <InstantBuyModal
+          isOpen={isInstantBuyOpen}
+          onClose={() => { setIsInstantBuyOpen(false); setInstantBuyCard(null); }}
+          card={instantBuyCard}
+          onAccept={(card, payout) => {
+            setInventory(prev => prev.map(c => c.id === card.id ? { ...c, status: 'sold' as const, salePrice: payout, saleDate: new Date().toISOString() } : c));
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -124,11 +124,19 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - Playbook-driven auto-negotiation with `getPlaybookOffer()`.
     - Negotiation Analytics: win rate, avg discount, total saved, rounds, time-to-close, per-playbook stats.
 
-### Phase 17: Institutional Liquidity Pool (PLANNED)
+### Phase 17: Institutional Liquidity Pool (COMPLETE)
 - **Objective**: Create an internal marketplace where users can sell assets instantly to the "MSI House" at a slight discount.
 - **Key Features**:
-    - AI-driven "Instant Buy" valuations.
-    - Liquidity score for every asset in the portfolio.
+    - AI-driven "Instant Buy" valuations based on liquidity score discount tiers (8%-35%).
+    - 5-tier discount system: Premium Liquid, Standard, Moderate, Low Liquidity, Illiquid.
+    - 15-minute quote expiration with real-time countdown timer.
+    - Speed Bonus: +2% payout if accepted within 5 minutes.
+    - 2% MSI platform processing fee.
+    - Side-by-side comparison vs eBay net proceeds (including time-to-sell estimate).
+    - Liquidity Pool Dashboard widget on main dashboard showing top instant offers.
+    - "Instant Sell to MSI House" button on every card in the collection.
+    - Transaction history with localStorage persistence.
+    - Portfolio-wide batch quote generation sorted by best value.
 
 ### Phase 18: Predictive Alpha Engine (PLANNED)
 - **Objective**: Move from tracking to forecasting.

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign } from 'lucide-react';
+import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap } from 'lucide-react';
 import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import ScarcityBadge from '../ScarcityBadge';
@@ -25,6 +25,7 @@ export interface CardGridItemProps {
   onOpenExitStrategy?: (card: CardInventory) => void;
   onOpenGradingCalc?: (card: CardInventory) => void;
   onOpenBreakEven?: (card: CardInventory) => void;
+  onInstantBuy?: (card: CardInventory) => void;
 }
 
 /** Renders a single card — shared between virtualized and static grid */
@@ -46,6 +47,7 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
   onOpenExitStrategy,
   onOpenGradingCalc,
   onOpenBreakEven,
+  onInstantBuy,
 }) => {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
@@ -251,6 +253,14 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
           >
             <DollarSign size={16} className="text-brand-orange" />
             Break-Even Calc
+          </button>
+        )}
+        {card.status !== 'sold' && onInstantBuy && (
+          <button
+            onClick={() => onInstantBuy(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime transition-all"
+          >
+            <Zap size={16} /> Instant Sell to MSI House
           </button>
         )}
         {card.searchUrl && (
