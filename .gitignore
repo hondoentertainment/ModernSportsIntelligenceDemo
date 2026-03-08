@@ -28,3 +28,6 @@ dist-ssr
 playwright-report/
 test-results/
 test_output.txt
+
+# Claude Code
+.claude/
