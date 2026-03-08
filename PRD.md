@@ -150,11 +150,21 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - PredictiveAlphaModal: Per-card deep-dive with trajectory, recommendation, projections, factor analysis, catalysts.
     - "Price Trajectory" button on every card in the collection grid.
 
-### Phase 19: Multi-Agent Intelligence (RECOMMENDED)
+### Phase 19: Multi-Agent Intelligence (COMPLETE)
 - **Objective**: Deploy specialized agents for autonomous portfolio management.
 - **Key Features**:
-    - Synthetic Analyst Team (Scout, Market, Risk, Negotiator).
-    - Multi-agent collaboration on investment thesis.
+    - Synthetic Analyst Team with 4 named agents: Atlas (Scout), Apex (Market), Sentinel (Risk), Viper (Negotiator).
+    - Each agent has distinct personality, specialty, analysis logic, and data points.
+    - Per-card Investment Thesis: All 4 agents analyze independently, then produce a weighted consensus verdict (Strong Buy → Sell) with confidence score.
+    - Dissent detection: Highlights when agents disagree, noting which agents hold contrary views.
+    - Portfolio Briefing: Aggregate health score (0-100), per-agent reports with action items, top picks, and risk alerts.
+    - Scout Agent: Breakout detection, prospect evaluation, autograph premium analysis.
+    - Market Agent: Price trajectory, liquidity assessment, ROI analysis, 30-day projections.
+    - Risk Agent: Concentration risk, volatility assessment, exit risk, grade risk, cost basis analysis.
+    - Negotiator Agent: Entry/exit timing, fair value range, negotiation leverage assessment.
+    - AgentInsightsPanel: Dashboard widget with expandable agent reports, health indicator, top picks, and risk alerts.
+    - AgentThesisModal: Per-card 4-agent deep-dive with consensus banner, individual analyses, data points, and key points.
+    - "Agent Thesis" button on every card in the collection grid.
 
 ### Phase 20: Liquidity Intelligence (RECOMMENDED)
 - **Objective**: Institutional-grade market depth analysis.

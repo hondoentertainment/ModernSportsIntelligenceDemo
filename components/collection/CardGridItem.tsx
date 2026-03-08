@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap } from 'lucide-react';
+import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap, Users } from 'lucide-react';
 import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import ScarcityBadge from '../ScarcityBadge';
@@ -27,6 +27,7 @@ export interface CardGridItemProps {
   onOpenBreakEven?: (card: CardInventory) => void;
   onInstantBuy?: (card: CardInventory) => void;
   onOpenPredictive?: (card: CardInventory) => void;
+  onOpenThesis?: (card: CardInventory) => void;
 }
 
 /** Renders a single card — shared between virtualized and static grid */
@@ -50,6 +51,7 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
   onOpenBreakEven,
   onInstantBuy,
   onOpenPredictive,
+  onOpenThesis,
 }) => {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
@@ -246,6 +248,15 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
           >
             <Target size={16} className="text-brand-teal" />
             Price Trajectory
+          </button>
+        )}
+        {onOpenThesis && (
+          <button
+            onClick={() => onOpenThesis(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <Users size={16} className="text-brand-blue" />
+            Agent Thesis
           </button>
         )}
         {!card.isGraded && onOpenGradingCalc && (

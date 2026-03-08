@@ -59,6 +59,8 @@ import StrategicSignalsFeed from '../components/dashboard/StrategicSignalsFeed.t
 import RecentlyIngested from '../components/dashboard/RecentlyIngested.tsx';
 import LiquidityPoolWidget from '../components/LiquidityPoolWidget.tsx';
 import BreakoutRadar from '../components/BreakoutRadar.tsx';
+import AgentInsightsPanel from '../components/AgentInsightsPanel.tsx';
+import AgentThesisModal from '../components/AgentThesisModal.tsx';
 import InstantBuyModal from '../components/InstantBuyModal.tsx';
 import PredictiveAlphaModal from '../components/PredictiveAlphaModal.tsx';
 import { NegotiableItem, CardInventory } from '../types.ts';
@@ -107,6 +109,8 @@ const Dashboard: React.FC = () => {
   const [instantBuyCard, setInstantBuyCard] = useState<CardInventory | null>(null);
   const [isPredictiveOpen, setIsPredictiveOpen] = useState(false);
   const [predictiveCard, setPredictiveCard] = useState<CardInventory | null>(null);
+  const [isThesisOpen, setIsThesisOpen] = useState(false);
+  const [thesisCard, setThesisCard] = useState<CardInventory | null>(null);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -742,6 +746,12 @@ const Dashboard: React.FC = () => {
             onCardClick={(card) => { setPredictiveCard(card); setIsPredictiveOpen(true); }}
           />
 
+          {/* Multi-Agent Intelligence */}
+          <AgentInsightsPanel
+            inventory={inventory}
+            onCardClick={(card) => { setThesisCard(card); setIsThesisOpen(true); }}
+          />
+
           {/* Liquidity Pool */}
           <LiquidityPoolWidget
             inventory={inventory}
@@ -816,6 +826,15 @@ const Dashboard: React.FC = () => {
           isOpen={isPredictiveOpen}
           onClose={() => { setIsPredictiveOpen(false); setPredictiveCard(null); }}
           card={predictiveCard}
+        />
+      )}
+
+      {thesisCard && (
+        <AgentThesisModal
+          isOpen={isThesisOpen}
+          onClose={() => { setIsThesisOpen(false); setThesisCard(null); }}
+          card={thesisCard}
+          portfolio={inventory}
         />
       )}
     </div>

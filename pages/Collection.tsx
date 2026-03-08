@@ -47,6 +47,7 @@ import GradingCalculatorModal from '../components/GradingCalculatorModal';
 import BreakEvenModal from '../components/BreakEvenModal';
 import InstantBuyModal from '../components/InstantBuyModal';
 import PredictiveAlphaModal from '../components/PredictiveAlphaModal';
+import AgentThesisModal from '../components/AgentThesisModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import CommandPalette from '../components/CommandPalette';
 import { CardGridSkeleton } from '../components/SkeletonLoader';
@@ -139,6 +140,8 @@ const Collection: React.FC = () => {
   const [instantBuyCard, setInstantBuyCard] = useState<CardInventory | null>(null);
   const [isPredictiveOpen, setIsPredictiveOpen] = useState(false);
   const [predictiveCard, setPredictiveCard] = useState<CardInventory | null>(null);
+  const [isThesisOpen, setIsThesisOpen] = useState(false);
+  const [thesisCard, setThesisCard] = useState<CardInventory | null>(null);
 
   // Sort state
   const [sortField, setSortField] = useState<SortField>('player');
@@ -656,6 +659,7 @@ const Collection: React.FC = () => {
                   onOpenBreakEven={(c) => { setBreakEvenCard(c); setIsBreakEvenOpen(true); }}
                   onInstantBuy={(c) => { setInstantBuyCard(c); setIsInstantBuyOpen(true); }}
                   onOpenPredictive={(c) => { setPredictiveCard(c); setIsPredictiveOpen(true); }}
+                  onOpenThesis={(c) => { setThesisCard(c); setIsThesisOpen(true); }}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -959,6 +963,15 @@ const Collection: React.FC = () => {
             isOpen={isPredictiveOpen}
             onClose={() => { setIsPredictiveOpen(false); setPredictiveCard(null); }}
             card={predictiveCard}
+          />
+        )}
+
+        {thesisCard && (
+          <AgentThesisModal
+            isOpen={isThesisOpen}
+            onClose={() => { setIsThesisOpen(false); setThesisCard(null); }}
+            card={thesisCard}
+            portfolio={inventory}
           />
         )}
 
