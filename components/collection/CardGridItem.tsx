@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap, Users, BarChart3, FileText } from 'lucide-react';
+import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap, Users, BarChart3, FileText, Eye } from 'lucide-react';
 import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import ScarcityBadge from '../ScarcityBadge';
@@ -30,6 +30,7 @@ export interface CardGridItemProps {
   onOpenThesis?: (card: CardInventory) => void;
   onOpenMarketDepth?: (card: CardInventory) => void;
   onOpenTaxLot?: (card: CardInventory) => void;
+  onOpenGradePrediction?: (card: CardInventory) => void;
 }
 
 /** Renders a single card — shared between virtualized and static grid */
@@ -56,6 +57,7 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
   onOpenThesis,
   onOpenMarketDepth,
   onOpenTaxLot,
+  onOpenGradePrediction,
 }) => {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
@@ -279,6 +281,15 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
           >
             <Award size={16} className="text-brand-lime" />
             Grade Premium Calc
+          </button>
+        )}
+        {!card.isGraded && onOpenGradePrediction && (
+          <button
+            onClick={() => onOpenGradePrediction(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <Eye size={16} className="text-purple-400" />
+            Grade Prediction
           </button>
         )}
         {onOpenBreakEven && (

@@ -50,6 +50,7 @@ import PredictiveAlphaModal from '../components/PredictiveAlphaModal';
 import AgentThesisModal from '../components/AgentThesisModal';
 import MarketDepthModal from '../components/MarketDepthModal';
 import TaxReportModal from '../components/TaxReportModal';
+import GradingPredictionModal from '../components/GradingPredictionModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import CommandPalette from '../components/CommandPalette';
 import { CardGridSkeleton } from '../components/SkeletonLoader';
@@ -148,6 +149,8 @@ const Collection: React.FC = () => {
   const [marketDepthCard, setMarketDepthCard] = useState<CardInventory | null>(null);
   const [isTaxLotOpen, setIsTaxLotOpen] = useState(false);
   const [taxLotCard, setTaxLotCard] = useState<CardInventory | null>(null);
+  const [isGradePredOpen, setIsGradePredOpen] = useState(false);
+  const [gradePredCard, setGradePredCard] = useState<CardInventory | null>(null);
 
   // Sort state
   const [sortField, setSortField] = useState<SortField>('player');
@@ -668,6 +671,7 @@ const Collection: React.FC = () => {
                   onOpenThesis={(c) => { setThesisCard(c); setIsThesisOpen(true); }}
                   onOpenMarketDepth={(c) => { setMarketDepthCard(c); setIsMarketDepthOpen(true); }}
                   onOpenTaxLot={(c) => { setTaxLotCard(c); setIsTaxLotOpen(true); }}
+                  onOpenGradePrediction={(c) => { setGradePredCard(c); setIsGradePredOpen(true); }}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -700,6 +704,7 @@ const Collection: React.FC = () => {
                         onOpenThesis={(c) => { setThesisCard(c); setIsThesisOpen(true); }}
                         onOpenMarketDepth={(c) => { setMarketDepthCard(c); setIsMarketDepthOpen(true); }}
                         onOpenTaxLot={(c) => { setTaxLotCard(c); setIsTaxLotOpen(true); }}
+                        onOpenGradePrediction={(c) => { setGradePredCard(c); setIsGradePredOpen(true); }}
                       />
                     </SwipeableCard>
                   ))}
@@ -1002,6 +1007,14 @@ const Collection: React.FC = () => {
             onClose={() => { setIsTaxLotOpen(false); setTaxLotCard(null); }}
             card={taxLotCard}
             portfolio={inventory}
+          />
+        )}
+
+        {gradePredCard && (
+          <GradingPredictionModal
+            isOpen={isGradePredOpen}
+            onClose={() => { setIsGradePredOpen(false); setGradePredCard(null); }}
+            card={gradePredCard}
           />
         )}
 

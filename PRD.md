@@ -210,11 +210,29 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - Short-term holding threshold alert: Shows days remaining to qualify for long-term rate with potential savings.
     - "Tax Lot Analysis" button on every card in the collection grid.
 
-### Phase 23: Visual Audit Simulation (RECOMMENDED)
+### Phase 23: Visual Audit Simulation (COMPLETE)
 - **Objective**: AI-powered grading predictions using high-fidelity vision.
+- **Key Features**:
+    - Grade Prediction Engine: Simulated sub-grade analysis (Surface, Centering, Corners, Edges) on 1-10 scale.
+    - Grade Probability Distribution: PSA 10 through PSA 7 probability percentages based on condition, age, manufacturer, and autograph status.
+    - Grade Value Projections: Expected market value at each grade level using current value as baseline.
+    - Grade ROI Analysis: Grading cost vs expected value uplift with net ROI calculation.
+    - Grading Recommendations: "Grade Now", "Hold", or "Re-examine" based on ROI threshold analysis.
+    - Grade Confidence Score: 0-100 confidence in predicted grade outcome.
+    - GradingPredictionModal: Per-card deep-dive with sub-grade bars, probability distribution, value projections, and ROI analysis.
+    - GradeAuditWidget: Dashboard widget showing ungraded card count, total value uplift potential, and top 5 "Grade Now" candidates.
+    - "Grade Prediction" button on ungraded cards in the collection grid.
 
-### Phase 24: Macro-Sentinel Monitoring (RECOMMENDED)
+### Phase 24: Macro-Sentinel Monitoring (COMPLETE)
 - **Objective**: Early warning system for global market shifts affecting luxury assets.
+- **Key Features**:
+    - 8 Macro Indicators across 4 categories (Economic, Market, Hobby, Seasonal): Consumer Confidence, S&P 500 Trend, eBay GMV, Hobby Search Volume, Auction House Premium Index, Card Show Attendance, New Collector Entry Rate, Seasonal Demand Cycle.
+    - Market Regime Detection: Risk-On, Risk-Off, Transition, or Neutral classification based on aggregate bullish/bearish indicator counts.
+    - Portfolio Exposure Assessment: Well-Positioned, Moderately Exposed, At Risk, or Critical Exposure ratings with per-sport sensitivity analysis.
+    - Macro Alerts: Severity-ranked alerts (Critical/Warning/Info) when indicators cross thresholds with actionable recommendations.
+    - MacroAlertModal: Detailed alert view with indicator sparkline, impact analysis, and related indicators.
+    - MacroSentinelWidget: Dashboard widget with regime badge, exposure assessment, indicator grid with trend arrows, and active alerts.
+    - Deterministic date-seeded simulation for consistent indicator values.
 
 ### Phase 25: Break-Even Calculator (COMPLETE)
 - **Objective**: Show collectors the minimum sale price needed to profit after all fees.

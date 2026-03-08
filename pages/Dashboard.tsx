@@ -68,6 +68,11 @@ import MarketDepthModal from '../components/MarketDepthModal.tsx';
 import HedgeSimulationModal from '../components/HedgeSimulationModal.tsx';
 import TaxSummaryWidget from '../components/TaxSummaryWidget.tsx';
 import TaxReportModal from '../components/TaxReportModal.tsx';
+import GradeAuditWidget from '../components/GradeAuditWidget.tsx';
+import GradingPredictionModal from '../components/GradingPredictionModal.tsx';
+import MacroSentinelWidget from '../components/MacroSentinelWidget.tsx';
+import MacroAlertModal from '../components/MacroAlertModal.tsx';
+import { MacroAlert } from '../lib/macroSentinelService.ts';
 import { NegotiableItem, CardInventory } from '../types.ts';
 
 const Dashboard: React.FC = () => {
@@ -121,6 +126,10 @@ const Dashboard: React.FC = () => {
   const [isHedgeSimOpen, setIsHedgeSimOpen] = useState(false);
   const [isTaxLotOpen, setIsTaxLotOpen] = useState(false);
   const [taxLotCard, setTaxLotCard] = useState<CardInventory | null>(null);
+  const [isGradePredOpen, setIsGradePredOpen] = useState(false);
+  const [gradePredCard, setGradePredCard] = useState<CardInventory | null>(null);
+  const [isMacroAlertOpen, setIsMacroAlertOpen] = useState(false);
+  const [macroAlert, setMacroAlert] = useState<MacroAlert | null>(null);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -491,6 +500,12 @@ const Dashboard: React.FC = () => {
           {/* Strategic Signals Feed */}
           <StrategicSignalsFeed signals={signals} />
 
+          {/* Macro-Sentinel Monitoring */}
+          <MacroSentinelWidget
+            inventory={inventory}
+            onAlertClick={(alert) => { setMacroAlert(alert); setIsMacroAlertOpen(true); }}
+          />
+
           {/* Asset Correlation & Hedge Advisor (Phase 21) */}
           <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-500 order-last" style={{ animationDelay: '600ms' }}>
             <div className="xl:col-span-3">
@@ -780,6 +795,12 @@ const Dashboard: React.FC = () => {
             onCardClick={(card) => { setTaxLotCard(card); setIsTaxLotOpen(true); }}
           />
 
+          {/* Visual Audit Simulation */}
+          <GradeAuditWidget
+            inventory={inventory}
+            onCardClick={(card) => { setGradePredCard(card); setIsGradePredOpen(true); }}
+          />
+
           {/* Recents Section */}
           <RecentlyIngested inventory={inventory} />
         </div>
@@ -880,6 +901,22 @@ const Dashboard: React.FC = () => {
           onClose={() => { setIsTaxLotOpen(false); setTaxLotCard(null); }}
           card={taxLotCard}
           portfolio={inventory}
+        />
+      )}
+
+      {gradePredCard && (
+        <GradingPredictionModal
+          isOpen={isGradePredOpen}
+          onClose={() => { setIsGradePredOpen(false); setGradePredCard(null); }}
+          card={gradePredCard}
+        />
+      )}
+
+      {macroAlert && (
+        <MacroAlertModal
+          isOpen={isMacroAlertOpen}
+          onClose={() => { setIsMacroAlertOpen(false); setMacroAlert(null); }}
+          alert={macroAlert}
         />
       )}
     </div>
