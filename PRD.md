@@ -106,18 +106,23 @@ To become the definitive source of truth for sports asset valuation, bridging th
 - **Intelligence (Phase 13)**: Scarcity Intelligence with badge logic and Pop 1 alerts.
 - **Social (Phase 14)**: Social Alpha Elite with Hype Feed & Investor Tiers.
 
-### Phase 15: Mobile Native Experience (IN PROGRESS)
+### Phase 15: Mobile Native Experience (COMPLETE)
 - **Objective**: Optimize for on-the-go scouting.
 - **Key Features**:
-    - PWA Manifest and Service Workers for offline access.
-    - Native Push Notifications for price alerts.
-    - Mobile-optimized camera flow for the Alpha Scanner.
+    - Enhanced Service Worker with multi-strategy caching (static, API, dynamic).
+    - Background sync and cache eviction with stale-while-revalidate.
+    - PWA install prompt handling (`usePWAInstall` hook) with MobileNav install button.
+    - Haptic feedback (Vibration API) on price alerts and swipe actions.
+    - SwipeableCard: swipe-right for watchlist, swipe-left to mark for sale.
+    - SW lifecycle management with auto-update detection and client claim.
 
-### Phase 16: Agentic Negotiation (PLANNED)
+### Phase 16: Agentic Negotiation (COMPLETE)
 - **Objective**: AI agents that can negotiate deals on behalf of the user.
 - **Key Features**:
-    - Gemin-driven sentiment analysis for firmness detection.
-    - Trade proposal generation based on portfolio gaps.
+    - Negotiation Playbook Templates (Lowball & Walk, Fair Market Anchor, Bundle Discount, Quick Close).
+    - Custom playbook creation with configurable firmness, increment rate, and walk-away thresholds.
+    - Playbook-driven auto-negotiation with `getPlaybookOffer()`.
+    - Negotiation Analytics: win rate, avg discount, total saved, rounds, time-to-close, per-playbook stats.
 
 ### Phase 17: Institutional Liquidity Pool (PLANNED)
 - **Objective**: Create an internal marketplace where users can sell assets instantly to the "MSI House" at a slight discount.
@@ -154,3 +159,63 @@ To become the definitive source of truth for sports asset valuation, bridging th
 
 ### Phase 24: Macro-Sentinel Monitoring (RECOMMENDED)
 - **Objective**: Early warning system for global market shifts affecting luxury assets.
+
+### Phase 25: Break-Even Calculator (COMPLETE)
+- **Objective**: Show collectors the minimum sale price needed to profit after all fees.
+- **Key Features**:
+    - Marketplace fee schedules (eBay 13.12%, COMC 5%, MySlabs 9%, PWCC 9.5%, Private 0%).
+    - Break-even price formula accounting for percentage + fixed platform fees.
+    - Profit scenarios at -20%, current, +20%, +50%, and 2x price points.
+    - Additional costs input for insurance, holders, etc.
+    - Integrated into CardGridItem and Collection page via BreakEvenModal.
+
+### Phase 26: Collection Insurance Valuation Report (COMPLETE)
+- **Objective**: Generate insurance-ready valuation documents.
+- **Key Features**:
+    - Timestamped FMV per card with grading details.
+    - Replacement cost estimate (115% of FMV).
+    - Itemized inventory sorted by value with page breaks.
+    - Policyholder information and unique report ID.
+    - Professional PDF with disclaimers.
+
+### Phase 27: What-If Portfolio Simulator (COMPLETE)
+- **Objective**: Test trades before executing.
+- **Key Features**:
+    - Simulate buy/sell trades and see NAV, ROI, diversification, and liquidity impact.
+    - League exposure comparison (current vs. simulated).
+    - Concentration risk warnings when single league exceeds 60%.
+    - Diversification regression alerts.
+
+### Phase 28: Grading Submission Batch Planner (COMPLETE)
+- **Objective**: Optimize grading submissions for maximum ROI.
+- **Key Features**:
+    - Identifies raw cards with highest grading ROI potential.
+    - Grade probability expectations by condition (Mint, Near Mint, Excellent).
+    - Groups candidates into optimal service tiers by value bracket.
+    - High-value ($200+) → PSA Regular, Mid ($50-200) → PSA Economy, Low (<$50) → SGC Economy.
+    - Total fees, expected gain, and best company recommendation.
+
+### Phase 29: eBay Listing Draft Generator (COMPLETE)
+- **Objective**: Auto-generate SEO-optimized eBay listings from card metadata.
+- **Key Features**:
+    - Title format: Year → Brand → Player → Set → Card# → Grade → Features (max 80 chars).
+    - HTML description template with card details table.
+    - Starting bid (75% FMV) and Buy It Now (110% FMV) pricing.
+    - Keyword extraction for eBay search visibility.
+    - Copy-to-clipboard for quick paste into eBay.
+
+### Phase 30: Collection Sharing & Embed Widget (COMPLETE)
+- **Objective**: Let collectors showcase collections on forums and social profiles.
+- **Key Features**:
+    - Shareable collection snapshots with stats (total value, card count, top league).
+    - Self-contained HTML embed widget with brand styling.
+    - Select specific cards or share entire collection.
+    - Local persistence for managing multiple shared collections.
+
+### Phase 31: Wax Break ROI Tracker (COMPLETE)
+- **Objective**: Track cost vs. return of hobby/wax box breaks.
+- **Key Features**:
+    - Create breaks with product name and cost.
+    - Log individual card pulls with estimated values and "hit" flags.
+    - Automatic ROI and profit calculation per break.
+    - Aggregate stats: total spent, win rate, avg ROI, best/worst break, total hits.
