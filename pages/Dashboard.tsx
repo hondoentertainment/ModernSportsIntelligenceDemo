@@ -66,6 +66,8 @@ import PredictiveAlphaModal from '../components/PredictiveAlphaModal.tsx';
 import LiquidityHeatmap from '../components/LiquidityHeatmap.tsx';
 import MarketDepthModal from '../components/MarketDepthModal.tsx';
 import HedgeSimulationModal from '../components/HedgeSimulationModal.tsx';
+import TaxSummaryWidget from '../components/TaxSummaryWidget.tsx';
+import TaxReportModal from '../components/TaxReportModal.tsx';
 import { NegotiableItem, CardInventory } from '../types.ts';
 
 const Dashboard: React.FC = () => {
@@ -117,6 +119,8 @@ const Dashboard: React.FC = () => {
   const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false);
   const [marketDepthCard, setMarketDepthCard] = useState<CardInventory | null>(null);
   const [isHedgeSimOpen, setIsHedgeSimOpen] = useState(false);
+  const [isTaxLotOpen, setIsTaxLotOpen] = useState(false);
+  const [taxLotCard, setTaxLotCard] = useState<CardInventory | null>(null);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -770,6 +774,12 @@ const Dashboard: React.FC = () => {
             onInstantBuy={(card) => { setInstantBuyCard(card); setIsInstantBuyOpen(true); }}
           />
 
+          {/* Fiscal Intelligence */}
+          <TaxSummaryWidget
+            inventory={inventory}
+            onCardClick={(card) => { setTaxLotCard(card); setIsTaxLotOpen(true); }}
+          />
+
           {/* Recents Section */}
           <RecentlyIngested inventory={inventory} />
         </div>
@@ -863,6 +873,15 @@ const Dashboard: React.FC = () => {
         onClose={() => setIsHedgeSimOpen(false)}
         inventory={inventory}
       />
+
+      {taxLotCard && (
+        <TaxReportModal
+          isOpen={isTaxLotOpen}
+          onClose={() => { setIsTaxLotOpen(false); setTaxLotCard(null); }}
+          card={taxLotCard}
+          portfolio={inventory}
+        />
+      )}
     </div>
   );
 };

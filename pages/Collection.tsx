@@ -49,6 +49,7 @@ import InstantBuyModal from '../components/InstantBuyModal';
 import PredictiveAlphaModal from '../components/PredictiveAlphaModal';
 import AgentThesisModal from '../components/AgentThesisModal';
 import MarketDepthModal from '../components/MarketDepthModal';
+import TaxReportModal from '../components/TaxReportModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import CommandPalette from '../components/CommandPalette';
 import { CardGridSkeleton } from '../components/SkeletonLoader';
@@ -145,6 +146,8 @@ const Collection: React.FC = () => {
   const [thesisCard, setThesisCard] = useState<CardInventory | null>(null);
   const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false);
   const [marketDepthCard, setMarketDepthCard] = useState<CardInventory | null>(null);
+  const [isTaxLotOpen, setIsTaxLotOpen] = useState(false);
+  const [taxLotCard, setTaxLotCard] = useState<CardInventory | null>(null);
 
   // Sort state
   const [sortField, setSortField] = useState<SortField>('player');
@@ -664,6 +667,7 @@ const Collection: React.FC = () => {
                   onOpenPredictive={(c) => { setPredictiveCard(c); setIsPredictiveOpen(true); }}
                   onOpenThesis={(c) => { setThesisCard(c); setIsThesisOpen(true); }}
                   onOpenMarketDepth={(c) => { setMarketDepthCard(c); setIsMarketDepthOpen(true); }}
+                  onOpenTaxLot={(c) => { setTaxLotCard(c); setIsTaxLotOpen(true); }}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -691,6 +695,11 @@ const Collection: React.FC = () => {
                         onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
                         onOpenGradingCalc={(c) => { setGradingCalcCard(c); setIsGradingCalcOpen(true); }}
                         onOpenBreakEven={(c) => { setBreakEvenCard(c); setIsBreakEvenOpen(true); }}
+                        onInstantBuy={(c) => { setInstantBuyCard(c); setIsInstantBuyOpen(true); }}
+                        onOpenPredictive={(c) => { setPredictiveCard(c); setIsPredictiveOpen(true); }}
+                        onOpenThesis={(c) => { setThesisCard(c); setIsThesisOpen(true); }}
+                        onOpenMarketDepth={(c) => { setMarketDepthCard(c); setIsMarketDepthOpen(true); }}
+                        onOpenTaxLot={(c) => { setTaxLotCard(c); setIsTaxLotOpen(true); }}
                       />
                     </SwipeableCard>
                   ))}
@@ -984,6 +993,15 @@ const Collection: React.FC = () => {
             isOpen={isMarketDepthOpen}
             onClose={() => { setIsMarketDepthOpen(false); setMarketDepthCard(null); }}
             card={marketDepthCard}
+          />
+        )}
+
+        {taxLotCard && (
+          <TaxReportModal
+            isOpen={isTaxLotOpen}
+            onClose={() => { setIsTaxLotOpen(false); setTaxLotCard(null); }}
+            card={taxLotCard}
+            portfolio={inventory}
           />
         )}
 

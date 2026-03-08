@@ -195,8 +195,20 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - Deploy All: Batch deployment of all proposed hedge nodes with projected diversification score improvement.
     - 30-day node expiration with deployment history tracking.
 
-### Phase 22: Fiscal Intelligence (RECOMMENDED)
+### Phase 22: Fiscal Intelligence (COMPLETE)
 - **Objective**: Automated tax and cost-basis tracking.
+- **Key Features**:
+    - Tax-Lot Accounting: Per-card cost basis calculation including purchase price, grading fees, and shipping fees.
+    - Cost-Basis Methods: FIFO, LIFO, Specific Identification, and Average Cost with one-click switching.
+    - Schedule D Generation: IRS-compatible entries with description, dates acquired/sold, proceeds, cost basis, and gain/loss.
+    - Holding Period Classification: Automatic Short-Term vs Long-Term determination with days held tracking.
+    - Tax Liability Estimation: Estimated tax at 32% (short-term) and 15% (long-term) capital gains rates.
+    - Method Comparison: Side-by-side comparison of tax liability across all 4 cost-basis methods with "Optimal" badge.
+    - Tax-Loss Harvesting: Automated identification of unrealized losses with estimated tax savings per position.
+    - TaxReportModal: Per-card deep-dive with cost basis breakdown, holding period timeline, tax impact, and harvesting alerts.
+    - TaxSummaryWidget: Dashboard widget with YTD gains/losses, short-term vs long-term split, effective tax rate, and harvest candidates.
+    - Short-term holding threshold alert: Shows days remaining to qualify for long-term rate with potential savings.
+    - "Tax Lot Analysis" button on every card in the collection grid.
 
 ### Phase 23: Visual Audit Simulation (RECOMMENDED)
 - **Objective**: AI-powered grading predictions using high-fidelity vision.

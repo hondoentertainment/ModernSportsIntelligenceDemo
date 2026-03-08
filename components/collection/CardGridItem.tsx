@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap, Users, BarChart3 } from 'lucide-react';
+import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap, Users, BarChart3, FileText } from 'lucide-react';
 import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import ScarcityBadge from '../ScarcityBadge';
@@ -29,6 +29,7 @@ export interface CardGridItemProps {
   onOpenPredictive?: (card: CardInventory) => void;
   onOpenThesis?: (card: CardInventory) => void;
   onOpenMarketDepth?: (card: CardInventory) => void;
+  onOpenTaxLot?: (card: CardInventory) => void;
 }
 
 /** Renders a single card — shared between virtualized and static grid */
@@ -54,6 +55,7 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
   onOpenPredictive,
   onOpenThesis,
   onOpenMarketDepth,
+  onOpenTaxLot,
 }) => {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
@@ -286,6 +288,15 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
           >
             <DollarSign size={16} className="text-brand-orange" />
             Break-Even Calc
+          </button>
+        )}
+        {onOpenTaxLot && (
+          <button
+            onClick={() => onOpenTaxLot(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <FileText size={16} className="text-brand-orange" />
+            Tax Lot Analysis
           </button>
         )}
         {card.status !== 'sold' && onInstantBuy && (
