@@ -65,6 +65,7 @@ import InstantBuyModal from '../components/InstantBuyModal.tsx';
 import PredictiveAlphaModal from '../components/PredictiveAlphaModal.tsx';
 import LiquidityHeatmap from '../components/LiquidityHeatmap.tsx';
 import MarketDepthModal from '../components/MarketDepthModal.tsx';
+import HedgeSimulationModal from '../components/HedgeSimulationModal.tsx';
 import { NegotiableItem, CardInventory } from '../types.ts';
 
 const Dashboard: React.FC = () => {
@@ -115,6 +116,7 @@ const Dashboard: React.FC = () => {
   const [thesisCard, setThesisCard] = useState<CardInventory | null>(null);
   const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false);
   const [marketDepthCard, setMarketDepthCard] = useState<CardInventory | null>(null);
+  const [isHedgeSimOpen, setIsHedgeSimOpen] = useState(false);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -491,7 +493,7 @@ const Dashboard: React.FC = () => {
               <CorrelationTerminal inventory={inventory} />
             </div>
             <div className="xl:col-span-2">
-              <HedgeAdvisor inventory={inventory} />
+              <HedgeAdvisor inventory={inventory} onDeployHedge={() => setIsHedgeSimOpen(true)} />
             </div>
           </div>
 
@@ -855,6 +857,12 @@ const Dashboard: React.FC = () => {
           card={marketDepthCard}
         />
       )}
+
+      <HedgeSimulationModal
+        isOpen={isHedgeSimOpen}
+        onClose={() => setIsHedgeSimOpen(false)}
+        inventory={inventory}
+      />
     </div>
   );
 };

@@ -179,8 +179,21 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - "Market Depth" button on every card in the collection grid.
     - Dashboard integration with LiquidityHeatmap widget and MarketDepthModal click-through.
 
-### Phase 21: Cross-Asset Correlation (RECOMMENDED)
+### Phase 21: Cross-Asset Correlation (COMPLETE)
 - **Objective**: Hedge strategies across sport ecosystems.
+- **Key Features**:
+    - Enhanced Correlation Engine: Pearson correlation from price history data with heuristic fallback for 10 sport pairings.
+    - Diversification Score (0-100) using Herfindahl-Hirschman Index for portfolio concentration measurement.
+    - Correlation Heatmap Matrix: Visual sport-to-sport correlation grid with color-coded cells.
+    - Risk Exposure Breakdown: Per-sport allocation bars with percentage tracking.
+    - Hedge Advisor: Strategic risk mitigation with High/Medium/Low impact recommendations (Concentration, Seasonal, Diversification).
+    - Hedge Simulation Engine: Full rebalancing simulation with proposed hedge nodes.
+    - Virtual Hedge Nodes: 4 node types (Rotate, Trim, Hedge, Rebalance) with deploy tracking and localStorage persistence.
+    - Portfolio Concentration Breakdown: Visual weight bars with risk classification per sport.
+    - Seasonal Outlook: Month-aware market timing insights for all 12 months.
+    - Correlation Insights: Auto-generated intelligence on high/low correlation pairs and diversification opportunities.
+    - Deploy All: Batch deployment of all proposed hedge nodes with projected diversification score improvement.
+    - 30-day node expiration with deployment history tracking.
 
 ### Phase 22: Fiscal Intelligence (RECOMMENDED)
 - **Objective**: Automated tax and cost-basis tracking.
