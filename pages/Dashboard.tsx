@@ -58,7 +58,9 @@ import { DashboardSkeleton } from '../components/SkeletonLoader.tsx';
 import StrategicSignalsFeed from '../components/dashboard/StrategicSignalsFeed.tsx';
 import RecentlyIngested from '../components/dashboard/RecentlyIngested.tsx';
 import LiquidityPoolWidget from '../components/LiquidityPoolWidget.tsx';
+import BreakoutRadar from '../components/BreakoutRadar.tsx';
 import InstantBuyModal from '../components/InstantBuyModal.tsx';
+import PredictiveAlphaModal from '../components/PredictiveAlphaModal.tsx';
 import { NegotiableItem, CardInventory } from '../types.ts';
 
 const Dashboard: React.FC = () => {
@@ -103,6 +105,8 @@ const Dashboard: React.FC = () => {
   const [isTerminalMode, setIsTerminalMode] = useState(false);
   const [isInstantBuyOpen, setIsInstantBuyOpen] = useState(false);
   const [instantBuyCard, setInstantBuyCard] = useState<CardInventory | null>(null);
+  const [isPredictiveOpen, setIsPredictiveOpen] = useState(false);
+  const [predictiveCard, setPredictiveCard] = useState<CardInventory | null>(null);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -732,6 +736,12 @@ const Dashboard: React.FC = () => {
           </section>
 
 
+          {/* Predictive Alpha Engine */}
+          <BreakoutRadar
+            inventory={inventory}
+            onCardClick={(card) => { setPredictiveCard(card); setIsPredictiveOpen(true); }}
+          />
+
           {/* Liquidity Pool */}
           <LiquidityPoolWidget
             inventory={inventory}
@@ -798,6 +808,14 @@ const Dashboard: React.FC = () => {
           onAccept={(card, payout) => {
             setInventory(prev => prev.map(c => c.id === card.id ? { ...c, status: 'sold' as const, salePrice: payout, saleDate: new Date().toISOString() } : c));
           }}
+        />
+      )}
+
+      {predictiveCard && (
+        <PredictiveAlphaModal
+          isOpen={isPredictiveOpen}
+          onClose={() => { setIsPredictiveOpen(false); setPredictiveCard(null); }}
+          card={predictiveCard}
         />
       )}
     </div>

@@ -138,11 +138,17 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - Transaction history with localStorage persistence.
     - Portfolio-wide batch quote generation sorted by best value.
 
-### Phase 18: Predictive Alpha Engine (PLANNED)
-- **Objective**: Move from tracking to forecasting.
+### Phase 18: Predictive Alpha Engine (COMPLETE)
+- **Objective**: Move from tracking to forecasting with multi-factor predictive models.
 - **Key Features**:
-    - Gemini-powered "Price Trajectory" based on MiLB stats.
-    - "Breakout Probability" score for prospect cards.
+    - Price Trajectory Forecasting: 30/90/180/365-day projections using weighted momentum, scarcity multipliers, grade premiums, and volatility adjustments.
+    - Breakout Probability Scoring: 5-factor weighted analysis (Prospect Status, Scarcity, Momentum, Grade, Value Position) producing 0-100 breakout score.
+    - Breakout Tiers: Elite Breakout, High Potential, Moderate, Low, Unlikely with recommendations (Strong Buy → Sell).
+    - Catalyst Detection: Automated identification of price catalysts (scarcity, grade premium, league timing, autograph, liquidity, ROI).
+    - Portfolio-Wide Predictions: Aggregate forecasted NAV, overall sentiment, top breakout candidates, at-risk positions.
+    - BreakoutRadar Dashboard Widget: Portfolio prediction overview with sentiment, projected NAV, breakout list, risk alerts.
+    - PredictiveAlphaModal: Per-card deep-dive with trajectory, recommendation, projections, factor analysis, catalysts.
+    - "Price Trajectory" button on every card in the collection grid.
 
 ### Phase 19: Multi-Agent Intelligence (RECOMMENDED)
 - **Objective**: Deploy specialized agents for autonomous portfolio management.

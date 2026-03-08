@@ -46,6 +46,7 @@ import { ExitStrategyModal } from '../components/ExitStrategyModal';
 import GradingCalculatorModal from '../components/GradingCalculatorModal';
 import BreakEvenModal from '../components/BreakEvenModal';
 import InstantBuyModal from '../components/InstantBuyModal';
+import PredictiveAlphaModal from '../components/PredictiveAlphaModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import CommandPalette from '../components/CommandPalette';
 import { CardGridSkeleton } from '../components/SkeletonLoader';
@@ -136,6 +137,8 @@ const Collection: React.FC = () => {
   const [breakEvenCard, setBreakEvenCard] = useState<CardInventory | null>(null);
   const [isInstantBuyOpen, setIsInstantBuyOpen] = useState(false);
   const [instantBuyCard, setInstantBuyCard] = useState<CardInventory | null>(null);
+  const [isPredictiveOpen, setIsPredictiveOpen] = useState(false);
+  const [predictiveCard, setPredictiveCard] = useState<CardInventory | null>(null);
 
   // Sort state
   const [sortField, setSortField] = useState<SortField>('player');
@@ -652,6 +655,7 @@ const Collection: React.FC = () => {
                   onOpenGradingCalc={(c) => { setGradingCalcCard(c); setIsGradingCalcOpen(true); }}
                   onOpenBreakEven={(c) => { setBreakEvenCard(c); setIsBreakEvenOpen(true); }}
                   onInstantBuy={(c) => { setInstantBuyCard(c); setIsInstantBuyOpen(true); }}
+                  onOpenPredictive={(c) => { setPredictiveCard(c); setIsPredictiveOpen(true); }}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -947,6 +951,14 @@ const Collection: React.FC = () => {
               setInventory(prev => prev.map(c => c.id === card.id ? { ...c, status: 'sold' as const, salePrice: payout, saleDate: new Date().toISOString() } : c));
               toast.success(`${card.player} sold to MSI House for $${payout.toLocaleString()}`);
             }}
+          />
+        )}
+
+        {predictiveCard && (
+          <PredictiveAlphaModal
+            isOpen={isPredictiveOpen}
+            onClose={() => { setIsPredictiveOpen(false); setPredictiveCard(null); }}
+            card={predictiveCard}
           />
         )}
 
