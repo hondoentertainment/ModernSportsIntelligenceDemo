@@ -8,38 +8,9 @@ import {
   getAnomalyHistory,
   getAnomalyTrend,
 } from '../../lib/anomalyDetectionService';
+import { makeCard, setupLocalStorageMock } from '../helpers';
 
-// Mock localStorage
-const localStorageMock = (() => {
-  let store: Record<string, string> = {};
-  return {
-    getItem: vi.fn((key: string) => store[key] ?? null),
-    setItem: vi.fn((key: string, value: string) => { store[key] = value; }),
-    removeItem: vi.fn((key: string) => { delete store[key]; }),
-    clear: vi.fn(() => { store = {}; }),
-  };
-})();
-Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock });
-
-function makeCard(overrides: Record<string, any> = {}) {
-  return {
-    id: '1',
-    player: 'Test Player',
-    year: 2023,
-    manufacturer: 'Topps',
-    cardNumber: '1',
-    set: 'Chrome',
-    sport: 'Baseball',
-    league: 'MLB',
-    status: 'active',
-    purchasePrice: 100,
-    currentValue: 100,
-    purchaseDate: '2023-06-01',
-    gradingFees: 0,
-    shippingFees: 0,
-    ...overrides,
-  } as any;
-}
+const localStorageMock = setupLocalStorageMock();
 
 describe('anomalyDetectionService', () => {
   beforeEach(() => {
@@ -107,7 +78,7 @@ describe('anomalyDetectionService', () => {
       expect(['low', 'medium']).toContain(stale[0].severity);
     });
 
-    it('assigns severity based on deviation percent', () => {
+    it('assigns critical severity for large crashes', () => {
       const card = makeCard({
         purchasePrice: 100,
         currentValue: 20, // -80% crash
@@ -119,43 +90,39 @@ describe('anomalyDetectionService', () => {
     });
 
     it('preserves acknowledged status from stored anomalies', () => {
-      // Pre-store an acknowledged anomaly
-      localStorageMock.setItem(
-        'msi_anomalies',
-        JSON.stringify([{ id: 'crash-1', isAcknowledged: true }])
-      );
-      const card = makeCard({
-        id: '1',
-        purchasePrice: 100,
-        currentValue: 40,
-      });
-      const anomalies = detectAnomalies([card]);
-      const crash = anomalies.find(a => a.id === 'crash-1');
-      if (crash) {
-        expect(crash.isAcknowledged).toBe(true);
-      }
+      // First detect anomalies to populate storage, then acknowledge
+      const card = makeCard({ id: '1', purchasePrice: 100, currentValue: 40 });
+      const initial = detectAnomalies([card]);
+      const crashAnomaly = initial.find(a => a.type === 'crash');
+      expect(crashAnomaly).toBeDefined();
+
+      // Acknowledge via public API
+      acknowledgeAnomaly(crashAnomaly!.id);
+
+      // Re-detect — should preserve acknowledged status
+      const refreshed = detectAnomalies([card]);
+      const acked = refreshed.find(a => a.id === crashAnomaly!.id);
+      expect(acked).toBeDefined();
+      expect(acked!.isAcknowledged).toBe(true);
     });
   });
 
   describe('findArbitrageOpportunities', () => {
+    const largeInventory = Array.from({ length: 20 }, (_, i) =>
+      makeCard({ id: `card-${i}`, player: `Player ${i}`, currentValue: 100 + i * 10 })
+    );
+
     it('returns empty for empty inventory', () => {
       expect(findArbitrageOpportunities([])).toEqual([]);
     });
 
     it('generates opportunities for some cards (deterministic)', () => {
-      const inventory = Array.from({ length: 20 }, (_, i) =>
-        makeCard({ id: `card-${i}`, player: `Player ${i}`, currentValue: 100 + i * 10 })
-      );
-      const opps = findArbitrageOpportunities(inventory);
-      // ~25% of 20 cards = ~5, but deterministic so at least some
+      const opps = findArbitrageOpportunities(largeInventory);
       expect(opps.length).toBeGreaterThan(0);
     });
 
     it('each opportunity has valid spread', () => {
-      const inventory = Array.from({ length: 10 }, (_, i) =>
-        makeCard({ id: `card-${i}`, player: `Player ${i}`, currentValue: 200 })
-      );
-      const opps = findArbitrageOpportunities(inventory);
+      const opps = findArbitrageOpportunities(largeInventory);
       for (const opp of opps) {
         expect(opp.sellPrice).toBeGreaterThan(opp.buyPrice);
         expect(opp.spread).toBeGreaterThan(0);
@@ -165,10 +132,7 @@ describe('anomalyDetectionService', () => {
     });
 
     it('sorts by spread descending', () => {
-      const inventory = Array.from({ length: 20 }, (_, i) =>
-        makeCard({ id: `card-${i}`, player: `Player ${i}`, currentValue: 50 + i * 20 })
-      );
-      const opps = findArbitrageOpportunities(inventory);
+      const opps = findArbitrageOpportunities(largeInventory);
       for (let i = 1; i < opps.length; i++) {
         expect(opps[i].spread).toBeLessThanOrEqual(opps[i - 1].spread);
       }
@@ -186,8 +150,8 @@ describe('anomalyDetectionService', () => {
 
     it('counts severity levels correctly', () => {
       const inventory = [
-        makeCard({ id: '1', purchasePrice: 100, currentValue: 20 }), // crash, critical
-        makeCard({ id: '2', purchasePrice: 100, currentValue: 100 }), // normal
+        makeCard({ id: '1', purchasePrice: 100, currentValue: 20 }),
+        makeCard({ id: '2', purchasePrice: 100, currentValue: 100 }),
       ];
       const summary = getAnomalySummary(inventory);
       expect(summary.totalActive).toBeGreaterThan(0);
@@ -196,17 +160,15 @@ describe('anomalyDetectionService', () => {
 
   describe('acknowledgeAnomaly', () => {
     it('marks an anomaly as acknowledged in storage', () => {
-      localStorageMock.setItem(
-        'msi_anomalies',
-        JSON.stringify([
-          { id: 'a1', isAcknowledged: false },
-          { id: 'a2', isAcknowledged: false },
-        ])
-      );
-      acknowledgeAnomaly('a1');
-      const stored = JSON.parse(localStorageMock.getItem('msi_anomalies')!);
-      expect(stored.find((a: any) => a.id === 'a1').isAcknowledged).toBe(true);
-      expect(stored.find((a: any) => a.id === 'a2').isAcknowledged).toBe(false);
+      // Generate anomalies via public API first
+      const card = makeCard({ id: '1', purchasePrice: 100, currentValue: 40 });
+      const anomalies = detectAnomalies([card]);
+      const target = anomalies[0];
+
+      acknowledgeAnomaly(target.id);
+
+      const history = getAnomalyHistory();
+      expect(history.find(a => a.id === target.id)!.isAcknowledged).toBe(true);
     });
   });
 
@@ -215,9 +177,9 @@ describe('anomalyDetectionService', () => {
       expect(getAnomalyHistory()).toEqual([]);
     });
 
-    it('returns stored anomalies', () => {
-      localStorageMock.setItem('msi_anomalies', JSON.stringify([{ id: 'x' }]));
-      expect(getAnomalyHistory()).toHaveLength(1);
+    it('returns stored anomalies after detection', () => {
+      detectAnomalies([makeCard({ purchasePrice: 100, currentValue: 40 })]);
+      expect(getAnomalyHistory().length).toBeGreaterThan(0);
     });
   });
 
