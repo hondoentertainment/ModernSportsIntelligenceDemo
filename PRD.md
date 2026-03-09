@@ -309,3 +309,92 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - **Focus Trap Hook**: Reusable `useFocusTrap` for modal accessibility (Tab wrapping, focus restore).
     - **ARIA Accessibility**: Added `aria-label`, `aria-haspopup`, `aria-expanded`, `aria-current`, `aria-modal`, `role="dialog"`, `role="menu"` across Header, Sidebar, AddAssetModal, CommandPalette, and ConfirmDialog.
     - **Swipeable Cards**: Touch gesture support for mobile card triage (right=watchlist, left=mark for sale) with haptic feedback.
+
+### Phase 33: Portfolio Rebalancing Alerts (COMPLETE)
+- **Objective**: Automated notifications when portfolio drift exceeds thresholds.
+- **Key Features**:
+    - Portfolio target allocation per sport (Baseball 25%, Basketball 25%, Football 25%, Hockey 15%, Soccer 10%) with configurable tolerance bands.
+    - Drift detection engine: calculates actual vs target allocation, flags overweight/underweight positions.
+    - Three-tier severity system: Critical (>15% drift), Warning (>10%), Info (>5%).
+    - Alert types: drift, concentration, performance, and seasonal alerts.
+    - Seasonal opportunity detection: month-aware alerts for sport-specific demand cycles.
+    - Rebalance suggestions: specific buy/sell recommendations with dollar amounts to return to target.
+    - Transaction cost estimation for rebalancing (8% estimated platform fees).
+    - Portfolio Health Score (0-100) based on average drift from targets.
+    - RebalanceAlertModal: per-alert deep-dive with current vs target allocation bars, drift direction, card suggestions, and cost estimate.
+    - RebalanceWidget: dashboard widget with health score badge, allocation bars, and top 3 urgent alerts.
+    - localStorage persistence for alert acknowledgment history.
+
+### Phase 34: Auction Sniper Intelligence (COMPLETE)
+- **Objective**: Real-time auction monitoring with bid timing optimization.
+- **Key Features**:
+    - Simulated live auction feed: 8-12 deterministic mock auctions related to user's collection.
+    - Sniper analysis engine: optimal bid strategy per listing (snipe, early_bid, watch, skip).
+    - Competition level assessment: low/medium/high/fierce based on watcher and bid counts.
+    - Optimal bid timing: 3-30 seconds before end based on competition analysis.
+    - Fair value comparison: listing price vs estimated market value with confidence scoring.
+    - Expected savings calculation per snipe opportunity.
+    - Auction alerts: ending soon (<1hr), below value (<70% FMV), price drops, new listings.
+    - AuctionSniperModal: per-listing deep-dive with strategy badge, countdown timer, competition analysis, and bid recommendation.
+    - AuctionSniperWidget: dashboard widget with active auctions, ending soon count, top 5 snipe opportunities.
+    - Color-coded urgency: red (<1hr), amber (<6hr), green (>6hr).
+
+### Phase 35: Consignment Tracker (COMPLETE)
+- **Objective**: Track cards sent to consignment houses with fee reconciliation.
+- **Key Features**:
+    - 5 pre-defined consignment houses: PWCC (8%), Goldin (10%), MySlabs (6%), Heritage (15%), Probstein123 (8.9%).
+    - Full consignment lifecycle: shipped → received → listed → sold/returned with status tracking.
+    - Net proceeds calculation: sale price minus commission, fixed fees, shipping, and insurance.
+    - House comparison engine: compare net proceeds across all houses for any card value.
+    - Optimal house recommendation based on sport specialty, value bracket, and historical performance.
+    - ConsignmentModal: per-card consignment management with house selector, comparison table, and active consignment timeline.
+    - ConsignmentWidget: dashboard widget with total consigned, pending sales, net proceeds, and per-house performance.
+    - "Consignment" button on active cards in the collection grid.
+    - localStorage persistence for consignment entries.
+
+### Phase 36: Price History Charts (COMPLETE)
+- **Objective**: Interactive time-series charts for individual card price trends.
+- **Key Features**:
+    - Deterministic price history generation: realistic simulated data anchored to purchase price and current value.
+    - 6 time range views: 1W, 1M, 3M, 6M, 1Y, ALL.
+    - Interactive Recharts AreaChart with gradient fills and dark theming.
+    - Technical indicators: 20-day Simple Moving Average (SMA), Bollinger Bands with upper/lower bands.
+    - Statistical analysis: ATH, ATL, avg price, volatility (std dev), Sharpe ratio, max drawdown.
+    - Support and resistance level detection from price data.
+    - Linear regression trendline calculation.
+    - Chart annotations: purchase date, sale date, grading events as visual markers.
+    - PriceHistoryModal: per-card deep-dive with time range selector, chart overlays, and statistics grid.
+    - PriceHistoryWidget: dashboard widget with portfolio value mini-chart, top 5 movers, and top 5 losers.
+    - "Price History" button on every card in the collection grid.
+
+### Phase 37: Collection Milestone Achievements (COMPLETE)
+- **Objective**: Gamification with badges for collection milestones.
+- **Key Features**:
+    - 30+ achievements across 5 categories: Collection, Trading, Grading, Diversification, Value.
+    - 5-tier badge system: Bronze (10pts), Silver (25pts), Gold (50pts), Platinum (100pts), Diamond (250pts).
+    - Level system: Level 1-50 based on total achievement points with XP progress tracking.
+    - Collection achievements: First Card, Starter Pack (10), Serious Collector (50), Centurion (100), Vault Master (500).
+    - Trading achievements: First Sale, Profit Machine (10 profitable), Day Trader (sell within 7 days), Diamond Hands (hold 1yr+).
+    - Grading achievements: Grade Getter, Perfect 10 (PSA 10), Multi-Grader (PSA+BGS+SGC), Gem Mint Collection.
+    - Diversification achievements: Multi-Sport (3+), League Leader (all leagues), Full Roster (all 5 sports).
+    - Value achievements: Thousand Dollar Club ($1K), Five Figure Club ($10K), Six Figure Club ($100K), Big Spender (>$500 card).
+    - AchievementModal: full achievement gallery with category tabs, tier badges, progress bars, and recently unlocked section.
+    - AchievementWidget: dashboard widget with level badge, completion stats, recent unlocks, and next-to-unlock.
+    - localStorage persistence for seen/unseen achievement tracking.
+
+### Phase 38: Market Anomaly Detection (COMPLETE)
+- **Objective**: Flag unusual price movements and potential arbitrage opportunities.
+- **Key Features**:
+    - 6 anomaly types: spike, crash, mispricing, volume surge, stale price, arbitrage.
+    - 4-tier severity: critical, high, medium, low based on deviation percentage and confidence.
+    - Spike detection: currentValue > 1.5x purchasePrice within 90 days.
+    - Crash detection: currentValue < 0.6x purchasePrice.
+    - Mispricing detection: >30% deviation from sport-average price ratios.
+    - Stale price flagging: valuations older than 30 days.
+    - Arbitrage opportunity engine: simulated cross-marketplace spreads (eBay, COMC, MySlabs, PWCC, Private Sale) with 3-12% spreads.
+    - Z-score statistical analysis for anomaly confidence scoring.
+    - Anomaly trend tracking: increasing/decreasing/stable anomaly rates over time.
+    - AnomalyDetailModal: per-anomaly deep-dive with price comparison bars, deviation metrics, arbitrage details, and action recommendations.
+    - AnomalyWidget: dashboard widget with severity breakdown, top 5 anomalies, and arbitrage opportunities.
+    - "Anomaly Check" button on every card in the collection grid.
+    - localStorage persistence for anomaly acknowledgment history.

@@ -51,6 +51,10 @@ import AgentThesisModal from '../components/AgentThesisModal';
 import MarketDepthModal from '../components/MarketDepthModal';
 import TaxReportModal from '../components/TaxReportModal';
 import GradingPredictionModal from '../components/GradingPredictionModal';
+import PriceHistoryModal from '../components/PriceHistoryModal';
+import ConsignmentModal from '../components/ConsignmentModal';
+import AnomalyDetailModal from '../components/AnomalyDetailModal';
+import { MarketAnomaly, detectAnomalies } from '../lib/anomalyDetectionService';
 import ConfirmDialog from '../components/ConfirmDialog';
 import CommandPalette from '../components/CommandPalette';
 import { CardGridSkeleton } from '../components/SkeletonLoader';
@@ -151,6 +155,12 @@ const Collection: React.FC = () => {
   const [taxLotCard, setTaxLotCard] = useState<CardInventory | null>(null);
   const [isGradePredOpen, setIsGradePredOpen] = useState(false);
   const [gradePredCard, setGradePredCard] = useState<CardInventory | null>(null);
+  const [isPriceHistoryOpen, setIsPriceHistoryOpen] = useState(false);
+  const [priceHistoryCard, setPriceHistoryCard] = useState<CardInventory | null>(null);
+  const [isConsignmentOpen, setIsConsignmentOpen] = useState(false);
+  const [consignmentCard, setConsignmentCard] = useState<CardInventory | null>(null);
+  const [isAnomalyOpen, setIsAnomalyOpen] = useState(false);
+  const [anomalyCard, setAnomalyCard] = useState<MarketAnomaly | null>(null);
 
   // Sort state
   const [sortField, setSortField] = useState<SortField>('player');
@@ -672,6 +682,9 @@ const Collection: React.FC = () => {
                   onOpenMarketDepth={(c) => { setMarketDepthCard(c); setIsMarketDepthOpen(true); }}
                   onOpenTaxLot={(c) => { setTaxLotCard(c); setIsTaxLotOpen(true); }}
                   onOpenGradePrediction={(c) => { setGradePredCard(c); setIsGradePredOpen(true); }}
+                  onOpenPriceHistory={(c) => { setPriceHistoryCard(c); setIsPriceHistoryOpen(true); }}
+                  onOpenConsignment={(c) => { setConsignmentCard(c); setIsConsignmentOpen(true); }}
+                  onOpenAnomaly={(c) => { const anomalies = detectAnomalies([c]); if (anomalies.length > 0) { setAnomalyCard(anomalies[0]); setIsAnomalyOpen(true); } }}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -705,6 +718,9 @@ const Collection: React.FC = () => {
                         onOpenMarketDepth={(c) => { setMarketDepthCard(c); setIsMarketDepthOpen(true); }}
                         onOpenTaxLot={(c) => { setTaxLotCard(c); setIsTaxLotOpen(true); }}
                         onOpenGradePrediction={(c) => { setGradePredCard(c); setIsGradePredOpen(true); }}
+                        onOpenPriceHistory={(c) => { setPriceHistoryCard(c); setIsPriceHistoryOpen(true); }}
+                        onOpenConsignment={(c) => { setConsignmentCard(c); setIsConsignmentOpen(true); }}
+                        onOpenAnomaly={(c) => { const anomalies = detectAnomalies([c]); if (anomalies.length > 0) { setAnomalyCard(anomalies[0]); setIsAnomalyOpen(true); } }}
                       />
                     </SwipeableCard>
                   ))}
@@ -1015,6 +1031,32 @@ const Collection: React.FC = () => {
             isOpen={isGradePredOpen}
             onClose={() => { setIsGradePredOpen(false); setGradePredCard(null); }}
             card={gradePredCard}
+          />
+        )}
+
+        {priceHistoryCard && (
+          <PriceHistoryModal
+            isOpen={isPriceHistoryOpen}
+            onClose={() => { setIsPriceHistoryOpen(false); setPriceHistoryCard(null); }}
+            card={priceHistoryCard}
+          />
+        )}
+
+        {consignmentCard && (
+          <ConsignmentModal
+            isOpen={isConsignmentOpen}
+            onClose={() => { setIsConsignmentOpen(false); setConsignmentCard(null); }}
+            card={consignmentCard}
+            inventory={inventory}
+          />
+        )}
+
+        {anomalyCard && (
+          <AnomalyDetailModal
+            isOpen={isAnomalyOpen}
+            onClose={() => { setIsAnomalyOpen(false); setAnomalyCard(null); }}
+            anomaly={anomalyCard}
+            inventory={inventory}
           />
         )}
 

@@ -73,6 +73,20 @@ import GradingPredictionModal from '../components/GradingPredictionModal.tsx';
 import MacroSentinelWidget from '../components/MacroSentinelWidget.tsx';
 import MacroAlertModal from '../components/MacroAlertModal.tsx';
 import { MacroAlert } from '../lib/macroSentinelService.ts';
+import RebalanceWidget from '../components/RebalanceWidget.tsx';
+import RebalanceAlertModal from '../components/RebalanceAlertModal.tsx';
+import { RebalanceAlert } from '../lib/rebalancingAlertService.ts';
+import AuctionSniperWidget from '../components/AuctionSniperWidget.tsx';
+import AuctionSniperModal from '../components/AuctionSniperModal.tsx';
+import { AuctionListing, analyzeListing } from '../lib/auctionSniperService.ts';
+import ConsignmentWidget from '../components/ConsignmentWidget.tsx';
+import PriceHistoryWidget from '../components/PriceHistoryWidget.tsx';
+import PriceHistoryModal from '../components/PriceHistoryModal.tsx';
+import AchievementWidget from '../components/AchievementWidget.tsx';
+import AchievementModal from '../components/AchievementModal.tsx';
+import AnomalyWidget from '../components/AnomalyWidget.tsx';
+import AnomalyDetailModal from '../components/AnomalyDetailModal.tsx';
+import { MarketAnomaly } from '../lib/anomalyDetectionService.ts';
 import { NegotiableItem, CardInventory } from '../types.ts';
 
 const Dashboard: React.FC = () => {
@@ -130,6 +144,15 @@ const Dashboard: React.FC = () => {
   const [gradePredCard, setGradePredCard] = useState<CardInventory | null>(null);
   const [isMacroAlertOpen, setIsMacroAlertOpen] = useState(false);
   const [macroAlert, setMacroAlert] = useState<MacroAlert | null>(null);
+  const [isRebalAlertOpen, setIsRebalAlertOpen] = useState(false);
+  const [rebalAlert, setRebalAlert] = useState<RebalanceAlert | null>(null);
+  const [isAuctionSniperOpen, setIsAuctionSniperOpen] = useState(false);
+  const [auctionListing, setAuctionListing] = useState<AuctionListing | null>(null);
+  const [isPriceHistOpen, setIsPriceHistOpen] = useState(false);
+  const [priceHistCard, setPriceHistCard] = useState<CardInventory | null>(null);
+  const [isAchievementOpen, setIsAchievementOpen] = useState(false);
+  const [isAnomalyOpen, setIsAnomalyOpen] = useState(false);
+  const [anomalyDetail, setAnomalyDetail] = useState<MarketAnomaly | null>(null);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -801,6 +824,39 @@ const Dashboard: React.FC = () => {
             onCardClick={(card) => { setGradePredCard(card); setIsGradePredOpen(true); }}
           />
 
+          {/* Portfolio Rebalancing */}
+          <RebalanceWidget
+            inventory={inventory}
+            onAlertClick={(alert) => { setRebalAlert(alert); setIsRebalAlertOpen(true); }}
+          />
+
+          {/* Auction Sniper Intelligence */}
+          <AuctionSniperWidget
+            inventory={inventory}
+            onListingClick={(listing) => { setAuctionListing(listing); setIsAuctionSniperOpen(true); }}
+          />
+
+          {/* Price History Charts */}
+          <PriceHistoryWidget
+            inventory={inventory}
+            onCardClick={(card) => { setPriceHistCard(card); setIsPriceHistOpen(true); }}
+          />
+
+          {/* Consignment Tracker */}
+          <ConsignmentWidget inventory={inventory} />
+
+          {/* Collection Achievements */}
+          <AchievementWidget
+            inventory={inventory}
+            onViewAll={() => setIsAchievementOpen(true)}
+          />
+
+          {/* Market Anomaly Detection */}
+          <AnomalyWidget
+            inventory={inventory}
+            onAnomalyClick={(anomaly) => { setAnomalyDetail(anomaly); setIsAnomalyOpen(true); }}
+          />
+
           {/* Recents Section */}
           <RecentlyIngested inventory={inventory} />
         </div>
@@ -917,6 +973,47 @@ const Dashboard: React.FC = () => {
           isOpen={isMacroAlertOpen}
           onClose={() => { setIsMacroAlertOpen(false); setMacroAlert(null); }}
           alert={macroAlert}
+        />
+      )}
+
+      {rebalAlert && (
+        <RebalanceAlertModal
+          isOpen={isRebalAlertOpen}
+          onClose={() => { setIsRebalAlertOpen(false); setRebalAlert(null); }}
+          alert={rebalAlert}
+          inventory={inventory}
+        />
+      )}
+
+      {auctionListing && (
+        <AuctionSniperModal
+          isOpen={isAuctionSniperOpen}
+          onClose={() => { setIsAuctionSniperOpen(false); setAuctionListing(null); }}
+          listing={auctionListing}
+          analysis={analyzeListing(auctionListing)}
+        />
+      )}
+
+      {priceHistCard && (
+        <PriceHistoryModal
+          isOpen={isPriceHistOpen}
+          onClose={() => { setIsPriceHistOpen(false); setPriceHistCard(null); }}
+          card={priceHistCard}
+        />
+      )}
+
+      <AchievementModal
+        isOpen={isAchievementOpen}
+        onClose={() => setIsAchievementOpen(false)}
+        inventory={inventory}
+      />
+
+      {anomalyDetail && (
+        <AnomalyDetailModal
+          isOpen={isAnomalyOpen}
+          onClose={() => { setIsAnomalyOpen(false); setAnomalyDetail(null); }}
+          anomaly={anomalyDetail}
+          inventory={inventory}
         />
       )}
     </div>

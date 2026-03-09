@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap, Users, BarChart3, FileText, Eye } from 'lucide-react';
+import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap, Users, BarChart3, FileText, Eye, TrendingUp, Gavel, Package, LineChart, AlertTriangle } from 'lucide-react';
 import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import ScarcityBadge from '../ScarcityBadge';
@@ -31,6 +31,9 @@ export interface CardGridItemProps {
   onOpenMarketDepth?: (card: CardInventory) => void;
   onOpenTaxLot?: (card: CardInventory) => void;
   onOpenGradePrediction?: (card: CardInventory) => void;
+  onOpenPriceHistory?: (card: CardInventory) => void;
+  onOpenConsignment?: (card: CardInventory) => void;
+  onOpenAnomaly?: (card: CardInventory) => void;
 }
 
 /** Renders a single card — shared between virtualized and static grid */
@@ -58,6 +61,9 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
   onOpenMarketDepth,
   onOpenTaxLot,
   onOpenGradePrediction,
+  onOpenPriceHistory,
+  onOpenConsignment,
+  onOpenAnomaly,
 }) => {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
@@ -308,6 +314,33 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
           >
             <FileText size={16} className="text-brand-orange" />
             Tax Lot Analysis
+          </button>
+        )}
+        {onOpenPriceHistory && (
+          <button
+            onClick={() => onOpenPriceHistory(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <LineChart size={16} className="text-cyan-400" />
+            Price History
+          </button>
+        )}
+        {onOpenConsignment && card.status !== 'sold' && (
+          <button
+            onClick={() => onOpenConsignment(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <Package size={16} className="text-amber-400" />
+            Consignment
+          </button>
+        )}
+        {onOpenAnomaly && (
+          <button
+            onClick={() => onOpenAnomaly(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <AlertTriangle size={16} className="text-rose-400" />
+            Anomaly Check
           </button>
         )}
         {card.status !== 'sold' && onInstantBuy && (
