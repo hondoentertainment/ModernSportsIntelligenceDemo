@@ -11,6 +11,7 @@
 - **NegotiationService**: Complete negotiation logic with sentiment analysis and fallback systems
 - **Phase 13: Scarcity Intelligence**: Integrated population reporting and "Pop 1" alerts
 - **Phase 14: Social Alpha Elite**: Live Hype Feed and institutional collector tiers
+- **Phases 39-43 (Planned)**: Trade Block & Offers, Market Watchlists & Price Alerts, Analytics Reports & Export, Community Benchmarking & Leaderboards, Smart Collection Advisor
 
 ## 2. Project Vision & Objectives
 ### 2.1 Vision
@@ -398,3 +399,71 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - AnomalyWidget: dashboard widget with severity breakdown, top 5 anomalies, and arbitrage opportunities.
     - "Anomaly Check" button on every card in the collection grid.
     - localStorage persistence for anomaly acknowledgment history.
+
+### Phase 39: Trade Block & Offer Management
+- **Objective**: Enable users to organize cards for trade, receive and evaluate incoming offers, and track negotiation threads.
+- **Key Features**:
+    - Trade Block board: drag-and-drop card grid where users flag cards as "available for trade" with ask price, minimum acceptable value, and trade preferences.
+    - Offer inbox: incoming offers list with offer amount, offerer reputation score, and counter-offer workflow.
+    - Offer evaluation engine: compares offered value against current market value, scarcity index, and historical trend to produce an "accept/counter/decline" recommendation with confidence score.
+    - Multi-card package deals: bundle multiple cards into a single trade proposal with combined valuation and fairness score.
+    - Trade history log: full record of completed, declined, and expired trades with ROI per trade.
+    - TradeBlockWidget: dashboard widget showing active listings count, pending offers, and recent trade activity.
+    - TradeBlockModal: full-screen trade management with card search, drag-to-add, and real-time valuation.
+    - Notification badges on Dashboard when new offers arrive.
+    - localStorage persistence for trade block state and offer history.
+
+### Phase 40: Market Watchlists & Price Alerts
+- **Objective**: Let users track cards they don't own and receive alerts when prices hit target thresholds.
+- **Key Features**:
+    - Watchlist management: add any card (owned or unowned) to named watchlists with custom categories (e.g., "Buy Targets", "Rookies to Watch", "Grail List").
+    - Price alert rules: per-card configurable triggers — alert when price drops below X, rises above Y, changes by Z% in N days, or hits all-time low.
+    - Alert evaluation engine: runs against simulated market data on each session load, produces triggered alerts with severity and recommended action.
+    - Market scanner: surface cards across the simulated marketplace matching user-defined criteria (sport, price range, grade, manufacturer, year range).
+    - Watchlist analytics: track watchlist performance over time — which watched cards appreciated most, best entry points missed, and optimal buy timing.
+    - WatchlistWidget: dashboard widget with watchlist counts, recently triggered alerts, and top movers on watched cards.
+    - WatchlistModal: full watchlist editor with card search, alert rule configuration, and price history sparklines.
+    - Bulk alert management: acknowledge, snooze, or dismiss alerts; export watchlist as CSV.
+    - localStorage persistence for watchlists, alert rules, and triggered alert history.
+
+### Phase 41: Collection Analytics Reports & Export
+- **Objective**: Generate comprehensive PDF-style analytics reports for insurance, tax, or personal review purposes.
+- **Key Features**:
+    - Report generator: produce on-demand portfolio summary reports covering total valuation, cost basis, realized/unrealized P&L, allocation breakdown, and top performers.
+    - Tax report module: capital gains/losses summary grouped by short-term vs long-term holdings, with per-card cost basis and proceeds.
+    - Insurance valuation report: itemized card list with current market values, grading details, purchase receipts, and replacement cost estimates.
+    - Performance report: time-weighted return, risk-adjusted metrics (Sharpe ratio, max drawdown), benchmark comparison against S&P 500 and hobby index.
+    - Report customization: select date range, include/exclude sold cards, filter by sport or collection group, choose sections to include.
+    - Export formats: render reports as printable HTML with @media print styles; CSV export for spreadsheet import; JSON export for API integration.
+    - Report history: store generated reports with timestamps for year-over-year comparison.
+    - ReportWidget: dashboard widget with quick-generate buttons for common reports and recent report history.
+    - ReportModal: full report builder with section toggles, date pickers, and live preview.
+    - localStorage persistence for report templates and generation history.
+
+### Phase 42: Community Benchmarking & Leaderboards
+- **Objective**: Allow users to compare portfolio performance against anonymized community benchmarks and compete on leaderboards.
+- **Key Features**:
+    - Portfolio benchmarking: compare user's total return, Sharpe ratio, diversification score, and collection size against simulated community percentiles (25th, 50th, 75th, 90th, 99th).
+    - Leaderboard categories: Top ROI (%), Largest Portfolio Value, Most Diversified, Best Grading Score, Most Active Trader, Achievement Points Leader.
+    - Simulated community data: deterministic seeded generation of 500 anonymous collector profiles with realistic portfolio distributions based on Pareto curves.
+    - Percentile ranking: user sees their rank and percentile for each metric with trend arrows (up/down/stable vs last period).
+    - Sport-specific leaderboards: separate rankings for Baseball, Basketball, Football, Hockey, Soccer specialists.
+    - Monthly challenges: time-limited objectives (e.g., "Sell 3 cards at >20% profit this month") with bonus achievement points.
+    - BenchmarkWidget: dashboard widget showing user's percentile badges, rank changes, and active challenges.
+    - BenchmarkModal: full leaderboard browser with category tabs, percentile distribution charts, and historical rank progression.
+    - Challenge tracker: progress bars for active monthly challenges with days remaining.
+    - localStorage persistence for leaderboard snapshots and challenge progress.
+
+### Phase 43: Smart Collection Advisor
+- **Objective**: Provide AI-driven personalized recommendations for portfolio optimization, identifying buy/sell opportunities and collection gaps.
+- **Key Features**:
+    - Portfolio gap analysis: identify missing cards that would improve diversification score — suggest specific sports, decades, manufacturers, or grades to target.
+    - Buy recommendations: surface simulated marketplace listings that match user's collection strategy, price range, and risk tolerance with a "fit score" (0-100).
+    - Sell timing advisor: flag cards approaching peak value based on trend analysis, seasonal patterns, and holding period — recommend optimal exit windows.
+    - Collection strategy profiles: predefined strategies (Conservative Growth, Aggressive Flipping, Long-Term Value, Completion Focused) with tailored advice per profile.
+    - Risk assessment: evaluate portfolio concentration risk, liquidity risk, and market exposure with a composite risk score and mitigation suggestions.
+    - Weekly digest: auto-generated summary of top 3 buy opportunities, top 3 sell candidates, and 1 collection gap to fill, based on current inventory.
+    - AdvisorWidget: dashboard widget showing today's top recommendation, portfolio risk gauge, and strategy alignment score.
+    - AdvisorModal: full advisor interface with strategy selector, recommendation feed with rationale, and "apply suggestion" quick actions.
+    - Recommendation feedback: thumbs up/down on suggestions to refine future recommendations.
+    - localStorage persistence for strategy selection, recommendation history, and feedback.
