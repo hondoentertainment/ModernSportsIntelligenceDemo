@@ -124,41 +124,115 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - Playbook-driven auto-negotiation with `getPlaybookOffer()`.
     - Negotiation Analytics: win rate, avg discount, total saved, rounds, time-to-close, per-playbook stats.
 
-### Phase 17: Institutional Liquidity Pool (PLANNED)
+### Phase 17: Institutional Liquidity Pool (COMPLETE)
 - **Objective**: Create an internal marketplace where users can sell assets instantly to the "MSI House" at a slight discount.
 - **Key Features**:
-    - AI-driven "Instant Buy" valuations.
-    - Liquidity score for every asset in the portfolio.
+    - AI-driven "Instant Buy" valuations based on liquidity score discount tiers (8%-35%).
+    - 5-tier discount system: Premium Liquid, Standard, Moderate, Low Liquidity, Illiquid.
+    - 15-minute quote expiration with real-time countdown timer.
+    - Speed Bonus: +2% payout if accepted within 5 minutes.
+    - 2% MSI platform processing fee.
+    - Side-by-side comparison vs eBay net proceeds (including time-to-sell estimate).
+    - Liquidity Pool Dashboard widget on main dashboard showing top instant offers.
+    - "Instant Sell to MSI House" button on every card in the collection.
+    - Transaction history with localStorage persistence.
+    - Portfolio-wide batch quote generation sorted by best value.
 
-### Phase 18: Predictive Alpha Engine (PLANNED)
-- **Objective**: Move from tracking to forecasting.
+### Phase 18: Predictive Alpha Engine (COMPLETE)
+- **Objective**: Move from tracking to forecasting with multi-factor predictive models.
 - **Key Features**:
-    - Gemini-powered "Price Trajectory" based on MiLB stats.
-    - "Breakout Probability" score for prospect cards.
+    - Price Trajectory Forecasting: 30/90/180/365-day projections using weighted momentum, scarcity multipliers, grade premiums, and volatility adjustments.
+    - Breakout Probability Scoring: 5-factor weighted analysis (Prospect Status, Scarcity, Momentum, Grade, Value Position) producing 0-100 breakout score.
+    - Breakout Tiers: Elite Breakout, High Potential, Moderate, Low, Unlikely with recommendations (Strong Buy → Sell).
+    - Catalyst Detection: Automated identification of price catalysts (scarcity, grade premium, league timing, autograph, liquidity, ROI).
+    - Portfolio-Wide Predictions: Aggregate forecasted NAV, overall sentiment, top breakout candidates, at-risk positions.
+    - BreakoutRadar Dashboard Widget: Portfolio prediction overview with sentiment, projected NAV, breakout list, risk alerts.
+    - PredictiveAlphaModal: Per-card deep-dive with trajectory, recommendation, projections, factor analysis, catalysts.
+    - "Price Trajectory" button on every card in the collection grid.
 
-### Phase 19: Multi-Agent Intelligence (RECOMMENDED)
+### Phase 19: Multi-Agent Intelligence (COMPLETE)
 - **Objective**: Deploy specialized agents for autonomous portfolio management.
 - **Key Features**:
-    - Synthetic Analyst Team (Scout, Market, Risk, Negotiator).
-    - Multi-agent collaboration on investment thesis.
+    - Synthetic Analyst Team with 4 named agents: Atlas (Scout), Apex (Market), Sentinel (Risk), Viper (Negotiator).
+    - Each agent has distinct personality, specialty, analysis logic, and data points.
+    - Per-card Investment Thesis: All 4 agents analyze independently, then produce a weighted consensus verdict (Strong Buy → Sell) with confidence score.
+    - Dissent detection: Highlights when agents disagree, noting which agents hold contrary views.
+    - Portfolio Briefing: Aggregate health score (0-100), per-agent reports with action items, top picks, and risk alerts.
+    - Scout Agent: Breakout detection, prospect evaluation, autograph premium analysis.
+    - Market Agent: Price trajectory, liquidity assessment, ROI analysis, 30-day projections.
+    - Risk Agent: Concentration risk, volatility assessment, exit risk, grade risk, cost basis analysis.
+    - Negotiator Agent: Entry/exit timing, fair value range, negotiation leverage assessment.
+    - AgentInsightsPanel: Dashboard widget with expandable agent reports, health indicator, top picks, and risk alerts.
+    - AgentThesisModal: Per-card 4-agent deep-dive with consensus banner, individual analyses, data points, and key points.
+    - "Agent Thesis" button on every card in the collection grid.
 
-### Phase 20: Liquidity Intelligence (RECOMMENDED)
-- **Objective**: Institutional-grade market depth analysis.
+### Phase 20: Liquidity Intelligence (COMPLETE)
+- **Objective**: Institutional-grade market depth analysis and portfolio liquidity visualization.
 - **Key Features**:
-    - MSI Liquidity Score for every asset.
-    - Exit strategy planning based on volume.
+    - Simulated Order Book: Bid/ask levels with cumulative volumes, spread calculation, buy pressure percentage.
+    - Market Impact Analysis: Slippage estimates for selling 1/3/5/10 units based on order book depth.
+    - Volume Velocity Metrics: Daily/weekly/monthly volume, velocity classification (very fast → very slow), avg days to sell, sell-through rate.
+    - Recent Comparable Sales: Price consensus scoring from simulated market data.
+    - Portfolio Liquidity Report: Liquid/moderate/illiquid value breakdown, avg liquidity score, estimated days to liquidate.
+    - Liquidity Heatmap Widget: Color-coded distribution bar with 5 liquidity buckets, stuck inventory warnings, illiquid concentration risk alerts.
+    - MarketDepthModal: Per-card deep-dive with spread, buy pressure, velocity, order book visualization, market impact grid, and comparable sales.
+    - "Market Depth" button on every card in the collection grid.
+    - Dashboard integration with LiquidityHeatmap widget and MarketDepthModal click-through.
 
-### Phase 21: Cross-Asset Correlation (RECOMMENDED)
+### Phase 21: Cross-Asset Correlation (COMPLETE)
 - **Objective**: Hedge strategies across sport ecosystems.
+- **Key Features**:
+    - Enhanced Correlation Engine: Pearson correlation from price history data with heuristic fallback for 10 sport pairings.
+    - Diversification Score (0-100) using Herfindahl-Hirschman Index for portfolio concentration measurement.
+    - Correlation Heatmap Matrix: Visual sport-to-sport correlation grid with color-coded cells.
+    - Risk Exposure Breakdown: Per-sport allocation bars with percentage tracking.
+    - Hedge Advisor: Strategic risk mitigation with High/Medium/Low impact recommendations (Concentration, Seasonal, Diversification).
+    - Hedge Simulation Engine: Full rebalancing simulation with proposed hedge nodes.
+    - Virtual Hedge Nodes: 4 node types (Rotate, Trim, Hedge, Rebalance) with deploy tracking and localStorage persistence.
+    - Portfolio Concentration Breakdown: Visual weight bars with risk classification per sport.
+    - Seasonal Outlook: Month-aware market timing insights for all 12 months.
+    - Correlation Insights: Auto-generated intelligence on high/low correlation pairs and diversification opportunities.
+    - Deploy All: Batch deployment of all proposed hedge nodes with projected diversification score improvement.
+    - 30-day node expiration with deployment history tracking.
 
-### Phase 22: Fiscal Intelligence (RECOMMENDED)
+### Phase 22: Fiscal Intelligence (COMPLETE)
 - **Objective**: Automated tax and cost-basis tracking.
+- **Key Features**:
+    - Tax-Lot Accounting: Per-card cost basis calculation including purchase price, grading fees, and shipping fees.
+    - Cost-Basis Methods: FIFO, LIFO, Specific Identification, and Average Cost with one-click switching.
+    - Schedule D Generation: IRS-compatible entries with description, dates acquired/sold, proceeds, cost basis, and gain/loss.
+    - Holding Period Classification: Automatic Short-Term vs Long-Term determination with days held tracking.
+    - Tax Liability Estimation: Estimated tax at 32% (short-term) and 15% (long-term) capital gains rates.
+    - Method Comparison: Side-by-side comparison of tax liability across all 4 cost-basis methods with "Optimal" badge.
+    - Tax-Loss Harvesting: Automated identification of unrealized losses with estimated tax savings per position.
+    - TaxReportModal: Per-card deep-dive with cost basis breakdown, holding period timeline, tax impact, and harvesting alerts.
+    - TaxSummaryWidget: Dashboard widget with YTD gains/losses, short-term vs long-term split, effective tax rate, and harvest candidates.
+    - Short-term holding threshold alert: Shows days remaining to qualify for long-term rate with potential savings.
+    - "Tax Lot Analysis" button on every card in the collection grid.
 
-### Phase 23: Visual Audit Simulation (RECOMMENDED)
+### Phase 23: Visual Audit Simulation (COMPLETE)
 - **Objective**: AI-powered grading predictions using high-fidelity vision.
+- **Key Features**:
+    - Grade Prediction Engine: Simulated sub-grade analysis (Surface, Centering, Corners, Edges) on 1-10 scale.
+    - Grade Probability Distribution: PSA 10 through PSA 7 probability percentages based on condition, age, manufacturer, and autograph status.
+    - Grade Value Projections: Expected market value at each grade level using current value as baseline.
+    - Grade ROI Analysis: Grading cost vs expected value uplift with net ROI calculation.
+    - Grading Recommendations: "Grade Now", "Hold", or "Re-examine" based on ROI threshold analysis.
+    - Grade Confidence Score: 0-100 confidence in predicted grade outcome.
+    - GradingPredictionModal: Per-card deep-dive with sub-grade bars, probability distribution, value projections, and ROI analysis.
+    - GradeAuditWidget: Dashboard widget showing ungraded card count, total value uplift potential, and top 5 "Grade Now" candidates.
+    - "Grade Prediction" button on ungraded cards in the collection grid.
 
-### Phase 24: Macro-Sentinel Monitoring (RECOMMENDED)
+### Phase 24: Macro-Sentinel Monitoring (COMPLETE)
 - **Objective**: Early warning system for global market shifts affecting luxury assets.
+- **Key Features**:
+    - 8 Macro Indicators across 4 categories (Economic, Market, Hobby, Seasonal): Consumer Confidence, S&P 500 Trend, eBay GMV, Hobby Search Volume, Auction House Premium Index, Card Show Attendance, New Collector Entry Rate, Seasonal Demand Cycle.
+    - Market Regime Detection: Risk-On, Risk-Off, Transition, or Neutral classification based on aggregate bullish/bearish indicator counts.
+    - Portfolio Exposure Assessment: Well-Positioned, Moderately Exposed, At Risk, or Critical Exposure ratings with per-sport sensitivity analysis.
+    - Macro Alerts: Severity-ranked alerts (Critical/Warning/Info) when indicators cross thresholds with actionable recommendations.
+    - MacroAlertModal: Detailed alert view with indicator sparkline, impact analysis, and related indicators.
+    - MacroSentinelWidget: Dashboard widget with regime badge, exposure assessment, indicator grid with trend arrows, and active alerts.
+    - Deterministic date-seeded simulation for consistent indicator values.
 
 ### Phase 25: Break-Even Calculator (COMPLETE)
 - **Objective**: Show collectors the minimum sale price needed to profit after all fees.
@@ -219,3 +293,108 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - Log individual card pulls with estimated values and "hit" flags.
     - Automatic ROI and profit calculation per break.
     - Aggregate stats: total spent, win rate, avg ROI, best/worst break, total hits.
+
+### Phase 32: Usability & Accessibility Overhaul (COMPLETE)
+- **Objective**: Enhance UX by 50%+ through comprehensive usability improvements across the platform.
+- **Key Features**:
+    - **Keyboard Shortcuts System**: Global shortcuts (`/` focus search, `Ctrl+K` command palette, `n` new card, `Esc` clear) via reusable `useKeyboardShortcuts` hook.
+    - **Command Palette**: Searchable command launcher (Ctrl+K) with arrow key navigation, 10 navigation routes, and contextual actions. Uses focus trap and full ARIA support.
+    - **Confirm Dialog**: Replaced browser `confirm()` with branded modal dialogs (danger/warning/info variants) with focus trap and ARIA attributes.
+    - **Undo-capable Toasts**: Toast notifications with undo button support (auto-extends to 8s), escape key dismiss, deduplication.
+    - **Collection Sort**: Full sort functionality with 6 fields (value, price, player, year, sport, league) and direction toggle.
+    - **Bulk Operations**: Select mode with select-all, bulk delete (with undo), and JSON export.
+    - **Search Enhancements**: Result count display, clear button, ref-based focus, empty state with filter clear action.
+    - **Price Update Feedback**: Shows old→new value delta toast with error handling on market price updates.
+    - **Skeleton Loaders**: `CardSkeleton`, `StatSkeleton`, `ChartSkeleton`, `DashboardSkeleton` components integrated into loading states.
+    - **Focus Trap Hook**: Reusable `useFocusTrap` for modal accessibility (Tab wrapping, focus restore).
+    - **ARIA Accessibility**: Added `aria-label`, `aria-haspopup`, `aria-expanded`, `aria-current`, `aria-modal`, `role="dialog"`, `role="menu"` across Header, Sidebar, AddAssetModal, CommandPalette, and ConfirmDialog.
+    - **Swipeable Cards**: Touch gesture support for mobile card triage (right=watchlist, left=mark for sale) with haptic feedback.
+
+### Phase 33: Portfolio Rebalancing Alerts (COMPLETE)
+- **Objective**: Automated notifications when portfolio drift exceeds thresholds.
+- **Key Features**:
+    - Portfolio target allocation per sport (Baseball 25%, Basketball 25%, Football 25%, Hockey 15%, Soccer 10%) with configurable tolerance bands.
+    - Drift detection engine: calculates actual vs target allocation, flags overweight/underweight positions.
+    - Three-tier severity system: Critical (>15% drift), Warning (>10%), Info (>5%).
+    - Alert types: drift, concentration, performance, and seasonal alerts.
+    - Seasonal opportunity detection: month-aware alerts for sport-specific demand cycles.
+    - Rebalance suggestions: specific buy/sell recommendations with dollar amounts to return to target.
+    - Transaction cost estimation for rebalancing (8% estimated platform fees).
+    - Portfolio Health Score (0-100) based on average drift from targets.
+    - RebalanceAlertModal: per-alert deep-dive with current vs target allocation bars, drift direction, card suggestions, and cost estimate.
+    - RebalanceWidget: dashboard widget with health score badge, allocation bars, and top 3 urgent alerts.
+    - localStorage persistence for alert acknowledgment history.
+
+### Phase 34: Auction Sniper Intelligence (COMPLETE)
+- **Objective**: Real-time auction monitoring with bid timing optimization.
+- **Key Features**:
+    - Simulated live auction feed: 8-12 deterministic mock auctions related to user's collection.
+    - Sniper analysis engine: optimal bid strategy per listing (snipe, early_bid, watch, skip).
+    - Competition level assessment: low/medium/high/fierce based on watcher and bid counts.
+    - Optimal bid timing: 3-30 seconds before end based on competition analysis.
+    - Fair value comparison: listing price vs estimated market value with confidence scoring.
+    - Expected savings calculation per snipe opportunity.
+    - Auction alerts: ending soon (<1hr), below value (<70% FMV), price drops, new listings.
+    - AuctionSniperModal: per-listing deep-dive with strategy badge, countdown timer, competition analysis, and bid recommendation.
+    - AuctionSniperWidget: dashboard widget with active auctions, ending soon count, top 5 snipe opportunities.
+    - Color-coded urgency: red (<1hr), amber (<6hr), green (>6hr).
+
+### Phase 35: Consignment Tracker (COMPLETE)
+- **Objective**: Track cards sent to consignment houses with fee reconciliation.
+- **Key Features**:
+    - 5 pre-defined consignment houses: PWCC (8%), Goldin (10%), MySlabs (6%), Heritage (15%), Probstein123 (8.9%).
+    - Full consignment lifecycle: shipped → received → listed → sold/returned with status tracking.
+    - Net proceeds calculation: sale price minus commission, fixed fees, shipping, and insurance.
+    - House comparison engine: compare net proceeds across all houses for any card value.
+    - Optimal house recommendation based on sport specialty, value bracket, and historical performance.
+    - ConsignmentModal: per-card consignment management with house selector, comparison table, and active consignment timeline.
+    - ConsignmentWidget: dashboard widget with total consigned, pending sales, net proceeds, and per-house performance.
+    - "Consignment" button on active cards in the collection grid.
+    - localStorage persistence for consignment entries.
+
+### Phase 36: Price History Charts (COMPLETE)
+- **Objective**: Interactive time-series charts for individual card price trends.
+- **Key Features**:
+    - Deterministic price history generation: realistic simulated data anchored to purchase price and current value.
+    - 6 time range views: 1W, 1M, 3M, 6M, 1Y, ALL.
+    - Interactive Recharts AreaChart with gradient fills and dark theming.
+    - Technical indicators: 20-day Simple Moving Average (SMA), Bollinger Bands with upper/lower bands.
+    - Statistical analysis: ATH, ATL, avg price, volatility (std dev), Sharpe ratio, max drawdown.
+    - Support and resistance level detection from price data.
+    - Linear regression trendline calculation.
+    - Chart annotations: purchase date, sale date, grading events as visual markers.
+    - PriceHistoryModal: per-card deep-dive with time range selector, chart overlays, and statistics grid.
+    - PriceHistoryWidget: dashboard widget with portfolio value mini-chart, top 5 movers, and top 5 losers.
+    - "Price History" button on every card in the collection grid.
+
+### Phase 37: Collection Milestone Achievements (COMPLETE)
+- **Objective**: Gamification with badges for collection milestones.
+- **Key Features**:
+    - 30+ achievements across 5 categories: Collection, Trading, Grading, Diversification, Value.
+    - 5-tier badge system: Bronze (10pts), Silver (25pts), Gold (50pts), Platinum (100pts), Diamond (250pts).
+    - Level system: Level 1-50 based on total achievement points with XP progress tracking.
+    - Collection achievements: First Card, Starter Pack (10), Serious Collector (50), Centurion (100), Vault Master (500).
+    - Trading achievements: First Sale, Profit Machine (10 profitable), Day Trader (sell within 7 days), Diamond Hands (hold 1yr+).
+    - Grading achievements: Grade Getter, Perfect 10 (PSA 10), Multi-Grader (PSA+BGS+SGC), Gem Mint Collection.
+    - Diversification achievements: Multi-Sport (3+), League Leader (all leagues), Full Roster (all 5 sports).
+    - Value achievements: Thousand Dollar Club ($1K), Five Figure Club ($10K), Six Figure Club ($100K), Big Spender (>$500 card).
+    - AchievementModal: full achievement gallery with category tabs, tier badges, progress bars, and recently unlocked section.
+    - AchievementWidget: dashboard widget with level badge, completion stats, recent unlocks, and next-to-unlock.
+    - localStorage persistence for seen/unseen achievement tracking.
+
+### Phase 38: Market Anomaly Detection (COMPLETE)
+- **Objective**: Flag unusual price movements and potential arbitrage opportunities.
+- **Key Features**:
+    - 6 anomaly types: spike, crash, mispricing, volume surge, stale price, arbitrage.
+    - 4-tier severity: critical, high, medium, low based on deviation percentage and confidence.
+    - Spike detection: currentValue > 1.5x purchasePrice within 90 days.
+    - Crash detection: currentValue < 0.6x purchasePrice.
+    - Mispricing detection: >30% deviation from sport-average price ratios.
+    - Stale price flagging: valuations older than 30 days.
+    - Arbitrage opportunity engine: simulated cross-marketplace spreads (eBay, COMC, MySlabs, PWCC, Private Sale) with 3-12% spreads.
+    - Z-score statistical analysis for anomaly confidence scoring.
+    - Anomaly trend tracking: increasing/decreasing/stable anomaly rates over time.
+    - AnomalyDetailModal: per-anomaly deep-dive with price comparison bars, deviation metrics, arbitrage details, and action recommendations.
+    - AnomalyWidget: dashboard widget with severity breakdown, top 5 anomalies, and arbitrage opportunities.
+    - "Anomaly Check" button on every card in the collection grid.
+    - localStorage persistence for anomaly acknowledgment history.

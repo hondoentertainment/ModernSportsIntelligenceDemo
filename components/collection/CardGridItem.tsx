@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign } from 'lucide-react';
+import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap, Users, BarChart3, FileText, Eye, TrendingUp, Gavel, Package, LineChart, AlertTriangle } from 'lucide-react';
 import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import ScarcityBadge from '../ScarcityBadge';
@@ -25,6 +25,15 @@ export interface CardGridItemProps {
   onOpenExitStrategy?: (card: CardInventory) => void;
   onOpenGradingCalc?: (card: CardInventory) => void;
   onOpenBreakEven?: (card: CardInventory) => void;
+  onInstantBuy?: (card: CardInventory) => void;
+  onOpenPredictive?: (card: CardInventory) => void;
+  onOpenThesis?: (card: CardInventory) => void;
+  onOpenMarketDepth?: (card: CardInventory) => void;
+  onOpenTaxLot?: (card: CardInventory) => void;
+  onOpenGradePrediction?: (card: CardInventory) => void;
+  onOpenPriceHistory?: (card: CardInventory) => void;
+  onOpenConsignment?: (card: CardInventory) => void;
+  onOpenAnomaly?: (card: CardInventory) => void;
 }
 
 /** Renders a single card — shared between virtualized and static grid */
@@ -46,6 +55,15 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
   onOpenExitStrategy,
   onOpenGradingCalc,
   onOpenBreakEven,
+  onInstantBuy,
+  onOpenPredictive,
+  onOpenThesis,
+  onOpenMarketDepth,
+  onOpenTaxLot,
+  onOpenGradePrediction,
+  onOpenPriceHistory,
+  onOpenConsignment,
+  onOpenAnomaly,
 }) => {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
@@ -235,6 +253,33 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
           )}
           Intelligence Check
         </button>
+        {onOpenPredictive && (
+          <button
+            onClick={() => onOpenPredictive(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <Target size={16} className="text-brand-teal" />
+            Price Trajectory
+          </button>
+        )}
+        {onOpenThesis && (
+          <button
+            onClick={() => onOpenThesis(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <Users size={16} className="text-brand-blue" />
+            Agent Thesis
+          </button>
+        )}
+        {onOpenMarketDepth && (
+          <button
+            onClick={() => onOpenMarketDepth(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <BarChart3 size={16} className="text-brand-green" />
+            Market Depth
+          </button>
+        )}
         {!card.isGraded && onOpenGradingCalc && (
           <button
             onClick={() => onOpenGradingCalc(card)}
@@ -244,6 +289,15 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
             Grade Premium Calc
           </button>
         )}
+        {!card.isGraded && onOpenGradePrediction && (
+          <button
+            onClick={() => onOpenGradePrediction(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <Eye size={16} className="text-purple-400" />
+            Grade Prediction
+          </button>
+        )}
         {onOpenBreakEven && (
           <button
             onClick={() => onOpenBreakEven(card)}
@@ -251,6 +305,50 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
           >
             <DollarSign size={16} className="text-brand-orange" />
             Break-Even Calc
+          </button>
+        )}
+        {onOpenTaxLot && (
+          <button
+            onClick={() => onOpenTaxLot(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <FileText size={16} className="text-brand-orange" />
+            Tax Lot Analysis
+          </button>
+        )}
+        {onOpenPriceHistory && (
+          <button
+            onClick={() => onOpenPriceHistory(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <LineChart size={16} className="text-cyan-400" />
+            Price History
+          </button>
+        )}
+        {onOpenConsignment && card.status !== 'sold' && (
+          <button
+            onClick={() => onOpenConsignment(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <Package size={16} className="text-amber-400" />
+            Consignment
+          </button>
+        )}
+        {onOpenAnomaly && (
+          <button
+            onClick={() => onOpenAnomaly(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
+          >
+            <AlertTriangle size={16} className="text-rose-400" />
+            Anomaly Check
+          </button>
+        )}
+        {card.status !== 'sold' && onInstantBuy && (
+          <button
+            onClick={() => onInstantBuy(card)}
+            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime transition-all"
+          >
+            <Zap size={16} /> Instant Sell to MSI House
           </button>
         )}
         {card.searchUrl && (

@@ -17,6 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
   return (
     <>
       <aside
+        aria-label="Main navigation"
         className={`fixed top-0 left-0 h-full z-40 glass-sidebar transition-all duration-300 hidden md:flex flex-col
       ${isOpen ? 'w-64' : 'w-20'}`}
       >
@@ -29,13 +30,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
           </div>
           <button
             onClick={toggle}
+            aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
             className="p-1.5 rounded-lg bg-brand-slate border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
             {isOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
           </button>
         </div>
 
-        <nav className="flex-1 px-3 space-y-1.5 mt-4">
+        <nav aria-label="Primary" className="flex-1 px-3 space-y-1.5 mt-4">
           {NAV_ITEMS.map((item) => {
             const isActive = location.pathname === item.path ||
               (item.path !== '/' && location.pathname.startsWith(item.path));
@@ -43,6 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
               <Link
                 key={item.id}
                 to={item.path}
+                aria-current={isActive ? 'page' : undefined}
                 className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all group relative
                 ${isActive
                     ? 'bg-brand-lime text-brand-charcoal font-bold'
@@ -82,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
       </aside>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-brand-charcoal/90 backdrop-blur-xl border-t border-slate-800 md:hidden flex justify-around items-center p-2 pb-6">
+      <nav aria-label="Mobile navigation" className="fixed bottom-0 left-0 right-0 z-50 bg-brand-charcoal/90 backdrop-blur-xl border-t border-slate-800 md:hidden flex justify-around items-center p-2 pb-6">
         {NAV_ITEMS.filter(item => ['dashboard', 'collection', 'alerts', 'profile'].includes(item.id)).map((item) => {
           const isActive = location.pathname === item.path ||
             (item.path !== '/' && location.pathname.startsWith(item.path));

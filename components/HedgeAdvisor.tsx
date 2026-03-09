@@ -5,9 +5,10 @@ import { AlertTriangle, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 
 interface HedgeAdvisorProps {
     inventory: CardInventory[];
+    onDeployHedge?: () => void;
 }
 
-export const HedgeAdvisor: React.FC<HedgeAdvisorProps> = ({ inventory }) => {
+export const HedgeAdvisor: React.FC<HedgeAdvisorProps> = ({ inventory, onDeployHedge }) => {
     const recommendations = useMemo(() => CorrelationService.getHedgingRecommendations(inventory), [inventory]);
 
     const getImpactStyles = (impact: HedgeRecommendation['impact']) => {
@@ -73,7 +74,10 @@ export const HedgeAdvisor: React.FC<HedgeAdvisorProps> = ({ inventory }) => {
                 })}
             </div>
 
-            <button className="w-full py-4 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 text-[10px] font-black uppercase tracking-[0.2em] text-white rounded-2xl transition-all">
+            <button
+                onClick={onDeployHedge}
+                className="w-full py-4 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 text-[10px] font-black uppercase tracking-[0.2em] text-white rounded-2xl transition-all hover:border-brand-lime/30 hover:text-brand-lime"
+            >
                 Deploy Virtual Hedge Nodes
             </button>
         </div>

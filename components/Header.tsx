@@ -38,6 +38,7 @@ const Header: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={isCommand ? "Enter terminal command (e.g. /scan, /buy, /compare)..." : "MSI Intel: Search card populations, market caps, or trajectories..."}
+            aria-label="Search cards, commands, and market data"
             className={`w-full bg-brand-slate border rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 transition-all placeholder:text-slate-500 font-medium ${isCommand ? 'border-brand-lime/50 ring-brand-lime/20 text-brand-lime font-mono' : 'border-slate-800 focus:ring-brand-lime'}`}
           />
           {isCommand && (
@@ -49,9 +50,12 @@ const Header: React.FC = () => {
       </div>
 
       <div className="flex items-center gap-3 md:gap-5 ml-4">
-        <button className="p-2 text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative">
+        <button
+          aria-label="Notifications"
+          className="p-2 text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative"
+        >
           <Bell size={20} />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-brand-lime rounded-full"></span>
+          <span className="absolute top-2 right-2 w-2 h-2 bg-brand-lime rounded-full" aria-hidden="true"></span>
         </button>
 
         <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-charcoal border border-slate-800 rounded-full group cursor-help transition-all hover:bg-brand-slate" title={syncStatus === 'synced' ? 'Cloud Sync Active' : syncStatus === 'migrating' ? 'Migrating Data...' : 'Local Storage Mode'}>
@@ -72,6 +76,9 @@ const Header: React.FC = () => {
         <div className="relative">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
+            aria-haspopup="menu"
+            aria-expanded={showDropdown}
+            aria-label={`User menu for ${displayName}`}
             className="flex items-center gap-2 group p-1 pr-3 rounded-full hover:bg-brand-slate transition-all border border-transparent hover:border-slate-700"
           >
             <div className="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center">
@@ -91,7 +98,7 @@ const Header: React.FC = () => {
           {showDropdown && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setShowDropdown(false)} />
-              <div className="absolute right-0 top-full mt-2 w-56 bg-brand-slate border border-slate-700 rounded-2xl shadow-xl z-50 overflow-hidden">
+              <div role="menu" className="absolute right-0 top-full mt-2 w-56 bg-brand-slate border border-slate-700 rounded-2xl shadow-xl z-50 overflow-hidden">
                 <div className="p-3 border-b border-slate-700">
                   <p className="text-sm font-medium text-white truncate">{displayName}</p>
                   <p className="text-xs text-slate-400 truncate">{displayEmail}</p>

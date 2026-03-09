@@ -54,9 +54,40 @@ import DeepDiverReport from '../components/DeepDiverReport.tsx';
 import { CorrelationTerminal } from '../components/CorrelationTerminal.tsx';
 import { HedgeAdvisor } from '../components/HedgeAdvisor.tsx';
 import DashboardEmptyState from '../components/dashboard/DashboardEmptyState.tsx';
+import { DashboardSkeleton } from '../components/SkeletonLoader.tsx';
 import StrategicSignalsFeed from '../components/dashboard/StrategicSignalsFeed.tsx';
 import RecentlyIngested from '../components/dashboard/RecentlyIngested.tsx';
-import { NegotiableItem } from '../types.ts';
+import LiquidityPoolWidget from '../components/LiquidityPoolWidget.tsx';
+import BreakoutRadar from '../components/BreakoutRadar.tsx';
+import AgentInsightsPanel from '../components/AgentInsightsPanel.tsx';
+import AgentThesisModal from '../components/AgentThesisModal.tsx';
+import InstantBuyModal from '../components/InstantBuyModal.tsx';
+import PredictiveAlphaModal from '../components/PredictiveAlphaModal.tsx';
+import LiquidityHeatmap from '../components/LiquidityHeatmap.tsx';
+import MarketDepthModal from '../components/MarketDepthModal.tsx';
+import HedgeSimulationModal from '../components/HedgeSimulationModal.tsx';
+import TaxSummaryWidget from '../components/TaxSummaryWidget.tsx';
+import TaxReportModal from '../components/TaxReportModal.tsx';
+import GradeAuditWidget from '../components/GradeAuditWidget.tsx';
+import GradingPredictionModal from '../components/GradingPredictionModal.tsx';
+import MacroSentinelWidget from '../components/MacroSentinelWidget.tsx';
+import MacroAlertModal from '../components/MacroAlertModal.tsx';
+import { MacroAlert } from '../lib/macroSentinelService.ts';
+import RebalanceWidget from '../components/RebalanceWidget.tsx';
+import RebalanceAlertModal from '../components/RebalanceAlertModal.tsx';
+import { RebalanceAlert } from '../lib/rebalancingAlertService.ts';
+import AuctionSniperWidget from '../components/AuctionSniperWidget.tsx';
+import AuctionSniperModal from '../components/AuctionSniperModal.tsx';
+import { AuctionListing, analyzeListing } from '../lib/auctionSniperService.ts';
+import ConsignmentWidget from '../components/ConsignmentWidget.tsx';
+import PriceHistoryWidget from '../components/PriceHistoryWidget.tsx';
+import PriceHistoryModal from '../components/PriceHistoryModal.tsx';
+import AchievementWidget from '../components/AchievementWidget.tsx';
+import AchievementModal from '../components/AchievementModal.tsx';
+import AnomalyWidget from '../components/AnomalyWidget.tsx';
+import AnomalyDetailModal from '../components/AnomalyDetailModal.tsx';
+import { MarketAnomaly } from '../lib/anomalyDetectionService.ts';
+import { NegotiableItem, CardInventory } from '../types.ts';
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
@@ -98,6 +129,30 @@ const Dashboard: React.FC = () => {
   const [isNegotiationOpen, setIsNegotiationOpen] = useState(false);
   const [negotiationTarget, setNegotiationTarget] = useState<NegotiableItem | null>(null);
   const [isTerminalMode, setIsTerminalMode] = useState(false);
+  const [isInstantBuyOpen, setIsInstantBuyOpen] = useState(false);
+  const [instantBuyCard, setInstantBuyCard] = useState<CardInventory | null>(null);
+  const [isPredictiveOpen, setIsPredictiveOpen] = useState(false);
+  const [predictiveCard, setPredictiveCard] = useState<CardInventory | null>(null);
+  const [isThesisOpen, setIsThesisOpen] = useState(false);
+  const [thesisCard, setThesisCard] = useState<CardInventory | null>(null);
+  const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false);
+  const [marketDepthCard, setMarketDepthCard] = useState<CardInventory | null>(null);
+  const [isHedgeSimOpen, setIsHedgeSimOpen] = useState(false);
+  const [isTaxLotOpen, setIsTaxLotOpen] = useState(false);
+  const [taxLotCard, setTaxLotCard] = useState<CardInventory | null>(null);
+  const [isGradePredOpen, setIsGradePredOpen] = useState(false);
+  const [gradePredCard, setGradePredCard] = useState<CardInventory | null>(null);
+  const [isMacroAlertOpen, setIsMacroAlertOpen] = useState(false);
+  const [macroAlert, setMacroAlert] = useState<MacroAlert | null>(null);
+  const [isRebalAlertOpen, setIsRebalAlertOpen] = useState(false);
+  const [rebalAlert, setRebalAlert] = useState<RebalanceAlert | null>(null);
+  const [isAuctionSniperOpen, setIsAuctionSniperOpen] = useState(false);
+  const [auctionListing, setAuctionListing] = useState<AuctionListing | null>(null);
+  const [isPriceHistOpen, setIsPriceHistOpen] = useState(false);
+  const [priceHistCard, setPriceHistCard] = useState<CardInventory | null>(null);
+  const [isAchievementOpen, setIsAchievementOpen] = useState(false);
+  const [isAnomalyOpen, setIsAnomalyOpen] = useState(false);
+  const [anomalyDetail, setAnomalyDetail] = useState<MarketAnomaly | null>(null);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -241,7 +296,9 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className={`space-y-12 animate-in fade-in duration-700 pb-12 ${isTerminalMode ? 'px-2' : ''}`}>
-      {inventory.length === 0 ? (
+      {loading ? (
+        <DashboardSkeleton />
+      ) : inventory.length === 0 ? (
         <DashboardEmptyState
           onScanOpen={() => setIsScanOpen(true)}
           onInitialize={initializeFullInventory}
@@ -466,13 +523,19 @@ const Dashboard: React.FC = () => {
           {/* Strategic Signals Feed */}
           <StrategicSignalsFeed signals={signals} />
 
+          {/* Macro-Sentinel Monitoring */}
+          <MacroSentinelWidget
+            inventory={inventory}
+            onAlertClick={(alert) => { setMacroAlert(alert); setIsMacroAlertOpen(true); }}
+          />
+
           {/* Asset Correlation & Hedge Advisor (Phase 21) */}
           <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-500 order-last" style={{ animationDelay: '600ms' }}>
             <div className="xl:col-span-3">
               <CorrelationTerminal inventory={inventory} />
             </div>
             <div className="xl:col-span-2">
-              <HedgeAdvisor inventory={inventory} />
+              <HedgeAdvisor inventory={inventory} onDeployHedge={() => setIsHedgeSimOpen(true)} />
             </div>
           </div>
 
@@ -725,6 +788,75 @@ const Dashboard: React.FC = () => {
           </section>
 
 
+          {/* Predictive Alpha Engine */}
+          <BreakoutRadar
+            inventory={inventory}
+            onCardClick={(card) => { setPredictiveCard(card); setIsPredictiveOpen(true); }}
+          />
+
+          {/* Multi-Agent Intelligence */}
+          <AgentInsightsPanel
+            inventory={inventory}
+            onCardClick={(card) => { setThesisCard(card); setIsThesisOpen(true); }}
+          />
+
+          {/* Liquidity Intelligence */}
+          <LiquidityHeatmap
+            inventory={inventory}
+            onCardClick={(card) => { setMarketDepthCard(card); setIsMarketDepthOpen(true); }}
+          />
+
+          {/* Liquidity Pool */}
+          <LiquidityPoolWidget
+            inventory={inventory}
+            onInstantBuy={(card) => { setInstantBuyCard(card); setIsInstantBuyOpen(true); }}
+          />
+
+          {/* Fiscal Intelligence */}
+          <TaxSummaryWidget
+            inventory={inventory}
+            onCardClick={(card) => { setTaxLotCard(card); setIsTaxLotOpen(true); }}
+          />
+
+          {/* Visual Audit Simulation */}
+          <GradeAuditWidget
+            inventory={inventory}
+            onCardClick={(card) => { setGradePredCard(card); setIsGradePredOpen(true); }}
+          />
+
+          {/* Portfolio Rebalancing */}
+          <RebalanceWidget
+            inventory={inventory}
+            onAlertClick={(alert) => { setRebalAlert(alert); setIsRebalAlertOpen(true); }}
+          />
+
+          {/* Auction Sniper Intelligence */}
+          <AuctionSniperWidget
+            inventory={inventory}
+            onListingClick={(listing) => { setAuctionListing(listing); setIsAuctionSniperOpen(true); }}
+          />
+
+          {/* Price History Charts */}
+          <PriceHistoryWidget
+            inventory={inventory}
+            onCardClick={(card) => { setPriceHistCard(card); setIsPriceHistOpen(true); }}
+          />
+
+          {/* Consignment Tracker */}
+          <ConsignmentWidget inventory={inventory} />
+
+          {/* Collection Achievements */}
+          <AchievementWidget
+            inventory={inventory}
+            onViewAll={() => setIsAchievementOpen(true)}
+          />
+
+          {/* Market Anomaly Detection */}
+          <AnomalyWidget
+            inventory={inventory}
+            onAnomalyClick={(anomaly) => { setAnomalyDetail(anomaly); setIsAnomalyOpen(true); }}
+          />
+
           {/* Recents Section */}
           <RecentlyIngested inventory={inventory} />
         </div>
@@ -776,6 +908,114 @@ const Dashboard: React.FC = () => {
           if (import.meta.env.DEV) console.warn('Acquired for', finalPrice);
         }}
       />
+
+      {instantBuyCard && (
+        <InstantBuyModal
+          isOpen={isInstantBuyOpen}
+          onClose={() => { setIsInstantBuyOpen(false); setInstantBuyCard(null); }}
+          card={instantBuyCard}
+          onAccept={(card, payout) => {
+            setInventory(prev => prev.map(c => c.id === card.id ? { ...c, status: 'sold' as const, salePrice: payout, saleDate: new Date().toISOString() } : c));
+          }}
+        />
+      )}
+
+      {predictiveCard && (
+        <PredictiveAlphaModal
+          isOpen={isPredictiveOpen}
+          onClose={() => { setIsPredictiveOpen(false); setPredictiveCard(null); }}
+          card={predictiveCard}
+        />
+      )}
+
+      {thesisCard && (
+        <AgentThesisModal
+          isOpen={isThesisOpen}
+          onClose={() => { setIsThesisOpen(false); setThesisCard(null); }}
+          card={thesisCard}
+          portfolio={inventory}
+        />
+      )}
+
+      {marketDepthCard && (
+        <MarketDepthModal
+          isOpen={isMarketDepthOpen}
+          onClose={() => { setIsMarketDepthOpen(false); setMarketDepthCard(null); }}
+          card={marketDepthCard}
+        />
+      )}
+
+      <HedgeSimulationModal
+        isOpen={isHedgeSimOpen}
+        onClose={() => setIsHedgeSimOpen(false)}
+        inventory={inventory}
+      />
+
+      {taxLotCard && (
+        <TaxReportModal
+          isOpen={isTaxLotOpen}
+          onClose={() => { setIsTaxLotOpen(false); setTaxLotCard(null); }}
+          card={taxLotCard}
+          portfolio={inventory}
+        />
+      )}
+
+      {gradePredCard && (
+        <GradingPredictionModal
+          isOpen={isGradePredOpen}
+          onClose={() => { setIsGradePredOpen(false); setGradePredCard(null); }}
+          card={gradePredCard}
+        />
+      )}
+
+      {macroAlert && (
+        <MacroAlertModal
+          isOpen={isMacroAlertOpen}
+          onClose={() => { setIsMacroAlertOpen(false); setMacroAlert(null); }}
+          alert={macroAlert}
+        />
+      )}
+
+      {rebalAlert && (
+        <RebalanceAlertModal
+          isOpen={isRebalAlertOpen}
+          onClose={() => { setIsRebalAlertOpen(false); setRebalAlert(null); }}
+          alert={rebalAlert}
+          inventory={inventory}
+        />
+      )}
+
+      {auctionListing && (
+        <AuctionSniperModal
+          isOpen={isAuctionSniperOpen}
+          onClose={() => { setIsAuctionSniperOpen(false); setAuctionListing(null); }}
+          listing={auctionListing}
+          analysis={analyzeListing(auctionListing)}
+        />
+      )}
+
+      {priceHistCard && (
+        <PriceHistoryModal
+          isOpen={isPriceHistOpen}
+          onClose={() => { setIsPriceHistOpen(false); setPriceHistCard(null); }}
+          card={priceHistCard}
+        />
+      )}
+
+      <AchievementModal
+        isOpen={isAchievementOpen}
+        onClose={() => setIsAchievementOpen(false)}
+        inventory={inventory}
+      />
+
+      {anomalyDetail && (
+        <AnomalyDetailModal
+          isOpen={isAnomalyOpen}
+          onClose={() => { setIsAnomalyOpen(false); setAnomalyDetail(null); }}
+          anomaly={anomalyDetail}
+          inventory={inventory}
+        />
+      )}
     </div>
   );
 };
