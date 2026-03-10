@@ -7,40 +7,9 @@ import {
   markAsSeen,
   calculateLevel,
 } from '../../lib/achievementService';
+import { makeCard, setupLocalStorageMock } from '../helpers';
 
-// Mock localStorage
-const localStorageMock = (() => {
-  let store: Record<string, string> = {};
-  return {
-    getItem: vi.fn((key: string) => store[key] ?? null),
-    setItem: vi.fn((key: string, value: string) => { store[key] = value; }),
-    removeItem: vi.fn((key: string) => { delete store[key]; }),
-    clear: vi.fn(() => { store = {}; }),
-  };
-})();
-Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock });
-
-function makeCard(overrides: Record<string, any> = {}) {
-  return {
-    id: '1',
-    player: 'Test Player',
-    year: 2023,
-    manufacturer: 'Topps',
-    cardNumber: '1',
-    set: 'Chrome',
-    sport: 'Baseball',
-    league: 'MLB',
-    status: 'active',
-    purchasePrice: 100,
-    currentValue: 100,
-    purchaseDate: '2023-06-01',
-    gradingFees: 0,
-    shippingFees: 0,
-    isGraded: false,
-    isAutographed: false,
-    ...overrides,
-  } as any;
-}
+const localStorageMock = setupLocalStorageMock();
 
 describe('achievementService', () => {
   beforeEach(() => {
@@ -52,7 +21,6 @@ describe('achievementService', () => {
     it('returns all achievement definitions', () => {
       const achievements = evaluateAchievements([]);
       expect(achievements.length).toBeGreaterThan(30);
-      // Every achievement has required fields
       for (const a of achievements) {
         expect(a.id).toBeTruthy();
         expect(a.name).toBeTruthy();
@@ -70,7 +38,7 @@ describe('achievementService', () => {
       expect(firstCard.progress).toBe(100);
     });
 
-    it('nothing unlocked for empty inventory except zero-requirement', () => {
+    it('nothing unlocked for empty inventory', () => {
       const achievements = evaluateAchievements([]);
       const unlocked = achievements.filter(a => a.isUnlocked);
       expect(unlocked).toHaveLength(0);
@@ -80,7 +48,7 @@ describe('achievementService', () => {
       const cards = Array.from({ length: 5 }, (_, i) => makeCard({ id: `c${i}` }));
       const achievements = evaluateAchievements(cards);
       const starterPack = achievements.find(a => a.id === 'starter_pack')!;
-      expect(starterPack.progress).toBe(50); // 5/10 = 50%
+      expect(starterPack.progress).toBe(50); // 5/10
       expect(starterPack.isUnlocked).toBe(false);
     });
 
@@ -142,10 +110,9 @@ describe('achievementService', () => {
       expect(summary.completionPercent).toBeGreaterThan(0);
     });
 
-    it('provides next to unlock suggestions', () => {
+    it('provides next to unlock suggestions sorted by progress', () => {
       const summary = getAchievementSummary([makeCard()]);
       expect(summary.nextToUnlock.length).toBeGreaterThan(0);
-      // Next to unlock should be sorted by progress desc
       for (let i = 1; i < summary.nextToUnlock.length; i++) {
         expect(summary.nextToUnlock[i].progress).toBeLessThanOrEqual(
           summary.nextToUnlock[i - 1].progress
@@ -180,13 +147,12 @@ describe('achievementService', () => {
   describe('getRecentlyUnlocked', () => {
     it('returns new unlocks not yet seen', () => {
       const recent = getRecentlyUnlocked([makeCard()]);
-      // first_card should be in recently unlocked since nothing is seen yet
       const firstCard = recent.find(a => a.id === 'first_card');
       expect(firstCard).toBeDefined();
     });
 
     it('excludes seen achievements', () => {
-      localStorageMock.setItem('achievement_seen_ids', JSON.stringify(['first_card']));
+      markAsSeen('first_card');
       const recent = getRecentlyUnlocked([makeCard()]);
       const firstCard = recent.find(a => a.id === 'first_card');
       expect(firstCard).toBeUndefined();
@@ -194,24 +160,20 @@ describe('achievementService', () => {
   });
 
   describe('markAsSeen', () => {
-    it('adds achievement to seen list', () => {
-      markAsSeen('first_card');
-      const stored = JSON.parse(localStorageMock.getItem('achievement_seen_ids')!);
-      expect(stored).toContain('first_card');
-    });
-
     it('accumulates seen ids', () => {
       markAsSeen('first_card');
       markAsSeen('starter_pack');
-      const stored = JSON.parse(localStorageMock.getItem('achievement_seen_ids')!);
-      expect(stored).toContain('first_card');
-      expect(stored).toContain('starter_pack');
+      // Verify via getRecentlyUnlocked (public API) that these are excluded
+      const cards = Array.from({ length: 10 }, (_, i) => makeCard({ id: `c${i}` }));
+      const recent = getRecentlyUnlocked(cards);
+      expect(recent.find(a => a.id === 'first_card')).toBeUndefined();
+      expect(recent.find(a => a.id === 'starter_pack')).toBeUndefined();
     });
   });
 
   describe('calculateLevel', () => {
     it('returns level 1 for 0 points', () => {
-      const { level, levelProgress } = calculateLevel(0);
+      const { level } = calculateLevel(0);
       expect(level).toBe(1);
     });
 
