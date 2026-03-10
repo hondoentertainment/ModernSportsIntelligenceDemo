@@ -11,7 +11,7 @@
 - **NegotiationService**: Complete negotiation logic with sentiment analysis and fallback systems
 - **Phase 13: Scarcity Intelligence**: Integrated population reporting and "Pop 1" alerts
 - **Phase 14: Social Alpha Elite**: Live Hype Feed and institutional collector tiers
-- **Phases 39-43 (Planned)**: Trade Block & Offers, Market Watchlists & Price Alerts, Analytics Reports & Export, Community Benchmarking & Leaderboards, Smart Collection Advisor
+- **Phases 39-43**: Trade Block & Offers, Market Watchlists & Price Alerts, Analytics Reports & Export, Community Benchmarking & Leaderboards, Smart Collection Advisor
 
 ## 2. Project Vision & Objectives
 ### 2.1 Vision
@@ -400,7 +400,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - "Anomaly Check" button on every card in the collection grid.
     - localStorage persistence for anomaly acknowledgment history.
 
-### Phase 39: Trade Block & Offer Management
+### Phase 39: Trade Block & Offer Management (COMPLETE)
 - **Objective**: Enable users to organize cards for trade, receive and evaluate incoming offers, and track negotiation threads.
 - **Key Features**:
     - Trade Block board: drag-and-drop card grid where users flag cards as "available for trade" with ask price, minimum acceptable value, and trade preferences.
@@ -413,7 +413,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - Notification badges on Dashboard when new offers arrive.
     - localStorage persistence for trade block state and offer history.
 
-### Phase 40: Market Watchlists & Price Alerts
+### Phase 40: Market Watchlists & Price Alerts (COMPLETE)
 - **Objective**: Let users track cards they don't own and receive alerts when prices hit target thresholds.
 - **Key Features**:
     - Watchlist management: add any card (owned or unowned) to named watchlists with custom categories (e.g., "Buy Targets", "Rookies to Watch", "Grail List").
@@ -426,7 +426,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - Bulk alert management: acknowledge, snooze, or dismiss alerts; export watchlist as CSV.
     - localStorage persistence for watchlists, alert rules, and triggered alert history.
 
-### Phase 41: Collection Analytics Reports & Export
+### Phase 41: Collection Analytics Reports & Export (COMPLETE)
 - **Objective**: Generate comprehensive PDF-style analytics reports for insurance, tax, or personal review purposes.
 - **Key Features**:
     - Report generator: produce on-demand portfolio summary reports covering total valuation, cost basis, realized/unrealized P&L, allocation breakdown, and top performers.
@@ -440,7 +440,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - ReportModal: full report builder with section toggles, date pickers, and live preview.
     - localStorage persistence for report templates and generation history.
 
-### Phase 42: Community Benchmarking & Leaderboards
+### Phase 42: Community Benchmarking & Leaderboards (COMPLETE)
 - **Objective**: Allow users to compare portfolio performance against anonymized community benchmarks and compete on leaderboards.
 - **Key Features**:
     - Portfolio benchmarking: compare user's total return, Sharpe ratio, diversification score, and collection size against simulated community percentiles (25th, 50th, 75th, 90th, 99th).
@@ -454,7 +454,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - Challenge tracker: progress bars for active monthly challenges with days remaining.
     - localStorage persistence for leaderboard snapshots and challenge progress.
 
-### Phase 43: Smart Collection Advisor
+### Phase 43: Smart Collection Advisor (COMPLETE)
 - **Objective**: Provide AI-driven personalized recommendations for portfolio optimization, identifying buy/sell opportunities and collection gaps.
 - **Key Features**:
     - Portfolio gap analysis: identify missing cards that would improve diversification score — suggest specific sports, decades, manufacturers, or grades to target.
