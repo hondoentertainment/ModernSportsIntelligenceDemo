@@ -40,7 +40,6 @@ import {
   EventDeal,
   DealType,
   EventROI,
-  WantListItem,
   getUpcomingEvents,
   getAllEvents,
   getEventById,
@@ -786,21 +785,120 @@ const DealsTab: React.FC<{
   );
 };
 
-// ---- History Tab ----
+// ---- ROI Tab ----
 
-const HistoryTab: React.FC = () => {
+const ROITab: React.FC = () => {
   const history = useMemo(() => getEventHistory(), []);
+
+  const chartData = useMemo(() => {
+    return history.map(r => ({
+      name: r.eventName.length > 18 ? r.eventName.slice(0, 16) + '..' : r.eventName,
+      spent: r.totalBudgetSpent + r.totalDealsSpent,
+      earned: r.totalDealsEarned + r.totalTradeValue,
+    }));
+  }, [history]);
+
+  const cumulativeData = useMemo(() => {
+    let cumSpent = 0;
+    let cumEarned = 0;
+    return history.map(r => {
+      cumSpent += r.totalBudgetSpent + r.totalDealsSpent;
+      cumEarned += r.totalDealsEarned + r.totalTradeValue;
+      return {
+        name: r.eventName.length > 12 ? r.eventName.slice(0, 10) + '..' : r.eventName,
+        cumROI: cumSpent > 0 ? ((cumEarned - cumSpent) / cumSpent) * 100 : 0,
+      };
+    });
+  }, [history]);
+
+  const totals = useMemo(() => {
+    const totalSpent = history.reduce((s, r) => s + r.totalBudgetSpent + r.totalDealsSpent, 0);
+    const totalEarned = history.reduce((s, r) => s + r.totalDealsEarned + r.totalTradeValue, 0);
+    return {
+      totalSpent,
+      totalEarned,
+      net: totalEarned - totalSpent,
+      pct: totalSpent > 0 ? ((totalEarned - totalSpent) / totalSpent) * 100 : 0,
+      events: history.length,
+      deals: history.reduce((s, r) => s + r.dealCount, 0),
+    };
+  }, [history]);
 
   if (history.length === 0) {
     return (
-      <div className="text-center py-8 text-slate-500 text-sm">
-        No event history yet. Log deals at events to see ROI breakdowns here.
+      <div className="text-center py-12 text-slate-500 text-sm">
+        No event history yet. Log deals and set budgets to see ROI analytics here.
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
+      {/* Aggregate Summary */}
+      <div className="grid grid-cols-4 gap-3">
+        <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl text-center">
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Events</p>
+          <p className="text-2xl font-bebas tracking-wider text-white">{totals.events}</p>
+        </div>
+        <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl text-center">
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Total Spent</p>
+          <p className="text-2xl font-bebas tracking-wider text-slate-300">${totals.totalSpent.toLocaleString()}</p>
+        </div>
+        <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl text-center">
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Total Earned</p>
+          <p className="text-2xl font-bebas tracking-wider text-green-400">${totals.totalEarned.toLocaleString()}</p>
+        </div>
+        <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl text-center">
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Net ROI</p>
+          <p className={`text-2xl font-bebas tracking-wider ${totals.pct >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            {totals.pct >= 0 ? '+' : ''}{totals.pct.toFixed(1)}%
+          </p>
+        </div>
+      </div>
+
+      {/* Spent vs Earned Bar Chart */}
+      <div className="p-4 bg-slate-800/30 border border-slate-700 rounded-2xl">
+        <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-3">Spent vs Earned by Event</p>
+        <ResponsiveContainer width="100%" height={220}>
+          <BarChart data={chartData} barGap={2}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+            <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 10 }} angle={-20} textAnchor="end" height={60} />
+            <YAxis tick={{ fill: '#64748b', fontSize: 10 }} />
+            <Tooltip
+              contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '0.75rem' }}
+              labelStyle={{ color: '#f8fafc' }}
+              formatter={(value: number, name: string) => [
+                `$${value.toLocaleString()}`,
+                name === 'spent' ? 'Spent' : 'Earned',
+              ]}
+            />
+            <Bar dataKey="spent" fill="#ef4444" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="earned" fill="#10b981" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Cumulative ROI Line Chart */}
+      {cumulativeData.length > 1 && (
+        <div className="p-4 bg-slate-800/30 border border-slate-700 rounded-2xl">
+          <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-3">Cumulative ROI Trend</p>
+          <ResponsiveContainer width="100%" height={180}>
+            <LineChart data={cumulativeData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+              <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 10 }} />
+              <YAxis tick={{ fill: '#64748b', fontSize: 10 }} unit="%" />
+              <Tooltip
+                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '0.75rem' }}
+                labelStyle={{ color: '#f8fafc' }}
+                formatter={(value: number) => [`${value.toFixed(1)}%`, 'ROI']}
+              />
+              <Line type="monotone" dataKey="cumROI" stroke="#3b82f6" strokeWidth={2} dot={{ fill: '#3b82f6', r: 4 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Event History Detail */}
       <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest px-1">
         Event History ({history.length})
       </p>
@@ -812,7 +910,6 @@ const HistoryTab: React.FC = () => {
             key={roi.eventId}
             className="p-5 bg-slate-800/50 border border-slate-700 rounded-2xl space-y-3"
           >
-            {/* Event Name & ROI */}
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-bold text-white">{roi.eventName}</p>
@@ -831,7 +928,6 @@ const HistoryTab: React.FC = () => {
               </div>
             </div>
 
-            {/* ROI Breakdown */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div className="p-2.5 bg-slate-700/50 rounded-xl text-center">
                 <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Budget</p>
@@ -851,7 +947,6 @@ const HistoryTab: React.FC = () => {
               </div>
             </div>
 
-            {/* Deal Count */}
             <div className="flex items-center gap-2 text-xs text-slate-500">
               <Tag size={12} />
               {roi.dealCount} deal{roi.dealCount !== 1 ? 's' : ''} logged
@@ -863,12 +958,118 @@ const HistoryTab: React.FC = () => {
   );
 };
 
+// ---- Want List Tab ----
+
+const WantListTab: React.FC<{
+  targets: TargetWatchlist[];
+}> = ({ targets }) => {
+  const wantList = useMemo(() => generateWantList(targets), [targets]);
+
+  const handleExport = useCallback(() => {
+    let text = '=== CARD SHOW WANT LIST ===\n';
+    text += `Generated: ${new Date().toLocaleDateString()}\n`;
+    text += `Total items: ${wantList.length}\n\n`;
+
+    wantList.forEach((item, i) => {
+      const stars = item.priority === 'High' ? '***' : item.priority === 'Medium' ? '** ' : '*  ';
+      text += `${i + 1}. ${stars} ${item.player}\n`;
+      text += `   ${item.cardDescription}\n`;
+      text += `   Max: $${item.targetPrice.toFixed(0)}`;
+      if (item.notes) text += ` | ${item.notes}`;
+      text += '\n\n';
+    });
+
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `want-list-${new Date().toISOString().split('T')[0]}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [wantList]);
+
+  const priorityColors: Record<string, string> = {
+    High: 'text-red-400 bg-red-500/10 border-red-500/30',
+    Medium: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
+    Low: 'text-slate-400 bg-slate-500/10 border-slate-500/30',
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="text-sm font-bold text-white">Show Shopping Want List</h4>
+          <p className="text-xs text-slate-500">{wantList.length} items from your watchlist</p>
+        </div>
+        {wantList.length > 0 && (
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors"
+          >
+            <Printer size={13} />
+            Export
+          </button>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        {wantList.length === 0 ? (
+          <div className="text-center py-12 text-slate-500 text-sm">
+            No active watchlist items. Add targets to your watchlist to generate a show shopping list.
+          </div>
+        ) : (
+          wantList.map(item => (
+            <div key={item.id} className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700 rounded-xl">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-semibold text-white truncate">{item.player}</span>
+                  <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${priorityColors[item.priority] ?? priorityColors.Low}`}>
+                    {item.priority.toUpperCase()}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 truncate">{item.cardDescription}</p>
+                {item.notes && <p className="text-xs text-slate-500 mt-0.5 italic truncate">{item.notes}</p>}
+              </div>
+              <span className="text-sm font-bold text-green-400 flex-shrink-0">
+                max ${item.targetPrice.toLocaleString()}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+
+      {wantList.length > 0 && (
+        <div className="p-3 bg-slate-800/30 border border-slate-700 rounded-xl flex items-center justify-between">
+          <div className="flex items-center gap-4 text-xs text-slate-400">
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-red-400" />
+              {wantList.filter(w => w.priority === 'High').length} High
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-amber-400" />
+              {wantList.filter(w => w.priority === 'Medium').length} Medium
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-slate-400" />
+              {wantList.filter(w => w.priority === 'Low').length} Low
+            </span>
+          </div>
+          <span className="text-xs font-bold text-white">
+            Total max: ${wantList.reduce((s, w) => s + w.targetPrice, 0).toLocaleString()}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ---- Main Modal ----
 
 export const EventModal: React.FC<EventModalProps> = ({
   isOpen,
   onClose,
   cards,
+  targets = [],
 }) => {
   const [activeTab, setActiveTab] = useState<TabId>('events');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
@@ -953,7 +1154,8 @@ export const EventModal: React.FC<EventModalProps> = ({
               onSelectEvent={handleSelectEvent}
             />
           )}
-          {activeTab === 'history' && <HistoryTab />}
+          {activeTab === 'roi' && <ROITab />}
+          {activeTab === 'wantlist' && <WantListTab targets={targets} />}
         </div>
       </div>
     </div>
