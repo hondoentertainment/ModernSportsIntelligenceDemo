@@ -546,7 +546,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - ImportModal: full import wizard with source selector, file upload, column mapper, preview table, duplicate checker, and confirmation.
     - localStorage persistence for column mapping profiles, import history, and backup schedule.
 
-### Phase 49: Social Network & Collector Messaging
+### Phase 49: Social Network & Collector Messaging (COMPLETE)
 - **Objective**: Enable direct collector interaction with follow/message/trade-match functionality, closing the critical social gap vs CollX and Mantel.
 - **Key Features**:
     - Collector profiles: simulated user profiles with display name, avatar, bio, public portfolio stats (total value, card count, top sport, collector tier), trade reputation score (0-5 stars).
@@ -560,7 +560,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - SocialModal: full social hub with tabs for Feed, Messages, Trade Matches, and Discover Collectors.
     - localStorage persistence for profiles, follows, messages, and activity feed.
 
-### Phase 50: Sealed Wax Investment Tracker
+### Phase 50: Sealed Wax Investment Tracker (COMPLETE)
 - **Objective**: Track sealed hobby boxes, blasters, and retail products as investable assets with price history and hold-vs-rip analysis.
 - **Key Features**:
     - Sealed product database: 20+ pre-built products across all 5 sports — hobby boxes, blasters, mega boxes, retail packs with MSRP, release date, and key rookie content.
@@ -574,7 +574,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - WaxInvestModal: full sealed product browser with portfolio tab, price charts, hold-vs-rip analysis, and release calendar.
     - localStorage persistence for sealed portfolio, alerts, and calendar preferences.
 
-### Phase 51: Counterfeit & Authentication Intelligence
+### Phase 51: Counterfeit & Authentication Intelligence (COMPLETE)
 - **Objective**: AI-powered authentication scoring and counterfeit detection to protect collectors from fraud — an emerging competitive moat.
 - **Key Features**:
     - Authentication score (0-100): per-card composite score based on cert verification, grade consistency, price anomaly analysis, and metadata cross-referencing.
@@ -588,7 +588,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - AuthModal: per-card deep-dive with auth score breakdown, cert verification result, risk factors, and verification checklist.
     - localStorage persistence for verification history and acknowledged alerts.
 
-### Phase 52: Player Market Index & Performance Tracker
+### Phase 52: Player Market Index & Performance Tracker (COMPLETE)
 - **Objective**: Aggregate card-level data into player-level market indexes for portfolio-wide player exposure analysis — matching CardLadder and Market Movers.
 - **Key Features**:
     - Player index: aggregate market value of all cards for a specific player across grades/sets, tracked over time with simulated historical data.
@@ -603,7 +603,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - PlayerIndexModal: full player explorer with search, comparison charts, rookie class browser, career arc visualizer, and injury impact simulator.
     - localStorage persistence for followed players, comparison bookmarks, and index preferences.
 
-### Phase 53: Digital Display Case & Showcase Builder
+### Phase 53: Digital Display Case & Showcase Builder (COMPLETE)
 - **Objective**: Let collectors build visual showcases of their best cards for sharing and social proof — inspired by Mantel's core differentiator.
 - **Key Features**:
     - Display case builder: drag-and-drop card placement into customizable grid layouts (2x2, 3x3, 4x4, freeform) with themed backgrounds.
