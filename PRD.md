@@ -12,6 +12,10 @@
 - **Phase 13: Scarcity Intelligence**: Integrated population reporting and "Pop 1" alerts
 - **Phase 14: Social Alpha Elite**: Live Hype Feed and institutional collector tiers
 - **Phases 39-43**: Trade Block & Offers, Market Watchlists & Price Alerts, Analytics Reports & Export, Community Benchmarking & Leaderboards, Smart Collection Advisor
+- **Phases 44-48**: Set Completion Registry, Portfolio Time Machine, Automated Trading Rules Engine, Advanced Technical Analysis Suite, Data Import Hub & External Sync
+- **Phases 49-53**: Social Network & Collector Messaging, Sealed Wax Investment Tracker, Counterfeit & Authentication Intelligence, Player Market Index, Digital Display Case
+- **Phases 54-63**: Grade Premium Analytics, Deal Finder & Cross-Platform Arbitrage, Collection Insurance Policy Manager, Pop Report Growth Tracker, Card Show & Event Planner, Seasonal Strategy Engine, Multi-Currency & International Markets, Prospect Pipeline & Draft Tracker, Collection Goal Planner, Notification Command Center
+- **Phases 64-68 ⚡ DIFFERENTIATED**: Monte Carlo Portfolio Stress Testing, AI Predictive Grading Engine, Tax-Loss Harvesting Optimizer, Cross-Asset Correlation Engine, Liquidity Intelligence & Exit Velocity
 
 ## 2. Project Vision & Objectives
 ### 2.1 Vision
@@ -467,3 +471,363 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - AdvisorModal: full advisor interface with strategy selector, recommendation feed with rationale, and "apply suggestion" quick actions.
     - Recommendation feedback: thumbs up/down on suggestions to refine future recommendations.
     - localStorage persistence for strategy selection, recommendation history, and feedback.
+
+### Phase 44: Set Completion Registry & Checklist (COMPLETE)
+- **Objective**: Let collectors track progress toward completing card sets and identify missing cards.
+- **Key Features**:
+    - Set database: pre-built checklists for popular sets (e.g., 2024 Topps Series 1, 2023 Panini Prizm) with total card count, base/parallel/insert breakdowns.
+    - Set enrollment: link owned cards to sets with automatic matching by year, manufacturer, set name, and card number.
+    - Completion dashboard: per-set progress bars, completion percentage, estimated cost to complete based on market data.
+    - Missing card finder: identify gaps in enrolled sets with estimated acquisition cost per missing card, sorted by cheapest-first or rarest-first.
+    - Parallel tracker: track base, refractor, auto, numbered parallels separately with independent completion percentages.
+    - Set value analysis: total set value vs sum-of-parts, set premium/discount calculation, historical completed set sale prices.
+    - Master set scoring: weighted completion score (base = 1x, insert = 2x, auto = 5x, 1/1 = 50x) for bragging rights.
+    - SetRegistryWidget: dashboard widget with top 3 active sets, nearest-to-complete, and recently added cards.
+    - SetRegistryModal: full set browser with enrollment, checklist view, missing card marketplace links, and completion timeline projection.
+    - localStorage persistence for set enrollments and checklist state.
+
+### Phase 45: Portfolio Time Machine & Historical Snapshots (COMPLETE)
+- **Objective**: Enable users to view portfolio state at any historical date and compare performance across time periods.
+- **Key Features**:
+    - Automatic daily snapshots: capture portfolio NAV, card count, allocation, top holdings, and key metrics at end of each session (stored in localStorage with date keys).
+    - Time machine slider: scrub to any past date and see the portfolio as it existed — cards owned, values, allocation, total NAV.
+    - Period comparison: side-by-side diff of any two dates showing cards added/removed, value changes per card, allocation drift, and net P&L.
+    - NAV timeline chart: interactive portfolio value chart with milestone markers (big purchases, sales, grading events).
+    - "What if I held?" analysis: for sold cards, show what the portfolio would be worth today if those positions were still held.
+    - Decision journal: optional notes attached to snapshots explaining buy/sell rationale, reviewable in hindsight with actual outcome.
+    - Yearly review generator: auto-generated year-in-review comparing Jan 1 vs Dec 31 with best/worst decisions, total return, and benchmark comparison.
+    - TimelineWidget: dashboard widget with NAV sparkline, YTD return, and "this day last year" comparison.
+    - TimeMachineModal: full time machine with date picker, snapshot diff view, decision journal, and yearly review.
+    - localStorage persistence for snapshots, journal entries, and comparison bookmarks.
+
+### Phase 46: Automated Trading Rules Engine (COMPLETE)
+- **Objective**: Let users define conditional rules that auto-trigger actions when market conditions are met.
+- **Key Features**:
+    - Rule builder: visual condition → action rule creator with AND/OR logic.
+    - Condition types: price crosses threshold (above/below), percentage change in N days, Sharpe drops below X, anomaly detected, breakout score exceeds Y, agent consensus reaches "Strong Buy/Sell".
+    - Action types: move to trade block, generate eBay listing draft, create watchlist alert, add to consignment queue, send notification, log to decision journal, trigger advisor re-evaluation.
+    - Rule templates: pre-built strategies (Stop-Loss at -20%, Take-Profit at +50%, DCA Weekly, Rebalance Monthly, Harvest Tax Losses in December).
+    - Backtesting engine: run rules against historical price data to show how many times they would have triggered and simulated P&L impact.
+    - Rule priority and conflict resolution: when multiple rules fire simultaneously, execute by priority with conflict warnings.
+    - Dry-run mode: rules evaluate but only log what they would do, no actual execution — for testing before going live.
+    - Rate limiting: max triggers per rule per day to prevent cascading actions.
+    - RulesEngineWidget: dashboard widget with active rules count, recent triggers, and rules pending review.
+    - RulesEngineModal: full rule builder with condition/action dropdowns, template library, backtest results, and trigger history.
+    - localStorage persistence for rules, trigger history, and backtest results.
+
+### Phase 47: Advanced Technical Analysis Suite (COMPLETE)
+- **Objective**: Full-featured charting toolkit for card price technical analysis, extending Phase 36.
+- **Key Features**:
+    - RSI (Relative Strength Index): 14-period RSI with overbought (>70) / oversold (<30) zones and divergence detection.
+    - MACD (Moving Average Convergence Divergence): 12/26/9 MACD line, signal line, and histogram with crossover alerts.
+    - Volume Profile: simulated volume distribution by price level, showing value area high/low and point of control.
+    - Fibonacci Retracement: auto-drawn from recent swing high/low with 23.6%, 38.2%, 50%, 61.8%, 78.6% levels.
+    - Candlestick patterns: detect doji, hammer, engulfing, morning star from daily price data with pattern labels on chart.
+    - Multi-timeframe analysis: daily, weekly, monthly aggregation with synchronized crosshairs across timeframes.
+    - Chart annotations: user-drawable trendlines, horizontal levels, and text notes saved per card.
+    - Indicator overlay manager: toggle any combination of indicators on/off with customizable parameters.
+    - Comparative overlay: plot two cards' price histories on the same chart for relative performance analysis.
+    - TechnicalAnalysisModal: per-card deep-dive replacing/extending PriceHistoryModal with full indicator toolkit and drawing tools.
+    - TAWidget: dashboard widget with cards at RSI extremes, recent MACD crossovers, and Fibonacci bounce candidates.
+    - localStorage persistence for chart settings, annotations, and indicator preferences.
+
+### Phase 48: Data Import Hub & External Sync (COMPLETE)
+- **Objective**: Eliminate onboarding friction by enabling bulk card import from multiple sources and formats.
+- **Key Features**:
+    - CSV import: upload CSV/TSV files with flexible column mapping UI — auto-detect player, year, value, sport, grade columns with preview and correction before import.
+    - eBay purchase history parser: paste eBay "Purchase History" export or HTML, extract card details, prices, and dates automatically.
+    - PSA/BGS cert lookup: enter certification number, pull card details (player, year, set, grade) from simulated registry to auto-populate fields.
+    - Collection manager import: import from popular apps (CardLadder, CollX, Ludex) via their CSV export formats with pre-mapped column profiles.
+    - Duplicate detection: fuzzy matching on player + year + set + card number to flag potential duplicates before import with merge/skip/replace options.
+    - Batch edit post-import: select imported cards and bulk-update sport, league, condition, or group assignment.
+    - Import history: log of all imports with card counts, source, timestamp, and undo capability (remove all cards from a specific import).
+    - Export hub: full collection export as CSV, JSON, or printable HTML with configurable column selection.
+    - Scheduled backup: auto-export collection to JSON on configurable interval (weekly/monthly) with localStorage download history.
+    - ImportWidget: dashboard widget showing last import date, total imported count, and quick-import button.
+    - ImportModal: full import wizard with source selector, file upload, column mapper, preview table, duplicate checker, and confirmation.
+    - localStorage persistence for column mapping profiles, import history, and backup schedule.
+
+### Phase 49: Social Network & Collector Messaging (COMPLETE)
+- **Objective**: Enable direct collector interaction with follow/message/trade-match functionality, closing the critical social gap vs CollX and Mantel.
+- **Key Features**:
+    - Collector profiles: simulated user profiles with display name, avatar, bio, public portfolio stats (total value, card count, top sport, collector tier), trade reputation score (0-5 stars).
+    - Follow system: follow/unfollow collectors with follower/following counts, activity feed showing followed collectors' actions (listings, trades, achievements).
+    - Direct messaging: 1-on-1 chat threads with text messages, card attachments (link any owned card into a message), and offer integration (inline trade proposals).
+    - Trade matching engine: auto-surface collectors who have cards on your watchlist and want cards you've listed on your trade block, with match score and "Propose Trade" quick action.
+    - Activity feed: global and following-only feeds showing recent listings, completed trades, achievement unlocks, and milestone events.
+    - Collector search: find collectors by username, sport specialty, collection size, or trade reputation.
+    - Block/mute/report: safety controls for blocking users, muting conversations, and flagging inappropriate behavior.
+    - SocialWidget: dashboard widget with new follower count, unread messages badge, top trade matches, and recent activity feed snippet.
+    - SocialModal: full social hub with tabs for Feed, Messages, Trade Matches, and Discover Collectors.
+    - localStorage persistence for profiles, follows, messages, and activity feed.
+
+### Phase 50: Sealed Wax Investment Tracker (COMPLETE)
+- **Objective**: Track sealed hobby boxes, blasters, and retail products as investable assets with price history and hold-vs-rip analysis.
+- **Key Features**:
+    - Sealed product database: 20+ pre-built products across all 5 sports — hobby boxes, blasters, mega boxes, retail packs with MSRP, release date, and key rookie content.
+    - Sealed portfolio: add purchased boxes with cost basis, track current market value, and calculate ROI per product and aggregate.
+    - Price history charts: simulated price trajectories for sealed products using same TA indicators (SMA, RSI, MACD) as card charts.
+    - Hold-vs-rip calculator: expected value of ripping (based on checklist key cards × pull rates × current values) vs holding sealed (based on price trend and historical sealed appreciation).
+    - Release calendar: upcoming product releases with estimated release date, MSRP, and pre-order price tracking.
+    - Sealed product alerts: price drops below cost basis, new releases matching preferred sports, and trending boxes.
+    - Sealed ROI leaderboard: rank owned sealed products by ROI performance.
+    - WaxInvestWidget: dashboard widget with sealed portfolio value, top performer, upcoming releases, and hold-vs-rip recommendation.
+    - WaxInvestModal: full sealed product browser with portfolio tab, price charts, hold-vs-rip analysis, and release calendar.
+    - localStorage persistence for sealed portfolio, alerts, and calendar preferences.
+
+### Phase 51: Counterfeit & Authentication Intelligence (COMPLETE)
+- **Objective**: AI-powered authentication scoring and counterfeit detection to protect collectors from fraud — an emerging competitive moat.
+- **Key Features**:
+    - Authentication score (0-100): per-card composite score based on cert verification, grade consistency, price anomaly analysis, and metadata cross-referencing.
+    - Cert verification engine: validate certification numbers against simulated PSA/BGS/SGC registries — check holder type, label style, grade, and expected population.
+    - Trimming/alteration detection: flag cards where grade + age + condition metadata don't align (e.g., PSA 10 on a 1952 card, grade upgrades without re-submission).
+    - Counterfeit risk factors: identify high-risk categories (high-value rookies, vintage, autographs) with elevated scrutiny thresholds.
+    - Counterfeit alert feed: surface known problematic cert ranges, common fake patterns, and marketplace red flags.
+    - Authentication checklist: step-by-step verification guide per grading company with visual reference for label styles, font, hologram placement.
+    - Seller risk scoring: evaluate seller patterns from simulated marketplace data — new accounts, bulk listings of high-value items, price-too-good-to-be-true flags.
+    - AuthWidget: dashboard widget with collection auth score, flagged cards count, and recent alerts.
+    - AuthModal: per-card deep-dive with auth score breakdown, cert verification result, risk factors, and verification checklist.
+    - localStorage persistence for verification history and acknowledged alerts.
+
+### Phase 52: Player Market Index & Performance Tracker (COMPLETE)
+- **Objective**: Aggregate card-level data into player-level market indexes for portfolio-wide player exposure analysis — matching CardLadder and Market Movers.
+- **Key Features**:
+    - Player index: aggregate market value of all cards for a specific player across grades/sets, tracked over time with simulated historical data.
+    - Player comparison charts: overlay two or more players' market performance on the same Recharts chart with normalized or absolute scaling.
+    - Rookie class indexes: track entire draft classes (e.g., "2024 NFL Rookies") as market cohorts with aggregate value and top/bottom performers.
+    - Career arc modeling: simulate player career trajectory (rookie → breakout → prime → decline) and correlate with card value curves.
+    - Injury impact simulator: model price impact when a player is injured (immediate drop) vs returns (recovery bounce), with historical pattern analysis.
+    - Team-level indexes: aggregate card market by team (e.g., "Dallas Cowboys Index") with roster turnover impact.
+    - Sport market indexes: broad market health indicators per sport (e.g., "Baseball Market Index") tracking aggregate volume and value trends.
+    - Hot/cold lists: daily movers — players whose aggregate card values changed most in the last 24hr/7d/30d.
+    - PlayerIndexWidget: dashboard widget with top 5 hot players, portfolio player exposure breakdown, and sport index sparklines.
+    - PlayerIndexModal: full player explorer with search, comparison charts, rookie class browser, career arc visualizer, and injury impact simulator.
+    - localStorage persistence for followed players, comparison bookmarks, and index preferences.
+
+### Phase 53: Digital Display Case & Showcase Builder (COMPLETE)
+- **Objective**: Let collectors build visual showcases of their best cards for sharing and social proof — inspired by Mantel's core differentiator.
+- **Key Features**:
+    - Display case builder: drag-and-drop card placement into customizable grid layouts (2x2, 3x3, 4x4, freeform) with themed backgrounds.
+    - Showcase themes: 6+ pre-built themes — "Trophy Room" (dark wood), "Vault" (steel), "Neon" (cyberpunk), "Classic" (felt green), "Ice" (frosted glass), "Fire" (gradient red).
+    - Card spotlight: click any card in the case to expand with player name, grade, value, and custom caption.
+    - Public showcase URL: generate shareable link with unique ID (extends Phase 30's collection sharing).
+    - Showcase reactions: simulated visitor reactions (fire, thumbs up, heart, mind-blown) with reaction counts per card.
+    - Featured card: pin one card as the showcase centerpiece with enlarged display and story text.
+    - Showcase analytics: simulated view count, reaction count, most-viewed card, and share count.
+    - Multiple showcases: create and manage multiple themed display cases (e.g., "Grail Wall", "Investment Picks", "Rookie Class").
+    - Print-ready export: generate high-res HTML rendering of showcase for screenshots and social sharing.
+    - ShowcaseWidget: dashboard widget with showcase count, total reactions, and featured showcase preview.
+    - ShowcaseModal: full showcase builder with theme selector, card picker, drag-and-drop layout, caption editor, and sharing controls.
+    - localStorage persistence for showcases, reactions, and analytics.
+
+### Phase 54: Grade Premium Analytics ✅ COMPLETE
+- **Objective**: Show grade-over-grade price multipliers and optimal grading decisions — a core CardLadder and Market Movers feature MSI lacks.
+- **Key Features**:
+    - Grade premium tables: per-card PSA 10 vs PSA 9 vs PSA 8 vs BGS 9.5 vs Raw price ratios with simulated market data.
+    - Cross-grader comparison: PSA 10 vs BGS 10 (Black Label) vs SGC 10 (Pristine) value differences for the same card.
+    - Grade arbitrage finder: identify cards where one grader's premium is significantly higher, suggesting re-grade or crossover opportunities.
+    - Crossover ROI calculator: estimate cost and expected value gain of crossing a BGS 9.5 to PSA 10 (success rate × premium uplift - crossover fee).
+    - Grade distribution chart: Recharts bar chart showing population at each grade level with value overlay.
+    - Portfolio grade analysis: aggregate grade distribution of entire collection with average grade, gem rate, and upgrade opportunity count.
+    - GradePremiumWidget: dashboard widget with top crossover opportunities, average portfolio grade, and gem rate percentage.
+    - GradePremiumModal: per-card grade premium table, cross-grader comparison, crossover ROI calculator, and portfolio-wide grade analytics.
+    - localStorage persistence for grade premium preferences and crossover tracking.
+
+### Phase 55: Deal Finder & Cross-Platform Arbitrage ✅ COMPLETE
+- **Objective**: Surface underpriced cards across simulated marketplaces — matching Market Movers' Deal Finder feature.
+- **Key Features**:
+    - Simulated marketplace feeds: generate listings across 5 platforms (eBay, COMC, MySlabs, Goldin, Private Sale) with price variation (±5-25% from fair value).
+    - Deal scoring engine: compare listing price vs estimated fair value, return deal score (0-100) with savings amount and percentage.
+    - Cross-platform arbitrage: identify cards listed below fair value on one platform that could be sold at fair value on another, with net profit after fees.
+    - Deal alerts: notify when cards on watchlist or matching collection profile appear below threshold price.
+    - Deal filters: by sport, price range, grade, deal score minimum, platform preference.
+    - Deal history: track deals found, acted on, and resulting profit/loss.
+    - DealFinderWidget: dashboard widget with top 5 deals, total potential savings, and arbitrage opportunities count.
+    - DealFinderModal: full deal browser with filters, sortable deal list, per-deal breakdown with platform comparison, and deal history log.
+    - localStorage persistence for deal preferences, alerts, and history.
+
+### Phase 56: Collection Insurance Policy Manager ✅ COMPLETE
+- **Objective**: Track actual insurance policies, premiums, and coverage gaps — extending Phase 26's valuation report into active policy management.
+- **Key Features**:
+    - Policy tracker: add insurance policies with provider, policy number, coverage limit, premium, deductible, and renewal date.
+    - Coverage gap analysis: compare total collection value vs total coverage, flag under-insured portions by category.
+    - Premium calculator: estimate annual premium based on collection value using industry-standard rates (typically 1-2% of value per year).
+    - Rider recommendations: identify high-value cards (>$5000) that should be individually scheduled on the policy.
+    - Renewal reminders: alert 30/60/90 days before policy renewal with updated valuation report.
+    - Claim tracker: log claims with status (filed/pending/approved/denied), amount, and supporting documentation reference.
+    - Coverage history: track how coverage has changed relative to collection value over time.
+    - InsurancePolicyWidget: dashboard widget with coverage ratio, next renewal date, and under-insured alert.
+    - InsurancePolicyModal: full policy manager with add/edit policies, coverage gap visualization, premium calculator, and claim tracker.
+    - localStorage persistence for policies, claims, and renewal preferences.
+
+### Phase 57: Pop Report Growth Tracker ✅ COMPLETE
+- **Objective**: Track population report changes over time to identify supply inflation threats — a key CardLadder differentiator.
+- **Key Features**:
+    - Pop growth monitoring: track simulated PSA/BGS/SGC population counts per card over time with weekly snapshots.
+    - Growth rate calculation: annualized pop growth rate per grade level, flagging cards with >20% annual growth as "supply risk."
+    - Pop growth charts: Recharts line chart showing population at each grade level over 12 months.
+    - Supply/demand indicator: combine pop growth rate with price trend to classify as "supply pressure" (pop up, price down), "demand driven" (pop up, price up), or "scarcity play" (pop flat/down, price up).
+    - Gem rate tracking: percentage of submissions receiving PSA 10/BGS 9.5+ over time, trend direction.
+    - Submission volume estimator: estimate total new submissions per month based on pop growth patterns.
+    - Collection impact report: for each owned card, show current pop, growth rate, and estimated price impact of continued growth.
+    - PopGrowthWidget: dashboard widget with cards facing supply pressure, average gem rate trend, and top pop growth alerts.
+    - PopGrowthModal: per-card pop growth chart, collection-wide supply risk assessment, and submission volume trends.
+    - localStorage persistence for pop snapshots and growth alerts.
+
+### Phase 58: Card Show & Event Planner ✅ COMPLETE
+- **Objective**: Help collectors prepare for card shows, trade nights, and hobby events with inventory planning and deal tracking.
+- **Key Features**:
+    - Event database: pre-built events (The National, local card shows, trade nights) with dates, locations, and expected attendance tiers.
+    - Show prep list: select cards to bring for sale/trade with target prices, print-ready inventory sheet.
+    - Budget planner: set event budget, track spending in real-time, and calculate remaining funds.
+    - Deal logger: quick-add deals made at events (bought/sold/traded) with photos and notes, auto-update collection.
+    - Want list generator: export watchlist as printable want list for show shopping.
+    - Event ROI tracker: total spent vs total value acquired per event, running ROI across all events attended.
+    - Travel cost integration: add travel, hotel, and table costs to event budget for true ROI.
+    - EventWidget: dashboard widget with next upcoming event, show prep status, and recent event ROI.
+    - EventModal: full event planner with event browser, prep list builder, budget tracker, deal logger, and event history.
+    - localStorage persistence for events, prep lists, budgets, and deal logs.
+
+### Phase 59: Seasonal Strategy Engine ✅ COMPLETE
+- **Objective**: Automate buy/sell timing based on sport-specific seasonal patterns — extending Phase 24's seasonal awareness into actionable strategy.
+- **Key Features**:
+    - Seasonal price models: per-sport monthly price index (e.g., football peaks Aug-Feb, baseball peaks Mar-Oct) based on historical pattern simulation.
+    - Buy window detector: identify optimal purchase windows when prices are historically lowest (off-season troughs).
+    - Sell window detector: flag optimal exit windows when prices are historically highest (season peaks, playoff runs).
+    - Calendar overlay: visual 12-month calendar showing buy/sell zones per sport with color coding.
+    - Portfolio seasonal exposure: analyze how current holdings align with seasonal patterns — "you're heavy on football entering the off-season."
+    - Seasonal alerts: "Football card prices typically drop 15% in March — consider buying" or "Baseball season starts in 2 weeks — sell window closing."
+    - Historical performance: how seasonal strategy would have performed vs buy-and-hold over simulated 3-year period.
+    - SeasonalWidget: dashboard widget with current season phase per sport, active buy/sell windows, and next seasonal event.
+    - SeasonalModal: full seasonal calendar with sport overlays, portfolio exposure analysis, historical backtest, and active recommendations.
+    - localStorage persistence for seasonal preferences and alert history.
+
+### Phase 60: Multi-Currency & International Markets ✅ COMPLETE
+- **Objective**: Support international collectors with currency conversion and cross-border market comparison.
+- **Key Features**:
+    - Currency selector: support 10 currencies (USD, EUR, GBP, CAD, AUD, JPY, CHF, MXN, BRL, CNY) with simulated exchange rates.
+    - Portfolio display in selected currency with automatic conversion of all values.
+    - Cross-border price comparison: show card prices in local marketplaces (US eBay vs UK eBay vs Japan Yahoo Auctions) with net-of-shipping comparison.
+    - Import duty calculator: estimate customs/duty costs for cross-border purchases by destination country.
+    - Currency trend impact: show how exchange rate movements affect portfolio value for non-USD collectors.
+    - International marketplace alerts: flag deals where currency advantage makes cross-border purchase attractive.
+    - CurrencyWidget: dashboard widget with current exchange rate, portfolio value in selected currency, and currency impact trend.
+    - CurrencyModal: full currency manager with conversion calculator, cross-border comparison, duty estimator, and currency trend charts.
+    - localStorage persistence for currency preference and exchange rate cache.
+
+### Phase 61: Prospect Pipeline & Draft Tracker ✅ COMPLETE
+- **Objective**: Deep prospect tracking from minor leagues through draft to rookie year — extending Phase 18's predictive engine into the prospect pipeline.
+- **Key Features**:
+    - Prospect database: 50+ pre-built prospects across MLB (MiLB), NBA (G-League/NCAA), NFL (NCAA), and NHL (CHL/NCAA) with stats, rankings, and projected draft position.
+    - Pipeline visualization: funnel view showing prospects at each stage (amateur → drafted → minor league → call-up → rookie) with card value at each transition.
+    - Draft tracker: simulated draft boards with pre-draft card values vs post-draft price impact analysis.
+    - Call-up alerts: flag when a tracked prospect gets promoted, with historical data on average price jump at call-up (typically 30-80%).
+    - Prospect card value curve: typical price trajectory from pre-draft through rookie year with key inflection points.
+    - Stash tracker: manage "stash" positions — low-cost prospect cards held speculatively with target exit price.
+    - Prospect comparison: overlay two prospects' trajectories and card values.
+    - ProspectWidget: dashboard widget with top 5 prospects nearest to call-up, recent promotions, and stash portfolio value.
+    - ProspectModal: full pipeline browser with stage filters, prospect detail cards, draft board, call-up alerts, and stash manager.
+    - localStorage persistence for followed prospects, stash entries, and alert preferences.
+
+### Phase 62: Collection Goal Planner ✅ COMPLETE
+- **Objective**: Set financial and collection targets with progress tracking and AI-assisted planning to reach goals.
+- **Key Features**:
+    - Goal types: portfolio value target ($100K by 2027), card count target (500 cards), sport diversification target, ROI target (25% annual return), set completion targets.
+    - Goal timeline: set target date with milestone checkpoints (quarterly reviews).
+    - Progress tracking: current progress vs target with on-track/behind/ahead status and projected completion date.
+    - Gap analysis: calculate what's needed to reach goal — "you need $15K more value; here are 10 cards that could get you there."
+    - Monthly contribution calculator: "to reach $100K by 2027, invest $850/month at historical average appreciation."
+    - Goal templates: pre-built goals for common collector archetypes (Casual Collector, Serious Investor, Set Builder, Flipper).
+    - Achievement integration: link goals to Phase 37 achievements for bonus motivation.
+    - GoalWidget: dashboard widget with primary goal progress bar, days remaining, and on-track status.
+    - GoalModal: full goal manager with create/edit goals, progress charts (Recharts), gap analysis, contribution calculator, and goal history.
+    - localStorage persistence for goals, milestones, and progress snapshots.
+
+### Phase 63: Notification Command Center ✅ COMPLETE
+- **Objective**: Unified notification hub aggregating alerts from all 60+ features into a single prioritized feed with smart filtering.
+- **Key Features**:
+    - Unified inbox: aggregate notifications from all services (price alerts, trade offers, anomalies, rebalancing, auth alerts, rule triggers, achievements, seasonal, events, goals) into one chronological feed.
+    - Priority scoring: auto-rank notifications by urgency (critical/high/medium/low) based on source and context.
+    - Smart grouping: batch related notifications (e.g., "5 cards hit price alerts today") to reduce noise.
+    - Category filters: toggle notification categories on/off (Trading, Analytics, Social, Alerts, Achievements, System).
+    - Notification preferences: per-category delivery settings (immediate, daily digest, weekly digest, muted).
+    - Daily digest generator: auto-compile top notifications into a morning briefing summary.
+    - Action buttons: inline actions on notifications (e.g., "View Card", "Accept Trade", "Dismiss Alert") without opening the source modal.
+    - Read/unread tracking with bulk mark-as-read.
+    - Notification history: searchable archive of past notifications with date range filter.
+    - NotificationWidget: dashboard widget (extends existing alert system) with unread count badge, top 3 priority notifications, and "View All" link.
+    - NotificationModal: full notification center with category tabs, priority sorting, bulk actions, preferences panel, and digest preview.
+    - localStorage persistence for notification state, preferences, and read/unread tracking.
+
+### Phase 64: Monte Carlo Portfolio Stress Testing ⚡ DIFFERENTIATED ✅ COMPLETE
+- **Objective**: Provide financial-grade risk simulation that no card platform competitor offers — model portfolio performance under market crash, grading scandal, sport-specific downturn, and black swan scenarios.
+- **Key Features**:
+    - Monte Carlo engine: run 1,000+ simulated portfolio paths over 1-5 year horizons using card-specific volatility, sport correlation, and grade stability factors.
+    - Scenario library: pre-built stress scenarios — "2008-style market crash" (-40% broad decline), "PSA grading scandal" (-25% graded premium collapse), "NFL lockout" (-30% football cards), "Rookie bust" (-60% single-player concentration), "Hobby boom" (+80% rising tide).
+    - Custom scenario builder: user-defined shocks by sport, grade, value tier, or specific cards with magnitude and duration sliders.
+    - Value-at-Risk (VaR): calculate 95% and 99% confidence intervals for maximum portfolio loss over 30/90/365 day horizons.
+    - Drawdown analysis: worst-case peak-to-trough decline with expected recovery time.
+    - Concentration risk score: flag portfolios over-exposed to single player, sport, era, or grading company.
+    - Diversification benefit: quantify how much risk is reduced by current diversification vs single-asset holding.
+    - Stress test report: exportable PDF-style summary with scenario results, VaR metrics, and actionable hedging recommendations.
+    - StressTestWidget: dashboard widget with portfolio risk score (1-100), worst-case VaR, top concentration risk, and "Run Stress Test" CTA.
+    - StressTestModal: full stress testing suite with scenario selector, Monte Carlo visualization (Recharts fan chart of outcome paths), VaR dashboard, concentration analysis, and hedging recommendations.
+    - localStorage persistence for scenario preferences, test history, and custom scenarios.
+
+### Phase 65: AI Predictive Grading Engine ⚡ DIFFERENTIATED ✅ COMPLETE
+- **Objective**: Predict the likely grade a card would receive before submission, saving collectors $20-50 per card on grading fees for unlikely gem candidates — no competitor offers pre-submission grade prediction.
+- **Key Features**:
+    - Grade prediction model: analyze card attributes (year, manufacturer, set, current condition notes, purchase price relative to graded prices) to estimate likely grade distribution (probability of PSA 10, 9, 8, etc.).
+    - Submission ROI calculator: combine predicted grade distribution with grade premiums to calculate expected value gain minus grading fee — "submit only if expected ROI > 0."
+    - Bulk submission optimizer: rank entire collection by submission ROI, recommend optimal batch for next grading submission.
+    - Grading company recommender: for each card, recommend PSA vs BGS vs SGC based on which grader's premium is highest for that card type and predicted grade.
+    - Submission cost tracker: track total grading fees spent, average grade received, and cumulative ROI on grading investments.
+    - Grade probability visualization: Recharts bar chart showing probability distribution across grades for selected card.
+    - Historical accuracy tracker: compare predictions to actual grades received (simulated) to show model calibration.
+    - GradePredictWidget: dashboard widget with next recommended submissions, average predicted ROI, and submission queue count.
+    - GradePredictModal: per-card grade prediction with probability bars, submission ROI calculator, bulk optimizer with sortable queue, grading company comparison, and submission history.
+    - localStorage persistence for predictions, submission history, and preferences.
+
+### Phase 66: Tax-Loss Harvesting Optimizer ⚡ DIFFERENTIATED ✅ COMPLETE
+- **Objective**: Identify cards to sell at a strategic loss to offset capital gains — with wash-sale rule awareness and tax bracket optimization. No card platform competitor offers tax strategy tools.
+- **Key Features**:
+    - Unrealized loss scanner: identify all cards currently below purchase price with loss amount, holding period (short-term vs long-term), and tax lot identification.
+    - Harvest recommendations: rank cards by tax benefit (loss amount × applicable tax rate) minus opportunity cost of selling.
+    - Wash-sale rule tracker: flag cards that cannot be repurchased within 30 days of sale, track wash-sale windows, and suggest "substantially different" replacement cards.
+    - Tax bracket optimizer: input estimated annual income and filing status to calculate marginal tax rate and optimize harvest amounts to maximize after-tax benefit.
+    - Short-term vs long-term classification: automatically classify holding period for each card, highlight cards approaching 1-year threshold where waiting converts to lower long-term rate.
+    - Harvest calendar: monthly view showing optimal harvest windows based on holding periods and market conditions.
+    - Annual tax impact summary: project total tax savings from recommended harvests with before/after comparison.
+    - Replacement card suggestions: after harvesting a loss, suggest similar cards (same player, different year/set) that maintain portfolio exposure without triggering wash-sale.
+    - TaxHarvestWidget: dashboard widget with total harvestable losses, estimated tax savings, and cards approaching long-term threshold.
+    - TaxHarvestModal: full tax harvesting suite with loss scanner, harvest recommendations, wash-sale tracker, bracket optimizer, harvest calendar, and annual summary.
+    - localStorage persistence for tax preferences, harvest history, and wash-sale tracking windows.
+
+### Phase 67: Cross-Asset Correlation Engine ⚡ DIFFERENTIATED ✅ COMPLETE
+- **Objective**: Correlate card portfolio performance with traditional financial markets (S&P 500, crypto, bonds) and sports metrics (player contracts, team wins, fantasy points) — positioning cards as a true alternative asset class. No competitor provides cross-asset analysis.
+- **Key Features**:
+    - Asset correlation matrix: calculate rolling 30/90/365-day correlation coefficients between card portfolio returns and simulated S&P 500, Bitcoin, gold, treasury bonds, and real estate indices.
+    - Sport-market linkage: correlate individual card values with simulated player contract values, team win percentages, and fantasy point production.
+    - Beta calculation: measure portfolio sensitivity to broad market movements — "your portfolio has 0.3 beta to S&P 500, meaning it's a diversification asset."
+    - Hedge ratio calculator: determine optimal allocation between cards and traditional assets to minimize portfolio variance.
+    - Regime detection: identify market regimes (risk-on, risk-off, hobby-boom, hobby-bust) and show how card values behave in each regime.
+    - Alternative asset comparison: benchmark card portfolio returns against art, wine, vintage cars, and sneakers indices.
+    - Macro event impact: show how past macro events (rate hikes, recessions, stimulus) affected card values historically (simulated).
+    - CorrelationWidget: dashboard widget with portfolio beta, current regime indicator, top correlated/uncorrelated assets, and diversification score.
+    - CorrelationModal: full correlation dashboard with heatmap matrix, asset overlay charts (Recharts), regime analysis, hedge calculator, and alternative asset benchmarks.
+    - localStorage persistence for correlation preferences, tracked assets, and regime history.
+
+### Phase 68: Liquidity Intelligence & Exit Velocity ⚡ DIFFERENTIATED ✅ COMPLETE
+- **Objective**: Score each card's liquidity (how quickly it would sell at fair value), provide market depth analysis, and recommend optimal listing strategies — no competitor measures sellability.
+- **Key Features**:
+    - Liquidity score (0-100): per-card composite based on simulated average days-to-sell, bid-ask spread, recent transaction volume, and number of active buyers.
+    - Market depth visualization: show simulated buy orders at various price levels (order book style) to illustrate demand at different price points.
+    - Exit velocity estimator: "at current market price, this card sells in ~3 days; at 10% premium, ~14 days; at 20% premium, ~45 days."
+    - Portfolio liquidity report: aggregate liquidity of entire collection — "68% of your portfolio can be liquidated within 7 days, 89% within 30 days."
+    - Illiquidity premium detector: identify cards where low liquidity creates a discount — potential buying opportunities for patient holders.
+    - Optimal listing price recommender: balance between speed and value — "list at $X for fastest sale, $Y for maximum value, $Z for best risk-adjusted return."
+    - Seasonal liquidity patterns: show how liquidity varies by month (shows, holidays, season start) per sport.
+    - Emergency liquidation planner: "if you need $X in Y days, here's the optimal set of cards to sell with expected proceeds."
+    - LiquidityWidget: dashboard widget with portfolio liquidity score, average days-to-sell, and illiquid card count alert.
+    - LiquidityModal: per-card liquidity analysis with market depth chart, exit velocity curves, listing price optimizer, portfolio liquidity breakdown, and emergency liquidation planner.
+    - localStorage persistence for liquidity preferences, listing history, and liquidation plans.
