@@ -1,18 +1,16 @@
 import React, { useMemo } from 'react';
 import {
   Shield,
-  ChevronRight,
   AlertTriangle,
-  Clock,
-  CheckCircle2,
-  TrendingUp,
-  FileText,
+  CalendarClock,
+  ChevronRight,
 } from 'lucide-react';
 import { CardInventory } from '../types';
 import {
-  InsurancePolicyService,
-  InsuranceSummary,
-  RenewalReminder,
+  getPolicies,
+  analyzeCoverageGaps,
+  getRenewalReminders,
+  ensureSampleData,
 } from '../lib/insurancePolicyService';
 
 interface InsurancePolicyWidgetProps {
@@ -20,40 +18,49 @@ interface InsurancePolicyWidgetProps {
   onClick?: () => void;
 }
 
-export const InsurancePolicyWidget: React.FC<InsurancePolicyWidgetProps> = ({
-  cards,
-  onClick,
-}) => {
-  const summary = useMemo<InsuranceSummary>(
-    () => InsurancePolicyService.generateSummary(cards),
-    [cards]
-  );
+export const InsurancePolicyWidget: React.FC<InsurancePolicyWidgetProps> = ({ cards, onClick }) => {
+  const { policies, coverageRatio, nextRenewal, underInsuredCount } = useMemo(() => {
+    ensureSampleData();
+    const pols = getPolicies();
+    const activePolicies = pols.filter(p => p.status === 'active');
 
-  const reminders = useMemo<RenewalReminder[]>(
-    () => InsurancePolicyService.getRenewalReminders(cards),
-    [cards]
-  );
+    // Coverage ratio
+    const totalValue = cards.reduce(
+      (s, c) => s + (c.currentValue ?? c.purchasePrice),
+      0
+    );
+    const totalCoverage = activePolicies.reduce((s, p) => s + p.coverageAmount, 0);
+    const ratio = totalValue > 0 ? Math.min(100, Math.round((totalCoverage / totalValue) * 100)) : 0;
 
-  const riderRecs = useMemo(
-    () => InsurancePolicyService.getHighValueRiderRecommendations(cards),
-    [cards]
-  );
+    // Next renewal
+    const reminders = getRenewalReminders(pols);
+    const next = reminders.length > 0 ? reminders[0] : null;
 
-  const coverageRatioPct = Math.min(100, Math.round(summary.coverageRatio * 100));
+    // Under-insured alerts
+    const gaps = analyzeCoverageGaps(pols, cards);
+    const underInsured = gaps.filter(g => g.severity === 'critical' || g.severity === 'warning').length;
+
+    return {
+      policies: pols,
+      coverageRatio: ratio,
+      nextRenewal: next,
+      underInsuredCount: underInsured,
+    };
+  }, [cards]);
+
   const coverageColor =
-    coverageRatioPct >= 95
+    coverageRatio >= 80
       ? 'text-green-400'
-      : coverageRatioPct >= 70
-      ? 'text-amber-400'
-      : 'text-red-400';
-  const coverageBg =
-    coverageRatioPct >= 95
-      ? 'bg-green-400'
-      : coverageRatioPct >= 70
-      ? 'bg-amber-400'
-      : 'bg-red-400';
+      : coverageRatio >= 50
+        ? 'text-amber-400'
+        : 'text-red-400';
 
-  const nextReminder = reminders.length > 0 ? reminders[0] : null;
+  const coverageBarColor =
+    coverageRatio >= 80
+      ? 'bg-green-500'
+      : coverageRatio >= 50
+        ? 'bg-amber-500'
+        : 'bg-red-500';
 
   return (
     <button
@@ -63,15 +70,15 @@ export const InsurancePolicyWidget: React.FC<InsurancePolicyWidgetProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-400">
+          <div className="p-2.5 bg-blue-500/10 rounded-xl text-blue-400">
             <Shield size={22} />
           </div>
           <div>
             <h3 className="text-3xl font-bebas tracking-widest text-white leading-tight">
-              Insurance <span className="text-emerald-400">Manager</span>
+              Insurance <span className="text-blue-400">Coverage</span>
             </h3>
             <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
-              Policy tracking & coverage analysis
+              Policy management & gap analysis
             </p>
           </div>
         </div>
@@ -81,147 +88,61 @@ export const InsurancePolicyWidget: React.FC<InsurancePolicyWidgetProps> = ({
         />
       </div>
 
-      {/* Coverage Ratio + Total Coverage */}
-      <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
-        <div className="flex-1">
-          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">
-            Coverage Ratio
-          </p>
-          <p className={`text-2xl font-bebas tracking-wider ${coverageColor}`}>
-            {summary.activePolicies > 0 ? `${coverageRatioPct}%` : 'No Policies'}
-          </p>
-          {/* Coverage bar */}
-          {summary.activePolicies > 0 && (
-            <div className="mt-2 h-1.5 bg-slate-700 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all ${coverageBg}`}
-                style={{ width: `${coverageRatioPct}%` }}
-              />
-            </div>
-          )}
+      {/* Coverage Ratio */}
+      <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-slate-400 font-bold uppercase tracking-widest">Coverage Ratio</span>
+          <span className={`text-2xl font-bebas tracking-wider ${coverageColor}`}>
+            {coverageRatio}%
+          </span>
         </div>
-        <div className="h-10 w-px bg-slate-700" />
-        <div className="flex-1 text-right">
-          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">
-            Total Coverage
-          </p>
-          <p className="text-2xl font-bebas tracking-wider text-white">
-            {summary.activePolicies > 0
-              ? `$${summary.totalCoverage.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
-              : '$0'}
-          </p>
+        <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-700 ${coverageBarColor}`}
+            style={{ width: `${coverageRatio}%` }}
+          />
+        </div>
+        <div className="flex items-center justify-between text-[10px] text-slate-500">
+          <span>{policies.filter(p => p.status === 'active').length} active {policies.filter(p => p.status === 'active').length === 1 ? 'policy' : 'policies'}</span>
+          <span>Target: 100%</span>
         </div>
       </div>
 
-      {/* Under-insured Alert */}
-      {summary.isUnderInsured && summary.activePolicies > 0 && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-red-500/5 border border-red-500/15 rounded-xl">
-          <AlertTriangle size={14} className="text-red-400 flex-shrink-0" />
-          <span className="text-xs text-red-400 font-medium">
-            Under-insured by ${summary.coverageGap.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-          </span>
-          <span className="ml-auto text-[10px] text-red-400/60 font-mono flex-shrink-0">
-            {coverageRatioPct}% covered
-          </span>
-        </div>
-      )}
-
-      {/* Next Renewal */}
-      {nextReminder && (
-        <div
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl ${
-            nextReminder.alertLevel === 'urgent'
-              ? 'bg-red-500/5 border border-red-500/15'
-              : nextReminder.alertLevel === 'warning'
-              ? 'bg-amber-500/5 border border-amber-500/15'
-              : 'bg-blue-500/5 border border-blue-500/15'
-          }`}
-        >
-          <Clock
-            size={14}
-            className={`flex-shrink-0 ${
-              nextReminder.alertLevel === 'urgent'
+      {/* Info Row */}
+      <div className="flex items-center gap-4 text-xs">
+        {/* Next Renewal */}
+        {nextRenewal && (
+          <div className="flex items-center gap-2">
+            <CalendarClock size={14} className={
+              nextRenewal.urgency === 'urgent'
                 ? 'text-red-400'
-                : nextReminder.alertLevel === 'warning'
-                ? 'text-amber-400'
-                : 'text-blue-400'
-            }`}
-          />
-          <span className="text-xs text-slate-400 flex-shrink-0">Renewal:</span>
-          <span className="text-xs text-white font-medium truncate">
-            {nextReminder.provider}
-          </span>
-          <span
-            className={`ml-auto text-xs font-bold flex-shrink-0 ${
-              nextReminder.alertLevel === 'urgent'
+                : nextRenewal.urgency === 'upcoming'
+                  ? 'text-amber-400'
+                  : 'text-slate-400'
+            } />
+            <span className="text-slate-400">Renewal:</span>
+            <span className={`font-bold ${
+              nextRenewal.urgency === 'urgent'
                 ? 'text-red-400'
-                : nextReminder.alertLevel === 'warning'
-                ? 'text-amber-400'
-                : 'text-blue-400'
-            }`}
-          >
-            {nextReminder.daysUntilRenewal}d
-          </span>
-        </div>
-      )}
-
-      {/* Rider Recommendations */}
-      {riderRecs.length > 0 && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-purple-500/5 border border-purple-500/15 rounded-xl">
-          <FileText size={14} className="text-purple-400 flex-shrink-0" />
-          <span className="text-xs text-slate-400 flex-shrink-0">Riders:</span>
-          <span className="text-xs text-white font-medium truncate">
-            {riderRecs.length} high-value card{riderRecs.length !== 1 ? 's' : ''} need scheduling
-          </span>
-          <span className="ml-auto text-xs font-bold text-purple-400 flex-shrink-0">
-            ${riderRecs.reduce((s, r) => s + r.currentValue, 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-          </span>
-        </div>
-      )}
-
-      {/* Stats Row */}
-      {summary.activePolicies > 0 && (
-        <div className="grid grid-cols-3 gap-2">
-          <div className="bg-slate-800/50 rounded-xl p-3 text-center">
-            <p className="text-[9px] font-black text-brand-muted uppercase tracking-widest mb-1">
-              Policies
-            </p>
-            <p className="text-sm font-mono font-bold text-white">
-              {summary.activePolicies}
-            </p>
+                : nextRenewal.urgency === 'upcoming'
+                  ? 'text-amber-400'
+                  : 'text-white'
+            }`}>
+              {nextRenewal.daysUntilExpiry}d
+            </span>
           </div>
-          <div className="bg-slate-800/50 rounded-xl p-3 text-center">
-            <p className="text-[9px] font-black text-brand-muted uppercase tracking-widest mb-1">
-              Premiums/yr
-            </p>
-            <p className="text-sm font-mono font-bold text-white">
-              ${summary.totalPremiums.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-            </p>
-          </div>
-          <div className="bg-slate-800/50 rounded-xl p-3 text-center">
-            <p className="text-[9px] font-black text-brand-muted uppercase tracking-widest mb-1">
-              Open Claims
-            </p>
-            <p
-              className={`text-sm font-mono font-bold ${
-                summary.openClaims > 0 ? 'text-amber-400' : 'text-green-400'
-              }`}
-            >
-              {summary.openClaims}
-            </p>
-          </div>
-        </div>
-      )}
+        )}
 
-      {/* Empty State */}
-      {summary.activePolicies === 0 && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-slate-800/30 border border-slate-700 rounded-xl">
-          <TrendingUp size={14} className="text-slate-500" />
-          <span className="text-xs text-slate-500">
-            Add insurance policies to track coverage and get renewal reminders
-          </span>
-        </div>
-      )}
+        {/* Under-insured alerts */}
+        {underInsuredCount > 0 && (
+          <div className="flex items-center gap-2">
+            <AlertTriangle size={14} className="text-amber-400" />
+            <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold rounded-md">
+              {underInsuredCount} gap{underInsuredCount !== 1 ? 's' : ''}
+            </span>
+          </div>
+        )}
+      </div>
     </button>
   );
 };
