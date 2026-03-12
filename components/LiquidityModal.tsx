@@ -34,7 +34,7 @@ import {
 } from 'recharts';
 import { CardInventory, Sport } from '../types';
 import {
-  calculateLiquidityScore,
+  calculateDetailedLiquidityScore,
   generateMarketDepth,
   calculateExitVelocity,
   getListingRecommendation,
@@ -42,9 +42,9 @@ import {
   detectIlliquidityOpportunities,
   getSeasonalLiquidityProfiles,
   generateEmergencyLiquidationPlan,
-  saveSettings,
-  loadSettings,
-  LiquidityScore,
+  saveLiquiditySettings,
+  loadLiquiditySettings,
+  LiquidityScoreDetail,
   MarketDepthLevel,
   ExitVelocityPoint,
   ListingRecommendation,
@@ -53,7 +53,7 @@ import {
   SeasonalLiquidityProfile,
   EmergencyLiquidationPlan,
   LiquiditySettings,
-} from '../lib/liquidityService';
+} from '../lib/LiquidityService';
 
 interface LiquidityModalProps {
   isOpen: boolean;
@@ -88,7 +88,7 @@ const sportTailwind: Record<Sport, { text: string; bg: string; border: string }>
   Soccer: { text: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30' },
 };
 
-function tierBadge(tier: LiquidityScore['tier']): { text: string; bg: string; border: string } {
+function tierBadge(tier: LiquidityScoreDetail['tier']): { text: string; bg: string; border: string } {
   switch (tier) {
     case 'Ultra-Liquid': return { text: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30' };
     case 'Liquid': return { text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' };
@@ -109,7 +109,7 @@ const CardAnalysisTab: React.FC<{
 
   const card = activeCards.find(c => c.id === cardId) || activeCards[0];
 
-  const score = useMemo(() => card ? calculateLiquidityScore(card) : null, [card]);
+  const score = useMemo(() => card ? calculateDetailedLiquidityScore(card) : null, [card]);
   const depth = useMemo(() => card ? generateMarketDepth(card) : [], [card]);
   const velocity = useMemo(() => card ? calculateExitVelocity(card) : [], [card]);
   const listing = useMemo(() => card ? getListingRecommendation(card) : null, [card]);
@@ -321,7 +321,7 @@ const PortfolioTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
 
   const activeCards = cards.filter(c => c.status !== 'sold');
   const cardScores = useMemo(() =>
-    activeCards.map(c => ({ card: c, score: calculateLiquidityScore(c) }))
+    activeCards.map(c => ({ card: c, score: calculateDetailedLiquidityScore(c) }))
       .sort((a, b) => b.score.overall - a.score.overall),
     [activeCards],
   );
@@ -640,7 +640,7 @@ const OpportunitiesTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
 // ─── Emergency Tab ──────────────────────────────────────────────────────────
 
 const EmergencyTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
-  const settings = useMemo(() => loadSettings(), []);
+  const settings = useMemo(() => loadLiquiditySettings(), []);
   const [targetAmount, setTargetAmount] = useState(settings.emergencyTargetAmount);
   const [targetDays, setTargetDays] = useState(settings.emergencyTargetDays);
 
@@ -650,7 +650,7 @@ const EmergencyTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
   );
 
   const handleSave = useCallback(() => {
-    saveSettings({ emergencyTargetAmount: targetAmount, emergencyTargetDays: targetDays });
+    saveLiquiditySettings({ emergencyTargetAmount: targetAmount, emergencyTargetDays: targetDays });
   }, [targetAmount, targetDays]);
 
   return (
