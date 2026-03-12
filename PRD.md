@@ -469,7 +469,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - Recommendation feedback: thumbs up/down on suggestions to refine future recommendations.
     - localStorage persistence for strategy selection, recommendation history, and feedback.
 
-### Phase 44: Set Completion Registry & Checklist
+### Phase 44: Set Completion Registry & Checklist (COMPLETE)
 - **Objective**: Let collectors track progress toward completing card sets and identify missing cards.
 - **Key Features**:
     - Set database: pre-built checklists for popular sets (e.g., 2024 Topps Series 1, 2023 Panini Prizm) with total card count, base/parallel/insert breakdowns.
@@ -483,7 +483,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - SetRegistryModal: full set browser with enrollment, checklist view, missing card marketplace links, and completion timeline projection.
     - localStorage persistence for set enrollments and checklist state.
 
-### Phase 45: Portfolio Time Machine & Historical Snapshots
+### Phase 45: Portfolio Time Machine & Historical Snapshots (COMPLETE)
 - **Objective**: Enable users to view portfolio state at any historical date and compare performance across time periods.
 - **Key Features**:
     - Automatic daily snapshots: capture portfolio NAV, card count, allocation, top holdings, and key metrics at end of each session (stored in localStorage with date keys).
@@ -497,7 +497,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - TimeMachineModal: full time machine with date picker, snapshot diff view, decision journal, and yearly review.
     - localStorage persistence for snapshots, journal entries, and comparison bookmarks.
 
-### Phase 46: Automated Trading Rules Engine
+### Phase 46: Automated Trading Rules Engine (COMPLETE)
 - **Objective**: Let users define conditional rules that auto-trigger actions when market conditions are met.
 - **Key Features**:
     - Rule builder: visual condition → action rule creator with AND/OR logic.
@@ -512,7 +512,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - RulesEngineModal: full rule builder with condition/action dropdowns, template library, backtest results, and trigger history.
     - localStorage persistence for rules, trigger history, and backtest results.
 
-### Phase 47: Advanced Technical Analysis Suite
+### Phase 47: Advanced Technical Analysis Suite (COMPLETE)
 - **Objective**: Full-featured charting toolkit for card price technical analysis, extending Phase 36.
 - **Key Features**:
     - RSI (Relative Strength Index): 14-period RSI with overbought (>70) / oversold (<30) zones and divergence detection.
@@ -528,7 +528,7 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - TAWidget: dashboard widget with cards at RSI extremes, recent MACD crossovers, and Fibonacci bounce candidates.
     - localStorage persistence for chart settings, annotations, and indicator preferences.
 
-### Phase 48: Data Import Hub & External Sync
+### Phase 48: Data Import Hub & External Sync (COMPLETE)
 - **Objective**: Eliminate onboarding friction by enabling bulk card import from multiple sources and formats.
 - **Key Features**:
     - CSV import: upload CSV/TSV files with flexible column mapping UI — auto-detect player, year, value, sport, grade columns with preview and correction before import.
