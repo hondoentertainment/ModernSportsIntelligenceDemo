@@ -15,7 +15,12 @@ import {
   Zap,
   GitCompare,
   Bell,
-  Kanban
+  Kanban,
+  Radio,
+  ScanEye,
+  Landmark,
+  Link2,
+  Tv
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -37,6 +42,11 @@ export const NAV_ITEMS = [
   { id: 'compare', label: 'Compare', icon: <GitCompare size={20} />, path: '/compare' },
   { id: 'warroom', label: 'Analyst War Room', icon: <Activity size={20} />, path: '/war-room' },
   { id: 'alerts', label: 'Alerts', icon: <Bell size={20} />, path: '/alerts' },
+  { id: 'liveimpact', label: 'Live Game Impact', icon: <Radio size={20} />, path: '/live-impact' },
+  { id: 'visiongrading', label: 'Vision Grading Lab', icon: <ScanEye size={20} />, path: '/vision-grading' },
+  { id: 'fractionalvault', label: 'Fractional Vault', icon: <Landmark size={20} />, path: '/fractional-vault' },
+  { id: 'provenance', label: 'Provenance Chain', icon: <Link2 size={20} />, path: '/provenance' },
+  { id: 'livebreaks', label: 'Live Breaks', icon: <Tv size={20} />, path: '/live-breaks' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];

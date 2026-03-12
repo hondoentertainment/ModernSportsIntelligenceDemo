@@ -38,7 +38,7 @@ import OCRIngestionModal from '../components/OCRIngestionModal';
 import { getRarityTier, getTierStyles } from '../lib/rarity';
 import { generatePopData, ScarcityService } from '../lib/scarcityService';
 import { getPriceTrend, getSparklineData } from '../lib/priceHistory';
-import { LiquidityService } from '../lib/LiquidityService';
+import { LiquidityService } from '../lib/liquidityService';
 import { LiquidityBadge } from '../components/LiquidityBadge';
 import CardImage from '../components/CardImage';
 import ImageLightbox from '../components/ImageLightbox';

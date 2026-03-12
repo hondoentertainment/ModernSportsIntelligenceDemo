@@ -1,5 +1,5 @@
 import { CardInventory } from '../types';
-import { LiquidityService } from './LiquidityService';
+import { LiquidityService } from './liquidityService';
 
 /** MSI House discount tiers based on liquidity score */
 const HOUSE_DISCOUNT_TIERS = [
