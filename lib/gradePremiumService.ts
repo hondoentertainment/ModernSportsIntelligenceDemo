@@ -1,593 +1,447 @@
 import { CardInventory } from '../types';
 
-/* ------------------------------------------------------------------ */
-/*  Types                                                              */
-/* ------------------------------------------------------------------ */
+// ---- Types ----
 
-export type GradingCompany = 'PSA' | 'BGS' | 'SGC' | 'CSG' | 'HGA';
-
-export interface GradePriceEntry {
+export interface GradePremium {
   grade: string;
-  company: GradingCompany;
+  grader: string;
+  multiplier: number;
   estimatedValue: number;
-  populationCount: number;
-  premiumOverRaw: number; // multiplier
-}
-
-export interface GradePremiumTable {
-  cardId: string;
-  player: string;
-  baseRawValue: number;
-  entries: GradePriceEntry[];
+  premiumOverRaw: number; // percentage
 }
 
 export interface CrossGraderComparison {
-  grade: string; // e.g. "10"
-  psa: { label: string; value: number; pop: number };
-  bgs: { label: string; value: number; pop: number };
-  sgc: { label: string; value: number; pop: number };
-  valueDiffPsaVsBgs: number;
-  valueDiffPsaVsSgc: number;
+  grade: string;
+  psaValue: number;
+  bgsValue: number;
+  sgcValue: number;
+  bestGrader: 'PSA' | 'BGS' | 'SGC';
+  bestValue: number;
 }
 
-export interface ArbitrageOpportunity {
+export interface CrossoverOpportunity {
   cardId: string;
   player: string;
-  fromCompany: GradingCompany;
-  fromGrade: string;
-  toCompany: GradingCompany;
-  toGrade: string;
+  cardDescription: string;
+  currentGrader: string;
+  currentGrade: string;
+  targetGrader: string;
+  targetGrade: string;
   currentValue: number;
   targetValue: number;
-  estimatedCost: number;
-  netProfit: number;
-  roi: number;
-  confidence: number; // 0-100
+  crossoverFee: number;
+  successRate: number; // 0-1
+  expectedProfit: number;
+  expectedROI: number; // percentage
+}
+
+export interface GradeDistribution {
+  grade: string;
+  population: number;
+  percentage: number;
 }
 
 export interface CrossoverROI {
-  cardId: string;
-  player: string;
-  sourceCompany: GradingCompany;
-  sourceGrade: string;
-  targetCompany: GradingCompany;
-  targetGrade: string;
-  currentValue: number;
-  projectedValue: number;
-  crossoverFee: number;
-  shippingCost: number;
-  insuranceCost: number;
-  totalCost: number;
-  expectedGain: number;
-  roi: number;
-  successProbability: number;
-  recommendation: 'Strong Buy' | 'Consider' | 'Hold' | 'Not Recommended';
-}
-
-export interface GradeDistributionEntry {
-  grade: string;
-  count: number;
-  totalValue: number;
-  avgValue: number;
+  cost: number;
+  successRate: number;
+  expectedValueGain: number;
+  netROI: number; // percentage
 }
 
 export interface PortfolioGradeAnalysis {
-  totalGraded: number;
-  totalRaw: number;
   averageGrade: number;
-  gemRate: number; // percentage of 9.5+ / 10
-  gradeDistribution: GradeDistributionEntry[];
-  upgradeOpportunityCount: number;
-  totalUpgradeValue: number;
-  companyBreakdown: { company: string; count: number; avgGrade: number }[];
+  gemRate: number; // percentage of cards graded 9.5+
+  totalCards: number;
+  gradedCards: number;
+  ungradedCards: number;
+  gradeDistribution: { grade: string; count: number }[];
+  graderDistribution: { grader: string; count: number }[];
+  totalCrossoverOpportunities: number;
+  upgradeValuePotential: number;
+  topCrossoverOpportunities: CrossoverOpportunity[];
 }
 
-export interface GradePremiumPreferences {
-  preferredCompany: GradingCompany;
-  showArbitrageAlerts: boolean;
-  minimumArbitrageROI: number;
-  trackedCrossovers: TrackedCrossover[];
-}
+// ---- Constants ----
 
-export interface TrackedCrossover {
-  id: string;
-  cardId: string;
-  player: string;
-  fromCompany: GradingCompany;
-  fromGrade: string;
-  toCompany: GradingCompany;
-  toGrade: string;
-  estimatedROI: number;
-  status: 'planned' | 'submitted' | 'completed' | 'failed';
-  createdAt: string;
-  completedAt?: string;
-  actualResult?: string;
-}
-
-/* ------------------------------------------------------------------ */
-/*  Constants                                                          */
-/* ------------------------------------------------------------------ */
-
-const LS_PREFERENCES_KEY = 'msi_grade_premium_prefs';
-const LS_CROSSOVERS_KEY = 'msi_grade_crossover_tracking';
+const PREFS_KEY = 'msi_grade_premium_prefs';
 
 const GRADE_MULTIPLIERS: Record<string, number> = {
-  '10':   8.5,
-  '9.5':  4.2,
-  '9':    2.5,
-  '8.5':  1.8,
-  '8':    1.4,
-  '7.5':  1.15,
-  '7':    1.0,
-  '6.5':  0.85,
-  '6':    0.7,
-  '5':    0.5,
-  '4':    0.35,
-  '3':    0.25,
-  '2':    0.15,
-  '1':    0.08,
+  'Raw': 1,
+  'PSA 1': 0.8,
+  'PSA 2': 0.9,
+  'PSA 3': 1.0,
+  'PSA 4': 1.1,
+  'PSA 5': 1.3,
+  'PSA 6': 1.5,
+  'PSA 7': 1.8,
+  'PSA 8': 2.0,
+  'PSA 9': 4.0,
+  'PSA 10': 10.0,
+  'BGS 8': 1.8,
+  'BGS 8.5': 2.2,
+  'BGS 9': 3.5,
+  'BGS 9.5': 6.0,
+  'BGS 10': 15.0,
+  'SGC 8': 1.6,
+  'SGC 8.5': 1.9,
+  'SGC 9': 3.2,
+  'SGC 9.5': 5.0,
+  'SGC 10': 8.0,
 };
 
-/** Company-specific multiplier adjustments relative to PSA baseline */
-const COMPANY_ADJUSTMENTS: Record<GradingCompany, Record<string, number>> = {
-  PSA: { '10': 1.0, '9': 1.0, '8': 1.0, '7': 1.0 },
-  BGS: { '10': 1.25, '9.5': 1.15, '9': 0.90, '8.5': 0.85, '8': 0.82 },
-  SGC: { '10': 0.72, '9.5': 0.68, '9': 0.65, '8': 0.60 },
-  CSG: { '10': 0.55, '9.5': 0.52, '9': 0.50, '8': 0.48 },
-  HGA: { '10': 0.48, '9.5': 0.45, '9': 0.42, '8': 0.40 },
-};
+const CROSSOVER_FEE = 30;
 
-const CROSSOVER_FEES: Record<GradingCompany, number> = {
-  PSA: 30,
-  BGS: 25,
-  SGC: 20,
-  CSG: 18,
-  HGA: 15,
-};
+// ---- Helpers ----
 
-const SHIPPING_COST = 12;
-const INSURANCE_RATE = 0.015; // 1.5% of declared value
+function seededRandom(seed: number, offset: number): number {
+  const x = Math.sin(seed + offset) * 10000;
+  return x - Math.floor(x);
+}
 
-const GRADES_ORDERED = ['10', '9.5', '9', '8.5', '8', '7.5', '7', '6.5', '6', '5', '4', '3', '2', '1'];
-
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                            */
-/* ------------------------------------------------------------------ */
-
-function seededRandom(seed: string): () => number {
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) {
-    h = (Math.imul(31, h) + seed.charCodeAt(i)) | 0;
+function getCardBaseValue(card: CardInventory): number {
+  // Base value for raw = purchase price adjusted down if graded
+  if (card.isGraded && card.grade && card.gradingCompany) {
+    const key = `${card.gradingCompany} ${card.grade}`;
+    const mult = GRADE_MULTIPLIERS[key] ?? 2.0;
+    return (card.currentValue ?? card.purchasePrice) / mult;
   }
-  return () => {
-    h = (h ^ (h >>> 16)) * 0x45d9f3b;
-    h = (h ^ (h >>> 16)) * 0x45d9f3b;
-    h = h ^ (h >>> 16);
-    return (h >>> 0) / 4294967296;
-  };
+  return card.currentValue ?? card.purchasePrice;
 }
 
-function parseNumericGrade(grade?: string): number {
-  if (!grade) return 0;
-  const num = parseFloat(grade.replace(/[^0-9.]/g, ''));
-  return isNaN(num) ? 0 : num;
-}
-
-function getBaseRawValue(card: CardInventory): number {
-  const val = card.currentValue ?? card.purchasePrice;
-  // Raw value is the card value without grading premium
-  if (card.isGraded && card.grade) {
-    const numGrade = parseNumericGrade(card.grade);
-    const gradeKey = numGrade >= 9.5 ? '10' : numGrade >= 8.5 ? '9' : numGrade >= 7.5 ? '8' : '7';
-    const mult = GRADE_MULTIPLIERS[gradeKey] ?? 1.0;
-    return Math.round(val / mult);
+function getCardSeed(card: CardInventory): number {
+  let hash = 0;
+  const str = card.id + card.player + card.year;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
   }
-  return Math.round(val * 0.85); // raw cards slightly discounted
+  return Math.abs(hash);
 }
 
-function generatePopulation(seed: string, grade: string): number {
-  const rng = seededRandom(seed + grade);
-  const gradeNum = parseFloat(grade);
-  if (gradeNum >= 10) return Math.floor(rng() * 500) + 10;
-  if (gradeNum >= 9.5) return Math.floor(rng() * 1200) + 50;
-  if (gradeNum >= 9) return Math.floor(rng() * 3000) + 200;
-  if (gradeNum >= 8) return Math.floor(rng() * 5000) + 500;
-  return Math.floor(rng() * 2000) + 100;
+// ---- Public API ----
+
+export function getGradePremiumTable(card: CardInventory): GradePremium[] {
+  const baseValue = getCardBaseValue(card);
+  const seed = getCardSeed(card);
+
+  const grades = [
+    { grade: 'Raw', grader: 'None' },
+    { grade: 'PSA 8', grader: 'PSA' },
+    { grade: 'PSA 9', grader: 'PSA' },
+    { grade: 'PSA 10', grader: 'PSA' },
+    { grade: 'BGS 9', grader: 'BGS' },
+    { grade: 'BGS 9.5', grader: 'BGS' },
+    { grade: 'BGS 10', grader: 'BGS' },
+    { grade: 'SGC 9', grader: 'SGC' },
+    { grade: 'SGC 10', grader: 'SGC' },
+  ];
+
+  return grades.map((g, i) => {
+    const key = g.grade === 'Raw' ? 'Raw' : g.grade;
+    const baseMult = GRADE_MULTIPLIERS[key] ?? 1;
+    // Add slight card-specific variation (+/- 10%)
+    const variation = 1 + (seededRandom(seed, i * 3) - 0.5) * 0.2;
+    const multiplier = Math.round(baseMult * variation * 100) / 100;
+    const estimatedValue = Math.round(baseValue * multiplier * 100) / 100;
+    const premiumOverRaw = Math.round((multiplier - 1) * 100 * 100) / 100;
+
+    return {
+      grade: g.grade,
+      grader: g.grader,
+      multiplier,
+      estimatedValue,
+      premiumOverRaw,
+    };
+  });
 }
-
-/* ------------------------------------------------------------------ */
-/*  Grade Premium Table                                                */
-/* ------------------------------------------------------------------ */
-
-export function getGradePremiumTable(card: CardInventory): GradePremiumTable {
-  const baseRaw = getBaseRawValue(card);
-  const rng = seededRandom(card.id + 'premium');
-  const entries: GradePriceEntry[] = [];
-
-  const companies: GradingCompany[] = ['PSA', 'BGS', 'SGC'];
-  const keyGrades = ['10', '9.5', '9', '8.5', '8'];
-
-  for (const company of companies) {
-    for (const grade of keyGrades) {
-      // Skip grades not applicable to certain companies
-      if (company === 'PSA' && (grade === '9.5' || grade === '8.5')) continue;
-
-      const baseMult = GRADE_MULTIPLIERS[grade] ?? 1.0;
-      const companyAdj = COMPANY_ADJUSTMENTS[company]?.[grade] ?? 0.7;
-      const variance = 0.9 + rng() * 0.2;
-      const estimatedValue = Math.round(baseRaw * baseMult * companyAdj * variance);
-      const pop = generatePopulation(card.id + company, grade);
-
-      entries.push({
-        grade: `${company} ${grade}`,
-        company,
-        estimatedValue: Math.max(estimatedValue, 1),
-        populationCount: pop,
-        premiumOverRaw: Math.round((estimatedValue / baseRaw) * 100) / 100,
-      });
-    }
-  }
-
-  return {
-    cardId: card.id,
-    player: card.player,
-    baseRawValue: baseRaw,
-    entries: entries.sort((a, b) => b.estimatedValue - a.estimatedValue),
-  };
-}
-
-/* ------------------------------------------------------------------ */
-/*  Cross-Grader Comparison                                            */
-/* ------------------------------------------------------------------ */
 
 export function getCrossGraderComparison(card: CardInventory): CrossGraderComparison[] {
-  const table = getGradePremiumTable(card);
-  const grades = ['10', '9', '8'];
-  const results: CrossGraderComparison[] = [];
+  const baseValue = getCardBaseValue(card);
+  const seed = getCardSeed(card);
 
-  for (const grade of grades) {
-    const psaEntry = table.entries.find(e => e.company === 'PSA' && e.grade === `PSA ${grade}`);
-    const bgsGrade = grade === '10' ? '10' : grade === '9' ? '9' : '8';
-    const bgsEntry = table.entries.find(e => e.company === 'BGS' && e.grade === `BGS ${bgsGrade}`);
-    const sgcEntry = table.entries.find(e => e.company === 'SGC' && e.grade === `SGC ${grade}`);
+  const gradeLevels = ['8', '8.5', '9', '9.5', '10'];
 
-    if (!psaEntry || !bgsEntry || !sgcEntry) continue;
+  return gradeLevels.map((grade, i) => {
+    const psaKey = `PSA ${grade}`;
+    const bgsKey = `BGS ${grade}`;
+    const sgcKey = `SGC ${grade}`;
 
-    const bgsLabel = grade === '10' ? 'BGS 10 Black Label' : `BGS ${bgsGrade}`;
-    const sgcLabel = grade === '10' ? 'SGC 10 Pristine' : `SGC ${grade}`;
+    const psaMult = GRADE_MULTIPLIERS[psaKey] ?? (1 + parseFloat(grade) * 0.5);
+    const bgsMult = GRADE_MULTIPLIERS[bgsKey] ?? psaMult * 0.9;
+    const sgcMult = GRADE_MULTIPLIERS[sgcKey] ?? psaMult * 0.75;
 
-    results.push({
+    // Card-specific variation
+    const v1 = 1 + (seededRandom(seed, 100 + i) - 0.5) * 0.15;
+    const v2 = 1 + (seededRandom(seed, 200 + i) - 0.5) * 0.15;
+    const v3 = 1 + (seededRandom(seed, 300 + i) - 0.5) * 0.15;
+
+    const psaValue = Math.round(baseValue * psaMult * v1 * 100) / 100;
+    const bgsValue = Math.round(baseValue * bgsMult * v2 * 100) / 100;
+    const sgcValue = Math.round(baseValue * sgcMult * v3 * 100) / 100;
+
+    const values: [number, 'PSA' | 'BGS' | 'SGC'][] = [
+      [psaValue, 'PSA'],
+      [bgsValue, 'BGS'],
+      [sgcValue, 'SGC'],
+    ];
+    const best = values.reduce((a, b) => (b[0] > a[0] ? b : a));
+
+    return {
       grade,
-      psa: { label: `PSA ${grade}`, value: psaEntry.estimatedValue, pop: psaEntry.populationCount },
-      bgs: { label: bgsLabel, value: bgsEntry.estimatedValue, pop: bgsEntry.populationCount },
-      sgc: { label: sgcLabel, value: sgcEntry.estimatedValue, pop: sgcEntry.populationCount },
-      valueDiffPsaVsBgs: psaEntry.estimatedValue - bgsEntry.estimatedValue,
-      valueDiffPsaVsSgc: psaEntry.estimatedValue - sgcEntry.estimatedValue,
-    });
-  }
-
-  return results;
+      psaValue,
+      bgsValue,
+      sgcValue,
+      bestGrader: best[1],
+      bestValue: best[0],
+    };
+  });
 }
 
-/* ------------------------------------------------------------------ */
-/*  Arbitrage Finder                                                   */
-/* ------------------------------------------------------------------ */
+export function findCrossoverOpportunities(cards: CardInventory[]): CrossoverOpportunity[] {
+  const opportunities: CrossoverOpportunity[] = [];
 
-export function findArbitrageOpportunities(cards: CardInventory[]): ArbitrageOpportunity[] {
-  const opportunities: ArbitrageOpportunity[] = [];
-
-  const gradedCards = cards.filter(c => c.isGraded && c.grade && c.gradingCompany);
-
-  for (const card of gradedCards) {
-    const company = card.gradingCompany as GradingCompany;
-    const numGrade = parseNumericGrade(card.grade);
-    if (numGrade < 8) continue; // Only consider high-grade cards
-
-    const table = getGradePremiumTable(card);
-    const currentValue = card.currentValue ?? card.purchasePrice;
-
-    // Check crossover to PSA if not already PSA
-    if (company !== 'PSA' && numGrade >= 9) {
-      const psaTarget = table.entries.find(e => e.company === 'PSA' && e.grade === `PSA ${Math.floor(numGrade)}`);
-      if (psaTarget && psaTarget.estimatedValue > currentValue) {
-        const cost = CROSSOVER_FEES.PSA + SHIPPING_COST + (currentValue * INSURANCE_RATE);
-        const netProfit = psaTarget.estimatedValue - currentValue - cost;
-        const roi = (netProfit / cost) * 100;
-
-        if (roi > 15) {
-          const rng = seededRandom(card.id + 'arb');
-          opportunities.push({
-            cardId: card.id,
-            player: card.player,
-            fromCompany: company,
-            fromGrade: card.grade!,
-            toCompany: 'PSA',
-            toGrade: `${Math.floor(numGrade)}`,
-            currentValue,
-            targetValue: psaTarget.estimatedValue,
-            estimatedCost: Math.round(cost),
-            netProfit: Math.round(netProfit),
-            roi: Math.round(roi),
-            confidence: Math.floor(55 + rng() * 35),
-          });
-        }
-      }
-    }
-
-    // Check BGS crossover for PSA cards with half-grade potential
-    if (company === 'PSA' && numGrade >= 9) {
-      const bgsTarget = table.entries.find(e => e.company === 'BGS' && e.grade === `BGS ${numGrade >= 10 ? '10' : '9.5'}`);
-      if (bgsTarget && bgsTarget.estimatedValue > currentValue * 1.1) {
-        const cost = CROSSOVER_FEES.BGS + SHIPPING_COST + (currentValue * INSURANCE_RATE);
-        const netProfit = bgsTarget.estimatedValue - currentValue - cost;
-        const roi = (netProfit / cost) * 100;
-
-        if (roi > 10) {
-          const rng = seededRandom(card.id + 'arb2');
-          opportunities.push({
-            cardId: card.id,
-            player: card.player,
-            fromCompany: 'PSA',
-            fromGrade: card.grade!,
-            toCompany: 'BGS',
-            toGrade: numGrade >= 10 ? '10' : '9.5',
-            currentValue,
-            targetValue: bgsTarget.estimatedValue,
-            estimatedCost: Math.round(cost),
-            netProfit: Math.round(netProfit),
-            roi: Math.round(roi),
-            confidence: Math.floor(30 + rng() * 40),
-          });
-        }
-      }
-    }
-  }
-
-  return opportunities.sort((a, b) => b.roi - a.roi);
-}
-
-/* ------------------------------------------------------------------ */
-/*  Crossover ROI Calculator                                           */
-/* ------------------------------------------------------------------ */
-
-export function calculateCrossoverROI(
-  card: CardInventory,
-  targetCompany: GradingCompany,
-  targetGrade: string,
-): CrossoverROI {
-  const sourceCompany = (card.gradingCompany ?? 'PSA') as GradingCompany;
-  const sourceGrade = card.grade ?? 'Raw';
-  const currentValue = card.currentValue ?? card.purchasePrice;
-
-  const table = getGradePremiumTable(card);
-  const targetEntry = table.entries.find(
-    e => e.company === targetCompany && e.grade === `${targetCompany} ${targetGrade}`
+  const gradedCards = cards.filter(
+    (c) => c.isGraded && c.grade && c.gradingCompany && c.status !== 'sold'
   );
 
-  const projectedValue = targetEntry?.estimatedValue ?? currentValue;
-  const crossoverFee = CROSSOVER_FEES[targetCompany] ?? 25;
-  const shippingCost = SHIPPING_COST;
-  const insuranceCost = Math.round(currentValue * INSURANCE_RATE);
-  const totalCost = crossoverFee + shippingCost + insuranceCost;
-  const expectedGain = projectedValue - currentValue - totalCost;
-  const roi = totalCost > 0 ? Math.round((expectedGain / totalCost) * 100) : 0;
+  for (const card of gradedCards) {
+    const seed = getCardSeed(card);
+    const baseValue = getCardBaseValue(card);
+    const gradeNum = parseFloat(card.grade!);
+    if (isNaN(gradeNum)) continue;
 
-  const rng = seededRandom(card.id + targetCompany + targetGrade);
-  const numSource = parseNumericGrade(sourceGrade);
-  const numTarget = parseFloat(targetGrade);
+    const currentValue = card.currentValue ?? card.purchasePrice;
 
-  // Success probability based on grade relationship
-  let successProbability: number;
-  if (numTarget <= numSource) {
-    successProbability = Math.floor(65 + rng() * 25);
-  } else if (numTarget <= numSource + 0.5) {
-    successProbability = Math.floor(30 + rng() * 25);
-  } else {
-    successProbability = Math.floor(5 + rng() * 20);
+    // BGS 9.5 -> PSA 10 crossover opportunity
+    if (card.gradingCompany === 'BGS' && gradeNum >= 9.5) {
+      const successRate = 0.6 + seededRandom(seed, 50) * 0.2; // 60-80%
+      const targetValue = Math.round(baseValue * (GRADE_MULTIPLIERS['PSA 10'] ?? 10) * 100) / 100;
+      const expectedProfit = Math.round(
+        (targetValue - currentValue) * successRate - CROSSOVER_FEE
+      );
+
+      if (expectedProfit > 0) {
+        opportunities.push({
+          cardId: card.id,
+          player: card.player,
+          cardDescription: `${card.year} ${card.manufacturer} ${card.set} #${card.cardNumber}`,
+          currentGrader: 'BGS',
+          currentGrade: card.grade!,
+          targetGrader: 'PSA',
+          targetGrade: '10',
+          currentValue,
+          targetValue,
+          crossoverFee: CROSSOVER_FEE,
+          successRate: Math.round(successRate * 100) / 100,
+          expectedProfit,
+          expectedROI: Math.round((expectedProfit / (currentValue + CROSSOVER_FEE)) * 100 * 100) / 100,
+        });
+      }
+    }
+
+    // SGC -> PSA crossover opportunity (same grade level)
+    if (card.gradingCompany === 'SGC' && gradeNum >= 9) {
+      const psaGrade = gradeNum >= 10 ? '10' : gradeNum >= 9.5 ? '10' : '9';
+      const psaKey = `PSA ${psaGrade}`;
+      const successRate = psaGrade === '10' ? 0.6 + seededRandom(seed, 60) * 0.15 : 0.7 + seededRandom(seed, 61) * 0.1;
+      const targetValue = Math.round(baseValue * (GRADE_MULTIPLIERS[psaKey] ?? 4) * 100) / 100;
+      const expectedProfit = Math.round(
+        (targetValue - currentValue) * successRate - CROSSOVER_FEE
+      );
+
+      if (expectedProfit > 0) {
+        opportunities.push({
+          cardId: card.id,
+          player: card.player,
+          cardDescription: `${card.year} ${card.manufacturer} ${card.set} #${card.cardNumber}`,
+          currentGrader: 'SGC',
+          currentGrade: card.grade!,
+          targetGrader: 'PSA',
+          targetGrade: psaGrade,
+          currentValue,
+          targetValue,
+          crossoverFee: CROSSOVER_FEE,
+          successRate: Math.round(successRate * 100) / 100,
+          expectedProfit,
+          expectedROI: Math.round((expectedProfit / (currentValue + CROSSOVER_FEE)) * 100 * 100) / 100,
+        });
+      }
+    }
+
+    // BGS 9 -> PSA 9 (PSA commands higher premium at same grade)
+    if (card.gradingCompany === 'BGS' && gradeNum >= 9 && gradeNum < 9.5) {
+      const successRate = 0.7 + seededRandom(seed, 70) * 0.1;
+      const targetValue = Math.round(baseValue * (GRADE_MULTIPLIERS['PSA 9'] ?? 4) * 100) / 100;
+      const expectedProfit = Math.round(
+        (targetValue - currentValue) * successRate - CROSSOVER_FEE
+      );
+
+      if (expectedProfit > 0) {
+        opportunities.push({
+          cardId: card.id,
+          player: card.player,
+          cardDescription: `${card.year} ${card.manufacturer} ${card.set} #${card.cardNumber}`,
+          currentGrader: 'BGS',
+          currentGrade: card.grade!,
+          targetGrader: 'PSA',
+          targetGrade: '9',
+          currentValue,
+          targetValue,
+          crossoverFee: CROSSOVER_FEE,
+          successRate: Math.round(successRate * 100) / 100,
+          expectedProfit,
+          expectedROI: Math.round((expectedProfit / (currentValue + CROSSOVER_FEE)) * 100 * 100) / 100,
+        });
+      }
+    }
   }
 
-  let recommendation: CrossoverROI['recommendation'];
-  if (roi > 100 && successProbability > 50) recommendation = 'Strong Buy';
-  else if (roi > 30 && successProbability > 40) recommendation = 'Consider';
-  else if (roi > 0) recommendation = 'Hold';
-  else recommendation = 'Not Recommended';
+  // Sort by expected ROI descending
+  return opportunities.sort((a, b) => b.expectedROI - a.expectedROI);
+}
+
+export function getCrossoverROI(
+  card: CardInventory,
+  _fromGrader: string,
+  toGrader: string
+): CrossoverROI {
+  const baseValue = getCardBaseValue(card);
+  const seed = getCardSeed(card);
+  const gradeNum = parseFloat(card.grade ?? '0');
+  const currentValue = card.currentValue ?? card.purchasePrice;
+
+  // Determine target grade & value
+  let targetGrade = '10';
+  if (gradeNum < 9.5) targetGrade = String(gradeNum);
+  const targetKey = `${toGrader} ${targetGrade}`;
+  const targetMult = GRADE_MULTIPLIERS[targetKey] ?? 4;
+  const targetValue = Math.round(baseValue * targetMult * 100) / 100;
+
+  const successRate = 0.6 + seededRandom(seed, 80) * 0.2;
+  const cost = CROSSOVER_FEE;
+  const expectedValueGain = Math.round((targetValue - currentValue) * successRate * 100) / 100;
+  const netROI = Math.round(((expectedValueGain - cost) / (currentValue + cost)) * 100 * 100) / 100;
 
   return {
-    cardId: card.id,
-    player: card.player,
-    sourceCompany,
-    sourceGrade,
-    targetCompany,
-    targetGrade,
-    currentValue,
-    projectedValue,
-    crossoverFee,
-    shippingCost,
-    insuranceCost,
-    totalCost,
-    expectedGain: Math.round(expectedGain),
-    roi,
-    successProbability,
-    recommendation,
+    cost,
+    successRate: Math.round(successRate * 100) / 100,
+    expectedValueGain,
+    netROI,
   };
 }
 
-/* ------------------------------------------------------------------ */
-/*  Grade Distribution (for Recharts)                                  */
-/* ------------------------------------------------------------------ */
+export function getGradeDistribution(card: CardInventory): GradeDistribution[] {
+  const seed = getCardSeed(card);
 
-export function getGradeDistribution(cards: CardInventory[]): GradeDistributionEntry[] {
-  const graded = cards.filter(c => c.isGraded && c.grade);
-  const buckets: Record<string, { count: number; totalValue: number }> = {};
+  const grades = ['1', '2', '3', '4', '5', '6', '7', '8', '8.5', '9', '9.5', '10'];
 
-  for (const grade of GRADES_ORDERED) {
-    buckets[grade] = { count: 0, totalValue: 0 };
-  }
+  // Generate bell-curve-ish population centered around 8-9
+  const rawPops = grades.map((grade, i) => {
+    const gradeNum = parseFloat(grade);
+    // Peak around 8, with steep dropoff at 10
+    const center = 8;
+    const spread = 2.5;
+    const basePop = Math.exp(-Math.pow(gradeNum - center, 2) / (2 * spread * spread));
+    // 10s are rarer
+    const rarityFactor = gradeNum >= 10 ? 0.05 : gradeNum >= 9.5 ? 0.15 : 1;
+    const variation = 0.7 + seededRandom(seed, 400 + i) * 0.6;
+    return Math.max(1, Math.round(basePop * rarityFactor * variation * 5000));
+  });
 
-  for (const card of graded) {
-    const num = parseNumericGrade(card.grade);
-    // Map to nearest standard grade
-    let gradeKey = GRADES_ORDERED.find(g => Math.abs(parseFloat(g) - num) < 0.3);
-    if (!gradeKey) gradeKey = String(Math.round(num));
-    if (!buckets[gradeKey]) buckets[gradeKey] = { count: 0, totalValue: 0 };
+  const totalPop = rawPops.reduce((a, b) => a + b, 0);
 
-    buckets[gradeKey].count += 1;
-    buckets[gradeKey].totalValue += card.currentValue ?? card.purchasePrice;
-  }
-
-  return GRADES_ORDERED
-    .map(grade => ({
-      grade,
-      count: buckets[grade]?.count ?? 0,
-      totalValue: Math.round(buckets[grade]?.totalValue ?? 0),
-      avgValue: buckets[grade]?.count
-        ? Math.round((buckets[grade].totalValue) / buckets[grade].count)
-        : 0,
-    }))
-    .filter(e => e.count > 0 || ['10', '9.5', '9', '8.5', '8', '7'].includes(e.grade));
+  return grades.map((grade, i) => ({
+    grade,
+    population: rawPops[i],
+    percentage: Math.round((rawPops[i] / totalPop) * 100 * 100) / 100,
+  }));
 }
-
-/* ------------------------------------------------------------------ */
-/*  Portfolio Grade Analysis                                           */
-/* ------------------------------------------------------------------ */
 
 export function getPortfolioGradeAnalysis(cards: CardInventory[]): PortfolioGradeAnalysis {
-  const graded = cards.filter(c => c.isGraded && c.grade);
-  const raw = cards.filter(c => !c.isGraded);
-  const distribution = getGradeDistribution(cards);
+  const activeCards = cards.filter((c) => c.status !== 'sold');
+  const gradedCards = activeCards.filter((c) => c.isGraded && c.grade);
+  const ungradedCards = activeCards.filter((c) => !c.isGraded);
 
   // Average grade
-  let gradeSum = 0;
-  for (const card of graded) {
-    gradeSum += parseNumericGrade(card.grade);
+  let averageGrade = 0;
+  if (gradedCards.length > 0) {
+    const grades = gradedCards.map((c) => {
+      const g = parseFloat(c.grade!);
+      return isNaN(g) ? 7 : g;
+    });
+    averageGrade = Math.round((grades.reduce((a, b) => a + b, 0) / grades.length) * 100) / 100;
   }
-  const averageGrade = graded.length > 0 ? Math.round((gradeSum / graded.length) * 10) / 10 : 0;
 
-  // Gem rate: PSA 10, BGS 9.5+, SGC 10
-  const gemCards = graded.filter(c => {
-    const num = parseNumericGrade(c.grade);
-    return num >= 9.5;
+  // Gem rate: percentage of cards graded 9.5 or higher
+  const gemCards = gradedCards.filter((c) => {
+    const g = parseFloat(c.grade!);
+    return !isNaN(g) && g >= 9.5;
   });
-  const gemRate = graded.length > 0 ? Math.round((gemCards.length / graded.length) * 1000) / 10 : 0;
+  const gemRate = gradedCards.length > 0
+    ? Math.round((gemCards.length / gradedCards.length) * 100 * 100) / 100
+    : 0;
 
-  // Upgrade opportunities: cards that could benefit from crossover
-  const arbitrage = findArbitrageOpportunities(cards);
-  const upgradeOpportunityCount = arbitrage.length;
-  const totalUpgradeValue = arbitrage.reduce((sum, a) => sum + a.netProfit, 0);
+  // Grade distribution
+  const gradeCounts: Record<string, number> = {};
+  gradedCards.forEach((c) => {
+    const g = c.grade ?? 'Unknown';
+    gradeCounts[g] = (gradeCounts[g] || 0) + 1;
+  });
+  const gradeDistribution = Object.entries(gradeCounts)
+    .map(([grade, count]) => ({ grade, count }))
+    .sort((a, b) => parseFloat(a.grade) - parseFloat(b.grade));
 
-  // Company breakdown
-  const companyMap: Record<string, { count: number; gradeSum: number }> = {};
-  for (const card of graded) {
-    const company = card.gradingCompany ?? 'Unknown';
-    if (!companyMap[company]) companyMap[company] = { count: 0, gradeSum: 0 };
-    companyMap[company].count += 1;
-    companyMap[company].gradeSum += parseNumericGrade(card.grade);
-  }
+  // Grader distribution
+  const graderCounts: Record<string, number> = {};
+  gradedCards.forEach((c) => {
+    const grader = c.gradingCompany ?? 'Unknown';
+    graderCounts[grader] = (graderCounts[grader] || 0) + 1;
+  });
+  const graderDistribution = Object.entries(graderCounts)
+    .map(([grader, count]) => ({ grader, count }))
+    .sort((a, b) => b.count - a.count);
 
-  const companyBreakdown = Object.entries(companyMap).map(([company, data]) => ({
-    company,
-    count: data.count,
-    avgGrade: Math.round((data.gradeSum / data.count) * 10) / 10,
-  })).sort((a, b) => b.count - a.count);
+  // Crossover opportunities
+  const crossoverOpps = findCrossoverOpportunities(activeCards);
+  const upgradeValuePotential = crossoverOpps.reduce(
+    (sum, opp) => sum + opp.expectedProfit,
+    0
+  );
 
   return {
-    totalGraded: graded.length,
-    totalRaw: raw.length,
     averageGrade,
     gemRate,
-    gradeDistribution: distribution,
-    upgradeOpportunityCount,
-    totalUpgradeValue: Math.round(totalUpgradeValue),
-    companyBreakdown,
+    totalCards: activeCards.length,
+    gradedCards: gradedCards.length,
+    ungradedCards: ungradedCards.length,
+    gradeDistribution,
+    graderDistribution,
+    totalCrossoverOpportunities: crossoverOpps.length,
+    upgradeValuePotential: Math.round(upgradeValuePotential * 100) / 100,
+    topCrossoverOpportunities: crossoverOpps.slice(0, 5),
   };
 }
 
-/* ------------------------------------------------------------------ */
-/*  Top Crossover Opportunities (for widget)                           */
-/* ------------------------------------------------------------------ */
+// ---- Preferences ----
 
-export function getTopCrossoverOpportunities(cards: CardInventory[], limit = 3): ArbitrageOpportunity[] {
-  return findArbitrageOpportunities(cards).slice(0, limit);
+export interface GradePremiumPrefs {
+  defaultTab?: string;
+  selectedCardId?: string;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Preferences Persistence                                            */
-/* ------------------------------------------------------------------ */
-
-export function getGradePremiumPreferences(): GradePremiumPreferences {
+export function loadGradePremiumPrefs(): GradePremiumPrefs {
   try {
-    const stored = localStorage.getItem(LS_PREFERENCES_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch { /* ignore */ }
-  return {
-    preferredCompany: 'PSA',
-    showArbitrageAlerts: true,
-    minimumArbitrageROI: 20,
-    trackedCrossovers: [],
-  };
-}
-
-export function saveGradePremiumPreferences(prefs: GradePremiumPreferences): void {
-  localStorage.setItem(LS_PREFERENCES_KEY, JSON.stringify(prefs));
-}
-
-/* ------------------------------------------------------------------ */
-/*  Crossover Tracking Persistence                                     */
-/* ------------------------------------------------------------------ */
-
-export function getTrackedCrossovers(): TrackedCrossover[] {
-  try {
-    const stored = localStorage.getItem(LS_CROSSOVERS_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch { /* ignore */ }
-  return [];
-}
-
-export function addTrackedCrossover(crossover: Omit<TrackedCrossover, 'id' | 'createdAt'>): TrackedCrossover {
-  const tracked = getTrackedCrossovers();
-  const newEntry: TrackedCrossover = {
-    ...crossover,
-    id: `xover_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-    createdAt: new Date().toISOString(),
-  };
-  tracked.push(newEntry);
-  localStorage.setItem(LS_CROSSOVERS_KEY, JSON.stringify(tracked));
-  return newEntry;
-}
-
-export function updateTrackedCrossover(id: string, updates: Partial<TrackedCrossover>): void {
-  const tracked = getTrackedCrossovers();
-  const idx = tracked.findIndex(t => t.id === id);
-  if (idx !== -1) {
-    tracked[idx] = { ...tracked[idx], ...updates };
-    localStorage.setItem(LS_CROSSOVERS_KEY, JSON.stringify(tracked));
+    const raw = localStorage.getItem(PREFS_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw) as GradePremiumPrefs;
+  } catch {
+    return {};
   }
 }
 
-export function removeTrackedCrossover(id: string): void {
-  const tracked = getTrackedCrossovers().filter(t => t.id !== id);
-  localStorage.setItem(LS_CROSSOVERS_KEY, JSON.stringify(tracked));
+export function saveGradePremiumPrefs(prefs: GradePremiumPrefs): void {
+  try {
+    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+  } catch {
+    // quota exceeded
+  }
 }
-
-/* ------------------------------------------------------------------ */
-/*  Utility Exports                                                    */
-/* ------------------------------------------------------------------ */
-
-export function formatGrade(company: string, grade: string): string {
-  if (company === 'BGS' && grade === '10') return 'BGS 10 Black Label';
-  if (company === 'SGC' && grade === '10') return 'SGC 10 Pristine';
-  if (company === 'BGS' && grade === '9.5') return 'BGS 9.5 Gem Mint';
-  if (company === 'PSA' && grade === '10') return 'PSA 10 Gem Mint';
-  return `${company} ${grade}`;
-}
-
-export function getGradeColor(grade: number): string {
-  if (grade >= 10) return '#10b981';
-  if (grade >= 9.5) return '#34d399';
-  if (grade >= 9) return '#3b82f6';
-  if (grade >= 8) return '#8b5cf6';
-  if (grade >= 7) return '#f59e0b';
-  return '#ef4444';
-}
-
-export { GRADES_ORDERED, CROSSOVER_FEES, COMPANY_ADJUSTMENTS };
