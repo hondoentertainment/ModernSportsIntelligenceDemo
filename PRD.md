@@ -13,6 +13,7 @@
 - **Phase 14: Social Alpha Elite**: Live Hype Feed and institutional collector tiers
 - **Phases 39-43**: Trade Block & Offers, Market Watchlists & Price Alerts, Analytics Reports & Export, Community Benchmarking & Leaderboards, Smart Collection Advisor
 - **Phases 44-48**: Set Completion Registry, Portfolio Time Machine, Automated Trading Rules Engine, Advanced Technical Analysis Suite, Data Import Hub & External Sync
+- **Phases 49-53**: Social Network & Collector Messaging, Sealed Wax Investment Tracker, Counterfeit & Authentication Intelligence, Player Market Index, Digital Display Case
 
 ## 2. Project Vision & Objectives
 ### 2.1 Vision
@@ -543,3 +544,76 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - ImportWidget: dashboard widget showing last import date, total imported count, and quick-import button.
     - ImportModal: full import wizard with source selector, file upload, column mapper, preview table, duplicate checker, and confirmation.
     - localStorage persistence for column mapping profiles, import history, and backup schedule.
+
+### Phase 49: Social Network & Collector Messaging
+- **Objective**: Enable direct collector interaction with follow/message/trade-match functionality, closing the critical social gap vs CollX and Mantel.
+- **Key Features**:
+    - Collector profiles: simulated user profiles with display name, avatar, bio, public portfolio stats (total value, card count, top sport, collector tier), trade reputation score (0-5 stars).
+    - Follow system: follow/unfollow collectors with follower/following counts, activity feed showing followed collectors' actions (listings, trades, achievements).
+    - Direct messaging: 1-on-1 chat threads with text messages, card attachments (link any owned card into a message), and offer integration (inline trade proposals).
+    - Trade matching engine: auto-surface collectors who have cards on your watchlist and want cards you've listed on your trade block, with match score and "Propose Trade" quick action.
+    - Activity feed: global and following-only feeds showing recent listings, completed trades, achievement unlocks, and milestone events.
+    - Collector search: find collectors by username, sport specialty, collection size, or trade reputation.
+    - Block/mute/report: safety controls for blocking users, muting conversations, and flagging inappropriate behavior.
+    - SocialWidget: dashboard widget with new follower count, unread messages badge, top trade matches, and recent activity feed snippet.
+    - SocialModal: full social hub with tabs for Feed, Messages, Trade Matches, and Discover Collectors.
+    - localStorage persistence for profiles, follows, messages, and activity feed.
+
+### Phase 50: Sealed Wax Investment Tracker
+- **Objective**: Track sealed hobby boxes, blasters, and retail products as investable assets with price history and hold-vs-rip analysis.
+- **Key Features**:
+    - Sealed product database: 20+ pre-built products across all 5 sports — hobby boxes, blasters, mega boxes, retail packs with MSRP, release date, and key rookie content.
+    - Sealed portfolio: add purchased boxes with cost basis, track current market value, and calculate ROI per product and aggregate.
+    - Price history charts: simulated price trajectories for sealed products using same TA indicators (SMA, RSI, MACD) as card charts.
+    - Hold-vs-rip calculator: expected value of ripping (based on checklist key cards × pull rates × current values) vs holding sealed (based on price trend and historical sealed appreciation).
+    - Release calendar: upcoming product releases with estimated release date, MSRP, and pre-order price tracking.
+    - Sealed product alerts: price drops below cost basis, new releases matching preferred sports, and trending boxes.
+    - Sealed ROI leaderboard: rank owned sealed products by ROI performance.
+    - WaxInvestWidget: dashboard widget with sealed portfolio value, top performer, upcoming releases, and hold-vs-rip recommendation.
+    - WaxInvestModal: full sealed product browser with portfolio tab, price charts, hold-vs-rip analysis, and release calendar.
+    - localStorage persistence for sealed portfolio, alerts, and calendar preferences.
+
+### Phase 51: Counterfeit & Authentication Intelligence
+- **Objective**: AI-powered authentication scoring and counterfeit detection to protect collectors from fraud — an emerging competitive moat.
+- **Key Features**:
+    - Authentication score (0-100): per-card composite score based on cert verification, grade consistency, price anomaly analysis, and metadata cross-referencing.
+    - Cert verification engine: validate certification numbers against simulated PSA/BGS/SGC registries — check holder type, label style, grade, and expected population.
+    - Trimming/alteration detection: flag cards where grade + age + condition metadata don't align (e.g., PSA 10 on a 1952 card, grade upgrades without re-submission).
+    - Counterfeit risk factors: identify high-risk categories (high-value rookies, vintage, autographs) with elevated scrutiny thresholds.
+    - Counterfeit alert feed: surface known problematic cert ranges, common fake patterns, and marketplace red flags.
+    - Authentication checklist: step-by-step verification guide per grading company with visual reference for label styles, font, hologram placement.
+    - Seller risk scoring: evaluate seller patterns from simulated marketplace data — new accounts, bulk listings of high-value items, price-too-good-to-be-true flags.
+    - AuthWidget: dashboard widget with collection auth score, flagged cards count, and recent alerts.
+    - AuthModal: per-card deep-dive with auth score breakdown, cert verification result, risk factors, and verification checklist.
+    - localStorage persistence for verification history and acknowledged alerts.
+
+### Phase 52: Player Market Index & Performance Tracker
+- **Objective**: Aggregate card-level data into player-level market indexes for portfolio-wide player exposure analysis — matching CardLadder and Market Movers.
+- **Key Features**:
+    - Player index: aggregate market value of all cards for a specific player across grades/sets, tracked over time with simulated historical data.
+    - Player comparison charts: overlay two or more players' market performance on the same Recharts chart with normalized or absolute scaling.
+    - Rookie class indexes: track entire draft classes (e.g., "2024 NFL Rookies") as market cohorts with aggregate value and top/bottom performers.
+    - Career arc modeling: simulate player career trajectory (rookie → breakout → prime → decline) and correlate with card value curves.
+    - Injury impact simulator: model price impact when a player is injured (immediate drop) vs returns (recovery bounce), with historical pattern analysis.
+    - Team-level indexes: aggregate card market by team (e.g., "Dallas Cowboys Index") with roster turnover impact.
+    - Sport market indexes: broad market health indicators per sport (e.g., "Baseball Market Index") tracking aggregate volume and value trends.
+    - Hot/cold lists: daily movers — players whose aggregate card values changed most in the last 24hr/7d/30d.
+    - PlayerIndexWidget: dashboard widget with top 5 hot players, portfolio player exposure breakdown, and sport index sparklines.
+    - PlayerIndexModal: full player explorer with search, comparison charts, rookie class browser, career arc visualizer, and injury impact simulator.
+    - localStorage persistence for followed players, comparison bookmarks, and index preferences.
+
+### Phase 53: Digital Display Case & Showcase Builder
+- **Objective**: Let collectors build visual showcases of their best cards for sharing and social proof — inspired by Mantel's core differentiator.
+- **Key Features**:
+    - Display case builder: drag-and-drop card placement into customizable grid layouts (2x2, 3x3, 4x4, freeform) with themed backgrounds.
+    - Showcase themes: 6+ pre-built themes — "Trophy Room" (dark wood), "Vault" (steel), "Neon" (cyberpunk), "Classic" (felt green), "Ice" (frosted glass), "Fire" (gradient red).
+    - Card spotlight: click any card in the case to expand with player name, grade, value, and custom caption.
+    - Public showcase URL: generate shareable link with unique ID (extends Phase 30's collection sharing).
+    - Showcase reactions: simulated visitor reactions (fire, thumbs up, heart, mind-blown) with reaction counts per card.
+    - Featured card: pin one card as the showcase centerpiece with enlarged display and story text.
+    - Showcase analytics: simulated view count, reaction count, most-viewed card, and share count.
+    - Multiple showcases: create and manage multiple themed display cases (e.g., "Grail Wall", "Investment Picks", "Rookie Class").
+    - Print-ready export: generate high-res HTML rendering of showcase for screenshots and social sharing.
+    - ShowcaseWidget: dashboard widget with showcase count, total reactions, and featured showcase preview.
+    - ShowcaseModal: full showcase builder with theme selector, card picker, drag-and-drop layout, caption editor, and sharing controls.
+    - localStorage persistence for showcases, reactions, and analytics.
