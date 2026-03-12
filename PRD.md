@@ -12,6 +12,7 @@
 - **Phase 13: Scarcity Intelligence**: Integrated population reporting and "Pop 1" alerts
 - **Phase 14: Social Alpha Elite**: Live Hype Feed and institutional collector tiers
 - **Phases 39-43**: Trade Block & Offers, Market Watchlists & Price Alerts, Analytics Reports & Export, Community Benchmarking & Leaderboards, Smart Collection Advisor
+- **Phases 44-48**: Set Completion Registry, Portfolio Time Machine, Automated Trading Rules Engine, Advanced Technical Analysis Suite, Data Import Hub & External Sync
 
 ## 2. Project Vision & Objectives
 ### 2.1 Vision
@@ -467,3 +468,78 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - AdvisorModal: full advisor interface with strategy selector, recommendation feed with rationale, and "apply suggestion" quick actions.
     - Recommendation feedback: thumbs up/down on suggestions to refine future recommendations.
     - localStorage persistence for strategy selection, recommendation history, and feedback.
+
+### Phase 44: Set Completion Registry & Checklist
+- **Objective**: Let collectors track progress toward completing card sets and identify missing cards.
+- **Key Features**:
+    - Set database: pre-built checklists for popular sets (e.g., 2024 Topps Series 1, 2023 Panini Prizm) with total card count, base/parallel/insert breakdowns.
+    - Set enrollment: link owned cards to sets with automatic matching by year, manufacturer, set name, and card number.
+    - Completion dashboard: per-set progress bars, completion percentage, estimated cost to complete based on market data.
+    - Missing card finder: identify gaps in enrolled sets with estimated acquisition cost per missing card, sorted by cheapest-first or rarest-first.
+    - Parallel tracker: track base, refractor, auto, numbered parallels separately with independent completion percentages.
+    - Set value analysis: total set value vs sum-of-parts, set premium/discount calculation, historical completed set sale prices.
+    - Master set scoring: weighted completion score (base = 1x, insert = 2x, auto = 5x, 1/1 = 50x) for bragging rights.
+    - SetRegistryWidget: dashboard widget with top 3 active sets, nearest-to-complete, and recently added cards.
+    - SetRegistryModal: full set browser with enrollment, checklist view, missing card marketplace links, and completion timeline projection.
+    - localStorage persistence for set enrollments and checklist state.
+
+### Phase 45: Portfolio Time Machine & Historical Snapshots
+- **Objective**: Enable users to view portfolio state at any historical date and compare performance across time periods.
+- **Key Features**:
+    - Automatic daily snapshots: capture portfolio NAV, card count, allocation, top holdings, and key metrics at end of each session (stored in localStorage with date keys).
+    - Time machine slider: scrub to any past date and see the portfolio as it existed — cards owned, values, allocation, total NAV.
+    - Period comparison: side-by-side diff of any two dates showing cards added/removed, value changes per card, allocation drift, and net P&L.
+    - NAV timeline chart: interactive portfolio value chart with milestone markers (big purchases, sales, grading events).
+    - "What if I held?" analysis: for sold cards, show what the portfolio would be worth today if those positions were still held.
+    - Decision journal: optional notes attached to snapshots explaining buy/sell rationale, reviewable in hindsight with actual outcome.
+    - Yearly review generator: auto-generated year-in-review comparing Jan 1 vs Dec 31 with best/worst decisions, total return, and benchmark comparison.
+    - TimelineWidget: dashboard widget with NAV sparkline, YTD return, and "this day last year" comparison.
+    - TimeMachineModal: full time machine with date picker, snapshot diff view, decision journal, and yearly review.
+    - localStorage persistence for snapshots, journal entries, and comparison bookmarks.
+
+### Phase 46: Automated Trading Rules Engine
+- **Objective**: Let users define conditional rules that auto-trigger actions when market conditions are met.
+- **Key Features**:
+    - Rule builder: visual condition → action rule creator with AND/OR logic.
+    - Condition types: price crosses threshold (above/below), percentage change in N days, Sharpe drops below X, anomaly detected, breakout score exceeds Y, agent consensus reaches "Strong Buy/Sell".
+    - Action types: move to trade block, generate eBay listing draft, create watchlist alert, add to consignment queue, send notification, log to decision journal, trigger advisor re-evaluation.
+    - Rule templates: pre-built strategies (Stop-Loss at -20%, Take-Profit at +50%, DCA Weekly, Rebalance Monthly, Harvest Tax Losses in December).
+    - Backtesting engine: run rules against historical price data to show how many times they would have triggered and simulated P&L impact.
+    - Rule priority and conflict resolution: when multiple rules fire simultaneously, execute by priority with conflict warnings.
+    - Dry-run mode: rules evaluate but only log what they would do, no actual execution — for testing before going live.
+    - Rate limiting: max triggers per rule per day to prevent cascading actions.
+    - RulesEngineWidget: dashboard widget with active rules count, recent triggers, and rules pending review.
+    - RulesEngineModal: full rule builder with condition/action dropdowns, template library, backtest results, and trigger history.
+    - localStorage persistence for rules, trigger history, and backtest results.
+
+### Phase 47: Advanced Technical Analysis Suite
+- **Objective**: Full-featured charting toolkit for card price technical analysis, extending Phase 36.
+- **Key Features**:
+    - RSI (Relative Strength Index): 14-period RSI with overbought (>70) / oversold (<30) zones and divergence detection.
+    - MACD (Moving Average Convergence Divergence): 12/26/9 MACD line, signal line, and histogram with crossover alerts.
+    - Volume Profile: simulated volume distribution by price level, showing value area high/low and point of control.
+    - Fibonacci Retracement: auto-drawn from recent swing high/low with 23.6%, 38.2%, 50%, 61.8%, 78.6% levels.
+    - Candlestick patterns: detect doji, hammer, engulfing, morning star from daily price data with pattern labels on chart.
+    - Multi-timeframe analysis: daily, weekly, monthly aggregation with synchronized crosshairs across timeframes.
+    - Chart annotations: user-drawable trendlines, horizontal levels, and text notes saved per card.
+    - Indicator overlay manager: toggle any combination of indicators on/off with customizable parameters.
+    - Comparative overlay: plot two cards' price histories on the same chart for relative performance analysis.
+    - TechnicalAnalysisModal: per-card deep-dive replacing/extending PriceHistoryModal with full indicator toolkit and drawing tools.
+    - TAWidget: dashboard widget with cards at RSI extremes, recent MACD crossovers, and Fibonacci bounce candidates.
+    - localStorage persistence for chart settings, annotations, and indicator preferences.
+
+### Phase 48: Data Import Hub & External Sync
+- **Objective**: Eliminate onboarding friction by enabling bulk card import from multiple sources and formats.
+- **Key Features**:
+    - CSV import: upload CSV/TSV files with flexible column mapping UI — auto-detect player, year, value, sport, grade columns with preview and correction before import.
+    - eBay purchase history parser: paste eBay "Purchase History" export or HTML, extract card details, prices, and dates automatically.
+    - PSA/BGS cert lookup: enter certification number, pull card details (player, year, set, grade) from simulated registry to auto-populate fields.
+    - Collection manager import: import from popular apps (CardLadder, CollX, Ludex) via their CSV export formats with pre-mapped column profiles.
+    - Duplicate detection: fuzzy matching on player + year + set + card number to flag potential duplicates before import with merge/skip/replace options.
+    - Batch edit post-import: select imported cards and bulk-update sport, league, condition, or group assignment.
+    - Import history: log of all imports with card counts, source, timestamp, and undo capability (remove all cards from a specific import).
+    - Export hub: full collection export as CSV, JSON, or printable HTML with configurable column selection.
+    - Scheduled backup: auto-export collection to JSON on configurable interval (weekly/monthly) with localStorage download history.
+    - ImportWidget: dashboard widget showing last import date, total imported count, and quick-import button.
+    - ImportModal: full import wizard with source selector, file upload, column mapper, preview table, duplicate checker, and confirmation.
+    - localStorage persistence for column mapping profiles, import history, and backup schedule.
