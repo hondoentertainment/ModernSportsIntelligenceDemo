@@ -20,7 +20,18 @@ import {
   Search,
   Trash2,
 } from 'lucide-react';
-import { CardInventory } from '../types';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+} from 'recharts';
+import { CardInventory, TargetWatchlist } from '../types';
 import {
   CardEvent,
   EventType,
@@ -29,6 +40,7 @@ import {
   EventDeal,
   DealType,
   EventROI,
+  WantListItem,
   getUpcomingEvents,
   getAllEvents,
   getEventById,
@@ -40,6 +52,7 @@ import {
   getDeals,
   calculateEventROI,
   getEventHistory,
+  generateWantList,
   exportPrepListHTML,
 } from '../lib/eventPlannerService';
 
@@ -47,16 +60,18 @@ interface EventModalProps {
   isOpen: boolean;
   onClose: () => void;
   cards: CardInventory[];
+  targets?: TargetWatchlist[];
 }
 
-type TabId = 'events' | 'prep' | 'budget' | 'deals' | 'history';
+type TabId = 'events' | 'prep' | 'budget' | 'deals' | 'roi' | 'wantlist';
 
 const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
   { id: 'events', label: 'Events', icon: <Calendar size={16} /> },
   { id: 'prep', label: 'Prep', icon: <Package size={16} /> },
   { id: 'budget', label: 'Budget', icon: <DollarSign size={16} /> },
   { id: 'deals', label: 'Deals', icon: <Tag size={16} /> },
-  { id: 'history', label: 'History', icon: <History size={16} /> },
+  { id: 'roi', label: 'ROI', icon: <TrendingUp size={16} /> },
+  { id: 'wantlist', label: 'Want List', icon: <Search size={16} /> },
 ];
 
 function daysUntil(dateStr: string): number {
