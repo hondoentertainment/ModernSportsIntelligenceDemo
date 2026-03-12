@@ -1,58 +1,47 @@
-import { CardInventory, Sport, TargetWatchlist } from '../types';
+import { CardInventory, TargetWatchlist } from '../types';
 
-// ── Types ────────────────────────────────────────────────────────────────────────
+// ---- Types ----
 
-export type EventType = 'national' | 'regional_show' | 'local_show' | 'trade_night' | 'card_convention';
-export type AttendanceTier = 'mega' | 'large' | 'medium' | 'small' | 'micro';
-export type DealType = 'bought' | 'sold' | 'traded';
-export type PrepCardStatus = 'pending' | 'packed' | 'sold' | 'traded' | 'unsold';
+export type EventType = 'national' | 'regional' | 'local' | 'trade_night';
+export type AttendanceTier = 'massive' | 'large' | 'medium' | 'small';
+export type DealType = 'buy' | 'sell' | 'trade';
 
-export interface CardShowEvent {
+export interface CardEvent {
   id: string;
   name: string;
-  type: EventType;
+  date: string; // ISO date
+  endDate?: string;
   location: string;
-  city: string;
-  state: string;
-  startDate: string;
-  endDate: string;
+  type: EventType;
   attendanceTier: AttendanceTier;
-  estimatedAttendance: number;
-  tableCost: number;
-  admissionCost: number;
   description: string;
-  sports: Sport[];
-  isRecurring: boolean;
-  website?: string;
+  estimatedAttendance?: number;
+  websiteUrl?: string;
 }
 
-export interface PrepListCard {
-  id: string;
-  eventId: string;
+export interface EventPrepItem {
   cardId: string;
-  player: string;
-  cardDescription: string;
-  targetPrice: number;
-  minAcceptPrice: number;
-  purpose: 'sale' | 'trade';
-  status: PrepCardStatus;
+  targetSalePrice: number;
   notes?: string;
-  addedAt: string;
+  status: 'pending' | 'ready' | 'sold';
+}
+
+export interface EventPrepList {
+  eventId: string;
+  items: EventPrepItem[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface EventBudget {
-  id: string;
   eventId: string;
-  totalBudget: number;
-  travelCost: number;
-  hotelCost: number;
-  tableCost: number;
-  admissionCost: number;
-  foodEstimate: number;
-  miscExpenses: number;
-  spentSoFar: number;
-  createdAt: string;
-  updatedAt: string;
+  travel: number;
+  hotel: number;
+  table: number;
+  spending: number;
+  food: number;
+  other: number;
+  notes?: string;
 }
 
 export interface EventDeal {
@@ -61,886 +50,454 @@ export interface EventDeal {
   type: DealType;
   player: string;
   cardDescription: string;
-  amount: number;
+  price: number;
   tradeValue?: number;
-  counterparty?: string;
   notes?: string;
-  sport: Sport;
   timestamp: string;
-}
-
-export interface UserEvent {
-  id: string;
-  eventId: string;
-  eventName: string;
-  status: 'planned' | 'attending' | 'completed';
-  registeredAt: string;
-  budget?: EventBudget;
-  prepListCount: number;
-  dealCount: number;
 }
 
 export interface EventROI {
   eventId: string;
   eventName: string;
-  totalSpent: number;
-  totalValueAcquired: number;
-  totalSalesRevenue: number;
-  totalTradeValueGained: number;
-  travelCosts: number;
-  tableCosts: number;
+  totalBudgetSpent: number;
+  totalDealsSpent: number;
+  totalDealsEarned: number;
+  totalTradeValue: number;
   netROI: number;
-  roiPercentage: number;
   dealCount: number;
-  date: string;
 }
 
 export interface WantListItem {
   id: string;
   player: string;
   cardDescription: string;
-  maxPrice: number;
-  priority: 'high' | 'medium' | 'low';
-  sport: Sport;
+  targetPrice: number;
+  priority: 'High' | 'Medium' | 'Low';
   notes?: string;
 }
 
-// ── Storage Keys ─────────────────────────────────────────────────────────────────
+// ---- Constants ----
 
-const EVENTS_KEY = 'msi_event_planner_events';
-const PREP_LIST_KEY = 'msi_event_prep_lists';
+const EVENTS_KEY = 'msi_events';
+const PREP_KEY = 'msi_event_prep';
 const BUDGET_KEY = 'msi_event_budgets';
 const DEALS_KEY = 'msi_event_deals';
-const USER_EVENTS_KEY = 'msi_user_events';
 
-// ── Deterministic Seed Helpers ───────────────────────────────────────────────────
+// ---- Pre-built Events ----
 
-function seededRandom(seed: number, offset: number): number {
-  const x = Math.sin(seed + offset) * 10000;
-  return x - Math.floor(x);
+function getBaseYear(): number {
+  return new Date().getFullYear();
 }
 
-function seededRange(seed: number, offset: number, min: number, max: number): number {
-  return min + seededRandom(seed, offset) * (max - min);
+function generatePrebuiltEvents(): CardEvent[] {
+  const year = getBaseYear();
+  return [
+    {
+      id: 'evt_national',
+      name: 'The National Sports Collectors Convention',
+      date: `${year}-07-23`,
+      endDate: `${year}-07-27`,
+      location: 'Cleveland, OH',
+      type: 'national',
+      attendanceTier: 'massive',
+      description: 'The largest sports collectibles event in the world. 800+ dealers, exclusive releases, and celebrity signings.',
+      estimatedAttendance: 100000,
+      websiteUrl: 'https://nsccshow.com',
+    },
+    {
+      id: 'evt_dallas_spring',
+      name: 'Dallas Card Show',
+      date: `${year}-03-14`,
+      endDate: `${year}-03-16`,
+      location: 'Dallas, TX',
+      type: 'regional',
+      attendanceTier: 'large',
+      description: 'Premier regional show in the Southwest with 200+ tables and top-tier inventory.',
+      estimatedAttendance: 15000,
+    },
+    {
+      id: 'evt_chicago_spring',
+      name: 'Chicago Card Show',
+      date: `${year}-04-11`,
+      endDate: `${year}-04-13`,
+      location: 'Chicago, IL',
+      type: 'regional',
+      attendanceTier: 'large',
+      description: 'Major Midwest show with strong vintage and modern selection.',
+      estimatedAttendance: 12000,
+    },
+    {
+      id: 'evt_houston_spring',
+      name: 'Houston Card Show',
+      date: `${year}-05-09`,
+      endDate: `${year}-05-11`,
+      location: 'Houston, TX',
+      type: 'regional',
+      attendanceTier: 'large',
+      description: 'Growing regional show with excellent baseball card selection.',
+      estimatedAttendance: 8000,
+    },
+    {
+      id: 'evt_atlanta_summer',
+      name: 'Atlanta Sports Card & Memorabilia Expo',
+      date: `${year}-06-20`,
+      endDate: `${year}-06-22`,
+      location: 'Atlanta, GA',
+      type: 'regional',
+      attendanceTier: 'medium',
+      description: 'Southeast premier card show with 150+ dealers.',
+      estimatedAttendance: 6000,
+    },
+    {
+      id: 'evt_la_fall',
+      name: 'LA Card Show',
+      date: `${year}-09-12`,
+      endDate: `${year}-09-14`,
+      location: 'Los Angeles, CA',
+      type: 'regional',
+      attendanceTier: 'large',
+      description: 'West Coast flagship show with celebrity appearances and exclusive breaks.',
+      estimatedAttendance: 10000,
+    },
+    {
+      id: 'evt_philly_fall',
+      name: 'Philly Non-Sports & Sports Card Show',
+      date: `${year}-10-17`,
+      endDate: `${year}-10-19`,
+      location: 'Philadelphia, PA',
+      type: 'regional',
+      attendanceTier: 'medium',
+      description: 'Historic East Coast show with strong vintage presence.',
+      estimatedAttendance: 5000,
+    },
+    {
+      id: 'evt_local_trade_jan',
+      name: 'Monthly Trade Night - January',
+      date: `${year}-01-15`,
+      location: 'Local Card Shop',
+      type: 'trade_night',
+      attendanceTier: 'small',
+      description: 'Monthly community trade night. Bring your duplicates and want lists!',
+      estimatedAttendance: 30,
+    },
+    {
+      id: 'evt_local_trade_feb',
+      name: 'Monthly Trade Night - February',
+      date: `${year}-02-19`,
+      location: 'Local Card Shop',
+      type: 'trade_night',
+      attendanceTier: 'small',
+      description: 'Monthly community trade night. Great for networking and finding deals.',
+      estimatedAttendance: 30,
+    },
+    {
+      id: 'evt_local_trade_mar',
+      name: 'Monthly Trade Night - March',
+      date: `${year}-03-19`,
+      location: 'Local Card Shop',
+      type: 'trade_night',
+      attendanceTier: 'small',
+      description: 'Monthly community trade night. Spring cleaning edition!',
+      estimatedAttendance: 35,
+    },
+    {
+      id: 'evt_local_trade_apr',
+      name: 'Monthly Trade Night - April',
+      date: `${year}-04-16`,
+      location: 'Local Card Shop',
+      type: 'trade_night',
+      attendanceTier: 'small',
+      description: 'Monthly community trade night. Baseball season kickoff special!',
+      estimatedAttendance: 40,
+    },
+    {
+      id: 'evt_local_show_may',
+      name: 'Spring Local Card Show',
+      date: `${year}-05-03`,
+      location: 'Community Center',
+      type: 'local',
+      attendanceTier: 'small',
+      description: 'Small local show with 20-30 tables. Great for bargain hunting.',
+      estimatedAttendance: 200,
+    },
+    {
+      id: 'evt_local_show_nov',
+      name: 'Fall Local Card Show',
+      date: `${year}-11-08`,
+      location: 'Community Center',
+      type: 'local',
+      attendanceTier: 'small',
+      description: 'End-of-year local show. Dealers looking to move inventory before holidays.',
+      estimatedAttendance: 250,
+    },
+  ];
 }
 
-function seededInt(seed: number, offset: number, min: number, max: number): number {
-  return Math.floor(seededRange(seed, offset, min, max + 1));
-}
+// ---- localStorage helpers ----
 
-function seededPick<T>(seed: number, offset: number, arr: T[]): T {
-  return arr[Math.floor(seededRandom(seed, offset) * arr.length)];
-}
-
-function generateId(): string {
-  return `evt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-}
-
-// ── Pre-Built Event Database ─────────────────────────────────────────────────────
-
-const EVENT_DATABASE: CardShowEvent[] = [
-  {
-    id: 'evt_national_2026',
-    name: 'The National Sports Collectors Convention',
-    type: 'national',
-    location: 'Atlantic City Convention Center',
-    city: 'Atlantic City',
-    state: 'NJ',
-    startDate: '2026-07-29',
-    endDate: '2026-08-02',
-    attendanceTier: 'mega',
-    estimatedAttendance: 100000,
-    tableCost: 2500,
-    admissionCost: 25,
-    description: 'The largest annual sports card and memorabilia event in the world. Over 800 dealer tables, exclusive releases, and celebrity signings.',
-    sports: ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'],
-    isRecurring: true,
-    website: 'https://nsccshow.com',
-  },
-  {
-    id: 'evt_dallas_show',
-    name: 'Dallas Card Show',
-    type: 'regional_show',
-    location: 'Dallas Market Hall',
-    city: 'Dallas',
-    state: 'TX',
-    startDate: '2026-04-18',
-    endDate: '2026-04-19',
-    attendanceTier: 'large',
-    estimatedAttendance: 15000,
-    tableCost: 800,
-    admissionCost: 15,
-    description: 'Premier regional card show featuring 300+ dealers, breaking events, and autograph sessions.',
-    sports: ['Baseball', 'Basketball', 'Football'],
-    isRecurring: true,
-  },
-  {
-    id: 'evt_chicago_sportsfest',
-    name: 'Chicago SportsFest',
-    type: 'regional_show',
-    location: 'Rosemont Convention Center',
-    city: 'Rosemont',
-    state: 'IL',
-    startDate: '2026-05-09',
-    endDate: '2026-05-10',
-    attendanceTier: 'large',
-    estimatedAttendance: 12000,
-    tableCost: 650,
-    admissionCost: 12,
-    description: 'Chicagoland premier card show with 250+ tables, box breaks, and grading submissions.',
-    sports: ['Baseball', 'Basketball', 'Football', 'Hockey'],
-    isRecurring: true,
-  },
-  {
-    id: 'evt_socal_monthly',
-    name: 'SoCal Monthly Card Show',
-    type: 'local_show',
-    location: 'Frank & Son Collectible Show',
-    city: 'City of Industry',
-    state: 'CA',
-    startDate: '2026-04-04',
-    endDate: '2026-04-04',
-    attendanceTier: 'medium',
-    estimatedAttendance: 3000,
-    tableCost: 200,
-    admissionCost: 5,
-    description: 'Popular monthly show in Southern California. Great for finding bargains and local trades.',
-    sports: ['Baseball', 'Basketball', 'Football', 'Soccer'],
-    isRecurring: true,
-  },
-  {
-    id: 'evt_hobby_expo_east',
-    name: 'Hobby Expo East',
-    type: 'card_convention',
-    location: 'Pennsylvania Convention Center',
-    city: 'Philadelphia',
-    state: 'PA',
-    startDate: '2026-06-12',
-    endDate: '2026-06-14',
-    attendanceTier: 'large',
-    estimatedAttendance: 20000,
-    tableCost: 1200,
-    admissionCost: 20,
-    description: 'East Coast premier hobby convention featuring manufacturers, grading companies, and exclusive product releases.',
-    sports: ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'],
-    isRecurring: true,
-  },
-  {
-    id: 'evt_seattle_trade_night',
-    name: 'Seattle Card Collectors Trade Night',
-    type: 'trade_night',
-    location: 'Seattle Community Center',
-    city: 'Seattle',
-    state: 'WA',
-    startDate: '2026-03-27',
-    endDate: '2026-03-27',
-    attendanceTier: 'micro',
-    estimatedAttendance: 80,
-    tableCost: 0,
-    admissionCost: 0,
-    description: 'Weekly trade night for Seattle area collectors. Bring your trade binders and doubles!',
-    sports: ['Baseball', 'Basketball', 'Football'],
-    isRecurring: true,
-  },
-  {
-    id: 'evt_ny_vintage_show',
-    name: 'New York Vintage Card Show',
-    type: 'regional_show',
-    location: 'Javits Center',
-    city: 'New York',
-    state: 'NY',
-    startDate: '2026-09-19',
-    endDate: '2026-09-20',
-    attendanceTier: 'large',
-    estimatedAttendance: 18000,
-    tableCost: 1500,
-    admissionCost: 20,
-    description: 'Specializing in pre-war and vintage cards. A must-attend for serious vintage collectors.',
-    sports: ['Baseball', 'Basketball', 'Football', 'Hockey'],
-    isRecurring: true,
-  },
-  {
-    id: 'evt_community_trade',
-    name: 'Community Card Swap & Trade',
-    type: 'trade_night',
-    location: 'Community Recreation Center',
-    city: 'Austin',
-    state: 'TX',
-    startDate: '2026-03-20',
-    endDate: '2026-03-20',
-    attendanceTier: 'micro',
-    estimatedAttendance: 50,
-    tableCost: 0,
-    admissionCost: 0,
-    description: 'Bi-weekly community card swap. Family friendly, all experience levels welcome.',
-    sports: ['Baseball', 'Basketball', 'Football'],
-    isRecurring: true,
-  },
-  {
-    id: 'evt_miami_sports_cards',
-    name: 'Miami Sports Card Expo',
-    type: 'local_show',
-    location: 'Miami Beach Convention Center',
-    city: 'Miami',
-    state: 'FL',
-    startDate: '2026-05-30',
-    endDate: '2026-05-31',
-    attendanceTier: 'medium',
-    estimatedAttendance: 5000,
-    tableCost: 400,
-    admissionCost: 10,
-    description: 'South Florida card expo with emphasis on basketball and international soccer cards.',
-    sports: ['Basketball', 'Football', 'Soccer'],
-    isRecurring: true,
-  },
-  {
-    id: 'evt_denver_mile_high',
-    name: 'Mile High Card Show',
-    type: 'local_show',
-    location: 'National Western Complex',
-    city: 'Denver',
-    state: 'CO',
-    startDate: '2026-04-25',
-    endDate: '2026-04-26',
-    attendanceTier: 'medium',
-    estimatedAttendance: 4000,
-    tableCost: 350,
-    admissionCost: 8,
-    description: 'Denver\'s largest card show with 150+ dealers, grading submissions, and break sessions.',
-    sports: ['Baseball', 'Basketball', 'Football', 'Hockey'],
-    isRecurring: true,
-  },
-  {
-    id: 'evt_atlanta_collectors',
-    name: 'Atlanta Collectors Showcase',
-    type: 'regional_show',
-    location: 'Georgia World Congress Center',
-    city: 'Atlanta',
-    state: 'GA',
-    startDate: '2026-08-15',
-    endDate: '2026-08-16',
-    attendanceTier: 'large',
-    estimatedAttendance: 10000,
-    tableCost: 700,
-    admissionCost: 15,
-    description: 'Southeast premiere card show with focus on basketball, football, and vintage cards.',
-    sports: ['Baseball', 'Basketball', 'Football'],
-    isRecurring: true,
-  },
-  {
-    id: 'evt_portland_trade',
-    name: 'Portland Cards & Coffee Trade Night',
-    type: 'trade_night',
-    location: 'Rose City Brewing',
-    city: 'Portland',
-    state: 'OR',
-    startDate: '2026-03-25',
-    endDate: '2026-03-25',
-    attendanceTier: 'micro',
-    estimatedAttendance: 40,
-    tableCost: 0,
-    admissionCost: 0,
-    description: 'Casual trade night at a local brewery. Bring cards, grab a coffee or beer, make trades.',
-    sports: ['Baseball', 'Basketball', 'Football', 'Soccer'],
-    isRecurring: true,
-  },
-];
-
-// ── Event Access ─────────────────────────────────────────────────────────────────
-
-export function getAllEvents(): CardShowEvent[] {
-  return [...EVENT_DATABASE];
-}
-
-export function getEventById(id: string): CardShowEvent | undefined {
-  return EVENT_DATABASE.find(e => e.id === id);
-}
-
-export function getUpcomingEvents(limit = 5): CardShowEvent[] {
-  const now = new Date().toISOString().split('T')[0];
-  return EVENT_DATABASE
-    .filter(e => e.startDate >= now)
-    .sort((a, b) => a.startDate.localeCompare(b.startDate))
-    .slice(0, limit);
-}
-
-export function getNextUpcomingEvent(): CardShowEvent | null {
-  const upcoming = getUpcomingEvents(1);
-  return upcoming.length > 0 ? upcoming[0] : null;
-}
-
-export function getEventsByType(type: EventType): CardShowEvent[] {
-  return EVENT_DATABASE.filter(e => e.type === type);
-}
-
-export function getAttendanceTierLabel(tier: AttendanceTier): string {
-  const labels: Record<AttendanceTier, string> = {
-    mega: 'Mega (50K+)',
-    large: 'Large (10K+)',
-    medium: 'Medium (1K-10K)',
-    small: 'Small (200-1K)',
-    micro: 'Micro (<200)',
-  };
-  return labels[tier];
-}
-
-export function getEventTypeLabel(type: EventType): string {
-  const labels: Record<EventType, string> = {
-    national: 'National Convention',
-    regional_show: 'Regional Show',
-    local_show: 'Local Show',
-    trade_night: 'Trade Night',
-    card_convention: 'Card Convention',
-  };
-  return labels[type];
-}
-
-export function getEventTypeColor(type: EventType): string {
-  const colors: Record<EventType, string> = {
-    national: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
-    regional_show: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
-    local_show: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30',
-    trade_night: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
-    card_convention: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30',
-  };
-  return colors[type];
-}
-
-// ── User Events (Registration/Attendance) ────────────────────────────────────────
-
-export function getUserEvents(): UserEvent[] {
+function loadJSON<T>(key: string, fallback: T): T {
   try {
-    const raw = localStorage.getItem(USER_EVENTS_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    return JSON.parse(raw) as T;
   } catch {
-    return [];
+    return fallback;
   }
 }
 
-function saveUserEvents(events: UserEvent[]): void {
-  localStorage.setItem(USER_EVENTS_KEY, JSON.stringify(events));
+function saveJSON<T>(key: string, data: T): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch {
+    // quota exceeded — silently ignore
+  }
 }
 
-export function registerForEvent(eventId: string): UserEvent {
-  const events = getUserEvents();
-  const existing = events.find(e => e.eventId === eventId);
-  if (existing) return existing;
+// ---- Events ----
 
-  const show = getEventById(eventId);
-  const userEvent: UserEvent = {
-    id: generateId(),
+export function getUpcomingEvents(filterType?: EventType): CardEvent[] {
+  const events = generatePrebuiltEvents();
+  const today = new Date().toISOString().slice(0, 10);
+
+  let upcoming = events
+    .filter(e => e.date >= today || (e.endDate && e.endDate >= today))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  if (filterType) {
+    upcoming = upcoming.filter(e => e.type === filterType);
+  }
+
+  return upcoming;
+}
+
+export function getAllEvents(): CardEvent[] {
+  return generatePrebuiltEvents().sort((a, b) => a.date.localeCompare(b.date));
+}
+
+export function getEventById(eventId: string): CardEvent | undefined {
+  return generatePrebuiltEvents().find(e => e.id === eventId);
+}
+
+// ---- Prep Lists ----
+
+export function createPrepList(eventId: string, items: EventPrepItem[]): EventPrepList {
+  const allPrep = loadJSON<EventPrepList[]>(PREP_KEY, []);
+  const now = new Date().toISOString();
+
+  const existing = allPrep.findIndex(p => p.eventId === eventId);
+  const prepList: EventPrepList = {
     eventId,
-    eventName: show?.name ?? 'Unknown Event',
-    status: 'planned',
-    registeredAt: new Date().toISOString(),
-    prepListCount: 0,
-    dealCount: 0,
+    items,
+    createdAt: existing >= 0 ? allPrep[existing].createdAt : now,
+    updatedAt: now,
   };
-  events.push(userEvent);
-  saveUserEvents(events);
-  return userEvent;
-}
 
-export function updateUserEventStatus(eventId: string, status: UserEvent['status']): void {
-  const events = getUserEvents();
-  const idx = events.findIndex(e => e.eventId === eventId);
-  if (idx >= 0) {
-    events[idx].status = status;
-    saveUserEvents(events);
+  if (existing >= 0) {
+    allPrep[existing] = prepList;
+  } else {
+    allPrep.push(prepList);
   }
+
+  saveJSON(PREP_KEY, allPrep);
+  return prepList;
 }
 
-export function unregisterFromEvent(eventId: string): void {
-  const events = getUserEvents().filter(e => e.eventId !== eventId);
-  saveUserEvents(events);
+export function getPrepList(eventId: string): EventPrepList | null {
+  const allPrep = loadJSON<EventPrepList[]>(PREP_KEY, []);
+  return allPrep.find(p => p.eventId === eventId) ?? null;
 }
 
-export function isRegistered(eventId: string): boolean {
-  return getUserEvents().some(e => e.eventId === eventId);
-}
+// ---- Budgets ----
 
-// ── Prep Lists ───────────────────────────────────────────────────────────────────
+export function setBudget(eventId: string, budget: Omit<EventBudget, 'eventId'>): EventBudget {
+  const allBudgets = loadJSON<EventBudget[]>(BUDGET_KEY, []);
+  const fullBudget: EventBudget = { eventId, ...budget };
 
-export function getPrepList(eventId: string): PrepListCard[] {
-  try {
-    const raw = localStorage.getItem(PREP_LIST_KEY);
-    const all: PrepListCard[] = raw ? JSON.parse(raw) : [];
-    return all.filter(p => p.eventId === eventId);
-  } catch {
-    return [];
+  const existing = allBudgets.findIndex(b => b.eventId === eventId);
+  if (existing >= 0) {
+    allBudgets[existing] = fullBudget;
+  } else {
+    allBudgets.push(fullBudget);
   }
+
+  saveJSON(BUDGET_KEY, allBudgets);
+  return fullBudget;
 }
 
-export function getAllPrepLists(): PrepListCard[] {
-  try {
-    const raw = localStorage.getItem(PREP_LIST_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+export function getBudget(eventId: string): EventBudget | null {
+  const allBudgets = loadJSON<EventBudget[]>(BUDGET_KEY, []);
+  return allBudgets.find(b => b.eventId === eventId) ?? null;
 }
 
-function savePrepLists(items: PrepListCard[]): void {
-  localStorage.setItem(PREP_LIST_KEY, JSON.stringify(items));
+function getTotalBudget(budget: EventBudget): number {
+  return budget.travel + budget.hotel + budget.table + budget.spending + budget.food + budget.other;
 }
 
-export function addToPrepList(
-  eventId: string,
-  card: CardInventory,
-  targetPrice: number,
-  minAcceptPrice: number,
-  purpose: 'sale' | 'trade'
-): PrepListCard {
-  const all = getAllPrepLists();
-  const item: PrepListCard = {
-    id: generateId(),
+// ---- Deals ----
+
+export function logDeal(eventId: string, deal: Omit<EventDeal, 'id' | 'eventId' | 'timestamp'>): EventDeal {
+  const allDeals = loadJSON<EventDeal[]>(DEALS_KEY, []);
+  const newDeal: EventDeal = {
+    ...deal,
+    id: `deal_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     eventId,
-    cardId: card.id,
-    player: card.player,
-    cardDescription: `${card.year} ${card.manufacturer} ${card.set} #${card.cardNumber}${card.isGraded ? ` ${card.gradingCompany} ${card.grade}` : ''}`,
-    targetPrice,
-    minAcceptPrice,
-    purpose,
-    status: 'pending',
-    addedAt: new Date().toISOString(),
+    timestamp: new Date().toISOString(),
   };
-  all.push(item);
-  savePrepLists(all);
-  return item;
+
+  allDeals.push(newDeal);
+  saveJSON(DEALS_KEY, allDeals);
+  return newDeal;
 }
 
-export function updatePrepCardStatus(prepId: string, status: PrepCardStatus): void {
-  const all = getAllPrepLists();
-  const idx = all.findIndex(p => p.id === prepId);
-  if (idx >= 0) {
-    all[idx].status = status;
-    savePrepLists(all);
-  }
-}
-
-export function removeFromPrepList(prepId: string): void {
-  const all = getAllPrepLists().filter(p => p.id !== prepId);
-  savePrepLists(all);
-}
-
-// ── Budgets ──────────────────────────────────────────────────────────────────────
-
-export function getEventBudget(eventId: string): EventBudget | null {
-  try {
-    const raw = localStorage.getItem(BUDGET_KEY);
-    const all: EventBudget[] = raw ? JSON.parse(raw) : [];
-    return all.find(b => b.eventId === eventId) ?? null;
-  } catch {
-    return null;
-  }
-}
-
-export function getAllBudgets(): EventBudget[] {
-  try {
-    const raw = localStorage.getItem(BUDGET_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveBudgets(budgets: EventBudget[]): void {
-  localStorage.setItem(BUDGET_KEY, JSON.stringify(budgets));
-}
-
-export function createOrUpdateBudget(eventId: string, data: Partial<EventBudget>): EventBudget {
-  const all = getAllBudgets();
-  const idx = all.findIndex(b => b.eventId === eventId);
-  const show = getEventById(eventId);
-
-  if (idx >= 0) {
-    all[idx] = { ...all[idx], ...data, updatedAt: new Date().toISOString() };
-    saveBudgets(all);
-    return all[idx];
-  }
-
-  const budget: EventBudget = {
-    id: generateId(),
-    eventId,
-    totalBudget: data.totalBudget ?? 500,
-    travelCost: data.travelCost ?? 0,
-    hotelCost: data.hotelCost ?? 0,
-    tableCost: data.tableCost ?? show?.tableCost ?? 0,
-    admissionCost: data.admissionCost ?? show?.admissionCost ?? 0,
-    foodEstimate: data.foodEstimate ?? 50,
-    miscExpenses: data.miscExpenses ?? 0,
-    spentSoFar: data.spentSoFar ?? 0,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-  all.push(budget);
-  saveBudgets(all);
-  return budget;
-}
-
-export function getBudgetRemaining(budget: EventBudget): number {
-  const fixedCosts = budget.travelCost + budget.hotelCost + budget.tableCost +
-    budget.admissionCost + budget.foodEstimate + budget.miscExpenses;
-  return budget.totalBudget - fixedCosts - budget.spentSoFar;
-}
-
-export function getBudgetBreakdown(budget: EventBudget) {
-  const fixedCosts = budget.travelCost + budget.hotelCost + budget.tableCost +
-    budget.admissionCost + budget.foodEstimate + budget.miscExpenses;
-  const remaining = budget.totalBudget - fixedCosts - budget.spentSoFar;
-  const utilizationPct = budget.totalBudget > 0
-    ? ((fixedCosts + budget.spentSoFar) / budget.totalBudget) * 100
-    : 0;
-
-  return {
-    fixedCosts,
-    cardSpending: budget.spentSoFar,
-    remaining,
-    utilizationPct,
-    categories: [
-      { label: 'Travel', amount: budget.travelCost, color: '#3b82f6' },
-      { label: 'Hotel', amount: budget.hotelCost, color: '#8b5cf6' },
-      { label: 'Table', amount: budget.tableCost, color: '#f59e0b' },
-      { label: 'Admission', amount: budget.admissionCost, color: '#06b6d4' },
-      { label: 'Food', amount: budget.foodEstimate, color: '#10b981' },
-      { label: 'Misc', amount: budget.miscExpenses, color: '#6b7280' },
-      { label: 'Cards', amount: budget.spentSoFar, color: '#ef4444' },
-    ].filter(c => c.amount > 0),
-  };
-}
-
-// ── Deals ────────────────────────────────────────────────────────────────────────
-
-export function getEventDeals(eventId: string): EventDeal[] {
-  try {
-    const raw = localStorage.getItem(DEALS_KEY);
-    const all: EventDeal[] = raw ? JSON.parse(raw) : [];
-    return all.filter(d => d.eventId === eventId);
-  } catch {
-    return [];
-  }
+export function getDeals(eventId: string): EventDeal[] {
+  const allDeals = loadJSON<EventDeal[]>(DEALS_KEY, []);
+  return allDeals.filter(d => d.eventId === eventId);
 }
 
 export function getAllDeals(): EventDeal[] {
-  try {
-    const raw = localStorage.getItem(DEALS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return loadJSON<EventDeal[]>(DEALS_KEY, []);
 }
 
-function saveDeals(deals: EventDeal[]): void {
-  localStorage.setItem(DEALS_KEY, JSON.stringify(deals));
+// ---- Want List ----
+
+export function generateWantList(watchlistCards: TargetWatchlist[]): WantListItem[] {
+  return watchlistCards
+    .filter(w => w.status === 'active')
+    .map(w => ({
+      id: w.id,
+      player: w.player,
+      cardDescription: w.cardDescription,
+      targetPrice: w.targetPrice,
+      priority: w.priority,
+      notes: w.notes,
+    }))
+    .sort((a, b) => {
+      const priorityOrder = { High: 0, Medium: 1, Low: 2 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
 }
 
-export function logDeal(
-  eventId: string,
-  type: DealType,
-  player: string,
-  cardDescription: string,
-  amount: number,
-  sport: Sport,
-  options?: { tradeValue?: number; counterparty?: string; notes?: string }
-): EventDeal {
-  const all = getAllDeals();
-  const deal: EventDeal = {
-    id: generateId(),
-    eventId,
-    type,
-    player,
-    cardDescription,
-    amount,
-    tradeValue: options?.tradeValue,
-    counterparty: options?.counterparty,
-    notes: options?.notes,
-    sport,
-    timestamp: new Date().toISOString(),
-  };
-  all.push(deal);
-  saveDeals(all);
+// ---- ROI ----
 
-  // Update budget spending for buys
-  if (type === 'bought') {
-    const budget = getEventBudget(eventId);
-    if (budget) {
-      createOrUpdateBudget(eventId, { spentSoFar: budget.spentSoFar + amount });
-    }
-  }
-
-  return deal;
-}
-
-export function removeDeal(dealId: string): void {
-  const all = getAllDeals().filter(d => d.id !== dealId);
-  saveDeals(all);
-}
-
-// ── ROI Calculations ─────────────────────────────────────────────────────────────
-
-export function getEventROI(eventId: string): EventROI {
+export function calculateEventROI(eventId: string): EventROI {
   const event = getEventById(eventId);
-  const deals = getEventDeals(eventId);
-  const budget = getEventBudget(eventId);
+  const budget = getBudget(eventId);
+  const deals = getDeals(eventId);
 
-  const totalBuys = deals.filter(d => d.type === 'bought').reduce((s, d) => s + d.amount, 0);
-  const totalSales = deals.filter(d => d.type === 'sold').reduce((s, d) => s + d.amount, 0);
-  const tradeValueGained = deals
-    .filter(d => d.type === 'traded')
-    .reduce((s, d) => s + (d.tradeValue ?? 0) - d.amount, 0);
+  const totalBudgetSpent = budget ? getTotalBudget(budget) : 0;
+  const totalDealsSpent = deals
+    .filter(d => d.type === 'buy')
+    .reduce((sum, d) => sum + d.price, 0);
+  const totalDealsEarned = deals
+    .filter(d => d.type === 'sell')
+    .reduce((sum, d) => sum + d.price, 0);
+  const totalTradeValue = deals
+    .filter(d => d.type === 'trade')
+    .reduce((sum, d) => sum + (d.tradeValue ?? 0), 0);
 
-  const travelCosts = budget ? budget.travelCost + budget.hotelCost : 0;
-  const tableCosts = budget?.tableCost ?? 0;
-  const otherCosts = budget
-    ? budget.admissionCost + budget.foodEstimate + budget.miscExpenses
-    : 0;
-
-  const totalSpent = totalBuys + travelCosts + tableCosts + otherCosts;
-  const totalValueAcquired = totalSales + tradeValueGained;
-  const netROI = totalValueAcquired - totalSpent;
-  const roiPercentage = totalSpent > 0 ? (netROI / totalSpent) * 100 : 0;
+  const totalSpent = totalBudgetSpent + totalDealsSpent;
+  const totalGained = totalDealsEarned + totalTradeValue;
+  const netROI = totalGained - totalSpent;
 
   return {
     eventId,
     eventName: event?.name ?? 'Unknown Event',
-    totalSpent,
-    totalValueAcquired,
-    totalSalesRevenue: totalSales,
-    totalTradeValueGained: tradeValueGained,
-    travelCosts,
-    tableCosts,
+    totalBudgetSpent,
+    totalDealsSpent,
+    totalDealsEarned,
+    totalTradeValue,
     netROI,
-    roiPercentage,
     dealCount: deals.length,
-    date: event?.startDate ?? '',
   };
 }
 
-export function getAllEventROIs(): EventROI[] {
-  const userEvents = getUserEvents();
-  return userEvents.map(ue => getEventROI(ue.eventId));
-}
+// ---- Event History ----
 
-export function getAggregateROI(): { totalSpent: number; totalGained: number; netROI: number; roiPct: number; eventCount: number } {
-  const rois = getAllEventROIs();
-  const totalSpent = rois.reduce((s, r) => s + r.totalSpent, 0);
-  const totalGained = rois.reduce((s, r) => s + r.totalValueAcquired, 0);
-  const netROI = totalGained - totalSpent;
-  const roiPct = totalSpent > 0 ? (netROI / totalSpent) * 100 : 0;
-  return { totalSpent, totalGained, netROI, roiPct, eventCount: rois.length };
-}
+export function getEventHistory(): EventROI[] {
+  const events = generatePrebuiltEvents();
+  const today = new Date().toISOString().slice(0, 10);
+  const allDeals = loadJSON<EventDeal[]>(DEALS_KEY, []);
 
-// ── Want List Generator ──────────────────────────────────────────────────────────
+  // Events that have passed and have deals or budgets
+  const pastEventIds = new Set<string>();
+  events.forEach(e => {
+    const endDate = e.endDate ?? e.date;
+    if (endDate < today) {
+      pastEventIds.add(e.id);
+    }
+  });
 
-export function generateWantList(targets: TargetWatchlist[]): WantListItem[] {
-  return targets
-    .filter(t => t.status === 'active')
-    .map(t => ({
-      id: t.id,
-      player: t.player,
-      cardDescription: t.cardDescription,
-      maxPrice: t.targetPrice,
-      priority: t.priority,
-      sport: t.sport,
-      notes: t.notes,
-    }))
+  // Also include events with deals regardless of date
+  allDeals.forEach(d => pastEventIds.add(d.eventId));
+
+  return Array.from(pastEventIds)
+    .map(id => calculateEventROI(id))
+    .filter(roi => roi.dealCount > 0 || roi.totalBudgetSpent > 0)
     .sort((a, b) => {
-      const pOrder = { high: 0, medium: 1, low: 2 };
-      return pOrder[a.priority] - pOrder[b.priority];
+      const eventA = getEventById(a.eventId);
+      const eventB = getEventById(b.eventId);
+      return (eventB?.date ?? '').localeCompare(eventA?.date ?? '');
     });
 }
 
-export function formatWantListForPrint(items: WantListItem[]): string {
-  const header = '═══════════════════════════════════════════════════\n';
-  const title = '            CARD SHOW WANT LIST\n';
-  const date = `            Generated: ${new Date().toLocaleDateString()}\n`;
-  const divider = '───────────────────────────────────────────────────\n';
+// ---- Export ----
 
-  let output = header + title + date + header + '\n';
-
-  const grouped: Record<string, WantListItem[]> = {};
-  items.forEach(item => {
-    const key = item.sport;
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(item);
-  });
-
-  Object.entries(grouped).forEach(([sport, sportItems]) => {
-    output += `◆ ${sport.toUpperCase()}\n`;
-    output += divider;
-    sportItems.forEach((item, i) => {
-      const priorityTag = item.priority === 'high' ? '★★★' : item.priority === 'medium' ? '★★ ' : '★  ';
-      output += `  ${i + 1}. ${priorityTag} ${item.player}\n`;
-      output += `     ${item.cardDescription}\n`;
-      output += `     Max: $${item.maxPrice.toFixed(0)}`;
-      if (item.notes) output += ` | ${item.notes}`;
-      output += '\n\n';
-    });
-  });
-
-  output += header;
-  output += `  Total items: ${items.length}\n`;
-  output += header;
-
-  return output;
-}
-
-// ── Prep List Print Format ───────────────────────────────────────────────────────
-
-export function formatPrepListForPrint(eventId: string): string {
+export function exportPrepListHTML(eventId: string, cards: CardInventory[]): string {
   const event = getEventById(eventId);
-  const items = getPrepList(eventId);
-  const header = '═══════════════════════════════════════════════════\n';
-  const title = `     SHOW INVENTORY - ${(event?.name ?? 'Event').toUpperCase()}\n`;
-  const date = `     ${event?.startDate ?? ''} | ${event?.city ?? ''}, ${event?.state ?? ''}\n`;
-  const divider = '───────────────────────────────────────────────────\n';
+  const prepList = getPrepList(eventId);
+  if (!prepList || !event) return '<p>No prep list found.</p>';
 
-  let output = header + title + date + header + '\n';
+  const cardMap = new Map(cards.map(c => [c.id, c]));
 
-  const forSale = items.filter(i => i.purpose === 'sale');
-  const forTrade = items.filter(i => i.purpose === 'trade');
+  const rows = prepList.items.map(item => {
+    const card = cardMap.get(item.cardId);
+    if (!card) return '';
+    return `
+      <tr>
+        <td style="padding:8px;border-bottom:1px solid #333;">${card.player}</td>
+        <td style="padding:8px;border-bottom:1px solid #333;">${card.year} ${card.manufacturer} ${card.set} #${card.cardNumber}</td>
+        <td style="padding:8px;border-bottom:1px solid #333;">${card.isGraded ? `${card.gradingCompany} ${card.grade}` : card.condition}</td>
+        <td style="padding:8px;border-bottom:1px solid #333;">$${card.purchasePrice.toFixed(2)}</td>
+        <td style="padding:8px;border-bottom:1px solid #333;font-weight:bold;">$${item.targetSalePrice.toFixed(2)}</td>
+        <td style="padding:8px;border-bottom:1px solid #333;">${item.notes ?? ''}</td>
+        <td style="padding:8px;border-bottom:1px solid #333;">${item.status}</td>
+      </tr>
+    `;
+  }).filter(Boolean).join('');
 
-  if (forSale.length > 0) {
-    output += '▸ FOR SALE\n' + divider;
-    forSale.forEach((item, i) => {
-      output += `  ${i + 1}. ${item.player}\n`;
-      output += `     ${item.cardDescription}\n`;
-      output += `     Ask: $${item.targetPrice.toFixed(0)} | Min: $${item.minAcceptPrice.toFixed(0)}\n`;
-      if (item.notes) output += `     Note: ${item.notes}\n`;
-      output += '\n';
-    });
-    const totalAsk = forSale.reduce((s, i) => s + i.targetPrice, 0);
-    output += `  Total Asking: $${totalAsk.toFixed(0)}\n\n`;
-  }
-
-  if (forTrade.length > 0) {
-    output += '▸ FOR TRADE\n' + divider;
-    forTrade.forEach((item, i) => {
-      output += `  ${i + 1}. ${item.player}\n`;
-      output += `     ${item.cardDescription}\n`;
-      output += `     Value: $${item.targetPrice.toFixed(0)}\n`;
-      if (item.notes) output += `     Note: ${item.notes}\n`;
-      output += '\n';
-    });
-  }
-
-  output += header;
-  output += `  Total items: ${items.length} (${forSale.length} sale, ${forTrade.length} trade)\n`;
-  output += header;
-
-  return output;
-}
-
-// ── Simulated Past Event Data (for demo ROI history) ─────────────────────────────
-
-export function getSimulatedEventHistory(): EventROI[] {
-  const seed = 42;
-  const pastEvents = [
-    { name: 'The National 2025', date: '2025-07-30' },
-    { name: 'Dallas Card Show - Feb', date: '2025-02-15' },
-    { name: 'Chicago SportsFest Fall', date: '2025-10-11' },
-    { name: 'SoCal Monthly - Dec', date: '2025-12-06' },
-    { name: 'Local Trade Night - Nov', date: '2025-11-14' },
-    { name: 'Hobby Expo East', date: '2025-06-14' },
-    { name: 'Dallas Card Show - Oct', date: '2025-10-18' },
-    { name: 'Local Trade Night - Sep', date: '2025-09-12' },
-  ];
-
-  return pastEvents.map((pe, i) => {
-    const totalSpent = Math.round(seededRange(seed, i * 10, 100, 3000));
-    const roiMult = seededRange(seed, i * 10 + 1, -0.15, 0.45);
-    const totalValueAcquired = Math.round(totalSpent * (1 + roiMult));
-    const salesRev = Math.round(totalValueAcquired * seededRange(seed, i * 10 + 2, 0.4, 0.8));
-    const tradeGain = totalValueAcquired - salesRev;
-    const travelCosts = Math.round(seededRange(seed, i * 10 + 3, 0, 500));
-    const tableCosts = Math.round(seededRange(seed, i * 10 + 4, 0, 1000));
-    const netROI = totalValueAcquired - totalSpent;
-    const roiPct = totalSpent > 0 ? (netROI / totalSpent) * 100 : 0;
-
-    return {
-      eventId: `sim_${i}`,
-      eventName: pe.name,
-      totalSpent,
-      totalValueAcquired,
-      totalSalesRevenue: salesRev,
-      totalTradeValueGained: tradeGain,
-      travelCosts,
-      tableCosts,
-      netROI,
-      roiPercentage: roiPct,
-      dealCount: seededInt(seed, i * 10 + 5, 2, 25),
-      date: pe.date,
-    };
-  }).sort((a, b) => a.date.localeCompare(b.date));
-}
-
-// ── Dashboard Summary ────────────────────────────────────────────────────────────
-
-export interface EventDashboardSummary {
-  nextEvent: CardShowEvent | null;
-  daysUntilNext: number | null;
-  prepListCount: number;
-  prepListReady: number;
-  recentROI: EventROI | null;
-  aggregateROI: { totalSpent: number; totalGained: number; netROI: number; roiPct: number; eventCount: number };
-  upcomingRegistered: UserEvent[];
-}
-
-export function getDashboardSummary(): EventDashboardSummary {
-  const nextEvent = getNextUpcomingEvent();
-  const now = new Date();
-  let daysUntilNext: number | null = null;
-  if (nextEvent) {
-    const eventDate = new Date(nextEvent.startDate);
-    daysUntilNext = Math.ceil((eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  }
-
-  const userEvents = getUserEvents();
-  const upcomingRegistered = userEvents.filter(ue => ue.status !== 'completed');
-
-  // Get prep status for next event
-  let prepListCount = 0;
-  let prepListReady = 0;
-  if (nextEvent) {
-    const prep = getPrepList(nextEvent.id);
-    prepListCount = prep.length;
-    prepListReady = prep.filter(p => p.status === 'packed').length;
-  }
-
-  // Most recent completed event ROI
-  const history = getSimulatedEventHistory();
-  const recentROI = history.length > 0 ? history[history.length - 1] : null;
-
-  const aggregateROI = getAggregateROI();
-
-  // Merge simulated data into aggregate if no real data
-  if (aggregateROI.eventCount === 0 && history.length > 0) {
-    const simTotalSpent = history.reduce((s, r) => s + r.totalSpent, 0);
-    const simTotalGained = history.reduce((s, r) => s + r.totalValueAcquired, 0);
-    return {
-      nextEvent,
-      daysUntilNext,
-      prepListCount,
-      prepListReady,
-      recentROI,
-      aggregateROI: {
-        totalSpent: simTotalSpent,
-        totalGained: simTotalGained,
-        netROI: simTotalGained - simTotalSpent,
-        roiPct: simTotalSpent > 0 ? ((simTotalGained - simTotalSpent) / simTotalSpent) * 100 : 0,
-        eventCount: history.length,
-      },
-      upcomingRegistered,
-    };
-  }
-
-  return {
-    nextEvent,
-    daysUntilNext,
-    prepListCount,
-    prepListReady,
-    recentROI,
-    aggregateROI,
-    upcomingRegistered,
-  };
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <title>${event.name} - Prep List</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0a0f1c; color: #e2e8f0; padding: 20px; }
+    h1 { color: #3b82f6; }
+    h2 { color: #94a3b8; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th { text-align: left; padding: 8px; border-bottom: 2px solid #3b82f6; color: #3b82f6; font-size: 12px; text-transform: uppercase; }
+    td { font-size: 13px; }
+    .footer { margin-top: 24px; font-size: 11px; color: #64748b; }
+    @media print { body { background: white; color: black; } th { color: #1e40af; border-color: #1e40af; } }
+  </style>
+</head>
+<body>
+  <h1>${event.name}</h1>
+  <h2>${event.date} | ${event.location} | ${prepList.items.length} cards</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Player</th>
+        <th>Card</th>
+        <th>Condition/Grade</th>
+        <th>Cost</th>
+        <th>Target Price</th>
+        <th>Notes</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="footer">Generated by MSI on ${new Date().toLocaleDateString()}</div>
+</body>
+</html>`;
 }
