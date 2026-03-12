@@ -1,7 +1,7 @@
 
 import { CardInventory } from '../types';
 import { getCardHistory, PriceSnapshot } from './priceHistory';
-import { LiquidityService } from './LiquidityService';
+import { LiquidityService } from './liquidityService';
 import { CorrelationService } from './CorrelationService';
 
 export interface PortfolioMetrics {

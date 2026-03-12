@@ -1,5 +1,5 @@
 import { CardInventory } from '../types';
-import { LiquidityService } from './LiquidityService';
+import { LiquidityService } from './liquidityService';
 import { CorrelationService } from './CorrelationService';
 
 export interface SimulationTrade {

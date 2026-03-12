@@ -36,6 +36,10 @@ import Billing from './pages/Billing.tsx';
 import { MigrationProvider } from './contexts/MigrationContext.tsx';
 import MigrationBanner from './components/MigrationBanner.tsx';
 import MarketTicker from './components/MarketTicker.tsx';
+import LiveImpact from './pages/LiveImpact.tsx';
+import FractionalVault from './pages/FractionalVault.tsx';
+import ProvenanceChain from './pages/ProvenanceChain.tsx';
+import LiveBreaks from './pages/LiveBreaks.tsx';
 import { useSupabaseInventory } from './lib/useSupabaseInventory.ts';
 
 const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: boolean) => void }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
@@ -73,6 +77,10 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
             <Route path="/alerts" element={<Alerts />} />
             <Route path="/war-room" element={<AnalystWarRoom />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/live-impact" element={<LiveImpact />} />
+            <Route path="/fractional-vault" element={<FractionalVault />} />
+            <Route path="/provenance" element={<ProvenanceChain />} />
+            <Route path="/live-breaks" element={<LiveBreaks />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

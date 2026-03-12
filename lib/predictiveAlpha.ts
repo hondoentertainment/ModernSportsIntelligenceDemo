@@ -1,5 +1,5 @@
 import { CardInventory } from '../types';
-import { LiquidityService } from './LiquidityService';
+import { LiquidityService } from './liquidityService';
 import { getCardHistory } from './priceHistory';
 import { generatePopData } from './scarcityService';
 

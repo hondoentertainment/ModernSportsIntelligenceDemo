@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Target, TrendingUp, Clock, Save, Info } from 'lucide-react';
 import { CardInventory, ExitPlan } from '../types';
-import { LiquidityService } from '../lib/LiquidityService';
+import { LiquidityService } from '../lib/liquidityService';
 import { LiquidityBadge } from './LiquidityBadge';
 
 interface ExitStrategyModalProps {

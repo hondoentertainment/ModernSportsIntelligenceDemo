@@ -53,7 +53,7 @@ import {
   SeasonalLiquidityProfile,
   EmergencyLiquidationPlan,
   LiquiditySettings,
-} from '../lib/LiquidityService';
+} from '../lib/liquidityService';
 
 interface LiquidityModalProps {
   isOpen: boolean;
