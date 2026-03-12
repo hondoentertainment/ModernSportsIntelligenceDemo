@@ -15,6 +15,7 @@
 - **Phases 44-48**: Set Completion Registry, Portfolio Time Machine, Automated Trading Rules Engine, Advanced Technical Analysis Suite, Data Import Hub & External Sync
 - **Phases 49-53**: Social Network & Collector Messaging, Sealed Wax Investment Tracker, Counterfeit & Authentication Intelligence, Player Market Index, Digital Display Case
 - **Phases 54-63**: Grade Premium Analytics, Deal Finder & Cross-Platform Arbitrage, Collection Insurance Policy Manager, Pop Report Growth Tracker, Card Show & Event Planner, Seasonal Strategy Engine, Multi-Currency & International Markets, Prospect Pipeline & Draft Tracker, Collection Goal Planner, Notification Command Center
+- **Phases 64-68 ⚡ DIFFERENTIATED**: Monte Carlo Portfolio Stress Testing, AI Predictive Grading Engine, Tax-Loss Harvesting Optimizer, Cross-Asset Correlation Engine, Liquidity Intelligence & Exit Velocity
 
 ## 2. Project Vision & Objectives
 ### 2.1 Vision
@@ -757,3 +758,76 @@ To become the definitive source of truth for sports asset valuation, bridging th
     - NotificationWidget: dashboard widget (extends existing alert system) with unread count badge, top 3 priority notifications, and "View All" link.
     - NotificationModal: full notification center with category tabs, priority sorting, bulk actions, preferences panel, and digest preview.
     - localStorage persistence for notification state, preferences, and read/unread tracking.
+
+### Phase 64: Monte Carlo Portfolio Stress Testing ⚡ DIFFERENTIATED
+- **Objective**: Provide financial-grade risk simulation that no card platform competitor offers — model portfolio performance under market crash, grading scandal, sport-specific downturn, and black swan scenarios.
+- **Key Features**:
+    - Monte Carlo engine: run 1,000+ simulated portfolio paths over 1-5 year horizons using card-specific volatility, sport correlation, and grade stability factors.
+    - Scenario library: pre-built stress scenarios — "2008-style market crash" (-40% broad decline), "PSA grading scandal" (-25% graded premium collapse), "NFL lockout" (-30% football cards), "Rookie bust" (-60% single-player concentration), "Hobby boom" (+80% rising tide).
+    - Custom scenario builder: user-defined shocks by sport, grade, value tier, or specific cards with magnitude and duration sliders.
+    - Value-at-Risk (VaR): calculate 95% and 99% confidence intervals for maximum portfolio loss over 30/90/365 day horizons.
+    - Drawdown analysis: worst-case peak-to-trough decline with expected recovery time.
+    - Concentration risk score: flag portfolios over-exposed to single player, sport, era, or grading company.
+    - Diversification benefit: quantify how much risk is reduced by current diversification vs single-asset holding.
+    - Stress test report: exportable PDF-style summary with scenario results, VaR metrics, and actionable hedging recommendations.
+    - StressTestWidget: dashboard widget with portfolio risk score (1-100), worst-case VaR, top concentration risk, and "Run Stress Test" CTA.
+    - StressTestModal: full stress testing suite with scenario selector, Monte Carlo visualization (Recharts fan chart of outcome paths), VaR dashboard, concentration analysis, and hedging recommendations.
+    - localStorage persistence for scenario preferences, test history, and custom scenarios.
+
+### Phase 65: AI Predictive Grading Engine ⚡ DIFFERENTIATED
+- **Objective**: Predict the likely grade a card would receive before submission, saving collectors $20-50 per card on grading fees for unlikely gem candidates — no competitor offers pre-submission grade prediction.
+- **Key Features**:
+    - Grade prediction model: analyze card attributes (year, manufacturer, set, current condition notes, purchase price relative to graded prices) to estimate likely grade distribution (probability of PSA 10, 9, 8, etc.).
+    - Submission ROI calculator: combine predicted grade distribution with grade premiums to calculate expected value gain minus grading fee — "submit only if expected ROI > 0."
+    - Bulk submission optimizer: rank entire collection by submission ROI, recommend optimal batch for next grading submission.
+    - Grading company recommender: for each card, recommend PSA vs BGS vs SGC based on which grader's premium is highest for that card type and predicted grade.
+    - Submission cost tracker: track total grading fees spent, average grade received, and cumulative ROI on grading investments.
+    - Grade probability visualization: Recharts bar chart showing probability distribution across grades for selected card.
+    - Historical accuracy tracker: compare predictions to actual grades received (simulated) to show model calibration.
+    - GradePredictWidget: dashboard widget with next recommended submissions, average predicted ROI, and submission queue count.
+    - GradePredictModal: per-card grade prediction with probability bars, submission ROI calculator, bulk optimizer with sortable queue, grading company comparison, and submission history.
+    - localStorage persistence for predictions, submission history, and preferences.
+
+### Phase 66: Tax-Loss Harvesting Optimizer ⚡ DIFFERENTIATED
+- **Objective**: Identify cards to sell at a strategic loss to offset capital gains — with wash-sale rule awareness and tax bracket optimization. No card platform competitor offers tax strategy tools.
+- **Key Features**:
+    - Unrealized loss scanner: identify all cards currently below purchase price with loss amount, holding period (short-term vs long-term), and tax lot identification.
+    - Harvest recommendations: rank cards by tax benefit (loss amount × applicable tax rate) minus opportunity cost of selling.
+    - Wash-sale rule tracker: flag cards that cannot be repurchased within 30 days of sale, track wash-sale windows, and suggest "substantially different" replacement cards.
+    - Tax bracket optimizer: input estimated annual income and filing status to calculate marginal tax rate and optimize harvest amounts to maximize after-tax benefit.
+    - Short-term vs long-term classification: automatically classify holding period for each card, highlight cards approaching 1-year threshold where waiting converts to lower long-term rate.
+    - Harvest calendar: monthly view showing optimal harvest windows based on holding periods and market conditions.
+    - Annual tax impact summary: project total tax savings from recommended harvests with before/after comparison.
+    - Replacement card suggestions: after harvesting a loss, suggest similar cards (same player, different year/set) that maintain portfolio exposure without triggering wash-sale.
+    - TaxHarvestWidget: dashboard widget with total harvestable losses, estimated tax savings, and cards approaching long-term threshold.
+    - TaxHarvestModal: full tax harvesting suite with loss scanner, harvest recommendations, wash-sale tracker, bracket optimizer, harvest calendar, and annual summary.
+    - localStorage persistence for tax preferences, harvest history, and wash-sale tracking windows.
+
+### Phase 67: Cross-Asset Correlation Engine ⚡ DIFFERENTIATED
+- **Objective**: Correlate card portfolio performance with traditional financial markets (S&P 500, crypto, bonds) and sports metrics (player contracts, team wins, fantasy points) — positioning cards as a true alternative asset class. No competitor provides cross-asset analysis.
+- **Key Features**:
+    - Asset correlation matrix: calculate rolling 30/90/365-day correlation coefficients between card portfolio returns and simulated S&P 500, Bitcoin, gold, treasury bonds, and real estate indices.
+    - Sport-market linkage: correlate individual card values with simulated player contract values, team win percentages, and fantasy point production.
+    - Beta calculation: measure portfolio sensitivity to broad market movements — "your portfolio has 0.3 beta to S&P 500, meaning it's a diversification asset."
+    - Hedge ratio calculator: determine optimal allocation between cards and traditional assets to minimize portfolio variance.
+    - Regime detection: identify market regimes (risk-on, risk-off, hobby-boom, hobby-bust) and show how card values behave in each regime.
+    - Alternative asset comparison: benchmark card portfolio returns against art, wine, vintage cars, and sneakers indices.
+    - Macro event impact: show how past macro events (rate hikes, recessions, stimulus) affected card values historically (simulated).
+    - CorrelationWidget: dashboard widget with portfolio beta, current regime indicator, top correlated/uncorrelated assets, and diversification score.
+    - CorrelationModal: full correlation dashboard with heatmap matrix, asset overlay charts (Recharts), regime analysis, hedge calculator, and alternative asset benchmarks.
+    - localStorage persistence for correlation preferences, tracked assets, and regime history.
+
+### Phase 68: Liquidity Intelligence & Exit Velocity ⚡ DIFFERENTIATED
+- **Objective**: Score each card's liquidity (how quickly it would sell at fair value), provide market depth analysis, and recommend optimal listing strategies — no competitor measures sellability.
+- **Key Features**:
+    - Liquidity score (0-100): per-card composite based on simulated average days-to-sell, bid-ask spread, recent transaction volume, and number of active buyers.
+    - Market depth visualization: show simulated buy orders at various price levels (order book style) to illustrate demand at different price points.
+    - Exit velocity estimator: "at current market price, this card sells in ~3 days; at 10% premium, ~14 days; at 20% premium, ~45 days."
+    - Portfolio liquidity report: aggregate liquidity of entire collection — "68% of your portfolio can be liquidated within 7 days, 89% within 30 days."
+    - Illiquidity premium detector: identify cards where low liquidity creates a discount — potential buying opportunities for patient holders.
+    - Optimal listing price recommender: balance between speed and value — "list at $X for fastest sale, $Y for maximum value, $Z for best risk-adjusted return."
+    - Seasonal liquidity patterns: show how liquidity varies by month (shows, holidays, season start) per sport.
+    - Emergency liquidation planner: "if you need $X in Y days, here's the optimal set of cards to sell with expected proceeds."
+    - LiquidityWidget: dashboard widget with portfolio liquidity score, average days-to-sell, and illiquid card count alert.
+    - LiquidityModal: per-card liquidity analysis with market depth chart, exit velocity curves, listing price optimizer, portfolio liquidity breakdown, and emergency liquidation planner.
+    - localStorage persistence for liquidity preferences, listing history, and liquidation plans.
