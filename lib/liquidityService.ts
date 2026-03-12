@@ -1,8 +1,9 @@
-import { CardInventory, Sport } from '../types';
+import { CardInventory, ExitPlan, Sport } from '../types';
+import { generatePopData } from './scarcityService';
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// ─── Phase 68: Liquidity Intelligence Types ─────────────────────────────────
 
-export interface LiquidityScore {
+export interface LiquidityScoreDetail {
   cardId: string;
   overall: number; // 0-100
   avgDaysToSell: number;
@@ -101,20 +102,20 @@ const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
 
 const SPORT_SEASONAL_PEAKS: Record<Sport, number[]> = {
   Baseball: [2, 3, 4, 6, 7, 9],    // spring training, opening day, ASG, postseason
-  Basketball: [0, 1, 2, 3, 5, 9],   // season start, ASG, march madness, draft, season start
+  Basketball: [0, 1, 2, 3, 5, 9],   // season start, ASG, march madness, draft
   Football: [0, 1, 8, 9, 10, 11],   // playoffs, super bowl, season start
   Hockey: [0, 3, 4, 5, 9],          // season, playoffs, draft
   Soccer: [5, 6, 7, 11],            // summer tournaments, transfer windows
 };
 
-// ─── Deterministic Hashing ──────────────────────────────────────────────────
+// ─── Deterministic Helpers ──────────────────────────────────────────────────
 
 function hashString(str: string): number {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
     hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit int
+    hash = hash & hash;
   }
   return Math.abs(hash);
 }
@@ -128,12 +129,52 @@ function seededRange(seed: number, min: number, max: number): number {
   return min + seededRandom(seed) * (max - min);
 }
 
-// ─── Core Liquidity Scoring ─────────────────────────────────────────────────
+// ─── Original LiquidityService Class (backward compat) ─────────────────────
+
+export class LiquidityService {
+  /** Institutional-grade liquidity scoring model. Score 0-100. */
+  static calculateLiquidityScore(card: CardInventory): number {
+    let score = 50;
+    if (card.league === 'MLB' || card.league === 'NBA' || card.league === 'NFL') score += 15;
+    if (card.league === 'MiLB') score -= 10;
+    const popData = card.popReport || generatePopData(card);
+    const pop = (popData as any).popAtGrade || (popData as any).popCount || 0;
+    if (pop > 1000) score += 20;
+    else if (pop > 100) score += 10;
+    else if (pop < 10) score -= 20;
+    else if (pop === 1) score -= 35;
+    if (card.isGraded) {
+      if (card.grade === '10' || card.grade === 'Gem Mint') score += 10;
+      if (card.gradingCompany === 'PSA') score += 5;
+    } else {
+      score -= 15;
+    }
+    const val = card.currentValue || card.purchasePrice || 0;
+    if (val > 10000) score -= 20;
+    else if (val < 100) score += 10;
+    return Math.max(0, Math.min(100, Math.round(score)));
+  }
+
+  /** Exit strategy recommendation based on portfolio health and market depth. */
+  static generateExitRecommendation(card: CardInventory): Partial<ExitPlan> {
+    const score = this.calculateLiquidityScore(card);
+    const val = card.currentValue || card.purchasePrice || 0;
+    const purchasePrice = card.purchasePrice || 0;
+    const roi = val > 0 && purchasePrice > 0 ? ((val - purchasePrice) / purchasePrice) * 100 : 0;
+    if (score < 40) {
+      return { targetPrice: Math.round(val * 1.5), timeframe: 'Long (1-3y)', strategy: 'Institutional Hold', notes: 'Low liquidity requires specialized auction placement for maximum ROI.' };
+    }
+    if (roi > 50) {
+      return { targetPrice: Math.round(val * 1.1), timeframe: 'Short (3m)', strategy: 'Take Profit', notes: 'High ROI and strong liquidity suggest locking in gains now.' };
+    }
+    return { targetPrice: Math.round(val * 1.25), timeframe: 'Medium (6-12m)', strategy: 'Take Profit', notes: 'Steady market depth; targeting mid-range appreciation.' };
+  }
+}
+
+// ─── Phase 68: Enhanced Liquidity Scoring ───────────────────────────────────
 
 function computeBaseLiquidity(card: CardInventory): number {
   let score = 50;
-
-  // Sport/League impact
   const sportWeights: Record<Sport, number> = {
     Baseball: 12, Basketball: 15, Football: 14, Hockey: 5, Soccer: 8,
   };
@@ -141,7 +182,6 @@ function computeBaseLiquidity(card: CardInventory): number {
   if (card.league === 'MLB' || card.league === 'NBA' || card.league === 'NFL') score += 5;
   if (card.league === 'MiLB') score -= 8;
 
-  // Grading impact
   if (card.isGraded) {
     score += 8;
     if (card.grade === '10' || card.grade === 'Gem Mint') score += 10;
@@ -152,22 +192,18 @@ function computeBaseLiquidity(card: CardInventory): number {
     score -= 12;
   }
 
-  // Value bracket impact
   const val = card.currentValue || card.purchasePrice || 0;
   if (val < 50) score += 10;
   else if (val < 200) score += 5;
-  else if (val > 5000) score -= 15;
   else if (val > 10000) score -= 25;
+  else if (val > 5000) score -= 15;
 
-  // Autograph premium (paradox: rarer but more sought after)
   if (card.isAutographed) score += 3;
 
-  // Year impact (vintage is less liquid)
   if (card.year < 1980) score -= 10;
   else if (card.year < 2000) score -= 5;
   else if (card.year >= 2020) score += 5;
 
-  // Player name hash for deterministic variation
   const playerHash = hashString(card.player + card.id);
   score += seededRange(playerHash, -5, 5);
 
@@ -175,7 +211,6 @@ function computeBaseLiquidity(card: CardInventory): number {
 }
 
 function computeDaysToSell(liquidityScore: number, card: CardInventory): number {
-  // Inverse relationship: higher score = fewer days
   const baseDays = Math.round(120 - (liquidityScore * 1.1));
   const seed = hashString(card.id + 'days');
   const jitter = seededRange(seed, 0.85, 1.15);
@@ -183,7 +218,6 @@ function computeDaysToSell(liquidityScore: number, card: CardInventory): number 
 }
 
 function computeBidAskSpread(liquidityScore: number, card: CardInventory): number {
-  // Higher liquidity = tighter spread
   const baseSpread = 25 - (liquidityScore * 0.2);
   const seed = hashString(card.id + 'spread');
   const jitter = seededRange(seed, 0.8, 1.2);
@@ -204,7 +238,7 @@ function computeActiveBuyers(liquidityScore: number, card: CardInventory): numbe
   return Math.max(1, Math.round(baseBuyers * jitter));
 }
 
-function scoreTier(score: number): LiquidityScore['tier'] {
+function scoreTier(score: number): LiquidityScoreDetail['tier'] {
   if (score >= 85) return 'Ultra-Liquid';
   if (score >= 65) return 'Liquid';
   if (score >= 45) return 'Moderate';
@@ -212,7 +246,7 @@ function scoreTier(score: number): LiquidityScore['tier'] {
   return 'Frozen';
 }
 
-export function calculateLiquidityScore(card: CardInventory): LiquidityScore {
+export function calculateDetailedLiquidityScore(card: CardInventory): LiquidityScoreDetail {
   const overall = computeBaseLiquidity(card);
   return {
     cardId: card.id,
@@ -233,16 +267,13 @@ export function generateMarketDepth(card: CardInventory): MarketDepthLevel[] {
   const levels: MarketDepthLevel[] = [];
   const seed = hashString(card.id + 'depth');
 
-  // Generate 10 price levels centered around current value
-  const stepPct = 0.05; // 5% per level
   let cumBuy = 0;
   let cumSell = 0;
 
   for (let i = -5; i <= 5; i++) {
-    const priceLevel = Math.round(val * (1 + i * stepPct));
+    const priceLevel = Math.round(val * (1 + i * 0.05));
     const levelSeed = seed + i * 137;
 
-    // Buy orders decrease as price goes up; sell orders increase
     const buyBase = Math.max(0, Math.round((score / 100) * 15 * (1 - i * 0.15)));
     const sellBase = Math.max(0, Math.round((score / 100) * 12 * (1 + i * 0.15)));
 
@@ -252,13 +283,7 @@ export function generateMarketDepth(card: CardInventory): MarketDepthLevel[] {
     cumBuy += buyOrders;
     cumSell += sellOrders;
 
-    levels.push({
-      priceLevel,
-      buyOrders,
-      sellOrders,
-      cumulativeBuy: cumBuy,
-      cumulativeSell: cumSell,
-    });
+    levels.push({ priceLevel, buyOrders, sellOrders, cumulativeBuy: cumBuy, cumulativeSell: cumSell });
   }
 
   return levels;
@@ -285,7 +310,6 @@ export function calculateExitVelocity(card: CardInventory): ExitVelocityPoint[] 
 
   premiums.forEach(({ pct, label, factor }) => {
     const days = Math.max(1, Math.round(baseDays * factor));
-    // Probability of selling within 30 days at this premium
     const prob = Math.max(0.05, Math.min(0.99, 1 - (days / 120)));
     points.push({
       premiumPercent: pct,
@@ -332,20 +356,17 @@ export function getPortfolioLiquidityReport(cards: CardInventory[]): PortfolioLi
   const activeCards = cards.filter(c => c.status !== 'sold');
   if (activeCards.length === 0) {
     return {
-      overallScore: 0,
-      avgDaysToSell: 0,
-      totalValue: 0,
+      overallScore: 0, avgDaysToSell: 0, totalValue: 0,
       liquidWithin7Days: { count: 0, value: 0, percent: 0 },
       liquidWithin30Days: { count: 0, value: 0, percent: 0 },
       liquidWithin90Days: { count: 0, value: 0, percent: 0 },
-      illiquidCards: 0,
-      illiquidValue: 0,
+      illiquidCards: 0, illiquidValue: 0,
     };
   }
 
   const scores = activeCards.map(c => ({
     card: c,
-    score: calculateLiquidityScore(c),
+    score: calculateDetailedLiquidityScore(c),
     value: c.currentValue || c.purchasePrice || 0,
   }));
 
@@ -353,7 +374,6 @@ export function getPortfolioLiquidityReport(cards: CardInventory[]): PortfolioLi
   const weightedScore = totalValue > 0
     ? scores.reduce((s, x) => s + x.score.overall * (x.value / totalValue), 0)
     : scores.reduce((s, x) => s + x.score.overall, 0) / scores.length;
-
   const avgDays = scores.reduce((s, x) => s + x.score.avgDaysToSell, 0) / scores.length;
 
   const within7 = scores.filter(x => x.score.avgDaysToSell <= 7);
@@ -367,21 +387,9 @@ export function getPortfolioLiquidityReport(cards: CardInventory[]): PortfolioLi
     overallScore: Math.round(weightedScore),
     avgDaysToSell: Math.round(avgDays),
     totalValue,
-    liquidWithin7Days: {
-      count: within7.length,
-      value: sumValue(within7),
-      percent: totalValue > 0 ? Math.round((sumValue(within7) / totalValue) * 100) : 0,
-    },
-    liquidWithin30Days: {
-      count: within30.length,
-      value: sumValue(within30),
-      percent: totalValue > 0 ? Math.round((sumValue(within30) / totalValue) * 100) : 0,
-    },
-    liquidWithin90Days: {
-      count: within90.length,
-      value: sumValue(within90),
-      percent: totalValue > 0 ? Math.round((sumValue(within90) / totalValue) * 100) : 0,
-    },
+    liquidWithin7Days: { count: within7.length, value: sumValue(within7), percent: totalValue > 0 ? Math.round((sumValue(within7) / totalValue) * 100) : 0 },
+    liquidWithin30Days: { count: within30.length, value: sumValue(within30), percent: totalValue > 0 ? Math.round((sumValue(within30) / totalValue) * 100) : 0 },
+    liquidWithin90Days: { count: within90.length, value: sumValue(within90), percent: totalValue > 0 ? Math.round((sumValue(within90) / totalValue) * 100) : 0 },
     illiquidCards: illiquid.length,
     illiquidValue: sumValue(illiquid),
   };
@@ -394,18 +402,17 @@ export function detectIlliquidityOpportunities(cards: CardInventory[]): Illiquid
   const opportunities: IlliquidityOpportunity[] = [];
 
   for (const card of activeCards) {
-    const score = calculateLiquidityScore(card);
-    if (score.overall >= 40) continue; // Only illiquid cards
+    const score = calculateDetailedLiquidityScore(card);
+    if (score.overall >= 40) continue;
 
     const val = card.currentValue || card.purchasePrice || 0;
     if (val <= 0) continue;
 
-    // Illiquid cards often trade at a discount to "fair" value
     const seed = hashString(card.id + 'illiq');
     const discountPct = seededRange(seed, 8, 25);
     const fairValue = Math.round(val * (1 + discountPct / 100));
 
-    const reasons = [];
+    const reasons: string[] = [];
     if (score.recentVolume < 5) reasons.push('Very low trading volume');
     if (score.bidAskSpread > 15) reasons.push('Wide bid-ask spread');
     if (score.activeBuyers < 5) reasons.push('Few active buyers');
@@ -438,23 +445,13 @@ export function getSeasonalLiquidityProfiles(): SeasonalLiquidityProfile[] {
       const baseScore = isPeak ? seededRange(seed, 70, 95) : seededRange(seed, 30, 65);
       const baseVolume = isPeak ? seededRange(seed + 11, 150, 400) : seededRange(seed + 11, 40, 150);
 
-      return {
-        month,
-        monthIndex: idx,
-        score: Math.round(baseScore),
-        volume: Math.round(baseVolume),
-      };
+      return { month, monthIndex: idx, score: Math.round(baseScore), volume: Math.round(baseVolume) };
     });
 
     const peak = data.reduce((best, d) => d.score > best.score ? d : best, data[0]);
     const trough = data.reduce((worst, d) => d.score < worst.score ? d : worst, data[0]);
 
-    return {
-      sport,
-      data,
-      peakMonth: peak.month,
-      troughMonth: trough.month,
-    };
+    return { sport, data, peakMonth: peak.month, troughMonth: trough.month };
   });
 }
 
@@ -467,18 +464,14 @@ export function generateEmergencyLiquidationPlan(
 ): EmergencyLiquidationPlan {
   const activeCards = cards.filter(c => c.status !== 'sold');
 
-  // Score and sort by liquidity efficiency (value / days-to-sell ratio)
   const candidates = activeCards.map(card => {
-    const score = calculateLiquidityScore(card);
+    const score = calculateDetailedLiquidityScore(card);
     const val = card.currentValue || card.purchasePrice || 0;
 
-    // Liquidation price is discounted based on urgency
     const urgencyDiscount = targetDays <= 3 ? 0.85 : targetDays <= 7 ? 0.90 : targetDays <= 14 ? 0.93 : 0.95;
     const liquidityDiscount = score.overall >= 70 ? 1.0 : score.overall >= 40 ? 0.95 : 0.88;
     const liquidationPrice = Math.round(val * urgencyDiscount * liquidityDiscount);
-
-    // Estimated days considering urgency pricing
-    const estimatedDays = Math.max(1, Math.round(score.avgDaysToSell * (urgencyDiscount)));
+    const estimatedDays = Math.max(1, Math.round(score.avgDaysToSell * urgencyDiscount));
 
     return {
       cardId: card.id,
@@ -488,14 +481,12 @@ export function generateEmergencyLiquidationPlan(
       estimatedDays,
       liquidityScore: score.overall,
       priority: 0,
-      // Efficiency: how much value per day of waiting
       efficiency: liquidationPrice / Math.max(1, estimatedDays),
     };
   })
     .filter(c => c.estimatedDays <= targetDays && c.liquidationPrice > 0)
     .sort((a, b) => b.efficiency - a.efficiency);
 
-  // Greedy selection: pick cards until target met
   const selected: EmergencyLiquidationCard[] = [];
   let accumulated = 0;
 
@@ -525,56 +516,48 @@ export function generateEmergencyLiquidationPlan(
 
 // ─── Persistence ────────────────────────────────────────────────────────────
 
-export function saveLiquidityData(data: Record<string, LiquidityScore>): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch { /* quota */ }
+export function saveLiquidityData(data: Record<string, LiquidityScoreDetail>): void {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch { /* quota */ }
 }
 
-export function loadLiquidityData(): Record<string, LiquidityScore> {
+export function loadLiquidityData(): Record<string, LiquidityScoreDetail> {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
+  } catch { return {}; }
 }
 
-export function saveSettings(settings: LiquiditySettings): void {
-  try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-  } catch { /* quota */ }
+export function saveLiquiditySettings(settings: LiquiditySettings): void {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch { /* quota */ }
 }
 
-export function loadSettings(): LiquiditySettings {
+export function loadLiquiditySettings(): LiquiditySettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     return raw ? JSON.parse(raw) : { emergencyTargetAmount: 5000, emergencyTargetDays: 7 };
-  } catch {
-    return { emergencyTargetAmount: 5000, emergencyTargetDays: 7 };
-  }
+  } catch { return { emergencyTargetAmount: 5000, emergencyTargetDays: 7 }; }
 }
 
 // ─── Batch Operations ───────────────────────────────────────────────────────
 
-export function computeAllLiquidityScores(cards: CardInventory[]): Record<string, LiquidityScore> {
-  const results: Record<string, LiquidityScore> = {};
+export function computeAllLiquidityScores(cards: CardInventory[]): Record<string, LiquidityScoreDetail> {
+  const results: Record<string, LiquidityScoreDetail> = {};
   for (const card of cards) {
     if (card.status === 'sold') continue;
-    results[card.id] = calculateLiquidityScore(card);
+    results[card.id] = calculateDetailedLiquidityScore(card);
   }
   saveLiquidityData(results);
   return results;
 }
 
 export function getCardLiquiditySummary(card: CardInventory): {
-  score: LiquidityScore;
+  score: LiquidityScoreDetail;
   depth: MarketDepthLevel[];
   velocity: ExitVelocityPoint[];
   listing: ListingRecommendation;
 } {
   return {
-    score: calculateLiquidityScore(card),
+    score: calculateDetailedLiquidityScore(card),
     depth: generateMarketDepth(card),
     velocity: calculateExitVelocity(card),
     listing: getListingRecommendation(card),
