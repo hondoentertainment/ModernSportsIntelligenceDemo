@@ -122,10 +122,10 @@ interface FanTooltipProps {
 
 const FanChartTooltip: React.FC<FanTooltipProps> = ({ active, payload, label }) => {
   if (!active || !payload || payload.length === 0) return null;
-  const data = payload.reduce<Record<string, number>>((acc, p) => {
-    acc[p.name] = p.value;
-    return acc;
-  }, {});
+  const data: Record<string, number> = {};
+  for (const p of payload) {
+    data[p.name] = p.value;
+  }
 
   return (
     <div className="bg-slate-900 border border-slate-700 rounded-xl p-3 shadow-xl text-xs">
