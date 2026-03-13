@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Bell, ChevronDown, User, LogOut, Settings, Terminal, Zap, Shield, Sparkles } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory';
+import FeatureSearch from './FeatureSearch';
 
 const Header: React.FC = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -50,6 +51,8 @@ const Header: React.FC = () => {
       </div>
 
       <div className="flex items-center gap-3 md:gap-5 ml-4">
+        <FeatureSearch />
+
         <button
           aria-label="Notifications"
           className="p-2 text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative"

@@ -15,6 +15,7 @@ import MarketTicker from './components/MarketTicker.tsx';
 import { useSupabaseInventory } from './lib/useSupabaseInventory.ts';
 import LazyErrorBoundary from './components/LazyErrorBoundary.tsx';
 import { PageLoadingFallback } from './components/LazyLoadFallback.tsx';
+import GuidedTour from './components/GuidedTour.tsx';
 
 // ─── Lazy-loaded Page Components ──────────────────────────────────────
 // Critical path: Dashboard loads first, everything else is code-split
@@ -53,6 +54,7 @@ const LiveImpact = lazy(() => import('./pages/LiveImpact.tsx'));
 const FractionalVault = lazy(() => import('./pages/FractionalVault.tsx'));
 const ProvenanceChain = lazy(() => import('./pages/ProvenanceChain.tsx'));
 const LiveBreaks = lazy(() => import('./pages/LiveBreaks.tsx'));
+const FeatureDirectory = lazy(() => import('./pages/FeatureDirectory.tsx'));
 
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
@@ -104,6 +106,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
                 <Route path="/fractional-vault" element={<FractionalVault />} />
                 <Route path="/provenance" element={<ProvenanceChain />} />
                 <Route path="/live-breaks" element={<LiveBreaks />} />
+                <Route path="/features" element={<FeatureDirectory />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
@@ -113,6 +116,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
         {/* Mobile Navigation */}
         <MobileNav />
       </div>
+      <GuidedTour />
     </div>
   );
 };
