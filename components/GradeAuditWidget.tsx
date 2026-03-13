@@ -103,4 +103,4 @@ const GradeAuditWidget: React.FC<GradeAuditWidgetProps> = ({ inventory, onCardCl
   );
 };
 
-export default GradeAuditWidget;
+export default React.memo(GradeAuditWidget);

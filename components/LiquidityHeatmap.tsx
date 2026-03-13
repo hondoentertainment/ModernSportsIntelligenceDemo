@@ -152,4 +152,4 @@ const LiquidityHeatmap: React.FC<LiquidityHeatmapProps> = ({ inventory, onCardCl
   );
 };
 
-export default LiquidityHeatmap;
+export default React.memo(LiquidityHeatmap);

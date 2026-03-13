@@ -105,4 +105,4 @@ const LiquidityPoolWidget: React.FC<LiquidityPoolWidgetProps> = ({ inventory, on
   );
 };
 
-export default LiquidityPoolWidget;
+export default React.memo(LiquidityPoolWidget);

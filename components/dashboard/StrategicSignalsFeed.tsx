@@ -81,4 +81,4 @@ const StrategicSignalsFeed: React.FC<StrategicSignalsFeedProps> = ({ signals }) 
   </div>
 );
 
-export default StrategicSignalsFeed;
+export default React.memo(StrategicSignalsFeed);

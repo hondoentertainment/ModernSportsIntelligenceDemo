@@ -157,4 +157,4 @@ const AchievementWidget: React.FC<AchievementWidgetProps> = ({ inventory, onView
   );
 };
 
-export default AchievementWidget;
+export default React.memo(AchievementWidget);

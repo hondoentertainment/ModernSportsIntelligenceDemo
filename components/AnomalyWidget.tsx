@@ -218,4 +218,4 @@ export const AnomalyWidget: React.FC<AnomalyWidgetProps> = ({ inventory, onAnoma
   );
 };
 
-export default AnomalyWidget;
+export default React.memo(AnomalyWidget);

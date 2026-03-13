@@ -240,5 +240,7 @@ const ConsignmentWidget: React.FC<ConsignmentWidgetProps> = ({ inventory, onCard
   );
 };
 
-export { ConsignmentWidget };
-export default ConsignmentWidget;
+
+const MemoizedConsignmentWidget = React.memo(ConsignmentWidget);
+export { MemoizedConsignmentWidget as ConsignmentWidget };
+export default MemoizedConsignmentWidget;
