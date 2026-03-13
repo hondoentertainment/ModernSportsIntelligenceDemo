@@ -223,7 +223,7 @@ export function analyzeBreakoutPotential(card: CardInventory): BreakoutAnalysis 
   const liquidityScore = LiquidityService.calculateLiquidityScore(card);
 
   // Factor 1: Prospect Status (MiLB/young player)
-  const isProspect = card.league === 'MiLB' || (card.year >= 2022 && card.league !== 'MiLB');
+  const isProspect = card.league === 'MiLB' || (card.year >= 2022 && (card.league as string) !== 'MiLB');
   const prospectScore = card.league === 'MiLB' ? 85 : isProspect ? 60 : 20;
   factors.push({
     name: 'Prospect Status',

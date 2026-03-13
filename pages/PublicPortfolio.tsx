@@ -120,7 +120,7 @@ const PublicPortfolio: React.FC = () => {
                         {LEAGUES.map(league => (
                             <button
                                 key={league}
-                                onClick={() => setFilterLeague(league === filterLeague ? 'All' : league)}
+                                onClick={() => setFilterLeague(league === filterLeague ? 'All' : league as League)}
                                 className={`px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${filterLeague === league
                                     ? 'bg-brand-lime text-brand-charcoal shadow-[0_0_20px_rgba(132,204,22,0.3)]'
                                     : 'bg-slate-900/50 text-slate-500 hover:bg-slate-800 hover:text-slate-300 border border-slate-800'

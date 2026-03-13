@@ -20,37 +20,7 @@ import {
   ScanEye,
   Landmark,
   Link2,
-  Tv,
-  Award,
-  Users,
-  CloudRain,
-  Newspaper,
-  Scale,
-  MapPin,
-  GitBranch,
-  MessageCircle,
-  Route,
-  Glasses,
-  Shield,
-  ShoppingCart,
-  Fingerprint,
-  Terminal,
-  MessageSquare,
-  BarChart3,
-  Code,
-  Database,
-  PieChart,
-  FileCheck,
-  Plug,
-  Umbrella,
-  FileText,
-  Package,
-  Gavel,
-  Dna,
-  RefreshCw,
-  Clock,
-  AlertOctagon,
-  Lock
+  Tv
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -77,44 +47,11 @@ export const NAV_ITEMS = [
   { id: 'fractionalvault', label: 'Fractional Vault', icon: <Landmark size={20} />, path: '/fractional-vault' },
   { id: 'provenance', label: 'Provenance Chain', icon: <Link2 size={20} />, path: '/provenance' },
   { id: 'livebreaks', label: 'Live Breaks', icon: <Tv size={20} />, path: '/live-breaks' },
-  // Phases 74-83: Core Features
-  { id: 'transactionwire', label: 'Transaction Wire', icon: <Newspaper size={20} />, path: '/transaction-wire' },
-  { id: 'rebalancer', label: 'Portfolio Rebalancer', icon: <Scale size={20} />, path: '/rebalancer' },
-  { id: 'cardshow', label: 'Card Show Mode', icon: <MapPin size={20} />, path: '/card-show' },
-  { id: 'trajectory', label: 'Player Trajectory', icon: <GitBranch size={20} />, path: '/trajectory' },
-  { id: 'sentiment', label: 'Sentiment Radar', icon: <MessageCircle size={20} />, path: '/sentiment' },
-  { id: 'consignment', label: 'Consignment Router', icon: <Route size={20} />, path: '/consignment-router' },
-  { id: 'arshowcase', label: 'AR Showcase', icon: <Glasses size={20} />, path: '/ar-showcase' },
-  { id: 'estate', label: 'Estate Planning', icon: <Shield size={20} />, path: '/estate-planning' },
-  { id: 'marketplace', label: 'P2P Marketplace', icon: <ShoppingCart size={20} />, path: '/marketplace' },
-  { id: 'carddna', label: 'Card DNA', icon: <Fingerprint size={20} />, path: '/card-dna' },
-  // Phases 84-93: Bloomberg-Grade
-  { id: 'terminal', label: 'MSI Terminal', icon: <Terminal size={20} />, path: '/terminal' },
-  { id: 'dealroom', label: 'Deal Room', icon: <MessageSquare size={20} />, path: '/deal-room' },
-  { id: 'indices', label: 'Market Indices', icon: <BarChart3 size={20} />, path: '/indices' },
-  { id: 'quant', label: 'Quant Workbench', icon: <Code size={20} />, path: '/quant' },
-  { id: 'datahub', label: 'Data Hub', icon: <Database size={20} />, path: '/data-hub' },
-  { id: 'attribution', label: 'Attribution', icon: <PieChart size={20} />, path: '/attribution' },
-  { id: 'compliance', label: 'Compliance', icon: <FileCheck size={20} />, path: '/compliance' },
-  { id: 'apiplatform', label: 'API Platform', icon: <Plug size={20} />, path: '/api-platform' },
-  { id: 'derivatives', label: 'Derivatives Desk', icon: <Umbrella size={20} />, path: '/derivatives' },
-  { id: 'research', label: 'MSI Research', icon: <FileText size={20} />, path: '/research' },
-  // Phases 94-103: Advanced Intelligence
-  { id: 'waxintel', label: 'Wax Intelligence', icon: <Package size={20} />, path: '/wax-intelligence' },
-  { id: 'auctionsniper', label: 'Auction Sniper', icon: <Gavel size={20} />, path: '/auction-sniper' },
-  { id: 'genome', label: 'Collection Genome', icon: <Dna size={20} />, path: '/genome' },
-  { id: 'gradingarb', label: 'Grading Arbitrage', icon: <RefreshCw size={20} />, path: '/grading-arbitrage' },
-  { id: 'vintage', label: 'Vintage Scanner', icon: <Clock size={20} />, path: '/vintage' },
-  { id: 'weatherimpact', label: 'Weather Impact', icon: <CloudRain size={20} />, path: '/weather-impact' },
-  { id: 'hoftracker', label: 'HOF Tracker', icon: <Award size={20} />, path: '/hof-tracker' },
-  { id: 'draftroom', label: 'Draft War Room', icon: <Users size={20} />, path: '/draft-room' },
-  { id: 'errorcards', label: 'Error Cards', icon: <AlertOctagon size={20} />, path: '/error-cards' },
-  { id: 'vaultsecurity', label: 'Vault Security', icon: <Lock size={20} />, path: '/vault-security' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];
 
-export const LEAGUES = ['MLB', 'MiLB', 'NBA', 'NFL', 'Other'];
+export const LEAGUES: readonly string[] = ['MLB', 'MiLB', 'NBA', 'NFL', 'Other'];
 export const SPORTS: Sport[] = ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
 
 export const GRADING_COMPANIES = ['PSA', 'BGS', 'SGC', 'CSG', 'HGA', 'Other'];
@@ -172,60 +109,84 @@ export const MOCK_TEAMS = [
     name: 'Oklahoma City Thunder',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/5/5d/Oklahoma_City_Thunder.svg/1200px-Oklahoma_City_Thunder.svg.png',
     league: 'NBA',
+    conference: 'Western',
+    division: 'Northwest',
     form: 'hot',
     score: 92,
     offense: 96,
-    defense: 94
+    defense: 94,
+    summary: 'Elite young core delivering dominant two-way basketball with league-best net rating.',
+    momentum: 'up' as const
   },
   {
     id: 'nba-bos',
     name: 'Boston Celtics',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8f/Boston_Celtics.svg/1200px-Boston_Celtics.svg.png',
     league: 'NBA',
+    conference: 'Eastern',
+    division: 'Atlantic',
     form: 'hot',
     score: 95,
     offense: 98,
-    defense: 92
+    defense: 92,
+    summary: 'Championship-caliber shooting and switching defense making them the team to beat.',
+    momentum: 'up' as const
   },
   {
     id: 'nba-den',
     name: 'Denver Nuggets',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/76/Denver_Nuggets.svg/1200px-Denver_Nuggets.svg.png',
     league: 'NBA',
+    conference: 'Western',
+    division: 'Northwest',
     form: 'variable',
     score: 89,
     offense: 95,
-    defense: 88
+    defense: 88,
+    summary: 'Jokic-led offense remains elite but inconsistent defense creates variance.',
+    momentum: 'stable' as const
   },
   {
     id: 'nba-min',
     name: 'Minnesota Wolves',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Minnesota_Timberwolves_logo.svg/1200px-Minnesota_Timberwolves_logo.svg.png',
     league: 'NBA',
+    conference: 'Western',
+    division: 'Northwest',
     form: 'stable',
     score: 91,
     offense: 89,
-    defense: 97
+    defense: 97,
+    summary: 'Defensive juggernaut anchored by elite rim protection and perimeter switchability.',
+    momentum: 'up' as const
   },
   {
     id: 'nba-lal',
     name: 'LA Lakers',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Los_Angeles_Lakers_logo.svg/1200px-Los_Angeles_Lakers_logo.svg.png',
     league: 'NBA',
+    conference: 'Western',
+    division: 'Pacific',
     form: 'cold',
     score: 85,
     offense: 91,
-    defense: 84
+    defense: 84,
+    summary: 'Star-dependent offense struggling with depth and consistency on the defensive end.',
+    momentum: 'down' as const
   },
   {
     id: 'nba-ny',
     name: 'NY Knicks',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/2/25/New_York_Knicks_logo.svg/1200px-New_York_Knicks_logo.svg.png',
     league: 'NBA',
+    conference: 'Eastern',
+    division: 'Atlantic',
     form: 'hot',
     score: 88,
     offense: 90,
-    defense: 93
+    defense: 93,
+    summary: 'Physical, defense-first identity with improved offensive versatility.',
+    momentum: 'up' as const
   },
   // MLB
   {
@@ -233,60 +194,84 @@ export const MOCK_TEAMS = [
     name: 'LA Dodgers',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c7/Los_Angeles_Dodgers_logo.svg/1200px-Los_Angeles_Dodgers_logo.svg.png',
     league: 'MLB',
+    conference: 'National',
+    division: 'NL West',
     form: 'hot',
     score: 97,
     offense: 99,
-    defense: 91
+    defense: 91,
+    summary: 'Loaded roster with historic offensive depth and deep pitching staff.',
+    momentum: 'up' as const
   },
   {
     id: 'mlb-atl',
     name: 'Atlanta Braves',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Atlanta_Braves.svg/1200px-Atlanta_Braves.svg.png',
     league: 'MLB',
+    conference: 'National',
+    division: 'NL East',
     form: 'stable',
     score: 94,
     offense: 96,
-    defense: 93
+    defense: 93,
+    summary: 'Consistent powerhouse with elite farm system feeding major league success.',
+    momentum: 'stable' as const
   },
   {
     id: 'mlb-bal',
     name: 'Baltimore Orioles',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/75/Baltimore_Orioles_cap.svg/1200px-Baltimore_Orioles_cap.svg.png',
     league: 'MLB',
+    conference: 'American',
+    division: 'AL East',
     form: 'hot',
     score: 93,
     offense: 94,
-    defense: 90
+    defense: 90,
+    summary: 'Young, exciting roster with top-tier prospect pipeline fueling rapid ascent.',
+    momentum: 'up' as const
   },
   {
     id: 'mlb-nyy',
     name: 'NY Yankees',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/2/25/New_York_Yankees_logo.svg/1200px-New_York_Yankees_logo.svg.png',
     league: 'MLB',
+    conference: 'American',
+    division: 'AL East',
     form: 'variable',
     score: 91,
     offense: 95,
-    defense: 88
+    defense: 88,
+    summary: 'Power-heavy lineup with rotation questions creating boom-or-bust variance.',
+    momentum: 'stable' as const
   },
   {
     id: 'mlb-tex',
     name: 'Texas Rangers',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/4/41/Texas_Rangers.svg/1200px-Texas_Rangers.svg.png',
     league: 'MLB',
+    conference: 'American',
+    division: 'AL West',
     form: 'cold',
     score: 86,
     offense: 92,
-    defense: 85
+    defense: 85,
+    summary: 'Defending champions facing regression with pitching injuries and lineup changes.',
+    momentum: 'down' as const
   },
   {
     id: 'mlb-phi',
     name: 'Philadelphia Phillies',
     logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0e/Philadelphia_Phillies_Logo.svg/1200px-Philadelphia_Phillies_Logo.svg.png',
     league: 'MLB',
+    conference: 'National',
+    division: 'NL East',
     form: 'stable',
     score: 90,
     offense: 91,
-    defense: 89
+    defense: 89,
+    summary: 'Well-rounded contender with balanced pitching and consistent offensive production.',
+    momentum: 'stable' as const
   }
 ];
 

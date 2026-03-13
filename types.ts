@@ -194,6 +194,8 @@ export interface NegotiableItem {
   id?: string;
   player?: string;
   name?: string;
+  year?: number;
+  manufacturer?: string;
   price?: number;
   currentValue?: number;
   currentMarketPrice?: number;

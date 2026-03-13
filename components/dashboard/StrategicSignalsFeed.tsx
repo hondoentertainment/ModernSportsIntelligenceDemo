@@ -3,7 +3,7 @@ import { Activity, Zap, Layers, ArrowUpRight } from 'lucide-react';
 
 interface Signal {
   id: string;
-  type: 'buy' | 'sell';
+  type: 'buy' | 'sell' | 'scarcity';
   impact: 'high' | 'medium' | 'low';
   title: string;
   description: string;
@@ -81,4 +81,4 @@ const StrategicSignalsFeed: React.FC<StrategicSignalsFeedProps> = ({ signals }) 
   </div>
 );
 
-export default React.memo(StrategicSignalsFeed);
+export default StrategicSignalsFeed;

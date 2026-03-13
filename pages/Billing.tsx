@@ -49,7 +49,7 @@ const Billing: React.FC = () => {
   const handleUpgrade = async (tier: SubscriptionTier) => {
     if (!user?.id || isDemoMode) return;
     const tierKey = tier as 'basic' | 'pro' | 'alpha';
-    if (tierKey === 'free') return;
+    if ((tierKey as string) === 'free') return;
     setActionLoading(tier);
     try {
       const base = window.location.href.split('#')[0];
