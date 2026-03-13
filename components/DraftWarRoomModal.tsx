@@ -15,6 +15,7 @@ import {
   watchProspect,
   unwatchProspect,
   isProspectWatched,
+  getProspectTrajectoryComparisons,
   type DraftProspect,
   type LandingSpotAnalysis,
   type DraftNightStrategy,
@@ -22,6 +23,7 @@ import {
   type CardPresence,
   type LandingSpotFit,
   type DraftStrategy,
+  type ProspectTrajectoryComparison,
 } from '../lib/draftWarRoomService';
 
 interface Props {
@@ -89,6 +91,7 @@ const DraftWarRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const events = useMemo(() => getDraftEvents(), []);
   const allProspects = useMemo(() => getDraftProspects(), []);
   const strategies = useMemo(() => getDraftNightStrategies(), []);
+  const trajectoryComps = useMemo(() => getProspectTrajectoryComparisons(sportFilter !== 'All' ? sportFilter : undefined), [sportFilter]);
 
   const filteredProspects = useMemo(() => {
     if (sportFilter === 'All') return allProspects;
@@ -277,30 +280,58 @@ const DraftWarRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                       </div>
 
                       {/* Expanded detail */}
-                      {isSelected && (
-                        <div className="mt-3 pt-3 border-t border-slate-700/30 grid grid-cols-4 gap-3">
-                          <div className="bg-slate-900/50 rounded-lg p-2 text-center">
-                            <p className="text-[9px] text-slate-500 uppercase mb-1">Best Case</p>
-                            <p className="text-sm font-bold text-emerald-400">${p.draftNightProjection.bestCase}</p>
+                      {isSelected && (() => {
+                        const trajComp = trajectoryComps.find(tc => tc.prospectId === p.id);
+                        return (
+                          <div className="mt-3 pt-3 border-t border-slate-700/30 space-y-3">
+                            <div className="grid grid-cols-4 gap-3">
+                              <div className="bg-slate-900/50 rounded-lg p-2 text-center">
+                                <p className="text-[9px] text-slate-500 uppercase mb-1">Best Case</p>
+                                <p className="text-sm font-bold text-emerald-400">${p.draftNightProjection.bestCase}</p>
+                              </div>
+                              <div className="bg-slate-900/50 rounded-lg p-2 text-center">
+                                <p className="text-[9px] text-slate-500 uppercase mb-1">Likely</p>
+                                <p className="text-sm font-bold text-blue-400">${p.draftNightProjection.likelyCase}</p>
+                              </div>
+                              <div className="bg-slate-900/50 rounded-lg p-2 text-center">
+                                <p className="text-[9px] text-slate-500 uppercase mb-1">Worst Case</p>
+                                <p className="text-sm font-bold text-red-400">${p.draftNightProjection.worstCase}</p>
+                              </div>
+                              <div className="bg-slate-900/50 rounded-lg p-2 text-center">
+                                <p className="text-[9px] text-slate-500 uppercase mb-1">Boom/Bust</p>
+                                <p className="text-sm font-bold">
+                                  <span className="text-emerald-400">{p.boomProbability}%</span>
+                                  <span className="text-slate-600 mx-1">/</span>
+                                  <span className="text-red-400">{p.bustProbability}%</span>
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Player Trajectory Comparison (Phase 77 Cross-reference) */}
+                            {trajComp && trajComp.comparablePlayers.length > 0 && (
+                              <div className="bg-cyan-500/5 border border-cyan-500/20 rounded-xl p-3">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <TrendingUp size={12} className="text-cyan-400" />
+                                  <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Trajectory Comps</span>
+                                  <span className="text-[10px] text-slate-500 ml-auto">{trajComp.projectedCareerArc}</span>
+                                </div>
+                                <div className="flex gap-2 flex-wrap mb-2">
+                                  {trajComp.comparablePlayers.slice(0, 3).map((cp, ci) => (
+                                    <div key={ci} className="bg-slate-900/50 rounded-lg px-2.5 py-1.5 text-[10px]">
+                                      <span className="text-slate-200 font-medium">{cp.trajectoryPlayer}</span>
+                                      <span className="text-slate-500 ml-1">Score: {cp.trajectoryScore}</span>
+                                      <span className={`ml-1 font-bold ${cp.riskLevel === 'low' ? 'text-emerald-400' : cp.riskLevel === 'medium' ? 'text-amber-400' : 'text-red-400'}`}>
+                                        {cp.riskLevel}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                                <p className="text-[10px] text-slate-400">{trajComp.investmentOutlook}</p>
+                              </div>
+                            )}
                           </div>
-                          <div className="bg-slate-900/50 rounded-lg p-2 text-center">
-                            <p className="text-[9px] text-slate-500 uppercase mb-1">Likely</p>
-                            <p className="text-sm font-bold text-blue-400">${p.draftNightProjection.likelyCase}</p>
-                          </div>
-                          <div className="bg-slate-900/50 rounded-lg p-2 text-center">
-                            <p className="text-[9px] text-slate-500 uppercase mb-1">Worst Case</p>
-                            <p className="text-sm font-bold text-red-400">${p.draftNightProjection.worstCase}</p>
-                          </div>
-                          <div className="bg-slate-900/50 rounded-lg p-2 text-center">
-                            <p className="text-[9px] text-slate-500 uppercase mb-1">Boom/Bust</p>
-                            <p className="text-sm font-bold">
-                              <span className="text-emerald-400">{p.boomProbability}%</span>
-                              <span className="text-slate-600 mx-1">/</span>
-                              <span className="text-red-400">{p.bustProbability}%</span>
-                            </p>
-                          </div>
-                        </div>
-                      )}
+                        );
+                      })()}
                     </div>
                   );
                 })}

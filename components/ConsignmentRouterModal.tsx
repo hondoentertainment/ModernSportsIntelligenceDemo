@@ -10,8 +10,10 @@ import {
 import {
   getConsignmentOptions,
   getPlatformComparison,
+  getLiquidityEnrichedConsignment,
   ConsignmentOption,
   PlatformComparison,
+  LiquidityEnrichedConsignment,
 } from '../lib/consignmentRouterService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
@@ -319,6 +321,28 @@ const ConsignmentRouterModal: React.FC<ConsignmentRouterModalProps> = ({ isOpen,
   const [cardValue, setCardValue] = useState(1000);
 
   const options = useMemo(() => getConsignmentOptions('Card', cardValue), [cardValue]);
+  const liquidityContext = useMemo(() => {
+    // Create a representative card for liquidity enrichment
+    const mockCard = {
+      id: 'consignment-query',
+      player: 'Query Card',
+      year: 2023,
+      manufacturer: 'Panini',
+      cardNumber: '1',
+      set: 'Prizm',
+      sport: 'Basketball' as const,
+      league: 'NBA' as const,
+      isAutographed: false,
+      condition: 'Near Mint' as const,
+      isGraded: true,
+      gradingCompany: 'PSA',
+      grade: '9',
+      purchasePrice: cardValue * 0.7,
+      purchaseDate: '2023-06-01',
+      currentValue: cardValue,
+    };
+    return getLiquidityEnrichedConsignment(mockCard, cardValue);
+  }, [cardValue]);
   const best = options[0] ?? null;
 
   if (!isOpen) return null;

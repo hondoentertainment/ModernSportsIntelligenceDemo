@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Package,
   BarChart3,
+  Zap,
 } from 'lucide-react';
 import {
   getCrossGradeOpportunities,
@@ -19,10 +20,12 @@ import {
   getGradePremiums,
   getActiveSubmissions,
   getGradingArbitrageStats,
+  getAIEnrichedOpportunities,
   type CrossGradeOpportunity,
   type GradeTranslation,
   type CrossGradeTracker,
   type GradingCompany,
+  type ArbitrageWithPrediction,
 } from '../lib/gradingArbitrageService.ts';
 import {
   BarChart,
@@ -76,6 +79,7 @@ const GradingArbitrageModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [selectedCard, setSelectedCard] = useState('2023 Panini Prizm Silver RC');
 
   const opportunities = useMemo(() => getCrossGradeOpportunities(), []);
+  const aiEnriched = useMemo(() => getAIEnrichedOpportunities(), []);
   const translations = useMemo(() => getGradeTranslationTable(), []);
   const submissions = useMemo(() => getActiveSubmissions(), []);
   const stats = useMemo(() => getGradingArbitrageStats(), []);
@@ -162,6 +166,27 @@ const GradingArbitrageModal: React.FC<Props> = ({ isOpen, onClose }) => {
           {/* ---- Opportunities Tab ---- */}
           {activeTab === 'opportunities' && (
             <div className="space-y-3">
+              {/* AI Predictive Grading Insights (Phase 65 Cross-reference) */}
+              {aiEnriched.length > 0 && (
+                <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-xl p-3 mb-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap size={14} className="text-indigo-400" />
+                    <span className="text-xs font-black text-indigo-400 uppercase tracking-widest">AI Grade Predictions</span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {aiEnriched.filter(e => e.aiPredictedGrade).slice(0, 3).map((e, i) => (
+                      <div key={i} className="flex items-center gap-3 text-xs text-slate-400">
+                        <span className="text-indigo-400">{'>'}</span>
+                        <span className="text-slate-200 font-medium">{e.opportunity.player}</span>
+                        <span>AI: {e.aiPredictedGrade} ({e.aiConfidence}% conf)</span>
+                        <span className={`font-bold ${e.adjustedROI > e.opportunity.netROI ? 'text-emerald-400' : 'text-amber-400'}`}>
+                          Adj ROI: {e.adjustedROI}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               {opportunities.map((opp, idx) => (
                 <OpportunityCard key={opp.id} opp={opp} rank={idx + 1} />
               ))}
