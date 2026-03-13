@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import {
   X, ShoppingCart, Search, Filter, Tag, Eye, Heart, MessageSquare,
-  TrendingUp, Star, DollarSign, Send, ChevronDown,
+  TrendingUp, Star, DollarSign, Send, ChevronDown, Shield,
 } from 'lucide-react';
 import {
   getActiveListings,
@@ -10,10 +10,13 @@ import {
   getListingsByFilters,
   getOffers,
   getTopSellers,
+  getListingsWithDealRoomOptions,
+  getCombinedMarketStats,
   Listing,
   Sport,
   CardGrade,
   CardCondition,
+  ListingWithDealRoomOption,
 } from '../lib/p2pMarketplaceService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
@@ -239,6 +242,9 @@ const P2PMarketplaceModal: React.FC<P2PMarketplaceModalProps> = ({ isOpen, onClo
   }, [search, sportFilter, gradeFilter, sortBy]);
 
   const topSellers = useMemo(() => getTopSellers().slice(0, 4), []);
+  const dealRoomListings = useMemo(() => getListingsWithDealRoomOptions(), []);
+  const combinedStats = useMemo(() => getCombinedMarketStats(), []);
+  const dealRoomEligible = useMemo(() => dealRoomListings.filter(l => l.eligibleForDealRoom), [dealRoomListings]);
 
   if (!isOpen) return null;
 
@@ -360,6 +366,26 @@ const P2PMarketplaceModal: React.FC<P2PMarketplaceModalProps> = ({ isOpen, onClo
               ))}
             </div>
           </div>
+
+          {/* Deal Room Eligible (Phase 85 Cross-reference) */}
+          {dealRoomEligible.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-xs text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1">
+                <Shield size={12} className="text-purple-400" /> Deal Room Eligible ({dealRoomEligible.length})
+              </h3>
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {dealRoomEligible.slice(0, 4).map(drl => (
+                  <div key={drl.listing.id} className="flex items-center gap-2 bg-purple-500/5 border border-purple-500/20 rounded-lg px-3 py-2 min-w-[200px]">
+                    <div>
+                      <p className="text-xs font-medium text-slate-200">{drl.listing.player}</p>
+                      <p className="text-[10px] text-slate-500">{fmtPrice(drl.listing.askingPrice)}</p>
+                      <p className="text-[10px] text-purple-400">{drl.dealRoomReason}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Listing grid */}
           {filteredListings.length === 0 ? (

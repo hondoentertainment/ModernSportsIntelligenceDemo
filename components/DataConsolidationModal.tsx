@@ -21,6 +21,8 @@ import {
   getTransactionFeed,
   getDataQualityReports,
   getConsolidationStats,
+  getEnrichedConsolidatedView,
+  EnrichedConsolidatedView,
 } from '../lib/dataConsolidationService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
@@ -117,6 +119,11 @@ const NBBOTab: React.FC = () => {
   }, []);
 
   const card = selected ?? defaultCard;
+
+  // Enriched view with market indices and consignment context (Phase 86/79 Cross-reference)
+  const enrichedView = useMemo(() => {
+    return getEnrichedConsolidatedView(card.player, card.cardDescription, card.grade);
+  }, [card]);
 
   const chartData = useMemo(() => {
     return card.platformPrices.map(p => ({

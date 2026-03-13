@@ -88,6 +88,39 @@ const EstatePlanningModal: React.FC<EstatePlanningModalProps> = ({ isOpen, onClo
 
         {/* Scrollable Content */}
         <div className="overflow-y-auto flex-1 p-6 space-y-6">
+          {/* Portfolio Performance Context (Phase 89 Cross-reference) */}
+          <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-xl p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <BarChart3 size={16} className="text-indigo-400" />
+              <h3 className="text-sm font-semibold text-indigo-400">Performance Attribution</h3>
+              <span className="text-[10px] text-slate-500 ml-auto">
+                Next review: {new Date(perfContext.recommendedReviewDate).toLocaleDateString()}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-slate-800/40 rounded-lg p-3 text-center">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Projected Annual Growth</p>
+                <p className={`text-lg font-bold ${perfContext.projectedAnnualGrowth >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {perfContext.projectedAnnualGrowth > 0 ? '+' : ''}{perfContext.projectedAnnualGrowth.toFixed(1)}%
+                </p>
+              </div>
+              <div className="bg-slate-800/40 rounded-lg p-3 text-center">
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Skill vs Luck</p>
+                <p className="text-lg font-bold text-blue-400">
+                  {perfContext.decomposition.percentSkill}% / {perfContext.decomposition.percentLuck}%
+                </p>
+              </div>
+            </div>
+            <ul className="space-y-1">
+              {perfContext.estateImpactSummary.map((item, i) => (
+                <li key={i} className="text-xs text-slate-400 flex gap-2">
+                  <TrendingUp size={10} className="text-indigo-400 mt-0.5 shrink-0" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* Beneficiary Allocations */}
           <div>
             <div className="flex items-center gap-2 mb-4">
