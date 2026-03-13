@@ -31,9 +31,11 @@ import {
   getTraitLabel,
   getCategoryColor,
   getSeverityColor,
+  getGenomeDNAInsights,
   CollectorGenome,
   BehavioralBias,
   CollectorComparison,
+  GenomeDNAInsights,
 } from '../lib/collectionGenomeService';
 
 interface CollectionGenomeModalProps {
@@ -56,6 +58,7 @@ const CollectionGenomeModal: React.FC<CollectionGenomeModalProps> = ({ isOpen, o
   const genome = useMemo(() => analyzeGenome(), []);
   const biases = useMemo(() => getBehavioralBiases(), []);
   const comparison = useMemo(() => getCollectorComparison(), []);
+  const dnaInsights = useMemo(() => getGenomeDNAInsights(), []);
 
   if (!isOpen) return null;
 
@@ -118,7 +121,7 @@ const CollectionGenomeModal: React.FC<CollectionGenomeModalProps> = ({ isOpen, o
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {activeTab === 'genome' && <GenomeTab genome={genome} radarData={radarData} />}
+          {activeTab === 'genome' && <GenomeTab genome={genome} radarData={radarData} dnaInsights={dnaInsights} />}
           {activeTab === 'traits' && <TraitsTab genome={genome} />}
           {activeTab === 'biases' && <BiasesTab biases={biases} />}
           {activeTab === 'compare' && <CompareTab comparison={comparison} comparisonRadarData={comparisonRadarData} />}
@@ -130,9 +133,45 @@ const CollectionGenomeModal: React.FC<CollectionGenomeModalProps> = ({ isOpen, o
 
 // ---- Your Genome Tab ----
 
-function GenomeTab({ genome, radarData }: { genome: CollectorGenome; radarData: { trait: string; score: number }[] }) {
+function GenomeTab({ genome, radarData, dnaInsights }: { genome: CollectorGenome; radarData: { trait: string; score: number }[]; dnaInsights: GenomeDNAInsights }) {
   return (
     <div className="space-y-6">
+      {/* Card DNA Authentication Insights (Phase 83 Cross-reference) */}
+      {dnaInsights.counterfeitAlerts.length > 0 && (
+        <div className="bg-purple-500/5 border border-purple-500/20 rounded-2xl p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <ShieldAlert size={16} className="text-purple-400" />
+            <h3 className="text-sm font-black text-purple-400 uppercase tracking-widest">Card DNA Insights</h3>
+          </div>
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="bg-slate-800/40 rounded-xl p-3">
+              <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Auth Rate</p>
+              <p className={`text-xl font-bebas ${dnaInsights.authenticationRate >= 90 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                {dnaInsights.authenticationRate.toFixed(1)}%
+              </p>
+            </div>
+            <div className="bg-slate-800/40 rounded-xl p-3">
+              <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Avg Confidence</p>
+              <p className="text-xl font-bebas text-blue-400">{dnaInsights.avgConfidence.toFixed(1)}%</p>
+            </div>
+            <div className="bg-slate-800/40 rounded-xl p-3">
+              <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Risk Adj</p>
+              <p className={`text-xl font-bebas ${dnaInsights.riskAdjustment >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                {dnaInsights.riskAdjustment > 0 ? '+' : ''}{dnaInsights.riskAdjustment}
+              </p>
+            </div>
+          </div>
+          <ul className="space-y-1">
+            {dnaInsights.genomeImpact.map((impact, i) => (
+              <li key={i} className="text-xs text-slate-400 flex gap-2">
+                <span className="text-purple-400 mt-0.5">{'>'}</span>
+                <span>{impact}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Collector Type Card */}
       <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 space-y-4">
         <div className="flex items-start gap-4">
