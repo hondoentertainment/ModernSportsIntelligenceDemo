@@ -1,0 +1,211 @@
+name: Code Health Agent
+
+on:
+  schedule:
+    # Every Monday at 6:00 AM UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  code-health:
+    name: Analyze Code Health
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Collect codebase metrics
+        id: metrics
+        run: |
+          echo "## Code Health Report" > report.md
+          echo "" >> report.md
+          echo "**Generated:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> report.md
+          echo "" >> report.md
+
+          # ── Total lines of code ──
+          echo "### Codebase Size" >> report.md
+          echo "" >> report.md
+
+          TOTAL_TS_FILES=$(find . -name '*.ts' -o -name '*.tsx' | grep -v node_modules | grep -v dist | wc -l)
+          TOTAL_LINES=$(find . \( -name '*.ts' -o -name '*.tsx' \) -not -path '*/node_modules/*' -not -path '*/dist/*' -exec cat {} + | wc -l)
+          COMPONENT_COUNT=$(find ./components -name '*.tsx' 2>/dev/null | wc -l)
+          SERVICE_COUNT=$(find ./lib -name '*Service.ts' -o -name '*service.ts' 2>/dev/null | wc -l)
+          PAGE_COUNT=$(find ./pages -name '*.tsx' 2>/dev/null | wc -l)
+          TEST_COUNT=$(find ./tests -name '*.test.ts' -o -name '*.test.tsx' 2>/dev/null | wc -l)
+          HOOK_COUNT=$(find ./lib -name 'use*.ts' 2>/dev/null | wc -l)
+
+          echo "| Metric | Count |" >> report.md
+          echo "|--------|-------|" >> report.md
+          echo "| TypeScript/TSX files | $TOTAL_TS_FILES |" >> report.md
+          echo "| Total lines of code | $TOTAL_LINES |" >> report.md
+          echo "| Components | $COMPONENT_COUNT |" >> report.md
+          echo "| Services | $SERVICE_COUNT |" >> report.md
+          echo "| Pages | $PAGE_COUNT |" >> report.md
+          echo "| Custom hooks | $HOOK_COUNT |" >> report.md
+          echo "| Test files | $TEST_COUNT |" >> report.md
+          echo "" >> report.md
+
+          # ── Files over 500 lines ──
+          echo "### Large Files (> 500 lines) — Consider Refactoring" >> report.md
+          echo "" >> report.md
+
+          LARGE_FILES_FOUND=false
+          echo "| File | Lines |" >> report.md
+          echo "|------|-------|" >> report.md
+          while IFS= read -r file; do
+            lines=$(wc -l < "$file")
+            if [ "$lines" -gt 500 ]; then
+              LARGE_FILES_FOUND=true
+              echo "| \`${file#./}\` | $lines |" >> report.md
+            fi
+          done < <(find . \( -name '*.ts' -o -name '*.tsx' \) -not -path '*/node_modules/*' -not -path '*/dist/*' | sort)
+
+          if [ "$LARGE_FILES_FOUND" = false ]; then
+            echo "| _(none — all files are under 500 lines)_ | - |" >> report.md
+          fi
+          echo "" >> report.md
+
+          # ── Unused exports detection ──
+          echo "### Potentially Unused Exports" >> report.md
+          echo "" >> report.md
+          echo "Exports declared but not imported elsewhere (top 30):" >> report.md
+          echo "" >> report.md
+          echo '```' >> report.md
+
+          UNUSED_COUNT=0
+          while IFS= read -r file; do
+            # Extract named exports from each file
+            grep -oP '(?<=export (?:const|function|class|type|interface|enum) )\w+' "$file" 2>/dev/null | while read -r symbol; do
+              # Search for the symbol being imported elsewhere
+              IMPORT_COUNT=$(grep -rl --include='*.ts' --include='*.tsx' "$symbol" . 2>/dev/null | grep -v node_modules | grep -v "$file" | wc -l)
+              if [ "$IMPORT_COUNT" -eq 0 ]; then
+                echo "  ${file#./}: $symbol"
+                UNUSED_COUNT=$((UNUSED_COUNT + 1))
+              fi
+            done
+          done < <(find . \( -name '*.ts' -o -name '*.tsx' \) -not -path '*/node_modules/*' -not -path '*/dist/*' | sort) | head -30 >> report.md
+
+          echo '```' >> report.md
+          echo "" >> report.md
+
+          # ── Duplicate code patterns ──
+          echo "### Duplicate Code Patterns" >> report.md
+          echo "" >> report.md
+          echo "Files with similar names that may contain duplicate logic:" >> report.md
+          echo "" >> report.md
+
+          # Find files with overlapping base names across directories
+          echo '```' >> report.md
+          find . \( -name '*.ts' -o -name '*.tsx' \) -not -path '*/node_modules/*' -not -path '*/dist/*' -printf '%f\n' | sort | uniq -d | while read -r dup; do
+            echo "Duplicate filename: $dup"
+            find . -name "$dup" -not -path '*/node_modules/*' -not -path '*/dist/*' | sed 's/^/  /'
+          done >> report.md
+
+          # Find near-identical import blocks (signals copy-paste)
+          echo "" >> report.md
+          echo "Services with similar function signatures (possible abstraction candidates):" >> report.md
+          grep -rh 'export function\|export const.*=' lib/ 2>/dev/null | sed 's/export //;s/ {.*//;s/ =.*//' | sort | uniq -c | sort -rn | head -10 | while read -r count sig; do
+            if [ "$count" -gt 1 ]; then
+              echo "  ($count occurrences) $sig"
+            fi
+          done >> report.md
+          echo '```' >> report.md
+          echo "" >> report.md
+
+          # ── Summary ──
+          echo "### Health Score" >> report.md
+          echo "" >> report.md
+
+          # Calculate a basic health score
+          LARGE_FILE_COUNT=$(find . \( -name '*.ts' -o -name '*.tsx' \) -not -path '*/node_modules/*' -not -path '*/dist/*' -exec sh -c 'test $(wc -l < "$1") -gt 500 && echo 1' _ {} \; | wc -l)
+
+          if [ "$LARGE_FILE_COUNT" -eq 0 ]; then
+            FILE_SCORE=100
+          elif [ "$LARGE_FILE_COUNT" -lt 5 ]; then
+            FILE_SCORE=90
+          elif [ "$LARGE_FILE_COUNT" -lt 15 ]; then
+            FILE_SCORE=75
+          elif [ "$LARGE_FILE_COUNT" -lt 30 ]; then
+            FILE_SCORE=60
+          else
+            FILE_SCORE=40
+          fi
+
+          if [ "$TEST_COUNT" -gt 0 ]; then
+            TEST_RATIO=$((TEST_COUNT * 100 / (SERVICE_COUNT + PAGE_COUNT)))
+          else
+            TEST_RATIO=0
+          fi
+
+          if [ "$TEST_RATIO" -gt 80 ]; then
+            TEST_SCORE=100
+          elif [ "$TEST_RATIO" -gt 50 ]; then
+            TEST_SCORE=80
+          elif [ "$TEST_RATIO" -gt 25 ]; then
+            TEST_SCORE=60
+          else
+            TEST_SCORE=40
+          fi
+
+          OVERALL=$(( (FILE_SCORE + TEST_SCORE) / 2 ))
+          echo "| Dimension | Score |" >> report.md
+          echo "|-----------|-------|" >> report.md
+          echo "| File size compliance | ${FILE_SCORE}/100 |" >> report.md
+          echo "| Test coverage ratio | ${TEST_SCORE}/100 (${TEST_RATIO}% of services+pages have tests) |" >> report.md
+          echo "| **Overall health** | **${OVERALL}/100** |" >> report.md
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-health-report
+          path: report.md
+          retention-days: 90
+
+      - name: Create or update issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('report.md', 'utf8');
+            const title = '📊 Weekly Code Health Report';
+
+            // Find existing open issue
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'code-health',
+              per_page: 1,
+            });
+
+            if (issues.length > 0) {
+              // Update existing issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                body: report,
+              });
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body: report,
+                labels: ['code-health', 'automated'],
+              });
+            }
