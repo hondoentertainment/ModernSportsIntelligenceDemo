@@ -1,14 +1,28 @@
 import React from 'react';
-import { Link2, ChevronRight, Shield, CheckCircle, Clock, Fingerprint } from 'lucide-react';
-import { getDigitalTwins, getProvenanceStats } from '../lib/provenanceChainService.ts';
+import {
+  Fingerprint,
+  Shield,
+  ShieldAlert,
+  ChevronRight,
+  Search,
+  AlertTriangle,
+  CheckCircle2,
+} from 'lucide-react';
+import { getRegistryStats, getFraudAlerts } from '../lib/provenanceChainService.ts';
 
 interface Props {
   onOpenModal?: () => void;
 }
 
 const ProvenanceChainWidget: React.FC<Props> = ({ onOpenModal }) => {
-  const twins = getDigitalTwins();
-  const stats = getProvenanceStats();
+  const stats = getRegistryStats();
+  const alerts = getFraudAlerts().filter(a => a.status === 'active');
+
+  const fmtValue = (n: number): string => {
+    if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+    if (n >= 1_000) return `$${(n / 1_000).toFixed(0)}K`;
+    return `$${n}`;
+  };
 
   return (
     <button
@@ -19,14 +33,14 @@ const ProvenanceChainWidget: React.FC<Props> = ({ onOpenModal }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-cyan-500/10 rounded-xl text-cyan-400">
-            <Link2 size={22} />
+            <Fingerprint size={22} />
           </div>
           <div>
             <h3 className="text-3xl font-bebas tracking-widest text-white leading-tight">
-              Provenance <span className="text-cyan-400">Chain</span>
+              Card DNA &amp; <span className="text-cyan-400">Provenance</span>
             </h3>
             <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
-              Blockchain-backed ownership history
+              Carfax for Sports Cards
             </p>
           </div>
         </div>
@@ -36,69 +50,88 @@ const ProvenanceChainWidget: React.FC<Props> = ({ onOpenModal }) => {
         />
       </div>
 
-      {/* Stats Bar */}
-      <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
-        <div className="flex items-center gap-1.5 text-xs">
-          <Fingerprint size={12} className="text-cyan-400" />
-          <span className="text-slate-400 font-medium">Twins:</span>
-          <span className="font-bebas text-lg text-cyan-400 tracking-wider">{stats.totalTwins}</span>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="p-3 bg-slate-800/50 border border-slate-700/50 rounded-2xl text-center">
+          <div className="flex items-center justify-center gap-1.5 mb-1">
+            <Fingerprint size={12} className="text-cyan-400" />
+            <span className="text-[10px] text-slate-500 uppercase font-bold">Registered</span>
+          </div>
+          <span className="font-bebas text-2xl text-cyan-400 tracking-wider">
+            {stats.totalCardsRegistered.toLocaleString()}
+          </span>
         </div>
-        <div className="h-5 w-px bg-slate-700" />
-        <div className="flex items-center gap-1.5 text-xs">
-          <CheckCircle size={12} className="text-emerald-400" />
-          <span className="text-slate-400 font-medium">Verified:</span>
-          <span className="font-bebas text-lg text-emerald-400 tracking-wider">{stats.totalVerified}</span>
+        <div className="p-3 bg-slate-800/50 border border-slate-700/50 rounded-2xl text-center">
+          <div className="flex items-center justify-center gap-1.5 mb-1">
+            <Shield size={12} className="text-emerald-400" />
+            <span className="text-[10px] text-slate-500 uppercase font-bold">Fraud Stopped</span>
+          </div>
+          <span className="font-bebas text-2xl text-emerald-400 tracking-wider">
+            {stats.fraudPrevented}
+          </span>
         </div>
-        <div className="h-5 w-px bg-slate-700" />
-        <div className="flex items-center gap-1.5 text-xs">
-          <Shield size={12} className="text-amber-400" />
-          <span className="text-slate-400 font-medium">Auth Score:</span>
-          <span className="font-mono text-amber-400">{stats.averageAuthenticityScore.toFixed(1)}%</span>
+        <div className="p-3 bg-slate-800/50 border border-slate-700/50 rounded-2xl text-center">
+          <div className="flex items-center justify-center gap-1.5 mb-1">
+            <CheckCircle2 size={12} className="text-amber-400" />
+            <span className="text-[10px] text-slate-500 uppercase font-bold">Protected</span>
+          </div>
+          <span className="font-bebas text-2xl text-amber-400 tracking-wider">
+            {fmtValue(stats.valueProtected)}
+          </span>
         </div>
       </div>
 
-      {/* Recent Twins */}
-      {twins.length > 0 ? (
+      {/* Recent Fraud Alerts */}
+      {alerts.length > 0 && (
         <div className="space-y-2">
-          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Recent Digital Twins</p>
+          <p className="text-[10px] font-black text-red-400 uppercase tracking-widest flex items-center gap-1.5">
+            <AlertTriangle size={10} />
+            Active Fraud Alerts
+          </p>
           <div className="space-y-1.5">
-            {twins.slice(0, 3).map(twin => (
+            {alerts.slice(0, 2).map(alert => (
               <div
-                key={twin.id}
-                className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl text-xs"
+                key={alert.id}
+                className="flex items-start gap-3 p-3 bg-red-500/5 border border-red-500/20 rounded-xl text-xs"
               >
-                <CheckCircle size={12} className="text-emerald-400 flex-shrink-0" />
+                <ShieldAlert size={14} className="text-red-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-white font-medium truncate">{twin.playerName}</p>
-                  <p className="text-[10px] text-slate-500">{twin.provenanceChain.length} chain events</p>
+                  <p className="text-white font-medium truncate">{alert.cardName}</p>
+                  <p className="text-[10px] text-red-400/80 mt-0.5 line-clamp-1">{alert.description}</p>
                 </div>
-                <span className={`font-mono text-xs w-14 text-right ${
-                  twin.authenticityScore >= 95 ? 'text-emerald-400' : 'text-amber-400'
+                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full flex-shrink-0 ${
+                  alert.severity === 'critical'
+                    ? 'bg-red-500/20 text-red-400'
+                    : 'bg-amber-500/20 text-amber-400'
                 }`}>
-                  {twin.authenticityScore}%
+                  {alert.severity}
                 </span>
               </div>
             ))}
           </div>
         </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <div className="p-4 bg-slate-800/50 rounded-2xl mb-4">
-            <Link2 size={32} className="text-slate-600" />
-          </div>
-          <p className="text-sm text-slate-400">No digital twins created</p>
-          <p className="text-xs text-slate-600 mt-1 group-hover:text-slate-500 transition-colors">
-            Click to create blockchain-backed provenance records
-          </p>
-        </div>
       )}
 
-      {/* Footer hint */}
-      {twins.length > 0 && (
-        <p className="text-[10px] text-slate-600 text-center group-hover:text-slate-500 transition-colors uppercase tracking-widest font-bold">
-          Click to manage provenance chain
-        </p>
-      )}
+      {/* Quick-Search Hint */}
+      <div className="flex items-center gap-2 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl">
+        <Search size={14} className="text-slate-500" />
+        <span className="text-xs text-slate-500">
+          Verify any card&apos;s authenticity — cert # or listing URL
+        </span>
+      </div>
+
+      {/* CTA */}
+      <div className="flex items-center justify-center gap-2 py-2 bg-cyan-500/10 border border-cyan-500/20 rounded-xl group-hover:bg-cyan-500/20 transition-colors">
+        <Fingerprint size={14} className="text-cyan-400" />
+        <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider">
+          Register a Card
+        </span>
+      </div>
+
+      {/* Footer */}
+      <p className="text-[10px] text-slate-600 text-center group-hover:text-slate-500 transition-colors uppercase tracking-widest font-bold">
+        Click to open Card DNA &amp; Provenance Center
+      </p>
     </button>
   );
 };
