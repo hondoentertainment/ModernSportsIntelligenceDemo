@@ -17,10 +17,12 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:desktop": "playwright test --project=chromium",
     "test:e2e:mobile": "playwright test --project=Mobile Chrome",
-    "feature-coverage": "npx tsx scripts/feature-coverage.ts",
-    "feature-coverage:json": "npx tsx scripts/feature-coverage.ts --json",
-    "code-health": "bash scripts/code-health.sh",
-    "bundle-check": "bash scripts/bundle-check.sh"
+    "joe": "tsx scripts/orchestrator.ts",
+    "joe:batch": "tsx scripts/batch-builder.ts",
+    "joe:validate": "tsx scripts/feature-validator.ts",
+    "joe:diff": "tsx scripts/feature-diff.ts",
+    "joe:health": "bash scripts/code-health.sh",
+    "joe:bundle": "bash scripts/bundle-check.sh"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
