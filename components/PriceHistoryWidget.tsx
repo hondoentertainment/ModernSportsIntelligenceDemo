@@ -389,4 +389,4 @@ const PriceHistoryWidget: React.FC<PriceHistoryWidgetProps> = ({
   );
 };
 
-export default PriceHistoryWidget;
+export default React.memo(PriceHistoryWidget);

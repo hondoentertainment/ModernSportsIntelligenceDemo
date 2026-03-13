@@ -198,4 +198,4 @@ const TaxSummaryWidget: React.FC<TaxSummaryWidgetProps> = ({ inventory, onCardCl
   );
 };
 
-export default TaxSummaryWidget;
+export default React.memo(TaxSummaryWidget);

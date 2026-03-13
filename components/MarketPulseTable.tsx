@@ -46,7 +46,7 @@ const MarketPulseTable: React.FC<MarketPulseTableProps> = ({ items }) => {
                                     </td>
                                     <td className="px-4 py-3">
                                         <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${item.isGraded ? 'bg-brand-blue/10 text-brand-blue' : 'bg-slate-800 text-slate-500'}`}>
-                                            {item.isGraded ? `${item.grader} ${item.grade}` : 'RAW'}
+                                            {item.isGraded ? `${item.gradingCompany} ${item.grade}` : 'RAW'}
                                         </span>
                                     </td>
                                     <td className="px-4 py-3">

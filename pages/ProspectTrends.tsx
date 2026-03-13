@@ -39,7 +39,7 @@ const ProspectTrends: React.FC = () => {
     const leagueToFetch = leagueOverride || activeLeague;
     const data = await getRealTimeLeagueTrends(leagueToFetch);
     if (data && data.length > 0) {
-      setProspects(data);
+      setProspects(data.map((d, i) => ({ ...d, id: d.name.replace(/\s+/g, '-').toLowerCase() + '-' + i, league: d.league as MiLBProspect['league'] })));
       localStorage.setItem(`cardx_trends_${leagueToFetch}`, JSON.stringify(data));
       localStorage.setItem(`cardx_trends_last_updated_${leagueToFetch}`, new Date().toISOString());
     }

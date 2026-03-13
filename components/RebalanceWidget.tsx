@@ -254,4 +254,4 @@ const RebalanceWidget: React.FC<RebalanceWidgetProps> = ({ inventory, onAlertCli
   );
 };
 
-export default RebalanceWidget;
+export default React.memo(RebalanceWidget);

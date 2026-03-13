@@ -85,54 +85,72 @@ const AuctionSniperWidget: React.FC<AuctionSniperWidgetProps> = ({ inventory, on
   }, [alerts]);
 
   return (
-    <div className="bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden">
-      {/* Widget Header */}
-      <div className="p-4 border-b border-slate-700 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Crosshair className="w-5 h-5 text-emerald-400" />
-          <h3 className="text-base font-bold text-white">Auction Sniper</h3>
+    <div className="bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-6 animate-in slide-in-from-bottom-8 duration-700">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-400">
+            <Crosshair size={22} />
+          </div>
+          <div>
+            <h3 className="text-3xl font-bebas tracking-widest text-white leading-tight">
+              Auction <span className="text-emerald-400">Sniper</span>
+            </h3>
+            <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
+              Live auction opportunities
+            </p>
+          </div>
         </div>
-        <span className="text-xs text-slate-500">Live Opportunities</span>
+        <div className="flex items-center gap-2">
+          {stats.endingSoon > 0 && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/30 animate-pulse">
+              <Clock size={12} />
+              {stats.endingSoon} ending
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Summary Bar */}
-      <div className="grid grid-cols-3 divide-x divide-slate-700 border-b border-slate-700">
-        <div className="p-3 text-center">
-          <p className="text-xs text-slate-400">Active</p>
-          <p className="text-lg font-bold text-white">{stats.totalActive}</p>
+      <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
+        <div className="flex items-center gap-1.5 text-xs">
+          <Crosshair size={12} className="text-emerald-400" />
+          <span className="text-slate-400 font-medium">Active:</span>
+          <span className="font-bebas text-lg text-white tracking-wider">{stats.totalActive}</span>
         </div>
-        <div className="p-3 text-center">
-          <p className="text-xs text-slate-400">Ending Soon</p>
-          <p className="text-lg font-bold text-red-400">{stats.endingSoon}</p>
+        <div className="h-5 w-px bg-slate-700" />
+        <div className="flex items-center gap-1.5 text-xs">
+          <Clock size={12} className="text-red-400" />
+          <span className="text-slate-400 font-medium">Ending Soon:</span>
+          <span className="font-bebas text-lg text-red-400 tracking-wider">{stats.endingSoon}</span>
         </div>
-        <div className="p-3 text-center">
-          <p className="text-xs text-slate-400">Potential Savings</p>
-          <p className="text-lg font-bold text-emerald-400">${stats.totalPotentialSavings.toFixed(0)}</p>
+        <div className="h-5 w-px bg-slate-700" />
+        <div className="flex items-center gap-1.5 text-xs">
+          <TrendingDown size={12} className="text-emerald-400" />
+          <span className="text-slate-400 font-medium">Savings:</span>
+          <span className="font-mono text-emerald-400">${stats.totalPotentialSavings.toFixed(0)}</span>
         </div>
       </div>
 
       {/* Top Opportunities */}
-      <div className="p-4">
-        <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-          <Zap className="w-3.5 h-3.5 text-emerald-400" />
-          Top Opportunities
-        </h4>
-
-        {topOpportunities.length === 0 ? (
-          <p className="text-sm text-slate-500 text-center py-4">No actionable opportunities right now</p>
-        ) : (
-          <div className="space-y-2">
+      {topOpportunities.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest flex items-center gap-1.5">
+            <Zap size={10} className="text-emerald-400" />
+            Top Opportunities
+          </p>
+          <div className="space-y-1.5">
             {topOpportunities.map(a => {
               const badge = STRATEGY_BADGE[a.strategy];
               return (
                 <button
                   key={a.listing.id}
                   onClick={() => onListingClick?.(a.listing)}
-                  className="w-full flex items-center gap-3 p-3 bg-slate-800 hover:bg-slate-750 border border-slate-700 rounded-xl transition-colors text-left group"
+                  className="w-full flex items-center gap-3 p-3 bg-slate-800/30 hover:bg-slate-800/60 border border-slate-700/50 hover:border-slate-600 rounded-xl text-left transition-all group"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-semibold text-white truncate">
+                      <span className="text-sm font-semibold text-white truncate group-hover:text-brand-lime transition-colors">
                         {a.listing.player}
                       </span>
                       <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${badge.cls}`}>
@@ -146,36 +164,39 @@ const AuctionSniperWidget: React.FC<AuctionSniperWidgetProps> = ({ inventory, on
                   </div>
 
                   <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                    <span className={`text-xs font-mono font-semibold ${timeUrgencyColor(a.listing.timeRemaining)}`}>
-                      <Clock className="w-3 h-3 inline mr-0.5" />
+                    <span className={`text-xs font-mono font-semibold flex items-center gap-0.5 ${timeUrgencyColor(a.listing.timeRemaining)}`}>
+                      <Clock size={10} />
                       {formatTimeShort(a.listing.timeRemaining)}
                     </span>
                     <span className="text-xs text-emerald-400 font-semibold flex items-center gap-0.5">
-                      <TrendingDown className="w-3 h-3" />
+                      <TrendingDown size={10} />
                       ${a.expectedSavings.toFixed(0)}
                     </span>
                   </div>
 
-                  <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0" />
+                  <ChevronRight
+                    size={14}
+                    className="text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0"
+                  />
                 </button>
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Alerts */}
       {topAlerts.length > 0 && (
-        <div className="p-4 pt-0">
-          <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <Activity className="w-3.5 h-3.5 text-amber-400" />
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest flex items-center gap-1.5">
+            <Activity size={10} className="text-amber-400" />
             Alerts
-          </h4>
-          <div className="space-y-2">
+          </p>
+          <div className="space-y-1.5">
             {topAlerts.map(alert => (
               <div
                 key={alert.id}
-                className={`flex items-start gap-2 p-2.5 rounded-lg border text-xs ${
+                className={`flex items-start gap-2 p-3 rounded-xl border text-xs ${
                   alert.severity === 'critical'
                     ? 'bg-red-500/10 border-red-500/30 text-red-400'
                     : alert.severity === 'warning'
@@ -184,16 +205,27 @@ const AuctionSniperWidget: React.FC<AuctionSniperWidgetProps> = ({ inventory, on
                 }`}
               >
                 {alert.severity === 'critical' ? (
-                  <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
                 ) : alert.severity === 'warning' ? (
-                  <Eye className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                  <Eye size={14} className="flex-shrink-0 mt-0.5" />
                 ) : (
-                  <Activity className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                  <Activity size={14} className="flex-shrink-0 mt-0.5" />
                 )}
                 <span className="leading-relaxed">{alert.message}</span>
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Empty state */}
+      {topOpportunities.length === 0 && topAlerts.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="p-4 bg-slate-800/50 rounded-2xl mb-4">
+            <Crosshair size={32} className="text-slate-600" />
+          </div>
+          <p className="text-sm text-slate-400">No actionable opportunities right now</p>
+          <p className="text-xs text-slate-600 mt-1">Add more cards to your inventory for auction analysis</p>
         </div>
       )}
     </div>

@@ -3,7 +3,7 @@ import { Activity, Zap, Layers, ArrowUpRight } from 'lucide-react';
 
 interface Signal {
   id: string;
-  type: 'buy' | 'sell';
+  type: 'buy' | 'sell' | 'scarcity';
   impact: 'high' | 'medium' | 'low';
   title: string;
   description: string;

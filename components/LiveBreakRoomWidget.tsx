@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Tv, ChevronRight, Users, Flame, Timer, Gavel } from 'lucide-react';
+import { Tv, ChevronRight, Users, Flame, Timer, Gavel, Bell } from 'lucide-react';
 import { getLiveBreakRooms, getLiveAuctions } from '../lib/liveBreakRoomService.ts';
 
 interface Props {
@@ -22,65 +22,137 @@ const LiveBreakRoomWidget: React.FC<Props> = ({ onOpenModal }) => {
   }, []);
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-rose-500/30 transition-all cursor-pointer" onClick={onOpenModal}>
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <div className={`p-1.5 rounded-lg bg-rose-500/20 ${liveBreaks.length > 0 && pulse ? 'animate-pulse' : ''}`}>
-            <Tv size={16} className="text-rose-400" />
+    <button
+      onClick={onOpenModal}
+      className="w-full text-left bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-6 animate-in slide-in-from-bottom-8 duration-700 hover:border-slate-700 transition-all group"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`p-2.5 bg-rose-500/10 rounded-xl text-rose-400 ${liveBreaks.length > 0 && pulse ? 'animate-pulse' : ''}`}>
+            <Tv size={22} />
           </div>
-          <h3 className="text-sm font-semibold text-slate-200">Live Breaks & Auctions</h3>
-          {liveBreaks.length > 0 && (
-            <span className="px-1.5 py-0.5 text-[10px] font-bold bg-rose-500/30 text-rose-300 rounded-full">
-              LIVE
-            </span>
-          )}
+          <div>
+            <h3 className="text-3xl font-bebas tracking-widest text-white leading-tight">
+              Live <span className="text-rose-400">Breaks</span>
+            </h3>
+            <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
+              Break rooms & auction intelligence
+            </p>
+          </div>
         </div>
-        <ChevronRight size={14} className="text-slate-500" />
+        {liveBreaks.length > 0 ? (
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/30 animate-pulse">
+            <Bell size={12} />
+            {liveBreaks.length} LIVE
+          </div>
+        ) : (
+          <ChevronRight
+            size={20}
+            className="text-slate-600 group-hover:text-brand-lime group-hover:translate-x-1 transition-all"
+          />
+        )}
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mb-3">
-        <div className="bg-slate-900/50 rounded-lg p-2 text-center">
-          <p className="text-[10px] text-slate-500">Live Breaks</p>
-          <p className="text-lg font-bold text-rose-400">{liveBreaks.length}</p>
+      {/* Stats Bar */}
+      <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
+        <div className="flex items-center gap-1.5 text-xs">
+          <Tv size={12} className="text-rose-400" />
+          <span className="text-slate-400 font-medium">Live:</span>
+          <span className={`font-bebas text-lg tracking-wider ${liveBreaks.length > 0 ? 'text-rose-400' : 'text-white'}`}>
+            {liveBreaks.length}
+          </span>
         </div>
-        <div className="bg-slate-900/50 rounded-lg p-2 text-center">
-          <p className="text-[10px] text-slate-500">Ending Soon</p>
-          <p className="text-lg font-bold text-amber-400">{endingSoonAuctions.length}</p>
+        <div className="h-5 w-px bg-slate-700" />
+        <div className="flex items-center gap-1.5 text-xs">
+          <Gavel size={12} className="text-amber-400" />
+          <span className="text-slate-400 font-medium">Ending Soon:</span>
+          <span className={`font-bebas text-lg tracking-wider ${endingSoonAuctions.length > 0 ? 'text-amber-400' : 'text-white'}`}>
+            {endingSoonAuctions.length}
+          </span>
+        </div>
+        <div className="h-5 w-px bg-slate-700" />
+        <div className="flex items-center gap-1.5 text-xs">
+          <Timer size={12} className="text-slate-400" />
+          <span className="text-slate-400 font-medium">Upcoming:</span>
+          <span className="font-bebas text-lg text-white tracking-wider">
+            {breaks.filter(b => b.status === 'upcoming').length}
+          </span>
         </div>
       </div>
 
+      {/* Top Live Break */}
       {liveBreaks.length > 0 && (
         <div className="space-y-2">
-          {liveBreaks.slice(0, 1).map(brk => (
-            <div key={brk.id} className="bg-slate-900/50 rounded-lg p-2">
-              <p className="text-xs font-medium text-slate-300 truncate">{brk.title}</p>
-              <div className="flex items-center gap-3 mt-1 text-[10px] text-slate-500">
-                <span className="flex items-center gap-0.5"><Users size={8} /> {brk.viewers}</span>
-                <span className="flex items-center gap-0.5"><Flame size={8} /> {brk.hits.length} hits</span>
-                <span>{brk.filledSpots}/{brk.totalSpots} spots</span>
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Now Breaking</p>
+          <div className="space-y-1.5">
+            {liveBreaks.slice(0, 2).map(brk => (
+              <div
+                key={brk.id}
+                className="flex items-center gap-3 p-3 bg-rose-500/5 border border-rose-500/15 rounded-xl text-xs"
+              >
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-medium truncate">{brk.title}</p>
+                  <p className="text-[10px] text-slate-500">
+                    {brk.sport} &bull; {brk.filledSpots}/{brk.totalSpots} spots
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 text-slate-400 flex-shrink-0">
+                  <span className="flex items-center gap-0.5"><Users size={10} /> {brk.viewers}</span>
+                  <span className="flex items-center gap-0.5"><Flame size={10} className="text-orange-400" /> {brk.hits.length}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
+      {/* Top Ending Auction */}
       {endingSoonAuctions.length > 0 && (
-        <div className="mt-2 pt-2 border-t border-slate-700/30">
-          {endingSoonAuctions.slice(0, 1).map(auction => (
-            <div key={auction.id} className="flex items-center justify-between text-xs">
-              <div>
-                <p className="text-slate-300 font-medium truncate">{auction.playerName}</p>
-                <p className="text-[10px] text-slate-500">{auction.platform} · {auction.timeRemaining}</p>
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Ending Soon</p>
+          <div className="space-y-1.5">
+            {endingSoonAuctions.slice(0, 2).map(auction => (
+              <div
+                key={auction.id}
+                className="flex items-center gap-3 p-3 bg-amber-500/5 border border-amber-500/15 rounded-xl text-xs"
+              >
+                <Gavel size={12} className="text-amber-400 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-medium truncate">{auction.playerName}</p>
+                  <p className="text-[10px] text-slate-500">{auction.platform} &bull; {auction.timeRemaining}</p>
+                </div>
+                <span className="font-mono text-white font-bold">${auction.currentBid.toLocaleString()}</span>
+                <span className={`text-[10px] font-bold ${auction.dealScore >= 70 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  {auction.dealScore}/100
+                </span>
               </div>
-              <div className="text-right">
-                <p className="text-sm font-bold text-slate-200">${auction.currentBid.toLocaleString()}</p>
-                <p className="text-[10px] text-emerald-400">Deal: {auction.dealScore}/100</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
-    </div>
+
+      {/* Empty state */}
+      {liveBreaks.length === 0 && endingSoonAuctions.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <div className="p-4 bg-slate-800/50 rounded-2xl mb-4">
+            <Tv size={32} className="text-slate-600" />
+          </div>
+          <p className="text-sm text-slate-400">No live breaks or auctions</p>
+          <p className="text-xs text-slate-600 mt-1 group-hover:text-slate-500 transition-colors">
+            Click to browse upcoming breaks and auctions
+          </p>
+        </div>
+      )}
+
+      {/* Footer hint */}
+      {(liveBreaks.length > 0 || endingSoonAuctions.length > 0) && (
+        <p className="text-[10px] text-slate-600 text-center group-hover:text-slate-500 transition-colors uppercase tracking-widest font-bold">
+          Click to manage breaks & auctions
+        </p>
+      )}
+    </button>
   );
 };
 

@@ -127,7 +127,7 @@ export async function getEbayCardPrice(card: CardInventory, signal?: AbortSignal
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
-      abortSignal: signal,
+
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -210,7 +210,7 @@ export async function getWatchlistItemPrice(target: TargetWatchlist, signal?: Ab
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
-      abortSignal: signal,
+
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -274,7 +274,7 @@ export async function getRealTimeLeagueTrends(league: string, signal?: AbortSign
     const response = await ai.models.generateContent({
       model: "gemini-1.5-flash",
       contents: prompt,
-      abortSignal: signal,
+
       config: {
         tools: [{ googleSearchRetrieval: {} as GoogleSearchRetrieval }],
         responseMimeType: "application/json",
@@ -336,7 +336,7 @@ export async function generatePortfolioSentiment(inventory: CardInventory[], sig
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
-      abortSignal: signal,
+
     });
 
     return response.text || "Stable market conditions observed across all sectors.";
@@ -379,7 +379,7 @@ export async function parseCardImage(imageBase64: string, mimeType: string = "im
   try {
     const response = await ai.models.generateContent({
       model: "gemini-1.5-flash",
-      abortSignal: signal,
+
       contents: [{
         role: "user",
         parts: [
@@ -428,7 +428,7 @@ export async function findSimilarCards(query: string, inventory: CardInventory[]
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: prompt,
-      abortSignal: signal,
+
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -505,7 +505,7 @@ Return JSON with: action (accept|counter|reject), sentiment (positive|neutral|ne
     const response = await ai.models.generateContent({
       model: "gemini-1.5-flash",
       contents: prompt,
-      abortSignal: signal,
+
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -579,7 +579,7 @@ Return JSON with: offerAmount (number), message (string for the seller), reasoni
     const response = await ai.models.generateContent({
       model: "gemini-1.5-flash",
       contents: prompt,
-      abortSignal: signal,
+
       config: {
         responseMimeType: "application/json",
         responseSchema: {

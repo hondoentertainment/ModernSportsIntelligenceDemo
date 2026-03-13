@@ -82,4 +82,4 @@ const RecentlyIngested: React.FC<RecentlyIngestedProps> = ({ inventory }) => {
   );
 };
 
-export default RecentlyIngested;
+export default React.memo(RecentlyIngested);

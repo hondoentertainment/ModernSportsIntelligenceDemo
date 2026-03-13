@@ -248,8 +248,7 @@ const Collection: React.FC = () => {
   };
 
   const handleSaveExitStrategy = (cardId: string, exitPlan: ExitPlan) => {
-    updateCard({
-      id: cardId,
+    updateCard(cardId, {
       exitPlan,
       exitPlanId: exitPlan.id,
       liquidityScore: LiquidityService.calculateLiquidityScore(inventory.find(c => c.id === cardId)!)
@@ -987,7 +986,7 @@ const Collection: React.FC = () => {
             card={instantBuyCard}
             onAccept={(card, payout) => {
               setInventory(prev => prev.map(c => c.id === card.id ? { ...c, status: 'sold' as const, salePrice: payout, saleDate: new Date().toISOString() } : c));
-              toast.success(`${card.player} sold to MSI House for $${payout.toLocaleString()}`);
+              addToast('success', `${card.player} sold to MSI House for $${payout.toLocaleString()}`);
             }}
           />
         )}

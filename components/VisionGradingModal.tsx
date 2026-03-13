@@ -46,21 +46,23 @@ const VisionGradingModal: React.FC<Props> = ({ isOpen, onClose }) => {
   ] : [];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Modal */}
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-gradient-to-r from-purple-500/10 to-slate-900">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-purple-500/20">
-              <ScanEye size={20} className="text-purple-400" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-100">AI Vision Grading Lab</h2>
-              <p className="text-xs text-slate-400">AI-powered pre-submission grade prediction & defect detection</p>
-            </div>
+            <ScanEye size={24} className="text-purple-400" />
+            <h2 className="text-xl font-bold text-white">AI Vision Grading Lab</h2>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-lg transition-colors">
-            <X size={18} className="text-slate-400" />
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          >
+            <X size={20} />
           </button>
         </div>
 

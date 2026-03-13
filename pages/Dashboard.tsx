@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import React, { Suspense, useMemo, useState, useCallback, useEffect, lazy } from 'react';
 import {
   TrendingUp,
   ArrowUpRight,
@@ -37,57 +37,76 @@ import { MOCK_CARDS, MOCK_INVENTORY_SUMMARY } from '../constants.tsx';
 import { syncPortfolio, SyncProgress } from '../lib/marketSync.ts';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
 import { useAlerts } from '../lib/useAlerts.ts';
-import ReportModal from '../components/ReportModal.tsx';
-import MorningBriefingModal from '../components/MorningBriefingModal.tsx';
-import ShareAlphaModal from '../components/ShareAlphaModal.tsx';
-import OCRIngestionModal from '../components/OCRIngestionModal.tsx';
 import { getHistoricalDelta } from '../lib/marketHistory.ts';
 import { StatsService } from '../lib/statsService.ts';
 import { generatePortfolioReport } from '../lib/pdfExport.ts';
 import { AggregationService } from '../lib/aggregationService.ts';
 import { Cloud, CloudOff, Gavel } from 'lucide-react';
 
-import NegotiationModal from '../components/NegotiationModal.tsx';
+// Above-the-fold components (loaded eagerly for critical path)
 import HypeFeed from '../components/HypeFeed.tsx';
-import MarketPulseTable from '../components/MarketPulseTable.tsx';
-import DeepDiverReport from '../components/DeepDiverReport.tsx';
-import { CorrelationTerminal } from '../components/CorrelationTerminal.tsx';
-import { HedgeAdvisor } from '../components/HedgeAdvisor.tsx';
 import DashboardEmptyState from '../components/dashboard/DashboardEmptyState.tsx';
 import { DashboardSkeleton } from '../components/SkeletonLoader.tsx';
 import StrategicSignalsFeed from '../components/dashboard/StrategicSignalsFeed.tsx';
-import RecentlyIngested from '../components/dashboard/RecentlyIngested.tsx';
-import LiquidityPoolWidget from '../components/LiquidityPoolWidget.tsx';
-import BreakoutRadar from '../components/BreakoutRadar.tsx';
-import AgentInsightsPanel from '../components/AgentInsightsPanel.tsx';
-import AgentThesisModal from '../components/AgentThesisModal.tsx';
-import InstantBuyModal from '../components/InstantBuyModal.tsx';
-import PredictiveAlphaModal from '../components/PredictiveAlphaModal.tsx';
-import LiquidityHeatmap from '../components/LiquidityHeatmap.tsx';
-import MarketDepthModal from '../components/MarketDepthModal.tsx';
-import HedgeSimulationModal from '../components/HedgeSimulationModal.tsx';
-import TaxSummaryWidget from '../components/TaxSummaryWidget.tsx';
-import TaxReportModal from '../components/TaxReportModal.tsx';
-import GradeAuditWidget from '../components/GradeAuditWidget.tsx';
-import GradingPredictionModal from '../components/GradingPredictionModal.tsx';
-import MacroSentinelWidget from '../components/MacroSentinelWidget.tsx';
-import MacroAlertModal from '../components/MacroAlertModal.tsx';
-import { MacroAlert } from '../lib/macroSentinelService.ts';
-import RebalanceWidget from '../components/RebalanceWidget.tsx';
-import RebalanceAlertModal from '../components/RebalanceAlertModal.tsx';
-import { RebalanceAlert } from '../lib/rebalancingAlertService.ts';
-import AuctionSniperWidget from '../components/AuctionSniperWidget.tsx';
-import AuctionSniperModal from '../components/AuctionSniperModal.tsx';
-import { AuctionListing, analyzeListing } from '../lib/auctionSniperService.ts';
-import ConsignmentWidget from '../components/ConsignmentWidget.tsx';
-import PriceHistoryWidget from '../components/PriceHistoryWidget.tsx';
-import PriceHistoryModal from '../components/PriceHistoryModal.tsx';
-import AchievementWidget from '../components/AchievementWidget.tsx';
-import AchievementModal from '../components/AchievementModal.tsx';
-import AnomalyWidget from '../components/AnomalyWidget.tsx';
-import AnomalyDetailModal from '../components/AnomalyDetailModal.tsx';
-import { MarketAnomaly } from '../lib/anomalyDetectionService.ts';
+import { WidgetLoadingFallback } from '../components/LazyLoadFallback.tsx';
+import LazyErrorBoundary from '../components/LazyErrorBoundary.tsx';
+
+// Type-only imports (no runtime cost)
+import type { MacroAlert } from '../lib/macroSentinelService.ts';
+import type { RebalanceAlert } from '../lib/rebalancingAlertService.ts';
+import type { AuctionListing } from '../lib/auctionSniperService.ts';
+import type { MarketAnomaly } from '../lib/anomalyDetectionService.ts';
 import { NegotiableItem, CardInventory } from '../types.ts';
+
+// ─── Lazy-loaded below-the-fold widgets ───────────────────────────────
+// These widgets appear further down the dashboard and benefit from code splitting
+
+// Terminal mode components
+const MarketPulseTable = lazy(() => import('../components/MarketPulseTable.tsx'));
+const DeepDiverReport = lazy(() => import('../components/DeepDiverReport.tsx'));
+
+// Correlation & hedge section
+const CorrelationTerminal = lazy(() => import('../components/CorrelationTerminal.tsx').then(m => ({ default: m.CorrelationTerminal })));
+const HedgeAdvisor = lazy(() => import('../components/HedgeAdvisor.tsx').then(m => ({ default: m.HedgeAdvisor })));
+
+// Intelligence widgets (below fold)
+const MacroSentinelWidget = lazy(() => import('../components/MacroSentinelWidget.tsx'));
+const BreakoutRadar = lazy(() => import('../components/BreakoutRadar.tsx'));
+const AgentInsightsPanel = lazy(() => import('../components/AgentInsightsPanel.tsx'));
+const LiquidityHeatmap = lazy(() => import('../components/LiquidityHeatmap.tsx'));
+const LiquidityPoolWidget = lazy(() => import('../components/LiquidityPoolWidget.tsx'));
+const TaxSummaryWidget = lazy(() => import('../components/TaxSummaryWidget.tsx'));
+const GradeAuditWidget = lazy(() => import('../components/GradeAuditWidget.tsx'));
+const RebalanceWidget = lazy(() => import('../components/RebalanceWidget.tsx'));
+const AuctionSniperWidget = lazy(() => import('../components/AuctionSniperWidget.tsx'));
+const PriceHistoryWidget = lazy(() => import('../components/PriceHistoryWidget.tsx'));
+const ConsignmentWidget = lazy(() => import('../components/ConsignmentWidget.tsx'));
+const AchievementWidget = lazy(() => import('../components/AchievementWidget.tsx'));
+const AnomalyWidget = lazy(() => import('../components/AnomalyWidget.tsx'));
+const RecentlyIngested = lazy(() => import('../components/dashboard/RecentlyIngested.tsx'));
+
+// Modals (only loaded when user interaction triggers them)
+const ReportModal = lazy(() => import('../components/ReportModal.tsx'));
+const MorningBriefingModal = lazy(() => import('../components/MorningBriefingModal.tsx'));
+const ShareAlphaModal = lazy(() => import('../components/ShareAlphaModal.tsx'));
+const OCRIngestionModal = lazy(() => import('../components/OCRIngestionModal.tsx'));
+const NegotiationModal = lazy(() => import('../components/NegotiationModal.tsx'));
+const AgentThesisModal = lazy(() => import('../components/AgentThesisModal.tsx'));
+const InstantBuyModal = lazy(() => import('../components/InstantBuyModal.tsx'));
+const PredictiveAlphaModal = lazy(() => import('../components/PredictiveAlphaModal.tsx'));
+const MarketDepthModal = lazy(() => import('../components/MarketDepthModal.tsx'));
+const HedgeSimulationModal = lazy(() => import('../components/HedgeSimulationModal.tsx'));
+const TaxReportModal = lazy(() => import('../components/TaxReportModal.tsx'));
+const GradingPredictionModal = lazy(() => import('../components/GradingPredictionModal.tsx'));
+const MacroAlertModal = lazy(() => import('../components/MacroAlertModal.tsx'));
+const RebalanceAlertModal = lazy(() => import('../components/RebalanceAlertModal.tsx'));
+const AuctionSniperModal = lazy(() => import('../components/AuctionSniperModal.tsx'));
+const PriceHistoryModal = lazy(() => import('../components/PriceHistoryModal.tsx'));
+const AchievementModal = lazy(() => import('../components/AchievementModal.tsx'));
+const AnomalyDetailModal = lazy(() => import('../components/AnomalyDetailModal.tsx'));
+
+// Lazy import for analyzeListing (used only when modal opens)
+const getAnalyzeListing = () => import('../lib/auctionSniperService.ts').then(m => m.analyzeListing);
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
@@ -153,6 +172,7 @@ const Dashboard: React.FC = () => {
   const [isAchievementOpen, setIsAchievementOpen] = useState(false);
   const [isAnomalyOpen, setIsAnomalyOpen] = useState(false);
   const [anomalyDetail, setAnomalyDetail] = useState<MarketAnomaly | null>(null);
+  const [auctionAnalysis, setAuctionAnalysis] = useState<any>(null);
 
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
@@ -420,25 +440,27 @@ const Dashboard: React.FC = () => {
 
           {/* Terminal Mode Market Pulse Table & Analyst Desk */}
           {isTerminalMode && (
-            <>
-              <div className="col-span-12 lg:col-span-8 animate-in slide-in-from-left duration-500">
-                <div className="flex items-center justify-between mb-4 px-2">
-                  <div className="flex items-center gap-3">
-                    <div className="p-1.5 bg-brand-lime/10 rounded-lg text-brand-lime">
-                      <Activity size={16} />
+            <LazyErrorBoundary compact>
+              <Suspense fallback={<WidgetLoadingFallback />}>
+                <div className="col-span-12 lg:col-span-8 animate-in slide-in-from-left duration-500">
+                  <div className="flex items-center justify-between mb-4 px-2">
+                    <div className="flex items-center gap-3">
+                      <div className="p-1.5 bg-brand-lime/10 rounded-lg text-brand-lime">
+                        <Activity size={16} />
+                      </div>
+                      <h3 className="text-lg font-bebas tracking-wide text-white">Live Market Quotes</h3>
                     </div>
-                    <h3 className="text-lg font-bebas tracking-wide text-white">Live Market Quotes</h3>
+                    <div className="flex gap-2">
+                      <span className="px-2 py-0.5 rounded bg-brand-charcoal border border-slate-800 text-[9px] font-black text-slate-500 uppercase tracking-widest">Streaming</span>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <span className="px-2 py-0.5 rounded bg-brand-charcoal border border-slate-800 text-[9px] font-black text-slate-500 uppercase tracking-widest">Streaming</span>
-                  </div>
+                  <MarketPulseTable items={inventory.slice(0, 8)} />
                 </div>
-                <MarketPulseTable items={inventory.slice(0, 8)} />
-              </div>
-              <div className="col-span-12 lg:col-span-4 animate-in slide-in-from-right duration-500">
-                <DeepDiverReport cardName={inventory[0]?.player ? `${inventory[0].year} ${inventory[0].manufacturer} ${inventory[0].player}` : undefined} />
-              </div>
-            </>
+                <div className="col-span-12 lg:col-span-4 animate-in slide-in-from-right duration-500">
+                  <DeepDiverReport cardName={inventory[0]?.player ? `${inventory[0].year} ${inventory[0].manufacturer} ${inventory[0].player}` : undefined} />
+                </div>
+              </Suspense>
+            </LazyErrorBoundary>
           )}
 
           {/* Portfolio Identity HUD */}
@@ -524,20 +546,28 @@ const Dashboard: React.FC = () => {
           <StrategicSignalsFeed signals={signals} />
 
           {/* Macro-Sentinel Monitoring */}
-          <MacroSentinelWidget
-            inventory={inventory}
-            onAlertClick={(alert) => { setMacroAlert(alert); setIsMacroAlertOpen(true); }}
-          />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              <MacroSentinelWidget
+                inventory={inventory}
+                onAlertClick={(alert) => { setMacroAlert(alert); setIsMacroAlertOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
           {/* Asset Correlation & Hedge Advisor (Phase 21) */}
-          <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-500 order-last" style={{ animationDelay: '600ms' }}>
-            <div className="xl:col-span-3">
-              <CorrelationTerminal inventory={inventory} />
-            </div>
-            <div className="xl:col-span-2">
-              <HedgeAdvisor inventory={inventory} onDeployHedge={() => setIsHedgeSimOpen(true)} />
-            </div>
-          </div>
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-500 order-last" style={{ animationDelay: '600ms' }}>
+                <div className="xl:col-span-3">
+                  <CorrelationTerminal inventory={inventory} />
+                </div>
+                <div className="xl:col-span-2">
+                  <HedgeAdvisor inventory={inventory} onDeployHedge={() => setIsHedgeSimOpen(true)} />
+                </div>
+              </div>
+            </Suspense>
+          </LazyErrorBoundary>
 
           {/* Negotiation / Marketplace Teaser */}
           <div className="reveal-section mt-8 mb-12" style={{ animationDelay: '500ms' }}>
@@ -788,234 +818,305 @@ const Dashboard: React.FC = () => {
           </section>
 
 
-          {/* Predictive Alpha Engine */}
-          <BreakoutRadar
-            inventory={inventory}
-            onCardClick={(card) => { setPredictiveCard(card); setIsPredictiveOpen(true); }}
-          />
+          {/* ─── Below-the-fold widget sections (lazy loaded) ─── */}
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Predictive Alpha Engine */}
+              <BreakoutRadar
+                inventory={inventory}
+                onCardClick={(card) => { setPredictiveCard(card); setIsPredictiveOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Multi-Agent Intelligence */}
-          <AgentInsightsPanel
-            inventory={inventory}
-            onCardClick={(card) => { setThesisCard(card); setIsThesisOpen(true); }}
-          />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Multi-Agent Intelligence */}
+              <AgentInsightsPanel
+                inventory={inventory}
+                onCardClick={(card) => { setThesisCard(card); setIsThesisOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Liquidity Intelligence */}
-          <LiquidityHeatmap
-            inventory={inventory}
-            onCardClick={(card) => { setMarketDepthCard(card); setIsMarketDepthOpen(true); }}
-          />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Liquidity Intelligence */}
+              <LiquidityHeatmap
+                inventory={inventory}
+                onCardClick={(card) => { setMarketDepthCard(card); setIsMarketDepthOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Liquidity Pool */}
-          <LiquidityPoolWidget
-            inventory={inventory}
-            onInstantBuy={(card) => { setInstantBuyCard(card); setIsInstantBuyOpen(true); }}
-          />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Liquidity Pool */}
+              <LiquidityPoolWidget
+                inventory={inventory}
+                onInstantBuy={(card) => { setInstantBuyCard(card); setIsInstantBuyOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Fiscal Intelligence */}
-          <TaxSummaryWidget
-            inventory={inventory}
-            onCardClick={(card) => { setTaxLotCard(card); setIsTaxLotOpen(true); }}
-          />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Fiscal Intelligence */}
+              <TaxSummaryWidget
+                inventory={inventory}
+                onCardClick={(card) => { setTaxLotCard(card); setIsTaxLotOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Visual Audit Simulation */}
-          <GradeAuditWidget
-            inventory={inventory}
-            onCardClick={(card) => { setGradePredCard(card); setIsGradePredOpen(true); }}
-          />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Visual Audit Simulation */}
+              <GradeAuditWidget
+                inventory={inventory}
+                onCardClick={(card) => { setGradePredCard(card); setIsGradePredOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Portfolio Rebalancing */}
-          <RebalanceWidget
-            inventory={inventory}
-            onAlertClick={(alert) => { setRebalAlert(alert); setIsRebalAlertOpen(true); }}
-          />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Portfolio Rebalancing */}
+              <RebalanceWidget
+                inventory={inventory}
+                onAlertClick={(alert) => { setRebalAlert(alert); setIsRebalAlertOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Auction Sniper Intelligence */}
-          <AuctionSniperWidget
-            inventory={inventory}
-            onListingClick={(listing) => { setAuctionListing(listing); setIsAuctionSniperOpen(true); }}
-          />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Auction Sniper Intelligence */}
+              <AuctionSniperWidget
+                inventory={inventory}
+                onListingClick={(listing) => {
+                  setAuctionListing(listing);
+                  getAnalyzeListing().then(fn => setAuctionAnalysis(fn(listing)));
+                  setIsAuctionSniperOpen(true);
+                }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Price History Charts */}
-          <PriceHistoryWidget
-            inventory={inventory}
-            onCardClick={(card) => { setPriceHistCard(card); setIsPriceHistOpen(true); }}
-          />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Price History Charts */}
+              <PriceHistoryWidget
+                inventory={inventory}
+                onCardClick={(card) => { setPriceHistCard(card); setIsPriceHistOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Consignment Tracker */}
-          <ConsignmentWidget inventory={inventory} />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Consignment Tracker */}
+              <ConsignmentWidget inventory={inventory} />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Collection Achievements */}
-          <AchievementWidget
-            inventory={inventory}
-            onViewAll={() => setIsAchievementOpen(true)}
-          />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Collection Achievements */}
+              <AchievementWidget
+                inventory={inventory}
+                onViewAll={() => setIsAchievementOpen(true)}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Market Anomaly Detection */}
-          <AnomalyWidget
-            inventory={inventory}
-            onAnomalyClick={(anomaly) => { setAnomalyDetail(anomaly); setIsAnomalyOpen(true); }}
-          />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Market Anomaly Detection */}
+              <AnomalyWidget
+                inventory={inventory}
+                onAnomalyClick={(anomaly) => { setAnomalyDetail(anomaly); setIsAnomalyOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
 
-          {/* Recents Section */}
-          <RecentlyIngested inventory={inventory} />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Recents Section */}
+              <RecentlyIngested inventory={inventory} />
+            </Suspense>
+          </LazyErrorBoundary>
         </div>
       )}
 
-      {/* Report Modal */}
-      <ReportModal
-        isOpen={isReportOpen}
-        onClose={() => setIsReportOpen(false)}
-        inventory={inventory}
-      />
+      {/* ─── Lazy-loaded Modals (only rendered when opened) ─── */}
+      <Suspense fallback={null}>
+        {isReportOpen && (
+          <ReportModal
+            isOpen={isReportOpen}
+            onClose={() => setIsReportOpen(false)}
+            inventory={inventory}
+          />
+        )}
 
-      {/* Morning Briefing Modal */}
-      <MorningBriefingModal
-        isOpen={showBriefing}
-        onClose={() => setShowBriefing(false)}
-        inventory={inventory}
-      />
+        {showBriefing && (
+          <MorningBriefingModal
+            isOpen={showBriefing}
+            onClose={() => setShowBriefing(false)}
+            inventory={inventory}
+          />
+        )}
 
-      <ShareAlphaModal
-        isOpen={isShareOpen}
-        onClose={() => setIsShareOpen(false)}
-        alphaScore={alphaScore}
-        roi={syncMeta.totalValue > 0 ? ((syncMeta.totalValue - 12000) / 12000) * 100 : 0}
-        portfolioName="My Alpha HUD"
-      />
+        {isShareOpen && (
+          <ShareAlphaModal
+            isOpen={isShareOpen}
+            onClose={() => setIsShareOpen(false)}
+            alphaScore={alphaScore}
+            roi={syncMeta.totalValue > 0 ? ((syncMeta.totalValue - 12000) / 12000) * 100 : 0}
+            portfolioName="My Alpha HUD"
+          />
+        )}
 
-      <OCRIngestionModal
-        isOpen={isScanOpen}
-        onClose={() => setIsScanOpen(false)}
-        onSuccess={(card) => {
-          const newCard = {
-            id: `card-${Date.now()}`,
-            purchasePrice: 0,
-            purchaseDate: new Date().toISOString(),
-            condition: 'Ungraded',
-            ...card
-          } as any;
-          setInventory(prev => [newCard, ...prev]);
-        }}
-      />
+        {isScanOpen && (
+          <OCRIngestionModal
+            isOpen={isScanOpen}
+            onClose={() => setIsScanOpen(false)}
+            onSuccess={(card) => {
+              const newCard = {
+                id: `card-${Date.now()}`,
+                purchasePrice: 0,
+                purchaseDate: new Date().toISOString(),
+                condition: 'Ungraded',
+                ...card
+              } as any;
+              setInventory(prev => [newCard, ...prev]);
+            }}
+          />
+        )}
 
-      <NegotiationModal
-        isOpen={isNegotiationOpen}
-        onClose={() => setIsNegotiationOpen(false)}
-        targetItem={negotiationTarget}
-        onSuccess={(finalPrice) => {
-          // Add to inventory logic here if desired
-          if (import.meta.env.DEV) console.warn('Acquired for', finalPrice);
-        }}
-      />
+        {isNegotiationOpen && (
+          <NegotiationModal
+            isOpen={isNegotiationOpen}
+            onClose={() => setIsNegotiationOpen(false)}
+            targetItem={negotiationTarget}
+            onSuccess={(finalPrice) => {
+              if (import.meta.env.DEV) console.warn('Acquired for', finalPrice);
+            }}
+          />
+        )}
 
-      {instantBuyCard && (
-        <InstantBuyModal
-          isOpen={isInstantBuyOpen}
-          onClose={() => { setIsInstantBuyOpen(false); setInstantBuyCard(null); }}
-          card={instantBuyCard}
-          onAccept={(card, payout) => {
-            setInventory(prev => prev.map(c => c.id === card.id ? { ...c, status: 'sold' as const, salePrice: payout, saleDate: new Date().toISOString() } : c));
-          }}
-        />
-      )}
+        {instantBuyCard && (
+          <InstantBuyModal
+            isOpen={isInstantBuyOpen}
+            onClose={() => { setIsInstantBuyOpen(false); setInstantBuyCard(null); }}
+            card={instantBuyCard}
+            onAccept={(card, payout) => {
+              setInventory(prev => prev.map(c => c.id === card.id ? { ...c, status: 'sold' as const, salePrice: payout, saleDate: new Date().toISOString() } : c));
+            }}
+          />
+        )}
 
-      {predictiveCard && (
-        <PredictiveAlphaModal
-          isOpen={isPredictiveOpen}
-          onClose={() => { setIsPredictiveOpen(false); setPredictiveCard(null); }}
-          card={predictiveCard}
-        />
-      )}
+        {predictiveCard && (
+          <PredictiveAlphaModal
+            isOpen={isPredictiveOpen}
+            onClose={() => { setIsPredictiveOpen(false); setPredictiveCard(null); }}
+            card={predictiveCard}
+          />
+        )}
 
-      {thesisCard && (
-        <AgentThesisModal
-          isOpen={isThesisOpen}
-          onClose={() => { setIsThesisOpen(false); setThesisCard(null); }}
-          card={thesisCard}
-          portfolio={inventory}
-        />
-      )}
+        {thesisCard && (
+          <AgentThesisModal
+            isOpen={isThesisOpen}
+            onClose={() => { setIsThesisOpen(false); setThesisCard(null); }}
+            card={thesisCard}
+            portfolio={inventory}
+          />
+        )}
 
-      {marketDepthCard && (
-        <MarketDepthModal
-          isOpen={isMarketDepthOpen}
-          onClose={() => { setIsMarketDepthOpen(false); setMarketDepthCard(null); }}
-          card={marketDepthCard}
-        />
-      )}
+        {marketDepthCard && (
+          <MarketDepthModal
+            isOpen={isMarketDepthOpen}
+            onClose={() => { setIsMarketDepthOpen(false); setMarketDepthCard(null); }}
+            card={marketDepthCard}
+          />
+        )}
 
-      <HedgeSimulationModal
-        isOpen={isHedgeSimOpen}
-        onClose={() => setIsHedgeSimOpen(false)}
-        inventory={inventory}
-      />
+        {isHedgeSimOpen && (
+          <HedgeSimulationModal
+            isOpen={isHedgeSimOpen}
+            onClose={() => setIsHedgeSimOpen(false)}
+            inventory={inventory}
+          />
+        )}
 
-      {taxLotCard && (
-        <TaxReportModal
-          isOpen={isTaxLotOpen}
-          onClose={() => { setIsTaxLotOpen(false); setTaxLotCard(null); }}
-          card={taxLotCard}
-          portfolio={inventory}
-        />
-      )}
+        {taxLotCard && (
+          <TaxReportModal
+            isOpen={isTaxLotOpen}
+            onClose={() => { setIsTaxLotOpen(false); setTaxLotCard(null); }}
+            card={taxLotCard}
+            portfolio={inventory}
+          />
+        )}
 
-      {gradePredCard && (
-        <GradingPredictionModal
-          isOpen={isGradePredOpen}
-          onClose={() => { setIsGradePredOpen(false); setGradePredCard(null); }}
-          card={gradePredCard}
-        />
-      )}
+        {gradePredCard && (
+          <GradingPredictionModal
+            isOpen={isGradePredOpen}
+            onClose={() => { setIsGradePredOpen(false); setGradePredCard(null); }}
+            card={gradePredCard}
+          />
+        )}
 
-      {macroAlert && (
-        <MacroAlertModal
-          isOpen={isMacroAlertOpen}
-          onClose={() => { setIsMacroAlertOpen(false); setMacroAlert(null); }}
-          alert={macroAlert}
-        />
-      )}
+        {macroAlert && (
+          <MacroAlertModal
+            isOpen={isMacroAlertOpen}
+            onClose={() => { setIsMacroAlertOpen(false); setMacroAlert(null); }}
+            alert={macroAlert}
+          />
+        )}
 
-      {rebalAlert && (
-        <RebalanceAlertModal
-          isOpen={isRebalAlertOpen}
-          onClose={() => { setIsRebalAlertOpen(false); setRebalAlert(null); }}
-          alert={rebalAlert}
-          inventory={inventory}
-        />
-      )}
+        {rebalAlert && (
+          <RebalanceAlertModal
+            isOpen={isRebalAlertOpen}
+            onClose={() => { setIsRebalAlertOpen(false); setRebalAlert(null); }}
+            alert={rebalAlert}
+            inventory={inventory}
+          />
+        )}
 
-      {auctionListing && (
-        <AuctionSniperModal
-          isOpen={isAuctionSniperOpen}
-          onClose={() => { setIsAuctionSniperOpen(false); setAuctionListing(null); }}
-          listing={auctionListing}
-          analysis={analyzeListing(auctionListing)}
-        />
-      )}
+        {auctionListing && auctionAnalysis && (
+          <AuctionSniperModal
+            isOpen={isAuctionSniperOpen}
+            onClose={() => { setIsAuctionSniperOpen(false); setAuctionListing(null); setAuctionAnalysis(null); }}
+            listing={auctionListing}
+            analysis={auctionAnalysis}
+          />
+        )}
 
-      {priceHistCard && (
-        <PriceHistoryModal
-          isOpen={isPriceHistOpen}
-          onClose={() => { setIsPriceHistOpen(false); setPriceHistCard(null); }}
-          card={priceHistCard}
-        />
-      )}
+        {priceHistCard && (
+          <PriceHistoryModal
+            isOpen={isPriceHistOpen}
+            onClose={() => { setIsPriceHistOpen(false); setPriceHistCard(null); }}
+            card={priceHistCard}
+          />
+        )}
 
-      <AchievementModal
-        isOpen={isAchievementOpen}
-        onClose={() => setIsAchievementOpen(false)}
-        inventory={inventory}
-      />
+        {isAchievementOpen && (
+          <AchievementModal
+            isOpen={isAchievementOpen}
+            onClose={() => setIsAchievementOpen(false)}
+            inventory={inventory}
+          />
+        )}
 
-      {anomalyDetail && (
-        <AnomalyDetailModal
-          isOpen={isAnomalyOpen}
-          onClose={() => { setIsAnomalyOpen(false); setAnomalyDetail(null); }}
-          anomaly={anomalyDetail}
-          inventory={inventory}
-        />
-      )}
+        {anomalyDetail && (
+          <AnomalyDetailModal
+            isOpen={isAnomalyOpen}
+            onClose={() => { setIsAnomalyOpen(false); setAnomalyDetail(null); }}
+            anomaly={anomalyDetail}
+            inventory={inventory}
+          />
+        )}
+      </Suspense>
     </div>
   );
 };

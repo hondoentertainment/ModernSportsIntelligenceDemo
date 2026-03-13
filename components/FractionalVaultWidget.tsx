@@ -12,63 +12,120 @@ const FractionalVaultWidget: React.FC<Props> = ({ onOpenModal }) => {
   const topListings = getFractionalListings({ sortBy: 'volume' }).slice(0, 3);
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-amber-500/30 transition-all cursor-pointer" onClick={onOpenModal}>
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-amber-500/20">
-            <Landmark size={16} className="text-amber-400" />
+    <button
+      onClick={onOpenModal}
+      className="w-full text-left bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-6 animate-in slide-in-from-bottom-8 duration-700 hover:border-slate-700 transition-all group"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-amber-500/10 rounded-xl text-amber-400">
+            <Landmark size={22} />
           </div>
-          <h3 className="text-sm font-semibold text-slate-200">Fractional Vault</h3>
+          <div>
+            <h3 className="text-3xl font-bebas tracking-widest text-white leading-tight">
+              Fractional <span className="text-amber-400">Vault</span>
+            </h3>
+            <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
+              Own shares of grail cards
+            </p>
+          </div>
         </div>
-        <ChevronRight size={14} className="text-slate-500" />
+        <ChevronRight
+          size={20}
+          className="text-slate-600 group-hover:text-brand-lime group-hover:translate-x-1 transition-all"
+        />
       </div>
 
       {positions.length > 0 ? (
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-2">
-            <div className="bg-slate-900/50 rounded-lg p-2 text-center">
-              <p className="text-[10px] text-slate-500">Vault Value</p>
-              <p className="text-sm font-bold text-slate-200">${stats.totalVaultValue.toLocaleString()}</p>
+        <>
+          {/* Stats Bar */}
+          <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
+            <div className="flex items-center gap-1.5 text-xs">
+              <DollarSign size={12} className="text-amber-400" />
+              <span className="text-slate-400 font-medium">Vault:</span>
+              <span className="font-bebas text-lg text-white tracking-wider">${stats.totalVaultValue.toLocaleString()}</span>
             </div>
-            <div className="bg-slate-900/50 rounded-lg p-2 text-center">
-              <p className="text-[10px] text-slate-500">Unrealized P/L</p>
-              <p className={`text-sm font-bold ${stats.totalPL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <div className="h-5 w-px bg-slate-700" />
+            <div className="flex items-center gap-1.5 text-xs">
+              <Users size={12} className="text-amber-400" />
+              <span className="text-slate-400 font-medium">Positions:</span>
+              <span className="font-bebas text-lg text-white tracking-wider">{positions.length}</span>
+            </div>
+            <div className="h-5 w-px bg-slate-700" />
+            <div className="flex items-center gap-1.5 text-xs">
+              {stats.totalPL >= 0 ? (
+                <TrendingUp size={12} className="text-emerald-400" />
+              ) : (
+                <TrendingDown size={12} className="text-red-400" />
+              )}
+              <span className="text-slate-400 font-medium">P/L:</span>
+              <span className={`font-mono ${stats.totalPL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                 {stats.totalPL >= 0 ? '+' : ''}${stats.totalPL.toFixed(0)} ({stats.totalPLPercent.toFixed(1)}%)
-              </p>
-            </div>
-          </div>
-          {positions.slice(0, 2).map(pos => (
-            <div key={pos.id} className="flex items-center justify-between text-xs border-t border-slate-700/30 pt-2">
-              <div>
-                <p className="text-slate-300 font-medium">{pos.playerName}</p>
-                <p className="text-[10px] text-slate-500">{pos.sharesOwned} shares @ ${pos.averageCost.toFixed(2)}</p>
-              </div>
-              <span className={`font-mono ${pos.unrealizedPL >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                {pos.unrealizedPL >= 0 ? '+' : ''}{pos.unrealizedPLPercent.toFixed(1)}%
               </span>
             </div>
-          ))}
-        </div>
+          </div>
+
+          {/* Top Positions */}
+          <div className="space-y-2">
+            <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Top Positions</p>
+            <div className="space-y-1.5">
+              {positions.slice(0, 3).map(pos => (
+                <div
+                  key={pos.id}
+                  className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl text-xs"
+                >
+                  <span className="text-white font-medium truncate flex-1">
+                    {pos.playerName}
+                  </span>
+                  <span className="font-mono text-slate-400">
+                    {pos.sharesOwned} shares @ ${pos.averageCost.toFixed(2)}
+                  </span>
+                  <span className={`font-mono text-xs w-16 text-right ${
+                    pos.unrealizedPL >= 0 ? 'text-emerald-400' : 'text-red-400'
+                  }`}>
+                    {pos.unrealizedPL >= 0 ? '+' : ''}{pos.unrealizedPLPercent.toFixed(1)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Trending */}
+          {topListings.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Trending on Vault</p>
+              <div className="space-y-1.5">
+                {topListings.slice(0, 2).map(l => (
+                  <div key={l.id} className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl text-xs">
+                    <span className="text-slate-300 truncate flex-1">{l.playerName}</span>
+                    <span className={`font-mono ${l.dailyChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                      {l.dailyChange >= 0 ? '+' : ''}{l.dailyChange.toFixed(1)}%
+                    </span>
+                    <span className="text-slate-500 font-mono">{l.volumeToday} vol</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Footer hint */}
+          <p className="text-[10px] text-slate-600 text-center group-hover:text-slate-500 transition-colors uppercase tracking-widest font-bold">
+            Click to manage vault positions
+          </p>
+        </>
       ) : (
-        <div className="text-center py-4">
-          <Landmark size={24} className="text-slate-600 mx-auto mb-2" />
-          <p className="text-xs text-slate-500">Own shares of grail cards</p>
-          <p className="text-[10px] text-slate-600 mt-1">Starting from $1/share</p>
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <div className="p-4 bg-slate-800/50 rounded-2xl mb-4">
+            <Landmark size={32} className="text-slate-600" />
+          </div>
+          <p className="text-sm text-slate-400">Own shares of grail cards</p>
+          <p className="text-xs text-slate-600 mt-1 group-hover:text-slate-500 transition-colors">
+            Click to browse the fractional marketplace
+          </p>
         </div>
       )}
-
-      <div className="mt-3 pt-2 border-t border-slate-700/30">
-        <p className="text-[10px] text-slate-500 mb-1">Trending on Vault</p>
-        {topListings.slice(0, 1).map(l => (
-          <div key={l.id} className="flex items-center justify-between text-xs">
-            <span className="text-slate-400 truncate">{l.playerName}</span>
-            <span className={`font-mono ${l.dailyChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-              {l.dailyChange >= 0 ? '+' : ''}{l.dailyChange.toFixed(1)}% · {l.volumeToday} vol
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
+    </button>
   );
 };
 

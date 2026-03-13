@@ -34,22 +34,28 @@ const AchievementWidget: React.FC<AchievementWidgetProps> = ({ inventory, onView
   const recentThree = summary.recentUnlocks.slice(0, 3);
 
   return (
-    <div className="bg-slate-900 border border-slate-700 rounded-xl p-4">
+    <div className="bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-6 animate-in slide-in-from-bottom-8 duration-700">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Trophy size={18} className="text-yellow-400" />
-          <h3 className="text-sm font-semibold text-white">Achievements</h3>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-yellow-500/10 rounded-xl text-yellow-400">
+            <Trophy size={22} />
+          </div>
+          <div>
+            <h3 className="text-3xl font-bebas tracking-widest text-white leading-tight">
+              Player <span className="text-yellow-400">Achievements</span>
+            </h3>
+            <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
+              {summary.totalUnlocked} / {summary.totalAvailable} unlocked
+            </p>
+          </div>
         </div>
-        <span className="text-xs text-slate-500">
-          {summary.totalUnlocked} / {summary.totalAvailable}
-        </span>
       </div>
 
       {/* Level Badge + XP Bar */}
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
         <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold shrink-0"
+          className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold shrink-0"
           style={{
             background: `linear-gradient(135deg, ${levelColor}, ${levelColor}88)`,
             color: summary.level >= 20 ? '#000' : '#fff',
@@ -71,26 +77,24 @@ const AchievementWidget: React.FC<AchievementWidgetProps> = ({ inventory, onView
               }}
             />
           </div>
+          <div className="flex items-center justify-between mt-1">
+            <span className="text-[10px] text-slate-500">Completion</span>
+            <span className="text-[10px] font-bold text-white">{summary.completionPercent}%</span>
+          </div>
         </div>
-      </div>
-
-      {/* Completion Stat */}
-      <div className="flex items-center justify-between px-3 py-2 bg-slate-800/60 rounded-lg mb-4">
-        <span className="text-xs text-slate-400">Completion</span>
-        <span className="text-sm font-semibold text-white">{summary.completionPercent}%</span>
       </div>
 
       {/* Recently Unlocked */}
       {recentThree.length > 0 && (
-        <div className="mb-4">
-          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-2">
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
             Recently Unlocked
           </p>
           <div className="space-y-1.5">
             {recentThree.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-800/50"
+                className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl"
               >
                 <span className="text-base">{a.icon}</span>
                 <span className="text-xs font-medium text-white flex-1 truncate">{a.name}</span>
@@ -112,13 +116,13 @@ const AchievementWidget: React.FC<AchievementWidgetProps> = ({ inventory, onView
 
       {/* Next to Unlock */}
       {summary.nextToUnlock.length > 0 && (
-        <div className="mb-4">
-          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide mb-2">
+        <div className="space-y-2">
+          <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
             Up Next
           </p>
           <div className="space-y-2">
             {summary.nextToUnlock.map((a) => (
-              <div key={a.id} className="px-2.5 py-2 rounded-lg bg-slate-800/30">
+              <div key={a.id} className="px-3 py-2.5 rounded-xl bg-slate-800/30 border border-slate-700/50">
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className="text-base opacity-50">{a.icon}</span>
                   <span className="text-xs font-medium text-slate-300 flex-1 truncate">
@@ -147,10 +151,9 @@ const AchievementWidget: React.FC<AchievementWidgetProps> = ({ inventory, onView
       {onViewAll && (
         <button
           onClick={onViewAll}
-          className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors text-xs font-medium"
+          className="w-full text-center text-xs text-brand-lime/70 hover:text-brand-lime font-bold uppercase tracking-widest py-2 transition-colors"
         >
           View All Achievements
-          <ChevronRight size={14} />
         </button>
       )}
     </div>

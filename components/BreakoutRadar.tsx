@@ -165,4 +165,4 @@ const BreakoutRadar: React.FC<BreakoutRadarProps> = ({ inventory, onCardClick })
   );
 };
 
-export default BreakoutRadar;
+export default React.memo(BreakoutRadar);

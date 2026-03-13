@@ -67,4 +67,4 @@ const HypeFeed: React.FC = () => {
     );
 };
 
-export default HypeFeed;
+export default React.memo(HypeFeed);

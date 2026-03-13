@@ -181,4 +181,4 @@ const MacroSentinelWidget: React.FC<MacroSentinelWidgetProps> = ({ inventory, on
   );
 };
 
-export default MacroSentinelWidget;
+export default React.memo(MacroSentinelWidget);

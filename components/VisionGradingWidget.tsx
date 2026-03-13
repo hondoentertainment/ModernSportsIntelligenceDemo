@@ -11,50 +11,80 @@ const VisionGradingWidget: React.FC<Props> = ({ onOpenModal }) => {
   const recentScans = history.slice(0, 3);
 
   return (
-    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-purple-500/30 transition-all cursor-pointer" onClick={onOpenModal}>
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-purple-500/20">
-            <ScanEye size={16} className="text-purple-400" />
+    <button
+      onClick={onOpenModal}
+      className="w-full text-left bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-6 animate-in slide-in-from-bottom-8 duration-700 hover:border-slate-700 transition-all group"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-purple-500/10 rounded-xl text-purple-400">
+            <ScanEye size={22} />
           </div>
-          <h3 className="text-sm font-semibold text-slate-200">Vision Grading Lab</h3>
+          <div>
+            <h3 className="text-3xl font-bebas tracking-widest text-white leading-tight">
+              Vision <span className="text-purple-400">Grading</span>
+            </h3>
+            <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
+              AI-powered grade prediction lab
+            </p>
+          </div>
         </div>
-        <ChevronRight size={14} className="text-slate-500" />
+        <ChevronRight
+          size={20}
+          className="text-slate-600 group-hover:text-brand-lime group-hover:translate-x-1 transition-all"
+        />
       </div>
 
       {recentScans.length === 0 ? (
-        <div className="text-center py-4">
-          <Camera size={24} className="text-slate-600 mx-auto mb-2" />
-          <p className="text-xs text-slate-500">Scan a card to get AI grade prediction</p>
-          <button onClick={onOpenModal} className="mt-2 px-3 py-1.5 text-xs bg-purple-500/20 text-purple-300 rounded-lg hover:bg-purple-500/30 transition-colors">
-            Start Scan
-          </button>
+        <div className="flex flex-col items-center justify-center py-8 text-center">
+          <div className="p-4 bg-slate-800/50 rounded-2xl mb-4">
+            <Camera size={32} className="text-slate-600" />
+          </div>
+          <p className="text-sm text-slate-400">Scan a card to get AI grade prediction</p>
+          <p className="text-xs text-slate-600 mt-1 group-hover:text-slate-500 transition-colors">
+            Click to start your first scan
+          </p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {recentScans.map(scan => (
-            <div key={scan.id} className="flex items-center justify-between bg-slate-900/50 rounded-lg p-2">
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-slate-300 truncate">{scan.playerName}</p>
-                <p className="text-[10px] text-slate-500 truncate">{scan.cardDescription}</p>
-              </div>
-              <div className="text-right ml-2">
-                <div className="flex items-center gap-1">
-                  <Star size={10} className="text-amber-400" />
-                  <span className="text-xs font-bold text-slate-200">PSA {scan.predictedGrade.psa.grade}</span>
+        <>
+          {/* Recent Scans */}
+          <div className="space-y-2">
+            <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Recent Scans</p>
+            <div className="space-y-1.5">
+              {recentScans.map(scan => (
+                <div
+                  key={scan.id}
+                  className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl text-xs"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium truncate">{scan.playerName}</p>
+                    <p className="text-[10px] text-slate-500 truncate">{scan.cardDescription}</p>
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <Star size={10} className="text-amber-400" />
+                    <span className="font-mono text-white font-bold">PSA {scan.predictedGrade.psa.grade}</span>
+                  </div>
+                  <span className={`text-[10px] font-bold ${scan.submissionAdvice.shouldSubmit ? 'text-emerald-400' : 'text-slate-500'}`}>
+                    {scan.submissionAdvice.shouldSubmit ? 'Submit' : 'Hold Raw'}
+                  </span>
                 </div>
-                <p className={`text-[10px] ${scan.submissionAdvice.shouldSubmit ? 'text-emerald-400' : 'text-slate-500'}`}>
-                  {scan.submissionAdvice.shouldSubmit ? 'Submit ✓' : 'Hold Raw'}
-                </p>
-              </div>
+              ))}
             </div>
-          ))}
-          <div className="text-center pt-1">
-            <p className="text-[10px] text-slate-500">{history.length} cards scanned total</p>
           </div>
-        </div>
+
+          {/* Footer stats */}
+          <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+            <span className="text-[10px] text-slate-600 uppercase tracking-widest">
+              {history.length} cards scanned
+            </span>
+            <span className="text-[10px] text-slate-600 group-hover:text-slate-500 transition-colors uppercase tracking-widest font-bold">
+              Click to scan more cards
+            </span>
+          </div>
+        </>
       )}
-    </div>
+    </button>
   );
 };
 

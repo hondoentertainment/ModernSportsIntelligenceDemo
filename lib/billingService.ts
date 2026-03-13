@@ -152,7 +152,7 @@ export async function redirectToCheckout(sessionId: string) {
     throw new Error('Stripe not configured');
   }
 
-  const { error } = await stripe.redirectToCheckout({ sessionId });
+  const { error } = await (stripe as any).redirectToCheckout({ sessionId });
   if (error) {
     throw new Error(`Failed to redirect to checkout: ${error.message}`);
   }

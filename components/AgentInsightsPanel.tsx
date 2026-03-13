@@ -165,4 +165,4 @@ const AgentInsightsPanel: React.FC<AgentInsightsPanelProps> = ({ inventory, onCa
   );
 };
 
-export default AgentInsightsPanel;
+export default React.memo(AgentInsightsPanel);
