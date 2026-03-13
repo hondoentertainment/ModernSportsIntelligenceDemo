@@ -20,7 +20,17 @@ import {
   ScanEye,
   Landmark,
   Link2,
-  Tv
+  Tv,
+  Gauge,
+  BarChart3,
+  Microscope,
+  Fingerprint,
+  Users,
+  LineChart,
+  Share2,
+  Briefcase,
+  Bot,
+  BookHeart
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -47,6 +57,17 @@ export const NAV_ITEMS = [
   { id: 'fractionalvault', label: 'Fractional Vault', icon: <Landmark size={20} />, path: '/fractional-vault' },
   { id: 'provenance', label: 'Provenance Chain', icon: <Link2 size={20} />, path: '/provenance' },
   { id: 'livebreaks', label: 'Live Breaks', icon: <Tv size={20} />, path: '/live-breaks' },
+  // Phases 104-113: Industry-First
+  { id: 'live-game-impact-engine', label: 'Game Impact Engine', icon: <Gauge size={20} />, path: '/live-game-impact-engine' },
+  { id: 'cross-asset-correlation', label: 'Asset Correlation', icon: <BarChart3 size={20} />, path: '/cross-asset-correlation' },
+  { id: 'pre-grade-intelligence', label: 'Pre-Grade AI', icon: <Microscope size={20} />, path: '/pre-grade-intelligence' },
+  { id: 'provenance-intelligence', label: 'Provenance Chain', icon: <Fingerprint size={20} />, path: '/provenance-intelligence' },
+  { id: 'copy-trading', label: 'Copy Trading', icon: <Users size={20} />, path: '/copy-trading' },
+  { id: 'predictive-market-maker', label: 'Market Maker', icon: <LineChart size={20} />, path: '/predictive-market-maker' },
+  { id: 'influence-graph', label: 'Influence Graph', icon: <Share2 size={20} />, path: '/influence-graph' },
+  { id: 'cross-hobby-portfolio', label: 'Cross-Hobby Portfolio', icon: <Briefcase size={20} />, path: '/cross-hobby-portfolio' },
+  { id: 'autonomous-acquisition', label: 'AI Acquisition', icon: <Bot size={20} />, path: '/autonomous-acquisition' },
+  { id: 'collection-narrative', label: 'Heritage Story', icon: <BookHeart size={20} />, path: '/collection-narrative' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];

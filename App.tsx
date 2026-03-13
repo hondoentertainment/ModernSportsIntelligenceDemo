@@ -56,6 +56,18 @@ const ProvenanceChain = lazy(() => import('./pages/ProvenanceChain.tsx'));
 const LiveBreaks = lazy(() => import('./pages/LiveBreaks.tsx'));
 const FeatureDirectory = lazy(() => import('./pages/FeatureDirectory.tsx'));
 
+// Phases 104-113: Industry-first features
+const LiveGameImpactEngine = lazy(() => import('./pages/LiveGameImpactEngine.tsx'));
+const CrossAssetCorrelation = lazy(() => import('./pages/CrossAssetCorrelation.tsx'));
+const PreGradeIntelligence = lazy(() => import('./pages/PreGradeIntelligence.tsx'));
+const ProvenanceChainIntelligence = lazy(() => import('./pages/ProvenanceChainIntelligence.tsx'));
+const CopyTrading = lazy(() => import('./pages/CopyTrading.tsx'));
+const PredictiveMarketMaker = lazy(() => import('./pages/PredictiveMarketMaker.tsx'));
+const InfluenceGraph = lazy(() => import('./pages/InfluenceGraph.tsx'));
+const CrossHobbyPortfolio = lazy(() => import('./pages/CrossHobbyPortfolio.tsx'));
+const AutonomousAcquisition = lazy(() => import('./pages/AutonomousAcquisition.tsx'));
+const CollectionNarrative = lazy(() => import('./pages/CollectionNarrative.tsx'));
+
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
 const Signup = lazy(() => import('./pages/Signup.tsx'));
@@ -107,6 +119,16 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
                 <Route path="/provenance" element={<ProvenanceChain />} />
                 <Route path="/live-breaks" element={<LiveBreaks />} />
                 <Route path="/features" element={<FeatureDirectory />} />
+                <Route path="/live-game-impact-engine" element={<LiveGameImpactEngine />} />
+                <Route path="/cross-asset-correlation" element={<CrossAssetCorrelation />} />
+                <Route path="/pre-grade-intelligence" element={<PreGradeIntelligence />} />
+                <Route path="/provenance-intelligence" element={<ProvenanceChainIntelligence />} />
+                <Route path="/copy-trading" element={<CopyTrading />} />
+                <Route path="/predictive-market-maker" element={<PredictiveMarketMaker />} />
+                <Route path="/influence-graph" element={<InfluenceGraph />} />
+                <Route path="/cross-hobby-portfolio" element={<CrossHobbyPortfolio />} />
+                <Route path="/autonomous-acquisition" element={<AutonomousAcquisition />} />
+                <Route path="/collection-narrative" element={<CollectionNarrative />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
