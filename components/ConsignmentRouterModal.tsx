@@ -411,6 +411,20 @@ const ConsignmentRouterModal: React.FC<ConsignmentRouterModalProps> = ({ isOpen,
           )}
         </div>
 
+        {/* Liquidity Intelligence (Phase 68 Cross-reference) */}
+        <div className="mx-4 mt-2 bg-cyan-500/5 border border-cyan-500/20 rounded-xl p-3 flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <TrendingUp size={14} className="text-cyan-400" />
+            <span className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Liquidity</span>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-slate-400">
+            <span>Score: <span className={`font-bold ${liquidityContext.liquidityScore >= 70 ? 'text-emerald-400' : liquidityContext.liquidityScore >= 40 ? 'text-amber-400' : 'text-red-400'}`}>{liquidityContext.liquidityScore}</span></span>
+            <span>Tier: <span className="text-slate-200 font-medium">{liquidityContext.liquidityTier}</span></span>
+            <span>Avg Sale: <span className="text-slate-200">{liquidityContext.avgDaysToSell}d</span></span>
+          </div>
+          <p className="text-[10px] text-slate-500 ml-auto max-w-xs truncate">{liquidityContext.liquidityRecommendation}</p>
+        </div>
+
         {/* Tabs */}
         <div className="flex items-center gap-1 px-4 pt-2 pb-0">
           {TABS.map((tab) => (

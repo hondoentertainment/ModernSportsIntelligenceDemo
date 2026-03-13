@@ -8,12 +8,16 @@ import {
   Clock,
   AlertTriangle,
   CircleDot,
+  TrendingUp,
+  BarChart3,
 } from 'lucide-react';
 import {
   getBeneficiaries,
   getDocumentChecklist,
   getEstatePlan,
+  getEstatePerformanceContext,
   DocumentStatus,
+  EstatePerformanceContext,
 } from '../lib/estatePlanningService';
 
 interface EstatePlanningModalProps {
@@ -48,6 +52,7 @@ const EstatePlanningModal: React.FC<EstatePlanningModalProps> = ({ isOpen, onClo
   const plan = useMemo(() => getEstatePlan(), []);
   const beneficiaries = useMemo(() => getBeneficiaries(), []);
   const checklist = useMemo(() => getDocumentChecklist(), []);
+  const perfContext = useMemo(() => getEstatePerformanceContext(), []);
 
   const completedDocs = checklist.filter((d) => d.status === 'complete').length;
 
