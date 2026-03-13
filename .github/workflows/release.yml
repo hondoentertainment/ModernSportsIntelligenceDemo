@@ -1,0 +1,240 @@
+name: Release Manager Agent
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 1.2.0)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for changelog generation
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            # Extract version from tag (e.g. v1.2.0 -> 1.2.0)
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "TAG=v$VERSION" >> "$GITHUB_ENV"
+          echo "Releasing version: $VERSION"
+
+      - name: Get previous tag
+        id: prev_tag
+        run: |
+          # Get the most recent tag before the current one
+          PREV_TAG=$(git tag --sort=-creatordate | grep -E '^v[0-9]' | head -2 | tail -1)
+          if [ -z "$PREV_TAG" ]; then
+            # No previous tag, use the initial commit
+            PREV_TAG=$(git rev-list --max-parents=0 HEAD | head -1)
+          fi
+          echo "PREV_TAG=$PREV_TAG" >> "$GITHUB_ENV"
+          echo "Previous tag: $PREV_TAG"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREV="${PREV_TAG}"
+          CURRENT="HEAD"
+
+          echo "# Release ${{ env.TAG }}" > changelog.md
+          echo "" >> changelog.md
+          echo "**Date:** $(date -u '+%Y-%m-%d')" >> changelog.md
+          echo "" >> changelog.md
+
+          # Collect commits by category
+          declare -A CATEGORIES
+          CATEGORIES[feat]=""
+          CATEGORIES[fix]=""
+          CATEGORIES[perf]=""
+          CATEGORIES[docs]=""
+          CATEGORIES[refactor]=""
+          CATEGORIES[test]=""
+          CATEGORIES[chore]=""
+          CATEGORIES[other]=""
+
+          # Parse conventional commits
+          while IFS= read -r line; do
+            hash=$(echo "$line" | cut -d' ' -f1)
+            msg=$(echo "$line" | cut -d' ' -f2-)
+            short_hash="${hash:0:7}"
+
+            # Categorize by conventional commit prefix
+            if echo "$msg" | grep -qiE '^feat(\(|:|\!)'; then
+              CATEGORIES[feat]+="- ${msg} (\`${short_hash}\`)"$'\n'
+            elif echo "$msg" | grep -qiE '^fix(\(|:|\!)'; then
+              CATEGORIES[fix]+="- ${msg} (\`${short_hash}\`)"$'\n'
+            elif echo "$msg" | grep -qiE '^perf(\(|:|\!)'; then
+              CATEGORIES[perf]+="- ${msg} (\`${short_hash}\`)"$'\n'
+            elif echo "$msg" | grep -qiE '^docs?(\(|:|\!)'; then
+              CATEGORIES[docs]+="- ${msg} (\`${short_hash}\`)"$'\n'
+            elif echo "$msg" | grep -qiE '^refactor(\(|:|\!)'; then
+              CATEGORIES[refactor]+="- ${msg} (\`${short_hash}\`)"$'\n'
+            elif echo "$msg" | grep -qiE '^test(\(|:|\!)'; then
+              CATEGORIES[test]+="- ${msg} (\`${short_hash}\`)"$'\n'
+            elif echo "$msg" | grep -qiE '^(chore|ci|build)(\(|:|\!)'; then
+              CATEGORIES[chore]+="- ${msg} (\`${short_hash}\`)"$'\n'
+            else
+              CATEGORIES[other]+="- ${msg} (\`${short_hash}\`)"$'\n'
+            fi
+          done < <(git log --oneline "${PREV}..${CURRENT}" 2>/dev/null)
+
+          # Write categorized sections
+          if [ -n "${CATEGORIES[feat]}" ]; then
+            echo "## New Features" >> changelog.md
+            echo "" >> changelog.md
+            echo "${CATEGORIES[feat]}" >> changelog.md
+          fi
+
+          if [ -n "${CATEGORIES[fix]}" ]; then
+            echo "## Bug Fixes" >> changelog.md
+            echo "" >> changelog.md
+            echo "${CATEGORIES[fix]}" >> changelog.md
+          fi
+
+          if [ -n "${CATEGORIES[perf]}" ]; then
+            echo "## Performance Improvements" >> changelog.md
+            echo "" >> changelog.md
+            echo "${CATEGORIES[perf]}" >> changelog.md
+          fi
+
+          if [ -n "${CATEGORIES[docs]}" ]; then
+            echo "## Documentation" >> changelog.md
+            echo "" >> changelog.md
+            echo "${CATEGORIES[docs]}" >> changelog.md
+          fi
+
+          if [ -n "${CATEGORIES[refactor]}" ]; then
+            echo "## Refactoring" >> changelog.md
+            echo "" >> changelog.md
+            echo "${CATEGORIES[refactor]}" >> changelog.md
+          fi
+
+          if [ -n "${CATEGORIES[test]}" ]; then
+            echo "## Tests" >> changelog.md
+            echo "" >> changelog.md
+            echo "${CATEGORIES[test]}" >> changelog.md
+          fi
+
+          if [ -n "${CATEGORIES[chore]}" ]; then
+            echo "## Maintenance" >> changelog.md
+            echo "" >> changelog.md
+            echo "${CATEGORIES[chore]}" >> changelog.md
+          fi
+
+          if [ -n "${CATEGORIES[other]}" ]; then
+            echo "## Other Changes" >> changelog.md
+            echo "" >> changelog.md
+            echo "${CATEGORIES[other]}" >> changelog.md
+          fi
+
+          # Stats
+          COMMIT_COUNT=$(git log --oneline "${PREV}..${CURRENT}" 2>/dev/null | wc -l)
+          CONTRIBUTOR_COUNT=$(git log --format='%aN' "${PREV}..${CURRENT}" 2>/dev/null | sort -u | wc -l)
+          FILES_CHANGED=$(git diff --stat "${PREV}..${CURRENT}" 2>/dev/null | tail -1 | grep -oE '[0-9]+ files?' || echo "0 files")
+
+          echo "---" >> changelog.md
+          echo "" >> changelog.md
+          echo "**Stats:** ${COMMIT_COUNT} commits by ${CONTRIBUTOR_COUNT} contributor(s), ${FILES_CHANGED} changed" >> changelog.md
+
+      - name: Bump version in package.json
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          # Update version in package.json without npm version (which creates a commit)
+          node -e "
+            const pkg = require('./package.json');
+            pkg.version = '${VERSION}';
+            require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+          # Commit the version bump
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json
+          git commit -m "chore: bump version to ${VERSION}" || true
+
+          # Create and push tag for manual releases
+          git tag -a "${TAG}" -m "Release ${TAG}"
+          git push origin "${TAG}" || true
+          git push origin HEAD || true
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Create dist archive
+        run: |
+          tar -czf "dist-${TAG}.tar.gz" dist/
+          zip -r "dist-${TAG}.zip" dist/
+
+      - name: Create GitHub Release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const changelog = fs.readFileSync('changelog.md', 'utf8');
+            const version = process.env.VERSION;
+            const tag = process.env.TAG;
+            const prerelease = '${{ github.event.inputs.prerelease }}' === 'true';
+
+            const release = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              name: `Modern Sports Intelligence ${tag}`,
+              body: changelog,
+              draft: false,
+              prerelease,
+            });
+
+            // Upload artifacts
+            const tarball = fs.readFileSync(`dist-${tag}.tar.gz`);
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release.data.id,
+              name: `dist-${tag}.tar.gz`,
+              data: tarball,
+            });
+
+            const zipball = fs.readFileSync(`dist-${tag}.zip`);
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release.data.id,
+              name: `dist-${tag}.zip`,
+              data: zipball,
+            });
+
+            core.info(`Release created: ${release.data.html_url}`);

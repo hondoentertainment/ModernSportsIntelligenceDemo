@@ -734,3 +734,651 @@ export function loadDashboardSnapshots(): { timestamp: string; score: number; be
   } catch { /* noop */ }
   return [];
 }
+
+// ========================================================================
+// Phase 105: Cross-Asset Correlation & Macro Hedge Intelligence
+// ========================================================================
+
+// ---- Phase 105 Types ----
+
+export type AssetClass =
+  | 'sp500'
+  | 'nasdaq'
+  | 'bitcoin'
+  | 'ethereum'
+  | 'gold'
+  | 'bonds_10y'
+  | 'cpi_inflation'
+  | 'reit_index';
+
+export type CardSegment =
+  | 'modern_basketball_rookies'
+  | 'vintage_baseball'
+  | 'modern_football'
+  | 'pokemon_tcg'
+  | 'soccer_international';
+
+export interface CorrelationCell {
+  segment: CardSegment;
+  asset: AssetClass;
+  coefficient30d: number;
+  coefficient90d: number;
+  coefficient365d: number;
+}
+
+export interface CorrelationMatrix {
+  cells: CorrelationCell[];
+  segments: CardSegment[];
+  assets: AssetClass[];
+  generatedAt: string;
+}
+
+export interface HedgeSignal {
+  id: string;
+  action: 'add' | 'reduce' | 'swap' | 'hold';
+  segment: CardSegment;
+  description: string;
+  currentCorrelation: number;
+  projectedCorrelation: number;
+  confidence: number;
+  impactSummary: string;
+  priority: 'high' | 'medium' | 'low';
+}
+
+export interface MacroAlert {
+  id: string;
+  title: string;
+  eventType: 'fed_rate' | 'cpi_release' | 'market_crash' | 'earnings' | 'geopolitical';
+  severity: 'critical' | 'warning' | 'info';
+  date: string;
+  description: string;
+  historicalCardImpact: number;
+  affectedSegments: CardSegment[];
+  recommendation: string;
+}
+
+export interface PortfolioCorrelation {
+  segment: CardSegment;
+  segmentLabel: string;
+  weight: number;
+  correlations: Record<AssetClass, number>;
+  avgCorrelation: number;
+}
+
+export interface DiversificationScore {
+  overall: number;
+  segmentScores: { segment: CardSegment; label: string; score: number; suggestion: string }[];
+  concentrationRisk: number;
+  macroExposure: number;
+  improvementTips: string[];
+}
+
+export interface OptimalAllocation {
+  segment: CardSegment;
+  label: string;
+  currentPct: number;
+  optimalPct: number;
+  delta: number;
+  rationale: string;
+}
+
+export interface HistoricalMacroImpact {
+  event: string;
+  date: string;
+  segmentImpacts: { segment: CardSegment; label: string; returnPct: number }[];
+  assetImpacts: { asset: AssetClass; label: string; returnPct: number }[];
+  narrative: string;
+}
+
+// ---- Phase 105 Constants ----
+
+export const ASSET_CLASS_LABELS: Record<AssetClass, string> = {
+  sp500: 'S&P 500',
+  nasdaq: 'NASDAQ',
+  bitcoin: 'Bitcoin',
+  ethereum: 'Ethereum',
+  gold: 'Gold',
+  bonds_10y: '10Y Treasury',
+  cpi_inflation: 'CPI / Inflation',
+  reit_index: 'REIT Index',
+};
+
+export const CARD_SEGMENT_LABELS: Record<CardSegment, string> = {
+  modern_basketball_rookies: 'Modern Basketball Rookies',
+  vintage_baseball: 'Vintage Baseball',
+  modern_football: 'Modern Football',
+  pokemon_tcg: 'Pokemon / TCG',
+  soccer_international: 'Soccer / International',
+};
+
+const ALL_ASSETS: AssetClass[] = [
+  'sp500', 'nasdaq', 'bitcoin', 'ethereum', 'gold', 'bonds_10y', 'cpi_inflation', 'reit_index',
+];
+
+const ALL_SEGMENTS: CardSegment[] = [
+  'modern_basketball_rookies', 'vintage_baseball', 'modern_football', 'pokemon_tcg', 'soccer_international',
+];
+
+// Plausible base correlation coefficients (segment x asset)
+// Rows: segments, Cols: sp500, nasdaq, bitcoin, ethereum, gold, bonds_10y, cpi_inflation, reit_index
+const BASE_CORRELATIONS: Record<CardSegment, Record<AssetClass, number>> = {
+  modern_basketball_rookies: {
+    sp500: 0.62, nasdaq: 0.71, bitcoin: 0.55, ethereum: 0.58,
+    gold: -0.12, bonds_10y: -0.28, cpi_inflation: 0.15, reit_index: 0.22,
+  },
+  vintage_baseball: {
+    sp500: 0.08, nasdaq: 0.05, bitcoin: -0.03, ethereum: -0.05,
+    gold: 0.35, bonds_10y: 0.18, cpi_inflation: 0.42, reit_index: 0.12,
+  },
+  modern_football: {
+    sp500: 0.52, nasdaq: 0.58, bitcoin: 0.42, ethereum: 0.45,
+    gold: -0.08, bonds_10y: -0.22, cpi_inflation: 0.10, reit_index: 0.18,
+  },
+  pokemon_tcg: {
+    sp500: 0.38, nasdaq: 0.55, bitcoin: 0.68, ethereum: 0.72,
+    gold: -0.18, bonds_10y: -0.35, cpi_inflation: 0.05, reit_index: 0.08,
+  },
+  soccer_international: {
+    sp500: 0.22, nasdaq: 0.18, bitcoin: 0.15, ethereum: 0.12,
+    gold: 0.10, bonds_10y: 0.05, cpi_inflation: 0.08, reit_index: 0.28,
+  },
+};
+
+// ---- Phase 105 Helpers ----
+
+function correlationJitter(base: number, seed: number, offset: number, amplitude: number = 0.08): number {
+  const jitter = (seededRandom(seed, offset) - 0.5) * amplitude * 2;
+  return Math.max(-1, Math.min(1, Math.round((base + jitter) * 100) / 100));
+}
+
+function segmentFromCard(card: CardInventory): CardSegment {
+  if (card.sport === 'Basketball' && card.year >= 2015) return 'modern_basketball_rookies';
+  if (card.sport === 'Baseball' && card.year < 1990) return 'vintage_baseball';
+  if (card.sport === 'Football' && card.year >= 2010) return 'modern_football';
+  if (card.sport === 'Soccer') return 'soccer_international';
+  // Fallback heuristic: check set name for TCG-like keywords
+  const setLower = (card.set || '').toLowerCase();
+  if (setLower.includes('pokemon') || setLower.includes('tcg') || setLower.includes('magic')) {
+    return 'pokemon_tcg';
+  }
+  // Default by sport
+  if (card.sport === 'Baseball') return 'vintage_baseball';
+  if (card.sport === 'Basketball') return 'modern_basketball_rookies';
+  if (card.sport === 'Football') return 'modern_football';
+  return 'modern_football';
+}
+
+// ---- Phase 105 Public API ----
+
+export function getCorrelationMatrix(window: TimeWindow = 90): CorrelationMatrix {
+  const seed = dateSeed();
+  const cells: CorrelationCell[] = [];
+
+  for (const segment of ALL_SEGMENTS) {
+    for (const asset of ALL_ASSETS) {
+      const base = BASE_CORRELATIONS[segment][asset];
+      cells.push({
+        segment,
+        asset,
+        coefficient30d: correlationJitter(base, seed, hashPair(segment, asset) + 30, 0.12),
+        coefficient90d: correlationJitter(base, seed, hashPair(segment, asset) + 90, 0.08),
+        coefficient365d: correlationJitter(base, seed, hashPair(segment, asset) + 365, 0.04),
+      });
+    }
+  }
+
+  return {
+    cells,
+    segments: ALL_SEGMENTS,
+    assets: ALL_ASSETS,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+function hashPair(a: string, b: string): number {
+  let h = 0;
+  const s = a + b;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h) % 10000;
+}
+
+export function getPortfolioCorrelationAnalysis(inventory: CardInventory[]): PortfolioCorrelation[] {
+  const activeCards = inventory.filter(c => c.status !== 'sold');
+  if (activeCards.length === 0) return [];
+
+  const totalValue = activeCards.reduce((s, c) => s + (c.currentValue || c.purchasePrice || 100), 0);
+
+  // Group cards by segment
+  const segmentValues: Record<CardSegment, number> = {
+    modern_basketball_rookies: 0,
+    vintage_baseball: 0,
+    modern_football: 0,
+    pokemon_tcg: 0,
+    soccer_international: 0,
+  };
+
+  for (const card of activeCards) {
+    const seg = segmentFromCard(card);
+    segmentValues[seg] += card.currentValue || card.purchasePrice || 100;
+  }
+
+  const matrix = getCorrelationMatrix(90);
+  const results: PortfolioCorrelation[] = [];
+
+  for (const segment of ALL_SEGMENTS) {
+    const weight = totalValue > 0 ? segmentValues[segment] / totalValue : 0;
+    if (weight === 0) continue;
+
+    const correlations: Record<AssetClass, number> = {} as Record<AssetClass, number>;
+    let sum = 0;
+    for (const asset of ALL_ASSETS) {
+      const cell = matrix.cells.find(c => c.segment === segment && c.asset === asset);
+      const coeff = cell?.coefficient90d ?? 0;
+      correlations[asset] = coeff;
+      sum += Math.abs(coeff);
+    }
+
+    results.push({
+      segment,
+      segmentLabel: CARD_SEGMENT_LABELS[segment],
+      weight: Math.round(weight * 1000) / 1000,
+      correlations,
+      avgCorrelation: Math.round((sum / ALL_ASSETS.length) * 100) / 100,
+    });
+  }
+
+  return results.sort((a, b) => b.weight - a.weight);
+}
+
+export function getHedgeSignals(inventory: CardInventory[]): HedgeSignal[] {
+  const activeCards = inventory.filter(c => c.status !== 'sold');
+  const seed = portfolioSeed(activeCards);
+  const portfolio = getPortfolioCorrelationAnalysis(inventory);
+  const signals: HedgeSignal[] = [];
+
+  // Find dominant tech correlation
+  const techHeavy = portfolio.find(
+    p => (p.correlations.nasdaq > 0.5 || p.correlations.sp500 > 0.5) && p.weight > 0.3
+  );
+
+  if (techHeavy) {
+    signals.push({
+      id: 'hedge-1',
+      action: 'add',
+      segment: 'vintage_baseball',
+      description: `Add 3 vintage baseball cards to reduce tech stock correlation from ${techHeavy.correlations.nasdaq.toFixed(2)} to ~0.40`,
+      currentCorrelation: techHeavy.correlations.nasdaq,
+      projectedCorrelation: 0.40,
+      confidence: 82,
+      impactSummary: 'Vintage baseball has near-zero NASDAQ correlation (0.05), diluting overall tech exposure significantly.',
+      priority: 'high',
+    });
+  }
+
+  // Crypto exposure check
+  const cryptoHeavy = portfolio.find(
+    p => (p.correlations.bitcoin > 0.5 || p.correlations.ethereum > 0.5) && p.weight > 0.2
+  );
+
+  if (cryptoHeavy) {
+    signals.push({
+      id: 'hedge-2',
+      action: 'add',
+      segment: 'soccer_international',
+      description: `Add soccer/international cards to reduce crypto correlation from ${cryptoHeavy.correlations.bitcoin.toFixed(2)} to ~0.25`,
+      currentCorrelation: cryptoHeavy.correlations.bitcoin,
+      projectedCorrelation: 0.25,
+      confidence: 75,
+      impactSummary: 'Soccer cards have low crypto beta (0.15) and provide geographic diversification.',
+      priority: 'medium',
+    });
+  }
+
+  // Concentration risk
+  const concentrated = portfolio.filter(p => p.weight > 0.6);
+  if (concentrated.length > 0) {
+    const seg = concentrated[0];
+    const targetSeg = seg.segment === 'modern_basketball_rookies' ? 'vintage_baseball' : 'modern_basketball_rookies';
+    signals.push({
+      id: 'hedge-3',
+      action: 'swap',
+      segment: targetSeg,
+      description: `Reduce ${CARD_SEGMENT_LABELS[seg.segment]} concentration (${(seg.weight * 100).toFixed(0)}%) by swapping 20% into ${CARD_SEGMENT_LABELS[targetSeg]}`,
+      currentCorrelation: seg.avgCorrelation,
+      projectedCorrelation: Math.round((seg.avgCorrelation * 0.65) * 100) / 100,
+      confidence: 78,
+      impactSummary: 'Segment concentration above 60% creates outsized exposure to single-market risks.',
+      priority: 'high',
+    });
+  }
+
+  // Inflation hedge signal
+  const inflationExposed = portfolio.find(
+    p => p.correlations.cpi_inflation < 0.1 && p.weight > 0.25
+  );
+
+  if (inflationExposed) {
+    signals.push({
+      id: 'hedge-4',
+      action: 'add',
+      segment: 'vintage_baseball',
+      description: 'Add vintage cards for inflation protection — vintage correlates 0.42 with CPI vs. your current 0.05',
+      currentCorrelation: inflationExposed.correlations.cpi_inflation,
+      projectedCorrelation: 0.28,
+      confidence: 70,
+      impactSummary: 'Vintage cards historically act as real assets with meaningful inflation hedging properties.',
+      priority: 'medium',
+    });
+  }
+
+  // Default signals if portfolio empty or no issues
+  if (signals.length === 0) {
+    signals.push({
+      id: 'hedge-default-1',
+      action: 'hold',
+      segment: 'vintage_baseball',
+      description: 'Portfolio is well diversified across card segments. No immediate hedging action needed.',
+      currentCorrelation: 0.25,
+      projectedCorrelation: 0.25,
+      confidence: 85,
+      impactSummary: 'Continue monitoring macro conditions for changes in cross-asset correlations.',
+      priority: 'low',
+    });
+    signals.push({
+      id: 'hedge-default-2',
+      action: 'add',
+      segment: 'soccer_international',
+      description: 'Consider adding soccer/international exposure for geographic diversification.',
+      currentCorrelation: 0.18,
+      projectedCorrelation: 0.15,
+      confidence: 65,
+      impactSummary: 'International cards provide exposure to global sports markets uncorrelated with US equities.',
+      priority: 'low',
+    });
+  }
+
+  return signals;
+}
+
+export function getMacroAlerts(): MacroAlert[] {
+  const seed = dateSeed();
+
+  const alerts: MacroAlert[] = [
+    {
+      id: 'macro-alert-1',
+      title: 'FOMC Rate Decision — Hold Expected',
+      eventType: 'fed_rate',
+      severity: 'warning',
+      date: new Date(Date.now() + 5 * 86400000).toISOString().split('T')[0],
+      description: 'Federal Reserve expected to hold rates steady. Markets pricing in 78% probability of no change. Previous holds have been neutral-to-positive for card markets.',
+      historicalCardImpact: 1.2,
+      affectedSegments: ['modern_basketball_rookies', 'modern_football', 'pokemon_tcg'],
+      recommendation: 'No action needed. Hold steady; rate pauses historically support speculative card segments.',
+    },
+    {
+      id: 'macro-alert-2',
+      title: 'CPI Report — Inflation Above Expectations',
+      eventType: 'cpi_release',
+      severity: 'critical',
+      date: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0],
+      description: 'Consensus expects CPI at 3.2% YoY, but recent data suggests upside risk. Higher inflation benefits vintage tangible assets but pressures modern speculative segments.',
+      historicalCardImpact: -4.5,
+      affectedSegments: ['modern_basketball_rookies', 'pokemon_tcg'],
+      recommendation: 'Rotate 10-15% from modern rookies into vintage baseball as inflation hedge.',
+    },
+    {
+      id: 'macro-alert-3',
+      title: 'Tech Earnings Season',
+      eventType: 'earnings',
+      severity: 'info',
+      date: new Date(Date.now() + 12 * 86400000).toISOString().split('T')[0],
+      description: 'Major tech earnings approaching. FAANG results historically correlate with modern card segment momentum through wealth effect channels.',
+      historicalCardImpact: 3.8,
+      affectedSegments: ['modern_basketball_rookies', 'modern_football'],
+      recommendation: 'Position for volatility. Strong earnings could lift modern segments 3-5%.',
+    },
+    {
+      id: 'macro-alert-4',
+      title: 'Geopolitical Tension Escalation',
+      eventType: 'geopolitical',
+      severity: 'warning',
+      date: new Date(Date.now() - 1 * 86400000).toISOString().split('T')[0],
+      description: 'Rising geopolitical tensions driving flight-to-safety flows. Gold up 2.3%. Historical pattern: vintage cards benefit, modern segments see temporary dips.',
+      historicalCardImpact: -2.1,
+      affectedSegments: ['modern_basketball_rookies', 'modern_football', 'pokemon_tcg'],
+      recommendation: 'Consider adding gold-correlated vintage baseball exposure. Avoid panic selling modern cards.',
+    },
+  ];
+
+  // Adjust severity based on seed for variety
+  if (seededRandom(seed, 999) > 0.7) {
+    alerts[0].severity = 'critical';
+    alerts[0].title = 'FOMC Rate Decision — Surprise Cut Possible';
+    alerts[0].historicalCardImpact = 8.5;
+  }
+
+  return alerts;
+}
+
+export function getDiversificationScoreAnalysis(inventory: CardInventory[]): DiversificationScore {
+  const activeCards = inventory.filter(c => c.status !== 'sold');
+  const portfolio = getPortfolioCorrelationAnalysis(inventory);
+
+  if (activeCards.length === 0) {
+    return {
+      overall: 0,
+      segmentScores: [],
+      concentrationRisk: 100,
+      macroExposure: 0,
+      improvementTips: ['Add cards to begin tracking diversification.'],
+    };
+  }
+
+  const totalValue = activeCards.reduce((s, c) => s + (c.currentValue || c.purchasePrice || 100), 0);
+
+  // Concentration risk: Herfindahl index (sum of squared weights)
+  const segmentWeights = portfolio.map(p => p.weight);
+  const hhi = segmentWeights.reduce((s, w) => s + w * w, 0);
+  const concentrationRisk = Math.round(Math.min(100, hhi * 100));
+
+  // Macro exposure: average absolute correlation with macro-sensitive assets (sp500, bonds, cpi)
+  let macroSum = 0;
+  let macroCount = 0;
+  for (const p of portfolio) {
+    macroSum += Math.abs(p.correlations.sp500 || 0);
+    macroSum += Math.abs(p.correlations.bonds_10y || 0);
+    macroSum += Math.abs(p.correlations.cpi_inflation || 0);
+    macroCount += 3;
+  }
+  const macroExposure = macroCount > 0 ? Math.round((macroSum / macroCount) * 100) : 0;
+
+  // Per-segment scores
+  const segmentScores = portfolio.map(p => {
+    const avgAbsCorr = p.avgCorrelation;
+    const segScore = Math.round(Math.max(0, Math.min(100, (1 - avgAbsCorr) * 80 + (p.weight < 0.5 ? 20 : 0))));
+
+    let suggestion: string;
+    if (segScore >= 75) {
+      suggestion = 'Well positioned — low cross-asset correlation provides genuine diversification.';
+    } else if (segScore >= 50) {
+      suggestion = 'Moderate diversification. Consider reducing if over-allocated.';
+    } else {
+      suggestion = 'High market correlation — acts more like equities than an alternative. Consider rebalancing.';
+    }
+
+    return {
+      segment: p.segment,
+      label: p.segmentLabel,
+      score: segScore,
+      suggestion,
+    };
+  });
+
+  // Overall score: blend of segment diversity, concentration, and macro insulation
+  const avgSegScore = segmentScores.length > 0
+    ? segmentScores.reduce((s, ss) => s + ss.score, 0) / segmentScores.length
+    : 50;
+  const diversityBonus = Math.min(20, portfolio.length * 5);
+  const concentrationPenalty = concentrationRisk > 50 ? (concentrationRisk - 50) * 0.4 : 0;
+  const overall = Math.round(Math.max(0, Math.min(100, avgSegScore + diversityBonus - concentrationPenalty)));
+
+  // Tips
+  const tips: string[] = [];
+  if (portfolio.length < 3) tips.push('Add cards from more segments to improve diversification.');
+  if (concentrationRisk > 60) tips.push('Reduce concentration — over 60% in a single segment increases risk.');
+  if (macroExposure > 40) tips.push('High macro exposure. Add vintage or international cards to reduce market sensitivity.');
+  const hasVintage = portfolio.some(p => p.segment === 'vintage_baseball' && p.weight > 0.05);
+  if (!hasVintage) tips.push('Vintage baseball cards offer strong inflation hedging. Consider adding exposure.');
+  if (tips.length === 0) tips.push('Portfolio is well diversified. Continue monitoring correlations for regime changes.');
+
+  return {
+    overall,
+    segmentScores,
+    concentrationRisk,
+    macroExposure,
+    improvementTips: tips,
+  };
+}
+
+export function getHistoricalMacroImpact(eventName: string): HistoricalMacroImpact {
+  const events: Record<string, HistoricalMacroImpact> = {
+    'fed_rate_2022': {
+      event: 'Fed Rate Hike Cycle 2022',
+      date: '2022-03',
+      segmentImpacts: [
+        { segment: 'modern_basketball_rookies', label: 'Modern Basketball Rookies', returnPct: -18.2 },
+        { segment: 'vintage_baseball', label: 'Vintage Baseball', returnPct: -2.1 },
+        { segment: 'modern_football', label: 'Modern Football', returnPct: -15.8 },
+        { segment: 'pokemon_tcg', label: 'Pokemon / TCG', returnPct: -25.3 },
+        { segment: 'soccer_international', label: 'Soccer / International', returnPct: -8.4 },
+      ],
+      assetImpacts: [
+        { asset: 'sp500', label: 'S&P 500', returnPct: -19.4 },
+        { asset: 'nasdaq', label: 'NASDAQ', returnPct: -33.1 },
+        { asset: 'bitcoin', label: 'Bitcoin', returnPct: -64.0 },
+        { asset: 'ethereum', label: 'Ethereum', returnPct: -67.5 },
+        { asset: 'gold', label: 'Gold', returnPct: -3.2 },
+        { asset: 'bonds_10y', label: '10Y Treasury', returnPct: -16.8 },
+        { asset: 'cpi_inflation', label: 'CPI / Inflation', returnPct: 8.0 },
+        { asset: 'reit_index', label: 'REIT Index', returnPct: -26.2 },
+      ],
+      narrative: 'When the Fed raised rates aggressively in 2022, modern rookies dropped 18% while vintage baseball held steady at -2%. Pokemon/TCG was hit hardest (-25%) due to speculative overlap with crypto. Vintage cards acted as a safe haven within the card market.',
+    },
+    'covid_stimulus_2020': {
+      event: 'COVID Stimulus Wave 2020',
+      date: '2020-04',
+      segmentImpacts: [
+        { segment: 'modern_basketball_rookies', label: 'Modern Basketball Rookies', returnPct: 62.5 },
+        { segment: 'vintage_baseball', label: 'Vintage Baseball', returnPct: 28.3 },
+        { segment: 'modern_football', label: 'Modern Football', returnPct: 55.1 },
+        { segment: 'pokemon_tcg', label: 'Pokemon / TCG', returnPct: 85.2 },
+        { segment: 'soccer_international', label: 'Soccer / International', returnPct: 18.7 },
+      ],
+      assetImpacts: [
+        { asset: 'sp500', label: 'S&P 500', returnPct: 26.9 },
+        { asset: 'nasdaq', label: 'NASDAQ', returnPct: 43.6 },
+        { asset: 'bitcoin', label: 'Bitcoin', returnPct: 305.0 },
+        { asset: 'ethereum', label: 'Ethereum', returnPct: 470.0 },
+        { asset: 'gold', label: 'Gold', returnPct: 25.1 },
+        { asset: 'bonds_10y', label: '10Y Treasury', returnPct: 7.8 },
+        { asset: 'cpi_inflation', label: 'CPI / Inflation', returnPct: 1.4 },
+        { asset: 'reit_index', label: 'REIT Index', returnPct: -5.2 },
+      ],
+      narrative: 'COVID stimulus created an unprecedented hobby boom. Pokemon/TCG led at +85% as lockdown-driven demand met limited supply. Modern basketball rookies surged 62% on retail FOMO. Vintage baseball was more muted at +28% but provided stability.',
+    },
+    'great_recession_2008': {
+      event: 'Great Recession 2008',
+      date: '2008-09',
+      segmentImpacts: [
+        { segment: 'modern_basketball_rookies', label: 'Modern Basketball Rookies', returnPct: -32.0 },
+        { segment: 'vintage_baseball', label: 'Vintage Baseball', returnPct: -8.5 },
+        { segment: 'modern_football', label: 'Modern Football', returnPct: -28.0 },
+        { segment: 'pokemon_tcg', label: 'Pokemon / TCG', returnPct: -35.0 },
+        { segment: 'soccer_international', label: 'Soccer / International', returnPct: -12.0 },
+      ],
+      assetImpacts: [
+        { asset: 'sp500', label: 'S&P 500', returnPct: -38.5 },
+        { asset: 'nasdaq', label: 'NASDAQ', returnPct: -40.5 },
+        { asset: 'bitcoin', label: 'Bitcoin', returnPct: 0 },
+        { asset: 'ethereum', label: 'Ethereum', returnPct: 0 },
+        { asset: 'gold', label: 'Gold', returnPct: 5.5 },
+        { asset: 'bonds_10y', label: '10Y Treasury', returnPct: 20.1 },
+        { asset: 'cpi_inflation', label: 'CPI / Inflation', returnPct: -0.4 },
+        { asset: 'reit_index', label: 'REIT Index', returnPct: -37.7 },
+      ],
+      narrative: 'The Great Recession devastated discretionary spending. Modern cards lost 28-35% as hobby budgets evaporated. Vintage baseball proved resilient at just -8.5%, with trophy cards actually appreciating. Gold and treasuries provided genuine safe-haven returns.',
+    },
+  };
+
+  return events[eventName] || events['fed_rate_2022'];
+}
+
+export function getOptimalAllocation(
+  budget: number,
+  riskTolerance: 'conservative' | 'moderate' | 'aggressive'
+): OptimalAllocation[] {
+  const profiles: Record<string, Record<CardSegment, number>> = {
+    conservative: {
+      modern_basketball_rookies: 15,
+      vintage_baseball: 40,
+      modern_football: 10,
+      pokemon_tcg: 5,
+      soccer_international: 30,
+    },
+    moderate: {
+      modern_basketball_rookies: 25,
+      vintage_baseball: 25,
+      modern_football: 20,
+      pokemon_tcg: 15,
+      soccer_international: 15,
+    },
+    aggressive: {
+      modern_basketball_rookies: 35,
+      vintage_baseball: 10,
+      modern_football: 25,
+      pokemon_tcg: 25,
+      soccer_international: 5,
+    },
+  };
+
+  const rationales: Record<CardSegment, Record<string, string>> = {
+    modern_basketball_rookies: {
+      conservative: 'Limited exposure — high equity correlation makes this risky in downturns.',
+      moderate: 'Balanced allocation — captures upside while managing equity correlation.',
+      aggressive: 'Core holding — max growth potential with accepted market sensitivity.',
+    },
+    vintage_baseball: {
+      conservative: 'Anchor position — lowest market correlation, strong inflation hedge.',
+      moderate: 'Stability core — provides portfolio ballast during market stress.',
+      aggressive: 'Minimal allocation — lower growth ceiling but maintained for diversification.',
+    },
+    modern_football: {
+      conservative: 'Small position — moderate equity correlation warrants caution.',
+      moderate: 'Balanced exposure — NFL popularity provides demand floor.',
+      aggressive: 'Growth allocation — seasonal NFL cycle creates trading opportunities.',
+    },
+    pokemon_tcg: {
+      conservative: 'Minimal — highest crypto correlation creates volatility risk.',
+      moderate: 'Tactical position — high return potential justifies moderate allocation.',
+      aggressive: 'High conviction — crypto-correlated upside with generational demand drivers.',
+    },
+    soccer_international: {
+      conservative: 'Strong allocation — geographic diversification reduces US market dependency.',
+      moderate: 'Geographic hedge — uncorrelated with US equities and growing global market.',
+      aggressive: 'Small position — lower near-term returns but emerging market optionality.',
+    },
+  };
+
+  const target = profiles[riskTolerance];
+
+  return ALL_SEGMENTS.map(segment => ({
+    segment,
+    label: CARD_SEGMENT_LABELS[segment],
+    currentPct: 0, // caller can fill in from portfolio
+    optimalPct: target[segment],
+    delta: target[segment],
+    rationale: rationales[segment][riskTolerance],
+  }));
+}

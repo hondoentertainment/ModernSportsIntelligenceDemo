@@ -1,0 +1,211 @@
+name: Dependency Guardian Agent
+
+on:
+  schedule:
+    # Every Wednesday at 7:00 AM UTC
+    - cron: '0 7 * * 3'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  dependency-check:
+    name: Audit Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check outdated packages
+        id: outdated
+        run: |
+          echo "## Dependency Guardian Report" > dep-report.md
+          echo "" >> dep-report.md
+          echo "**Generated:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> dep-report.md
+          echo "" >> dep-report.md
+
+          # ── Outdated packages ──
+          echo "### Outdated Packages" >> dep-report.md
+          echo "" >> dep-report.md
+
+          # npm outdated returns exit code 1 when packages are outdated
+          npm outdated --json > outdated.json 2>/dev/null || true
+
+          if [ -s outdated.json ] && [ "$(cat outdated.json)" != "{}" ]; then
+            echo "| Package | Current | Wanted | Latest | Breaking? |" >> dep-report.md
+            echo "|---------|---------|--------|--------|-----------|" >> dep-report.md
+
+            BREAKING_COUNT=0
+            node -e "
+              const data = require('./outdated.json');
+              for (const [pkg, info] of Object.entries(data)) {
+                const current = info.current || 'N/A';
+                const wanted = info.wanted || 'N/A';
+                const latest = info.latest || 'N/A';
+                // Compare major versions to detect breaking changes
+                const currentMajor = current.split('.')[0];
+                const latestMajor = latest.split('.')[0];
+                const breaking = currentMajor !== latestMajor && currentMajor !== 'N' ? '⚠️ YES' : 'No';
+                console.log('| ' + pkg + ' | ' + current + ' | ' + wanted + ' | ' + latest + ' | ' + breaking + ' |');
+              }
+            " >> dep-report.md
+
+            BREAKING_COUNT=$(node -e "
+              const data = require('./outdated.json');
+              let count = 0;
+              for (const [pkg, info] of Object.entries(data)) {
+                const current = (info.current || '').split('.')[0];
+                const latest = (info.latest || '').split('.')[0];
+                if (current !== latest && current !== 'N') count++;
+              }
+              console.log(count);
+            ")
+            echo "" >> dep-report.md
+            echo "**$BREAKING_COUNT package(s) have breaking changes available.**" >> dep-report.md
+          else
+            echo "All packages are up to date." >> dep-report.md
+          fi
+          echo "" >> dep-report.md
+
+      - name: Run security audit
+        run: |
+          echo "### Security Vulnerabilities" >> dep-report.md
+          echo "" >> dep-report.md
+
+          npm audit --json > audit.json 2>/dev/null || true
+
+          VULN_TOTAL=$(node -e "
+            try {
+              const data = require('./audit.json');
+              const meta = data.metadata?.vulnerabilities || {};
+              const total = (meta.critical || 0) + (meta.high || 0) + (meta.moderate || 0) + (meta.low || 0);
+              console.log(total);
+            } catch { console.log(0); }
+          ")
+
+          if [ "$VULN_TOTAL" -gt 0 ]; then
+            node -e "
+              const data = require('./audit.json');
+              const meta = data.metadata?.vulnerabilities || {};
+              console.log('| Severity | Count |');
+              console.log('|----------|-------|');
+              if (meta.critical) console.log('| 🔴 Critical | ' + meta.critical + ' |');
+              if (meta.high) console.log('| 🟠 High | ' + meta.high + ' |');
+              if (meta.moderate) console.log('| 🟡 Moderate | ' + meta.moderate + ' |');
+              if (meta.low) console.log('| 🟢 Low | ' + meta.low + ' |');
+            " >> dep-report.md
+            echo "" >> dep-report.md
+
+            echo "<details>" >> dep-report.md
+            echo "<summary>Full audit details</summary>" >> dep-report.md
+            echo "" >> dep-report.md
+            echo '```' >> dep-report.md
+            npm audit 2>/dev/null >> dep-report.md || true
+            echo '```' >> dep-report.md
+            echo "</details>" >> dep-report.md
+          else
+            echo "No known vulnerabilities found." >> dep-report.md
+          fi
+          echo "" >> dep-report.md
+
+      - name: Detect unused dependencies
+        run: |
+          echo "### Potentially Unused Dependencies" >> dep-report.md
+          echo "" >> dep-report.md
+          echo "Packages in \`dependencies\` not imported anywhere in source code:" >> dep-report.md
+          echo "" >> dep-report.md
+
+          # Extract dependencies from package.json
+          UNUSED_FOUND=false
+          echo '```' >> dep-report.md
+          node -e "
+            const pkg = require('./package.json');
+            const deps = Object.keys(pkg.dependencies || {});
+            const { execSync } = require('child_process');
+            const unused = [];
+            for (const dep of deps) {
+              // Normalize package name for import search
+              // e.g., @supabase/supabase-js -> supabase, react-dom -> react-dom
+              const searchTerms = [dep];
+              if (dep.startsWith('@')) {
+                searchTerms.push(dep.split('/')[1]);
+              }
+              let found = false;
+              for (const term of searchTerms) {
+                try {
+                  const result = execSync(
+                    'grep -rl --include=\"*.ts\" --include=\"*.tsx\" \"' + term + '\" . --exclude-dir=node_modules --exclude-dir=dist 2>/dev/null',
+                    { encoding: 'utf8', timeout: 10000 }
+                  ).trim();
+                  if (result) { found = true; break; }
+                } catch {}
+              }
+              if (!found) unused.push(dep);
+            }
+            if (unused.length === 0) {
+              console.log('All dependencies appear to be in use.');
+            } else {
+              unused.forEach(d => console.log('  - ' + d));
+            }
+          " >> dep-report.md
+          echo '```' >> dep-report.md
+          echo "" >> dep-report.md
+
+          # ── Upgrade recommendations ──
+          echo "### Upgrade Recommendations" >> dep-report.md
+          echo "" >> dep-report.md
+          echo "1. **Patch/minor updates** — Run \`npm update\` to apply non-breaking updates" >> dep-report.md
+          echo "2. **Breaking changes** — Review the changelogs for packages marked with ⚠️ above" >> dep-report.md
+          echo "3. **Security fixes** — Run \`npm audit fix\` for automatic fixes, or \`npm audit fix --force\` for breaking fixes" >> dep-report.md
+          echo "4. **Unused packages** — Consider removing unused packages with \`npm uninstall <package>\`" >> dep-report.md
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-report
+          path: dep-report.md
+          retention-days: 90
+
+      - name: Create or update issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('dep-report.md', 'utf8');
+            const title = '🛡️ Weekly Dependency Guardian Report';
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'dependencies',
+              per_page: 1,
+            });
+
+            if (issues.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                body: report,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body: report,
+                labels: ['dependencies', 'automated'],
+              });
+            }
