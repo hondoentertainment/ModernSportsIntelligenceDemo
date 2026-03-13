@@ -36,6 +36,25 @@ interface AuthProviderProps {
 
 // Session refresh interval: 4 minutes (tokens typically expire at 5 min)
 const SESSION_REFRESH_INTERVAL = 4 * 60 * 1000;
+// Maximum time to wait for a session refresh before giving up
+const SESSION_REFRESH_TIMEOUT_MS = 8000;
+
+/**
+ * Wraps supabase.auth.refreshSession() with a hard timeout so a slow or
+ * hung network request cannot stall the refresh timer indefinitely.
+ */
+async function refreshSessionWithTimeout(timeoutMs: number) {
+    return new Promise<Awaited<ReturnType<typeof supabase.auth.refreshSession>>>((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('Session refresh timed out')), timeoutMs);
+        supabase.auth.refreshSession().then(result => {
+            clearTimeout(timer);
+            resolve(result);
+        }).catch(err => {
+            clearTimeout(timer);
+            reject(err);
+        });
+    });
+}
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -51,7 +70,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         refreshTimerRef.current = setInterval(async () => {
             try {
-                const { data, error } = await supabase.auth.refreshSession();
+                const { data, error } = await refreshSessionWithTimeout(SESSION_REFRESH_TIMEOUT_MS);
                 if (error) {
                     console.warn('Session refresh failed:', error.message);
                 } else if (data.session) {
@@ -203,7 +222,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const refreshSession = async () => {
         if (isDemoMode) return;
         try {
-            const { data, error } = await supabase.auth.refreshSession();
+            const { data, error } = await refreshSessionWithTimeout(SESSION_REFRESH_TIMEOUT_MS);
             if (error) {
                 console.warn('Manual session refresh failed:', error.message);
             } else if (data.session) {
