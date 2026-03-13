@@ -40,6 +40,39 @@ import LiveImpact from './pages/LiveImpact.tsx';
 import FractionalVault from './pages/FractionalVault.tsx';
 import ProvenanceChain from './pages/ProvenanceChain.tsx';
 import LiveBreaks from './pages/LiveBreaks.tsx';
+// Phases 74-83: Core Features (lazy loaded when available)
+const TransactionWire = React.lazy(() => import('./pages/TransactionWire.tsx').catch(() => ({ default: () => React.createElement('div', {className: 'p-8 text-slate-400'}, 'Transaction Wire — Coming Soon') })));
+const Rebalancer = React.lazy(() => import('./pages/Rebalancer.tsx').catch(() => ({ default: () => React.createElement('div', {className: 'p-8 text-slate-400'}, 'Portfolio Rebalancer — Coming Soon') })));
+const CardShowMode = React.lazy(() => import('./pages/CardShowMode.tsx').catch(() => ({ default: () => React.createElement('div', {className: 'p-8 text-slate-400'}, 'Card Show Mode — Coming Soon') })));
+const PlayerTrajectory = React.lazy(() => import('./pages/PlayerTrajectory.tsx').catch(() => ({ default: () => React.createElement('div', {className: 'p-8 text-slate-400'}, 'Player Trajectory — Coming Soon') })));
+const SentimentRadar = React.lazy(() => import('./pages/SentimentRadar.tsx').catch(() => ({ default: () => React.createElement('div', {className: 'p-8 text-slate-400'}, 'Sentiment Radar — Coming Soon') })));
+const ConsignmentRouter = React.lazy(() => import('./pages/ConsignmentRouter.tsx').catch(() => ({ default: () => React.createElement('div', {className: 'p-8 text-slate-400'}, 'Consignment Router — Coming Soon') })));
+const ARShowcase = React.lazy(() => import('./pages/ARShowcase.tsx').catch(() => ({ default: () => React.createElement('div', {className: 'p-8 text-slate-400'}, 'AR Showcase — Coming Soon') })));
+const EstatePlanning = React.lazy(() => import('./pages/EstatePlanning.tsx').catch(() => ({ default: () => React.createElement('div', {className: 'p-8 text-slate-400'}, 'Estate Planning — Coming Soon') })));
+const P2PMarketplace = React.lazy(() => import('./pages/P2PMarketplace.tsx').catch(() => ({ default: () => React.createElement('div', {className: 'p-8 text-slate-400'}, 'P2P Marketplace — Coming Soon') })));
+const CardDNA = React.lazy(() => import('./pages/CardDNA.tsx').catch(() => ({ default: () => React.createElement('div', {className: 'p-8 text-slate-400'}, 'Card DNA — Coming Soon') })));
+// Phases 84-93: Bloomberg-Grade
+import MSITerminal from './pages/MSITerminal.tsx';
+import DealRoom from './pages/DealRoom.tsx';
+import MarketIndices from './pages/MarketIndices.tsx';
+import QuantWorkbench from './pages/QuantWorkbench.tsx';
+import DataConsolidation from './pages/DataConsolidation.tsx';
+import PortfolioAttribution from './pages/PortfolioAttribution.tsx';
+import ComplianceCenter from './pages/ComplianceCenter.tsx';
+import APIPlatform from './pages/APIPlatform.tsx';
+import DerivativesDesk from './pages/DerivativesDesk.tsx';
+import ResearchReports from './pages/ResearchReports.tsx';
+// Phases 94-103: Advanced Intelligence
+import WaxIntelligence from './pages/WaxIntelligence.tsx';
+import AuctionSniper from './pages/AuctionSniper.tsx';
+import CollectionGenome from './pages/CollectionGenome.tsx';
+import GradingArbitrage from './pages/GradingArbitrage.tsx';
+import VintageMarket from './pages/VintageMarket.tsx';
+import WeatherImpact from './pages/WeatherImpact.tsx';
+import HOFTracker from './pages/HOFTracker.tsx';
+import DraftWarRoom from './pages/DraftWarRoom.tsx';
+import ErrorCardIntel from './pages/ErrorCardIntel.tsx';
+import VaultSecurity from './pages/VaultSecurity.tsx';
 import { useSupabaseInventory } from './lib/useSupabaseInventory.ts';
 
 const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: boolean) => void }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
@@ -81,6 +114,39 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
             <Route path="/fractional-vault" element={<FractionalVault />} />
             <Route path="/provenance" element={<ProvenanceChain />} />
             <Route path="/live-breaks" element={<LiveBreaks />} />
+            {/* Phases 74-83: Core Features (lazy loaded) */}
+            <Route path="/transaction-wire" element={<React.Suspense fallback={<div className="p-8 text-slate-400">Loading...</div>}><TransactionWire /></React.Suspense>} />
+            <Route path="/rebalancer" element={<React.Suspense fallback={<div className="p-8 text-slate-400">Loading...</div>}><Rebalancer /></React.Suspense>} />
+            <Route path="/card-show" element={<React.Suspense fallback={<div className="p-8 text-slate-400">Loading...</div>}><CardShowMode /></React.Suspense>} />
+            <Route path="/trajectory" element={<React.Suspense fallback={<div className="p-8 text-slate-400">Loading...</div>}><PlayerTrajectory /></React.Suspense>} />
+            <Route path="/sentiment" element={<React.Suspense fallback={<div className="p-8 text-slate-400">Loading...</div>}><SentimentRadar /></React.Suspense>} />
+            <Route path="/consignment-router" element={<React.Suspense fallback={<div className="p-8 text-slate-400">Loading...</div>}><ConsignmentRouter /></React.Suspense>} />
+            <Route path="/ar-showcase" element={<React.Suspense fallback={<div className="p-8 text-slate-400">Loading...</div>}><ARShowcase /></React.Suspense>} />
+            <Route path="/estate-planning" element={<React.Suspense fallback={<div className="p-8 text-slate-400">Loading...</div>}><EstatePlanning /></React.Suspense>} />
+            <Route path="/marketplace" element={<React.Suspense fallback={<div className="p-8 text-slate-400">Loading...</div>}><P2PMarketplace /></React.Suspense>} />
+            <Route path="/card-dna" element={<React.Suspense fallback={<div className="p-8 text-slate-400">Loading...</div>}><CardDNA /></React.Suspense>} />
+            {/* Phases 84-93: Bloomberg-Grade */}
+            <Route path="/terminal" element={<MSITerminal />} />
+            <Route path="/deal-room" element={<DealRoom />} />
+            <Route path="/indices" element={<MarketIndices />} />
+            <Route path="/quant" element={<QuantWorkbench />} />
+            <Route path="/data-hub" element={<DataConsolidation />} />
+            <Route path="/attribution" element={<PortfolioAttribution />} />
+            <Route path="/compliance" element={<ComplianceCenter />} />
+            <Route path="/api-platform" element={<APIPlatform />} />
+            <Route path="/derivatives" element={<DerivativesDesk />} />
+            <Route path="/research" element={<ResearchReports />} />
+            {/* Phases 94-103: Advanced Intelligence */}
+            <Route path="/wax-intelligence" element={<WaxIntelligence />} />
+            <Route path="/auction-sniper" element={<AuctionSniper />} />
+            <Route path="/genome" element={<CollectionGenome />} />
+            <Route path="/grading-arbitrage" element={<GradingArbitrage />} />
+            <Route path="/vintage" element={<VintageMarket />} />
+            <Route path="/weather-impact" element={<WeatherImpact />} />
+            <Route path="/hof-tracker" element={<HOFTracker />} />
+            <Route path="/draft-room" element={<DraftWarRoom />} />
+            <Route path="/error-cards" element={<ErrorCardIntel />} />
+            <Route path="/vault-security" element={<VaultSecurity />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
