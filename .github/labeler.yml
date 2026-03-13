@@ -1,0 +1,30 @@
+frontend:
+  - changed-files:
+      - any-glob-to-any-file: 'src/**/*.{ts,tsx,css}'
+
+config:
+  - changed-files:
+      - any-glob-to-any-file: '*.{json,js,ts,yml,yaml}'
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file: '**/*.test.{ts,tsx}'
+      - any-glob-to-any-file: '**/*.spec.{ts,tsx}'
+      - any-glob-to-any-file: 'e2e/**'
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: '.github/**'
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: '**/*.md'
+
+styles:
+  - changed-files:
+      - any-glob-to-any-file: '**/*.css'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file: 'package.json'
+      - any-glob-to-any-file: 'package-lock.json'
