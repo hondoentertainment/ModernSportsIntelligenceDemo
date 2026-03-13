@@ -573,7 +573,42 @@ export function executeCommand(input: string): CommandResult {
 
   // Market commands
   if (trimmed === 'MSI500' || trimmed === 'INDEX' || trimmed === 'MSI') {
-    return { command: input, timestamp, resultType: 'market_data', data: { type: 'index', ...generateMSI500() }, executionTime: performance.now() - start };
+    // Cross-reference: Market Indices (Phase 86) — use real index data when available
+    let indexData: any;
+    try {
+      const { getIndices, getIndexComparison } = require('./marketIndicesService');
+      const indices = getIndices();
+      const msi500 = indices.find((idx: any) => idx.ticker === 'MSI500');
+      if (msi500) {
+        const comparison = getIndexComparison();
+        indexData = {
+          type: 'index',
+          level: msi500.currentValue,
+          change: msi500.changePercent,
+          high52w: msi500.high52Week,
+          low52w: msi500.low52Week,
+          advancers: Math.floor(msi500.components * 0.55),
+          decliners: Math.floor(msi500.components * 0.35),
+          unchanged: Math.floor(msi500.components * 0.10),
+          volume: `$${Math.round(msi500.dataPoints[msi500.dataPoints.length - 1]?.volume / 1000)}K`,
+          chartData: msi500.dataPoints.map((dp: any) => ({ date: dp.date, value: dp.value })),
+          sectors: comparison.indices.slice(0, 5).map((idx: any) => ({
+            name: idx.name.replace('MSI ', ''),
+            change: idx.returns.day,
+            weight: Math.round(100 / comparison.indices.length),
+          })),
+          sharpeRatio: msi500.sharpeRatio,
+          annualizedReturn: msi500.annualizedReturn,
+          maxDrawdown: msi500.maxDrawdown,
+        };
+      }
+    } catch {
+      // Fall back to generated data if marketIndicesService is unavailable
+    }
+    if (!indexData) {
+      indexData = { type: 'index', ...generateMSI500() };
+    }
+    return { command: input, timestamp, resultType: 'market_data', data: indexData, executionTime: performance.now() - start };
   }
   if (trimmed === 'MOVERS' || trimmed === 'TOP' || trimmed === 'GAINERS') {
     return { command: input, timestamp, resultType: 'market_data', data: { type: 'movers', ...generateMovers() }, executionTime: performance.now() - start };

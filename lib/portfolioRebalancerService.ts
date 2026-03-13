@@ -248,10 +248,88 @@ export function getRiskMetrics(): RiskMetric[] {
   return RISK_METRICS;
 }
 
+// ---- Cross-reference: Portfolio Attribution (Phase 89) ----
+// Bridge functions to integrate attribution data into rebalancer recommendations
+
+import {
+  getReturnAttribution,
+  getAlphaBeta,
+  getPerformanceDecomposition,
+  type ReturnAttribution,
+  type AlphaBeta,
+  type PerformanceDecomposition,
+} from './portfolioAttributionService';
+
+export interface RebalancerAttributionContext {
+  attribution: ReturnAttribution;
+  alphaBeta: AlphaBeta;
+  decomposition: PerformanceDecomposition;
+  attributionDrivenRecommendations: string[];
+}
+
+/**
+ * Enriches rebalancer recommendations with attribution analysis from Phase 89.
+ * Uses factor-level return data to identify which allocation changes would
+ * improve portfolio alpha generation.
+ */
+export function getAttributionEnrichedContext(
+  period: '1m' | '3m' | '6m' | '1y' | 'ytd' = '1y'
+): RebalancerAttributionContext {
+  const attribution = getReturnAttribution(period);
+  const alphaBeta = getAlphaBeta();
+  const decomposition = getPerformanceDecomposition(period);
+
+  const recommendations: string[] = [];
+
+  // Generate attribution-driven recommendations
+  const negativeFactors = attribution.factors.filter(f => f.contribution < 0);
+  for (const factor of negativeFactors) {
+    if (factor.name === 'sport_rotation') {
+      recommendations.push(
+        `Sport rotation dragged returns by ${Math.abs(factor.contribution).toFixed(1)}%. Consider adjusting sport allocation weights.`
+      );
+    }
+    if (factor.name === 'era_shift') {
+      recommendations.push(
+        `Era shift factor negative at ${factor.contribution.toFixed(1)}%. Review vintage vs modern allocation.`
+      );
+    }
+    if (factor.name === 'momentum') {
+      recommendations.push(
+        `Momentum factor negative. Consider reducing holdings in cards with declining price trends.`
+      );
+    }
+  }
+
+  if (alphaBeta.alpha < 0) {
+    recommendations.push(
+      `Negative alpha of ${alphaBeta.alpha.toFixed(2)}% vs ${alphaBeta.benchmark}. Rebalancing towards higher-conviction positions may help.`
+    );
+  }
+
+  if (decomposition.percentLuck > 40) {
+    recommendations.push(
+      `${decomposition.percentLuck}% of returns attributed to luck factor. Increase systematic allocation to reduce randomness.`
+    );
+  }
+
+  if (recommendations.length === 0) {
+    recommendations.push('Attribution analysis shows balanced factor exposure. Current allocation is well-optimized.');
+  }
+
+  return {
+    attribution,
+    alphaBeta,
+    decomposition,
+    attributionDrivenRecommendations: recommendations,
+  };
+}
+
 export default {
   getPortfolioAllocations,
   getRebalanceRecommendations,
   getOptimizationScore,
   getPortfolioHealthScore,
   getRiskMetrics,
+  getAttributionEnrichedContext,
 };
