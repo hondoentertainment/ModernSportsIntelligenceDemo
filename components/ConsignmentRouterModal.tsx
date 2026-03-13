@@ -323,17 +323,17 @@ const ConsignmentRouterModal: React.FC<ConsignmentRouterModalProps> = ({ isOpen,
   const options = useMemo(() => getConsignmentOptions('Card', cardValue), [cardValue]);
   const liquidityContext = useMemo(() => {
     // Create a representative card for liquidity enrichment
-    const mockCard = {
+    const mockCard: import('../types').CardInventory = {
       id: 'consignment-query',
       player: 'Query Card',
       year: 2023,
       manufacturer: 'Panini',
       cardNumber: '1',
       set: 'Prizm',
-      sport: 'Basketball' as const,
-      league: 'NBA' as const,
+      sport: 'Basketball',
+      league: 'NBA',
       isAutographed: false,
-      condition: 'Near Mint' as const,
+      condition: 'Near Mint',
       isGraded: true,
       gradingCompany: 'PSA',
       grade: '9',

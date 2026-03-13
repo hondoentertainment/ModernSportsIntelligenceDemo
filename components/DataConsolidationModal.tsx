@@ -223,6 +223,41 @@ const NBBOTab: React.FC = () => {
         </div>
       </div>
 
+      {/* Cross-Reference Insights (Phase 86 Market Indices / Phase 79 Consignment Router) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {enrichedView.marketIndicesContext && (
+          <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp size={12} className="text-blue-400" />
+              <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Market Index</span>
+            </div>
+            <p className="text-xs text-slate-200 font-medium">{enrichedView.marketIndicesContext.relevantIndex}</p>
+            <div className="flex items-center gap-3 mt-1 text-xs">
+              <span className="text-slate-400">Value: <span className="text-white font-semibold">{enrichedView.marketIndicesContext.indexValue.toLocaleString()}</span></span>
+              <span className={`font-bold ${enrichedView.marketIndicesContext.indexChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                {enrichedView.marketIndicesContext.indexChange >= 0 ? '+' : ''}{enrichedView.marketIndicesContext.indexChange.toFixed(2)}%
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-500 mt-1">{enrichedView.marketIndicesContext.correlation}</p>
+          </div>
+        )}
+        {enrichedView.consignmentContext && (
+          <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <Repeat size={12} className="text-emerald-400" />
+              <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Consignment</span>
+            </div>
+            <div className="flex items-center gap-3 text-xs">
+              <span className="text-slate-400">Best: <span className="text-emerald-400 font-bold">{enrichedView.consignmentContext.bestPlatform}</span></span>
+              <span className="text-slate-400">Net: <span className="text-white font-semibold">${enrichedView.consignmentContext.bestNetProceeds.toLocaleString()}</span></span>
+            </div>
+            <p className="text-[10px] text-slate-500 mt-1">
+              ${enrichedView.consignmentContext.pricingAdvantage.toLocaleString()} advantage over {enrichedView.consignmentContext.worstPlatform}
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Platform detail table */}
       <div className="overflow-x-auto">
         <table className="w-full text-xs">

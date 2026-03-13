@@ -18,11 +18,13 @@ import {
   getDerivativesStats,
   getPlayerList,
   getPlayerPrice,
+  getQuantEnrichedDerivatives,
   type CardOption,
   type InsurancePolicy,
   type HedgeCalculation,
   type VolatilitySurface as VolSurfaceType,
   type ScenarioResult,
+  type DerivativesQuantContext,
 } from '../lib/derivativesDeskService';
 
 interface Props {
@@ -48,6 +50,7 @@ const OptionsChainTab: React.FC = () => {
   const [expiryFilter, setExpiryFilter] = useState<number | null>(null);
 
   const options = useMemo(() => getAvailableOptions(selectedPlayer), [selectedPlayer]);
+  const quantContext = useMemo(() => getQuantEnrichedDerivatives(selectedPlayer), [selectedPlayer]);
 
   const filtered = useMemo(() => {
     if (!expiryFilter) return options;
@@ -152,6 +155,42 @@ const OptionsChainTab: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Quant Workbench Insights (Phase 87 Cross-reference) */}
+      {quantContext.quantInsights.length > 0 && (
+        <div className="bg-purple-500/5 border border-purple-500/20 rounded-xl p-3 mt-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Zap size={12} className="text-purple-400" />
+            <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">Quant Insights</span>
+          </div>
+          <div className="space-y-1">
+            {quantContext.quantInsights.map((insight, i) => (
+              <p key={i} className="text-xs text-slate-400 flex gap-2">
+                <span className="text-purple-400 mt-0.5">{'>'}</span>
+                <span>{insight}</span>
+              </p>
+            ))}
+          </div>
+          {quantContext.backtestResult && (
+            <div className="grid grid-cols-3 gap-2 mt-2">
+              <div className="bg-slate-800/40 rounded-lg p-2 text-center">
+                <p className="text-[10px] text-slate-500">Backtest Return</p>
+                <p className={`text-sm font-bold ${quantContext.backtestResult.totalReturn >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {quantContext.backtestResult.totalReturn >= 0 ? '+' : ''}{quantContext.backtestResult.totalReturn.toFixed(1)}%
+                </p>
+              </div>
+              <div className="bg-slate-800/40 rounded-lg p-2 text-center">
+                <p className="text-[10px] text-slate-500">Sharpe Ratio</p>
+                <p className="text-sm font-bold text-blue-400">{quantContext.backtestResult.sharpeRatio.toFixed(2)}</p>
+              </div>
+              <div className="bg-slate-800/40 rounded-lg p-2 text-center">
+                <p className="text-[10px] text-slate-500">Max Drawdown</p>
+                <p className="text-sm font-bold text-amber-400">{quantContext.backtestResult.maxDrawdown.toFixed(1)}%</p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
