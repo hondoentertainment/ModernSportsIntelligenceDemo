@@ -302,3 +302,77 @@ export function getSeverityColor(severity: 'low' | 'medium' | 'high'): { text: s
     case 'high': return { text: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' };
   }
 }
+
+// ---- Cross-reference: Card DNA (Phase 83) ----
+// Bridge functions to integrate Card DNA authentication data into genome analysis
+
+import {
+  getDNAStats,
+  getCounterfeitAlerts,
+  getAllFingerprints,
+  type DNAStats,
+  type CounterfeitAlert,
+  type CardFingerprint,
+} from './cardDNAService';
+
+export interface GenomeDNAInsights {
+  dnaStats: DNAStats;
+  counterfeitAlerts: CounterfeitAlert[];
+  authenticationRate: number;
+  avgConfidence: number;
+  genomeImpact: string[];
+  riskAdjustment: number;
+}
+
+/**
+ * Enriches the collection genome with Card DNA authentication data from Phase 83.
+ * Uses authentication confidence and counterfeit risk to adjust genome traits
+ * related to risk tolerance and collection quality.
+ */
+export function getGenomeDNAInsights(): GenomeDNAInsights {
+  const dnaStats = getDNAStats();
+  const alerts = getCounterfeitAlerts();
+  const fingerprints = getAllFingerprints();
+
+  const avgConfidence = dnaStats.averageConfidence;
+  const authRate = dnaStats.totalScanned > 0
+    ? Math.round((dnaStats.authenticated / dnaStats.totalScanned) * 100)
+    : 0;
+
+  const genomeImpact: string[] = [];
+
+  if (alerts.filter(a => a.riskLevel === 'critical' || a.riskLevel === 'high').length > 0) {
+    genomeImpact.push(
+      `${alerts.filter(a => a.riskLevel === 'critical' || a.riskLevel === 'high').length} high-risk cards detected by DNA scan. Your risk profile may be underestimating authenticity risk.`
+    );
+  }
+
+  if (avgConfidence >= 90) {
+    genomeImpact.push(
+      `Average DNA confidence of ${avgConfidence}% indicates strong authentication habits. This supports a lower risk-tolerance genome score.`
+    );
+  } else if (avgConfidence < 70) {
+    genomeImpact.push(
+      `Average DNA confidence of ${avgConfidence}% is below optimal. Consider scanning more cards to validate your collection.`
+    );
+  }
+
+  const unscanedEstimate = Math.max(0, 50 - dnaStats.totalScanned);
+  if (unscanedEstimate > 20) {
+    genomeImpact.push(
+      `Approximately ${unscanedEstimate} cards unscanned. Full DNA profiling would improve your genome accuracy.`
+    );
+  }
+
+  // Risk adjustment: negative means riskier, positive means safer
+  const riskAdjustment = avgConfidence >= 90 ? 5 : avgConfidence >= 70 ? 0 : -8;
+
+  return {
+    dnaStats,
+    counterfeitAlerts: alerts,
+    authenticationRate: authRate,
+    avgConfidence,
+    genomeImpact,
+    riskAdjustment,
+  };
+}

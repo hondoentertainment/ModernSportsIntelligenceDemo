@@ -382,3 +382,91 @@ export function getGradingArbitrageStats(): GradingArbitrageStats {
     activeSubmissions: active.length,
   };
 }
+
+// ---- Cross-reference: AI Predictive Grading (Phase 65) ----
+// Bridge functions to integrate grade prediction confidence into arbitrage decisions
+
+import type { CardInventory, Sport, League } from '../types';
+
+export interface ArbitrageWithPrediction {
+  opportunity: CrossGradeOpportunity;
+  aiPredictedGrade: string | null;
+  aiConfidence: number | null;
+  adjustedROI: number;
+  aiRecommendation: string;
+}
+
+/**
+ * Enriches cross-grade opportunities with AI grade predictions from Phase 65.
+ * Uses the grade prediction engine to validate or adjust crossover probability
+ * estimates for more accurate ROI calculations.
+ */
+export function getAIEnrichedOpportunities(): ArbitrageWithPrediction[] {
+  const opportunities = getCrossGradeOpportunities();
+
+  // Dynamically import to avoid circular dependency issues
+  let getPredictedGrade: ((card: CardInventory) => { grade: string; confidence: number }) | null = null;
+  try {
+    const gradePredictService = require('./gradePredictService');
+    getPredictedGrade = gradePredictService.getPredictedGrade;
+  } catch {
+    // Grade predict service unavailable
+  }
+
+  return opportunities.map(opp => {
+    let aiPredictedGrade: string | null = null;
+    let aiConfidence: number | null = null;
+    let adjustedROI = opp.netROI;
+    let aiRecommendation = 'AI grading data unavailable for this card.';
+
+    if (getPredictedGrade) {
+      // Create a synthetic card for prediction
+      const syntheticCard: CardInventory = {
+        id: opp.id,
+        player: opp.player,
+        year: parseInt(opp.cardDescription.match(/\d{4}/)?.[0] || '2020'),
+        manufacturer: opp.cardDescription.includes('Panini') ? 'Panini' : 'Topps',
+        set: opp.cardDescription.split(' ').slice(1, 3).join(' '),
+        cardNumber: '',
+        sport: 'Basketball' as Sport,
+        league: 'NBA' as League,
+        condition: `${opp.currentCompany} ${opp.currentGrade}`,
+        purchasePrice: opp.currentValue,
+        purchaseDate: new Date().toISOString(),
+        currentValue: opp.currentValue,
+        status: 'active',
+        isGraded: true,
+        grade: String(opp.currentGrade),
+        gradingCompany: opp.currentCompany,
+        isAutographed: false,
+      };
+
+      try {
+        const prediction = getPredictedGrade(syntheticCard);
+        aiPredictedGrade = prediction.grade;
+        aiConfidence = prediction.confidence;
+
+        // Adjust ROI based on AI confidence
+        const confidenceFactor = prediction.confidence;
+        adjustedROI = Math.round(opp.netROI * confidenceFactor * 100) / 100;
+
+        const predictedNum = parseFloat(prediction.grade);
+        if (predictedNum >= opp.expectedGrade) {
+          aiRecommendation = `AI predicts grade ${prediction.grade} (${(prediction.confidence * 100).toFixed(0)}% confidence). Supports crossover — proceed.`;
+        } else {
+          aiRecommendation = `AI predicts grade ${prediction.grade} (${(prediction.confidence * 100).toFixed(0)}% confidence). Below target — exercise caution.`;
+        }
+      } catch {
+        aiRecommendation = 'AI prediction engine encountered an error for this card.';
+      }
+    }
+
+    return {
+      opportunity: opp,
+      aiPredictedGrade,
+      aiConfidence,
+      adjustedROI,
+      aiRecommendation,
+    };
+  });
+}

@@ -450,3 +450,101 @@ export function getPlatformComparison(player: string, cardDesc: string): Platfor
 }
 
 export { ALL_PLATFORMS, CARD_SEEDS };
+
+// ── Cross-reference: Multiple Data Sources ────────────────────────────────────
+// Bridge functions to integrate data from Market Indices (Phase 86),
+// Liquidity Intelligence (Phase 68), and Consignment Router (Phase 79)
+
+import { getIndices, type MarketIndex } from './marketIndicesService';
+import { getPlatformComparison as getConsignmentComparison, type PlatformComparison as ConsignmentComparison } from './consignmentRouterService';
+
+export interface EnrichedConsolidatedView {
+  consolidatedPrice: ConsolidatedPrice;
+  marketIndicesContext: {
+    relevantIndex: string;
+    indexValue: number;
+    indexChange: number;
+    correlation: string;
+  } | null;
+  consignmentContext: {
+    bestPlatform: string;
+    bestNetProceeds: number;
+    worstPlatform: string;
+    pricingAdvantage: number;
+  } | null;
+}
+
+/**
+ * Creates an enriched consolidated view by combining price data with
+ * market index context and consignment platform comparison.
+ */
+export function getEnrichedConsolidatedView(
+  player: string,
+  cardDesc: string,
+  grade: string,
+): EnrichedConsolidatedView {
+  const consolidatedPrice = getConsolidatedPrice(player, cardDesc, grade);
+
+  // Market Indices context
+  let marketIndicesContext: EnrichedConsolidatedView['marketIndicesContext'] = null;
+  try {
+    const indices = getIndices();
+    // Find the most relevant index (sport-specific if possible)
+    const sportKeywords: Record<string, string> = {
+      baseball: 'MSIMLB',
+      basketball: 'MSINBA',
+      football: 'MSINFL',
+      hockey: 'MSINHL',
+    };
+    const playerLower = player.toLowerCase();
+    let relevantTicker = 'MSI500';
+    for (const [keyword, ticker] of Object.entries(sportKeywords)) {
+      // Basic sport detection from player name context
+      if (cardDesc.toLowerCase().includes(keyword)) {
+        relevantTicker = ticker;
+        break;
+      }
+    }
+    const idx = indices.find(i => i.ticker === relevantTicker) || indices[0];
+    if (idx) {
+      marketIndicesContext = {
+        relevantIndex: idx.name,
+        indexValue: idx.currentValue,
+        indexChange: idx.changePercent,
+        correlation: idx.changePercent > 0 ? 'Positive market tailwind' : 'Market headwind — prices may face pressure',
+      };
+    }
+  } catch {
+    // Market indices service unavailable
+  }
+
+  // Consignment context
+  let consignmentContext: EnrichedConsolidatedView['consignmentContext'] = null;
+  try {
+    const consignmentData = getConsignmentComparison();
+    if (consignmentData.length > 0) {
+      const priceCol = consolidatedPrice.consensusPrice >= 5000
+        ? 'netProceedsAt5000' as const
+        : consolidatedPrice.consensusPrice >= 1000
+          ? 'netProceedsAt1000' as const
+          : 'netProceedsAt500' as const;
+      const sorted = [...consignmentData].sort((a, b) => b[priceCol] - a[priceCol]);
+      const best = sorted[0];
+      const worst = sorted[sorted.length - 1];
+      consignmentContext = {
+        bestPlatform: best.platformName,
+        bestNetProceeds: best[priceCol],
+        worstPlatform: worst.platformName,
+        pricingAdvantage: Math.round(((best[priceCol] - worst[priceCol]) / worst[priceCol]) * 100 * 10) / 10,
+      };
+    }
+  } catch {
+    // Consignment router service unavailable
+  }
+
+  return {
+    consolidatedPrice,
+    marketIndicesContext,
+    consignmentContext,
+  };
+}

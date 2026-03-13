@@ -382,3 +382,92 @@ export function daysUntilDraft(dateStr: string): number {
   const draft = new Date(dateStr);
   return Math.max(0, Math.ceil((draft.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
 }
+
+// ── Cross-reference: Player Trajectory (Phase 77) ────────────────────────────
+// Bridge functions to integrate trajectory projections with draft prospect analysis
+
+import {
+  getAllPlayerTrajectories,
+  type PlayerTrajectoryData,
+  type PlayerComparable,
+} from './playerTrajectoryService';
+
+export interface ProspectTrajectoryComparison {
+  prospectId: string;
+  prospectName: string;
+  sport: string;
+  comparablePlayers: {
+    trajectoryPlayer: string;
+    trajectoryScore: number;
+    peakProjectedValue: number;
+    riskLevel: string;
+    relevance: string;
+  }[];
+  projectedCareerArc: string;
+  investmentOutlook: string;
+}
+
+/**
+ * Enriches draft prospects with trajectory analysis from Phase 77.
+ * Compares draft prospect profiles with existing player trajectories
+ * to project career arc and card value trajectory.
+ */
+export function getProspectTrajectoryComparisons(sportFilter?: string): ProspectTrajectoryComparison[] {
+  const prospects = getDraftProspects(sportFilter);
+  const trajectories = getAllPlayerTrajectories();
+
+  return prospects.slice(0, 10).map(prospect => {
+    // Find trajectory players in same sport or similar position
+    const relevantTrajectories = trajectories.filter(t =>
+      t.sport === prospect.sport ||
+      t.position === prospect.position
+    );
+
+    const comparablePlayers = relevantTrajectories.map(t => {
+      // Calculate relevance based on position/sport match and age proximity
+      let relevanceScore = 0;
+      if (t.sport === prospect.sport) relevanceScore += 50;
+      if (t.position === prospect.position) relevanceScore += 30;
+      const ageDiff = Math.abs(t.age - prospect.age);
+      relevanceScore += Math.max(0, 20 - ageDiff * 5);
+
+      const relevance = relevanceScore >= 70 ? 'High' : relevanceScore >= 40 ? 'Medium' : 'Low';
+
+      return {
+        trajectoryPlayer: t.playerName,
+        trajectoryScore: t.trajectoryScore,
+        peakProjectedValue: t.peakProjectedValue,
+        riskLevel: t.riskLevel,
+        relevance,
+      };
+    }).sort((a, b) => {
+      const order = { High: 0, Medium: 1, Low: 2 };
+      return (order[a.relevance as keyof typeof order] ?? 2) - (order[b.relevance as keyof typeof order] ?? 2);
+    }).slice(0, 3);
+
+    // Determine projected career arc based on prospect stats
+    let projectedCareerArc = 'Standard Development';
+    if (prospect.boomProbability >= 60) projectedCareerArc = 'Breakout Trajectory';
+    else if (prospect.boomProbability >= 45) projectedCareerArc = 'Steady Rise';
+    else if (prospect.bustProbability >= 25) projectedCareerArc = 'High Variance';
+
+    // Investment outlook
+    let investmentOutlook = 'Hold for development';
+    if (prospect.boomProbability >= 60 && prospect.bustProbability < 15) {
+      investmentOutlook = 'Strong long-term hold — generational upside with low bust risk';
+    } else if (prospect.boomProbability >= 45) {
+      investmentOutlook = 'Accumulate early — favorable risk/reward at current pre-draft prices';
+    } else if (prospect.bustProbability >= 25) {
+      investmentOutlook = 'Speculative position only — high bust risk warrants small allocation';
+    }
+
+    return {
+      prospectId: prospect.id,
+      prospectName: prospect.name,
+      sport: prospect.sport,
+      comparablePlayers,
+      projectedCareerArc,
+      investmentOutlook,
+    };
+  });
+}

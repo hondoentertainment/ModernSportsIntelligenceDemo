@@ -318,6 +318,87 @@ export function getListingsByFilters(filters: {
   return results;
 }
 
+// ── Cross-reference: Deal Room (Phase 85) ────────────────────────────────────
+// Bridge functions to escalate P2P listings into encrypted deal rooms
+
+import {
+  getDealRooms,
+  createDealRoom,
+  getDealFlowStats,
+  type DealRoom,
+  type DealFlowStats,
+} from './dealRoomService';
+
+export interface ListingWithDealRoomOption {
+  listing: Listing;
+  dealScore: number;
+  eligibleForDealRoom: boolean;
+  existingDealRoom: DealRoom | null;
+  dealRoomReason: string;
+}
+
+/**
+ * Enriches P2P listings with Deal Room (Phase 85) integration.
+ * High-value listings can be escalated to encrypted deal rooms
+ * for institutional-grade negotiations.
+ */
+export function getListingsWithDealRoomOptions(): ListingWithDealRoomOption[] {
+  const listings = getActiveListings();
+  const dealRooms = getDealRooms();
+
+  return listings.map(listing => {
+    const score = dealScore(listing);
+    const eligibleForDealRoom = listing.askingPrice >= 1000;
+
+    // Check if a deal room already exists for this card/player
+    const existingDealRoom = dealRooms.find(room =>
+      room.card.player === listing.player &&
+      room.status !== 'closed' && room.status !== 'expired'
+    ) || null;
+
+    let dealRoomReason: string;
+    if (existingDealRoom) {
+      dealRoomReason = `Active deal room exists: "${existingDealRoom.title}" (${existingDealRoom.status})`;
+    } else if (!eligibleForDealRoom) {
+      dealRoomReason = 'Card value below $1,000 — standard P2P listing recommended';
+    } else if (listing.askingPrice >= 10000) {
+      dealRoomReason = 'High-value card — encrypted deal room recommended for institutional buyers';
+    } else {
+      dealRoomReason = 'Eligible for deal room — useful for private negotiations with verified buyers';
+    }
+
+    return {
+      listing,
+      dealScore: score,
+      eligibleForDealRoom,
+      existingDealRoom,
+      dealRoomReason,
+    };
+  });
+}
+
+/**
+ * Escalates a P2P listing to an encrypted Deal Room.
+ */
+export function escalateToDealRoom(listing: Listing): DealRoom {
+  return createDealRoom(
+    {
+      player: listing.player,
+      description: listing.cardDescription,
+      grade: listing.grade,
+      estimatedValue: listing.marketValue,
+    },
+    'sell',
+    listing.askingPrice,
+  );
+}
+
+export function getCombinedMarketStats(): MarketplaceStats & { dealFlow: DealFlowStats } {
+  const stats = getMarketplaceStats();
+  const dealFlow = getDealFlowStats();
+  return { ...stats, dealFlow };
+}
+
 export default {
   getActiveListings,
   getAllListings,
@@ -329,4 +410,7 @@ export default {
   getMarketplaceStats,
   getListingDealScore,
   getListingsByFilters,
+  getListingsWithDealRoomOptions,
+  escalateToDealRoom,
+  getCombinedMarketStats,
 };

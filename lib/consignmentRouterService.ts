@@ -265,10 +265,74 @@ export function getAllPlatforms(): PlatformProfile[] {
   return [...PLATFORMS];
 }
 
+// ── Cross-reference: Liquidity Intelligence (Phase 68) ────────────────────────
+// Bridge functions to integrate liquidity scoring with consignment recommendations
+
+import type { CardInventory } from '../types';
+
+export interface LiquidityEnrichedConsignment {
+  options: ConsignmentOption[];
+  liquidityScore: number;
+  liquidityTier: string;
+  avgDaysToSell: number;
+  liquidityRecommendation: string;
+}
+
+/**
+ * Enriches consignment recommendations with liquidity intelligence from Phase 68.
+ * Uses the card's liquidity score to adjust platform recommendations
+ * and identify optimal timing for consignment.
+ */
+export function getLiquidityEnrichedConsignment(
+  card: CardInventory,
+  estimatedValue: number,
+): LiquidityEnrichedConsignment {
+  const options = getConsignmentOptions(
+    `${card.year} ${card.manufacturer} ${card.player}`,
+    estimatedValue,
+  );
+
+  // Import liquidity functions dynamically
+  let liquidityScore = 50;
+  let liquidityTier = 'Moderate';
+  let avgDaysToSell = 30;
+
+  try {
+    const { calculateDetailedLiquidityScore } = require('./liquidityService');
+    const detail = calculateDetailedLiquidityScore(card);
+    liquidityScore = detail.overall;
+    liquidityTier = detail.tier;
+    avgDaysToSell = detail.avgDaysToSell;
+  } catch {
+    // Liquidity service unavailable, use defaults
+  }
+
+  let liquidityRecommendation: string;
+  if (liquidityScore >= 75) {
+    liquidityRecommendation =
+      'High liquidity card — eBay or MySlabs recommended for fastest sale. Premium auction houses may not be necessary.';
+  } else if (liquidityScore >= 50) {
+    liquidityRecommendation =
+      'Moderate liquidity — PWCC or Goldin recommended for best price realization. Allow 2-4 weeks for optimal sale.';
+  } else {
+    liquidityRecommendation =
+      'Low liquidity card — Heritage Auctions or Goldin recommended. Premium platforms attract the niche buyers needed for illiquid cards.';
+  }
+
+  return {
+    options,
+    liquidityScore,
+    liquidityTier,
+    avgDaysToSell,
+    liquidityRecommendation,
+  };
+}
+
 export default {
   getConsignmentOptions,
   getTopPlatforms,
   getPlatformComparison,
   getPlatformById,
   getAllPlatforms,
+  getLiquidityEnrichedConsignment,
 };

@@ -249,3 +249,75 @@ export function getEstateValuation(): EstateValuation {
 export function getDocumentChecklist(): DocumentChecklistItem[] {
   return mockDocumentChecklist;
 }
+
+// ---- Cross-reference: Portfolio Attribution (Phase 89) ----
+// Bridge functions to integrate attribution data for estate valuation insights
+
+import {
+  getReturnAttribution,
+  getPerformanceDecomposition,
+  type ReturnAttribution,
+  type PerformanceDecomposition,
+} from './portfolioAttributionService';
+
+export interface EstatePerformanceContext {
+  attribution: ReturnAttribution;
+  decomposition: PerformanceDecomposition;
+  estateImpactSummary: string[];
+  projectedAnnualGrowth: number;
+  recommendedReviewDate: string;
+}
+
+/**
+ * Enriches estate planning with portfolio performance attribution from Phase 89.
+ * Uses return decomposition to project estate value growth and identify
+ * factors that may impact beneficiary allocations.
+ */
+export function getEstatePerformanceContext(
+  period: '1m' | '3m' | '6m' | '1y' | 'ytd' = '1y'
+): EstatePerformanceContext {
+  const attribution = getReturnAttribution(period);
+  const decomposition = getPerformanceDecomposition(period);
+
+  const summary: string[] = [];
+
+  if (attribution.totalReturn > 10) {
+    summary.push(
+      `Portfolio has appreciated ${attribution.totalReturn.toFixed(1)}% in the past year. Estate valuation may need updating.`
+    );
+  } else if (attribution.totalReturn < -5) {
+    summary.push(
+      `Portfolio has declined ${Math.abs(attribution.totalReturn).toFixed(1)}%. Review beneficiary allocations for fairness.`
+    );
+  }
+
+  if (decomposition.percentSkill > 50) {
+    summary.push(
+      `${decomposition.percentSkill}% of returns are skill-driven, suggesting active management adds value. Consider succession planning for collection management.`
+    );
+  }
+
+  const topFactor = attribution.factors.reduce((best, f) =>
+    Math.abs(f.contribution) > Math.abs(best.contribution) ? f : best
+  );
+  summary.push(
+    `Largest return driver: ${topFactor.name.replace(/_/g, ' ')} (${topFactor.contribution > 0 ? '+' : ''}${topFactor.contribution.toFixed(1)}%). Factor concentration may affect estate value stability.`
+  );
+
+  // Projected annual growth based on recent performance
+  const projectedAnnualGrowth = Math.round(attribution.totalReturn * 10) / 10;
+
+  // Recommend review if significant changes
+  const now = new Date();
+  const reviewMonths = Math.abs(attribution.totalReturn) > 15 ? 3 : 6;
+  now.setMonth(now.getMonth() + reviewMonths);
+  const recommendedReviewDate = now.toISOString().slice(0, 10);
+
+  return {
+    attribution,
+    decomposition,
+    estateImpactSummary: summary,
+    projectedAnnualGrowth,
+    recommendedReviewDate,
+  };
+}

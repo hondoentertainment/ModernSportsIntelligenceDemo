@@ -437,3 +437,87 @@ export function getPlayerList(): string[] {
 export function getPlayerPrice(name: string): number {
   return PLAYERS.find(p => p.name === name)?.price || 0;
 }
+
+// ---- Cross-reference: Quant Workbench (Phase 87) ----
+// Bridge functions to integrate quantitative analysis into derivatives pricing
+
+import {
+  runBacktest,
+  runScreener,
+  type BacktestResult,
+  type ScreenerResult,
+  type ScreenerFilter,
+} from './quantWorkbenchService';
+
+export interface DerivativesQuantContext {
+  backtestResult: BacktestResult | null;
+  screenedHedgeCandidates: ScreenerResult | null;
+  quantInsights: string[];
+}
+
+/**
+ * Enriches derivatives analysis with quant workbench analytics from Phase 87.
+ * Uses backtesting and screening to validate hedging strategies and
+ * identify optimal options positions.
+ */
+export function getQuantEnrichedDerivatives(
+  player: string,
+): DerivativesQuantContext {
+  const insights: string[] = [];
+
+  // Run backtest for the player's volatility-based strategy
+  let backtestResult: BacktestResult | null = null;
+  try {
+    backtestResult = runBacktest(
+      `derivatives-hedge-${player}`,
+      '2024-01-01',
+      '2025-12-31',
+    );
+
+    if (backtestResult.maxDrawdown > 15) {
+      insights.push(
+        `Backtest shows ${backtestResult.maxDrawdown.toFixed(1)}% max drawdown. Protective puts recommended.`
+      );
+    }
+    if (backtestResult.sharpeRatio < 0.5) {
+      insights.push(
+        `Low Sharpe ratio of ${backtestResult.sharpeRatio.toFixed(2)} suggests hedging would improve risk-adjusted returns.`
+      );
+    }
+    if (backtestResult.winRate < 50) {
+      insights.push(
+        `Win rate of ${backtestResult.winRate.toFixed(1)}% is below 50%. Consider collar strategy to limit downside.`
+      );
+    }
+  } catch {
+    insights.push('Backtest engine unavailable — using default risk assumptions.');
+  }
+
+  // Screen for hedge candidates
+  let screenedHedgeCandidates: ScreenerResult | null = null;
+  try {
+    const filters: ScreenerFilter[] = [
+      { field: 'player', operator: 'contains', value: player, label: `Player: ${player}` },
+      { field: 'change30d', operator: '<', value: -10, label: '30D decline > 10%' },
+    ];
+    screenedHedgeCandidates = runScreener(filters);
+
+    if (screenedHedgeCandidates.totalMatches > 0) {
+      insights.push(
+        `Screener found ${screenedHedgeCandidates.totalMatches} cards with >10% decline. Hedging these positions is advisable.`
+      );
+    }
+  } catch {
+    // Screener unavailable
+  }
+
+  if (insights.length === 0) {
+    insights.push('Quant analysis shows balanced risk profile. Current derivatives positioning is adequate.');
+  }
+
+  return {
+    backtestResult,
+    screenedHedgeCandidates,
+    quantInsights: insights,
+  };
+}

@@ -16,6 +16,7 @@ import {
   getRebalanceRecommendations,
   getOptimizationScore,
   getPortfolioHealthScore,
+  getAttributionEnrichedContext,
   RebalanceAction,
   RebalanceRecommendation,
 } from '../lib/portfolioRebalancerService';
@@ -50,6 +51,7 @@ const RebalancerModal: React.FC<RebalancerModalProps> = ({ isOpen, onClose }) =>
   const recommendations = useMemo(() => getRebalanceRecommendations(), []);
   const optimizationScore = useMemo(() => getOptimizationScore(), []);
   const healthScore = useMemo(() => getPortfolioHealthScore(), []);
+  const attributionContext = useMemo(() => getAttributionEnrichedContext('1y'), []);
 
   const pieData = useMemo(
     () => allocations.map((a) => ({ name: a.category, value: a.currentPct })),
@@ -181,6 +183,40 @@ const RebalancerModal: React.FC<RebalancerModalProps> = ({ isOpen, onClose }) =>
             </div>
           </div>
         </div>
+
+        {/* Attribution Insights (Phase 89 Cross-reference) */}
+        {attributionContext.attributionDrivenRecommendations.length > 0 && (
+          <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-2xl p-5 space-y-3">
+            <div className="flex items-center gap-2">
+              <AlertTriangle size={16} className="text-indigo-400" />
+              <h3 className="text-sm font-black text-indigo-400 uppercase tracking-widest">Attribution Insights</h3>
+            </div>
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <div className="bg-slate-800/40 rounded-xl p-3">
+                <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Alpha</p>
+                <p className={`text-xl font-bebas ${attributionContext.alphaBeta.alpha >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {attributionContext.alphaBeta.alpha > 0 ? '+' : ''}{attributionContext.alphaBeta.alpha.toFixed(2)}%
+                </p>
+              </div>
+              <div className="bg-slate-800/40 rounded-xl p-3">
+                <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Beta</p>
+                <p className="text-xl font-bebas text-blue-400">{attributionContext.alphaBeta.beta.toFixed(2)}</p>
+              </div>
+              <div className="bg-slate-800/40 rounded-xl p-3">
+                <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Skill %</p>
+                <p className="text-xl font-bebas text-purple-400">{attributionContext.decomposition.percentSkill}%</p>
+              </div>
+            </div>
+            <ul className="space-y-1">
+              {attributionContext.attributionDrivenRecommendations.map((rec, i) => (
+                <li key={i} className="text-xs text-brand-muted flex gap-2">
+                  <span className="text-indigo-400 mt-0.5">{'>'}</span>
+                  <span>{rec}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Recommendations */}
         <div className="space-y-4">
