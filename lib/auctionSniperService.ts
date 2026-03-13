@@ -461,3 +461,38 @@ export function getAuctionHistory(): AuctionHistoryRecord[] {
   const data = ensureData();
   return data.history;
 }
+
+// ── Widget compatibility API ──────────────────────────────────────────────────
+
+export type SniperStrategy = 'snipe' | 'early_bid' | 'watch' | 'skip';
+
+export function generateMockAuctions(_inventory: any[]): AuctionListing[] {
+  return getActiveAuctions();
+}
+
+export function analyzeListing(listing: AuctionListing): AuctionListing & { strategy: SniperStrategy } {
+  const strategy: SniperStrategy =
+    listing.dealScore >= 75 ? 'snipe' :
+    listing.dealScore >= 50 ? 'early_bid' :
+    listing.dealScore >= 25 ? 'watch' : 'skip';
+  return { ...listing, strategy };
+}
+
+export function getAuctionAlerts(listings: AuctionListing[]): { type: string; message: string }[] {
+  const alerts: { type: string; message: string }[] = [];
+  for (const l of listings) {
+    if (l.timeRemaining <= 600) alerts.push({ type: 'ending', message: `${l.player} ending in ${Math.round(l.timeRemaining / 60)}m` });
+    if (l.shillRisk > 70) alerts.push({ type: 'shill', message: `Shill risk on ${l.player}: ${l.shillRisk}%` });
+    if (l.dealScore >= 80) alerts.push({ type: 'deal', message: `Great deal: ${l.player} (score ${l.dealScore})` });
+  }
+  return alerts;
+}
+
+export function getAuctionStats(listings: AuctionListing[]) {
+  return {
+    total: listings.length,
+    endingSoon: listings.filter(l => l.timeRemaining <= 3600).length,
+    avgDealScore: listings.length ? Math.round(listings.reduce((s, l) => s + l.dealScore, 0) / listings.length) : 0,
+    totalValue: listings.reduce((s, l) => s + l.currentBid, 0),
+  };
+}
