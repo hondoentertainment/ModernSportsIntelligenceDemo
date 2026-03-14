@@ -1,0 +1,3 @@
+Ship execution intelligence, release readiness, and frontier planning
+
+Bundle the current platform expansion into a deployable release so GitHub and Vercel can publish the updated trading, dossier, API, and roadmap surfaces together.
