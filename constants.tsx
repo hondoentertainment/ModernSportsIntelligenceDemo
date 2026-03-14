@@ -30,7 +30,19 @@ import {
   Share2,
   Briefcase,
   Bot,
-  BookHeart
+  BookHeart,
+  ShoppingCart,
+  Box,
+  Dna,
+  Gavel,
+  ClipboardCheck,
+  Store,
+  KeyRound,
+  MapPin,
+  ScanLine,
+  Sparkles,
+  HeartPulse,
+  Leaf,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -68,6 +80,22 @@ export const NAV_ITEMS = [
   { id: 'cross-hobby-portfolio', label: 'Cross-Hobby Portfolio', icon: <Briefcase size={20} />, path: '/cross-hobby-portfolio' },
   { id: 'autonomous-acquisition', label: 'AI Acquisition', icon: <Bot size={20} />, path: '/autonomous-acquisition' },
   { id: 'collection-narrative', label: 'Heritage Story', icon: <BookHeart size={20} />, path: '/collection-narrative' },
+  // Phases 114-128: Next-Gen
+  { id: 'portfolio-copilot', label: 'AI Copilot', icon: <Bot size={20} />, path: '/portfolio-copilot' },
+  { id: 'marketplace-aggregator', label: 'Marketplace', icon: <ShoppingCart size={20} />, path: '/marketplace-aggregator' },
+  { id: 'subscription-box', label: 'Sub Box Intel', icon: <Box size={20} />, path: '/subscription-box' },
+  { id: 'collector-dna', label: 'Collector DNA', icon: <Dna size={20} />, path: '/collector-dna' },
+  { id: 'auction-war-room', label: 'Auction War Room', icon: <Gavel size={20} />, path: '/auction-war-room' },
+  { id: 'grading-tracker', label: 'Grading Tracker', icon: <ClipboardCheck size={20} />, path: '/grading-tracker' },
+  { id: 'dealer-dashboard', label: 'Dealer Dashboard', icon: <Store size={20} />, path: '/dealer-dashboard' },
+  { id: 'fund-manager', label: 'Fund Manager', icon: <Landmark size={20} />, path: '/fund-manager' },
+  { id: 'api-licensing', label: 'API & Licensing', icon: <KeyRound size={20} />, path: '/api-licensing' },
+  { id: 'card-show-mode', label: 'Card Show Mode', icon: <MapPin size={20} />, path: '/card-show-mode' },
+  { id: 'ar-scanner', label: 'AR Scanner', icon: <ScanLine size={20} />, path: '/ar-scanner' },
+  { id: 'hype-radar', label: 'Hype Radar', icon: <Radio size={20} />, path: '/hype-radar' },
+  { id: 'non-sports', label: 'Non-Sports', icon: <Sparkles size={20} />, path: '/non-sports' },
+  { id: 'injury-intel', label: 'Injury Intel', icon: <HeartPulse size={20} />, path: '/injury-intel' },
+  { id: 'carbon-score', label: 'Carbon Score', icon: <Leaf size={20} />, path: '/carbon-score' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];

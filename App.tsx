@@ -68,6 +68,23 @@ const CrossHobbyPortfolio = lazy(() => import('./pages/CrossHobbyPortfolio.tsx')
 const AutonomousAcquisition = lazy(() => import('./pages/AutonomousAcquisition.tsx'));
 const CollectionNarrative = lazy(() => import('./pages/CollectionNarrative.tsx'));
 
+// Phases 114-128: Next-gen features
+const PortfolioCopilot = lazy(() => import('./pages/PortfolioCopilot.tsx'));
+const MarketplaceAggregator = lazy(() => import('./pages/MarketplaceAggregator.tsx'));
+const SubscriptionBox = lazy(() => import('./pages/SubscriptionBox.tsx'));
+const CollectorDna = lazy(() => import('./pages/CollectorDna.tsx'));
+const AuctionWarRoom = lazy(() => import('./pages/AuctionWarRoom.tsx'));
+const GradingTracker = lazy(() => import('./pages/GradingTracker.tsx'));
+const DealerDashboard = lazy(() => import('./pages/DealerDashboard.tsx'));
+const FundManager = lazy(() => import('./pages/FundManager.tsx'));
+const ApiLicensing = lazy(() => import('./pages/ApiLicensing.tsx'));
+const CardShowModePage = lazy(() => import('./pages/CardShowModePage.tsx'));
+const ArScanner = lazy(() => import('./pages/ArScanner.tsx'));
+const HypeRadar = lazy(() => import('./pages/HypeRadar.tsx'));
+const NonSportsExpansion = lazy(() => import('./pages/NonSportsExpansion.tsx'));
+const InjuryIntel = lazy(() => import('./pages/InjuryIntel.tsx'));
+const CarbonScore = lazy(() => import('./pages/CarbonScore.tsx'));
+
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
 const Signup = lazy(() => import('./pages/Signup.tsx'));
@@ -129,6 +146,21 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
                 <Route path="/cross-hobby-portfolio" element={<CrossHobbyPortfolio />} />
                 <Route path="/autonomous-acquisition" element={<AutonomousAcquisition />} />
                 <Route path="/collection-narrative" element={<CollectionNarrative />} />
+                <Route path="/portfolio-copilot" element={<PortfolioCopilot />} />
+                <Route path="/marketplace-aggregator" element={<MarketplaceAggregator />} />
+                <Route path="/subscription-box" element={<SubscriptionBox />} />
+                <Route path="/collector-dna" element={<CollectorDna />} />
+                <Route path="/auction-war-room" element={<AuctionWarRoom />} />
+                <Route path="/grading-tracker" element={<GradingTracker />} />
+                <Route path="/dealer-dashboard" element={<DealerDashboard />} />
+                <Route path="/fund-manager" element={<FundManager />} />
+                <Route path="/api-licensing" element={<ApiLicensing />} />
+                <Route path="/card-show-mode" element={<CardShowModePage />} />
+                <Route path="/ar-scanner" element={<ArScanner />} />
+                <Route path="/hype-radar" element={<HypeRadar />} />
+                <Route path="/non-sports" element={<NonSportsExpansion />} />
+                <Route path="/injury-intel" element={<InjuryIntel />} />
+                <Route path="/carbon-score" element={<CarbonScore />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
