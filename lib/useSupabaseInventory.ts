@@ -5,6 +5,9 @@ import { isDemoMode } from './supabase';
 import { fetchCards, fetchTargets, upsertCard, deleteCard as deleteCardFromDb, upsertTarget, deleteTarget as deleteTargetFromDb, bulkUpsertCards } from './supabaseData';
 import { MOCK_CARDS } from '../constants';
 import { migrateToSupabase, needsMigration } from './migration';
+import { logAuditEvent } from './auditLog';
+import { enqueueJob, processAllJobs } from './jobQueue';
+import { incrementCounter, recordMetric } from './telemetryService';
 
 const STORAGE_KEY = 'cardx_inventory';
 const TARGETS_KEY = 'cardx_targets';
@@ -140,27 +143,42 @@ export function useSupabaseInventory() {
             const success = await upsertCard(card, userId);
             if (!success) setLastSyncError('Failed to save card to cloud');
         }
+
+        await logAuditEvent({
+            userId: userId || undefined,
+            category: 'portfolio',
+            action: 'card.add',
+            entityType: 'card',
+            entityId: card.id,
+            metadata: {
+                player: card.player,
+                year: card.year,
+                set: card.set
+            }
+        });
     }, [isAuthenticated, userId]);
 
     const updateCard = useCallback(async (id: string, updates: Partial<CardInventory>) => {
-        let updatedCard: CardInventory | undefined;
         setInventory(prev => {
-            return prev.map(c => {
-                if (c.id !== id) return c;
-                updatedCard = { ...c, ...updates };
-                return updatedCard;
-            });
+            const updated = prev.map(c => c.id === id ? { ...c, ...updates } : c);
+            if (isAuthenticated && userId) {
+                const card = updated.find(c => c.id === id);
+                if (card) {
+                    upsertCard(card, userId).then(async success => {
+                        if (!success) setLastSyncError('Failed to update card in cloud');
+                        await logAuditEvent({
+                            userId,
+                            category: 'portfolio',
+                            action: 'card.update',
+                            entityType: 'card',
+                            entityId: id,
+                            metadata: { changedKeys: Object.keys(updates) }
+                        });
+                    });
+                }
+            }
+            return updated;
         });
-        if (isAuthenticated && userId && updatedCard) {
-            upsertCard(updatedCard, userId)
-                .then(success => {
-                    if (!success) setLastSyncError('Failed to update card in cloud');
-                })
-                .catch(err => {
-                    console.error('Card update sync error:', err);
-                    setLastSyncError('Network error while updating card');
-                });
-        }
     }, [isAuthenticated, userId]);
 
     const removeCard = useCallback(async (id: string) => {
@@ -169,7 +187,15 @@ export function useSupabaseInventory() {
             const success = await deleteCardFromDb(id);
             if (!success) setLastSyncError('Failed to delete card from cloud');
         }
-    }, [isAuthenticated]);
+
+        await logAuditEvent({
+            userId: userId || undefined,
+            category: 'portfolio',
+            action: 'card.delete',
+            entityType: 'card',
+            entityId: id
+        });
+    }, [isAuthenticated, userId]);
 
     // === Target Operations ===
 
@@ -179,27 +205,41 @@ export function useSupabaseInventory() {
             const success = await upsertTarget(target, userId);
             if (!success) setLastSyncError('Failed to save target to cloud');
         }
+
+        await logAuditEvent({
+            userId: userId || undefined,
+            category: 'portfolio',
+            action: 'target.add',
+            entityType: 'target',
+            entityId: target.id,
+            metadata: {
+                player: target.player,
+                description: target.cardDescription
+            }
+        });
     }, [isAuthenticated, userId]);
 
     const updateTarget = useCallback(async (id: string, updates: Partial<TargetWatchlist>) => {
-        let updatedTarget: TargetWatchlist | undefined;
         setTargets(prev => {
-            return prev.map(t => {
-                if (t.id !== id) return t;
-                updatedTarget = { ...t, ...updates };
-                return updatedTarget;
-            });
+            const updated = prev.map(t => t.id === id ? { ...t, ...updates } : t);
+            if (isAuthenticated && userId) {
+                const target = updated.find(t => t.id === id);
+                if (target) {
+                    upsertTarget(target, userId).then(async success => {
+                        if (!success) setLastSyncError('Failed to update target in cloud');
+                        await logAuditEvent({
+                            userId,
+                            category: 'portfolio',
+                            action: 'target.update',
+                            entityType: 'target',
+                            entityId: id,
+                            metadata: { changedKeys: Object.keys(updates) }
+                        });
+                    });
+                }
+            }
+            return updated;
         });
-        if (isAuthenticated && userId && updatedTarget) {
-            upsertTarget(updatedTarget, userId)
-                .then(success => {
-                    if (!success) setLastSyncError('Failed to update target in cloud');
-                })
-                .catch(err => {
-                    console.error('Target update sync error:', err);
-                    setLastSyncError('Network error while updating target');
-                });
-        }
     }, [isAuthenticated, userId]);
 
     const removeTarget = useCallback(async (id: string) => {
@@ -208,7 +248,15 @@ export function useSupabaseInventory() {
             const success = await deleteTargetFromDb(id);
             if (!success) setLastSyncError('Failed to delete target from cloud');
         }
-    }, [isAuthenticated]);
+
+        await logAuditEvent({
+            userId: userId || undefined,
+            category: 'portfolio',
+            action: 'target.delete',
+            entityType: 'target',
+            entityId: id
+        });
+    }, [isAuthenticated, userId]);
 
     const markAcquired = useCallback((id: string) => {
         updateTarget(id, { status: 'acquired' });
@@ -243,16 +291,39 @@ export function useSupabaseInventory() {
     }, [isAuthenticated]);
 
     const persistSyncToCloud = useCallback(async (cards: CardInventory[], updatedTargets?: TargetWatchlist[]) => {
-        if (isAuthenticated && userId) {
-            const success = await bulkUpsertCards(cards, userId);
-            if (!success) setLastSyncError('Failed to sync cards to cloud');
+        if (!isAuthenticated || !userId) return;
 
-            if (updatedTargets && updatedTargets.length > 0) {
-                const { bulkUpsertTargets } = await import('./supabaseData');
-                const targetSuccess = await bulkUpsertTargets(updatedTargets, userId);
-                if (!targetSuccess) setLastSyncError('Failed to sync targets to cloud');
+        const syncJob = enqueueJob('cloud_sync', { cards, updatedTargets, userId });
+        const started = performance.now();
+
+        await processAllJobs({
+            cloud_sync: async (job) => {
+                const payload = job.payload as { cards: CardInventory[]; updatedTargets?: TargetWatchlist[]; userId: string };
+                const success = await bulkUpsertCards(payload.cards, payload.userId);
+                if (!success) throw new Error('Failed to sync cards to cloud');
+
+                if (payload.updatedTargets && payload.updatedTargets.length > 0) {
+                    const { bulkUpsertTargets } = await import('./supabaseData');
+                    const targetSuccess = await bulkUpsertTargets(payload.updatedTargets, payload.userId);
+                    if (!targetSuccess) throw new Error('Failed to sync targets to cloud');
+                }
             }
-        }
+        });
+
+        recordMetric('sync.cloud.duration_ms', performance.now() - started, { source: 'persistSyncToCloud' });
+        incrementCounter('sync.cloud.success');
+
+        await logAuditEvent({
+            userId,
+            category: 'system',
+            action: 'cloud.sync.completed',
+            entityType: 'sync_job',
+            entityId: syncJob.id,
+            metadata: {
+                cards: cards.length,
+                targets: updatedTargets?.length || 0
+            }
+        });
     }, [isAuthenticated, userId]);
 
     return {
@@ -280,3 +351,6 @@ export function useSupabaseInventory() {
         totalCards: inventory.length
     };
 }
+
+
+

@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { supabase } from './supabase';
 
 // ---- Types ----
 
@@ -755,24 +756,98 @@ const MOCK_USERS: UserProfile[] = [
 ];
 
 export async function fetchPublicProfile(username: string): Promise<UserProfile | null> {
-  return MOCK_USERS.find(u => u.username.toLowerCase() === username.toLowerCase()) || null;
+  const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', username)
+        .eq('is_public', true)
+        .single();
+
+    if (error || !data) return null;
+
+    return {
+        id: data.id,
+        username: data.username,
+        displayName: data.display_name,
+        bio: data.bio,
+        isPublic: data.is_public,
+        joinedAt: data.created_at,
+        alphaScore: data.alpha_score || 0,
+        portfolioValue: data.total_portfolio_value || 0,
+        roi: data.total_roi || 0,
+        avatarUrl: data.avatar_url,
+        tier: data.tier || 'Collector'
+    };
 }
 
 export async function fetchPublicInventory(userId: string): Promise<CardInventory[]> {
-  const seed = userId.charCodeAt(userId.length - 1);
-  const start = seed % 5;
-  return MOCK_CARDS.slice(start, start + 10);
+    const { data, error } = await supabase
+        .from('cards')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'active'); // Only show active holdings publicly
+
+    if (error) return [];
+
+    // Use the dbToCard helper if available, or manual map
+    return (data || []).map(row => ({
+        id: row.id,
+        player: row.player,
+        year: row.year,
+        manufacturer: row.manufacturer,
+        cardNumber: row.card_number,
+        set: row.set_name,
+        sport: row.sport,
+        league: row.league,
+        isAutographed: row.is_autographed,
+        condition: row.condition,
+        isGraded: row.is_graded,
+        gradingCompany: row.grading_company,
+        grade: row.grade,
+        purchasePrice: row.purchase_price,
+        purchaseDate: row.purchase_date,
+        currentValue: row.current_value,
+        lastValuationDate: row.last_valuation_date,
+        image: row.image_url,
+        notes: row.notes,
+        searchUrl: row.search_url,
+        taxBasis: row.tax_basis,
+        gradingFees: row.grading_fees,
+        shippingFees: row.shipping_fees,
+        group: row.card_group,
+        groupOrder: row.group_order,
+        pricingRationale: row.pricing_rationale,
+    }));
 }
 
 export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
-  return MOCK_USERS.map((user, index) => ({
-    rank: index + 1,
-    user,
-    alphaScore: user.alphaScore,
-    change24h: (seededRandom(dateSeed(), index) * 5) * (seededRandom(dateSeed(), index + 50) > 0.5 ? 1 : -1),
-  }))
-    .sort((a, b) => b.alphaScore - a.alphaScore)
-    .map((entry, i) => ({ ...entry, rank: i + 1 }));
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('is_public', true)
+        .order('alpha_score', { ascending: false })
+        .limit(20);
+
+    if (error) return [];
+
+    return (data || []).map((row, index) => ({
+        rank: index + 1,
+        user: {
+            id: row.id,
+            username: row.username,
+            displayName: row.display_name,
+            bio: row.bio,
+            isPublic: row.is_public,
+            joinedAt: row.created_at,
+            alphaScore: row.alpha_score || 0,
+            portfolioValue: row.total_portfolio_value || 0,
+            roi: row.total_roi || 0,
+            avatarUrl: row.avatar_url,
+            tier: row.tier || 'Collector'
+        },
+        alphaScore: row.alpha_score || 0,
+        change24h: 0 // In a real app this would come from a separate trend table
+    }));
 }
 
 export function generateShareLink(username: string): string {

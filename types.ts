@@ -1,6 +1,8 @@
 
 export type Sport = 'Baseball' | 'Basketball' | 'Football' | 'Hockey' | 'Soccer';
 export type League = 'MLB' | 'MiLB' | 'NBA' | 'NFL' | 'Other';
+export type AssetClass = 'Sports Cards' | 'Luxury Watches' | 'Fine Art' | 'Wine & Spirits';
+
 
 export interface ExitPlan {
   id: string;
@@ -19,6 +21,7 @@ export interface PopReport {
   source: 'simulated' | 'psa' | 'bgs';
   badge?: 'Apex' | 'Low Pop' | 'Standard';
 }
+
 
 export interface CardInventory {
   id: string;
@@ -39,16 +42,21 @@ export interface CardInventory {
   currentValue?: number;
   lastValuationDate?: string;
   valuationConfidence?: number;
+  pricingRationale?: string;
   notes?: string;
   image?: string;
   searchUrl?: string;
-  // Professional Grade Fields
+  // Fiscal Intelligence (Phase 27)
+  realizedGainLoss?: number;
+  taxCategory?: 'Short Term' | 'Long Term';
+  overheadCost?: number; // Sum of grading, insurance, shipping
   taxBasis?: number;
   gradingFees?: number;
   shippingFees?: number;
-  status?: 'active' | 'sold';
+  insuranceFees?: number;
   salePrice?: number;
   saleDate?: string;
+  status?: 'active' | 'sold';
   // Portfolio Builder Groups
   group?: string;
   groupOrder?: number;
@@ -62,6 +70,22 @@ export interface CardInventory {
   liquidityScore?: number; // 0-100
   exitPlan?: ExitPlan;
   exitPlanId?: string;
+  // Arbitrage Intelligence (Phase 22)
+  opportunityScore?: number; // 0-100
+  arbitrageDelta?: number; // Percentage deviation from mean
+  // Vault Intelligence (Phase 25)
+  isVaulted?: boolean;
+  vaultProvider?: 'PWCC' | 'PSA' | 'Goldin' | 'Other';
+  vaultAssetId?: string;
+  vaultInstantLiquidityPrice?: number;
+}
+
+export type VaultProvider = 'PWCC' | 'PSA' | 'Goldin' | 'Other';
+
+export interface VaultAsset extends CardInventory {
+  isVaulted: true;
+  vaultProvider: VaultProvider;
+  vaultAssetId: string;
 }
 
 export interface TargetWatchlist {
@@ -78,6 +102,10 @@ export interface TargetWatchlist {
   createdAt: string;
   image?: string;
   searchUrl?: string;
+  // Arbitrage Intelligence (Phase 22)
+  opportunityScore?: number; // 0-100
+  arbitrageDelta?: number; // Percentage deviation from mean
+  pricingRationale?: string;
 }
 
 export interface MiLBProspect {
@@ -118,6 +146,11 @@ export interface PricingAnalysis {
   salesCount: number;
   lastUpdated: string;
   searchUrl?: string; // Deep link to eBay for manual verification
+  rationale?: string; // AI-generated rationale for this valuation
+  salesData?: any[]; // Granular sales data used for analysis
+  valuationSource?: 'ebay-api' | 'gemini' | 'fallback';
+  valuationTimestamp?: string;
+  quality?: ValuationQuality;
 }
 
 export type AlertType = 'price_target' | 'sync_complete' | 'trend' | 'momentum' | 'warning' | 'system';
@@ -150,6 +183,9 @@ export interface UserProfile {
   portfolioValue: number;
   roi: number;
   tier?: string;
+  // Fiscal Settings
+  estimatedTaxRate?: number; // 0-1
+  isTaxResident?: boolean;
 }
 
 export interface LeaderboardEntry {
@@ -177,7 +213,128 @@ export interface CollaborativeThesis {
   riskAssessment: string;
   recommendedAction: string;
   agents: AgentInsight[];
+  executionPlan?: AutonomousAction[];
   createdAt: string;
+}
+
+export interface RiskCollar {
+  maxBudget: number;
+  maxSpendPerAsset: number;
+  riskTolerance: 'Conservative' | 'Balanced' | 'Aggressive';
+  autoSellThreshold?: number; // Percentage gain/loss
+  minActionConfidence?: number; // 0-1
+  requireApprovalAbove?: number; // Dollar threshold
+  maxDailyActions?: number;
+  blockedPlayers?: string[];
+  blockedSports?: Sport[];
+}
+
+export interface AutoPilotConfig {
+  isActive: boolean;
+  collar: RiskCollar;
+  lastExecution?: string;
+}
+
+export interface AutonomousAction {
+  id: string;
+  type: 'BUY' | 'SELL' | 'REBALANCE' | 'HOLD';
+  assetName: string;
+  amount: number;
+  rationale: string;
+  timestamp: string;
+  status: 'pending' | 'executed' | 'failed';
+  confidence?: number;
+  cycleId?: string;
+  idempotencyKey?: string;
+  policyDecision?: 'approved' | 'blocked' | 'needs_approval';
+  policyReason?: string;
+  approvalActor?: string;
+  approvalNote?: string;
+  approvalUpdatedAt?: string;
+  scenarioTag?: string;
+  estimatedEdgePct?: number;
+}
+
+export interface SwarmInsight {
+  id: string;
+  title: string;
+  description: string;
+  sentiment: 'bullish' | 'bearish' | 'neutral';
+  confidence: number;
+  impactScore: number;
+  tags: string[];
+  participatingAgents: string[];
+}
+
+export interface IntelligenceSwarm {
+  id: string;
+  name: string;
+  description: string;
+  memberCount: number;
+  activeInsights: SwarmInsight[];
+  recentAlpha: string[];
+  tier: 'Elite' | 'Institutional' | 'Private';
+}
+
+export type GuildRole = 'Owner' | 'Analyst' | 'Member';
+
+export interface GuildMember {
+  userId: string;
+  displayName: string;
+  role: GuildRole;
+  joinedAt: string;
+}
+
+export interface ProposalVote {
+  userId: string;
+  vote: 'approve' | 'reject';
+  votedAt: string;
+}
+
+export interface ContributionLedgerEntry {
+  id: string;
+  proposalId: string;
+  userId: string;
+  amount: number;
+  status: 'held' | 'released' | 'returned';
+  createdAt: string;
+}
+
+export interface GuildGovernance {
+  quorumPercent: number;
+  minApprovals: number;
+  approvalWindowHours: number;
+  vetoEnabled?: boolean;
+}
+
+export interface JointAcquisitionProposal {
+  id: string;
+  targetCardId: string;
+  title?: string;
+  targetAssetName?: string;
+  targetPrice: number;
+  currentFunding: number;
+  minEntry: number;
+  proposedBy?: string;
+  proposalMemo?: string;
+  payoutWaterfall?: {
+    managerCarryPercent: number;
+    reservePercent: number;
+    distributionModel: 'pro_rata' | 'priority_return';
+  };
+  participants: {
+    userId: string;
+    share: number;
+    amount: number;
+  }[];
+  votes?: ProposalVote[];
+  quorumPercent?: number;
+  approvalStatus?: 'pending' | 'approved' | 'rejected';
+  approvalDeadline?: string;
+  ledgerEntries?: ContributionLedgerEntry[];
+  status: 'open' | 'funded' | 'completed' | 'cancelled';
+  expiryDate: string;
+  agentEvaluation: CollaborativeThesis;
 }
 
 export interface NegotiationMessage {
@@ -219,3 +376,106 @@ export interface NegotiationSession {
   createdAt: string;
   updatedAt: string;
 }
+
+export type MacroTrend = 'bullish' | 'bearish' | 'neutral';
+
+export interface MacroSignal {
+  id: string;
+  indicator: string;
+  value: string;
+  trend: MacroTrend;
+  impact: 'High' | 'Medium' | 'Low';
+  description: string;
+  aiAnalysis?: string;
+  updatedAt: string;
+}
+
+export interface VisualDefect {
+  type: 'Centering' | 'Corners' | 'Edges' | 'Surface';
+  location: string;
+  severity: 'Minor' | 'Moderate' | 'Severe';
+  description: string;
+}
+
+export interface VisualAuditResult {
+  predictedGrade: string;
+  confidenceScore: number;
+  subgrades: {
+    centering: number;
+    corners: number;
+    edges: number;
+    surface: number;
+  };
+  defects: VisualDefect[];
+  summary: string;
+  estimatedGradingPremium?: number;
+}
+
+export interface GradingPremiumAnalysis {
+  cardId: string;
+  rawPrice: number;
+  psa10Price: number;
+  psa9Price: number;
+  bgs95Price: number;
+  gradingFees: number;
+  potentialNetGain: number;
+  recommendation: 'Submit' | 'Hold Raw' | 'Sell Now';
+  rationale: string;
+  updatedAt: string;
+}
+
+export interface ArbitrageNode {
+  id: string;
+  sourceAsset: {
+    name: string;
+    assetClass: AssetClass;
+    currentValue: number;
+    image?: string;
+  };
+  targetAsset: {
+    name: string;
+    assetClass: AssetClass;
+    currentValue: number;
+    image?: string;
+  };
+  correlationDelta: number; // Percentage
+  opportunityScore: number; // 0-100
+  rationale: string;
+  status: 'active' | 'closed';
+  createdAt: string;
+}
+
+export interface CrossAssetInsight {
+  id: string;
+  summary: string;
+  liquidityFlightStatus: 'Stable' | 'Volatile' | 'Critical';
+  topArbitrageNodes: ArbitrageNode[];
+  agents: AgentInsight[];
+  createdAt: string;
+}
+
+export type AuditCategory = 'portfolio' | 'valuation' | 'autonomy' | 'auth' | 'system';
+
+export interface AuditEvent {
+  id?: string;
+  userId?: string;
+  category: AuditCategory;
+  action: string;
+  entityType: string;
+  entityId?: string;
+  metadata?: Record<string, unknown>;
+  createdAt?: string;
+}
+
+
+
+
+
+export interface ValuationQuality {
+  isStale: boolean;
+  freshnessHours: number;
+  confidenceTier: 'High' | 'Medium' | 'Low';
+  qualityScore: number; // 0-100
+  warnings: string[];
+}
+

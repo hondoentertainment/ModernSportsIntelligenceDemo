@@ -30,6 +30,7 @@ function dbToCard(row: any): CardInventory {
         shippingFees: row.shipping_fees,
         group: row.card_group,
         groupOrder: row.group_order,
+        pricingRationale: row.pricing_rationale,
     };
 }
 
@@ -62,6 +63,7 @@ function cardToDb(card: CardInventory, userId: string): any {
         shipping_fees: card.shippingFees,
         card_group: card.group,
         group_order: card.groupOrder,
+        pricing_rationale: card.pricingRationale,
     };
 }
 
@@ -81,6 +83,7 @@ function dbToTarget(row: any): TargetWatchlist {
         image: row.image_url,
         searchUrl: row.search_url,
         notes: row.notes,
+        pricingRationale: row.pricing_rationale,
     };
 }
 
@@ -100,6 +103,7 @@ function targetToDb(target: TargetWatchlist, userId: string): any {
         image_url: target.image,
         search_url: target.searchUrl,
         notes: target.notes,
+        pricing_rationale: target.pricingRationale,
     };
 }
 

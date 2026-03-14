@@ -16,6 +16,8 @@ import { useSupabaseInventory } from './lib/useSupabaseInventory.ts';
 import LazyErrorBoundary from './components/LazyErrorBoundary.tsx';
 import { PageLoadingFallback } from './components/LazyLoadFallback.tsx';
 import GuidedTour from './components/GuidedTour.tsx';
+import InstitutionalWallHUD from './components/InstitutionalWallHUD.tsx';
+import GrailShowcase from './components/GrailShowcase.tsx';
 
 // ─── Lazy-loaded Page Components ──────────────────────────────────────
 // Critical path: Dashboard loads first, everything else is code-split
@@ -48,6 +50,8 @@ const Leaderboard = lazy(() => import('./pages/Leaderboard.tsx'));
 // Alerts & tools
 const Alerts = lazy(() => import('./pages/Alerts.tsx'));
 const AnalystWarRoom = lazy(() => import('./components/AnalystWarRoom.tsx'));
+const GuildDashboard = lazy(() => import('./pages/GuildDashboard.tsx'));
+const PhaseOperations = lazy(() => import('./pages/PhaseOperations.tsx'));
 
 // Live & advanced features
 const LiveImpact = lazy(() => import('./pages/LiveImpact.tsx'));
@@ -79,6 +83,11 @@ const PublicPortfolio = lazy(() => import('./pages/PublicPortfolio.tsx'));
 
 const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: boolean) => void }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { inventory } = useSupabaseInventory();
+  const [isWallHUDOpen, setIsWallHUDOpen] = useState(false);
+  const [selectedGrail, setSelectedGrail] = useState<any>(null);
+
+  // Expose a way to open grail via window for testing/demo
+  (window as any).openGrail = (card: any) => setSelectedGrail(card);
 
   return (
     <div className="flex h-screen overflow-hidden bg-brand-charcoal text-slate-100 font-sans selection:bg-brand-lime/30 luminous-container">
@@ -87,9 +96,33 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
       <Sidebar isOpen={isSidebarOpen} toggle={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       <div className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
-        <Header />
+        <Header onToggleWallHUD={() => setIsWallHUDOpen(true)} />
         <MarketTicker inventory={inventory} />
         <MigrationBanner />
+
+        {isWallHUDOpen && (
+          <InstitutionalWallHUD
+            onClose={() => setIsWallHUDOpen(false)}
+            inventoryCount={inventory.length}
+            totalMarketValue={`$${inventory.reduce((acc, curr) => acc + (parseFloat(curr.market_value?.replace(/[^0-9.]/g, '') || '0')), 0).toLocaleString()}`}
+          />
+        )}
+
+        {selectedGrail && (
+          <GrailShowcase
+            isOpen={!!selectedGrail}
+            onClose={() => setSelectedGrail(null)}
+            card={{
+              name: selectedGrail.name || selectedGrail.card_name || 'Grail Asset',
+              player: selectedGrail.player_name || 'Elite Athlete',
+              year: selectedGrail.year || '2024',
+              set: selectedGrail.set_name || 'Panini Prizm',
+              grade: selectedGrail.grade || 'PSA 10',
+              image: selectedGrail.image_url || 'https://images.unsplash.com/photo-1510133769062-80c1e26dcb6e?q=80&w=2070&auto=format&fit=crop',
+              marketValue: selectedGrail.market_value || '$12,500.00'
+            }}
+          />
+        )}
 
         <main className="flex-1 p-4 md:p-8 page-container overflow-y-auto pb-24 md:pb-8">
           <LazyErrorBoundary>
@@ -113,7 +146,9 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
                 <Route path="/compare" element={<Compare />} />
                 <Route path="/alerts" element={<Alerts />} />
                 <Route path="/war-room" element={<AnalystWarRoom />} />
+                <Route path="/guilds" element={<GuildDashboard />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/phase-ops" element={<PhaseOperations />} />
                 <Route path="/live-impact" element={<LiveImpact />} />
                 <Route path="/fractional-vault" element={<FractionalVault />} />
                 <Route path="/provenance" element={<ProvenanceChain />} />
@@ -180,3 +215,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

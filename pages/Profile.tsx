@@ -342,19 +342,28 @@ const Profile: React.FC = () => {
           <Cloud className="text-brand-teal" size={20} />
           Data Management
         </h2>
-        <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 flex flex-col md:flex-row items-center gap-6">
-          <div className="p-4 bg-brand-charcoal rounded-full border border-slate-800">
+        <div className="bg-slate-900 rounded-2xl border border-slate-800 p-8 flex flex-col md:flex-row items-center gap-8">
+          <div className="w-20 h-20 rounded-2xl bg-brand-charcoal border border-slate-800 flex items-center justify-center shrink-0">
             <Database className="text-brand-lime" size={32} />
           </div>
-          <div className="flex-1 text-center md:text-left">
-            <h3 className="text-lg font-bold text-white mb-1">Sync Local Data</h3>
-            <p className="text-lg font-bold text-white mb-1">Sync Local Data</p>
-            <p className="text-slate-400 text-sm">
-              Manually push your local portfolio data (from Demo Mode) to the cloud.
-              Use this if your data isn't appearing on other devices.
+          <div className="flex-1 text-center md:text-left space-y-2">
+            <h3 className="text-lg font-bold text-white uppercase tracking-widest">Bridged Intelligence Sync</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Manually resolve state between local cache and MSI Cloud. Use this if your portfolio NAV or Target Watchlist
+              appears divergent across multiple terminal sessions.
             </p>
+            <div className="flex items-center gap-4 pt-2">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${user ? 'bg-brand-lime animate-pulse' : 'bg-red-500'}`}></div>
+                <span className="text-[10px] font-black text-brand-muted uppercase tracking-wider">Cloud: {user ? 'Connected' : 'Offline'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-brand-teal"></div>
+                <span className="text-[10px] font-black text-brand-muted uppercase tracking-wider">Local: Cache Active</span>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-2 w-full md:w-auto">
+          <div className="flex flex-col gap-3 w-full md:w-auto">
             <button
               onClick={async () => {
                 const result = await triggerMigration();
@@ -362,12 +371,13 @@ const Profile: React.FC = () => {
                   window.location.reload();
                 }
               }}
-              disabled={isMigrating}
-              className="flex-1 md:flex-none px-6 py-3 bg-brand-teal/20 hover:bg-brand-teal/30 border border-brand-teal/30 rounded-xl text-brand-teal font-bold flex items-center justify-center gap-2 transition-all uppercase tracking-wider text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isMigrating || !user}
+              className="w-full md:w-48 px-6 py-4 bg-brand-teal text-brand-charcoal rounded-xl font-black text-xs transition-all uppercase tracking-[0.2em] transform hover:scale-105 active:scale-95 shadow-xl shadow-brand-teal/20 disabled:opacity-50 disabled:grayscale flex items-center justify-center gap-3"
             >
               <RefreshCw size={16} className={isMigrating ? "animate-spin" : ""} />
               {isMigrating ? 'Syncing...' : 'Force Sync'}
             </button>
+            <p className="text-[8px] font-black text-brand-muted text-center uppercase tracking-[0.3em]">Institutional Uplink</p>
           </div>
         </div>
       </section>

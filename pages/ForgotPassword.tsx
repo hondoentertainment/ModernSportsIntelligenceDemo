@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getFriendlyAuthMessage } from '../lib/authErrors';
-import { Mail, ArrowLeft, Loader2, Check, TrendingUp } from 'lucide-react';
+import { Mail, ArrowLeft, Loader2, Check, TrendingUp, Shield } from 'lucide-react';
 
 const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -80,8 +80,11 @@ const ForgotPassword: React.FC = () => {
                 )}
 
                 {error && (
-                    <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
-                        <p className="text-red-400 text-sm text-center">{error}</p>
+                    <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 animate-in fade-in slide-in-from-top-2">
+                        <div className="flex items-start gap-3">
+                            <Shield className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                            <p className="text-red-400 text-sm font-medium">{error}</p>
+                        </div>
                     </div>
                 )}
 

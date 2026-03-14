@@ -1,76 +1,336 @@
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Plus,
   Search,
   Filter,
   Upload,
+  Trash2,
+  Sparkles,
+  Tag,
   History,
   Grid,
   List,
   SortAsc,
-  SortDesc,
+  Trophy,
+  Target,
+  Edit3,
   CheckCircle2,
   Clock,
-  XCircle,
-  CheckSquare,
-  Square,
-  Trash2,
-  Download,
-  Sparkles,
-  Loader2,
-  Cloud,
-  CloudOff,
   Star,
-  Edit3,
-  Target,
-  Trophy,
+  Calculator,
+  Share2
 } from 'lucide-react';
 import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
 import { getEbayCardPrice } from '../lib/gemini';
 import { LEAGUES } from '../constants';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory';
 import { useFavorites } from '../lib/useFavorites';
-import { useToast } from '../contexts/ToastContext';
 import AddTargetModal from '../components/AddTargetModal';
 import AddAssetModal from '../components/AddAssetModal';
 import OCRIngestionModal from '../components/OCRIngestionModal';
 import { getRarityTier, getTierStyles } from '../lib/rarity';
 import { generatePopData, ScarcityService } from '../lib/scarcityService';
+import Sparkline from '../components/Sparkline';
 import { getPriceTrend, getSparklineData } from '../lib/priceHistory';
-import { LiquidityService } from '../lib/liquidityService';
-import { LiquidityBadge } from '../components/LiquidityBadge';
+import { Loader2, Cloud, CloudOff } from 'lucide-react';
 import CardImage from '../components/CardImage';
 import ImageLightbox from '../components/ImageLightbox';
+import ScarcityBadge from '../components/ScarcityBadge';
+import GradingAuditModal from '../components/GradingAuditModal';
+import { LiquidityBadge } from '../components/LiquidityBadge';
 import { ExitStrategyModal } from '../components/ExitStrategyModal';
-import GradingCalculatorModal from '../components/GradingCalculatorModal';
-import BreakEvenModal from '../components/BreakEvenModal';
-import InstantBuyModal from '../components/InstantBuyModal';
-import PredictiveAlphaModal from '../components/PredictiveAlphaModal';
-import AgentThesisModal from '../components/AgentThesisModal';
-import MarketDepthModal from '../components/MarketDepthModal';
-import TaxReportModal from '../components/TaxReportModal';
-import GradingPredictionModal from '../components/GradingPredictionModal';
-import PriceHistoryModal from '../components/PriceHistoryModal';
-import ConsignmentModal from '../components/ConsignmentModal';
-import AnomalyDetailModal from '../components/AnomalyDetailModal';
-import { MarketAnomaly, detectAnomalies } from '../lib/anomalyDetectionService';
-import ConfirmDialog from '../components/ConfirmDialog';
-import CommandPalette from '../components/CommandPalette';
-import { CardGridSkeleton } from '../components/SkeletonLoader';
-import CardGridItem from '../components/collection/CardGridItem';
-import SwipeableCard from '../components/collection/SwipeableCard';
-import VirtualizedGrid from '../components/collection/VirtualizedGrid';
-import { useKeyboardShortcuts } from '../lib/useKeyboardShortcuts';
-
-type SortField = 'player' | 'value' | 'purchasePrice' | 'date' | 'roi' | 'league';
-type SortDir = 'asc' | 'desc';
+import { LiquidityService } from '../lib/LiquidityService';
+import { OpportunityBadge } from '../components/OpportunityBadge';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import GradingPremiumTool from '../components/GradingPremiumTool';
+import ShareAlphaModal from '../components/ShareAlphaModal';
+import { fetchPublicProfile } from '../lib/socialService';
+import { useAuth } from '../contexts/AuthContext';
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
 const CARD_ESTIMATE_HEIGHT = 480;
 const ROW_GAP = 32;
 
+interface CardGridItemProps {
+  card: CardInventory;
+  getRarityTier: (c: CardInventory) => string;
+  getTierStyles: (tier: string) => { border: string; glow?: string; text: string; badge: string };
+  isFavorite: (id: string) => boolean;
+  toggleFavorite: (c: CardInventory) => void;
+  deleteCard: (id: string) => void;
+  setEditingAsset: (c: CardInventory | null) => void;
+  setIsAssetModalOpen: (v: boolean) => void;
+  handleAddToWatchlist: (c: CardInventory) => void;
+  handleUpdatePrice: (c: CardInventory) => void;
+  isPricing: string | null;
+  getSparklineData: (id: string, limit?: number) => number[];
+  getPriceTrend: (id: string) => string;
+  onOpenLightbox?: (card: CardInventory) => void;
+  onOpenExitStrategy?: (card: CardInventory) => void;
+  onOpenGradingPremium?: (card: CardInventory) => void;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
+  key?: React.Key;
+}
+
+/** Renders a single card - shared between virtualized and static grid */
+function CardGridItem({
+  card,
+  getRarityTier,
+  getTierStyles,
+  isFavorite,
+  toggleFavorite,
+  deleteCard,
+  setEditingAsset,
+  setIsAssetModalOpen,
+  handleAddToWatchlist,
+  handleUpdatePrice,
+  isPricing,
+  getSparklineData,
+  getPriceTrend,
+  onOpenLightbox,
+  onOpenExitStrategy,
+  onOpenGradingPremium,
+  isSelected,
+  onToggleSelect,
+}: CardGridItemProps) {
+  const tier = getRarityTier(card);
+  const styles = getTierStyles(tier);
+  return (
+    <div className={`group bg-brand-slate border ${isSelected ? 'border-brand-lime ring-2 ring-brand-lime/20' : styles.border} rounded-[2.5rem] overflow-hidden transition-all flex flex-col active:scale-[0.98] relative`}>
+      {/* Selection Checkbox */}
+      <button
+        onClick={(e) => { e.preventDefault(); onToggleSelect?.(card.id); }}
+        className={`absolute top-6 left-6 z-20 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-brand-lime border-brand-lime text-brand-charcoal' : 'bg-black/50 border-white/20 text-transparent hover:border-white/50 opacity-0 group-hover:opacity-100'}`}
+      >
+        <CheckCircle2 size={16} strokeWidth={3} />
+      </button>
+
+      <div className="aspect-[4/5] bg-slate-950 relative overflow-hidden group">
+        <CardImage
+          src={card.image}
+          playerName={card.player}
+          year={card.year}
+          manufacturer={card.manufacturer}
+          className="w-full h-full"
+          enableLightbox={!!onOpenLightbox}
+          onImageClick={onOpenLightbox ? () => onOpenLightbox(card) : undefined}
+        />
+        <div className={`absolute inset-0 bg-gradient-to-t ${styles.glow || 'from-black/80'} via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity`}></div>
+        <div className="absolute top-6 left-6 flex flex-col gap-2">
+          {tier !== 'Common' && tier !== 'Uncommon' && (
+            <div className={`${styles.badge} px-4 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-2xl flex items-center gap-2`}>
+              {tier === 'OneOfOne' ? <Sparkles size={14} fill="currentColor" /> : <Trophy size={14} fill="currentColor" />}
+              {tier === 'OneOfOne' ? '1 of 1' : tier}
+            </div>
+          )}
+          {card.isGraded && (
+            <div className="bg-brand-lime text-brand-charcoal px-4 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-2xl flex items-center gap-2">
+              <Trophy size={14} fill="currentColor" /> {card.gradingCompany} {card.grade}
+            </div>
+          )}
+          {card.isAutographed && (
+            <div className="bg-white text-brand-charcoal px-4 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-2xl flex items-center gap-2">
+              <Sparkles size={14} /> Auto
+            </div>
+          )}
+        </div>
+        <div className="absolute bottom-6 left-6 right-6">
+          <span className={`text-[10px] font-black ${styles.text} uppercase tracking-widest mb-1 block`}>{card.sport}</span>
+          <h3 className="text-2xl font-bold text-white leading-tight truncate">{card.player}</h3>
+        </div>
+        <button onClick={(e) => { e.preventDefault(); deleteCard(card.id); }} className="absolute top-6 right-6 p-3 bg-brand-red/10 text-brand-red rounded-xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-brand-red hover:text-white backdrop-blur-md"><Trash2 size={20} /></button>
+        <button onClick={(e) => { e.preventDefault(); setEditingAsset(card); setIsAssetModalOpen(true); }} className="absolute top-6 right-20 p-3 bg-brand-charcoal/30 text-white rounded-xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-brand-charcoal hover:text-brand-lime backdrop-blur-md"><Edit3 size={20} /></button>
+        <button onClick={(e) => { e.preventDefault(); toggleFavorite(card); }} className={`absolute top-6 right-[8.5rem] p-3 rounded-xl transition-all backdrop-blur-md ${isFavorite(card.id) ? 'bg-amber-500/20 text-amber-400 opacity-100' : 'bg-brand-charcoal/30 text-white opacity-0 group-hover:opacity-100 hover:bg-amber-500/20 hover:text-amber-400'}`}><Star size={20} fill={isFavorite(card.id) ? 'currentColor' : 'none'} /></button>
+        <button onClick={(e) => { e.preventDefault(); handleAddToWatchlist(card); }} className="absolute top-6 right-[12rem] p-3 bg-brand-charcoal/30 text-white rounded-xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-brand-charcoal hover:text-brand-lime backdrop-blur-md" title="Add to Watchlist"><Target size={20} /></button>
+        {card.status !== 'sold' && (
+          <button
+            onClick={(e) => { e.preventDefault(); setEditingAsset({ ...card, status: 'sold' }); setIsAssetModalOpen(true); }}
+            className="absolute top-6 left-6 p-3 bg-brand-red/10 text-brand-red rounded-xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-brand-red hover:text-white backdrop-blur-md"
+            title="Mark as Sold"
+          >
+            <Tag size={20} />
+          </button>
+        )}
+      </div>
+      <div className="p-8 space-y-6 flex-1">
+        <div>
+          <p className="text-[10px] text-brand-muted font-black tracking-widest uppercase mb-1">{card.year} {card.manufacturer}</p>
+          <p className="text-sm font-bold text-slate-300 truncate">{card.set} #{card.cardNumber}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-4 bg-brand-charcoal/40 border border-slate-800/50 rounded-2xl">
+            <p className="text-[9px] font-black text-brand-muted uppercase tracking-tighter mb-1">Book Value</p>
+            <p className="text-sm font-mono font-black text-slate-200">${Math.round(card.purchasePrice).toLocaleString()}</p>
+          </div>
+          <div className="p-4 bg-brand-lime/5 border border-brand-lime/10 rounded-2xl">
+            <p className="text-[9px] font-black text-brand-muted uppercase tracking-tighter mb-1">Market Nav</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-mono font-black text-brand-lime">{card.currentValue ? `$${Math.round(card.currentValue).toLocaleString()}` : '—'}</p>
+              {card.currentValue !== undefined && <OpportunityBadge asset={card} size="sm" showLabel={false} />}
+            </div>
+          </div>
+        </div>
+        {card.pricingRationale && (
+          <div className="p-4 bg-brand-lime/5 border border-brand-lime/10 rounded-2xl">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles size={12} className="text-brand-lime" />
+              <span className="text-[9px] font-black text-brand-muted uppercase tracking-widest">Market Rationale</span>
+            </div>
+            <p className="text-[11px] leading-relaxed text-slate-300 italic">
+              "{card.pricingRationale}"
+            </p>
+          </div>
+        )}
+        {
+          (card.popReport || card.popCount !== undefined) && (
+            <div className="flex items-center justify-between p-4 bg-brand-charcoal/30 border border-slate-800/30 rounded-2xl">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${card.scarcityIndex && card.scarcityIndex > 80 ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 'bg-slate-600'}`}></div>
+                <span className="text-[9px] font-black text-brand-muted uppercase tracking-tighter">Pop Intelligence</span>
+              </div>
+              <ScarcityBadge report={card.popReport} />
+              {!card.popReport && card.popCount !== undefined && (
+                <div className="text-right">
+                  <span className="text-xs font-black text-white">Pop {card.popCount}</span>
+                  {card.popHigher !== undefined && card.popHigher < 5 && (
+                    <span className="text-[9px] font-bold text-brand-muted ml-1">({card.popHigher === 0 ? 'None' : card.popHigher} Higher)</span>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        }
+        <div className="flex items-center justify-between p-4 bg-brand-charcoal/30 border border-slate-800/30 rounded-2xl cursor-pointer hover:bg-brand-charcoal/50 transition-colors" onClick={() => onOpenExitStrategy?.(card)}>
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${(card.liquidityScore || 0) > 70 ? 'bg-brand-green shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-600'}`}></div>
+            <span className="text-[9px] font-black text-brand-muted uppercase tracking-tighter">Market Depth</span>
+          </div>
+          <LiquidityBadge score={card.liquidityScore || LiquidityService.calculateLiquidityScore(card)} size="sm" />
+        </div>
+        <div className="bg-brand-charcoal/30 border border-slate-800/30 rounded-xl p-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[9px] font-black text-brand-muted uppercase tracking-tighter">Price Trend</span>
+            {getPriceTrend(card.id) !== 'stable' && (
+              <span className={`text-[9px] font-black uppercase ${getPriceTrend(card.id) === 'up' ? 'text-brand-green' : 'text-brand-red'}`}>{getPriceTrend(card.id) === 'up' ? '↑' : '↓'}</span>
+            )}
+          </div>
+          <Sparkline data={getSparklineData(card.id)} showTrend={true} height={32} />
+        </div>
+        <button onClick={() => handleUpdatePrice(card)} disabled={isPricing === card.id} className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all disabled:opacity-50">
+          {isPricing === card.id ? <div className="w-4 h-4 border-2 border-brand-lime border-t-transparent rounded-full animate-spin"></div> : <Sparkles size={16} className="text-brand-lime" />}
+          Intelligence Check
+        </button>
+        {
+          card.searchUrl && (
+            <a href={card.searchUrl} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime transition-all"><Search size={16} /> Verify on eBay</a>
+          )
+        }
+      </div >
+    </div >
+  );
+}
+
+function VirtualizedGrid({
+  items,
+  columns,
+  cardHeight,
+  rowGap,
+  getRarityTier,
+  getTierStyles,
+  isFavorite,
+  toggleFavorite,
+  deleteCard,
+  setEditingAsset,
+  setIsAssetModalOpen,
+  handleAddToWatchlist,
+  handleUpdatePrice,
+  isPricing,
+  getSparklineData,
+  getPriceTrend,
+  onOpenLightbox,
+  onOpenExitStrategy,
+  onOpenGradingPremium,
+}: {
+  items: CardInventory[];
+  columns: number;
+  cardHeight: number;
+  rowGap: number;
+  getRarityTier: (c: CardInventory) => string;
+  getTierStyles: (tier: string) => { border: string; glow?: string; text: string; badge: string };
+  isFavorite: (id: string) => boolean;
+  toggleFavorite: (c: CardInventory) => void;
+  deleteCard: (id: string) => void;
+  setEditingAsset: (c: CardInventory | null) => void;
+  setIsAssetModalOpen: (v: boolean) => void;
+  handleAddToWatchlist: (c: CardInventory) => void;
+  handleUpdatePrice: (c: CardInventory) => void;
+  isPricing: string | null;
+  getSparklineData: (id: string, limit?: number) => number[];
+  getPriceTrend: (id: string) => string;
+  onOpenLightbox?: (card: CardInventory) => void;
+  onOpenExitStrategy?: (card: CardInventory) => void;
+  onOpenGradingPremium?: (card: CardInventory) => void;
+}) {
+  const parentRef = useRef<HTMLDivElement>(null);
+  const rowCount = Math.ceil(items.length / columns);
+  const rowVirtualizer = useVirtualizer({
+    count: rowCount,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => cardHeight + rowGap,
+    overscan: 3,
+    gap: rowGap,
+  });
+  return (
+    <div ref={parentRef} className="h-[calc(100vh-340px)] min-h-[420px] overflow-y-auto rounded-2xl">
+      <div
+        style={{ height: `${rowVirtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}
+      >
+        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+          const start = virtualRow.index * columns;
+          const rowItems = items.slice(start, start + columns);
+          return (
+            <div
+              key={virtualRow.key}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8"
+            >
+              {rowItems.map((card) => (
+                <CardGridItem
+                  key={card.id}
+                  card={card}
+                  getRarityTier={getRarityTier}
+                  getTierStyles={getTierStyles}
+                  isFavorite={isFavorite}
+                  toggleFavorite={toggleFavorite}
+                  deleteCard={deleteCard}
+                  setEditingAsset={setEditingAsset}
+                  setIsAssetModalOpen={setIsAssetModalOpen}
+                  handleAddToWatchlist={handleAddToWatchlist}
+                  handleUpdatePrice={handleUpdatePrice}
+                  isPricing={isPricing}
+                  getSparklineData={getSparklineData}
+                  getPriceTrend={getPriceTrend}
+                  onOpenLightbox={onOpenLightbox}
+                  onOpenExitStrategy={onOpenExitStrategy}
+                  onOpenGradingPremium={onOpenGradingPremium}
+                />
+              ))}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 const Collection: React.FC = () => {
 
@@ -108,10 +368,10 @@ const Collection: React.FC = () => {
           const popReport: any = {
             popAtGrade: popData.popCount,
             popTotal: Math.floor(popData.popCount * 2.5),
-            popHigher: popData.popHigher,
+            popHigher: card.grade === '10' ? 0 : Math.floor(popData.popCount * 0.15),
             lastChecked: new Date().toISOString(),
             source: 'simulated',
-            badge: ScarcityService.getBadgeType(popData.popCount, popData.popHigher)
+            badge: ScarcityService.getBadgeType(popData.popCount, card.grade === '10' ? 0 : 5)
           };
           return { ...card, ...popData, popReport };
         }
@@ -120,7 +380,7 @@ const Collection: React.FC = () => {
 
       if (hydrated) {
         setInventory(updatedInventory);
-        if (import.meta.env.DEV) console.warn(`Hydrated cards with scarcity data.`);
+        console.log(`Hydrated cards with scarcity data.`);
       }
     }
   }, [inventory, setInventory]);
@@ -136,51 +396,25 @@ const Collection: React.FC = () => {
   const [editingAsset, setEditingAsset] = useState<CardInventory | null>(null);
   const [initialAssetData, setInitialAssetData] = useState<Partial<CardInventory> | null>(null);
   const [isOCRModalOpen, setIsOCRModalOpen] = useState(false);
+  const [isGradingAuditOpen, setIsGradingAuditOpen] = useState(false);
   const [lightboxCard, setLightboxCard] = useState<CardInventory | null>(null);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [exitStrategyCard, setExitStrategyCard] = useState<CardInventory | null>(null);
-  const [isGradingCalcOpen, setIsGradingCalcOpen] = useState(false);
-  const [gradingCalcCard, setGradingCalcCard] = useState<CardInventory | null>(null);
-  const [isBreakEvenOpen, setIsBreakEvenOpen] = useState(false);
-  const [breakEvenCard, setBreakEvenCard] = useState<CardInventory | null>(null);
-  const [isInstantBuyOpen, setIsInstantBuyOpen] = useState(false);
-  const [instantBuyCard, setInstantBuyCard] = useState<CardInventory | null>(null);
-  const [isPredictiveOpen, setIsPredictiveOpen] = useState(false);
-  const [predictiveCard, setPredictiveCard] = useState<CardInventory | null>(null);
-  const [isThesisOpen, setIsThesisOpen] = useState(false);
-  const [thesisCard, setThesisCard] = useState<CardInventory | null>(null);
-  const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false);
-  const [marketDepthCard, setMarketDepthCard] = useState<CardInventory | null>(null);
-  const [isTaxLotOpen, setIsTaxLotOpen] = useState(false);
-  const [taxLotCard, setTaxLotCard] = useState<CardInventory | null>(null);
-  const [isGradePredOpen, setIsGradePredOpen] = useState(false);
-  const [gradePredCard, setGradePredCard] = useState<CardInventory | null>(null);
-  const [isPriceHistoryOpen, setIsPriceHistoryOpen] = useState(false);
-  const [priceHistoryCard, setPriceHistoryCard] = useState<CardInventory | null>(null);
-  const [isConsignmentOpen, setIsConsignmentOpen] = useState(false);
-  const [consignmentCard, setConsignmentCard] = useState<CardInventory | null>(null);
-  const [isAnomalyOpen, setIsAnomalyOpen] = useState(false);
-  const [anomalyCard, setAnomalyCard] = useState<MarketAnomaly | null>(null);
+  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
+  const [premiumCard, setPremiumCard] = useState<CardInventory | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const { user } = useAuth();
+  const [userProfile, setUserProfile] = useState<any>(null);
 
-  // Sort state
-  const [sortField, setSortField] = useState<SortField>('player');
-  const [sortDir, setSortDir] = useState<SortDir>('asc');
-  const [showSortMenu, setShowSortMenu] = useState(false);
-
-  // Bulk selection state
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [bulkMode, setBulkMode] = useState(false);
-
-  // Confirm dialog state
-  const [confirmState, setConfirmState] = useState<{ open: boolean; title: string; message: string; onConfirm: () => void }>({ open: false, title: '', message: '', onConfirm: () => {} });
-
-  // Command palette
-  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
-
-  // Search ref for keyboard shortcut focus
-  const searchRef = useRef<HTMLInputElement>(null);
-
-  const { addToast } = useToast();
+  useEffect(() => {
+    if (user?.email) {
+      // For demo, we use the user's email prefix as username
+      const username = user.email.split('@')[0];
+      fetchPublicProfile(username).then(profile => {
+        if (profile) setUserProfile(profile);
+      });
+    }
+  }, [user]);
 
   // Ensure full inventory is loaded on mount
   useEffect(() => {
@@ -189,6 +423,19 @@ const Collection: React.FC = () => {
 
   const [isPricing, setIsPricing] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const clearSelection = () => setSelectedIds(new Set());
+  const selectAll = () => setSelectedIds(new Set(filteredInventory.map(c => c.id)));
 
   const handleAddToWatchlist = (card: CardInventory) => {
     setInitialTargetData({
@@ -219,36 +466,26 @@ const Collection: React.FC = () => {
 
   const handleUpdatePrice = async (card: CardInventory) => {
     setIsPricing(card.id);
-    const oldValue = card.currentValue || card.purchasePrice;
-    try {
-      const analysis = await getEbayCardPrice(card);
-      if (analysis) {
-        setInventory(prev => prev.map(c =>
-          c.id === card.id
-            ? {
-              ...c,
-              currentValue: analysis.estimatedValue,
-              lastValuationDate: analysis.lastUpdated,
-              searchUrl: analysis.searchUrl
-            }
-            : c
-        ));
-        const delta = analysis.estimatedValue - oldValue;
-        const sign = delta >= 0 ? '+' : '';
-        addToast(delta >= 0 ? 'success' : 'warning',
-          `${card.player}: $${oldValue.toLocaleString()} → $${analysis.estimatedValue.toLocaleString()} (${sign}$${Math.round(delta).toLocaleString()})`
-        );
-      } else {
-        addToast('error', `Failed to update price for ${card.player}. Try again.`);
-      }
-    } catch {
-      addToast('error', `Price update failed for ${card.player}. Check your connection.`);
+    const analysis = await getEbayCardPrice(card);
+    if (analysis) {
+      setInventory(prev => prev.map(c =>
+        c.id === card.id
+          ? {
+            ...c,
+            currentValue: analysis.estimatedValue,
+            lastValuationDate: analysis.lastUpdated,
+            searchUrl: analysis.searchUrl,
+            pricingRationale: analysis.rationale
+          }
+          : c
+      ));
     }
     setIsPricing(null);
   };
 
   const handleSaveExitStrategy = (cardId: string, exitPlan: ExitPlan) => {
-    updateCard(cardId, {
+    updateCard({
+      id: cardId,
       exitPlan,
       exitPlanId: exitPlan.id,
       liquidityScore: LiquidityService.calculateLiquidityScore(inventory.find(c => c.id === cardId)!)
@@ -256,123 +493,23 @@ const Collection: React.FC = () => {
   };
 
   const deleteCard = (id: string) => {
-    const card = inventory.find(c => c.id === id);
-    if (!card) return;
-    setConfirmState({
-      open: true,
-      title: 'Remove Asset',
-      message: `Remove "${card.player} (${card.year} ${card.set})" from your collection? This can be undone for 8 seconds.`,
-      onConfirm: () => {
-        removeCard(id);
-        setConfirmState(prev => ({ ...prev, open: false }));
-        addToast('success', `${card.player} removed from collection.`, {
-          onUndo: () => { addCard(card); },
-          undoLabel: 'Undo Remove'
-        });
-      }
-    });
-  };
-
-  // Bulk delete
-  const handleBulkDelete = () => {
-    if (selectedIds.size === 0) return;
-    const cards = inventory.filter(c => selectedIds.has(c.id));
-    setConfirmState({
-      open: true,
-      title: `Remove ${selectedIds.size} Assets`,
-      message: `Remove ${selectedIds.size} selected assets from your collection?`,
-      onConfirm: () => {
-        cards.forEach(c => removeCard(c.id));
-        setConfirmState(prev => ({ ...prev, open: false }));
-        setSelectedIds(new Set());
-        setBulkMode(false);
-        addToast('success', `${cards.length} assets removed.`, {
-          onUndo: () => { cards.forEach(c => addCard(c)); }
-        });
-      }
-    });
-  };
-
-  // Bulk export to JSON
-  const handleBulkExport = () => {
-    const cards = bulkMode && selectedIds.size > 0
-      ? inventory.filter(c => selectedIds.has(c.id))
-      : inventory.filter(c => c.status !== 'sold');
-    const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `msi_collection_${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    addToast('success', `Exported ${cards.length} cards to JSON.`);
-  };
-
-  // Toggle bulk selection
-  const toggleSelection = (id: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  // Select all visible cards
-  const selectAll = () => {
-    if (selectedIds.size === filteredInventory.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(filteredInventory.map(c => c.id)));
+    if (confirm('Are you sure you want to remove this asset from your collection?')) {
+      removeCard(id);
     }
   };
 
-  // Keyboard shortcuts
-  useKeyboardShortcuts([
-    { key: '/', description: 'Focus search', action: () => searchRef.current?.focus() },
-    { key: 'k', ctrl: true, description: 'Command palette', action: () => setIsPaletteOpen(true) },
-    { key: 'n', description: 'Add new card', action: () => { setEditingAsset(null); setInitialAssetData(null); setIsAssetModalOpen(true); } },
-    { key: 'Escape', description: 'Clear search / close', global: true, action: () => {
-      if (searchQuery) setSearchQuery('');
-      else if (bulkMode) { setBulkMode(false); setSelectedIds(new Set()); }
-    }},
-  ]);
-
   const filteredInventory = useMemo(() => {
-    let result = inventory.filter(c => {
-      const q = searchQuery.toLowerCase();
-      const matchesSearch = !q || c.player.toLowerCase().includes(q) ||
-        c.set.toLowerCase().includes(q) ||
-        c.manufacturer.toLowerCase().includes(q) ||
-        (c.cardNumber && c.cardNumber.toLowerCase().includes(q));
+    return inventory.filter(c => {
+      const matchesSearch = c.player.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.set.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.manufacturer.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesLeague = filterLeague === 'All' || c.league === filterLeague;
 
       if (activeTab === 'inventory') return matchesSearch && matchesLeague && c.status !== 'sold';
       if (activeTab === 'vault') return matchesSearch && matchesLeague && c.status === 'sold';
       return matchesSearch && matchesLeague;
     });
-
-    // Sort
-    result.sort((a, b) => {
-      let cmp = 0;
-      switch (sortField) {
-        case 'player': cmp = a.player.localeCompare(b.player); break;
-        case 'value': cmp = (a.currentValue || 0) - (b.currentValue || 0); break;
-        case 'purchasePrice': cmp = a.purchasePrice - b.purchasePrice; break;
-        case 'date': cmp = new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime(); break;
-        case 'roi': {
-          const roiA = a.purchasePrice > 0 ? ((a.currentValue || 0) - a.purchasePrice) / a.purchasePrice : 0;
-          const roiB = b.purchasePrice > 0 ? ((b.currentValue || 0) - b.purchasePrice) / b.purchasePrice : 0;
-          cmp = roiA - roiB;
-          break;
-        }
-        case 'league': cmp = a.league.localeCompare(b.league); break;
-      }
-      return sortDir === 'desc' ? -cmp : cmp;
-    });
-
-    return result;
-  }, [inventory, searchQuery, filterLeague, activeTab, sortField, sortDir]);
+  }, [inventory, searchQuery, filterLeague, activeTab]);
 
   const stats = useMemo(() => {
     const totalValue = inventory.reduce((sum, c) => sum + (c.currentValue || 0), 0);
@@ -437,11 +574,25 @@ const Collection: React.FC = () => {
             AI Alpha Scan
           </button>
           <button
+            onClick={() => setIsGradingAuditOpen(true)}
+            className="flex items-center gap-3 px-6 py-4 bg-brand-charcoal border border-brand-lime/30 text-brand-lime font-black rounded-2xl transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[10px] group"
+          >
+            <Search size={16} className="group-hover:animate-pulse" />
+            Visual Audit
+          </button>
+          <button
             onClick={() => { setEditingAsset(null); setInitialAssetData(null); setIsAssetModalOpen(true); }}
             className="flex items-center gap-3 px-10 py-4 bg-brand-lime hover:bg-white text-brand-charcoal font-black rounded-2xl transition-all shadow-xl shadow-brand-lime/20 active:scale-95 uppercase tracking-widest text-xs"
           >
             <Plus size={18} strokeWidth={4} />
             Add Asset
+          </button>
+          <button
+            onClick={() => setIsShareModalOpen(true)}
+            className="p-4 bg-brand-slate border border-slate-800 rounded-2xl text-brand-muted hover:text-brand-lime transition-all shadow-lg active:scale-95"
+            title="Share Portfolio Alpha"
+          >
+            <Share2 size={18} />
           </button>
           <button className="p-4 bg-brand-slate border border-slate-800 rounded-2xl text-brand-muted hover:text-white transition-all shadow-lg">
             <Upload size={18} />
@@ -509,38 +660,19 @@ const Collection: React.FC = () => {
               <div className="relative flex-1 group">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted group-focus-within:text-brand-lime transition-colors" size={20} />
                 <input
-                  ref={searchRef}
                   type="text"
-                  placeholder="Search players, sets, manufacturers... (press /)"
+                  placeholder="Query collection players, manufacturers, or sets..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-brand-slate border border-slate-800 rounded-2xl py-4 pl-12 pr-20 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium"
-                  aria-label="Search collection"
+                  className="w-full bg-brand-slate border border-slate-800 rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium"
                 />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-muted hover:text-white transition-colors"
-                    aria-label="Clear search"
-                  >
-                    <XCircle size={18} />
-                  </button>
-                )}
               </div>
 
-              {/* Result count */}
-              {searchQuery && (
-                <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest whitespace-nowrap">
-                  {filteredInventory.length} result{filteredInventory.length !== 1 ? 's' : ''}
-                </span>
-              )}
-
-              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 w-full lg:w-auto" role="group" aria-label="Filter by league">
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 w-full lg:w-auto">
                 {['All', ...LEAGUES].map((s) => (
                   <button
                     key={s}
                     onClick={() => setFilterLeague(s as any)}
-                    aria-pressed={filterLeague === s}
                     className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border
                       ${filterLeague === s
                         ? 'bg-brand-lime border-brand-lime text-brand-charcoal shadow-lg shadow-brand-lime/20'
@@ -551,103 +683,43 @@ const Collection: React.FC = () => {
                 ))}
               </div>
 
-              {/* Sort dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowSortMenu(!showSortMenu)}
-                  className="flex items-center gap-2 px-6 py-4 bg-brand-slate border border-slate-800 rounded-2xl text-xs font-black uppercase tracking-widest text-brand-muted hover:text-white transition-all shadow-xl"
-                  aria-haspopup="listbox"
-                  aria-expanded={showSortMenu}
-                >
-                  {sortDir === 'asc' ? <SortAsc size={18} /> : <SortDesc size={18} />}
-                  Sort
-                </button>
-                {showSortMenu && (
-                  <div className="absolute right-0 top-full mt-2 w-52 bg-brand-slate border border-slate-700 rounded-2xl shadow-2xl z-50 py-2 animate-in fade-in zoom-in-95 duration-150" role="listbox">
-                    {([
-                      { field: 'player' as SortField, label: 'Name' },
-                      { field: 'value' as SortField, label: 'Market Value' },
-                      { field: 'purchasePrice' as SortField, label: 'Purchase Price' },
-                      { field: 'date' as SortField, label: 'Date Added' },
-                      { field: 'roi' as SortField, label: 'ROI' },
-                      { field: 'league' as SortField, label: 'League' },
-                    ]).map(opt => (
-                      <button
-                        key={opt.field}
-                        role="option"
-                        aria-selected={sortField === opt.field}
-                        onClick={() => {
-                          if (sortField === opt.field) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-                          else { setSortField(opt.field); setSortDir('asc'); }
-                          setShowSortMenu(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-4 py-2.5 text-xs font-medium transition-colors ${sortField === opt.field ? 'text-brand-lime bg-brand-charcoal/50' : 'text-slate-300 hover:bg-brand-charcoal/30'}`}
-                      >
-                        <span>{opt.label}</span>
-                        {sortField === opt.field && (
-                          <span className="text-[9px] text-brand-muted">{sortDir === 'asc' ? 'A→Z' : 'Z→A'}</span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Bulk mode toggle */}
-              <button
-                onClick={() => { setBulkMode(!bulkMode); setSelectedIds(new Set()); }}
-                className={`flex items-center gap-2 px-4 py-4 rounded-2xl border text-xs font-black uppercase tracking-widest transition-all ${bulkMode ? 'bg-brand-lime/10 border-brand-lime/30 text-brand-lime' : 'bg-brand-slate border-slate-800 text-brand-muted hover:text-white'}`}
-                aria-pressed={bulkMode}
-              >
-                <CheckSquare size={18} />
+              <button className="flex items-center gap-2 px-6 py-4 bg-brand-slate border border-slate-800 rounded-2xl text-xs font-black uppercase tracking-widest text-brand-muted hover:text-white transition-all shadow-xl">
+                <SortAsc size={18} /> Sort
               </button>
             </div>
 
-            {/* Bulk action bar */}
-            {bulkMode && (
-              <div className="flex items-center gap-4 p-4 bg-brand-slate border border-slate-800 rounded-2xl animate-in slide-in-from-top-2 duration-200">
-                <button onClick={selectAll} className="text-xs font-black text-brand-muted hover:text-white transition-colors uppercase tracking-widest">
-                  {selectedIds.size === filteredInventory.length ? 'Deselect All' : 'Select All'}
-                </button>
-                <span className="text-[10px] font-mono text-brand-muted">{selectedIds.size} selected</span>
-                <div className="flex-1" />
-                <button
-                  onClick={handleBulkExport}
-                  disabled={selectedIds.size === 0}
-                  className="flex items-center gap-2 px-4 py-2 bg-brand-charcoal border border-slate-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand-muted hover:text-white disabled:opacity-30 transition-all"
-                >
-                  <Download size={14} /> Export
-                </button>
-                <button
-                  onClick={handleBulkDelete}
-                  disabled={selectedIds.size === 0}
-                  className="flex items-center gap-2 px-4 py-2 bg-brand-red/10 border border-brand-red/30 rounded-xl text-[10px] font-black uppercase tracking-widest text-brand-red hover:bg-brand-red hover:text-white disabled:opacity-30 transition-all"
-                >
-                  <Trash2 size={14} /> Delete
-                </button>
-              </div>
-            )}
-
-            {/* Empty state for no results */}
-            {filteredInventory.length === 0 && !loading && (
-              <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
-                <Search size={48} className="text-brand-muted/30" />
-                <h3 className="text-xl font-bold text-brand-muted">
-                  {searchQuery ? 'No cards match your search' : 'No cards in collection yet'}
-                </h3>
-                <p className="text-sm text-brand-muted/60 max-w-md">
-                  {searchQuery
-                    ? `Try adjusting your search or clearing filters.`
-                    : `Add your first card to start tracking your portfolio.`}
-                </p>
-                {searchQuery && (
-                  <button
-                    onClick={() => { setSearchQuery(''); setFilterLeague('All'); }}
-                    className="px-6 py-3 bg-brand-lime/10 border border-brand-lime/30 text-brand-lime text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-brand-lime/20 transition-all"
-                  >
-                    Clear Filters
-                  </button>
-                )}
+            {/* Bulk Actions Floating Bar */}
+            {selectedIds.size > 0 && (
+              <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-12 duration-500">
+                <div className="bg-brand-charcoal/90 backdrop-blur-xl border border-brand-lime/30 rounded-full px-6 py-3 shadow-2xl flex items-center gap-6">
+                  <span className="text-xs font-black text-white uppercase tracking-widest border-r border-slate-700 pr-6 mr-2">
+                    {selectedIds.size} Selected
+                  </span>
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={clearSelection}
+                      className="text-[10px] font-black text-brand-muted uppercase tracking-widest hover:text-white transition-colors"
+                    >
+                      Clear
+                    </button>
+                    <button
+                      className="flex items-center gap-2 px-5 py-2 bg-brand-lime text-brand-charcoal rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all active:scale-95"
+                    >
+                      <History size={14} /> Mark Sold
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (confirm(`Mass delete ${selectedIds.size} assets?`)) {
+                          selectedIds.forEach(id => removeCard(id));
+                          clearSelection();
+                        }
+                      }}
+                      className="flex items-center gap-2 px-5 py-2 bg-brand-red text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-500 transition-all active:scale-95"
+                    >
+                      <Trash2 size={14} /> Batch Delete
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -673,55 +745,31 @@ const Collection: React.FC = () => {
                   getPriceTrend={getPriceTrend}
                   onOpenLightbox={(c) => setLightboxCard(c)}
                   onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
-                  onOpenGradingCalc={(c) => { setGradingCalcCard(c); setIsGradingCalcOpen(true); }}
-                  onOpenBreakEven={(c) => { setBreakEvenCard(c); setIsBreakEvenOpen(true); }}
-                  onInstantBuy={(c) => { setInstantBuyCard(c); setIsInstantBuyOpen(true); }}
-                  onOpenPredictive={(c) => { setPredictiveCard(c); setIsPredictiveOpen(true); }}
-                  onOpenThesis={(c) => { setThesisCard(c); setIsThesisOpen(true); }}
-                  onOpenMarketDepth={(c) => { setMarketDepthCard(c); setIsMarketDepthOpen(true); }}
-                  onOpenTaxLot={(c) => { setTaxLotCard(c); setIsTaxLotOpen(true); }}
-                  onOpenGradePrediction={(c) => { setGradePredCard(c); setIsGradePredOpen(true); }}
-                  onOpenPriceHistory={(c) => { setPriceHistoryCard(c); setIsPriceHistoryOpen(true); }}
-                  onOpenConsignment={(c) => { setConsignmentCard(c); setIsConsignmentOpen(true); }}
-                  onOpenAnomaly={(c) => { const anomalies = detectAnomalies([c]); if (anomalies.length > 0) { setAnomalyCard(anomalies[0]); setIsAnomalyOpen(true); } }}
+                  onOpenGradingPremium={(c) => { setPremiumCard(c); setIsPremiumModalOpen(true); }}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
                   {filteredInventory.map((card) => (
-                    <SwipeableCard
+                    <CardGridItem
                       key={card.id}
-                      onSwipeRight={() => handleAddToWatchlist(card)}
-                      onSwipeLeft={() => { setEditingAsset({ ...card, status: 'sold' }); setIsAssetModalOpen(true); }}
-                    >
-                      <CardGridItem
-                        card={card}
-                        getRarityTier={getRarityTier}
-                        getTierStyles={getTierStyles}
-                        isFavorite={isFavorite}
-                        toggleFavorite={toggleFavorite}
-                        deleteCard={deleteCard}
-                        setEditingAsset={setEditingAsset}
-                        setIsAssetModalOpen={setIsAssetModalOpen}
-                        handleAddToWatchlist={handleAddToWatchlist}
-                        handleUpdatePrice={handleUpdatePrice}
-                        isPricing={isPricing}
-                        getSparklineData={getSparklineData}
-                        getPriceTrend={getPriceTrend}
-                        onOpenLightbox={(c) => setLightboxCard(c)}
-                        onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
-                        onOpenGradingCalc={(c) => { setGradingCalcCard(c); setIsGradingCalcOpen(true); }}
-                        onOpenBreakEven={(c) => { setBreakEvenCard(c); setIsBreakEvenOpen(true); }}
-                        onInstantBuy={(c) => { setInstantBuyCard(c); setIsInstantBuyOpen(true); }}
-                        onOpenPredictive={(c) => { setPredictiveCard(c); setIsPredictiveOpen(true); }}
-                        onOpenThesis={(c) => { setThesisCard(c); setIsThesisOpen(true); }}
-                        onOpenMarketDepth={(c) => { setMarketDepthCard(c); setIsMarketDepthOpen(true); }}
-                        onOpenTaxLot={(c) => { setTaxLotCard(c); setIsTaxLotOpen(true); }}
-                        onOpenGradePrediction={(c) => { setGradePredCard(c); setIsGradePredOpen(true); }}
-                        onOpenPriceHistory={(c) => { setPriceHistoryCard(c); setIsPriceHistoryOpen(true); }}
-                        onOpenConsignment={(c) => { setConsignmentCard(c); setIsConsignmentOpen(true); }}
-                        onOpenAnomaly={(c) => { const anomalies = detectAnomalies([c]); if (anomalies.length > 0) { setAnomalyCard(anomalies[0]); setIsAnomalyOpen(true); } }}
-                      />
-                    </SwipeableCard>
+                      card={card}
+                      getRarityTier={getRarityTier}
+                      getTierStyles={getTierStyles}
+                      isFavorite={isFavorite}
+                      toggleFavorite={toggleFavorite}
+                      deleteCard={deleteCard}
+                      setEditingAsset={setEditingAsset}
+                      setIsAssetModalOpen={setIsAssetModalOpen}
+                      handleAddToWatchlist={handleAddToWatchlist}
+                      handleUpdatePrice={handleUpdatePrice}
+                      isPricing={isPricing}
+                      getSparklineData={getSparklineData}
+                      getPriceTrend={getPriceTrend}
+                      onOpenLightbox={(c) => setLightboxCard(c)}
+                      onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
+                      isSelected={selectedIds.has(card.id)}
+                      onToggleSelect={toggleSelection}
+                    />
                   ))}
                 </div>
               )
@@ -863,6 +911,18 @@ const Collection: React.FC = () => {
                         <p className="text-sm text-brand-muted font-medium line-clamp-2">{target.cardDescription}</p>
                       </div>
 
+                      {target.pricingRationale && (
+                        <div className="p-4 bg-brand-lime/5 border border-brand-lime/10 rounded-xl mb-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Sparkles size={12} className="text-brand-lime" />
+                            <span className="text-[9px] font-black text-brand-muted uppercase tracking-widest">Pricing Intelligence</span>
+                          </div>
+                          <p className="text-[11px] leading-relaxed text-slate-300 italic">
+                            "{target.pricingRationale}"
+                          </p>
+                        </div>
+                      )}
+
                       {/* Target Price */}
                       <div className="bg-brand-charcoal/40 border border-slate-800/50 rounded-xl p-4">
                         <p className="text-[9px] font-black text-brand-muted uppercase tracking-widest mb-1">Target Price</p>
@@ -946,6 +1006,15 @@ const Collection: React.FC = () => {
           onSuccess={handleVisionSuccess}
         />
 
+        <GradingAuditModal
+          isOpen={isGradingAuditOpen}
+          onClose={() => setIsGradingAuditOpen(false)}
+          onComplete={(res) => {
+            console.log('Visual Audit Complete:', res);
+            setIsGradingAuditOpen(false);
+          }}
+        />
+
         <ImageLightbox
           isOpen={!!lightboxCard}
           onClose={() => setLightboxCard(null)}
@@ -963,118 +1032,40 @@ const Collection: React.FC = () => {
           />
         )}
 
-        {gradingCalcCard && (
-          <GradingCalculatorModal
-            isOpen={isGradingCalcOpen}
-            onClose={() => { setIsGradingCalcOpen(false); setGradingCalcCard(null); }}
-            card={gradingCalcCard}
-          />
-        )}
+        {/* Grading Premium Modal */}
+        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-500 ${isPremiumModalOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
+          <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => setIsPremiumModalOpen(false)} />
+          <div className="relative w-full max-w-lg bg-brand-charcoal border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-brand-lime/10 rounded-lg text-brand-lime text-xs font-black uppercase tracking-widest border border-brand-lime/20">
+                  Phase 13
+                </div>
+                <h2 className="text-xl font-bebas tracking-wide text-white">Grading <span className="text-brand-lime">Premium</span></h2>
+              </div>
+              <button
+                onClick={() => setIsPremiumModalOpen(false)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors"
+              >
+                <Plus className="rotate-45" size={20} />
+              </button>
+            </div>
+            <div className="p-6">
+              {premiumCard && <GradingPremiumTool card={premiumCard} />}
+            </div>
+          </div>
+        </div>
 
-        {breakEvenCard && (
-          <BreakEvenModal
-            isOpen={isBreakEvenOpen}
-            onClose={() => { setIsBreakEvenOpen(false); setBreakEvenCard(null); }}
-            card={breakEvenCard}
-          />
-        )}
-
-        {instantBuyCard && (
-          <InstantBuyModal
-            isOpen={isInstantBuyOpen}
-            onClose={() => { setIsInstantBuyOpen(false); setInstantBuyCard(null); }}
-            card={instantBuyCard}
-            onAccept={(card, payout) => {
-              setInventory(prev => prev.map(c => c.id === card.id ? { ...c, status: 'sold' as const, salePrice: payout, saleDate: new Date().toISOString() } : c));
-              addToast('success', `${card.player} sold to MSI House for $${payout.toLocaleString()}`);
+        {userProfile && (
+          <ShareAlphaModal
+            isOpen={isShareModalOpen}
+            onClose={() => setIsShareModalOpen(false)}
+            profile={userProfile}
+            onToggleVisibility={(isPublic) => {
+              setUserProfile({ ...userProfile, isPublic });
             }}
           />
         )}
-
-        {predictiveCard && (
-          <PredictiveAlphaModal
-            isOpen={isPredictiveOpen}
-            onClose={() => { setIsPredictiveOpen(false); setPredictiveCard(null); }}
-            card={predictiveCard}
-          />
-        )}
-
-        {thesisCard && (
-          <AgentThesisModal
-            isOpen={isThesisOpen}
-            onClose={() => { setIsThesisOpen(false); setThesisCard(null); }}
-            card={thesisCard}
-            portfolio={inventory}
-          />
-        )}
-
-        {marketDepthCard && (
-          <MarketDepthModal
-            isOpen={isMarketDepthOpen}
-            onClose={() => { setIsMarketDepthOpen(false); setMarketDepthCard(null); }}
-            card={marketDepthCard}
-          />
-        )}
-
-        {taxLotCard && (
-          <TaxReportModal
-            isOpen={isTaxLotOpen}
-            onClose={() => { setIsTaxLotOpen(false); setTaxLotCard(null); }}
-            card={taxLotCard}
-            portfolio={inventory}
-          />
-        )}
-
-        {gradePredCard && (
-          <GradingPredictionModal
-            isOpen={isGradePredOpen}
-            onClose={() => { setIsGradePredOpen(false); setGradePredCard(null); }}
-            card={gradePredCard}
-          />
-        )}
-
-        {priceHistoryCard && (
-          <PriceHistoryModal
-            isOpen={isPriceHistoryOpen}
-            onClose={() => { setIsPriceHistoryOpen(false); setPriceHistoryCard(null); }}
-            card={priceHistoryCard}
-          />
-        )}
-
-        {consignmentCard && (
-          <ConsignmentModal
-            isOpen={isConsignmentOpen}
-            onClose={() => { setIsConsignmentOpen(false); setConsignmentCard(null); }}
-            card={consignmentCard}
-            inventory={inventory}
-          />
-        )}
-
-        {anomalyCard && (
-          <AnomalyDetailModal
-            isOpen={isAnomalyOpen}
-            onClose={() => { setIsAnomalyOpen(false); setAnomalyCard(null); }}
-            anomaly={anomalyCard}
-            inventory={inventory}
-          />
-        )}
-
-        <ConfirmDialog
-          isOpen={confirmState.open}
-          title={confirmState.title}
-          message={confirmState.message}
-          confirmLabel="Remove"
-          variant="danger"
-          onConfirm={confirmState.onConfirm}
-          onCancel={() => setConfirmState(prev => ({ ...prev, open: false }))}
-        />
-
-        <CommandPalette
-          isOpen={isPaletteOpen}
-          onClose={() => setIsPaletteOpen(false)}
-          onAddCard={() => { setEditingAsset(null); setInitialAssetData(null); setIsAssetModalOpen(true); }}
-          onOpenScanner={() => setIsOCRModalOpen(true)}
-        />
       </div>
     </div>
   );

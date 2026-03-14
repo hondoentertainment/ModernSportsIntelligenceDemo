@@ -30,7 +30,8 @@ import {
   Share2,
   Briefcase,
   Bot,
-  BookHeart
+  BookHeart,
+  Shield
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -51,6 +52,7 @@ export const NAV_ITEMS = [
   { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={20} />, path: '/leaderboard' },
   { id: 'compare', label: 'Compare', icon: <GitCompare size={20} />, path: '/compare' },
   { id: 'warroom', label: 'Analyst War Room', icon: <Activity size={20} />, path: '/war-room' },
+  { id: 'phaseops', label: 'Phase Ops', icon: <Shield size={20} />, path: '/phase-ops' },
   { id: 'alerts', label: 'Alerts', icon: <Bell size={20} />, path: '/alerts' },
   { id: 'liveimpact', label: 'Live Game Impact', icon: <Radio size={20} />, path: '/live-impact' },
   { id: 'visiongrading', label: 'Vision Grading Lab', icon: <ScanEye size={20} />, path: '/vision-grading' },
@@ -337,3 +339,4 @@ export const MOCK_ACQUISITION_TARGETS = [
     image: 'https://img.mlbstatic.com/mlb-photos/person/702616.jpg'
   }
 ];
+
