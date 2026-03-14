@@ -1,10 +1,14 @@
-import { GoogleGenAI, Type } from "@google/genai";
-import { CardInventory, PricingAnalysis, TargetWatchlist } from "../types.ts";
+import { Type } from "@google/genai";
+import { CardInventory, PricingAnalysis, TargetWatchlist, VisualAuditResult, MacroSignal, GradingPremiumAnalysis } from "../types.ts";
 import { ebayApi } from "./ebayApi.ts";
 import { showToast } from "./toast.ts";
+import { attachValuationQuality } from "./valuationQuality.ts";
+import { estimateGeminiCostUsd, recordModelUsage } from "./telemetryService.ts";
+import { createGeminiClient } from "./geminiClient.ts";
 
-const apiKey = (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) ? process.env.VITE_GEMINI_API_KEY : "";
-const ai = new GoogleGenAI({ apiKey });
+const ai = createGeminiClient();
+
+const estimateTokens = (text: string): number => Math.max(1, Math.ceil(text.length / 4));
 
 const MOCK_PROSPECTS: Record<string, any[]> = {
   MiLB: [
@@ -67,7 +71,23 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
 
       if (ebayResult && ebayResult.totalListings > 0) {
         console.log('Using eBay API pricing for:', card.player);
-        return {
+
+        // Use Gemini to generate a rationale based on these real sales
+        const salesSummary = ebayResult.recentSales.map(s => `$${s.price} (${s.date})`).join(', ');
+        const rationalePrompt = `Act as an institutional sports card analyst. Based on these 10 recent eBay sales for a ${card.year} ${card.player} ${card.set}: ${salesSummary}, provide a concise, 2-sentence rationale for an estimated value of $${ebayResult.averagePrice}. Use professional language like 'liquidity resistance', 'recent auction volatility', or 'standardized baseline'.`;
+
+        let rationale = "Institutional valuation based on recent market clearing prices.";
+        try {
+          const rationaleResponse = await ai.models.generateContent({
+            model: "gemini-1.5-flash",
+            contents: rationalePrompt
+          });
+          rationale = rationaleResponse.text || rationale;
+        } catch (e) {
+          console.warn("Failed to generate rationale, using default.");
+        }
+
+        return attachValuationQuality({
           estimatedValue: ebayResult.averagePrice,
           low: ebayResult.priceRange.min,
           high: ebayResult.priceRange.max,
@@ -76,7 +96,11 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
           salesCount: ebayResult.totalListings,
           searchUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(`${card.year} ${card.player} ${card.set}`)}&LH_Sold=1&LH_Complete=1`,
           lastUpdated: new Date().toISOString(),
-        };
+          rationale,
+          salesData: ebayResult.recentSales,
+          valuationSource: 'ebay-api',
+          valuationTimestamp: new Date().toISOString()
+        });
       }
     } catch (error) {
       console.warn('eBay API pricing failed, falling back to AI:', error);
@@ -95,7 +119,14 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
   Autographed: ${card.isAutographed ? 'Yes' : 'No'}
   Condition: ${card.condition}
 
-  Provide a detailed breakdown including the estimated current market value, low/high/average ranges from recent sales, a confidence score (0-1), and the number of recent sales used for the calculation.`;
+  Provide a detailed breakdown including:
+  1. estimatedValue (Number)
+  2. low/high/avg ranges (Numbers)
+  3. confidence (0-1)
+  4. salesCount (Integer)
+  5. rationale (Concise 2-sentence explanation of the valuation based on current market trends)
+
+  Only return valid JSON.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -112,23 +143,35 @@ export async function getEbayCardPrice(card: CardInventory): Promise<PricingAnal
             avg: { type: Type.NUMBER },
             confidence: { type: Type.NUMBER },
             salesCount: { type: Type.INTEGER },
+            rationale: { type: Type.STRING }
           },
-          required: ["estimatedValue", "low", "high", "avg", "confidence", "salesCount"],
+          required: ["estimatedValue", "low", "high", "avg", "confidence", "salesCount", "rationale"],
         },
       },
     });
 
-    const data = JSON.parse(response.text || "{}");
+    const responseText = response.text || "{}";
+    const data = JSON.parse(responseText);
+    const tokenEstimate = estimateTokens(prompt + responseText);
+    recordModelUsage({
+      provider: 'gemini',
+      model: 'gemini-3-flash-preview',
+      tokens: tokenEstimate,
+      estimatedCostUsd: estimateGeminiCostUsd(tokenEstimate),
+      context: 'card_valuation'
+    });
 
     // Generate grounded eBay Search URL
     const searchQuery = encodeURIComponent(`${card.year} ${card.manufacturer} ${card.player} ${card.cardNumber} ${card.set}${card.isGraded ? ` ${card.gradingCompany} ${card.grade}` : ''} sold`);
     const searchUrl = `https://www.ebay.com/sch/i.html?_from=R40&_nkw=${searchQuery}&_sacat=0&rt=nc&LH_Sold=1&LH_Complete=1`;
 
-    return {
+    return attachValuationQuality({
       ...data,
       searchUrl,
       lastUpdated: new Date().toISOString(),
-    };
+      valuationSource: 'gemini',
+      valuationTimestamp: new Date().toISOString(),
+    });
   } catch (error) {
     console.error("Gemini Pricing Error:", error);
     showToast('error', `AI valuation failed for ${card.player}. Try again later.`, { dedupeKey: `gemini_price_${card.id}` });
@@ -152,7 +195,22 @@ export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<Pr
 
       if (ebayResult && ebayResult.totalListings > 0) {
         console.log('Using eBay API pricing for watchlist:', target.player);
-        return {
+
+        const salesSummary = ebayResult.recentSales.map(s => `$${s.price} (${s.date})`).join(', ');
+        const rationalePrompt = `Act as an institutional sports card analyst. Based on these 10 recent eBay sales for "${target.player} ${target.cardDescription}": ${salesSummary}, provide a concise, 2-sentence rationale for an estimated value of $${ebayResult.averagePrice}. Mention specific price points if relevant.`;
+
+        let rationale = "Institutional valuation based on recent market clearing prices.";
+        try {
+          const rationaleResponse = await ai.models.generateContent({
+            model: "gemini-1.5-flash",
+            contents: rationalePrompt
+          });
+          rationale = rationaleResponse.text || rationale;
+        } catch (e) {
+          console.warn("Failed to generate rationale for watchlist, using default.");
+        }
+
+        return attachValuationQuality({
           estimatedValue: ebayResult.averagePrice,
           low: ebayResult.priceRange.min,
           high: ebayResult.priceRange.max,
@@ -161,7 +219,11 @@ export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<Pr
           salesCount: ebayResult.totalListings,
           searchUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(`${target.player} ${target.cardDescription}`)}&LH_Sold=1&LH_Complete=1`,
           lastUpdated: new Date().toISOString(),
-        };
+          rationale,
+          salesData: ebayResult.recentSales,
+          valuationSource: 'ebay-api',
+          valuationTimestamp: new Date().toISOString()
+        });
       }
     } catch (error) {
       console.warn('eBay API pricing failed for watchlist, falling back to AI:', error);
@@ -176,7 +238,14 @@ export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<Pr
   Sport: ${target.sport}
   League: ${target.league}
 
-  Provide a detailed breakdown including the estimated current market value, low/high/average ranges from recent sales, a confidence score (0-1), and the number of recent sales used for the calculation.`;
+  Provide a detailed breakdown including:
+  1. estimatedValue (Number)
+  2. low/high/avg ranges (Numbers)
+  3. confidence (0-1)
+  4. salesCount (Integer)
+  5. rationale (Concise 2-sentence explanation of the valuation based on current market trends)
+
+  Only return valid JSON.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -193,22 +262,34 @@ export async function getWatchlistItemPrice(target: TargetWatchlist): Promise<Pr
             avg: { type: Type.NUMBER },
             confidence: { type: Type.NUMBER },
             salesCount: { type: Type.INTEGER },
+            rationale: { type: Type.STRING }
           },
-          required: ["estimatedValue", "low", "high", "avg", "confidence", "salesCount"],
+          required: ["estimatedValue", "low", "high", "avg", "confidence", "salesCount", "rationale"],
         },
       },
     });
 
-    const data = JSON.parse(response.text || "{}");
+    const responseText = response.text || "{}";
+    const data = JSON.parse(responseText);
+    const tokenEstimate = estimateTokens(prompt + responseText);
+    recordModelUsage({
+      provider: 'gemini',
+      model: 'gemini-3-flash-preview',
+      tokens: tokenEstimate,
+      estimatedCostUsd: estimateGeminiCostUsd(tokenEstimate),
+      context: 'watchlist_valuation'
+    });
 
     const searchQuery = encodeURIComponent(`${target.player} ${target.cardDescription} sold`);
     const searchUrl = `https://www.ebay.com/sch/i.html?_from=R40&_nkw=${searchQuery}&_sacat=0&rt=nc&LH_Sold=1&LH_Complete=1`;
 
-    return {
+    return attachValuationQuality({
       ...data,
       searchUrl,
       lastUpdated: new Date().toISOString(),
-    };
+      valuationSource: 'gemini',
+      valuationTimestamp: new Date().toISOString(),
+    });
   } catch (error) {
     console.error("Gemini Watchlist Pricing Error:", error);
     showToast('error', `AI valuation failed for watchlist item "${target.player}".`, { dedupeKey: `gemini_wl_${target.id}` });
@@ -562,3 +643,216 @@ Return JSON with: offerAmount (number), message (string for the seller), reasoni
     return null;
   }
 }
+
+/**
+ * Phase 23: Visual Audit Simulation
+ * Analyzes a card image for grading defects and predicts a grade.
+ */
+export async function auditCardVisuals(imageBase64: string, mimeType: string = "image/jpeg"): Promise<VisualAuditResult | null> {
+  const prompt = `Act as an expert sports card grader (like PSA, BGS, or SGC). Perform a strict, high-fidelity visual audit of this card image.
+  
+  Examine the following four subgrades critically:
+  1. Centering (Measure left/right and top/bottom borders)
+  2. Corners (Look for any soft touches, whitening, or fraying)
+  3. Edges (Check for chipping, roughness, or indentations)
+  4. Surface (Identify scratches, print lines, dimples, or gloss issues)
+  
+  Identify any specific defects. If you find defects, list them with their type, location, severity, and a short description.
+  Based on the subgrades and defects, provide a 'predictedGrade' in the format of "PSA X" or "BGS X" (where X is 1-10, can include half-points for BGS).
+  Include a 'confidenceScore' (0-1) representing how clear the image is for grading.
+  Provide a short overall 'summary' of the card's condition.
+  
+  Return the result in valid JSON matching this schema:
+  - predictedGrade (String)
+  - confidenceScore (Number)
+  - subgrades (Object with numeric properties: centering, corners, edges, surface, each 1-10)
+  - defects (Array of objects, each with strings: type ('Centering' | 'Corners' | 'Edges' | 'Surface'), location, severity ('Minor' | 'Moderate' | 'Severe'), description)
+  - summary (String)
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-1.5-pro",
+      contents: [{
+        role: "user",
+        parts: [
+          { text: prompt },
+          { inlineData: { data: imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64, mimeType } }
+        ]
+      }],
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            predictedGrade: { type: Type.STRING },
+            confidenceScore: { type: Type.NUMBER },
+            subgrades: {
+              type: Type.OBJECT,
+              properties: {
+                centering: { type: Type.NUMBER },
+                corners: { type: Type.NUMBER },
+                edges: { type: Type.NUMBER },
+                surface: { type: Type.NUMBER }
+              },
+              required: ["centering", "corners", "edges", "surface"]
+            },
+            defects: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  type: { type: Type.STRING },
+                  location: { type: Type.STRING },
+                  severity: { type: Type.STRING },
+                  description: { type: Type.STRING }
+                },
+                required: ["type", "location", "severity", "description"]
+              }
+            },
+            summary: { type: Type.STRING }
+          },
+          required: ["predictedGrade", "confidenceScore", "subgrades", "defects", "summary"]
+        }
+      }
+    });
+
+    const text = response.text || "";
+    // Clean JSON if it has markdown blocks
+    const cleanJson = text.replace(/\`\`\`json|\`\`\`/g, "").trim();
+    return JSON.parse(cleanJson);
+  } catch (error) {
+    console.error("Gemini Visual Audit Error:", error);
+    showToast('error', 'Visual audit analysis failed. Please try a clearer image.', { dedupeKey: 'visual_audit' });
+    return null;
+  }
+}
+
+/**
+ * Phase 13: Grading Premium Analysis
+ * Uses Gemini to estimate the price spread between Raw and Graded versions.
+ */
+export async function getGradingPremiumAnalysis(card: CardInventory): Promise<GradingPremiumAnalysis | null> {
+  const prompt = `Act as an expert sports card investment consultant. Analyze the grading premium for:
+  Item: ${card.year} ${card.player} ${card.set} #${card.cardNumber}
+  Current Estimated Raw Value: $${card.currentValue || card.purchasePrice}
+  Grading Company: PSA/BGS
+  
+  TASK:
+  1. Perform a live search or use your knowledge to find the current market prices for this card in:
+     - Raw condition
+     - PSA 10 (Gem Mint)
+     - PSA 9 (Mint)
+     - BGS 9.5 (Gem Mint)
+  2. Factor in a standard grading fee of $25 per card.
+  3. Calculate the potential net gain (PSA 10 Price - Raw Price - Fees).
+  4. Provide a recommendation: 'Submit' (if net gain > $50), 'Hold Raw' (if spread is thin), or 'Sell Now' (if market is peaking).
+  5. Provide a concise, professional rationale.
+  
+  Return the result in valid JSON matching the GradingPremiumAnalysis schema.
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-1.5-flash",
+      contents: prompt,
+      config: {
+        tools: [{ google_search_retrieval: {} }],
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            rawPrice: { type: Type.NUMBER },
+            psa10Price: { type: Type.NUMBER },
+            psa9Price: { type: Type.NUMBER },
+            bgs95Price: { type: Type.NUMBER },
+            gradingFees: { type: Type.NUMBER },
+            potentialNetGain: { type: Type.NUMBER },
+            recommendation: { type: Type.STRING },
+            rationale: { type: Type.STRING }
+          },
+          required: ["rawPrice", "psa10Price", "psa9Price", "bgs95Price", "gradingFees", "potentialNetGain", "recommendation", "rationale"]
+        },
+      },
+    });
+
+    const data = JSON.parse(response.text || "{}");
+    return {
+      ...data,
+      cardId: card.id,
+      updatedAt: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error("Gemini Grading Premium Error:", error);
+    return null;
+  }
+}
+
+/**
+ * Phase 24: Macro-Sentinel Intelligence
+ * Fetches real-time macroeconomic signals using Google Search grounding.
+ */
+export async function getLiveMacroSignals(): Promise<MacroSignal[]> {
+  const prompt = `Perform a live search for the most critical macroeconomic indicators affecting discretionary high-end markets (like sports cards) as of today.
+  
+  Identify:
+  1. Current Fed Funds Rate and latest FOMC sentiment.
+  2. Crypto Market Liquidity (Bitcoin price and overall market cap).
+  3. Inflation data (latest CPI).
+  4. S&P 500 performance.
+  5. Any major sports card industry news (e.g., M&A, Fanatics/PSA news, major record-breaking sales).
+
+  Return a JSON array of MacroSignal objects:
+  - id (unique string)
+  - indicator (e.g., 'Fed Funds Rate')
+  - value (current value/range)
+  - trend ('bullish' | 'bearish' | 'neutral')
+  - impact ('High' | 'Medium' | 'Low')
+  - description (2-sentence strategic summary of HOW this affects sports card investors)
+  - updatedAt (ISO timestamp)
+  `;
+
+  try {
+    const response = await (ai as any).models.generateContent({
+      model: "gemini-1.5-flash",
+      contents: prompt,
+      config: {
+        tools: [{ google_search_retrieval: {} }],
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              id: { type: Type.STRING },
+              indicator: { type: Type.STRING },
+              value: { type: Type.STRING },
+              trend: { type: Type.STRING },
+              impact: { type: Type.STRING },
+              description: { type: Type.STRING },
+              updatedAt: { type: Type.STRING },
+            },
+            required: ["id", "indicator", "value", "trend", "impact", "description", "updatedAt"]
+          }
+        },
+      },
+    });
+
+    const data = JSON.parse(response.text || "[]");
+    return data;
+  } catch (error) {
+    console.error("Gemini Macro Signal Error:", error);
+    return [];
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

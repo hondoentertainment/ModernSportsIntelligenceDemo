@@ -23,6 +23,10 @@ const FRIENDLY_MESSAGES: Record<string, string> = {
     // Supabase-specific codes
     sign_in_required: 'Please sign in to continue.',
     mfa_challenge_required: 'Additional verification is required.',
+    password_too_short: 'Password must be at least 8 characters long.',
+    password_no_upper: 'Password must contain at least one uppercase letter.',
+    password_no_lower: 'Password must contain at least one lowercase letter.',
+    password_no_number: 'Password must contain at least one numeric character.',
 };
 
 export function getFriendlyAuthMessage(error: AuthError | null): string {

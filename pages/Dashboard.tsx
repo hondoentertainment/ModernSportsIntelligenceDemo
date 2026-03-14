@@ -65,6 +65,13 @@ import MarketPulseTable from '../components/MarketPulseTable.tsx';
 import DeepDiverReport from '../components/DeepDiverReport.tsx';
 import { CorrelationTerminal } from '../components/CorrelationTerminal.tsx';
 import { HedgeAdvisor } from '../components/HedgeAdvisor.tsx';
+import MacroSentinelWidget from '../components/MacroSentinelWidget.tsx';
+import { ArbitrageTerminal } from '../components/ArbitrageTerminal.tsx';
+import WarRoomWidget from '../components/WarRoomWidget.tsx';
+import FiscalHealthWidget from '../components/FiscalHealthWidget.tsx';
+import StrategyMap from '../components/StrategyMap.tsx';
+import ArbitrageSwarmDashboard from '../components/ArbitrageSwarmDashboard.tsx';
+
 
 const Dashboard: React.FC = () => {
   // Shared inventory state
@@ -591,14 +598,42 @@ const Dashboard: React.FC = () => {
             )}
           </div>
 
-          {/* Asset Correlation & Hedge Advisor (Phase 21) */}
+          {/* Asset Correlation & Strategic Autonomy (Phase 19 & 21) */}
           <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-500 order-last" style={{ animationDelay: '600ms' }}>
             <div className="xl:col-span-3">
-              <CorrelationTerminal inventory={inventory} />
+              <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-6">
+                <CorrelationTerminal inventory={inventory} />
+                <div className="mt-6 lg:mt-0">
+                  <StrategyMap inventory={inventory} />
+                </div>
+              </div>
             </div>
             <div className="xl:col-span-2">
-              <HedgeAdvisor inventory={inventory} />
+              <WarRoomWidget />
             </div>
+          </div>
+
+          <div className="reveal-section mt-8 animate-in slide-in-from-bottom-8 duration-700 order-last" style={{ animationDelay: '650ms' }}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <HedgeAdvisor inventory={inventory} />
+              <FiscalHealthWidget />
+            </div>
+          </div>
+
+          {/* Macro-Sentinel Monitoring (Phase 24) */}
+          <div className="reveal-section mb-12 animate-in slide-in-from-bottom-8 duration-700 order-last" style={{ animationDelay: '450ms' }}>
+            <MacroSentinelWidget portfolioValue={portfolioMetrics.totalValue} />
+          </div>
+
+          {/* Arbitrage & Tactical Execution (Phase 22) */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-500 order-last" style={{ animationDelay: '700ms' }}>
+            <div className="xl:col-span-1">
+              <ArbitrageTerminal inventory={inventory} targets={targets} />
+            </div>
+            <div className="xl:col-span-2">
+              <ArbitrageSwarmDashboard />
+            </div>
+
           </div>
 
           {/* Negotiation / Marketplace Teaser */}

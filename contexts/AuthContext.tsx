@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isDemoMode } from '../lib/supabase';
-import { migrateToSupabase, needsMigration } from '../lib/migration';
 
 interface AuthContextType {
     user: User | null;

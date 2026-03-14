@@ -8,18 +8,18 @@ export interface EbayConfig {
 export const ebayApi = {
   // Initialize eBay API configuration
   config: null as EbayConfig | null,
-  
+
   // Set API configuration
   initialize(config: EbayConfig) {
     this.config = config;
   },
-  
+
   // Get base URL for API calls
   getBaseUrl() {
     if (!this.config) {
       throw new Error('eBay API not initialized');
     }
-    return this.config.sandbox 
+    return this.config.sandbox
       ? 'https://api.sandbox.ebay.com'
       : 'https://api.ebay.com';
   },
@@ -32,7 +32,7 @@ export const ebayApi = {
 
     const baseUrl = this.getBaseUrl();
     const credentials = btoa(`${this.config.clientId}:${this.config.clientSecret}`);
-    
+
     const response = await fetch(`${baseUrl}/identity/v1/oauth2/token`, {
       method: 'POST',
       headers: {
@@ -60,16 +60,18 @@ export const ebayApi = {
     condition?: string;
     maxPrice?: number;
     limit?: number;
+    soldOnly?: boolean;
   }): Promise<any> {
     const token = await this.getAccessToken();
     const baseUrl = this.getBaseUrl();
-    
+
     // Build search query
-    let query = `${params.playerName} card`;
+    let query = `${params.playerName}`;
     if (params.cardYear) query += ` ${params.cardYear}`;
     if (params.cardSet) query += ` ${params.cardSet}`;
     if (params.cardNumber) query += ` ${params.cardNumber}`;
-    
+    query += ` card`;
+
     // Build filters
     const filters = [];
     if (params.maxPrice) {
@@ -78,18 +80,25 @@ export const ebayApi = {
     if (params.condition) {
       filters.push(`condition:${params.condition}`);
     }
-    
+
     // Sports cards category IDs
     const sportsCategories = [213, 50132, 2737, 175690, 3034]; // Baseball, Basketball, Football, Hockey, Trading Cards
-    
+
     const searchParams = new URLSearchParams({
       q: query,
       category_ids: sportsCategories.join(','),
       limit: (params.limit || 50).toString(),
       sort: 'price',
-      filter: filters.join(','),
       fieldgroups: 'EXTENDED'
     });
+
+    if (filters.length > 0) {
+      searchParams.append('filter', filters.join(','));
+    }
+
+    // NOTE: The Browse API officially doesn't support sold listings via simple query params. 
+    // In a production environment, we would use Marketplace Insights API.
+    // For this demo, we use Browse API results and assume typical market pricing.
 
     const response = await fetch(
       `${baseUrl}/buy/browse/v1/item_summary/search?${searchParams}`,
@@ -154,7 +163,7 @@ export const ebayApi = {
       if (item.price && item.price.value) {
         const price = parseFloat(item.price.value);
         prices.push(price);
-        
+
         sales.push({
           price,
           date: item.itemCreationDate || new Date().toISOString(),
@@ -200,7 +209,7 @@ export const ebayApi = {
   async getItemDetails(itemId: string): Promise<any> {
     const token = await this.getAccessToken();
     const baseUrl = this.getBaseUrl();
-    
+
     const response = await fetch(
       `${baseUrl}/buy/browse/v1/item/${itemId}`,
       {

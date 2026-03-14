@@ -1,156 +1,163 @@
 # Product Requirements Document (PRD): Modern Sports Intelligence
 
-## 1. Executive Summary
-**Modern Sports Intelligence** is a premium analytics platform designed for sports card collectors, analysts, and fans. It combines real-time sports data with advanced financial tracking and AI-powered market insights to provide a comprehensive view of "sports as an asset class." The platform now features a professional-grade Investment Tracking engine with realized P/L analysis, an "Alpha Correlation" discovery system, AI-powered negotiation capabilities, and a comprehensive subscription billing system.
+## 1. Document Control
+- Product: Modern Sports Intelligence (MSI)
+- PRD Version: 2.0
+- Last Updated: March 7, 2026
+- Status: Active
 
-## 1.1 Key Recent Additions
-- **AI-Powered Negotiation Arena**: Real-time negotiating with AI sellers using Gemini-powered responses
-- **Deep Search Intelligence**: Semantic search engine for finding cards by "vibe" and trajectory
-- **Image Lightbox Component**: Professional image viewing experience with ESC key support
-- **Stripe Billing Integration**: Multi-tier subscription system with usage-based pricing
-- **NegotiationService**: Complete negotiation logic with sentiment analysis and fallback systems
-- **Phase 13: Scarcity Intelligence**: Integrated population reporting and "Pop 1" alerts
-- **Phase 14: Social Alpha Elite**: Live Hype Feed and institutional collector tiers
+## 2. Executive Summary
+Modern Sports Intelligence is an AI-assisted portfolio intelligence platform for sports-card investors. MSI combines collection management, valuation engines, social signal layers, and autonomous recommendations to help users discover, acquire, manage, and exit assets with institutional-style controls.
 
-## 2. Project Vision & Objectives
-### 2.1 Vision
-To become the definitive source of truth for sports asset valuation, bridging the gap between on-field performance metrics and off-field market liquidity across all major professional ecosystems.
+MSI currently operates as a production-oriented application with working authentication, cloud/local sync, AI valuation fallback systems, and advanced analytics modules. The current strategic focus is reliability, governance, and safe automation.
 
-### 2.2 Strategic Objectives
-- Provide real-time transparency into multi-league portfolio value (Realized + Unrealized).
-- Leverage Generative AI to automate cross-league market research and identify "Alpha Divergence."
-- Create a "Stock Market for Sports" experience through a unified, premium UI/UX.
+## 3. Vision, Mission, and Product Outcomes
+### 3.1 Vision
+Become the system of record for sports-card asset intelligence, bridging collector workflows with institutional risk and execution discipline.
 
-## 3. Target Audience
-- **High-Net-Worth Collectors**: Managing diversified portfolios of sports assets.
-- **Data-Driven Prospectors**: Focusing on Minor League (MiLB) trends and early-entry opportunities.
-- **Hobby Analysts**: Fans interested in the intersection of performance stats and card scarcity.
+### 3.2 Mission
+Provide users with accurate market context, explainable decisions, and controlled automation across the asset lifecycle.
 
-## 4. Feature Specifications
+### 3.3 Product Outcomes
+- Higher valuation confidence and provenance transparency.
+- Faster decision-to-action cycles for buys, sells, and rebalancing.
+- Reduced operational risk via policy controls, auditability, and recovery playbooks.
 
-### 4.1 League Intelligence Dashboard (NAV Central)
-- **Net Asset Value (NAV)**: Dynamic calculation of portfolio worth grouped by professional league.
-- **Financial Intelligence**: Realized P/L, Total Portfolio Gain, and ROI tracking for active and sold assets.
-- **League Intelligence HUD**: A specialized analytics interface for switching between major market hubs.
+## 4. Target Users
+- Professional/HNW collectors managing diversified portfolios.
+- Data-driven prospectors seeking lagging-alpha opportunities.
+- Competitive hobby analysts using social + market intelligence.
+- Collaborative groups (Guilds) performing pooled acquisitions.
 
-### 4.2 Automated Ingestion & Inventory Management
-- **Intelligent Mapping**: Automated classification of assets into professional leagues.
-- **Sold Vault**: Targeted view for tracking historical performance of exited positions.
-- **Grading Support**: Integrated fields for PSA, BGS, SGC, with automatic valuation adjustments.
+## 5. Scope
+### 5.1 In Scope
+- Portfolio ingestion, valuation, watchlist, and alert workflows.
+- AI-assisted pricing, negotiation, and multi-agent strategic analysis.
+- Social profile sharing, leaderboard, and guild intelligence modules.
+- Fiscal analysis (tax estimates, exit simulations).
+- Autonomous action recommendation logging and risk-collar controls.
 
-### 4.3 Market Intelligence (Market Pulse)
-- **Sentiment Analysis**: Tracking "Hype" vs. "Utility" for top-tier cards.
-- **Alpha Correlation**: Overlaying on-field performance stats (OPS, ERA) with market price trends to identify undervalued assets.
-- **Lagging Alpha Alerts**: Automated signals when performance outpaces price action.
+### 5.2 Out of Scope (Current)
+- Broker-dealer execution and regulated order routing.
+- Guaranteed external market data coverage across all asset classes.
+- On-chain custody or tokenized settlement.
 
-### 4.4 AI Discovery Engine (Gemini 1.5 Integration)
-- **Automated Valuation**: Analyzing eBay sold listings via NLP to determine "Fair Market Value."
-- **Live Market Sync**: Batch-processing engine for on-demand portfolio updates.
-- **Prospect Discovery**: Simulating trend scores for MiLB players using performance data.
+## 6. Functional Requirements
+### 6.1 Portfolio System
+- Users can create, update, and delete card assets and watchlist targets.
+- System supports active/sold states, cost basis, valuation history, and notes.
+- System supports local mode with cloud sync when authenticated.
 
-### 4.5 Watchlist & Comparison
-- **Target Price Alerts**: Notifications when a watched asset reaches a buy/sell threshold.
-- **comparative Analysis**: Side-by-side performance overlays.
+### 6.2 Valuation Engine
+- Primary valuation source order: eBay/API sources when available, AI fallback otherwise.
+- Every valuation record must store timestamp and source metadata.
+- UI must expose stale/low-confidence signals when source quality degrades.
 
-### 4.6 AI Negotiation Arena (NEW)
-- **Real-time Negotiation**: Live chat-based negotiation with AI sellers using Gemini 1.5 Flash.
-- **Sentiment Analysis**: Seller sentiment tracking (positive, neutral, negative, aggressive).
-- **Auto-Negotiation**: Automated negotiation agent that negotiates on behalf of users.
-- **Negotiation Configuration**: Users set maximum willing price and walk-away parameters.
-- **Deal Securing**: Complete transaction flow with portfolio integration.
+### 6.3 Intelligence Layers
+- Macro, scarcity, liquidity, and correlation modules surface portfolio-level insights.
+- Multi-agent committee can produce thesis outputs and action candidates.
+- Arbitrage and cross-asset views are advisory unless explicitly approved.
 
-### 4.7 Deep Search Intelligence (NEW)
-- **Semantic Search**: AI-powered search by "vibe", era, trajectory, or specific card similarity.
-- **Similarity Scoring**: Percentage-based matching system with institutional-grade results.
-- **Natural Language Queries**: Search using conversational language and investment thesis.
-- **Alpha Rationale**: AI-generated explanations for why cards are similar or recommended.
-- **Smart Suggestions**: Pre-built search queries for common scouting scenarios.
+### 6.4 Social and Guilds
+- Users can toggle profile visibility (`is_public`).
+- Public profile and leaderboard queries must respect RLS policy constraints.
+- Guild proposals support shared thesis visibility and staged collaboration.
 
-### 4.8 Image Viewing Experience (NEW)
-- **Professional Lightbox**: Full-screen image viewing with ESC key support and background blur.
-- **Responsive Design**: Mobile-optimized viewing up to 90vw/90vh constraints.
-- **Accessibility Support**: ARIA labels, keyboard navigation, and focus management.
-- **Caption Display**: Contextual information overlays with player and card details.
+### 6.5 Automation and Safety
+- Auto-Pilot actions require configured risk collars.
+- High-risk actions must be policy-gated before execution.
+- All autonomous actions must be auditable.
 
-## 5. Technical Architecture
-### 5.1 Technology Stack
-- **Frontend**: React 19, Vite, TypeScript.
-- **Styling**: Vanilla CSS with "Legacy of the Void" design system.
-- **Intelligence**: Google GenAI (Gemini 1.5 Flash).
-- **Data Visualization**: Recharts (Customized with brand gradients).
-- **Icons**: Lucide React.
-- **Billing**: Stripe integration with Supabase Edge Functions.
-- **State Management**: React hooks with custom context providers.
+## 7. Non-Functional Requirements
+### 7.1 Reliability
+- Core portfolio and valuation flows target 99.9% uptime.
+- Sync drift incidents target <1% monthly user impact.
 
-### 5.2 Deployment
-- **Hosting**: Vercel (Production environments).
-- **Environment**: Secure `.env` management.
+### 7.2 Performance
+- Dashboard interaction target: P95 <150ms on high-density workloads.
+- Bulk operations should remain responsive for 10k+ asset users.
 
-## 6. Design & UX Principles
-- **Terminal Aesthetic**: High-contrast, dark-mode design using `font-bebas` and a "Deep Slate" palette.
-- **UI Component Standardization**: Unified button components and typography.
-- **Spatial HUD Stability**: Zero-overlap layout philosophy.
+### 7.3 Security
+- RLS enforced on all multi-tenant data tables.
+- Secrets loaded only from environment configuration.
+- Missing/invalid runtime config must generate explicit warnings.
 
-## 7. User Stories
-- *As a fund manager*, I want to see my realized profit from card sales so I can report on annual performance.
-- *As a scout*, I want to see which AAA players have high performance stats but low market trend scores ("Lagging Alpha").
-- *As a user*, I want to compare a raw card vs. a PSA 10 counterpart to determine the "grading premium."
+### 7.4 Observability
+- Critical state changes require structured audit events.
+- Incidents require runbooks and postmortem-ready logs.
 
-## 8. Roadmap & Future Scope
+## 8. Technical Architecture
+### 8.1 Stack
+- Frontend: React 19 + TypeScript + Vite
+- Data/Auth: Supabase
+- AI: Google GenAI (Gemini)
+- Visualization/UI: Recharts + Lucide + custom CSS system
+- Testing: Vitest + Playwright
 
-### Completed Phases (1-14)
-- **Foundation**: Multi-League Support, Automated Classification.
-- **Core Features**: Auth System, Data Migration, Automated Sync Scheduler.
-- **Advanced Analytics**: Investment Tracking, Realized P/L, Sold Vault.
-- **Discovery**: Alpha Scanner (Vision), Alpha Correlation (Stats vs Price).
-- **Intelligence (Phase 13)**: Scarcity Intelligence with badge logic and Pop 1 alerts.
-- **Social (Phase 14)**: Social Alpha Elite with Hype Feed & Investor Tiers.
+### 8.2 Core Services
+- `useSupabaseInventory`: inventory/watchlist orchestration
+- `gemini.ts` + related agents: AI workflows
+- `auditLog.ts`: local + cloud audit persistence
+- `runtimeConfig.ts`: startup environment validation
 
-### Phase 15: Mobile Native Experience (IN PROGRESS)
-- **Objective**: Optimize for on-the-go scouting.
-- **Key Features**:
-    - PWA Manifest and Service Workers for offline access.
-    - Native Push Notifications for price alerts.
-    - Mobile-optimized camera flow for the Alpha Scanner.
+### 8.3 Data Governance Controls
+- `audit_events` table with RLS policies
+- Public profile access governed by explicit public-read policy
+- Incident playbooks for auth lockout, sync drift, pricing failure
 
-### Phase 16: Agentic Negotiation (PLANNED)
-- **Objective**: AI agents that can negotiate deals on behalf of the user.
-- **Key Features**:
-    - Gemin-driven sentiment analysis for firmness detection.
-    - Trade proposal generation based on portfolio gaps.
+## 9. Data Model (Key Domains)
+- Portfolio: cards, targets, price history
+- Identity/Social: profiles, public visibility, leaderboard projections
+- Governance: audit events, migration metadata, sync status
+- Intelligence: theses, swarm insights, arbitrage nodes, macro signals
 
-### Phase 17: Institutional Liquidity Pool (PLANNED)
-- **Objective**: Create an internal marketplace where users can sell assets instantly to the "MSI House" at a slight discount.
-- **Key Features**:
-    - AI-driven "Instant Buy" valuations.
-    - Liquidity score for every asset in the portfolio.
+## 10. Phase Status
+### 10.1 Delivered Foundation (Phases 1-30)
+- Portfolio lifecycle, auth, migration, valuation pipelines, social/guild modules, macro/fiscal/autonomy prototypes.
 
-### Phase 18: Predictive Alpha Engine (PLANNED)
-- **Objective**: Move from tracking to forecasting.
-- **Key Features**:
-    - Gemini-powered "Price Trajectory" based on MiLB stats.
-    - "Breakout Probability" score for prospect cards.
+### 10.2 Current Work (Phase 31)
+- Trust, security, and governance hardening.
+- Implemented: runtime config checks, audit logging foundation, incident playbooks, audit schema/policies.
+- Remaining: audit timeline UI, CI RLS policy tests, operational key-rotation drill.
 
-### Phase 19: Multi-Agent Intelligence (RECOMMENDED)
-- **Objective**: Deploy specialized agents for autonomous portfolio management.
-- **Key Features**:
-    - Synthetic Analyst Team (Scout, Market, Risk, Negotiator).
-    - Multi-agent collaboration on investment thesis.
+### 10.3 Next (Phase 32)
+- Pricing truth layer completion.
+- In progress: provenance fields (`valuationSource`, `valuationTimestamp`).
+- Remaining: stale/quality badges, confidence-based UX gating, source-priority regression tests.
 
-### Phase 20: Liquidity Intelligence (RECOMMENDED)
-- **Objective**: Institutional-grade market depth analysis.
-- **Key Features**:
-    - MSI Liquidity Score for every asset.
-    - Exit strategy planning based on volume.
+### 10.4 Planned (Phases 33-36)
+- Phase 33: Autonomous execution safety gates + idempotent action contracts.
+- Phase 34: Guild governance + pooled contribution ledger.
+- Phase 35: Reliability scaling + queue/telemetry/cost controls.
+- Phase 36: API productization + scoped tokens + webhooks + enterprise controls.
 
-### Phase 21: Cross-Asset Correlation (RECOMMENDED)
-- **Objective**: Hedge strategies across sport ecosystems.
+## 11. Success Metrics
+- Security: 0 critical RLS/Auth findings in scheduled audits.
+- Integrity: <1% sync drift incidents monthly.
+- Pricing: >=95% valuations sourced from verifiable market data within SLA.
+- Safety: 100% high-risk autonomous actions policy-gated.
+- Reliability: 99.9% uptime for core workflows.
+- Performance: P95 interaction <150ms at target scale.
 
-### Phase 22: Fiscal Intelligence (RECOMMENDED)
-- **Objective**: Automated tax and cost-basis tracking.
+## 12. Release and Validation Strategy
+### 12.1 Quality Gates
+- Build must pass.
+- Unit tests must pass.
+- Critical path smoke tests for auth, sync, valuation, and portfolio mutations.
 
-### Phase 23: Visual Audit Simulation (RECOMMENDED)
-- **Objective**: AI-powered grading predictions using high-fidelity vision.
+### 12.2 Rollout Strategy
+- Stage schema/policy updates first.
+- Validate public/private data boundaries in staging.
+- Promote to production with rollback-ready policy snapshot.
 
-### Phase 24: Macro-Sentinel Monitoring (RECOMMENDED)
-- **Objective**: Early warning system for global market shifts affecting luxury assets.
+## 13. Risks and Mitigations
+- External API instability: maintain source fallback and stale-state labeling.
+- Multi-tenant leakage risk: enforce RLS tests per release.
+- Automation overreach: strict risk collars + approval checkpoints.
+- Operational regressions: codified incident playbooks + audit replay.
+
+## 14. Open Decisions
+- Final confidence scoring algorithm for valuation quality tiers.
+- Approval UX for high-risk autonomous actions.
+- Guild governance model defaults (quorum, veto, treasury controls).
+- API monetization model and tiered rate limits for Phase 36.

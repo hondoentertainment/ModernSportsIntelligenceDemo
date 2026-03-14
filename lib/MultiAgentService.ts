@@ -1,9 +1,9 @@
-import { GoogleGenAI, Type } from "@google/genai";
-import { CardInventory, CollaborativeThesis, AgentInsight } from "../types.ts";
+import { Type } from "@google/genai";
+import { CardInventory, CollaborativeThesis, AgentInsight, SwarmInsight, JointAcquisitionProposal } from "../types.ts";
 import { showToast } from "./toast.ts";
+import { createGeminiClient } from "./geminiClient.ts";
 
-const apiKey = (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) ? process.env.VITE_GEMINI_API_KEY : "";
-const ai = new GoogleGenAI({ apiKey });
+const ai = createGeminiClient();
 
 const AGENT_PERSONAS = {
     scout: {
@@ -25,11 +25,16 @@ const AGENT_PERSONAS = {
         name: "The Closer",
         persona: "Acquisition Strategy Specialist. Focuses on entry points, negotiation leverage, and deal flow.",
         avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100"
+    },
+    strategist: {
+        name: "Strategist Prime",
+        persona: "Autonomous Execution Lead. Focuses on active portfolio rebalancing and algorithmic entry/exit.",
+        avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=100"
     }
 };
 
 export class MultiAgentService {
-    static async getCollaborativeThesis(inventory: CardInventory[]): Promise<CollaborativeThesis | null> {
+    static async getCollaborativeThesis(inventory: CardInventory[], includeStrategist: boolean = false): Promise<CollaborativeThesis | null> {
         if (inventory.length === 0) {
             showToast('warning', 'Inventory empty. Ingest assets to unlock War Room intelligence.');
             return null;
@@ -45,9 +50,10 @@ export class MultiAgentService {
     ${inventorySummary}
     
     SYSTEM INSTRUCTIONS:
-    1. Simulate four distinct specialist agents (Scout, Market, Risk, Negotiator).
+    1. Simulate the following specialist agents: ${includeStrategist ? 'Scout, Market, Risk, Negotiator, and Strategist' : 'Scout, Market, Risk, and Negotiator'}.
     2. Each agent must provide a concise (max 2 sentences) insight from their perspective.
     3. Synthesize their collaborative output into a unified thesis.
+    ${includeStrategist ? '4. Strategist Prime MUST provide a specific executionPlan as a list of actions.' : ''}
     
     EXPECTED JSON OUTPUT:
     {
@@ -95,6 +101,22 @@ export class MultiAgentService {
                                     },
                                     required: ["agentId", "agentName", "persona", "insight", "sentiment", "confidence"]
                                 }
+                            },
+                            executionPlan: {
+                                type: Type.ARRAY,
+                                items: {
+                                    type: Type.OBJECT,
+                                    properties: {
+                                        id: { type: Type.STRING },
+                                        type: { type: Type.STRING },
+                                        assetName: { type: Type.STRING },
+                                        amount: { type: Type.NUMBER },
+                                        rationale: { type: Type.STRING },
+                                        timestamp: { type: Type.STRING },
+                                        status: { type: Type.STRING }
+                                    },
+                                    required: ["id", "type", "assetName", "amount", "rationale", "timestamp", "status"]
+                                }
                             }
                         },
                         required: ["summary", "keyTakeaways", "riskAssessment", "recommendedAction", "agents"]
@@ -115,7 +137,100 @@ export class MultiAgentService {
         }
     }
 
+    static async getSwarmIntelligence(): Promise<SwarmInsight[]> {
+        const prompt = `Act as a Collective Intelligence Hub. Synthesize market-wide "Alpha Swarms" based on institutional and retail liquidity shifts.
+    
+    EXPECTED JSON OUTPUT:
+    [
+      {
+        "id": "uuid",
+        "title": "Short title of the alpha trend",
+        "description": "2-sentence breakdown of the opportunity",
+        "sentiment": "bullish|bearish|neutral",
+        "confidence": 0.0-1.0,
+        "impactScore": 1-100,
+        "tags": ["Scarcity", "Momentum", etc.],
+        "participatingAgents": ["Scout", "Market", "Risk"]
+      }
+    ]`;
+
+        try {
+            const response = await ai.models.generateContent({
+                model: "gemini-1.5-flash",
+                contents: prompt,
+                config: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: Type.ARRAY,
+                        items: {
+                            type: Type.OBJECT,
+                            properties: {
+                                id: { type: Type.STRING },
+                                title: { type: Type.STRING },
+                                description: { type: Type.STRING },
+                                sentiment: { type: Type.STRING },
+                                confidence: { type: Type.NUMBER },
+                                impactScore: { type: Type.NUMBER },
+                                tags: { type: Type.ARRAY, items: { type: Type.STRING } },
+                                participatingAgents: { type: Type.ARRAY, items: { type: Type.STRING } }
+                            },
+                            required: ["id", "title", "description", "sentiment", "confidence", "impactScore", "tags", "participatingAgents"]
+                        }
+                    }
+                }
+            });
+
+            return JSON.parse(response.text || "[]");
+        } catch (error) {
+            console.error("Swarm Intelligence Error:", error);
+            return [];
+        }
+    }
+
+    static async getJointAcquisitionThesis(targetCard: CardInventory, groupContext: string): Promise<CollaborativeThesis | null> {
+        const prompt = `Act as an Elite Multi-Agent Investment Committee for a Joint Acquisition Guild. 
+    Analyze this asset for collective fractional ownership.
+    
+    TARGET ASSET:
+    ${targetCard.year} ${targetCard.player} ${targetCard.set} - Price: $${targetCard.purchasePrice}
+    
+    GUILD CONTEXT:
+    ${groupContext}
+    
+    SPECIAL INSTRUCTIONS:
+    - Evaluate this specifically as a fractional hold.
+    - Risk agent must focus on group liquidity and exit consensus.
+    - Scout must focus on the "Grail" potential for the guild's prestige.
+
+    EXPECTED JSON OUTPUT:
+    (Standard CollaborativeThesis JSON structure)`;
+
+        try {
+            const response = await ai.models.generateContent({
+                model: "gemini-1.5-flash",
+                contents: prompt,
+                config: {
+                    responseMimeType: "application/json"
+                }
+            });
+
+            const data = JSON.parse(response.text || "{}");
+            return {
+                ...data,
+                id: crypto.randomUUID(),
+                createdAt: new Date().toISOString()
+            };
+        } catch (error) {
+            console.error("Joint Thesis Error:", error);
+            return null;
+        }
+    }
+
     static getPersona(agentId: string) {
         return AGENT_PERSONAS[agentId as keyof typeof AGENT_PERSONAS] || AGENT_PERSONAS.scout;
     }
 }
+
+
+
+

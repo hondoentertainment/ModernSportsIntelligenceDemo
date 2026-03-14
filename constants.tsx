@@ -15,7 +15,8 @@ import {
   Zap,
   GitCompare,
   Bell,
-  Kanban
+  Kanban,
+  Shield
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -36,6 +37,7 @@ export const NAV_ITEMS = [
   { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={20} />, path: '/leaderboard' },
   { id: 'compare', label: 'Compare', icon: <GitCompare size={20} />, path: '/compare' },
   { id: 'warroom', label: 'Analyst War Room', icon: <Activity size={20} />, path: '/war-room' },
+  { id: 'phaseops', label: 'Phase Ops', icon: <Shield size={20} />, path: '/phase-ops' },
   { id: 'alerts', label: 'Alerts', icon: <Bell size={20} />, path: '/alerts' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
@@ -258,3 +260,4 @@ export const MOCK_ACQUISITION_TARGETS = [
     image: 'https://img.mlbstatic.com/mlb-photos/person/702616.jpg'
   }
 ];
+

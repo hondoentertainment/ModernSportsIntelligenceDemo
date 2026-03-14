@@ -1,18 +1,59 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, ChevronDown, User, LogOut, Settings, Terminal, Zap, Shield, Sparkles } from 'lucide-react';
+import { Search, Bell, ChevronDown, User, LogOut, Settings, Terminal, Zap, Shield, Sparkles, Maximize2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory';
+import SwarmFeed from './SwarmFeed';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onToggleWallHUD?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isSwarmOpen, setIsSwarmOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { user, signOut, isDemoMode } = useAuth();
   const { syncStatus, lastSyncError } = useSupabaseInventory();
   const navigate = useNavigate();
 
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('omni-search')?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const isCommand = searchQuery.startsWith('/');
+
+  const runCommand = (command: string) => {
+    switch (command) {
+      case '/scan':
+        navigate('/');
+        break;
+      case '/compare':
+        navigate('/compare');
+        break;
+      case '/war-room':
+        navigate('/war-room');
+        break;
+      case '/buy':
+        navigate('/deep-search');
+        break;
+      case '/guilds':
+        navigate('/guilds');
+        break;
+      default:
+        break;
+    }
+    setSearchQuery('');
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -34,24 +75,84 @@ const Header: React.FC = () => {
             )}
           </div>
           <input
+            id="omni-search"
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && isCommand) {
+                e.preventDefault();
+                runCommand(searchQuery.trim());
+              }
+            }}
             placeholder={isCommand ? "Enter terminal command (e.g. /scan, /buy, /compare)..." : "MSI Intel: Search card populations, market caps, or trajectories..."}
-            className={`w-full bg-brand-slate border rounded-full py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 transition-all placeholder:text-slate-500 font-medium ${isCommand ? 'border-brand-lime/50 ring-brand-lime/20 text-brand-lime font-mono' : 'border-slate-800 focus:ring-brand-lime'}`}
+            className={`w-full bg-brand-slate border rounded-full py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 transition-all placeholder:text-slate-500 font-medium ${isCommand ? 'border-brand-lime/50 ring-brand-lime/20 text-brand-lime font-mono' : 'border-slate-800 focus:ring-brand-lime'}`}
           />
-          {isCommand && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 rounded bg-brand-lime/10 border border-brand-lime/30 text-[9px] font-black text-brand-lime uppercase tracking-widest animate-pulse">
-              Terminal Active
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            {!isCommand && (
+              <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border border-slate-700 bg-slate-900 px-1.5 font-mono text-[10px] font-medium text-slate-500 opacity-100">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            )}
+            {isCommand && (
+              <div className="px-2 py-0.5 rounded bg-brand-lime/10 border border-brand-lime/30 text-[9px] font-black text-brand-lime uppercase tracking-widest animate-pulse">
+                Terminal Active
+              </div>
+            )}
+          </div>
+
+          {/* Command Dropdown Hint */}
+          {searchQuery === '/' && (
+            <div className="absolute top-full mt-2 w-full bg-brand-charcoal border border-slate-700 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
+              <div className="p-2 border-b border-slate-700">
+                <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest px-3 py-1">Available Commands</p>
+              </div>
+              <div className="p-2 space-y-1">
+                {[
+                  { cmd: '/scan', desc: 'Launch AI Alpha Scan', icon: <Sparkles size={14} /> },
+                  { cmd: '/compare', desc: 'Compare multi-asset NAV', icon: <Zap size={14} /> },
+                  { cmd: '/war-room', desc: 'Enter Analyst War Room', icon: <Shield size={14} /> },
+                  { cmd: '/buy', desc: 'Search marketplace for targets', icon: <Search size={14} /> },
+                ].map(c => (
+                  <button
+                    key={c.cmd}
+                    onClick={() => runCommand(c.cmd)}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-300 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-brand-lime opacity-60 group-hover:opacity-100">{c.icon}</div>
+                      <span className="text-xs font-mono font-bold text-brand-lime">{c.cmd}</span>
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-medium">{c.desc}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
       </div>
 
       <div className="flex items-center gap-3 md:gap-5 ml-4">
+        <button
+          onClick={() => setIsSwarmOpen(true)}
+          className="p-2 text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative group"
+          title="Open Swarm Intelligence"
+        >
+          <Zap size={20} className="group-hover:animate-pulse" />
+          <span className="absolute top-2 right-2 w-2 h-2 bg-brand-lime rounded-full"></span>
+        </button>
+
+        <button
+          onClick={onToggleWallHUD}
+          className="p-2 text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative group"
+          title="Institutional Wall HUD"
+        >
+          <Maximize2 size={20} />
+        </button>
+
         <button className="p-2 text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative">
           <Bell size={20} />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-brand-lime rounded-full"></span>
+          <span className="absolute top-2 right-2 w-2 h-2 bg-brand-red rounded-full"></span>
         </button>
 
         <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-charcoal border border-slate-800 rounded-full group cursor-help transition-all hover:bg-brand-slate" title={syncStatus === 'synced' ? 'Cloud Sync Active' : syncStatus === 'migrating' ? 'Migrating Data...' : 'Local Storage Mode'}>
@@ -117,6 +218,7 @@ const Header: React.FC = () => {
           )}
         </div>
       </div>
+      <SwarmFeed isOpen={isSwarmOpen} onClose={() => setIsSwarmOpen(false)} />
     </header>
   );
 };

@@ -17,7 +17,9 @@ import {
   Edit3,
   CheckCircle2,
   Clock,
-  Star
+  Star,
+  Calculator,
+  Share2
 } from 'lucide-react';
 import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
 import { getEbayCardPrice } from '../lib/gemini';
@@ -35,10 +37,16 @@ import { Loader2, Cloud, CloudOff } from 'lucide-react';
 import CardImage from '../components/CardImage';
 import ImageLightbox from '../components/ImageLightbox';
 import ScarcityBadge from '../components/ScarcityBadge';
+import GradingAuditModal from '../components/GradingAuditModal';
 import { LiquidityBadge } from '../components/LiquidityBadge';
 import { ExitStrategyModal } from '../components/ExitStrategyModal';
 import { LiquidityService } from '../lib/LiquidityService';
+import { OpportunityBadge } from '../components/OpportunityBadge';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import GradingPremiumTool from '../components/GradingPremiumTool';
+import ShareAlphaModal from '../components/ShareAlphaModal';
+import { fetchPublicProfile } from '../lib/socialService';
+import { useAuth } from '../contexts/AuthContext';
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -61,6 +69,9 @@ interface CardGridItemProps {
   getPriceTrend: (id: string) => string;
   onOpenLightbox?: (card: CardInventory) => void;
   onOpenExitStrategy?: (card: CardInventory) => void;
+  onOpenGradingPremium?: (card: CardInventory) => void;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
   key?: React.Key;
 }
 
@@ -81,11 +92,22 @@ function CardGridItem({
   getPriceTrend,
   onOpenLightbox,
   onOpenExitStrategy,
+  onOpenGradingPremium,
+  isSelected,
+  onToggleSelect,
 }: CardGridItemProps) {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
   return (
-    <div className={`group bg-brand-slate border ${styles.border} rounded-[2.5rem] overflow-hidden transition-all flex flex-col active:scale-[0.98] relative`}>
+    <div className={`group bg-brand-slate border ${isSelected ? 'border-brand-lime ring-2 ring-brand-lime/20' : styles.border} rounded-[2.5rem] overflow-hidden transition-all flex flex-col active:scale-[0.98] relative`}>
+      {/* Selection Checkbox */}
+      <button
+        onClick={(e) => { e.preventDefault(); onToggleSelect?.(card.id); }}
+        className={`absolute top-6 left-6 z-20 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-brand-lime border-brand-lime text-brand-charcoal' : 'bg-black/50 border-white/20 text-transparent hover:border-white/50 opacity-0 group-hover:opacity-100'}`}
+      >
+        <CheckCircle2 size={16} strokeWidth={3} />
+      </button>
+
       <div className="aspect-[4/5] bg-slate-950 relative overflow-hidden group">
         <CardImage
           src={card.image}
@@ -145,26 +167,42 @@ function CardGridItem({
           </div>
           <div className="p-4 bg-brand-lime/5 border border-brand-lime/10 rounded-2xl">
             <p className="text-[9px] font-black text-brand-muted uppercase tracking-tighter mb-1">Market Nav</p>
-            <p className="text-sm font-mono font-black text-brand-lime">{card.currentValue ? `$${Math.round(card.currentValue).toLocaleString()}` : '—'}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-mono font-black text-brand-lime">{card.currentValue ? `$${Math.round(card.currentValue).toLocaleString()}` : '—'}</p>
+              {card.currentValue !== undefined && <OpportunityBadge asset={card} size="sm" showLabel={false} />}
+            </div>
           </div>
         </div>
-        {(card.popReport || card.popCount !== undefined) && (
-          <div className="flex items-center justify-between p-4 bg-brand-charcoal/30 border border-slate-800/30 rounded-2xl">
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${card.scarcityIndex && card.scarcityIndex > 80 ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 'bg-slate-600'}`}></div>
-              <span className="text-[9px] font-black text-brand-muted uppercase tracking-tighter">Pop Intelligence</span>
+        {card.pricingRationale && (
+          <div className="p-4 bg-brand-lime/5 border border-brand-lime/10 rounded-2xl">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles size={12} className="text-brand-lime" />
+              <span className="text-[9px] font-black text-brand-muted uppercase tracking-widest">Market Rationale</span>
             </div>
-            <ScarcityBadge report={card.popReport} />
-            {!card.popReport && card.popCount !== undefined && (
-              <div className="text-right">
-                <span className="text-xs font-black text-white">Pop {card.popCount}</span>
-                {card.popHigher !== undefined && card.popHigher < 5 && (
-                  <span className="text-[9px] font-bold text-brand-muted ml-1">({card.popHigher === 0 ? 'None' : card.popHigher} Higher)</span>
-                )}
-              </div>
-            )}
+            <p className="text-[11px] leading-relaxed text-slate-300 italic">
+              "{card.pricingRationale}"
+            </p>
           </div>
         )}
+        {
+          (card.popReport || card.popCount !== undefined) && (
+            <div className="flex items-center justify-between p-4 bg-brand-charcoal/30 border border-slate-800/30 rounded-2xl">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${card.scarcityIndex && card.scarcityIndex > 80 ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]' : 'bg-slate-600'}`}></div>
+                <span className="text-[9px] font-black text-brand-muted uppercase tracking-tighter">Pop Intelligence</span>
+              </div>
+              <ScarcityBadge report={card.popReport} />
+              {!card.popReport && card.popCount !== undefined && (
+                <div className="text-right">
+                  <span className="text-xs font-black text-white">Pop {card.popCount}</span>
+                  {card.popHigher !== undefined && card.popHigher < 5 && (
+                    <span className="text-[9px] font-bold text-brand-muted ml-1">({card.popHigher === 0 ? 'None' : card.popHigher} Higher)</span>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        }
         <div className="flex items-center justify-between p-4 bg-brand-charcoal/30 border border-slate-800/30 rounded-2xl cursor-pointer hover:bg-brand-charcoal/50 transition-colors" onClick={() => onOpenExitStrategy?.(card)}>
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${(card.liquidityScore || 0) > 70 ? 'bg-brand-green shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-600'}`}></div>
@@ -185,10 +223,12 @@ function CardGridItem({
           {isPricing === card.id ? <div className="w-4 h-4 border-2 border-brand-lime border-t-transparent rounded-full animate-spin"></div> : <Sparkles size={16} className="text-brand-lime" />}
           Intelligence Check
         </button>
-        {card.searchUrl && (
-          <a href={card.searchUrl} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime transition-all"><Search size={16} /> Verify on eBay</a>
-        )}
-      </div>
+        {
+          card.searchUrl && (
+            <a href={card.searchUrl} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime transition-all"><Search size={16} /> Verify on eBay</a>
+          )
+        }
+      </div >
     </div >
   );
 }
@@ -212,6 +252,7 @@ function VirtualizedGrid({
   getPriceTrend,
   onOpenLightbox,
   onOpenExitStrategy,
+  onOpenGradingPremium,
 }: {
   items: CardInventory[];
   columns: number;
@@ -231,6 +272,7 @@ function VirtualizedGrid({
   getPriceTrend: (id: string) => string;
   onOpenLightbox?: (card: CardInventory) => void;
   onOpenExitStrategy?: (card: CardInventory) => void;
+  onOpenGradingPremium?: (card: CardInventory) => void;
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
   const rowCount = Math.ceil(items.length / columns);
@@ -279,6 +321,7 @@ function VirtualizedGrid({
                   getPriceTrend={getPriceTrend}
                   onOpenLightbox={onOpenLightbox}
                   onOpenExitStrategy={onOpenExitStrategy}
+                  onOpenGradingPremium={onOpenGradingPremium}
                 />
               ))}
             </div>
@@ -353,9 +396,25 @@ const Collection: React.FC = () => {
   const [editingAsset, setEditingAsset] = useState<CardInventory | null>(null);
   const [initialAssetData, setInitialAssetData] = useState<Partial<CardInventory> | null>(null);
   const [isOCRModalOpen, setIsOCRModalOpen] = useState(false);
+  const [isGradingAuditOpen, setIsGradingAuditOpen] = useState(false);
   const [lightboxCard, setLightboxCard] = useState<CardInventory | null>(null);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [exitStrategyCard, setExitStrategyCard] = useState<CardInventory | null>(null);
+  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
+  const [premiumCard, setPremiumCard] = useState<CardInventory | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const { user } = useAuth();
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+  useEffect(() => {
+    if (user?.email) {
+      // For demo, we use the user's email prefix as username
+      const username = user.email.split('@')[0];
+      fetchPublicProfile(username).then(profile => {
+        if (profile) setUserProfile(profile);
+      });
+    }
+  }, [user]);
 
   // Ensure full inventory is loaded on mount
   useEffect(() => {
@@ -364,6 +423,19 @@ const Collection: React.FC = () => {
 
   const [isPricing, setIsPricing] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const toggleSelection = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const clearSelection = () => setSelectedIds(new Set());
+  const selectAll = () => setSelectedIds(new Set(filteredInventory.map(c => c.id)));
 
   const handleAddToWatchlist = (card: CardInventory) => {
     setInitialTargetData({
@@ -402,7 +474,8 @@ const Collection: React.FC = () => {
             ...c,
             currentValue: analysis.estimatedValue,
             lastValuationDate: analysis.lastUpdated,
-            searchUrl: analysis.searchUrl
+            searchUrl: analysis.searchUrl,
+            pricingRationale: analysis.rationale
           }
           : c
       ));
@@ -501,11 +574,25 @@ const Collection: React.FC = () => {
             AI Alpha Scan
           </button>
           <button
+            onClick={() => setIsGradingAuditOpen(true)}
+            className="flex items-center gap-3 px-6 py-4 bg-brand-charcoal border border-brand-lime/30 text-brand-lime font-black rounded-2xl transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[10px] group"
+          >
+            <Search size={16} className="group-hover:animate-pulse" />
+            Visual Audit
+          </button>
+          <button
             onClick={() => { setEditingAsset(null); setInitialAssetData(null); setIsAssetModalOpen(true); }}
             className="flex items-center gap-3 px-10 py-4 bg-brand-lime hover:bg-white text-brand-charcoal font-black rounded-2xl transition-all shadow-xl shadow-brand-lime/20 active:scale-95 uppercase tracking-widest text-xs"
           >
             <Plus size={18} strokeWidth={4} />
             Add Asset
+          </button>
+          <button
+            onClick={() => setIsShareModalOpen(true)}
+            className="p-4 bg-brand-slate border border-slate-800 rounded-2xl text-brand-muted hover:text-brand-lime transition-all shadow-lg active:scale-95"
+            title="Share Portfolio Alpha"
+          >
+            <Share2 size={18} />
           </button>
           <button className="p-4 bg-brand-slate border border-slate-800 rounded-2xl text-brand-muted hover:text-white transition-all shadow-lg">
             <Upload size={18} />
@@ -601,6 +688,41 @@ const Collection: React.FC = () => {
               </button>
             </div>
 
+            {/* Bulk Actions Floating Bar */}
+            {selectedIds.size > 0 && (
+              <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-12 duration-500">
+                <div className="bg-brand-charcoal/90 backdrop-blur-xl border border-brand-lime/30 rounded-full px-6 py-3 shadow-2xl flex items-center gap-6">
+                  <span className="text-xs font-black text-white uppercase tracking-widest border-r border-slate-700 pr-6 mr-2">
+                    {selectedIds.size} Selected
+                  </span>
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={clearSelection}
+                      className="text-[10px] font-black text-brand-muted uppercase tracking-widest hover:text-white transition-colors"
+                    >
+                      Clear
+                    </button>
+                    <button
+                      className="flex items-center gap-2 px-5 py-2 bg-brand-lime text-brand-charcoal rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all active:scale-95"
+                    >
+                      <History size={14} /> Mark Sold
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (confirm(`Mass delete ${selectedIds.size} assets?`)) {
+                          selectedIds.forEach(id => removeCard(id));
+                          clearSelection();
+                        }
+                      }}
+                      className="flex items-center gap-2 px-5 py-2 bg-brand-red text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-500 transition-all active:scale-95"
+                    >
+                      <Trash2 size={14} /> Batch Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Assets Grid */}
             {viewMode === 'grid' ? (
               filteredInventory.length > VIRTUAL_THRESHOLD ? (
@@ -623,6 +745,7 @@ const Collection: React.FC = () => {
                   getPriceTrend={getPriceTrend}
                   onOpenLightbox={(c) => setLightboxCard(c)}
                   onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
+                  onOpenGradingPremium={(c) => { setPremiumCard(c); setIsPremiumModalOpen(true); }}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -644,6 +767,8 @@ const Collection: React.FC = () => {
                       getPriceTrend={getPriceTrend}
                       onOpenLightbox={(c) => setLightboxCard(c)}
                       onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
+                      isSelected={selectedIds.has(card.id)}
+                      onToggleSelect={toggleSelection}
                     />
                   ))}
                 </div>
@@ -786,6 +911,18 @@ const Collection: React.FC = () => {
                         <p className="text-sm text-brand-muted font-medium line-clamp-2">{target.cardDescription}</p>
                       </div>
 
+                      {target.pricingRationale && (
+                        <div className="p-4 bg-brand-lime/5 border border-brand-lime/10 rounded-xl mb-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Sparkles size={12} className="text-brand-lime" />
+                            <span className="text-[9px] font-black text-brand-muted uppercase tracking-widest">Pricing Intelligence</span>
+                          </div>
+                          <p className="text-[11px] leading-relaxed text-slate-300 italic">
+                            "{target.pricingRationale}"
+                          </p>
+                        </div>
+                      )}
+
                       {/* Target Price */}
                       <div className="bg-brand-charcoal/40 border border-slate-800/50 rounded-xl p-4">
                         <p className="text-[9px] font-black text-brand-muted uppercase tracking-widest mb-1">Target Price</p>
@@ -869,6 +1006,15 @@ const Collection: React.FC = () => {
           onSuccess={handleVisionSuccess}
         />
 
+        <GradingAuditModal
+          isOpen={isGradingAuditOpen}
+          onClose={() => setIsGradingAuditOpen(false)}
+          onComplete={(res) => {
+            console.log('Visual Audit Complete:', res);
+            setIsGradingAuditOpen(false);
+          }}
+        />
+
         <ImageLightbox
           isOpen={!!lightboxCard}
           onClose={() => setLightboxCard(null)}
@@ -883,6 +1029,41 @@ const Collection: React.FC = () => {
             onClose={() => { setIsExitModalOpen(false); setExitStrategyCard(null); }}
             card={exitStrategyCard}
             onSave={handleSaveExitStrategy}
+          />
+        )}
+
+        {/* Grading Premium Modal */}
+        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-500 ${isPremiumModalOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
+          <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => setIsPremiumModalOpen(false)} />
+          <div className="relative w-full max-w-lg bg-brand-charcoal border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-brand-lime/10 rounded-lg text-brand-lime text-xs font-black uppercase tracking-widest border border-brand-lime/20">
+                  Phase 13
+                </div>
+                <h2 className="text-xl font-bebas tracking-wide text-white">Grading <span className="text-brand-lime">Premium</span></h2>
+              </div>
+              <button
+                onClick={() => setIsPremiumModalOpen(false)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors"
+              >
+                <Plus className="rotate-45" size={20} />
+              </button>
+            </div>
+            <div className="p-6">
+              {premiumCard && <GradingPremiumTool card={premiumCard} />}
+            </div>
+          </div>
+        </div>
+
+        {userProfile && (
+          <ShareAlphaModal
+            isOpen={isShareModalOpen}
+            onClose={() => setIsShareModalOpen(false)}
+            profile={userProfile}
+            onToggleVisibility={(isPublic) => {
+              setUserProfile({ ...userProfile, isPublic });
+            }}
           />
         )}
       </div>

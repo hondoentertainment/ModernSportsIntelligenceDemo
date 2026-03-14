@@ -1,8 +1,7 @@
-import { GoogleGenAI } from '@google/genai';
+import { createGeminiClient } from './geminiClient.ts';
 import { CardInventory } from '../types';
 
-const apiKey = (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) ? process.env.VITE_GEMINI_API_KEY : "";
-const ai = new GoogleGenAI({ apiKey });
+const ai = createGeminiClient();
 
 export async function generateCompareAnalysis(card1: CardInventory, card2: CardInventory): Promise<string> {
     const prompt = `You are a senior sports card analyst. Compare these two assets and provide a concise investment recommendation:
@@ -35,4 +34,6 @@ Be direct and analytical. Do not use bullet points.`;
         return 'Analysis unavailable. Ensure your API key is configured correctly.';
     }
 }
+
+
 

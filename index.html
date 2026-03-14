@@ -233,6 +233,74 @@
             backdrop-filter: blur(40px) saturate(1.5);
             border-bottom: 1px solid oklch(1 0 0 / 0.03);
         }
+
+        /* Phase 28: 3D & AR Utilities */
+        .perspective-1500 {
+            perspective: 1500px;
+        }
+
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        @keyframes scan-vertical {
+            0% {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        .animate-scan-vertical {
+            animation: scan-vertical 4s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .animate-marquee {
+            display: inline-flex;
+            animation: marquee 30s linear infinite;
+        }
+
+        .skewed-item {
+            transform: skewX(-15deg);
+        }
+
+        @keyframes slide-in-right {
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-slide-in-right {
+            animation: slide-in-right 0.5s ease-out forwards;
+        }
     </style>
 </head>
 
