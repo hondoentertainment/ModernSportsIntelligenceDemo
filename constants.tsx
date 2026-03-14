@@ -43,6 +43,16 @@ import {
   Sparkles,
   HeartPulse,
   Leaf,
+  ArrowLeftRight,
+  Hammer,
+  Brain,
+  SearchCheck,
+  Swords,
+  Megaphone,
+  Timer,
+  GraduationCap,
+  RefreshCw,
+  TrendingDown,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -96,6 +106,17 @@ export const NAV_ITEMS = [
   { id: 'non-sports', label: 'Non-Sports', icon: <Sparkles size={20} />, path: '/non-sports' },
   { id: 'injury-intel', label: 'Injury Intel', icon: <HeartPulse size={20} />, path: '/injury-intel' },
   { id: 'carbon-score', label: 'Carbon Score', icon: <Leaf size={20} />, path: '/carbon-score' },
+  // Phases 129-138: Competitive Differentiators
+  { id: 'vault-arbitrage', label: 'Vault Arbitrage', icon: <ArrowLeftRight size={20} />, path: '/vault-arbitrage' },
+  { id: 'pressing-roi', label: 'Pressing ROI', icon: <Hammer size={20} />, path: '/pressing-roi' },
+  { id: 'behavioral-finance', label: 'Behavioral Finance', icon: <Brain size={20} />, path: '/behavioral-finance' },
+  { id: 'comp-forensics', label: 'Comp Forensics', icon: <SearchCheck size={20} />, path: '/comp-forensics' },
+  { id: 'tournament-arena', label: 'Tournament Arena', icon: <Swords size={20} />, path: '/tournament-arena' },
+  { id: 'influencer-impact', label: 'Influencer Impact', icon: <Megaphone size={20} />, path: '/influencer-impact' },
+  { id: 'condition-aging', label: 'Condition Aging', icon: <Timer size={20} />, path: '/condition-aging' },
+  { id: 'auth-training', label: 'Auth Academy', icon: <GraduationCap size={20} />, path: '/auth-training' },
+  { id: 'inventory-sync', label: 'Inventory Sync', icon: <RefreshCw size={20} />, path: '/inventory-sync' },
+  { id: 'rookie-class-index', label: 'Rookie Index', icon: <TrendingDown size={20} />, path: '/rookie-class-index' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];

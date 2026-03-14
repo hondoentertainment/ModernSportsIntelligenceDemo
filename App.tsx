@@ -85,6 +85,18 @@ const NonSportsExpansion = lazy(() => import('./pages/NonSportsExpansion.tsx'));
 const InjuryIntel = lazy(() => import('./pages/InjuryIntel.tsx'));
 const CarbonScore = lazy(() => import('./pages/CarbonScore.tsx'));
 
+// Phases 129-138: Competitive differentiators
+const VaultArbitrage = lazy(() => import('./pages/VaultArbitrage.tsx'));
+const PressingRoi = lazy(() => import('./pages/PressingRoi.tsx'));
+const BehavioralFinance = lazy(() => import('./pages/BehavioralFinance.tsx'));
+const CompForensics = lazy(() => import('./pages/CompForensics.tsx'));
+const TournamentArena = lazy(() => import('./pages/TournamentArena.tsx'));
+const InfluencerImpact = lazy(() => import('./pages/InfluencerImpact.tsx'));
+const ConditionAging = lazy(() => import('./pages/ConditionAging.tsx'));
+const AuthTraining = lazy(() => import('./pages/AuthTraining.tsx'));
+const InventorySync = lazy(() => import('./pages/InventorySync.tsx'));
+const RookieClassIndex = lazy(() => import('./pages/RookieClassIndex.tsx'));
+
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
 const Signup = lazy(() => import('./pages/Signup.tsx'));
@@ -161,6 +173,16 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
                 <Route path="/non-sports" element={<NonSportsExpansion />} />
                 <Route path="/injury-intel" element={<InjuryIntel />} />
                 <Route path="/carbon-score" element={<CarbonScore />} />
+                <Route path="/vault-arbitrage" element={<VaultArbitrage />} />
+                <Route path="/pressing-roi" element={<PressingRoi />} />
+                <Route path="/behavioral-finance" element={<BehavioralFinance />} />
+                <Route path="/comp-forensics" element={<CompForensics />} />
+                <Route path="/tournament-arena" element={<TournamentArena />} />
+                <Route path="/influencer-impact" element={<InfluencerImpact />} />
+                <Route path="/condition-aging" element={<ConditionAging />} />
+                <Route path="/auth-training" element={<AuthTraining />} />
+                <Route path="/inventory-sync" element={<InventorySync />} />
+                <Route path="/rookie-class-index" element={<RookieClassIndex />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
