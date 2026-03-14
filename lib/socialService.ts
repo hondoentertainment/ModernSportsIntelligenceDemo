@@ -757,10 +757,9 @@ const MOCK_USERS: UserProfile[] = [
 
 export async function fetchPublicProfile(username: string): Promise<UserProfile | null> {
   const { data, error } = await supabase
-        .from('profiles')
+        .from('public_profiles_public')
         .select('*')
         .eq('username', username)
-        .eq('is_public', true)
         .single();
 
     if (error || !data) return null;
@@ -782,10 +781,10 @@ export async function fetchPublicProfile(username: string): Promise<UserProfile 
 
 export async function fetchPublicInventory(userId: string): Promise<CardInventory[]> {
     const { data, error } = await supabase
-        .from('cards')
+        .from('public_cards_public')
         .select('*')
         .eq('user_id', userId)
-        .eq('status', 'active'); // Only show active holdings publicly
+        .eq('status', 'active');
 
     if (error) return [];
 
@@ -804,19 +803,20 @@ export async function fetchPublicInventory(userId: string): Promise<CardInventor
         isGraded: row.is_graded,
         gradingCompany: row.grading_company,
         grade: row.grade,
-        purchasePrice: row.purchase_price,
-        purchaseDate: row.purchase_date,
+        purchasePrice: row.purchase_price || 0,
+        purchaseDate: row.purchase_date || row.created_at,
         currentValue: row.current_value,
         lastValuationDate: row.last_valuation_date,
         image: row.image_url,
-        notes: row.notes,
         searchUrl: row.search_url,
-        taxBasis: row.tax_basis,
-        gradingFees: row.grading_fees,
-        shippingFees: row.shipping_fees,
-        group: row.card_group,
-        groupOrder: row.group_order,
         pricingRationale: row.pricing_rationale,
+        status: row.status,
+        popCount: row.pop_count,
+        popHigher: row.pop_higher,
+        scarcityIndex: row.scarcity_index,
+        liquidityScore: row.liquidity_score,
+        opportunityScore: row.opportunity_score,
+        arbitrageDelta: row.arbitrage_delta,
     }));
 }
 

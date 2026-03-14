@@ -2,7 +2,16 @@ import { useState, useEffect, useCallback } from 'react';
 import { CardInventory, TargetWatchlist } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { isDemoMode } from './supabase';
-import { fetchCards, fetchTargets, upsertCard, deleteCard as deleteCardFromDb, upsertTarget, deleteTarget as deleteTargetFromDb, bulkUpsertCards } from './supabaseData';
+import {
+    fetchCards,
+    fetchTargets,
+    upsertCard,
+    deleteCard as deleteCardFromDb,
+    upsertTarget,
+    deleteTarget as deleteTargetFromDb,
+    bulkUpsertCards,
+    bulkUpsertTargets,
+} from './supabaseData';
 import { MOCK_CARDS } from '../constants';
 import { migrateToSupabase, needsMigration } from './migration';
 import { logAuditEvent } from './auditLog';
@@ -19,11 +28,63 @@ export interface SyncMeta {
     assetCount: number;
 }
 
+export type InventorySyncStatus =
+    | 'loading'
+    | 'migrating'
+    | 'local'
+    | 'synced'
+    | 'retrying'
+    | 'offline'
+    | 'error';
+
+function readLocalRows<T>(key: string): T[] {
+    try {
+        const saved = localStorage.getItem(key);
+        const parsed = saved ? JSON.parse(saved) : [];
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.warn(`Failed to read ${key} from localStorage`, error);
+        return [];
+    }
+}
+
+function readLocalMeta(): SyncMeta | null {
+    try {
+        const savedMeta = localStorage.getItem(SYNC_META_KEY);
+        if (!savedMeta) return null;
+        const parsedMeta: unknown = JSON.parse(savedMeta);
+        if (
+            parsedMeta !== null &&
+            typeof parsedMeta === 'object' &&
+            'totalValue' in parsedMeta &&
+            'assetCount' in parsedMeta &&
+            typeof (parsedMeta as Record<string, unknown>).totalValue === 'number' &&
+            typeof (parsedMeta as Record<string, unknown>).assetCount === 'number'
+        ) {
+            return parsedMeta as SyncMeta;
+        }
+        console.warn('Discarding malformed syncMeta from localStorage');
+        return null;
+    } catch (error) {
+        console.warn('Failed to load sync metadata from localStorage', error);
+        return null;
+    }
+}
+
+function calculateSyncMeta(inventory: CardInventory[], lastSyncTime: string | null): SyncMeta {
+    return {
+        lastSyncTime,
+        totalValue: inventory.reduce((sum, card) => sum + (card.currentValue || 0), 0),
+        assetCount: inventory.length,
+    };
+}
+
 /**
  * Supabase-aware inventory hook
  * - Uses Supabase for authenticated users
  * - Falls back to localStorage for demo/guest mode
  * - Automatically migrates local data to cloud on first login
+ * - Tracks explicit sync states and rolls back optimistic writes on cloud failure
  */
 export function useSupabaseInventory() {
     const { user } = useAuth();
@@ -37,112 +98,123 @@ export function useSupabaseInventory() {
     const [syncMeta, setSyncMeta] = useState<SyncMeta>({
         lastSyncTime: null,
         totalValue: 0,
-        assetCount: 0
+        assetCount: 0,
     });
     const [lastSyncError, setLastSyncError] = useState<string | null>(null);
+    const [syncStatus, setSyncStatus] = useState<InventorySyncStatus>('loading');
 
-    const syncStatus = loading ? 'loading' : isMigrating ? 'migrating' : (isAuthenticated ? 'synced' : 'local');
+    const markCloudHealthy = useCallback(() => {
+        setLastSyncError(null);
+        setSyncStatus('synced');
+        setSyncMeta(prev => ({
+            ...prev,
+            lastSyncTime: new Date().toISOString(),
+        }));
+    }, []);
 
-    // Load data on mount or auth change
+    const markCloudFailure = useCallback((message: string, offlineFallback = false) => {
+        setLastSyncError(message);
+        setSyncStatus(offlineFallback ? 'offline' : 'error');
+    }, []);
+
     useEffect(() => {
         const loadData = async () => {
             setLoading(true);
+            setLastSyncError(null);
+            setSyncStatus('loading');
 
             if (isAuthenticated && userId) {
-                // 1. Check if we need to migrate local data first
                 if (needsMigration()) {
                     setIsMigrating(true);
+                    setSyncStatus('migrating');
                     try {
                         const migrationResult = await migrateToSupabase(userId);
-                        if (migrationResult.success) {
-                            if (import.meta.env.DEV) console.warn('Migration successful:', migrationResult);
-                        } else {
-                            setLastSyncError(migrationResult.errors.join(', '));
+                        if (!migrationResult.success) {
+                            markCloudFailure(migrationResult.errors.join(', '));
                         }
-                    } catch (e) {
-                        setLastSyncError('System error during migration');
-                        console.error('Migration error:', e);
+                    } catch (error) {
+                        console.error('Migration error:', error);
+                        markCloudFailure('System error during migration');
+                    } finally {
+                        setIsMigrating(false);
                     }
-                    setIsMigrating(false);
                 }
 
-                // 2. Fetch from Supabase
                 try {
                     const [cards, watchlist] = await Promise.all([
                         fetchCards(userId),
-                        fetchTargets(userId)
+                        fetchTargets(userId),
                     ]);
                     setInventory(cards);
                     setTargets(watchlist);
-                } catch (e) {
-                    setLastSyncError('Failed to fetch data from cloud');
+                    setSyncMeta(calculateSyncMeta(cards, new Date().toISOString()));
+                    setSyncStatus('synced');
+                } catch (error) {
+                    console.error('Failed to fetch data from cloud:', error);
+                    const cachedInventory = readLocalRows<CardInventory>(STORAGE_KEY);
+                    const cachedTargets = readLocalRows<TargetWatchlist>(TARGETS_KEY);
+                    const cachedMeta = readLocalMeta();
+                    setInventory(cachedInventory);
+                    setTargets(cachedTargets);
+                    if (cachedMeta) {
+                        setSyncMeta(cachedMeta);
+                    } else {
+                        setSyncMeta(calculateSyncMeta(cachedInventory, null));
+                    }
+                    markCloudFailure('Failed to fetch data from cloud. Showing cached local data.', true);
                 }
             } else {
-                // Load from localStorage (demo mode)
-                try {
-                    const savedInventory = localStorage.getItem(STORAGE_KEY);
-                    const savedTargets = localStorage.getItem(TARGETS_KEY);
-                    const savedMeta = localStorage.getItem(SYNC_META_KEY);
-
-                    if (savedInventory) {
-                        const parsed = JSON.parse(savedInventory);
-                        if (Array.isArray(parsed)) setInventory(parsed);
-                    }
-                    if (savedTargets) {
-                        const parsed = JSON.parse(savedTargets);
-                        if (Array.isArray(parsed)) setTargets(parsed);
-                    }
-                    if (savedMeta) {
-                        const parsedMeta: unknown = JSON.parse(savedMeta);
-                        if (
-                            parsedMeta !== null &&
-                            typeof parsedMeta === 'object' &&
-                            'totalValue' in parsedMeta &&
-                            'assetCount' in parsedMeta &&
-                            typeof (parsedMeta as Record<string, unknown>).totalValue === 'number' &&
-                            typeof (parsedMeta as Record<string, unknown>).assetCount === 'number'
-                        ) {
-                            setSyncMeta(parsedMeta as SyncMeta);
-                        } else {
-                            console.warn('Discarding malformed syncMeta from localStorage');
-                        }
-                    }
-                } catch (e) {
-                    console.warn('Failed to load from localStorage', e);
-                }
+                setInventory(readLocalRows<CardInventory>(STORAGE_KEY));
+                setTargets(readLocalRows<TargetWatchlist>(TARGETS_KEY));
+                setSyncMeta(readLocalMeta() || calculateSyncMeta([], null));
+                setSyncStatus('local');
             }
 
             setLoading(false);
         };
 
-        loadData();
-    }, [userId, isAuthenticated]);
+        void loadData();
+    }, [userId, isAuthenticated, markCloudFailure]);
 
-    // Sync to localStorage whenever inventory/targets change (for demo mode)
     useEffect(() => {
-        if (!isAuthenticated) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(inventory));
-            localStorage.setItem(TARGETS_KEY, JSON.stringify(targets));
+        const nextMeta = calculateSyncMeta(inventory, syncMeta.lastSyncTime);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(inventory));
+        localStorage.setItem(TARGETS_KEY, JSON.stringify(targets));
+        localStorage.setItem(SYNC_META_KEY, JSON.stringify(nextMeta));
+        setSyncMeta(nextMeta);
+    }, [inventory, targets, syncMeta.lastSyncTime]);
 
-            const totalValue = inventory.reduce((sum, c) => sum + (c.currentValue || 0), 0);
-            const meta: SyncMeta = {
-                lastSyncTime: syncMeta.lastSyncTime,
-                totalValue,
-                assetCount: inventory.length
-            };
-            localStorage.setItem(SYNC_META_KEY, JSON.stringify(meta));
-            setSyncMeta(meta);
+    const runCloudMutation = useCallback(async (
+        action: () => Promise<boolean>,
+        onFailure: () => void,
+        failureMessage: string,
+    ) => {
+        if (!isAuthenticated || !userId) {
+            setSyncStatus('local');
+            return true;
         }
-    }, [inventory, targets, isAuthenticated, syncMeta.lastSyncTime]);
 
-    // === Card Operations ===
+        setSyncStatus('retrying');
+        setLastSyncError(null);
+
+        const success = await action();
+        if (!success) {
+            onFailure();
+            markCloudFailure(failureMessage);
+            return false;
+        }
+
+        markCloudHealthy();
+        return true;
+    }, [isAuthenticated, userId, markCloudFailure, markCloudHealthy]);
 
     const addCard = useCallback(async (card: CardInventory) => {
         setInventory(prev => [card, ...prev]);
-        if (isAuthenticated && userId) {
-            const success = await upsertCard(card, userId);
-            if (!success) setLastSyncError('Failed to save card to cloud');
-        }
+        await runCloudMutation(
+            () => upsertCard(card, userId!),
+            () => setInventory(prev => prev.filter(existing => existing.id !== card.id)),
+            'Failed to save card to cloud. Local change has been rolled back.',
+        );
 
         await logAuditEvent({
             userId: userId || undefined,
@@ -153,58 +225,63 @@ export function useSupabaseInventory() {
             metadata: {
                 player: card.player,
                 year: card.year,
-                set: card.set
-            }
+                set: card.set,
+            },
         });
-    }, [isAuthenticated, userId]);
+    }, [runCloudMutation, userId]);
 
     const updateCard = useCallback(async (id: string, updates: Partial<CardInventory>) => {
-        setInventory(prev => {
-            const updated = prev.map(c => c.id === id ? { ...c, ...updates } : c);
-            if (isAuthenticated && userId) {
-                const card = updated.find(c => c.id === id);
-                if (card) {
-                    upsertCard(card, userId).then(async success => {
-                        if (!success) setLastSyncError('Failed to update card in cloud');
-                        await logAuditEvent({
-                            userId,
-                            category: 'portfolio',
-                            action: 'card.update',
-                            entityType: 'card',
-                            entityId: id,
-                            metadata: { changedKeys: Object.keys(updates) }
-                        });
-                    });
-                }
-            }
-            return updated;
+        const previousCard = inventory.find(card => card.id === id);
+        if (!previousCard) return;
+
+        const nextCard = { ...previousCard, ...updates };
+        setInventory(prev => prev.map(card => card.id === id ? nextCard : card));
+
+        await runCloudMutation(
+            () => upsertCard(nextCard, userId!),
+            () => setInventory(prev => prev.map(card => card.id === id ? previousCard : card)),
+            'Failed to update card in cloud. Local change has been rolled back.',
+        );
+
+        await logAuditEvent({
+            userId: userId || undefined,
+            category: 'portfolio',
+            action: 'card.update',
+            entityType: 'card',
+            entityId: id,
+            metadata: { changedKeys: Object.keys(updates) },
         });
-    }, [isAuthenticated, userId]);
+    }, [inventory, runCloudMutation, userId]);
 
     const removeCard = useCallback(async (id: string) => {
-        setInventory(prev => prev.filter(c => c.id !== id));
-        if (isAuthenticated) {
-            const success = await deleteCardFromDb(id);
-            if (!success) setLastSyncError('Failed to delete card from cloud');
-        }
+        const removedCard = inventory.find(card => card.id === id);
+        if (!removedCard) return;
+
+        setInventory(prev => prev.filter(card => card.id !== id));
+
+        await runCloudMutation(
+            () => deleteCardFromDb(id),
+            () => setInventory(prev => [removedCard, ...prev]),
+            'Failed to delete card from cloud. Local change has been restored.',
+        );
 
         await logAuditEvent({
             userId: userId || undefined,
             category: 'portfolio',
             action: 'card.delete',
             entityType: 'card',
-            entityId: id
+            entityId: id,
         });
-    }, [isAuthenticated, userId]);
-
-    // === Target Operations ===
+    }, [inventory, runCloudMutation, userId]);
 
     const addTarget = useCallback(async (target: TargetWatchlist) => {
         setTargets(prev => [target, ...prev]);
-        if (isAuthenticated && userId) {
-            const success = await upsertTarget(target, userId);
-            if (!success) setLastSyncError('Failed to save target to cloud');
-        }
+
+        await runCloudMutation(
+            () => upsertTarget(target, userId!),
+            () => setTargets(prev => prev.filter(existing => existing.id !== target.id)),
+            'Failed to save target to cloud. Local change has been rolled back.',
+        );
 
         await logAuditEvent({
             userId: userId || undefined,
@@ -214,117 +291,135 @@ export function useSupabaseInventory() {
             entityId: target.id,
             metadata: {
                 player: target.player,
-                description: target.cardDescription
-            }
+                description: target.cardDescription,
+            },
         });
-    }, [isAuthenticated, userId]);
+    }, [runCloudMutation, userId]);
 
     const updateTarget = useCallback(async (id: string, updates: Partial<TargetWatchlist>) => {
-        setTargets(prev => {
-            const updated = prev.map(t => t.id === id ? { ...t, ...updates } : t);
-            if (isAuthenticated && userId) {
-                const target = updated.find(t => t.id === id);
-                if (target) {
-                    upsertTarget(target, userId).then(async success => {
-                        if (!success) setLastSyncError('Failed to update target in cloud');
-                        await logAuditEvent({
-                            userId,
-                            category: 'portfolio',
-                            action: 'target.update',
-                            entityType: 'target',
-                            entityId: id,
-                            metadata: { changedKeys: Object.keys(updates) }
-                        });
-                    });
-                }
-            }
-            return updated;
+        const previousTarget = targets.find(target => target.id === id);
+        if (!previousTarget) return;
+
+        const nextTarget = { ...previousTarget, ...updates };
+        setTargets(prev => prev.map(target => target.id === id ? nextTarget : target));
+
+        await runCloudMutation(
+            () => upsertTarget(nextTarget, userId!),
+            () => setTargets(prev => prev.map(target => target.id === id ? previousTarget : target)),
+            'Failed to update target in cloud. Local change has been rolled back.',
+        );
+
+        await logAuditEvent({
+            userId: userId || undefined,
+            category: 'portfolio',
+            action: 'target.update',
+            entityType: 'target',
+            entityId: id,
+            metadata: { changedKeys: Object.keys(updates) },
         });
-    }, [isAuthenticated, userId]);
+    }, [targets, runCloudMutation, userId]);
 
     const removeTarget = useCallback(async (id: string) => {
-        setTargets(prev => prev.filter(t => t.id !== id));
-        if (isAuthenticated) {
-            const success = await deleteTargetFromDb(id);
-            if (!success) setLastSyncError('Failed to delete target from cloud');
-        }
+        const removedTarget = targets.find(target => target.id === id);
+        if (!removedTarget) return;
+
+        setTargets(prev => prev.filter(target => target.id !== id));
+
+        await runCloudMutation(
+            () => deleteTargetFromDb(id),
+            () => setTargets(prev => [removedTarget, ...prev]),
+            'Failed to delete target from cloud. Local change has been restored.',
+        );
 
         await logAuditEvent({
             userId: userId || undefined,
             category: 'portfolio',
             action: 'target.delete',
             entityType: 'target',
-            entityId: id
+            entityId: id,
         });
-    }, [isAuthenticated, userId]);
+    }, [targets, runCloudMutation, userId]);
 
     const markAcquired = useCallback((id: string) => {
-        updateTarget(id, { status: 'acquired' });
+        void updateTarget(id, { status: 'acquired' });
     }, [updateTarget]);
 
-    // === Bulk Operations ===
-
     const initializeFullInventory = useCallback(async () => {
-        if (inventory.length === 0 || inventory.length < MOCK_CARDS.length) {
-            setInventory(MOCK_CARDS);
-            if (isAuthenticated && userId) {
-                const success = await bulkUpsertCards(MOCK_CARDS, userId);
-                if (!success) setLastSyncError('Failed to initialize cloud inventory');
-            } else {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_CARDS));
-            }
+        if (inventory.length > 0 && inventory.length >= MOCK_CARDS.length) return;
+
+        const previousInventory = inventory;
+        setInventory(MOCK_CARDS);
+
+        if (isAuthenticated && userId) {
+            const success = await runCloudMutation(
+                () => bulkUpsertCards(MOCK_CARDS, userId),
+                () => setInventory(previousInventory),
+                'Failed to initialize cloud inventory. Local change has been rolled back.',
+            );
+            if (!success) return;
+        } else {
+            setSyncStatus('local');
         }
-    }, [inventory.length, isAuthenticated, userId]);
+    }, [inventory, isAuthenticated, runCloudMutation, userId]);
 
     const refreshFromStorage = useCallback(() => {
+        setInventory(readLocalRows<CardInventory>(STORAGE_KEY));
+        setTargets(readLocalRows<TargetWatchlist>(TARGETS_KEY));
+        const cachedMeta = readLocalMeta();
+        if (cachedMeta) {
+            setSyncMeta(cachedMeta);
+        }
         if (!isAuthenticated) {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (Array.isArray(parsed)) setInventory(parsed);
-                }
-            } catch (e) {
-                console.warn('Failed to refresh from storage', e);
-            }
+            setSyncStatus('local');
         }
     }, [isAuthenticated]);
 
     const persistSyncToCloud = useCallback(async (cards: CardInventory[], updatedTargets?: TargetWatchlist[]) => {
-        if (!isAuthenticated || !userId) return;
+        if (!isAuthenticated || !userId) {
+            setSyncStatus('local');
+            return;
+        }
+
+        setSyncStatus('retrying');
+        setLastSyncError(null);
 
         const syncJob = enqueueJob('cloud_sync', { cards, updatedTargets, userId });
         const started = performance.now();
 
-        await processAllJobs({
-            cloud_sync: async (job) => {
-                const payload = job.payload as { cards: CardInventory[]; updatedTargets?: TargetWatchlist[]; userId: string };
-                const success = await bulkUpsertCards(payload.cards, payload.userId);
-                if (!success) throw new Error('Failed to sync cards to cloud');
+        try {
+            await processAllJobs({
+                cloud_sync: async (job) => {
+                    const payload = job.payload as { cards: CardInventory[]; updatedTargets?: TargetWatchlist[]; userId: string };
+                    const cardsSynced = await bulkUpsertCards(payload.cards, payload.userId);
+                    if (!cardsSynced) throw new Error('Failed to sync cards to cloud');
 
-                if (payload.updatedTargets && payload.updatedTargets.length > 0) {
-                    const { bulkUpsertTargets } = await import('./supabaseData');
-                    const targetSuccess = await bulkUpsertTargets(payload.updatedTargets, payload.userId);
-                    if (!targetSuccess) throw new Error('Failed to sync targets to cloud');
-                }
-            }
-        });
+                    if (payload.updatedTargets && payload.updatedTargets.length > 0) {
+                        const targetsSynced = await bulkUpsertTargets(payload.updatedTargets, payload.userId);
+                        if (!targetsSynced) throw new Error('Failed to sync targets to cloud');
+                    }
+                },
+            });
 
-        recordMetric('sync.cloud.duration_ms', performance.now() - started, { source: 'persistSyncToCloud' });
-        incrementCounter('sync.cloud.success');
+            recordMetric('sync.cloud.duration_ms', performance.now() - started, { source: 'persistSyncToCloud' });
+            incrementCounter('sync.cloud.success');
+            markCloudHealthy();
 
-        await logAuditEvent({
-            userId,
-            category: 'system',
-            action: 'cloud.sync.completed',
-            entityType: 'sync_job',
-            entityId: syncJob.id,
-            metadata: {
-                cards: cards.length,
-                targets: updatedTargets?.length || 0
-            }
-        });
-    }, [isAuthenticated, userId]);
+            await logAuditEvent({
+                userId,
+                category: 'system',
+                action: 'cloud.sync.completed',
+                entityType: 'sync_job',
+                entityId: syncJob.id,
+                metadata: {
+                    cards: cards.length,
+                    targets: updatedTargets?.length || 0,
+                },
+            });
+        } catch (error) {
+            console.error('Cloud sync failed:', error);
+            markCloudFailure('Cloud sync failed. Local cache remains available.', true);
+        }
+    }, [isAuthenticated, markCloudFailure, markCloudHealthy, userId]);
 
     return {
         inventory,
@@ -337,7 +432,7 @@ export function useSupabaseInventory() {
         lastSyncError,
         syncMeta,
         setSyncMeta,
-        isCloudSynced: isAuthenticated,
+        isCloudSynced: isAuthenticated && syncStatus === 'synced',
         addCard,
         updateCard,
         deleteCard: removeCard,
@@ -348,7 +443,7 @@ export function useSupabaseInventory() {
         refreshFromStorage,
         initializeFullInventory,
         persistSyncToCloud,
-        totalCards: inventory.length
+        totalCards: inventory.length,
     };
 }
 

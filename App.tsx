@@ -51,26 +51,16 @@ const Leaderboard = lazy(() => import('./pages/Leaderboard.tsx'));
 const Alerts = lazy(() => import('./pages/Alerts.tsx'));
 const AnalystWarRoom = lazy(() => import('./components/AnalystWarRoom.tsx'));
 const GuildDashboard = lazy(() => import('./pages/GuildDashboard.tsx'));
-const PhaseOperations = lazy(() => import('./pages/PhaseOperations.tsx'));
 
-// Live & advanced features
-const LiveImpact = lazy(() => import('./pages/LiveImpact.tsx'));
-const FractionalVault = lazy(() => import('./pages/FractionalVault.tsx'));
-const ProvenanceChain = lazy(() => import('./pages/ProvenanceChain.tsx'));
-const LiveBreaks = lazy(() => import('./pages/LiveBreaks.tsx'));
+// Feature discovery and release-ready advanced features
 const FeatureDirectory = lazy(() => import('./pages/FeatureDirectory.tsx'));
-
-// Phases 104-113: Industry-first features
-const LiveGameImpactEngine = lazy(() => import('./pages/LiveGameImpactEngine.tsx'));
-const CrossAssetCorrelation = lazy(() => import('./pages/CrossAssetCorrelation.tsx'));
-const PreGradeIntelligence = lazy(() => import('./pages/PreGradeIntelligence.tsx'));
-const ProvenanceChainIntelligence = lazy(() => import('./pages/ProvenanceChainIntelligence.tsx'));
-const CopyTrading = lazy(() => import('./pages/CopyTrading.tsx'));
-const PredictiveMarketMaker = lazy(() => import('./pages/PredictiveMarketMaker.tsx'));
-const InfluenceGraph = lazy(() => import('./pages/InfluenceGraph.tsx'));
-const CrossHobbyPortfolio = lazy(() => import('./pages/CrossHobbyPortfolio.tsx'));
-const AutonomousAcquisition = lazy(() => import('./pages/AutonomousAcquisition.tsx'));
 const CollectionNarrative = lazy(() => import('./pages/CollectionNarrative.tsx'));
+const LiquidityTwin = lazy(() => import('./pages/LiquidityTwin.tsx'));
+const CatalystMarket = lazy(() => import('./pages/CatalystMarket.tsx'));
+const CounterpartyTrustGraph = lazy(() => import('./pages/CounterpartyTrustGraph.tsx'));
+const PortfolioScenarioTheater = lazy(() => import('./pages/PortfolioScenarioTheater.tsx'));
+const PrivateDealRoomAgent = lazy(() => import('./pages/PrivateDealRoomAgent.tsx'));
+const CollectorAuditDossier = lazy(() => import('./pages/CollectorAuditDossier.tsx'));
 
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
@@ -148,22 +138,14 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
                 <Route path="/war-room" element={<AnalystWarRoom />} />
                 <Route path="/guilds" element={<GuildDashboard />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/phase-ops" element={<PhaseOperations />} />
-                <Route path="/live-impact" element={<LiveImpact />} />
-                <Route path="/fractional-vault" element={<FractionalVault />} />
-                <Route path="/provenance" element={<ProvenanceChain />} />
-                <Route path="/live-breaks" element={<LiveBreaks />} />
                 <Route path="/features" element={<FeatureDirectory />} />
-                <Route path="/live-game-impact-engine" element={<LiveGameImpactEngine />} />
-                <Route path="/cross-asset-correlation" element={<CrossAssetCorrelation />} />
-                <Route path="/pre-grade-intelligence" element={<PreGradeIntelligence />} />
-                <Route path="/provenance-intelligence" element={<ProvenanceChainIntelligence />} />
-                <Route path="/copy-trading" element={<CopyTrading />} />
-                <Route path="/predictive-market-maker" element={<PredictiveMarketMaker />} />
-                <Route path="/influence-graph" element={<InfluenceGraph />} />
-                <Route path="/cross-hobby-portfolio" element={<CrossHobbyPortfolio />} />
-                <Route path="/autonomous-acquisition" element={<AutonomousAcquisition />} />
+                <Route path="/liquidity-twin" element={<LiquidityTwin />} />
+                <Route path="/counterparty-trust-graph" element={<CounterpartyTrustGraph />} />
+                <Route path="/portfolio-scenario-theater" element={<PortfolioScenarioTheater />} />
+                <Route path="/private-deal-room-agent" element={<PrivateDealRoomAgent />} />
+                <Route path="/catalyst-market" element={<CatalystMarket />} />
                 <Route path="/collection-narrative" element={<CollectionNarrative />} />
+                <Route path="/audit-dossier" element={<CollectorAuditDossier />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

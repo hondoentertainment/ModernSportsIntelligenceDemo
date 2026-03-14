@@ -1,8 +1,8 @@
+import { serverApiRequest } from './serverApi';
+
 // eBay API Integration for Sports Card Pricing
 export interface EbayConfig {
-  clientId: string;
-  clientSecret: string;
-  sandbox: boolean;
+  sandbox?: boolean;
 }
 
 export interface EbayPrice {
@@ -26,51 +26,24 @@ export interface EbaySearchResponse {
 }
 
 export const ebayApi = {
-  // Initialize eBay API configuration
-  config: null as EbayConfig | null,
+  config: { sandbox: false } as EbayConfig,
 
-  // Set API configuration
   initialize(config: EbayConfig) {
-    this.config = config;
+    this.config = { ...this.config, ...config };
   },
 
-  // Get base URL for API calls
-  getBaseUrl() {
-    if (!this.config) {
-      throw new Error('eBay API not initialized');
-    }
-    return this.config.sandbox
-      ? 'https://api.sandbox.ebay.com'
-      : 'https://api.ebay.com';
+  isAvailable() {
+    return true;
   },
 
-  // Get OAuth token
   async getAccessToken(): Promise<string> {
-    if (!this.config) {
-      throw new Error('eBay API not initialized');
-    }
-
-    const baseUrl = this.getBaseUrl();
-    const credentials = btoa(`${this.config.clientId}:${this.config.clientSecret}`);
-
-    const response = await fetch(`${baseUrl}/identity/v1/oauth2/token`, {
+    const data = await serverApiRequest<{ accessToken: string }>('/api/market/ebay', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Basic ${credentials}`
-      },
-      body: 'grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope'
+      body: JSON.stringify({ action: 'token', sandbox: !!this.config.sandbox }),
     });
-
-    if (!response.ok) {
-      throw new Error(`Failed to get eBay access token: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data.access_token;
+    return data.accessToken;
   },
 
-  // Search for sports cards
   async searchSportsCards(params: {
     playerName: string;
     cardYear?: string;
@@ -82,60 +55,14 @@ export const ebayApi = {
     limit?: number;
     soldOnly?: boolean;
   }): Promise<EbaySearchResponse> {
-    const token = await this.getAccessToken();
-    const baseUrl = this.getBaseUrl();
-
-    // Build search query
-    let query = `${params.playerName}`;
-    if (params.cardYear) query += ` ${params.cardYear}`;
-    if (params.cardSet) query += ` ${params.cardSet}`;
-    if (params.cardNumber) query += ` ${params.cardNumber}`;
-    query += ` card`;
-
-    // Build filters
-    const filters = [];
-    if (params.maxPrice) {
-      filters.push(`price:[0..${params.maxPrice}]`);
-    }
-    if (params.condition) {
-      filters.push(`condition:${params.condition}`);
-    }
-
-    // Sports cards category IDs
-    const sportsCategories = [213, 50132, 2737, 175690, 3034]; // Baseball, Basketball, Football, Hockey, Trading Cards
-
-    const searchParams = new URLSearchParams({
-      q: query,
-      category_ids: sportsCategories.join(','),
-      limit: (params.limit || 50).toString(),
-      sort: 'price',
-      fieldgroups: 'EXTENDED'
+    return serverApiRequest<EbaySearchResponse>('/api/market/ebay', {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'search',
+        sandbox: !!this.config.sandbox,
+        params,
+      }),
     });
-
-    if (filters.length > 0) {
-      searchParams.append('filter', filters.join(','));
-    }
-
-    // NOTE: The Browse API officially doesn't support sold listings via simple query params. 
-    // In a production environment, we would use Marketplace Insights API.
-    // For this demo, we use Browse API results and assume typical market pricing.
-
-    const response = await fetch(
-      `${baseUrl}/buy/browse/v1/item_summary/search?${searchParams}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US',
-          'Accept-Language': 'en-US'
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`eBay API search failed: ${response.statusText}`);
-    }
-
-    return await response.json();
   },
 
   // Get market value estimate from eBay sold listings
@@ -225,29 +152,17 @@ export const ebayApi = {
     };
   },
 
-  // Get item details by item ID
   async getItemDetails(itemId: string): Promise<EbayItemSummary> {
-    const token = await this.getAccessToken();
-    const baseUrl = this.getBaseUrl();
-
-    const response = await fetch(
-      `${baseUrl}/buy/browse/v1/item/${itemId}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US'
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to get item details: ${response.statusText}`);
-    }
-
-    return await response.json();
+    return serverApiRequest<EbayItemSummary>('/api/market/ebay', {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'item',
+        sandbox: !!this.config.sandbox,
+        itemId,
+      }),
+    });
   },
 
-  // Test connection
   async testConnection(): Promise<string> {
     try {
       await this.getAccessToken();

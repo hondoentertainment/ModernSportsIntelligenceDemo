@@ -2,7 +2,14 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, ChevronRight, X, Zap, ArrowRight, Layers } from 'lucide-react';
-import { FEATURE_CATALOG, TIER_CONFIG, groupByTier, getCategories, Feature, FeatureTier } from '../lib/featureCatalog';
+import {
+  DISCOVERABLE_FEATURE_CATALOG,
+  TIER_CONFIG,
+  groupByTier,
+  getCategories,
+  Feature,
+  FeatureTier,
+} from '../lib/featureCatalog';
 
 const FeatureDirectory: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -10,10 +17,10 @@ const FeatureDirectory: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const navigate = useNavigate();
 
-  const categories = useMemo(() => getCategories(), []);
+  const categories = useMemo(() => getCategories(DISCOVERABLE_FEATURE_CATALOG), []);
 
   const filtered = useMemo(() => {
-    let features = FEATURE_CATALOG;
+    let features = DISCOVERABLE_FEATURE_CATALOG;
 
     if (selectedTier !== 'all') {
       features = features.filter(f => f.tier === selectedTier);
@@ -36,8 +43,8 @@ const FeatureDirectory: React.FC = () => {
   const grouped = useMemo(() => groupByTier(filtered), [filtered]);
 
   const tierCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: FEATURE_CATALOG.length };
-    FEATURE_CATALOG.forEach(f => {
+    const counts: Record<string, number> = { all: DISCOVERABLE_FEATURE_CATALOG.length };
+    DISCOVERABLE_FEATURE_CATALOG.forEach(f => {
       counts[f.tier] = (counts[f.tier] || 0) + 1;
     });
     return counts;
@@ -69,7 +76,7 @@ const FeatureDirectory: React.FC = () => {
             <h1 className="font-bebas text-3xl md:text-4xl tracking-wider text-white">Feature Directory</h1>
           </div>
           <p className="text-sm text-brand-muted">
-            All <span className="text-brand-lime font-bold">{FEATURE_CATALOG.length}</span> platform features across{' '}
+            All <span className="text-brand-lime font-bold">{DISCOVERABLE_FEATURE_CATALOG.length}</span> verified platform features across{' '}
             <span className="text-brand-lime font-bold">{Object.keys(TIER_CONFIG).length}</span> tiers.
             {hasActiveFilters && (
               <span className="ml-2 text-slate-400">
@@ -243,7 +250,7 @@ const FeatureDirectory: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-brand-slate rounded-xl p-4 border border-slate-800">
             <p className="text-[9px] font-black uppercase tracking-widest text-brand-muted mb-1">Total Features</p>
-            <p className="text-2xl font-bebas tracking-wider text-brand-lime">{FEATURE_CATALOG.length}</p>
+            <p className="text-2xl font-bebas tracking-wider text-brand-lime">{DISCOVERABLE_FEATURE_CATALOG.length}</p>
           </div>
           <div className="bg-brand-slate rounded-xl p-4 border border-slate-800">
             <p className="text-[9px] font-black uppercase tracking-widest text-brand-muted mb-1">Categories</p>
@@ -252,13 +259,13 @@ const FeatureDirectory: React.FC = () => {
           <div className="bg-brand-slate rounded-xl p-4 border border-slate-800">
             <p className="text-[9px] font-black uppercase tracking-widest text-brand-muted mb-1">Live Features</p>
             <p className="text-2xl font-bebas tracking-wider text-brand-lime">
-              {FEATURE_CATALOG.filter(f => f.status === 'live').length}
+              {DISCOVERABLE_FEATURE_CATALOG.filter(f => f.status === 'live').length}
             </p>
           </div>
           <div className="bg-brand-slate rounded-xl p-4 border border-slate-800">
             <p className="text-[9px] font-black uppercase tracking-widest text-brand-muted mb-1">Industry Firsts</p>
             <p className="text-2xl font-bebas tracking-wider text-red-400">
-              {FEATURE_CATALOG.filter(f => f.tier === 'Industry-First').length}
+              {DISCOVERABLE_FEATURE_CATALOG.filter(f => f.tier === 'Industry-First').length}
             </p>
           </div>
         </div>

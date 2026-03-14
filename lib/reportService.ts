@@ -1,8 +1,14 @@
 import { CardInventory, Sport } from '../types';
+import { buildCollectorAuditDossierReport } from './collectorAuditDossierService';
 
 // ---- Types ----
 
-export type ReportType = 'portfolio_summary' | 'tax' | 'insurance' | 'performance';
+export type ReportType =
+  | 'portfolio_summary'
+  | 'tax'
+  | 'insurance'
+  | 'performance'
+  | 'collector_audit_dossier';
 
 export interface ReportConfig {
   dateRange?: { start: string; end: string };
@@ -18,6 +24,8 @@ export interface ReportSection {
   data: Record<string, unknown>[];
   columns?: string[];
   summary?: Record<string, string | number>;
+  sourceType?: 'market-data' | 'inventory-history' | 'user-input' | 'heuristic-estimate' | 'simulated-placeholder';
+  sourceNote?: string;
 }
 
 export interface TaxLineItem {
@@ -695,6 +703,15 @@ export function generatePerformanceReport(inventory: CardInventory[], config: Re
   };
 }
 
+export function generateCollectorAuditDossier(
+  inventory: CardInventory[],
+  config: ReportConfig,
+  options?: { cardId?: string }
+): GeneratedReport {
+  const filtered = filterInventory(inventory, config);
+  return buildCollectorAuditDossierReport(filtered, config, options);
+}
+
 // ---- Export functions ----
 
 export function exportToCSV(report: GeneratedReport): string {
@@ -707,6 +724,10 @@ export function exportToCSV(report: GeneratedReport): string {
 
   for (const section of report.sections) {
     lines.push(`"${section.title}"`);
+    if (section.sourceType || section.sourceNote) {
+      lines.push(`"Source Type","${section.sourceType ?? ''}"`);
+      lines.push(`"Source Note","${section.sourceNote ?? ''}"`);
+    }
 
     if (section.summary) {
       for (const [key, value] of Object.entries(section.summary)) {
@@ -746,8 +767,9 @@ export function renderReportHTML(report: GeneratedReport): string {
     if (typeof val === 'number') {
       const currencyFields = ['value', 'costBasis', 'currentValue', 'purchasePrice', 'marketValue',
         'replacementCost', 'adjustedBasis', 'proceeds', 'gainLoss', 'shortTermGains', 'shortTermLosses',
-        'longTermGains', 'longTermLosses', 'gradingFees', 'shippingFees', 'benchmarkReturn', 'portfolioReturn', 'alpha'];
-      const pctFields = ['allocation', 'gainLossPercent', 'returnPct', 'return', 'percentage'];
+        'longTermGains', 'longTermLosses', 'gradingFees', 'shippingFees', 'benchmarkReturn', 'portfolioReturn', 'alpha',
+        'liability', 'premium', 'gapAmount', 'coveredAmount', 'expectedNet', 'breakEvenSalePrice', 'fees'];
+      const pctFields = ['allocation', 'gainLossPercent', 'returnPct', 'return', 'percentage', 'gapPercent'];
       const lc = col.toLowerCase();
       if (currencyFields.some(f => lc.includes(f.toLowerCase()))) {
         return formatCurrency(val);
@@ -764,6 +786,16 @@ export function renderReportHTML(report: GeneratedReport): string {
   for (const section of report.sections) {
     sectionsHTML += `<div class="section">`;
     sectionsHTML += `<h2>${section.title}</h2>`;
+    if (section.sourceType || section.sourceNote) {
+      sectionsHTML += `<div class="source-note">`;
+      if (section.sourceType) {
+        sectionsHTML += `<span class="source-badge">${section.sourceType.replace(/-/g, ' ')}</span>`;
+      }
+      if (section.sourceNote) {
+        sectionsHTML += `<span>${section.sourceNote}</span>`;
+      }
+      sectionsHTML += `</div>`;
+    }
 
     if (section.summary) {
       sectionsHTML += `<div class="summary-grid">`;
@@ -772,10 +804,13 @@ export function renderReportHTML(report: GeneratedReport): string {
         const isNeg = !isNaN(numVal) && numVal < 0;
         const isPos = !isNaN(numVal) && numVal > 0;
         const colorClass = isNeg ? 'negative' : isPos ? 'positive' : '';
+        const summaryKey = key.toLowerCase();
+        const isCurrencySummary = ['value', 'cost', 'liability', 'premium', 'gap', 'net', 'replacement'].some(token => summaryKey.includes(token));
+        const isPercentSummary = key.includes('%') || summaryKey.includes('percent');
         sectionsHTML += `<div class="summary-item"><span class="summary-label">${key}</span><span class="summary-value ${colorClass}">${
-          typeof value === 'number' && key.includes('P&L')
+          typeof value === 'number' && isCurrencySummary
             ? formatCurrency(value)
-            : typeof value === 'number' && key.includes('%')
+            : typeof value === 'number' && isPercentSummary
               ? formatPercent(value)
               : value
         }</span></div>`;
@@ -824,6 +859,8 @@ export function renderReportHTML(report: GeneratedReport): string {
   h2 { font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
   .summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
   .summary-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 16px; }
+  .source-note { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; font-size: 12px; color: #64748b; }
+  .source-badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; text-transform: uppercase; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; }
   .summary-label { display: block; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
   .summary-value { font-size: 18px; font-weight: 700; color: #0f172a; font-variant-numeric: tabular-nums; }
   .summary-value.positive { color: #16a34a; }

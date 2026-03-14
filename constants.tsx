@@ -31,7 +31,8 @@ import {
   Briefcase,
   Bot,
   BookHeart,
-  Shield
+  Shield,
+  Sparkles
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -66,10 +67,16 @@ export const NAV_ITEMS = [
   { id: 'provenance-intelligence', label: 'Provenance Chain', icon: <Fingerprint size={20} />, path: '/provenance-intelligence' },
   { id: 'copy-trading', label: 'Copy Trading', icon: <Users size={20} />, path: '/copy-trading' },
   { id: 'predictive-market-maker', label: 'Market Maker', icon: <LineChart size={20} />, path: '/predictive-market-maker' },
+  { id: 'liquidity-twin', label: 'Liquidity Twin', icon: <Zap size={20} />, path: '/liquidity-twin' },
   { id: 'influence-graph', label: 'Influence Graph', icon: <Share2 size={20} />, path: '/influence-graph' },
+  { id: 'counterparty-trust-graph', label: 'Trust Graph', icon: <Share2 size={20} />, path: '/counterparty-trust-graph' },
   { id: 'cross-hobby-portfolio', label: 'Cross-Hobby Portfolio', icon: <Briefcase size={20} />, path: '/cross-hobby-portfolio' },
+  { id: 'portfolio-scenario-theater', label: 'Scenario Theater', icon: <Activity size={20} />, path: '/portfolio-scenario-theater' },
   { id: 'autonomous-acquisition', label: 'AI Acquisition', icon: <Bot size={20} />, path: '/autonomous-acquisition' },
+  { id: 'private-deal-room-agent', label: 'Private Deal Room', icon: <Shield size={20} />, path: '/private-deal-room-agent' },
+  { id: 'catalyst-market', label: 'Catalyst Market', icon: <TrendingUp size={20} />, path: '/catalyst-market' },
   { id: 'collection-narrative', label: 'Heritage Story', icon: <BookHeart size={20} />, path: '/collection-narrative' },
+  { id: 'frontier-lab', label: 'Frontier Lab', icon: <Sparkles size={20} />, path: '/frontier-lab' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];

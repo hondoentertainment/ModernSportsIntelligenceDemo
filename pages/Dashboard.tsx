@@ -19,7 +19,8 @@ import {
   Camera,
   Share2,
   FileDown,
-  Terminal
+  Terminal,
+  BriefcaseBusiness
 } from 'lucide-react';
 
 import { Link } from 'react-router-dom';
@@ -84,7 +85,9 @@ const Dashboard: React.FC = () => {
     initializeFullInventory,
     isCloudSynced,
     loading,
-    persistSyncToCloud
+    persistSyncToCloud,
+    syncStatus,
+    lastSyncError
   } = useSupabaseInventory();
 
   const [realMlbStats, setRealMlbStats] = useState<any[]>([]);
@@ -254,6 +257,18 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className={`space-y-12 animate-in fade-in duration-700 pb-12 ${isTerminalMode ? 'px-2' : ''}`}>
+      {lastSyncError && (
+        <section className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-sm text-amber-100">
+          <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+            <span className="font-semibold">Cloud sync needs attention.</span>
+            <span className="text-xs uppercase tracking-widest text-amber-300">
+              {syncStatus === 'offline' ? 'Offline Cache' : syncStatus}
+            </span>
+          </div>
+          <p className="mt-2 text-amber-200/90">{lastSyncError}</p>
+        </section>
+      )}
+
       {inventory.length === 0 ? (
         /* Compact HUD Initialization State */
         <div className="min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden py-12">
@@ -369,6 +384,12 @@ const Dashboard: React.FC = () => {
                     >
                       <Sparkles size={12} /> Alpha
                     </button>
+                    <Link
+                      to="/audit-dossier"
+                      className="px-4 py-2 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/20 text-cyan-200 font-black uppercase tracking-widest text-[9px] flex items-center gap-2 transition-all active:scale-95"
+                    >
+                      <BriefcaseBusiness size={12} /> Dossier
+                    </Link>
                     <Link to="/collection" className="px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-black uppercase tracking-widest text-[10px] flex items-center gap-2 transition-all border border-slate-700">
                       Manage Assets <ArrowUpRight size={14} />
                     </Link>
@@ -558,6 +579,23 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
 
+            <div className="mb-6 flex flex-wrap gap-3">
+              <Link
+                to="/audit-dossier"
+                className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-200 text-[10px] font-black uppercase tracking-widest"
+              >
+                <BriefcaseBusiness size={14} />
+                Open Collector Audit Dossier
+              </Link>
+              <button
+                onClick={() => setIsReportOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-slate-900 border border-slate-700 text-slate-200 text-[10px] font-black uppercase tracking-widest"
+              >
+                <FileDown size={14} />
+                Open Report Builder
+              </button>
+            </div>
+
             {signals.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {signals.map((signal, i) => (
@@ -718,6 +756,34 @@ const Dashboard: React.FC = () => {
                   </button>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="reveal-section mb-12">
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bebas tracking-wide text-white">Differentiator Layer</h3>
+                <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Execution, trust, catalysts, and simulation</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+              {[
+                { title: 'Liquidity Twin', subtitle: 'Exit velocity + venue routing', path: '/liquidity-twin', icon: <Zap size={16} /> },
+                { title: 'Private Deal Room', subtitle: 'High-value negotiation rooms', path: '/private-deal-room-agent', icon: <Gavel size={16} /> },
+                { title: 'Trust Graph', subtitle: 'Counterparty confidence map', path: '/counterparty-trust-graph', icon: <Share2 size={16} /> },
+                { title: 'Catalyst Market', subtitle: 'Event-driven repricing windows', path: '/catalyst-market', icon: <TrendingUp size={16} /> },
+                { title: 'Scenario Theater', subtitle: 'Forward NAV simulation', path: '/portfolio-scenario-theater', icon: <Activity size={16} /> },
+              ].map(card => (
+                <Link
+                  key={card.path}
+                  to={card.path}
+                  className="rounded-2xl border border-slate-800 bg-brand-charcoal/50 p-5 transition-all hover:border-brand-lime/30 hover:bg-brand-charcoal"
+                >
+                  <div className="mb-3 flex items-center gap-2 text-brand-lime">{card.icon}</div>
+                  <h4 className="font-semibold text-white">{card.title}</h4>
+                  <p className="mt-1 text-xs text-brand-muted">{card.subtitle}</p>
+                </Link>
+              ))}
             </div>
           </div>
 

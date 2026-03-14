@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, LayoutDashboard, Package, TrendingUp, Star, BarChart3, Target, Bell, User, FileText, Zap, Settings, X } from 'lucide-react';
+import { Search, LayoutDashboard, Package, TrendingUp, BarChart3, Bell, FileText, Zap, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFocusTrap } from '../lib/useFocusTrap';
+import { COMMAND_ROUTES } from '../lib/productSurface';
 
 interface CommandItem {
   id: string;
@@ -28,18 +29,28 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onAddC
   const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
   const navigate = useNavigate();
 
+  const commandIcons: Record<string, React.ReactNode> = {
+    'nav-dashboard': <LayoutDashboard size={16} />,
+    'nav-collection': <Package size={16} />,
+    'nav-prospects': <TrendingUp size={16} />,
+    'nav-alerts': <Bell size={16} />,
+    'nav-mlb-stats': <BarChart3 size={16} />,
+    'nav-audit': <FileText size={16} />,
+    'nav-search': <Search size={16} />,
+    'nav-settings': <Settings size={16} />,
+    'nav-dossier': <FileText size={16} />,
+  };
+
   const commands: CommandItem[] = useMemo(() => [
-    // Navigation
-    { id: 'nav-dashboard', label: 'Go to Dashboard', icon: <LayoutDashboard size={16} />, action: () => { navigate('/'); onClose(); }, section: 'Navigate', keywords: ['home', 'overview'] },
-    { id: 'nav-collection', label: 'Go to Collection', icon: <Package size={16} />, action: () => { navigate('/collection'); onClose(); }, section: 'Navigate', keywords: ['cards', 'inventory'] },
-    { id: 'nav-prospects', label: 'Go to Prospects', icon: <TrendingUp size={16} />, action: () => { navigate('/prospects'); onClose(); }, section: 'Navigate', keywords: ['milb', 'minor league'] },
-    { id: 'nav-favorites', label: 'Go to Favorites', icon: <Star size={16} />, action: () => { navigate('/favorites'); onClose(); }, section: 'Navigate', keywords: ['starred', 'bookmarks'] },
-    { id: 'nav-stats', label: 'Go to MLB Stats', icon: <BarChart3 size={16} />, action: () => { navigate('/stats'); onClose(); }, section: 'Navigate', keywords: ['mlb', 'baseball'] },
-    { id: 'nav-watchlist', label: 'Go to Watchlist', icon: <Target size={16} />, action: () => { navigate('/collection?tab=targets'); onClose(); }, section: 'Navigate', keywords: ['targets', 'watch'] },
-    { id: 'nav-alerts', label: 'Go to Alerts', icon: <Bell size={16} />, action: () => { navigate('/alerts'); onClose(); }, section: 'Navigate', keywords: ['notifications'] },
-    { id: 'nav-profile', label: 'Go to Profile', icon: <User size={16} />, action: () => { navigate('/profile'); onClose(); }, section: 'Navigate', keywords: ['settings', 'account'] },
-    { id: 'nav-audit', label: 'Go to Portfolio Audit', icon: <FileText size={16} />, action: () => { navigate('/audit'); onClose(); }, section: 'Navigate', keywords: ['report', 'analysis'] },
-    { id: 'nav-search', label: 'Go to Deep Search', icon: <Search size={16} />, action: () => { navigate('/search'); onClose(); }, section: 'Navigate', keywords: ['find', 'lookup'] },
+    ...COMMAND_ROUTES.map(command => ({
+      id: command.id,
+      label: command.label,
+      description: command.description,
+      icon: commandIcons[command.id] || <Search size={16} />,
+      action: () => { navigate(command.path); onClose(); },
+      section: 'Navigate',
+      keywords: [...command.keywords],
+    })),
 
     // Actions
     ...(onAddCard ? [{ id: 'action-add', label: 'Add New Card', description: 'Add a card to your collection', icon: <Package size={16} />, action: () => { onAddCard(); onClose(); }, section: 'Actions', keywords: ['new', 'create'] }] : []),

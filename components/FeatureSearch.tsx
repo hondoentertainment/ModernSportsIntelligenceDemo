@@ -2,7 +2,14 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Search, X, ArrowRight, Command } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { searchFeatures, groupByTier, TIER_CONFIG, FEATURE_CATALOG, Feature } from '../lib/featureCatalog';
+import {
+  searchFeatures,
+  groupByTier,
+  TIER_CONFIG,
+  DISCOVERABLE_FEATURE_CATALOG,
+  FEATURED_FEATURE_CATALOG,
+  Feature,
+} from '../lib/featureCatalog';
 import { useFocusTrap } from '../lib/useFocusTrap';
 
 const FeatureSearch: React.FC = () => {
@@ -37,10 +44,7 @@ const FeatureSearch: React.FC = () => {
 
   const results = useMemo(() => {
     if (!query.trim()) {
-      // Show popular/featured when empty
-      return FEATURE_CATALOG.filter(f =>
-        ['dashboard', 'collection', 'deep-search', 'live-impact', 'fractional-vault', 'war-room', 'stress-test', 'vision-grading'].includes(f.id)
-      );
+      return FEATURED_FEATURE_CATALOG;
     }
     return searchFeatures(query);
   }, [query]);
@@ -125,7 +129,7 @@ const FeatureSearch: React.FC = () => {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search 103 features... (e.g. grading, live, tax, AI)"
+                placeholder={`Search ${DISCOVERABLE_FEATURE_CATALOG.length} verified features... (e.g. grading, live, tax, AI)`}
                 className="flex-1 bg-transparent text-sm text-white placeholder:text-slate-500 outline-none"
                 aria-label="Search features"
               />
@@ -212,7 +216,7 @@ const FeatureSearch: React.FC = () => {
                 onClick={() => { setIsOpen(false); navigate('/features'); }}
                 className="text-brand-lime hover:underline font-bold uppercase tracking-wider"
               >
-                View All 103 Features →
+                View All {DISCOVERABLE_FEATURE_CATALOG.length} Features →
               </button>
             </div>
           </div>

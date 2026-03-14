@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "App.tsx",
+    "index.tsx",
+    "vite.config.ts",
+    "playwright.config.ts",
+    "vite-env.d.ts",
+    "api/**/*.ts",
+    "tests/components/FeatureSearch.test.tsx",
+    "tests/lib/featureCatalog.test.ts",
+    "tests/lib/differentiatorData.test.ts",
+    "tests/lib/fiveDifferentiatorService.test.ts",
+    "tests/e2e/**/*.ts"
+  ],
+  "exclude": [
+    "scripts/**",
+    "node_modules/**"
+  ]
+}

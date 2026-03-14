@@ -2,6 +2,7 @@ import { AutoPilotConfig, AutonomousAction, CardInventory, RiskCollar } from "..
 import { MultiAgentService } from "./MultiAgentService";
 import { showToast } from "./toast";
 import { logAuditEvent } from "./auditLog";
+import { insertExecutionApproval } from "./differentiatorData";
 
 const STORAGE_KEY = 'msi_autopilot_config';
 const ACTIONS_KEY = 'msi_autonomous_actions';
@@ -210,6 +211,15 @@ export class AutonomousExecutionService {
 
         const updated = actions.find(action => action.id === actionId);
         if (updated) {
+            await insertExecutionApproval({
+                id: crypto.randomUUID(),
+                intentId: updated.id,
+                actorUserId: undefined,
+                actorLabel: actor,
+                decision,
+                note,
+                createdAt: new Date().toISOString(),
+            });
             await logAuditEvent({
                 category: 'autonomy',
                 action: `autopilot.action.${decision}`,

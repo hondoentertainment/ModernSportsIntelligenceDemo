@@ -1,16 +1,51 @@
-import { GoogleGenAI } from "@google/genai";
-import { showToast } from "./toast";
+import { showToast } from './toast';
+import { serverApiRequest } from './serverApi';
 
-const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
-let missingKeyWarned = false;
+interface GeminiGenerateConfig {
+    responseMimeType?: string;
+    responseSchema?: unknown;
+    tools?: unknown;
+}
 
-export const hasGeminiApiKey = geminiApiKey.length > 0;
+interface GeminiGenerateRequest {
+    model: string;
+    contents: unknown;
+    config?: GeminiGenerateConfig;
+}
 
-export function createGeminiClient(): GoogleGenAI {
-    if (!hasGeminiApiKey && !missingKeyWarned) {
-        missingKeyWarned = true;
-        console.warn("VITE_GEMINI_API_KEY is missing. Gemini features will be unavailable.");
-        showToast('warning', 'AI features unavailable: missing Gemini API key.', { dedupeKey: 'gemini_key_missing' });
-    }
-    return new GoogleGenAI({ apiKey: geminiApiKey });
+interface GeminiGenerateResponse {
+    text: string;
+}
+
+interface GeminiClientLike {
+    models: {
+        generateContent(request: GeminiGenerateRequest): Promise<GeminiGenerateResponse>;
+    };
+}
+
+let missingProxyWarned = false;
+
+export const hasGeminiApiKey = true;
+
+export function createGeminiClient(): GeminiClientLike {
+    return {
+        models: {
+            async generateContent(request: GeminiGenerateRequest): Promise<GeminiGenerateResponse> {
+                try {
+                    return await serverApiRequest<GeminiGenerateResponse>('/api/ai/generate', {
+                        method: 'POST',
+                        body: JSON.stringify(request),
+                    });
+                } catch (error) {
+                    if (!missingProxyWarned) {
+                        missingProxyWarned = true;
+                        showToast('warning', 'AI features are unavailable until the server API is configured.', {
+                            dedupeKey: 'gemini_proxy_missing',
+                        });
+                    }
+                    throw error;
+                }
+            },
+        },
+    };
 }

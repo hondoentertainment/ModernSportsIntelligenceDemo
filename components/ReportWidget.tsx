@@ -8,11 +8,13 @@ import {
   Clock,
   ChevronRight,
   BarChart3,
+  BriefcaseBusiness,
 } from 'lucide-react';
 import { CardInventory } from '../types';
 import {
   ReportType,
   getReportHistory,
+  generateCollectorAuditDossier,
   generatePortfolioSummary,
   generateTaxReport,
   generateInsuranceReport,
@@ -60,6 +62,14 @@ const reportButtons: { type: ReportType; label: string; icon: React.ReactNode; c
     bg: 'bg-purple-500/10',
     border: 'border-purple-500/30',
   },
+  {
+    type: 'collector_audit_dossier',
+    label: 'Audit Dossier',
+    icon: <BriefcaseBusiness size={16} />,
+    color: 'text-cyan-400',
+    bg: 'bg-cyan-500/10',
+    border: 'border-cyan-500/30',
+  },
 ];
 
 function generateReport(type: ReportType, inventory: CardInventory[]): GeneratedReport {
@@ -69,6 +79,7 @@ function generateReport(type: ReportType, inventory: CardInventory[]): Generated
     case 'tax': return generateTaxReport(inventory, config);
     case 'insurance': return generateInsuranceReport(inventory, config);
     case 'performance': return generatePerformanceReport(inventory, config);
+    case 'collector_audit_dossier': return generateCollectorAuditDossier(inventory, config);
   }
 }
 

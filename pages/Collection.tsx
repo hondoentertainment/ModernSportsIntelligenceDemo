@@ -19,8 +19,10 @@ import {
   Clock,
   Star,
   Calculator,
-  Share2
+  Share2,
+  BriefcaseBusiness
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
 import { getEbayCardPrice } from '../lib/gemini';
 import { LEAGUES } from '../constants';
@@ -40,7 +42,7 @@ import ScarcityBadge from '../components/ScarcityBadge';
 import GradingAuditModal from '../components/GradingAuditModal';
 import { LiquidityBadge } from '../components/LiquidityBadge';
 import { ExitStrategyModal } from '../components/ExitStrategyModal';
-import { LiquidityService } from '../lib/LiquidityService';
+import { LiquidityService } from '../lib/liquidityService';
 import { OpportunityBadge } from '../components/OpportunityBadge';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import GradingPremiumTool from '../components/GradingPremiumTool';
@@ -70,6 +72,7 @@ interface CardGridItemProps {
   onOpenLightbox?: (card: CardInventory) => void;
   onOpenExitStrategy?: (card: CardInventory) => void;
   onOpenGradingPremium?: (card: CardInventory) => void;
+  onOpenDossier?: (card: CardInventory) => void;
   isSelected?: boolean;
   onToggleSelect?: (id: string) => void;
   key?: React.Key;
@@ -93,6 +96,7 @@ function CardGridItem({
   onOpenLightbox,
   onOpenExitStrategy,
   onOpenGradingPremium,
+  onOpenDossier,
   isSelected,
   onToggleSelect,
 }: CardGridItemProps) {
@@ -223,6 +227,13 @@ function CardGridItem({
           {isPricing === card.id ? <div className="w-4 h-4 border-2 border-brand-lime border-t-transparent rounded-full animate-spin"></div> : <Sparkles size={16} className="text-brand-lime" />}
           Intelligence Check
         </button>
+        <button
+          onClick={() => onOpenDossier?.(card)}
+          className="w-full flex items-center justify-center gap-3 py-3.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-cyan-200 transition-all"
+        >
+          <BriefcaseBusiness size={16} />
+          Audit Dossier
+        </button>
         {
           card.searchUrl && (
             <a href={card.searchUrl} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime transition-all"><Search size={16} /> Verify on eBay</a>
@@ -253,6 +264,7 @@ function VirtualizedGrid({
   onOpenLightbox,
   onOpenExitStrategy,
   onOpenGradingPremium,
+  onOpenDossier,
 }: {
   items: CardInventory[];
   columns: number;
@@ -273,6 +285,7 @@ function VirtualizedGrid({
   onOpenLightbox?: (card: CardInventory) => void;
   onOpenExitStrategy?: (card: CardInventory) => void;
   onOpenGradingPremium?: (card: CardInventory) => void;
+  onOpenDossier?: (card: CardInventory) => void;
 }) {
   const parentRef = useRef<HTMLDivElement>(null);
   const rowCount = Math.ceil(items.length / columns);
@@ -322,6 +335,7 @@ function VirtualizedGrid({
                   onOpenLightbox={onOpenLightbox}
                   onOpenExitStrategy={onOpenExitStrategy}
                   onOpenGradingPremium={onOpenGradingPremium}
+                  onOpenDossier={onOpenDossier}
                 />
               ))}
             </div>
@@ -353,7 +367,9 @@ const Collection: React.FC = () => {
     markAcquired,
     isCloudSynced,
     isMigrating,
-    loading
+    loading,
+    syncStatus,
+    lastSyncError
   } = useSupabaseInventory();
 
   // Hydrate local inventory with Scarcity Data if missing
@@ -542,6 +558,18 @@ const Collection: React.FC = () => {
         </div>
       )}
 
+      {lastSyncError && (
+        <section className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-sm text-amber-100">
+          <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+            <span className="font-semibold">Repository sync is running in a degraded state.</span>
+            <span className="text-xs uppercase tracking-widest text-amber-300">
+              {syncStatus === 'offline' ? 'Offline Cache' : syncStatus}
+            </span>
+          </div>
+          <p className="mt-2 text-amber-200/90">{lastSyncError}</p>
+        </section>
+      )}
+
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <div className="space-y-2">
@@ -566,6 +594,13 @@ const Collection: React.FC = () => {
           <p className="text-brand-muted max-w-2xl font-medium">Professional grade inventory management and market liquidity tracking.</p>
         </div>
         <div className="flex items-center gap-4">
+          <Link
+            to="/audit-dossier"
+            className="flex items-center gap-3 px-6 py-4 bg-slate-950 border border-cyan-500/20 text-cyan-200 font-black rounded-2xl transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[10px]"
+          >
+            <BriefcaseBusiness size={16} />
+            Audit Dossier
+          </Link>
           <button
             onClick={() => setIsOCRModalOpen(true)}
             className="flex items-center gap-3 px-6 py-4 bg-brand-charcoal border border-brand-lime/30 text-brand-lime font-black rounded-2xl transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[10px] group"
@@ -746,6 +781,7 @@ const Collection: React.FC = () => {
                   onOpenLightbox={(c) => setLightboxCard(c)}
                   onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
                   onOpenGradingPremium={(c) => { setPremiumCard(c); setIsPremiumModalOpen(true); }}
+                  onOpenDossier={(c) => window.location.hash = `/audit-dossier?cardId=${c.id}`}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -767,6 +803,7 @@ const Collection: React.FC = () => {
                       getPriceTrend={getPriceTrend}
                       onOpenLightbox={(c) => setLightboxCard(c)}
                       onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
+                      onOpenDossier={(c) => window.location.hash = `/audit-dossier?cardId=${c.id}`}
                       isSelected={selectedIds.has(card.id)}
                       onToggleSelect={toggleSelection}
                     />
@@ -829,6 +866,9 @@ const Collection: React.FC = () => {
                           </button>
                           <button onClick={() => handleAddToWatchlist(card)} className="p-2 text-slate-500 hover:text-brand-lime transition-colors opacity-0 group-hover:opacity-100" title="Add to Watchlist">
                             <Target size={16} />
+                          </button>
+                          <button onClick={() => window.location.hash = `/audit-dossier?cardId=${card.id}`} className="p-2 text-slate-500 hover:text-cyan-300 transition-colors opacity-0 group-hover:opacity-100" title="Open Audit Dossier">
+                            <BriefcaseBusiness size={16} />
                           </button>
                         </td>
                       </tr>

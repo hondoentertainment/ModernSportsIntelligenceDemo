@@ -1,5 +1,7 @@
 // Phase 37: Execution Integrations
 
+import { insertExecutionFill, upsertExecutionIntent } from './differentiatorData';
+
 export type OrderIntentType = 'buy' | 'list' | 'cancel' | 'counter';
 export type ExecutionState = 'submitted' | 'filled' | 'partial' | 'failed' | 'cancelled';
 
@@ -105,7 +107,7 @@ export class ExecutionService {
 
         const checks = this.preTradeCheck(intent, maxPositionBudget);
         if (!checks.approved) {
-            return {
+            const failedOrder = {
                 id: crypto.randomUUID(),
                 intentId: intent.id,
                 venue,
@@ -114,9 +116,36 @@ export class ExecutionService {
                 filledQuantity: 0,
                 lastError: checks.reasons.join(' ')
             };
+            await upsertExecutionIntent({
+                id: intent.id,
+                actionType: intent.type,
+                venue: venue as any,
+                assetId: intent.assetId,
+                assetName: intent.assetName,
+                quantity: intent.quantity,
+                limitPrice: intent.price,
+                maxSlippagePct: intent.maxSlippagePct,
+                status: 'failed',
+                rationale: failedOrder.lastError,
+                createdAt: intent.createdAt,
+            });
+            return failedOrder;
         }
 
         const order = await adapter.submit(intent);
+        await upsertExecutionIntent({
+            id: intent.id,
+            actionType: intent.type,
+            venue: venue as any,
+            assetId: intent.assetId,
+            assetName: intent.assetName,
+            quantity: intent.quantity,
+            limitPrice: intent.price,
+            maxSlippagePct: intent.maxSlippagePct,
+            status: order.state === 'submitted' ? 'submitted' : 'filled',
+            rationale: `Execution submitted via ${venue}.`,
+            createdAt: intent.createdAt,
+        });
         const orders = [order, ...readOrders()].slice(0, 500);
         writeOrders(orders);
         return order;
@@ -132,6 +161,18 @@ export class ExecutionService {
                 return o;
             }
             const nextState = await adapter.status(o.id);
+            if (nextState === 'filled') {
+                await insertExecutionFill({
+                    id: crypto.randomUUID(),
+                    intentId: o.intentId,
+                    venue: venue as any,
+                    fillQuantity: o.filledQuantity || 1,
+                    fillPrice: o.avgFillPrice || 0,
+                    state: 'filled',
+                    externalOrderId: o.id,
+                    createdAt: new Date().toISOString(),
+                });
+            }
             return { ...o, state: nextState };
         }));
 

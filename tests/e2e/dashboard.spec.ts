@@ -4,9 +4,8 @@ test.describe('Dashboard (after demo login)', () => {
     test.beforeEach(async ({ page }) => {
         await page.goto('/#/login');
         const demoButton = page.getByRole('button', { name: /demo|enter demo/i });
-        if (await demoButton.isVisible()) {
+        if (await demoButton.isVisible({ timeout: 5000 }).catch(() => false)) {
             await demoButton.click();
-            await page.waitForTimeout(500);
             await expect(page).toHaveURL(/#\/$/, { timeout: 15000 });
         }
     });

@@ -1,3 +1,13 @@
+import {
+  fetchDealRoomAttachments,
+  fetchDealRoomMessages,
+  fetchDealRoomParticipants,
+  fetchDealRooms as fetchPersistedDealRooms,
+  insertDealRoomMessage,
+  upsertDealRoom,
+  upsertDealRoomParticipant,
+} from './differentiatorData';
+
 // ── Interfaces ──────────────────────────────────────────────────────────────────
 
 export interface DealParticipant {
@@ -363,4 +373,159 @@ export function getMonthlyVolume(): { month: string; volume: number; deals: numb
     { month: 'Feb', volume: 345000, deals: 18 },
     { month: 'Mar', volume: 198000, deals: 11 },
   ];
+}
+
+function mapRoomRecordToDealRoom(
+  room: Awaited<ReturnType<typeof fetchPersistedDealRooms>>[number],
+  participants: Awaited<ReturnType<typeof fetchDealRoomParticipants>>,
+  messages: Awaited<ReturnType<typeof fetchDealRoomMessages>>,
+  attachments: Awaited<ReturnType<typeof fetchDealRoomAttachments>>,
+): DealRoom {
+  return {
+    id: room.id,
+    title: room.title,
+    type: room.roomType,
+    status: room.status,
+    createdBy: room.ownerUserId || 'owner',
+    participants: participants.map(participant => ({
+      id: participant.id,
+      name: participant.displayName,
+      role: participant.role,
+      institution: 'MSI Verified Counterparty',
+      verified: participant.isVerified,
+      joinedAt: participant.joinedAt,
+      reputation: {
+        rating: participant.isVerified ? 4.8 : 4.2,
+        trades: 0,
+        memberSince: participant.joinedAt.slice(0, 4),
+      },
+    })),
+    card: {
+      player: room.cardPlayer,
+      description: room.cardDescription,
+      grade: room.cardGrade || 'Raw',
+      estimatedValue: room.estimatedValue || room.askingPrice || 0,
+    },
+    askingPrice: room.askingPrice || 0,
+    currentBid: room.currentBid || 0,
+    messages: messages.map(message => ({
+      id: message.id,
+      senderId: message.senderParticipantId || 'system',
+      senderName: message.senderDisplayName,
+      content: message.content,
+      timestamp: message.createdAt,
+      type: message.messageType,
+      offerAmount: message.offerAmount,
+      attachedData: message.metadata,
+    })),
+    attachments: attachments.map(attachment => attachment.filename),
+    createdAt: room.createdAt,
+    expiresAt: room.expiresAt || new Date(Date.now() + 14 * 86400000).toISOString(),
+    isEncrypted: room.isEncrypted,
+  };
+}
+
+export async function getDealRoomsAsync(ownerUserId?: string): Promise<DealRoom[]> {
+  const rooms = await fetchPersistedDealRooms(ownerUserId);
+  if (rooms.length === 0) {
+    return getDealRooms();
+  }
+
+  const hydrated = await Promise.all(rooms.map(async room => {
+    const [participants, messages, attachments] = await Promise.all([
+      fetchDealRoomParticipants(room.id),
+      fetchDealRoomMessages(room.id),
+      fetchDealRoomAttachments(room.id),
+    ]);
+    return mapRoomRecordToDealRoom(room, participants, messages, attachments);
+  }));
+
+  return hydrated;
+}
+
+export async function createDealRoomAsync(
+  card: { player: string; description: string; grade: string; estimatedValue: number },
+  type: DealRoom['type'],
+  askingPrice: number,
+  ownerUserId?: string | null,
+): Promise<DealRoom> {
+  const now = new Date().toISOString();
+  const roomRecord = {
+    id: crypto.randomUUID(),
+    ownerUserId: ownerUserId || null,
+    title: `${card.player} ${card.description} ${card.grade}`,
+    roomType: type,
+    status: 'active' as const,
+    cardPlayer: card.player,
+    cardDescription: card.description,
+    cardGrade: card.grade,
+    estimatedValue: card.estimatedValue,
+    askingPrice,
+    currentBid: 0,
+    isEncrypted: true,
+    createdAt: now,
+    expiresAt: new Date(Date.now() + 14 * 86400000).toISOString(),
+    metadata: { source: 'private_deal_room_agent' },
+  };
+  await upsertDealRoom(roomRecord);
+
+  const participant = {
+    id: crypto.randomUUID(),
+    roomId: roomRecord.id,
+    userId: ownerUserId || null,
+    displayName: 'You',
+    role: type === 'sell' || type === 'swap' ? 'seller' as const : 'buyer' as const,
+    isVerified: true,
+    joinedAt: now,
+  };
+  await upsertDealRoomParticipant(participant);
+  await insertDealRoomMessage({
+    id: crypto.randomUUID(),
+    roomId: roomRecord.id,
+    senderParticipantId: null,
+    senderDisplayName: 'System',
+    messageType: 'system',
+    content: `Private deal room created for ${card.player}.`,
+    createdAt: now,
+  });
+
+  return mapRoomRecordToDealRoom(roomRecord, [participant], [{
+    id: crypto.randomUUID(),
+    roomId: roomRecord.id,
+    senderParticipantId: null,
+    senderDisplayName: 'System',
+    messageType: 'system',
+    content: `Private deal room created for ${card.player}.`,
+    createdAt: now,
+  }], []);
+}
+
+export async function sendMessageAsync(roomId: string, message: Omit<DealMessage, 'id' | 'timestamp'>): Promise<DealMessage> {
+  const next: DealMessage = {
+    ...message,
+    id: crypto.randomUUID(),
+    timestamp: new Date().toISOString(),
+  };
+  await insertDealRoomMessage({
+    id: next.id,
+    roomId,
+    senderParticipantId: next.senderId === 'system' ? null : next.senderId,
+    senderDisplayName: next.senderName,
+    messageType: next.type,
+    content: next.content,
+    offerAmount: next.offerAmount,
+    metadata: next.attachedData,
+    createdAt: next.timestamp,
+  });
+  return next;
+}
+
+export async function makeOfferAsync(roomId: string, amount: number): Promise<DealMessage> {
+  return sendMessageAsync(roomId, {
+    senderId: 'p-010',
+    senderName: 'You',
+    content: `Offer: $${amount.toLocaleString()}`,
+    type: 'offer',
+    offerAmount: amount,
+  });
 }

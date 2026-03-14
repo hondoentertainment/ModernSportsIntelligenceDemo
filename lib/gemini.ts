@@ -86,7 +86,7 @@ const MOCK_PROSPECTS: Record<string, ProspectData[]> = {
 
 export async function getEbayCardPrice(card: CardInventory, signal?: AbortSignal): Promise<PricingAnalysis | null> {
   // Try eBay API first if configured
-  if (ebayApi.config) {
+  if (ebayApi.isAvailable()) {
     try {
       const ebayResult = await ebayApi.getMarketValue({
         playerName: card.player,
@@ -213,7 +213,7 @@ export async function getEbayCardPrice(card: CardInventory, signal?: AbortSignal
  */
 export async function getWatchlistItemPrice(target: TargetWatchlist, signal?: AbortSignal): Promise<PricingAnalysis | null> {
   // Try eBay API first if configured
-  if (ebayApi.config) {
+  if (ebayApi.isAvailable()) {
     try {
       const ebayResult = await ebayApi.getMarketValue({
         playerName: target.player,
@@ -356,7 +356,7 @@ export async function getRealTimeLeagueTrends(league: string, signal?: AbortSign
       contents: prompt,
 
       config: {
-        tools: [{ googleSearchRetrieval: {} as GoogleSearchRetrieval }],
+        tools: [{ googleSearchRetrieval: {} }],
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.ARRAY,
