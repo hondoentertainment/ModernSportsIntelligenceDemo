@@ -1,5 +1,5 @@
 // Phase 144: Youth & Next-Gen Collector Onboarding Platform
-// Interactive learning platform for new and young collectors with guided modules, achievements, and mentorship
+// Educational content, starter collections, glossary, achievements, and mentorship matching
 
 // ---- Types ----
 
@@ -9,11 +9,14 @@ export interface LearningModule {
   id: string;
   title: string;
   description: string;
-  difficulty: SkillLevel;
+  level: SkillLevel;
   estimatedMinutes: number;
   xpReward: number;
-  completed: boolean;
+  category: string;
   order: number;
+  completed: boolean;
+  topics: string[];
+  iconEmoji: string;
 }
 
 export interface Achievement {
@@ -21,10 +24,11 @@ export interface Achievement {
   name: string;
   description: string;
   xpValue: number;
-  icon: string;
+  iconEmoji: string;
   unlocked: boolean;
-  unlockedAt?: string;
+  unlockedDate?: string;
   category: string;
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 }
 
 export interface StarterCollection {
@@ -32,29 +36,33 @@ export interface StarterCollection {
   name: string;
   description: string;
   budget: number;
-  cards: { player: string; year: number; set: string; estimatedValue: number }[];
+  cardCount: number;
   sport: string;
   difficulty: SkillLevel;
+  cards: { name: string; estimatedPrice: number; reason: string }[];
+  tips: string[];
 }
 
 export interface GlossaryTerm {
   id: string;
   term: string;
   definition: string;
-  category: string;
+  example?: string;
   relatedTerms: string[];
+  category: string;
 }
 
 export interface MentorProfile {
   id: string;
   name: string;
   avatar: string;
-  bio: string;
   specialties: string[];
+  experience: string;
   rating: number;
-  availability: string;
-  yearsExperience: number;
-  studentsHelped: number;
+  menteeCount: number;
+  available: boolean;
+  bio: string;
+  responseTime: string;
 }
 
 export interface CollectorMilestone {
@@ -63,7 +71,8 @@ export interface CollectorMilestone {
   description: string;
   xpRequired: number;
   reward: string;
-  reached: boolean;
+  completed: boolean;
+  order: number;
 }
 
 export interface SafetyTip {
@@ -71,54 +80,256 @@ export interface SafetyTip {
   title: string;
   description: string;
   category: string;
-  priority: 'low' | 'medium' | 'high';
+  importance: 'low' | 'medium' | 'high' | 'critical';
 }
 
 export interface BudgetPlan {
   id: string;
   name: string;
   monthlyBudget: number;
-  description: string;
-  breakdown: { category: string; percentage: number; amount: number }[];
-  skillLevel: SkillLevel;
+  ageRange: string;
+  allocation: { category: string; percentage: number; amount: number }[];
+  tips: string[];
+  savingsGoal: number;
 }
 
 export interface QuizQuestion {
   id: string;
+  moduleId: string;
   question: string;
-  options: [string, string, string, string];
+  options: string[];
   correctIndex: number;
   explanation: string;
-  difficulty: SkillLevel;
-  moduleId: string;
   xpReward: number;
 }
 
 export interface ProgressTracker {
-  level: number;
-  xp: number;
   totalXp: number;
+  level: number;
+  levelName: string;
+  xpToNextLevel: number;
   modulesCompleted: number;
+  totalModules: number;
   achievementsUnlocked: number;
-  streakDays: number;
-  joinDate: string;
+  totalAchievements: number;
+  streak: number;
+  lastActive: string;
 }
 
 export interface CommunityChallenge {
   id: string;
   title: string;
   description: string;
-  type: string;
   xpReward: number;
   participants: number;
-  startDate: string;
-  endDate: string;
-  active: boolean;
+  deadline: string;
+  difficulty: SkillLevel;
+  status: 'active' | 'upcoming' | 'completed';
+  tasks: string[];
 }
 
-// ---- Storage ----
+// ---- Constants ----
 
 const STORAGE_KEY = 'msi_youth_onboarding';
+
+const LEVEL_THRESHOLDS = [
+  { level: 1, xp: 0, name: 'Rookie Collector' },
+  { level: 2, xp: 200, name: 'Card Spotter' },
+  { level: 3, xp: 500, name: 'Pack Opener' },
+  { level: 4, xp: 1000, name: 'Set Builder' },
+  { level: 5, xp: 2000, name: 'Grade Hunter' },
+  { level: 6, xp: 3500, name: 'Market Scout' },
+  { level: 7, xp: 5500, name: 'Collection Curator' },
+  { level: 8, xp: 8000, name: 'Trading Pro' },
+  { level: 9, xp: 12000, name: 'Hobby Veteran' },
+  { level: 10, xp: 18000, name: 'Master Collector' },
+];
+
+// ---- Mock Data: 12 Learning Modules ----
+
+const MOCK_LEARNING_MODULES: LearningModule[] = [
+  { id: 'mod-001', title: 'What Are Trading Cards?', description: 'Discover the world of sports trading cards, from their history to how they are made and why people collect them.', level: 'beginner', estimatedMinutes: 15, xpReward: 50, category: 'Fundamentals', order: 1, completed: true, topics: ['Card history', 'Types of cards', 'Why people collect', 'Major sports covered'], iconEmoji: '🃏' },
+  { id: 'mod-002', title: 'Understanding Card Grades', description: 'Learn what card grading is, why it matters, and how companies like PSA, BGS, and SGC assess card condition.', level: 'beginner', estimatedMinutes: 20, xpReward: 75, category: 'Grading', order: 2, completed: true, topics: ['What is grading', 'PSA vs BGS vs SGC', 'Grade scale explained', 'When to grade'], iconEmoji: '🔍' },
+  { id: 'mod-003', title: 'Building Your First Collection', description: 'Step-by-step guide to starting your card collection on any budget. Learn what to buy first and how to organize.', level: 'beginner', estimatedMinutes: 25, xpReward: 100, category: 'Collecting', order: 3, completed: true, topics: ['Setting a budget', 'Choosing your focus', 'Where to buy', 'Storage basics'], iconEmoji: '📦' },
+  { id: 'mod-004', title: 'Spotting Fakes & Counterfeits', description: 'Protect yourself by learning how to identify fake cards, trimmed cards, and other common scams in the hobby.', level: 'intermediate', estimatedMinutes: 30, xpReward: 125, category: 'Safety', order: 4, completed: false, topics: ['Common red flags', 'Fake auto detection', 'Trimmed card signs', 'Reputable sellers'], iconEmoji: '🛡️' },
+  { id: 'mod-005', title: 'Smart Buying Strategies', description: 'Learn where and when to buy cards for the best deals. Understand market timing, auction strategies, and fair pricing.', level: 'intermediate', estimatedMinutes: 25, xpReward: 100, category: 'Market', order: 5, completed: false, topics: ['Buy low sell high', 'Auction tips', 'eBay best practices', 'Local card shows'], iconEmoji: '💡' },
+  { id: 'mod-006', title: 'Card Care 101', description: 'Keep your cards in pristine condition with proper handling, storage, and display techniques.', level: 'beginner', estimatedMinutes: 15, xpReward: 50, category: 'Care', order: 6, completed: false, topics: ['Penny sleeves & top loaders', 'Handling techniques', 'Temperature & humidity', 'Display options'], iconEmoji: '🧤' },
+  { id: 'mod-007', title: 'Market Basics & Card Values', description: 'Understand what makes a card valuable and how to research prices using comps, population reports, and market trends.', level: 'intermediate', estimatedMinutes: 30, xpReward: 125, category: 'Market', order: 7, completed: false, topics: ['Supply and demand', 'Comparable sales', 'Population reports', 'Rookies vs veterans'], iconEmoji: '📊' },
+  { id: 'mod-008', title: 'The Art of Trading', description: 'Master the fundamentals of trading cards with other collectors. Learn etiquette, fair trade evaluation, and building relationships.', level: 'intermediate', estimatedMinutes: 20, xpReward: 100, category: 'Trading', order: 8, completed: false, topics: ['Trade etiquette', 'Evaluating trade offers', 'Online trading safety', 'Building trust'], iconEmoji: '🤝' },
+  { id: 'mod-009', title: 'Understanding Parallels & Inserts', description: 'Decode the rainbow of parallel versions, insert sets, short prints, and other variations that make collecting exciting.', level: 'beginner', estimatedMinutes: 20, xpReward: 75, category: 'Fundamentals', order: 9, completed: false, topics: ['Base vs parallel', 'Numbered cards', 'Insert sets', 'Short prints & SSPs'], iconEmoji: '🌈' },
+  { id: 'mod-010', title: 'Breaking & Box Opening', description: 'Learn about hobby boxes, retail boxes, and group breaks. Understand odds, expected value, and responsible opening.', level: 'intermediate', estimatedMinutes: 25, xpReward: 100, category: 'Collecting', order: 10, completed: false, topics: ['Box types explained', 'Understanding odds', 'Group breaks', 'Expected value'], iconEmoji: '📦' },
+  { id: 'mod-011', title: 'Selling Your Cards', description: 'When you are ready to sell, learn the best platforms, pricing strategies, and shipping best practices.', level: 'advanced', estimatedMinutes: 30, xpReward: 150, category: 'Market', order: 11, completed: false, topics: ['eBay selling tips', 'Shipping safely', 'Setting prices', 'Other platforms'], iconEmoji: '💰' },
+  { id: 'mod-012', title: 'Long-Term Collecting Strategy', description: 'Build a collection with lasting value. Learn about set building, player investing, and portfolio diversification.', level: 'advanced', estimatedMinutes: 35, xpReward: 175, category: 'Strategy', order: 12, completed: false, topics: ['Set completion', 'Player selection', 'Diversification', 'Patience pays'], iconEmoji: '🎯' },
+];
+
+// ---- Mock Achievements (20) ----
+
+const MOCK_ACHIEVEMENTS: Achievement[] = [
+  { id: 'ach-001', name: 'First Purchase', description: 'Buy your very first trading card', xpValue: 25, iconEmoji: '🛒', unlocked: true, unlockedDate: '2026-01-15', category: 'Collecting', rarity: 'common' },
+  { id: 'ach-002', name: 'Grade Guru', description: 'Complete the Understanding Card Grades module', xpValue: 50, iconEmoji: '🎓', unlocked: true, unlockedDate: '2026-01-20', category: 'Learning', rarity: 'common' },
+  { id: 'ach-003', name: 'Collection of 10', description: 'Reach 10 cards in your collection', xpValue: 30, iconEmoji: '🔟', unlocked: true, unlockedDate: '2026-02-01', category: 'Collecting', rarity: 'common' },
+  { id: 'ach-004', name: 'Collection of 100', description: 'Reach 100 cards in your collection', xpValue: 100, iconEmoji: '💯', unlocked: false, category: 'Collecting', rarity: 'uncommon' },
+  { id: 'ach-005', name: 'First Trade', description: 'Complete your first card trade with another collector', xpValue: 50, iconEmoji: '🤝', unlocked: true, unlockedDate: '2026-02-10', category: 'Trading', rarity: 'common' },
+  { id: 'ach-006', name: 'Pack Rat', description: 'Open 10 packs of cards', xpValue: 40, iconEmoji: '📦', unlocked: true, unlockedDate: '2026-02-05', category: 'Collecting', rarity: 'common' },
+  { id: 'ach-007', name: 'Sharp Eye', description: 'Successfully identify a fake card', xpValue: 75, iconEmoji: '👁️', unlocked: false, category: 'Safety', rarity: 'uncommon' },
+  { id: 'ach-008', name: 'Budget Master', description: 'Stay within your monthly budget for 3 consecutive months', xpValue: 100, iconEmoji: '💵', unlocked: false, category: 'Finance', rarity: 'uncommon' },
+  { id: 'ach-009', name: 'Rookie Hunter', description: 'Collect 5 different rookie cards', xpValue: 60, iconEmoji: '⭐', unlocked: true, unlockedDate: '2026-02-15', category: 'Collecting', rarity: 'common' },
+  { id: 'ach-010', name: 'Set Builder', description: 'Complete your first card set', xpValue: 200, iconEmoji: '🏆', unlocked: false, category: 'Collecting', rarity: 'rare' },
+  { id: 'ach-011', name: 'Quiz Whiz', description: 'Score 100% on any learning module quiz', xpValue: 50, iconEmoji: '🧠', unlocked: true, unlockedDate: '2026-01-22', category: 'Learning', rarity: 'common' },
+  { id: 'ach-012', name: 'Show Goer', description: 'Attend your first card show', xpValue: 75, iconEmoji: '🎪', unlocked: false, category: 'Community', rarity: 'uncommon' },
+  { id: 'ach-013', name: 'Grading Pro', description: 'Submit your first card for professional grading', xpValue: 100, iconEmoji: '📋', unlocked: false, category: 'Grading', rarity: 'uncommon' },
+  { id: 'ach-014', name: 'Mentor Match', description: 'Connect with a mentor for the first time', xpValue: 50, iconEmoji: '🧑‍🏫', unlocked: false, category: 'Community', rarity: 'common' },
+  { id: 'ach-015', name: 'Multi-Sport', description: 'Collect cards from 3 different sports', xpValue: 80, iconEmoji: '🏅', unlocked: false, category: 'Collecting', rarity: 'uncommon' },
+  { id: 'ach-016', name: 'Knowledge Seeker', description: 'Complete 5 learning modules', xpValue: 150, iconEmoji: '📚', unlocked: false, category: 'Learning', rarity: 'rare' },
+  { id: 'ach-017', name: 'Streak Master', description: 'Maintain a 7-day login streak', xpValue: 75, iconEmoji: '🔥', unlocked: false, category: 'Engagement', rarity: 'uncommon' },
+  { id: 'ach-018', name: 'Community Star', description: 'Participate in 3 community challenges', xpValue: 120, iconEmoji: '🌟', unlocked: false, category: 'Community', rarity: 'rare' },
+  { id: 'ach-019', name: 'Vintage Explorer', description: 'Add a card from before 2000 to your collection', xpValue: 80, iconEmoji: '🏛️', unlocked: false, category: 'Collecting', rarity: 'uncommon' },
+  { id: 'ach-020', name: 'Hobby Legend', description: 'Reach Level 10 Master Collector', xpValue: 500, iconEmoji: '👑', unlocked: false, category: 'Milestone', rarity: 'legendary' },
+];
+
+// ---- Mock Starter Collections (6) ----
+
+const MOCK_STARTER_COLLECTIONS: StarterCollection[] = [
+  { id: 'sc-001', name: 'Budget Starter', description: 'The perfect entry point for new collectors. Focuses on affordable base cards and a few parallels.', budget: 50, cardCount: 25, sport: 'Multi-Sport', difficulty: 'beginner', cards: [{ name: '2024 Topps Series 1 Hobby Pack (x3)', estimatedPrice: 9, reason: 'Great way to experience pack opening with quality base cards' }, { name: 'Rookie card lot (10 random rookies)', estimatedPrice: 8, reason: 'Rookies are the building blocks of any collection' }, { name: 'Team set of your favorite team', estimatedPrice: 5, reason: 'Personal connection makes collecting fun' }, { name: 'Top loader + penny sleeve combo (50 ct)', estimatedPrice: 6, reason: 'Protect your best pulls immediately' }, { name: 'Single hobby pack Panini Prizm', estimatedPrice: 12, reason: 'Experience the popular Prizm brand' }, { name: 'Card storage box (200 ct)', estimatedPrice: 3, reason: 'Keep your growing collection organized' }, { name: 'Bargain bin star cards (5 cards)', estimatedPrice: 7, reason: 'Get recognizable names at discount prices' }], tips: ['Start with one sport you love', 'Do not chase expensive cards right away', 'Trade duplicates with friends', 'Keep your cards organized from day one'] },
+  { id: 'sc-002', name: 'Sport Focus', description: 'Dive deep into one sport with a curated mix of base, rookies, and one graded card.', budget: 100, cardCount: 30, sport: 'Baseball', difficulty: 'beginner', cards: [{ name: '2024 Topps Chrome Hobby Pack (x2)', estimatedPrice: 20, reason: 'Chrome cards are iconic and hold value better than base' }, { name: 'PSA 8 vintage common (1970s-80s)', estimatedPrice: 15, reason: 'Your first graded card teaches you about the grading scale' }, { name: 'Current star base card lot (10 cards)', estimatedPrice: 12, reason: 'Build a foundation of current star players' }, { name: 'Rookie card of a top prospect', estimatedPrice: 18, reason: 'Investment in an up-and-coming player' }, { name: 'Insert/parallel lot (5 cards)', estimatedPrice: 10, reason: 'Learn to identify different card types' }, { name: 'Complete team set', estimatedPrice: 8, reason: 'Satisfaction of having a complete set' }, { name: 'Premium card sleeves & top loaders', estimatedPrice: 8, reason: 'Proper protection is essential' }, { name: 'Binder with 9-pocket pages', estimatedPrice: 9, reason: 'Display and organize your collection beautifully' }], tips: ['Learn the top rookies each year', 'Follow your team closely', 'Compare prices across multiple platforms', 'Start a want list'] },
+  { id: 'sc-003', name: 'Graded Beginning', description: 'Start with professionally graded cards to learn about condition and long-term value.', budget: 200, cardCount: 8, sport: 'Multi-Sport', difficulty: 'intermediate', cards: [{ name: 'PSA 9 modern rookie card', estimatedPrice: 45, reason: 'A high-grade rookie is the cornerstone of any collection' }, { name: 'BGS 9.5 parallel card', estimatedPrice: 35, reason: 'Experience the BGS grading standard' }, { name: 'SGC graded vintage card (1980s)', estimatedPrice: 25, reason: 'SGC offers affordable vintage options' }, { name: 'PSA 10 base card of a star', estimatedPrice: 30, reason: 'See what perfection looks like in grading' }, { name: 'CGC graded card', estimatedPrice: 20, reason: 'Explore a newer grading company' }, { name: 'Raw card to submit for grading', estimatedPrice: 15, reason: 'Experience the grading submission process' }, { name: 'Grading submission fee (1 card)', estimatedPrice: 20, reason: 'Learn the process firsthand' }, { name: 'One-touch magnetic holders (5 ct)', estimatedPrice: 10, reason: 'Premium display for your graded cards' }], tips: ['Compare grades across companies', 'Learn sub-grade breakdowns for BGS', 'Centering is the most common issue', 'Start with economy grading tiers to save money'] },
+  { id: 'sc-004', name: 'Vintage Explorer', description: 'Travel back in time with affordable vintage cards from the 1960s through 1990s.', budget: 150, cardCount: 15, sport: 'Baseball', difficulty: 'intermediate', cards: [{ name: '1980s Topps star card (ungraded)', estimatedPrice: 12, reason: 'Affordable stars from the junk wax era' }, { name: '1970s Topps common lot (10 cards)', estimatedPrice: 20, reason: 'Feel the history in your hands' }, { name: '1990 Topps Frank Thomas RC', estimatedPrice: 15, reason: 'Iconic rookie card at an accessible price' }, { name: '1987 Topps Barry Bonds RC', estimatedPrice: 10, reason: 'Controversial but historically significant' }, { name: '1989 Upper Deck Ken Griffey Jr RC', estimatedPrice: 25, reason: 'The card that changed the hobby' }, { name: '1960s Topps card (fair condition)', estimatedPrice: 18, reason: 'Your first true vintage piece' }, { name: '1993 SP Derek Jeter RC', estimatedPrice: 30, reason: 'A modern vintage classic' }, { name: 'Vintage card storage supplies', estimatedPrice: 8, reason: 'Older cards need gentle handling' }, { name: 'Price guide or Beckett issue', estimatedPrice: 12, reason: 'Learn to research vintage values' }], tips: ['Condition is everything with vintage', 'Learn about different Topps series by year', 'Junk wax era cards are great entry points', 'Handle vintage cards with clean dry hands'] },
+  { id: 'sc-005', name: 'Modern Rookie', description: 'Focus on current rookies and prospects with the best chance of future appreciation.', budget: 100, cardCount: 12, sport: 'Football', difficulty: 'beginner', cards: [{ name: 'Top QB rookie base card', estimatedPrice: 15, reason: 'QBs drive the football card market' }, { name: 'Panini Prizm Silver rookie', estimatedPrice: 20, reason: 'Silver Prizms are the standard for football cards' }, { name: 'Donruss Rated Rookie lot (3 cards)', estimatedPrice: 8, reason: 'Rated Rookies are an iconic insert' }, { name: 'Select Concourse rookie', estimatedPrice: 12, reason: 'Select tiers teach you about product lines' }, { name: 'Optic Rated Rookie', estimatedPrice: 10, reason: 'The chrome version of Donruss' }, { name: 'Mosaic rookie card', estimatedPrice: 8, reason: 'Beautiful designs at a fair price' }, { name: 'Contenders rookie ticket', estimatedPrice: 12, reason: 'Contenders is key for football collectors' }, { name: 'Card supplies and storage', estimatedPrice: 15, reason: 'Protect your investments from day one' }], tips: ['Draft picks cards drop when pro versions release', 'Wait for prices to settle before buying rookies', 'Focus on skill positions in football', 'Track player performance throughout the season'] },
+  { id: 'sc-006', name: 'Multi-Sport Sampler', description: 'Sample cards from baseball, basketball, football, and hockey to find your niche.', budget: 175, cardCount: 20, sport: 'Multi-Sport', difficulty: 'beginner', cards: [{ name: 'Topps Baseball hobby pack', estimatedPrice: 15, reason: 'Americas pastime and the original card hobby' }, { name: 'Panini Prizm Basketball pack', estimatedPrice: 20, reason: 'Basketball cards are the hottest market right now' }, { name: 'Donruss Football blaster box', estimatedPrice: 25, reason: 'Good value for football card variety' }, { name: 'Upper Deck Hockey pack', estimatedPrice: 12, reason: 'Hockey has a passionate collector community' }, { name: 'Baseball star card', estimatedPrice: 15, reason: 'An anchor card for your baseball section' }, { name: 'Basketball rookie card', estimatedPrice: 20, reason: 'NBA rookies are always exciting' }, { name: 'Football parallel card', estimatedPrice: 12, reason: 'Experience the rainbow of parallels' }, { name: 'Hockey Young Guns RC', estimatedPrice: 18, reason: 'The most popular hockey insert set' }, { name: 'Multi-sport storage solution', estimatedPrice: 15, reason: 'Organize by sport from the start' }, { name: 'Card sleeves and top loaders', estimatedPrice: 8, reason: 'Essential supplies for any collector' }, { name: 'Hobby magazine or guide', estimatedPrice: 15, reason: 'Stay informed across all sports' }], tips: ['Try each sport before committing to one', 'Basketball and football cards tend to be most expensive', 'Hockey offers great value for collectors on a budget', 'Baseball has the deepest history and most sets'] },
+];
+
+// ---- Mock Glossary (40 terms) ----
+
+const MOCK_GLOSSARY: GlossaryTerm[] = [
+  { id: 'gl-001', term: 'Auto', definition: 'Short for autograph. A card that has been signed by the player, either on-card or on a sticker applied to the card.', example: 'I pulled a Jaylen Brown auto from a Prizm box!', relatedTerms: ['On-Card Auto', 'Sticker Auto', 'Hard-Signed'], category: 'Card Types' },
+  { id: 'gl-002', term: 'Base Card', definition: 'The standard, most common version of a card in a set. These make up the majority of cards produced.', example: 'Base cards are numbered in the main set checklist.', relatedTerms: ['Parallel', 'Insert', 'Short Print'], category: 'Card Types' },
+  { id: 'gl-003', term: 'BGS', definition: 'Beckett Grading Services. One of the major card grading companies known for sub-grades in centering, corners, edges, and surface.', relatedTerms: ['PSA', 'SGC', 'CGC'], category: 'Grading' },
+  { id: 'gl-004', term: 'Blaster Box', definition: 'A retail box of cards typically sold at stores like Walmart and Target, usually containing 6-8 packs.', example: 'I grabbed a Topps blaster at Target for $25.', relatedTerms: ['Hobby Box', 'Hanger Box', 'Fat Pack'], category: 'Products' },
+  { id: 'gl-005', term: 'Break', definition: 'A group buying event where one person opens boxes and distributes cards to participants who bought spots.', example: 'I joined a Prizm case break and got the Lakers.', relatedTerms: ['Random Team', 'Pick Your Team', 'Hit Draft'], category: 'Buying' },
+  { id: 'gl-006', term: 'Centering', definition: 'How well-centered the image is on the card. Poor centering reduces the grade. Measured as a ratio like 60/40.', relatedTerms: ['Grade', 'Surface', 'Corners', 'Edges'], category: 'Grading' },
+  { id: 'gl-007', term: 'Chrome', definition: 'A type of card stock with a shiny, chromium finish. Topps Chrome and Bowman Chrome are popular examples.', example: 'Chrome cards have a distinct shine and feel compared to paper cards.', relatedTerms: ['Refractor', 'Paper', 'Base'], category: 'Card Types' },
+  { id: 'gl-008', term: 'Comp', definition: 'Short for comparable sale. A recently sold listing used to determine a cards fair market value.', example: 'The last comp for this card was $45 on eBay.', relatedTerms: ['FMV', 'Last Sold', 'Market Value'], category: 'Market' },
+  { id: 'gl-009', term: 'Ding', definition: 'A small dent or imperfection on the surface or edge of a card that can lower its grade.', relatedTerms: ['Corner Wear', 'Surface Scratch', 'Crease'], category: 'Condition' },
+  { id: 'gl-010', term: 'Error Card', definition: 'A card with a printing mistake such as wrong stats, misspelled name, or incorrect photo. Some errors are valuable.', example: 'The 1989 Fleer Bill Ripken error card is famous.', relatedTerms: ['Variation', 'Corrected', 'SP'], category: 'Card Types' },
+  { id: 'gl-011', term: 'FMV', definition: 'Fair Market Value. The price a card would reasonably sell for based on recent comparable sales.', relatedTerms: ['Comp', 'Book Value', 'Market Price'], category: 'Market' },
+  { id: 'gl-012', term: 'Gem Mint', definition: 'The highest or near-highest grade a card can receive, typically PSA 10 or BGS 9.5. Indicates near-perfect condition.', relatedTerms: ['PSA 10', 'BGS 9.5', 'Pristine'], category: 'Grading' },
+  { id: 'gl-013', term: 'Hobby Box', definition: 'A box of cards sold through card shops and hobby dealers, typically with guaranteed hits like autos or relics.', example: 'Hobby boxes are more expensive but guarantee autographs.', relatedTerms: ['Blaster Box', 'Jumbo Box', 'Super Box'], category: 'Products' },
+  { id: 'gl-014', term: 'Insert', definition: 'A special card that is not part of the base set, often with unique designs and lower print runs.', example: 'I pulled a Stained Glass insert from my Prizm box!', relatedTerms: ['Base Card', 'Parallel', 'Chase Card'], category: 'Card Types' },
+  { id: 'gl-015', term: 'Junk Wax Era', definition: 'The period from roughly 1987-1993 when cards were massively overproduced, making most base cards nearly worthless.', example: '1989 Donruss and 1990 Fleer are classic junk wax products.', relatedTerms: ['Overproduction', 'Vintage', 'Modern'], category: 'History' },
+  { id: 'gl-016', term: 'Lot', definition: 'A group of cards sold together as a single listing, often themed by player, team, or set.', relatedTerms: ['Bundle', 'Collection', 'Bulk'], category: 'Buying' },
+  { id: 'gl-017', term: 'Numbered', definition: 'A card with a specific serial number printed on it, indicating limited production. Written as /99, /50, etc.', example: 'This Gold parallel is numbered /50, meaning only 50 exist.', relatedTerms: ['Limited Edition', 'Print Run', 'Parallel'], category: 'Card Types' },
+  { id: 'gl-018', term: 'One-of-One (1/1)', definition: 'A card that is the only one of its kind in existence. The most sought-after parallel level.', example: 'I pulled a 1/1 Superfractor from Topps Chrome!', relatedTerms: ['Numbered', 'Superfractor', 'Printing Plate'], category: 'Card Types' },
+  { id: 'gl-019', term: 'Parallel', definition: 'A version of a base card with a different color, pattern, or finish. Parallels come in varying degrees of rarity.', example: 'The Silver Prizm is the most popular parallel in Prizm basketball.', relatedTerms: ['Base Card', 'Refractor', 'Numbered'], category: 'Card Types' },
+  { id: 'gl-020', term: 'Patch Card', definition: 'A card containing a piece of game-worn or player-worn jersey material, often showing part of a team logo or number.', relatedTerms: ['Relic', 'Game-Used', 'Memorabilia'], category: 'Card Types' },
+  { id: 'gl-021', term: 'Penny Sleeve', definition: 'A thin, inexpensive plastic sleeve used as the first layer of protection for a card.', relatedTerms: ['Top Loader', 'One-Touch', 'Card Saver'], category: 'Supplies' },
+  { id: 'gl-022', term: 'Pop Report', definition: 'Population report showing how many cards of a specific type have been graded at each grade level by a grading company.', example: 'The PSA pop report shows only 5 copies of this card exist in PSA 10.', relatedTerms: ['Census', 'Registry', 'Scarcity'], category: 'Grading' },
+  { id: 'gl-023', term: 'PSA', definition: 'Professional Sports Authenticator. The most widely recognized and used card grading service.', relatedTerms: ['BGS', 'SGC', 'CGC'], category: 'Grading' },
+  { id: 'gl-024', term: 'RC', definition: 'Rookie Card. A players first officially licensed trading card, typically the most valuable card of that player.', example: 'The 2018 Topps Update Juan Soto RC is a key modern card.', relatedTerms: ['Prospect', '1st Bowman', 'Rated Rookie'], category: 'Card Types' },
+  { id: 'gl-025', term: 'Refractor', definition: 'A type of parallel with a rainbow-like reflective surface, most commonly associated with Topps Chrome products.', example: 'Refractors catch the light differently at every angle.', relatedTerms: ['Chrome', 'Parallel', 'Prizm'], category: 'Card Types' },
+  { id: 'gl-026', term: 'Relic', definition: 'A card containing a piece of memorabilia such as a jersey swatch, bat piece, or other game-used material.', relatedTerms: ['Patch Card', 'Game-Used', 'Memorabilia'], category: 'Card Types' },
+  { id: 'gl-027', term: 'SGC', definition: 'Sportscard Guaranty Corporation. A grading company gaining popularity for its attractive tuxedo-style holders.', relatedTerms: ['PSA', 'BGS', 'CGC'], category: 'Grading' },
+  { id: 'gl-028', term: 'Short Print (SP)', definition: 'A card produced in smaller quantities than regular base cards, making it more scarce and typically more valuable.', example: 'Image variation SPs in Topps are highly collected.', relatedTerms: ['SSP', 'Base Card', 'Variation'], category: 'Card Types' },
+  { id: 'gl-029', term: 'Slab', definition: 'The hard plastic case a card is sealed in after being professionally graded.', example: 'My PSA 10 Jeter is in a perfect slab on my shelf.', relatedTerms: ['Grade', 'Case', 'Holder'], category: 'Grading' },
+  { id: 'gl-030', term: 'Top Loader', definition: 'A rigid plastic holder used to protect individual cards. Cards are inserted from the top opening.', relatedTerms: ['Penny Sleeve', 'One-Touch', 'Card Saver'], category: 'Supplies' },
+  { id: 'gl-031', term: 'Trimmed', definition: 'A card that has been illegally cut or altered to improve its appearance, especially centering. This is fraud.', relatedTerms: ['Altered', 'Counterfeit', 'Fake'], category: 'Safety' },
+  { id: 'gl-032', term: 'Variation', definition: 'An alternate version of a card with a different image, design, or detail from the standard version.', example: 'Photo variation short prints can be very valuable.', relatedTerms: ['SP', 'SSP', 'Error Card'], category: 'Card Types' },
+  { id: 'gl-033', term: 'Wax', definition: 'Originally referred to wax-sealed packs. Now used as a general term for sealed card product.', example: 'Are you ripping wax this weekend?', relatedTerms: ['Pack', 'Box', 'Sealed'], category: 'Products' },
+  { id: 'gl-034', term: 'Young Guns', definition: 'Upper Deck hockey rookie card subset. The most popular and collected hockey rookie cards.', example: 'Connor McDavid Young Guns is worth over $200 in PSA 10.', relatedTerms: ['RC', 'Rookie', 'Upper Deck'], category: 'Card Types' },
+  { id: 'gl-035', term: 'Case Hit', definition: 'An extremely rare card that statistically appears only once per sealed case of boxes.', relatedTerms: ['Box Hit', 'Odds', 'Pull Rate'], category: 'Products' },
+  { id: 'gl-036', term: 'Flip', definition: 'Buying a card to quickly resell at a profit. Short-term card trading for financial gain.', example: 'I flipped that rookie for a $20 profit same day.', relatedTerms: ['Invest', 'Hold', 'Sell'], category: 'Market' },
+  { id: 'gl-037', term: 'Graded', definition: 'A card that has been professionally evaluated and encased by a grading company with a numerical score.', relatedTerms: ['Raw', 'Slab', 'Grade'], category: 'Grading' },
+  { id: 'gl-038', term: 'Hit', definition: 'A valuable or notable card pulled from a pack, usually an autograph, relic, or low-numbered parallel.', example: 'I got a huge hit — a numbered auto of the top pick!', relatedTerms: ['Pull', 'Chase Card', 'Auto'], category: 'Collecting' },
+  { id: 'gl-039', term: 'Raw', definition: 'A card that has not been professionally graded. It is in its original, unencased state.', relatedTerms: ['Graded', 'Ungraded', 'Slab'], category: 'Condition' },
+  { id: 'gl-040', term: 'Checklist', definition: 'A complete list of all cards in a set, including base cards, inserts, and parallels.', example: 'Check the checklist to see if your favorite player is in the set.', relatedTerms: ['Set', 'Base Card', 'Insert'], category: 'Products' },
+];
+
+// ---- Mock Mentor Profiles (8) ----
+
+const MOCK_MENTORS: MentorProfile[] = [
+  { id: 'mnt-001', name: 'Coach Martinez', avatar: 'CM', specialties: ['Baseball', 'Grading', 'Vintage Cards'], experience: '15 years collecting', rating: 4.9, menteeCount: 42, available: true, bio: 'Former card shop owner who loves helping new collectors find their passion. Specializes in vintage baseball from the 1950s to 1980s.', responseTime: 'Within 2 hours' },
+  { id: 'mnt-002', name: 'Sarah K.', avatar: 'SK', specialties: ['Basketball', 'Modern Rookies', 'Market Analysis'], experience: '8 years collecting', rating: 4.8, menteeCount: 28, available: true, bio: 'Full-time basketball card collector and market analyst. Can help you navigate the modern rookie market and identify smart buys.', responseTime: 'Within 4 hours' },
+  { id: 'mnt-003', name: 'Mike T.', avatar: 'MT', specialties: ['Football', 'Breaks', 'Budget Collecting'], experience: '10 years collecting', rating: 4.7, menteeCount: 35, available: true, bio: 'Budget-conscious collector who has built an impressive football card collection without breaking the bank. Great at finding deals.', responseTime: 'Within 6 hours' },
+  { id: 'mnt-004', name: 'Dr. Cards', avatar: 'DC', specialties: ['Grading', 'Authentication', 'Fake Detection'], experience: '20 years collecting', rating: 5.0, menteeCount: 56, available: false, bio: 'Card authentication expert who has examined over 50,000 cards. Can teach you every trick for spotting fakes and altered cards.', responseTime: 'Within 24 hours' },
+  { id: 'mnt-005', name: 'Jenny L.', avatar: 'JL', specialties: ['Hockey', 'Set Building', 'Young Guns'], experience: '6 years collecting', rating: 4.6, menteeCount: 18, available: true, bio: 'Hockey card enthusiast and completionist who has built over 20 full sets. Passionate about helping young collectors find hockey gems.', responseTime: 'Within 3 hours' },
+  { id: 'mnt-006', name: 'The Card Dad', avatar: 'CD', specialties: ['Family Collecting', 'Budget Plans', 'Teaching Kids'], experience: '12 years collecting', rating: 4.9, menteeCount: 64, available: true, bio: 'Father of three who introduced all his kids to the hobby. Expert at making collecting fun, educational, and budget-friendly for families.', responseTime: 'Within 1 hour' },
+  { id: 'mnt-007', name: 'Alex R.', avatar: 'AR', specialties: ['Trading', 'Online Safety', 'Community Building'], experience: '7 years collecting', rating: 4.5, menteeCount: 22, available: true, bio: 'Online trading specialist who can teach safe buying and selling practices. Runs a collector community with over 2,000 members.', responseTime: 'Within 4 hours' },
+  { id: 'mnt-008', name: 'Vintage Vic', avatar: 'VV', specialties: ['Pre-War Cards', 'Tobacco Cards', 'Card History'], experience: '25 years collecting', rating: 4.8, menteeCount: 31, available: false, bio: 'The ultimate historian of the card hobby. Specializes in pre-war and tobacco era cards, and loves sharing the stories behind the cardboard.', responseTime: 'Within 12 hours' },
+];
+
+// ---- Mock Safety Tips (10) ----
+
+const MOCK_SAFETY_TIPS: SafetyTip[] = [
+  { id: 'st-001', title: 'Never Share Personal Information', description: 'Do not share your home address, school name, phone number, or full name with strangers online when trading or buying cards.', category: 'Online Safety', importance: 'critical' },
+  { id: 'st-002', title: 'Always Use Protected Payment Methods', description: 'When buying online, use PayPal Goods & Services or credit cards that offer buyer protection. Never send cash, Zelle, or Venmo to strangers.', category: 'Financial Safety', importance: 'critical' },
+  { id: 'st-003', title: 'Get a Parent or Guardian Involved', description: 'For any purchase over $20 or any in-person meetup to buy or trade cards, have a trusted adult present.', category: 'Personal Safety', importance: 'critical' },
+  { id: 'st-004', title: 'Research Before You Buy', description: 'Always check recent sold listings on eBay before paying for a card. Asking prices are not real prices — only sold prices matter.', category: 'Financial Safety', importance: 'high' },
+  { id: 'st-005', title: 'Beware of Too-Good-to-Be-True Deals', description: 'If someone offers a card far below market value, it is likely a scam or the card is fake. Trust your instincts and walk away.', category: 'Scam Prevention', importance: 'high' },
+  { id: 'st-006', title: 'Verify Graded Card Cert Numbers', description: 'Before buying any graded card, look up the certification number on the grading company website to confirm it matches the card.', category: 'Authentication', importance: 'high' },
+  { id: 'st-007', title: 'Set a Monthly Budget and Stick to It', description: 'Decide how much you can afford to spend each month on cards and do not exceed it, no matter how tempting a purchase might be.', category: 'Financial Safety', importance: 'high' },
+  { id: 'st-008', title: 'Meet in Public Places for Local Trades', description: 'If meeting someone locally to trade or buy cards, always meet in a public place like a card shop, library, or police station parking lot.', category: 'Personal Safety', importance: 'critical' },
+  { id: 'st-009', title: 'Keep Records of All Purchases', description: 'Track what you buy, what you paid, and where you bought it. This helps with budgeting, insurance, and resolving any disputes.', category: 'Financial Safety', importance: 'medium' },
+  { id: 'st-010', title: 'Be Skeptical of Social Media Sellers', description: 'Instagram and TikTok sellers may not have return policies or buyer protections. Prefer established platforms with built-in safeguards.', category: 'Scam Prevention', importance: 'high' },
+];
+
+// ---- Mock Budget Plans (5) ----
+
+const MOCK_BUDGET_PLANS: BudgetPlan[] = [
+  { id: 'bp-001', name: 'Allowance Saver', monthlyBudget: 20, ageRange: '8-12', allocation: [{ category: 'Pack Opening', percentage: 40, amount: 8 }, { category: 'Single Cards', percentage: 30, amount: 6 }, { category: 'Supplies', percentage: 15, amount: 3 }, { category: 'Savings', percentage: 15, amount: 3 }], tips: ['Save for 2-3 months to buy something special', 'Trade duplicates instead of buying new packs', 'Ask for cards as birthday or holiday gifts'], savingsGoal: 50 },
+  { id: 'bp-002', name: 'Part-Time Collector', monthlyBudget: 50, ageRange: '13-16', allocation: [{ category: 'Single Cards', percentage: 40, amount: 20 }, { category: 'Sealed Product', percentage: 25, amount: 12.50 }, { category: 'Grading Fund', percentage: 15, amount: 7.50 }, { category: 'Supplies', percentage: 10, amount: 5 }, { category: 'Savings', percentage: 10, amount: 5 }], tips: ['Focus on targeted singles over random packs', 'Save grading fund for 3 months then submit', 'Track your spending weekly'], savingsGoal: 150 },
+  { id: 'bp-003', name: 'Serious Student', monthlyBudget: 100, ageRange: '16-18', allocation: [{ category: 'Investment Singles', percentage: 35, amount: 35 }, { category: 'Hobby Boxes', percentage: 25, amount: 25 }, { category: 'Grading Submissions', percentage: 15, amount: 15 }, { category: 'Card Shows', percentage: 10, amount: 10 }, { category: 'Supplies', percentage: 5, amount: 5 }, { category: 'Emergency/Savings', percentage: 10, amount: 10 }], tips: ['Reinvest profits from sales', 'Attend local card shows for deals', 'Build relationships with local card shop owners'], savingsGoal: 300 },
+  { id: 'bp-004', name: 'Family Fun', monthlyBudget: 75, ageRange: 'Family', allocation: [{ category: 'Family Pack Opening', percentage: 35, amount: 26.25 }, { category: 'Kids Individual Cards', percentage: 25, amount: 18.75 }, { category: 'Parent Cards', percentage: 20, amount: 15 }, { category: 'Supplies', percentage: 10, amount: 7.50 }, { category: 'Show Fund', percentage: 10, amount: 7.50 }], tips: ['Make pack opening a family activity', 'Let kids choose their own cards within budget', 'Visit card shows together as a family outing'], savingsGoal: 200 },
+  { id: 'bp-005', name: 'Gift Card Collector', monthlyBudget: 30, ageRange: '10-14', allocation: [{ category: 'Retail Packs', percentage: 50, amount: 15 }, { category: 'Dollar Bin Cards', percentage: 25, amount: 7.50 }, { category: 'Supplies', percentage: 15, amount: 4.50 }, { category: 'Savings Jar', percentage: 10, amount: 3 }], tips: ['Use birthday money and gift cards for special purchases', 'Shop at retail stores for best pack prices', 'The dollar bin at card shops can have hidden gems'], savingsGoal: 75 },
+];
+
+// ---- Mock Quiz Questions (15) ----
+
+const MOCK_QUIZ_QUESTIONS: QuizQuestion[] = [
+  { id: 'qq-001', moduleId: 'mod-001', question: 'What are the most commonly collected types of trading cards?', options: ['Greeting cards', 'Sports trading cards', 'Business cards', 'Credit cards'], correctIndex: 1, explanation: 'Sports trading cards featuring athletes from baseball, basketball, football, and hockey are the most commonly collected type of trading card.', xpReward: 10 },
+  { id: 'qq-002', moduleId: 'mod-001', question: 'When did modern sports card collecting begin?', options: ['1850s', '1880s-1900s with tobacco cards', '1990s', '2010s'], correctIndex: 1, explanation: 'The earliest sports cards were included in cigarette and tobacco products in the late 1800s, making this the origin of the hobby.', xpReward: 10 },
+  { id: 'qq-003', moduleId: 'mod-002', question: 'What does PSA stand for?', options: ['Professional Sports Authenticator', 'Perfect Sports Association', 'Pro Score Agency', 'Player Stats Authority'], correctIndex: 0, explanation: 'PSA stands for Professional Sports Authenticator, the most widely used card grading service in the hobby.', xpReward: 10 },
+  { id: 'qq-004', moduleId: 'mod-002', question: 'What is the highest grade a card can receive from PSA?', options: ['PSA 8', 'PSA 9', 'PSA 10 Gem Mint', 'PSA 100'], correctIndex: 2, explanation: 'PSA 10 Gem Mint is the highest grade, indicating the card is in virtually perfect condition.', xpReward: 10 },
+  { id: 'qq-005', moduleId: 'mod-003', question: 'What should be your FIRST purchase when starting a collection?', options: ['The most expensive card you can find', 'Card protection supplies', 'A complete set', 'A grading submission'], correctIndex: 1, explanation: 'Card protection supplies like penny sleeves and top loaders should be purchased first so you can protect any cards you acquire.', xpReward: 10 },
+  { id: 'qq-006', moduleId: 'mod-004', question: 'What is a common sign that a card might be fake?', options: ['It has a hologram sticker', 'The colors look slightly off or the card feels different', 'It is in a penny sleeve', 'It was bought at a card shop'], correctIndex: 1, explanation: 'Fake cards often have slightly off colors, wrong card stock thickness, or blurry text compared to authentic cards.', xpReward: 15 },
+  { id: 'qq-007', moduleId: 'mod-005', question: 'What is the best way to determine a cards fair market value?', options: ['Asking the seller', 'Checking asking prices on eBay', 'Looking at recently SOLD listings on eBay', 'Guessing based on the player'], correctIndex: 2, explanation: 'Only completed/sold listings show what people actually paid for a card. Asking prices can be wildly inflated.', xpReward: 15 },
+  { id: 'qq-008', moduleId: 'mod-006', question: 'What is the ideal humidity level for card storage?', options: ['0% - bone dry', '35-45% relative humidity', '75-85% relative humidity', 'Humidity does not matter'], correctIndex: 1, explanation: 'Cards should be stored at 35-45% relative humidity. Too much moisture causes warping and mold, while too dry can cause brittleness.', xpReward: 10 },
+  { id: 'qq-009', moduleId: 'mod-007', question: 'Why are rookie cards typically the most valuable cards of a player?', options: ['They are always the rarest', 'They represent the first official card and carry the most nostalgia and demand', 'They are always graded highest', 'They come in the most colors'], correctIndex: 1, explanation: 'Rookie cards are the first official licensed card of a player and carry historical significance, driving the highest demand and prices.', xpReward: 15 },
+  { id: 'qq-010', moduleId: 'mod-008', question: 'What is good trading etiquette?', options: ['Always try to win the trade by a lot', 'Be transparent about card condition and aim for fair value on both sides', 'Never show your cards first', 'Only trade with strangers online'], correctIndex: 1, explanation: 'Good trading is about fairness and transparency. Both parties should feel they got a fair deal to build lasting trading relationships.', xpReward: 15 },
+  { id: 'qq-011', moduleId: 'mod-009', question: 'What is a parallel card?', options: ['Two identical cards', 'A version of a base card with a different color or finish', 'A card printed sideways', 'A card with two players'], correctIndex: 1, explanation: 'Parallels are alternate versions of base cards featuring different colors, patterns, or finishes, produced in varying quantities.', xpReward: 10 },
+  { id: 'qq-012', moduleId: 'mod-010', question: 'What does expected value (EV) mean for a hobby box?', options: ['The expected shipping cost', 'The average total value of cards you would pull based on odds and market prices', 'The retail price', 'How many cards are in the box'], correctIndex: 1, explanation: 'Expected value is the statistical average of what your pulls would be worth based on published odds and current market prices.', xpReward: 15 },
+  { id: 'qq-013', moduleId: 'mod-011', question: 'What is the safest way to ship a graded card?', options: ['In a regular envelope with a stamp', 'Wrapped in bubble wrap inside a padded mailer or small box', 'Loose in a large box', 'It does not matter how you ship it'], correctIndex: 1, explanation: 'Graded cards should be wrapped in bubble wrap and shipped in a padded mailer or small box to prevent damage during transit.', xpReward: 15 },
+  { id: 'qq-014', moduleId: 'mod-012', question: 'What is diversification in card collecting?', options: ['Buying only one type of card', 'Spreading your collection across different players, sports, and eras to reduce risk', 'Having the most cards possible', 'Only collecting graded cards'], correctIndex: 1, explanation: 'Just like in investing, diversification means spreading your collection across different areas so that a downturn in one area does not destroy your entire value.', xpReward: 20 },
+  { id: 'qq-015', moduleId: 'mod-003', question: 'What is the Junk Wax era?', options: ['A period of low card production', 'The 1987-1993 period of massive overproduction that made most cards nearly worthless', 'A type of premium card', 'Cards made from recycled wax'], correctIndex: 1, explanation: 'The Junk Wax Era (1987-1993) saw card companies print billions of cards, so many that most base cards from this period have little to no value today.', xpReward: 10 },
+];
+
+// ---- Mock Milestones (10) ----
+
+const MOCK_MILESTONES: CollectorMilestone[] = [
+  { id: 'ms-001', title: 'First Steps', description: 'Complete your first learning module', xpRequired: 50, reward: 'Collector Badge', completed: true, order: 1 },
+  { id: 'ms-002', title: 'Getting Started', description: 'Reach Level 2 - Card Spotter', xpRequired: 200, reward: 'Card Spotter Title', completed: true, order: 2 },
+  { id: 'ms-003', title: 'Knowledge Base', description: 'Complete 3 learning modules', xpRequired: 300, reward: 'Bronze Scholar Badge', completed: true, order: 3 },
+  { id: 'ms-004', title: 'Pack Opener', description: 'Reach Level 3', xpRequired: 500, reward: 'Pack Opener Title', completed: false, order: 4 },
+  { id: 'ms-005', title: 'Halfway Scholar', description: 'Complete 6 learning modules', xpRequired: 750, reward: 'Silver Scholar Badge', completed: false, order: 5 },
+  { id: 'ms-006', title: 'Grade Hunter', description: 'Reach Level 5', xpRequired: 2000, reward: 'Grade Hunter Title', completed: false, order: 6 },
+  { id: 'ms-007', title: 'Full Graduate', description: 'Complete all 12 learning modules', xpRequired: 1325, reward: 'Gold Scholar Badge', completed: false, order: 7 },
+  { id: 'ms-008', title: 'Achievement Hunter', description: 'Unlock 10 achievements', xpRequired: 1500, reward: 'Achievement Hunter Badge', completed: false, order: 8 },
+  { id: 'ms-009', title: 'Hobby Veteran', description: 'Reach Level 9', xpRequired: 12000, reward: 'Veteran Crown', completed: false, order: 9 },
+  { id: 'ms-010', title: 'Master Collector', description: 'Reach Level 10 and complete all modules', xpRequired: 18000, reward: 'Master Collector Crown', completed: false, order: 10 },
+];
+
+// ---- Mock Community Challenges (8) ----
+
+const MOCK_CHALLENGES: CommunityChallenge[] = [
+  { id: 'ch-001', title: 'Rookie Roundup', description: 'Collect 3 rookie cards from the current year and share them with the community.', xpReward: 75, participants: 234, deadline: '2026-04-01', difficulty: 'beginner', status: 'active', tasks: ['Find 3 current year rookie cards', 'Take photos of each card', 'Share in the community feed', 'Explain why you chose each player'] },
+  { id: 'ch-002', title: 'Budget Boss Challenge', description: 'Build the best collection you can with only $25. Share your haul and strategy!', xpReward: 100, participants: 189, deadline: '2026-03-31', difficulty: 'beginner', status: 'active', tasks: ['Set a $25 budget', 'Shop for cards', 'Document all purchases', 'Share your collection and total spent'] },
+  { id: 'ch-003', title: 'Grade Guesser', description: 'Examine 5 raw cards and predict what grade they would receive. Closest predictions win!', xpReward: 125, participants: 156, deadline: '2026-04-15', difficulty: 'intermediate', status: 'active', tasks: ['Examine 5 provided card images', 'Submit grade predictions for each', 'Explain your reasoning', 'Compare with actual grades when revealed'] },
+  { id: 'ch-004', title: 'Card Care Showcase', description: 'Show off your card storage setup and share tips on how you keep your collection safe.', xpReward: 50, participants: 312, deadline: '2026-04-10', difficulty: 'beginner', status: 'active', tasks: ['Photograph your storage setup', 'List all supplies you use', 'Share one unique tip', 'Help critique another collectors setup'] },
+  { id: 'ch-005', title: 'Vintage Hunt', description: 'Find and acquire a card from before the year 2000. Share the story of how you found it.', xpReward: 100, participants: 98, deadline: '2026-04-30', difficulty: 'intermediate', status: 'active', tasks: ['Find a pre-2000 card', 'Research its history', 'Share the card and its story', 'Explain what you learned about vintage collecting'] },
+  { id: 'ch-006', title: 'Trade Chain', description: 'Complete 3 trades with different collectors in one month. Document each trade and what you learned.', xpReward: 150, participants: 67, deadline: '2026-05-01', difficulty: 'intermediate', status: 'upcoming', tasks: ['Find 3 trading partners', 'Complete each trade', 'Document what you traded and received', 'Share what you learned about negotiation'] },
+  { id: 'ch-007', title: 'Set Builder Sprint', description: 'Choose a base set and try to collect as many cards as possible in 30 days. Track your progress.', xpReward: 200, participants: 45, deadline: '2026-05-15', difficulty: 'advanced', status: 'upcoming', tasks: ['Choose a current base set', 'Track cards acquired daily', 'Share progress updates weekly', 'Calculate completion percentage'] },
+  { id: 'ch-008', title: 'Glossary Master', description: 'Learn all 40 glossary terms and pass the vocabulary quiz with 90% or better.', xpReward: 100, participants: 278, deadline: '2026-03-25', difficulty: 'beginner', status: 'active', tasks: ['Study all glossary terms', 'Review with flashcard mode', 'Take the vocabulary quiz', 'Score 90% or higher'] },
+];
+
+// ---- localStorage Helpers ----
 
 function loadData<T>(key: string): T | null {
   try {
@@ -133,899 +344,172 @@ function saveData<T>(key: string, data: T): void {
   try {
     localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
   } catch {
-    console.warn(`Failed to save data for key: ${key}`);
+    // storage full or unavailable
   }
 }
 
-// ---- Mock Data: Learning Modules ----
+// ---- Helper Functions ----
 
-const MOCK_LEARNING_MODULES: LearningModule[] = [
-  {
-    id: 'mod_001',
-    title: 'What Are Trading Cards?',
-    description: 'An introduction to the world of sports trading cards, their history, and why people collect them.',
-    difficulty: 'beginner',
-    estimatedMinutes: 15,
-    xpReward: 100,
-    completed: false,
-    order: 1,
-  },
-  {
-    id: 'mod_002',
-    title: 'Understanding Card Grades',
-    description: 'Learn how cards are graded on a scale of 1-10 and why condition matters so much to collectors.',
-    difficulty: 'beginner',
-    estimatedMinutes: 20,
-    xpReward: 150,
-    completed: false,
-    order: 2,
-  },
-  {
-    id: 'mod_003',
-    title: 'Building Your First Collection',
-    description: 'Step-by-step guide to starting your own card collection on any budget.',
-    difficulty: 'beginner',
-    estimatedMinutes: 25,
-    xpReward: 200,
-    completed: false,
-    order: 3,
-  },
-  {
-    id: 'mod_004',
-    title: 'Spotting Fakes & Counterfeits',
-    description: 'How to identify counterfeit cards and protect yourself from scams in the hobby.',
-    difficulty: 'intermediate',
-    estimatedMinutes: 30,
-    xpReward: 250,
-    completed: false,
-    order: 4,
-  },
-  {
-    id: 'mod_005',
-    title: 'Smart Buying Strategies',
-    description: 'Tips and techniques for getting the best deals on cards whether buying online or in person.',
-    difficulty: 'intermediate',
-    estimatedMinutes: 25,
-    xpReward: 200,
-    completed: false,
-    order: 5,
-  },
-  {
-    id: 'mod_006',
-    title: 'Card Care & Storage 101',
-    description: 'Proper techniques for handling, storing, and preserving your cards to maintain their value.',
-    difficulty: 'beginner',
-    estimatedMinutes: 20,
-    xpReward: 150,
-    completed: false,
-    order: 6,
-  },
-  {
-    id: 'mod_007',
-    title: 'Market Basics',
-    description: 'Understanding supply and demand, market trends, and what drives card values up or down.',
-    difficulty: 'intermediate',
-    estimatedMinutes: 35,
-    xpReward: 300,
-    completed: false,
-    order: 7,
-  },
-  {
-    id: 'mod_008',
-    title: 'The Grading Process',
-    description: 'A deep dive into professional grading services like PSA, BGS, and SGC and how to submit cards.',
-    difficulty: 'intermediate',
-    estimatedMinutes: 30,
-    xpReward: 250,
-    completed: false,
-    order: 8,
-  },
-  {
-    id: 'mod_009',
-    title: 'Trading & Selling',
-    description: 'How to trade cards fairly and sell them through various platforms and marketplaces.',
-    difficulty: 'advanced',
-    estimatedMinutes: 30,
-    xpReward: 300,
-    completed: false,
-    order: 9,
-  },
-  {
-    id: 'mod_010',
-    title: 'Digital Cards & NFTs',
-    description: 'Exploring the world of digital trading cards, NFTs, and how they fit into the collecting hobby.',
-    difficulty: 'advanced',
-    estimatedMinutes: 25,
-    xpReward: 250,
-    completed: false,
-    order: 10,
-  },
-  {
-    id: 'mod_011',
-    title: 'Hobby History',
-    description: 'The fascinating history of sports card collecting from the 1800s tobacco cards to modern releases.',
-    difficulty: 'beginner',
-    estimatedMinutes: 20,
-    xpReward: 150,
-    completed: false,
-    order: 11,
-  },
-  {
-    id: 'mod_012',
-    title: 'Advanced Investing',
-    description: 'Advanced strategies for treating cards as investments including portfolio diversification and long-term holds.',
-    difficulty: 'expert',
-    estimatedMinutes: 45,
-    xpReward: 500,
-    completed: false,
-    order: 12,
-  },
-];
-
-// ---- Mock Data: Achievements ----
-
-const MOCK_ACHIEVEMENTS: Achievement[] = [
-  { id: 'ach_001', name: 'First Steps', description: 'Complete your first learning module', xpValue: 50, icon: '🎓', unlocked: false, category: 'learning' },
-  { id: 'ach_002', name: 'Knowledge Seeker', description: 'Complete 3 learning modules', xpValue: 100, icon: '📚', unlocked: false, category: 'learning' },
-  { id: 'ach_003', name: 'Scholar', description: 'Complete 6 learning modules', xpValue: 200, icon: '🏅', unlocked: false, category: 'learning' },
-  { id: 'ach_004', name: 'Master Graduate', description: 'Complete all 12 learning modules', xpValue: 500, icon: '🎖️', unlocked: false, category: 'learning' },
-  { id: 'ach_005', name: 'Quiz Whiz', description: 'Answer 10 quiz questions correctly', xpValue: 100, icon: '🧠', unlocked: false, category: 'quiz' },
-  { id: 'ach_006', name: 'Perfect Score', description: 'Get 100% on any module quiz', xpValue: 150, icon: '💯', unlocked: false, category: 'quiz' },
-  { id: 'ach_007', name: 'Card Spotter', description: 'Identify your first counterfeit card in training', xpValue: 75, icon: '🔍', unlocked: false, category: 'skills' },
-  { id: 'ach_008', name: 'Budget Boss', description: 'Create your first budget plan', xpValue: 100, icon: '💰', unlocked: false, category: 'finance' },
-  { id: 'ach_009', name: 'Community Member', description: 'Join your first community challenge', xpValue: 75, icon: '🤝', unlocked: false, category: 'community' },
-  { id: 'ach_010', name: 'Streak Starter', description: 'Maintain a 3-day learning streak', xpValue: 100, icon: '🔥', unlocked: false, category: 'engagement' },
-  { id: 'ach_011', name: 'Week Warrior', description: 'Maintain a 7-day learning streak', xpValue: 200, icon: '⚡', unlocked: false, category: 'engagement' },
-  { id: 'ach_012', name: 'Glossary Guru', description: 'Look up 20 glossary terms', xpValue: 100, icon: '📖', unlocked: false, category: 'learning' },
-  { id: 'ach_013', name: 'Mentor Connection', description: 'Connect with your first mentor', xpValue: 150, icon: '👨‍🏫', unlocked: false, category: 'community' },
-  { id: 'ach_014', name: 'Collection Starter', description: 'Build your first starter collection', xpValue: 200, icon: '📦', unlocked: false, category: 'collecting' },
-  { id: 'ach_015', name: 'Safety First', description: 'Read all safety tips', xpValue: 100, icon: '🛡️', unlocked: false, category: 'safety' },
-  { id: 'ach_016', name: 'Level 5 Collector', description: 'Reach Level 5', xpValue: 250, icon: '⭐', unlocked: false, category: 'progress' },
-  { id: 'ach_017', name: 'Level 10 Collector', description: 'Reach Level 10', xpValue: 500, icon: '🌟', unlocked: false, category: 'progress' },
-  { id: 'ach_018', name: 'Challenge Champion', description: 'Complete 3 community challenges', xpValue: 300, icon: '🏆', unlocked: false, category: 'community' },
-  { id: 'ach_019', name: 'Grading Expert', description: 'Complete the grading process module with a perfect quiz score', xpValue: 350, icon: '💎', unlocked: false, category: 'skills' },
-  { id: 'ach_020', name: 'Hobby Historian', description: 'Complete the Hobby History module and score 80%+ on the quiz', xpValue: 200, icon: '📜', unlocked: false, category: 'learning' },
-];
-
-// ---- Mock Data: Starter Collections ----
-
-const MOCK_STARTER_COLLECTIONS: StarterCollection[] = [
-  {
-    id: 'sc_001',
-    name: 'Baseball Beginners Bundle',
-    description: 'A great starting point for young baseball card collectors featuring iconic players.',
-    budget: 50,
-    cards: [
-      { player: 'Mike Trout', year: 2020, set: 'Topps Series 1', estimatedValue: 8 },
-      { player: 'Shohei Ohtani', year: 2021, set: 'Topps Chrome', estimatedValue: 12 },
-      { player: 'Ronald Acuna Jr.', year: 2019, set: 'Topps Update', estimatedValue: 10 },
-      { player: 'Juan Soto', year: 2020, set: 'Topps Heritage', estimatedValue: 7 },
-      { player: 'Mookie Betts', year: 2021, set: 'Topps Series 2', estimatedValue: 6 },
-      { player: 'Fernando Tatis Jr.', year: 2020, set: 'Topps Chrome', estimatedValue: 7 },
-    ],
-    sport: 'Baseball',
-    difficulty: 'beginner',
-  },
-  {
-    id: 'sc_002',
-    name: 'Basketball Starter Pack',
-    description: 'Essential basketball cards featuring current superstars and rising stars.',
-    budget: 75,
-    cards: [
-      { player: 'Luka Doncic', year: 2020, set: 'Panini Prizm', estimatedValue: 15 },
-      { player: 'Ja Morant', year: 2021, set: 'Panini Select', estimatedValue: 12 },
-      { player: 'Anthony Edwards', year: 2021, set: 'Panini Prizm', estimatedValue: 14 },
-      { player: 'LaMelo Ball', year: 2021, set: 'Panini Hoops', estimatedValue: 10 },
-      { player: 'Zion Williamson', year: 2020, set: 'Panini Mosaic', estimatedValue: 12 },
-      { player: 'Tyrese Haliburton', year: 2022, set: 'Panini Prizm', estimatedValue: 8 },
-    ],
-    sport: 'Basketball',
-    difficulty: 'beginner',
-  },
-  {
-    id: 'sc_003',
-    name: 'Football Fundamentals',
-    description: 'Core football cards featuring top quarterbacks and skill position players.',
-    budget: 100,
-    cards: [
-      { player: 'Patrick Mahomes', year: 2020, set: 'Panini Prizm', estimatedValue: 20 },
-      { player: 'Justin Herbert', year: 2021, set: 'Panini Mosaic', estimatedValue: 18 },
-      { player: 'Joe Burrow', year: 2021, set: 'Panini Select', estimatedValue: 16 },
-      { player: 'Josh Allen', year: 2020, set: 'Panini Prizm', estimatedValue: 15 },
-      { player: 'Trevor Lawrence', year: 2022, set: 'Panini Prizm', estimatedValue: 12 },
-      { player: 'Ja\'Marr Chase', year: 2022, set: 'Panini Mosaic', estimatedValue: 10 },
-      { player: 'CeeDee Lamb', year: 2021, set: 'Panini Select', estimatedValue: 9 },
-    ],
-    sport: 'Football',
-    difficulty: 'intermediate',
-  },
-  {
-    id: 'sc_004',
-    name: 'Multi-Sport Sampler',
-    description: 'A diverse collection spanning multiple sports to help you discover your favorite.',
-    budget: 100,
-    cards: [
-      { player: 'Aaron Judge', year: 2022, set: 'Topps Chrome', estimatedValue: 15 },
-      { player: 'Victor Wembanyama', year: 2024, set: 'Panini Prizm', estimatedValue: 25 },
-      { player: 'Travis Kelce', year: 2021, set: 'Panini Prizm', estimatedValue: 12 },
-      { player: 'Connor McDavid', year: 2020, set: 'Upper Deck', estimatedValue: 18 },
-      { player: 'Lionel Messi', year: 2022, set: 'Topps Chrome', estimatedValue: 20 },
-      { player: 'Caitlin Clark', year: 2024, set: 'Panini Prizm', estimatedValue: 10 },
-    ],
-    sport: 'Multi-Sport',
-    difficulty: 'beginner',
-  },
-  {
-    id: 'sc_005',
-    name: 'Vintage Appreciation Set',
-    description: 'Affordable vintage cards that teach young collectors about card history and preservation.',
-    budget: 150,
-    cards: [
-      { player: 'Ken Griffey Jr.', year: 1989, set: 'Upper Deck', estimatedValue: 25 },
-      { player: 'Cal Ripken Jr.', year: 1982, set: 'Topps Traded', estimatedValue: 30 },
-      { player: 'Derek Jeter', year: 1993, set: 'Topps', estimatedValue: 20 },
-      { player: 'Michael Jordan', year: 1990, set: 'Fleer', estimatedValue: 35 },
-      { player: 'Wayne Gretzky', year: 1990, set: 'Pro Set', estimatedValue: 15 },
-      { player: 'Nolan Ryan', year: 1990, set: 'Topps', estimatedValue: 10 },
-      { player: 'Magic Johnson', year: 1988, set: 'Fleer', estimatedValue: 15 },
-    ],
-    sport: 'Multi-Sport',
-    difficulty: 'intermediate',
-  },
-  {
-    id: 'sc_006',
-    name: 'Premium Rookie Investment',
-    description: 'Higher-end rookie cards with strong long-term potential for the serious young collector.',
-    budget: 200,
-    cards: [
-      { player: 'Victor Wembanyama', year: 2024, set: 'Panini Prizm Silver', estimatedValue: 45 },
-      { player: 'Shohei Ohtani', year: 2018, set: 'Topps Chrome Refractor', estimatedValue: 40 },
-      { player: 'Caleb Williams', year: 2024, set: 'Panini Prizm', estimatedValue: 30 },
-      { player: 'Connor Bedard', year: 2024, set: 'Upper Deck Young Guns', estimatedValue: 35 },
-      { player: 'Chet Holmgren', year: 2023, set: 'Panini Select', estimatedValue: 25 },
-      { player: 'Anthony Richardson', year: 2024, set: 'Panini Prizm', estimatedValue: 25 },
-    ],
-    sport: 'Multi-Sport',
-    difficulty: 'advanced',
-  },
-];
-
-// ---- Mock Data: Glossary Terms ----
-
-const MOCK_GLOSSARY_TERMS: GlossaryTerm[] = [
-  { id: 'gl_001', term: 'Auto', definition: 'Short for autograph. A card that has been signed by the featured player, either on-card or on a sticker affixed to the card.', category: 'Card Types', relatedTerms: ['On-Card Auto', 'Sticker Auto'] },
-  { id: 'gl_002', term: 'Base Card', definition: 'The standard, most common cards in a set. They make up the majority of any product release.', category: 'Card Types', relatedTerms: ['Parallel', 'Insert'] },
-  { id: 'gl_003', term: 'BGS', definition: 'Beckett Grading Services. One of the top professional card grading companies known for subgrades.', category: 'Grading', relatedTerms: ['PSA', 'SGC', 'Subgrade'] },
-  { id: 'gl_004', term: 'Box Break', definition: 'Opening an entire box of cards, often streamed live. Group breaks split the cost among participants.', category: 'Buying', relatedTerms: ['Hobby Box', 'Case Break'] },
-  { id: 'gl_005', term: 'Centering', definition: 'How well-centered the image is on the card. A key factor in grading, measured by border symmetry.', category: 'Grading', relatedTerms: ['Subgrade', 'Surface', 'Corners'] },
-  { id: 'gl_006', term: 'Chrome', definition: 'A type of card stock with a shiny, reflective surface. Topps Chrome is one of the most popular product lines.', category: 'Card Types', relatedTerms: ['Refractor', 'Base Card'] },
-  { id: 'gl_007', term: 'Comps', definition: 'Short for comparables. Recent sales of similar cards used to determine a card\'s current market value.', category: 'Market', relatedTerms: ['Fair Market Value', 'Last Sold'] },
-  { id: 'gl_008', term: 'Corners', definition: 'One of the four grading subgrades. Refers to the sharpness and condition of a card\'s corners.', category: 'Grading', relatedTerms: ['Centering', 'Edges', 'Surface'] },
-  { id: 'gl_009', term: 'Dinged', definition: 'A card with visible damage, typically dents or dings on the edges or corners, reducing its grade and value.', category: 'Condition', relatedTerms: ['Corners', 'Edges', 'Raw'] },
-  { id: 'gl_010', term: 'Edges', definition: 'The sides of a card. One of the four grading subgrades, examining chips, nicks, or wear along the edges.', category: 'Grading', relatedTerms: ['Corners', 'Surface', 'Centering'] },
-  { id: 'gl_011', term: 'Fair Market Value', definition: 'The price a card would reasonably sell for on the open market based on recent comparable sales.', category: 'Market', relatedTerms: ['Comps', 'Book Value'] },
-  { id: 'gl_012', term: 'Gem Mint', definition: 'The highest grade a card can receive (PSA 10 or BGS 9.5+). Indicates near-perfect condition.', category: 'Grading', relatedTerms: ['PSA', 'BGS', 'Mint'] },
-  { id: 'gl_013', term: 'Hobby Box', definition: 'A sealed box of cards sold through hobby shops and authorized dealers, usually with guaranteed hits.', category: 'Buying', relatedTerms: ['Retail Box', 'Box Break', 'Hits'] },
-  { id: 'gl_014', term: 'Hits', definition: 'Valuable cards found in packs, typically autographs, memorabilia cards, or low-numbered parallels.', category: 'Card Types', relatedTerms: ['Auto', 'Patch Card', 'Parallel'] },
-  { id: 'gl_015', term: 'Insert', definition: 'A special card that is not part of the base set, often with a unique design or theme.', category: 'Card Types', relatedTerms: ['Base Card', 'Parallel', 'Short Print'] },
-  { id: 'gl_016', term: 'Junk Wax Era', definition: 'The period from roughly 1987-1994 when cards were massively overproduced, making most cards from this era worth very little.', category: 'History', relatedTerms: ['Overproduction', 'Vintage'] },
-  { id: 'gl_017', term: 'Lot', definition: 'A group of cards sold together as a single listing, often at a discount compared to individual sales.', category: 'Buying', relatedTerms: ['Comps', 'Fair Market Value'] },
-  { id: 'gl_018', term: 'Mint', definition: 'A card in excellent condition with minimal flaws. Typically a grade of 9 on a 10-point scale.', category: 'Grading', relatedTerms: ['Gem Mint', 'Near Mint', 'Raw'] },
-  { id: 'gl_019', term: 'Numbered Card', definition: 'A card that is serial numbered (e.g., /99 or /25), indicating limited print run and often higher value.', category: 'Card Types', relatedTerms: ['Parallel', 'Short Print', 'One of One'] },
-  { id: 'gl_020', term: 'One of One (1/1)', definition: 'A card with only a single copy in existence, making it the most rare type of numbered card.', category: 'Card Types', relatedTerms: ['Numbered Card', 'Parallel'] },
-  { id: 'gl_021', term: 'Parallel', definition: 'A variation of a base card with a different color, design, or finish, often numbered to a limited quantity.', category: 'Card Types', relatedTerms: ['Base Card', 'Refractor', 'Numbered Card'] },
-  { id: 'gl_022', term: 'Patch Card', definition: 'A memorabilia card containing a piece of game-worn jersey, often featuring multi-colored patches.', category: 'Card Types', relatedTerms: ['Hits', 'Memorabilia', 'Game-Used'] },
-  { id: 'gl_023', term: 'Penny Sleeve', definition: 'A thin, inexpensive plastic sleeve used as the first layer of protection for a card.', category: 'Storage', relatedTerms: ['Top Loader', 'One-Touch', 'Card Saver'] },
-  { id: 'gl_024', term: 'Population Report', definition: 'A database showing how many of each card have been graded at each grade level by a grading company.', category: 'Grading', relatedTerms: ['PSA', 'BGS', 'Gem Mint'] },
-  { id: 'gl_025', term: 'PSA', definition: 'Professional Sports Authenticator. The most widely recognized card grading and authentication service.', category: 'Grading', relatedTerms: ['BGS', 'SGC', 'Gem Mint'] },
-  { id: 'gl_026', term: 'Raw', definition: 'An ungraded card that has not been submitted to a professional grading service.', category: 'Condition', relatedTerms: ['PSA', 'BGS', 'Grading'] },
-  { id: 'gl_027', term: 'Refractor', definition: 'A type of Chrome card with a rainbow-like reflective finish, highly sought after by collectors.', category: 'Card Types', relatedTerms: ['Chrome', 'Parallel', 'Prizm'] },
-  { id: 'gl_028', term: 'Retail Box', definition: 'Cards sold at major retail stores like Walmart or Target, typically with lower odds of hits than hobby boxes.', category: 'Buying', relatedTerms: ['Hobby Box', 'Blaster Box'] },
-  { id: 'gl_029', term: 'ROI', definition: 'Return on Investment. The profit or loss on a card purchase expressed as a percentage of the original cost.', category: 'Market', relatedTerms: ['Fair Market Value', 'Comps'] },
-  { id: 'gl_030', term: 'Rookie Card (RC)', definition: 'A player\'s first officially licensed trading card, usually the most valuable and collected card of that player.', category: 'Card Types', relatedTerms: ['Base Card', 'Prospect'] },
-  { id: 'gl_031', term: 'SGC', definition: 'Sportscard Guaranty Corporation. A professional grading service known for its distinctive tuxedo-style holders.', category: 'Grading', relatedTerms: ['PSA', 'BGS'] },
-  { id: 'gl_032', term: 'Short Print (SP)', definition: 'A card printed in smaller quantities than the standard base cards, making it rarer and often more valuable.', category: 'Card Types', relatedTerms: ['Super Short Print', 'Base Card', 'Insert'] },
-  { id: 'gl_033', term: 'Slab', definition: 'The hard plastic case a card is sealed in after being graded by a professional grading company.', category: 'Grading', relatedTerms: ['PSA', 'BGS', 'Raw'] },
-  { id: 'gl_034', term: 'Surface', definition: 'One of the four grading subgrades. Refers to the condition of the card\'s front and back surfaces.', category: 'Grading', relatedTerms: ['Centering', 'Corners', 'Edges'] },
-  { id: 'gl_035', term: 'Top Loader', definition: 'A rigid plastic holder used to protect individual cards. More protection than a penny sleeve.', category: 'Storage', relatedTerms: ['Penny Sleeve', 'One-Touch', 'Card Saver'] },
-  { id: 'gl_036', term: 'Trimmed', definition: 'A card whose edges have been illegally cut to improve centering or remove damage. Considered altered and fraudulent.', category: 'Condition', relatedTerms: ['Counterfeit', 'Altered'] },
-  { id: 'gl_037', term: 'Vintage', definition: 'Generally refers to cards produced before 1980, though definitions vary among collectors.', category: 'History', relatedTerms: ['Junk Wax Era', 'Pre-War'] },
-  { id: 'gl_038', term: 'Wax Pack', definition: 'A pack of cards sealed in wax paper wrapping, common before the 1990s. Now used loosely to refer to any card pack.', category: 'Buying', relatedTerms: ['Hobby Box', 'Retail Box'] },
-  { id: 'gl_039', term: 'Wrapper Redemption', definition: 'A promotion where collectors can exchange wrappers or proof of purchase for exclusive cards or prizes at events.', category: 'Buying', relatedTerms: ['Hobby Box', 'Insert'] },
-  { id: 'gl_040', term: 'X-Fractors', definition: 'A popular parallel type in Topps Chrome featuring an X-shaped refractor pattern on the card surface.', category: 'Card Types', relatedTerms: ['Refractor', 'Chrome', 'Parallel'] },
-];
-
-// ---- Mock Data: Mentor Profiles ----
-
-const MOCK_MENTOR_PROFILES: MentorProfile[] = [
-  {
-    id: 'mentor_001',
-    name: 'Coach Williams',
-    avatar: '/avatars/coach-williams.png',
-    bio: 'Former card shop owner with 25 years in the hobby. Specializes in helping beginners understand card values and market basics.',
-    specialties: ['Market Analysis', 'Vintage Cards', 'Baseball'],
-    rating: 4.9,
-    availability: 'Weekdays 9am-5pm EST',
-    yearsExperience: 25,
-    studentsHelped: 342,
-  },
-  {
-    id: 'mentor_002',
-    name: 'Sarah Chen',
-    avatar: '/avatars/sarah-chen.png',
-    bio: 'Professional card grader turned educator. Expert in card authentication and condition assessment.',
-    specialties: ['Card Grading', 'Authentication', 'Counterfeit Detection'],
-    rating: 4.8,
-    availability: 'Mon-Wed-Fri 10am-3pm EST',
-    yearsExperience: 15,
-    studentsHelped: 218,
-  },
-  {
-    id: 'mentor_003',
-    name: 'Marcus Thompson',
-    avatar: '/avatars/marcus-thompson.png',
-    bio: 'Basketball card specialist and content creator with a passion for helping young collectors build smart collections.',
-    specialties: ['Basketball Cards', 'Rookie Investing', 'Social Media'],
-    rating: 4.7,
-    availability: 'Daily 12pm-8pm EST',
-    yearsExperience: 10,
-    studentsHelped: 567,
-  },
-  {
-    id: 'mentor_004',
-    name: 'Dr. Emily Park',
-    avatar: '/avatars/emily-park.png',
-    bio: 'Sports memorabilia historian and professor. Brings academic rigor to understanding the hobby\'s past and future.',
-    specialties: ['Hobby History', 'Pre-War Cards', 'Set Building'],
-    rating: 4.9,
-    availability: 'Tue-Thu 2pm-6pm EST',
-    yearsExperience: 20,
-    studentsHelped: 145,
-  },
-  {
-    id: 'mentor_005',
-    name: 'Jake Rivera',
-    avatar: '/avatars/jake-rivera.png',
-    bio: 'Young collector who turned his childhood hobby into a thriving business. Relatable mentor for teen collectors.',
-    specialties: ['Football Cards', 'Budget Collecting', 'Online Selling'],
-    rating: 4.6,
-    availability: 'Weekends 10am-4pm EST',
-    yearsExperience: 8,
-    studentsHelped: 890,
-  },
-  {
-    id: 'mentor_006',
-    name: 'Lisa Nakamura',
-    avatar: '/avatars/lisa-nakamura.png',
-    bio: 'Digital cards and NFT expert. Helps young collectors navigate the intersection of technology and collecting.',
-    specialties: ['Digital Cards', 'NFTs', 'Technology'],
-    rating: 4.5,
-    availability: 'Mon-Fri 11am-7pm EST',
-    yearsExperience: 6,
-    studentsHelped: 312,
-  },
-  {
-    id: 'mentor_007',
-    name: 'Robert "Big Rob" Jackson',
-    avatar: '/avatars/big-rob.png',
-    bio: 'Card show veteran and community leader. Known for running the most welcoming card shows in the Midwest.',
-    specialties: ['Card Shows', 'Trading', 'Community Building'],
-    rating: 4.8,
-    availability: 'Weekdays 3pm-9pm EST',
-    yearsExperience: 30,
-    studentsHelped: 720,
-  },
-  {
-    id: 'mentor_008',
-    name: 'Amanda Torres',
-    avatar: '/avatars/amanda-torres.png',
-    bio: 'Financial advisor who collects cards. Teaches young people about budgeting, saving, and responsible spending in the hobby.',
-    specialties: ['Budgeting', 'Financial Literacy', 'Long-Term Investing'],
-    rating: 4.7,
-    availability: 'Tue-Sat 9am-1pm EST',
-    yearsExperience: 12,
-    studentsHelped: 256,
-  },
-];
-
-// ---- Mock Data: Milestones ----
-
-const MOCK_MILESTONES: CollectorMilestone[] = [
-  { id: 'ms_001', title: 'Rookie Collector', description: 'Begin your collecting journey', xpRequired: 0, reward: 'Welcome Badge', reached: true },
-  { id: 'ms_002', title: 'Card Apprentice', description: 'Reach 500 XP', xpRequired: 500, reward: 'Apprentice Badge + 1 Free Glossary Download', reached: false },
-  { id: 'ms_003', title: 'Rising Star', description: 'Reach 1,500 XP', xpRequired: 1500, reward: 'Rising Star Badge + Mentor Access', reached: false },
-  { id: 'ms_004', title: 'Hobby Enthusiast', description: 'Reach 3,000 XP', xpRequired: 3000, reward: 'Enthusiast Badge + Exclusive Quiz Pack', reached: false },
-  { id: 'ms_005', title: 'Seasoned Collector', description: 'Reach 5,000 XP', xpRequired: 5000, reward: 'Seasoned Badge + Advanced Module Access', reached: false },
-  { id: 'ms_006', title: 'Expert Collector', description: 'Reach 8,000 XP', xpRequired: 8000, reward: 'Expert Badge + Community Leader Status', reached: false },
-  { id: 'ms_007', title: 'Master Collector', description: 'Reach 12,000 XP', xpRequired: 12000, reward: 'Master Badge + Mentor Certification', reached: false },
-  { id: 'ms_008', title: 'Hall of Fame', description: 'Reach 20,000 XP', xpRequired: 20000, reward: 'Hall of Fame Badge + Lifetime Achievement', reached: false },
-  { id: 'ms_009', title: 'Legend', description: 'Reach 35,000 XP', xpRequired: 35000, reward: 'Legend Badge + Platform Ambassador', reached: false },
-  { id: 'ms_010', title: 'GOAT Collector', description: 'Reach 50,000 XP', xpRequired: 50000, reward: 'GOAT Badge + Custom Profile Theme', reached: false },
-];
-
-// ---- Mock Data: Safety Tips ----
-
-const MOCK_SAFETY_TIPS: SafetyTip[] = [
-  { id: 'st_001', title: 'Never Share Personal Information', description: 'Never share your full name, address, school, or phone number with strangers online when buying or trading cards.', category: 'Online Safety', priority: 'high' },
-  { id: 'st_002', title: 'Always Involve a Parent or Guardian', description: 'Before making any purchase over $20 or meeting someone to trade, always get permission from a parent or guardian.', category: 'Purchasing', priority: 'high' },
-  { id: 'st_003', title: 'Use Trusted Platforms Only', description: 'Only buy cards from reputable websites and marketplaces. Avoid deals that seem too good to be true.', category: 'Online Safety', priority: 'high' },
-  { id: 'st_004', title: 'Verify Before You Buy', description: 'Always check recent sales (comps) before buying a card to make sure the price is fair and reasonable.', category: 'Purchasing', priority: 'medium' },
-  { id: 'st_005', title: 'Beware of Counterfeit Cards', description: 'Learn the signs of fake cards: blurry printing, wrong card stock weight, missing holograms, or misaligned borders.', category: 'Authentication', priority: 'high' },
-  { id: 'st_006', title: 'Set a Budget and Stick to It', description: 'Decide how much you can spend each month and never go over that amount. Collecting should be fun, not stressful.', category: 'Financial', priority: 'medium' },
-  { id: 'st_007', title: 'Protect Your Cards Properly', description: 'Always use penny sleeves and top loaders to protect valuable cards. Store them in a cool, dry place away from sunlight.', category: 'Card Care', priority: 'medium' },
-  { id: 'st_008', title: 'Meet in Public Places for Trades', description: 'If meeting someone in person to trade or buy cards, always meet in a well-lit public place with an adult present.', category: 'In-Person Safety', priority: 'high' },
-  { id: 'st_009', title: 'Keep Records of Your Collection', description: 'Maintain a list or spreadsheet of your cards and what you paid. This helps with insurance and tracking value.', category: 'Organization', priority: 'low' },
-  { id: 'st_010', title: 'Don\'t Chase Losses', description: 'If you buy a box and don\'t get great hits, resist the urge to buy another immediately. Take a break and reassess.', category: 'Financial', priority: 'medium' },
-];
-
-// ---- Mock Data: Budget Plans ----
-
-const MOCK_BUDGET_PLANS: BudgetPlan[] = [
-  {
-    id: 'bp_001',
-    name: 'Pocket Money Plan',
-    monthlyBudget: 20,
-    description: 'Perfect for young collectors working with a small allowance. Focus on singles and retail packs.',
-    breakdown: [
-      { category: 'Singles', percentage: 50, amount: 10 },
-      { category: 'Retail Packs', percentage: 30, amount: 6 },
-      { category: 'Supplies', percentage: 20, amount: 4 },
-    ],
-    skillLevel: 'beginner',
-  },
-  {
-    id: 'bp_002',
-    name: 'Birthday Money Plan',
-    monthlyBudget: 50,
-    description: 'A step up for collectors who save birthday and holiday money for the hobby.',
-    breakdown: [
-      { category: 'Singles', percentage: 40, amount: 20 },
-      { category: 'Blaster Boxes', percentage: 30, amount: 15 },
-      { category: 'Grading Fund', percentage: 15, amount: 7.50 },
-      { category: 'Supplies', percentage: 15, amount: 7.50 },
-    ],
-    skillLevel: 'beginner',
-  },
-  {
-    id: 'bp_003',
-    name: 'Part-Time Job Plan',
-    monthlyBudget: 100,
-    description: 'For teen collectors with part-time income who want to build a quality collection.',
-    breakdown: [
-      { category: 'Singles', percentage: 35, amount: 35 },
-      { category: 'Hobby Boxes', percentage: 30, amount: 30 },
-      { category: 'Grading Submissions', percentage: 20, amount: 20 },
-      { category: 'Supplies & Storage', percentage: 15, amount: 15 },
-    ],
-    skillLevel: 'intermediate',
-  },
-  {
-    id: 'bp_004',
-    name: 'Savings Goal Plan',
-    monthlyBudget: 150,
-    description: 'A balanced approach that includes saving for bigger purchases while still enjoying the hobby.',
-    breakdown: [
-      { category: 'Key Singles', percentage: 30, amount: 45 },
-      { category: 'Hobby Products', percentage: 25, amount: 37.50 },
-      { category: 'Grading', percentage: 15, amount: 22.50 },
-      { category: 'Savings for Big Purchase', percentage: 20, amount: 30 },
-      { category: 'Supplies', percentage: 10, amount: 15 },
-    ],
-    skillLevel: 'intermediate',
-  },
-  {
-    id: 'bp_005',
-    name: 'Serious Collector Plan',
-    monthlyBudget: 250,
-    description: 'For dedicated collectors ready to make strategic investments and build a premium collection.',
-    breakdown: [
-      { category: 'Investment Singles', percentage: 35, amount: 87.50 },
-      { category: 'Premium Hobby Boxes', percentage: 25, amount: 62.50 },
-      { category: 'Grading & Authentication', percentage: 15, amount: 37.50 },
-      { category: 'Long-Term Hold Fund', percentage: 15, amount: 37.50 },
-      { category: 'Supplies & Insurance', percentage: 10, amount: 25 },
-    ],
-    skillLevel: 'advanced',
-  },
-];
-
-// ---- Mock Data: Quiz Questions ----
-
-const MOCK_QUIZ_QUESTIONS: QuizQuestion[] = [
-  {
-    id: 'q_001',
-    question: 'What does "RC" stand for on a trading card?',
-    options: ['Rare Card', 'Rookie Card', 'Retail Copy', 'Regular Chrome'],
-    correctIndex: 1,
-    explanation: 'RC stands for Rookie Card, which is a player\'s first officially licensed trading card.',
-    difficulty: 'beginner',
-    moduleId: 'mod_001',
-    xpReward: 10,
-  },
-  {
-    id: 'q_002',
-    question: 'What is the highest grade a PSA-graded card can receive?',
-    options: ['PSA 8', 'PSA 9', 'PSA 10', 'PSA 12'],
-    correctIndex: 2,
-    explanation: 'PSA grades cards on a scale of 1-10, with PSA 10 (Gem Mint) being the highest possible grade.',
-    difficulty: 'beginner',
-    moduleId: 'mod_002',
-    xpReward: 10,
-  },
-  {
-    id: 'q_003',
-    question: 'What is the first thing you should do when you pull a valuable card from a pack?',
-    options: ['Post it on social media', 'Put it in a penny sleeve and top loader', 'Bend it to test the stock', 'Lick the back to test authenticity'],
-    correctIndex: 1,
-    explanation: 'Always protect valuable cards immediately by placing them in a penny sleeve first, then a top loader.',
-    difficulty: 'beginner',
-    moduleId: 'mod_003',
-    xpReward: 10,
-  },
-  {
-    id: 'q_004',
-    question: 'Which of these is a red flag that a card might be counterfeit?',
-    options: ['Sharp corners', 'Proper hologram', 'Blurry text and images', 'Correct card stock thickness'],
-    correctIndex: 2,
-    explanation: 'Blurry text and images are a common sign of counterfeit cards, as reproductions often lack the print quality of genuine cards.',
-    difficulty: 'intermediate',
-    moduleId: 'mod_004',
-    xpReward: 15,
-  },
-  {
-    id: 'q_005',
-    question: 'What are "comps" in card collecting?',
-    options: ['Complimentary free cards', 'Competition entries', 'Comparable recent sales', 'Complete sets'],
-    correctIndex: 2,
-    explanation: 'Comps (comparables) are recent sales of similar cards used to determine current market value.',
-    difficulty: 'beginner',
-    moduleId: 'mod_005',
-    xpReward: 10,
-  },
-  {
-    id: 'q_006',
-    question: 'What is the ideal temperature range for storing trading cards?',
-    options: ['32-45\u00B0F', '60-72\u00B0F', '80-90\u00B0F', 'Temperature doesn\'t matter'],
-    correctIndex: 1,
-    explanation: 'Cards should be stored at 60-72\u00B0F (room temperature) in a dry environment to prevent warping and damage.',
-    difficulty: 'beginner',
-    moduleId: 'mod_006',
-    xpReward: 10,
-  },
-  {
-    id: 'q_007',
-    question: 'What typically happens to a rookie card\'s value when the player gets injured?',
-    options: ['It always goes up', 'It usually decreases temporarily', 'It stays exactly the same', 'It permanently becomes worthless'],
-    correctIndex: 1,
-    explanation: 'Player injuries typically cause a temporary decrease in card value due to uncertainty, though it often recovers if the player returns.',
-    difficulty: 'intermediate',
-    moduleId: 'mod_007',
-    xpReward: 15,
-  },
-  {
-    id: 'q_008',
-    question: 'Which grading company uses the distinctive "tuxedo" style holder?',
-    options: ['PSA', 'BGS', 'SGC', 'CSG'],
-    correctIndex: 2,
-    explanation: 'SGC (Sportscard Guaranty Corporation) is known for its distinctive black and white "tuxedo" style holders.',
-    difficulty: 'intermediate',
-    moduleId: 'mod_008',
-    xpReward: 15,
-  },
-  {
-    id: 'q_009',
-    question: 'What percentage does eBay typically charge as a final value fee on card sales?',
-    options: ['0%', 'About 3%', 'About 13%', 'About 30%'],
-    correctIndex: 2,
-    explanation: 'eBay typically charges around 13% in final value fees on sports card sales, which sellers must factor into their pricing.',
-    difficulty: 'intermediate',
-    moduleId: 'mod_009',
-    xpReward: 15,
-  },
-  {
-    id: 'q_010',
-    question: 'What does "NFT" stand for in the context of digital cards?',
-    options: ['New Format Technology', 'Non-Fungible Token', 'National Football Trading', 'Next-Gen File Type'],
-    correctIndex: 1,
-    explanation: 'NFT stands for Non-Fungible Token, a unique digital asset verified using blockchain technology.',
-    difficulty: 'beginner',
-    moduleId: 'mod_010',
-    xpReward: 10,
-  },
-  {
-    id: 'q_011',
-    question: 'What era is known as the "Junk Wax Era" in card collecting?',
-    options: ['1950s-1960s', '1970s-1980s', '1987-1994', '2000-2010'],
-    correctIndex: 2,
-    explanation: 'The Junk Wax Era (roughly 1987-1994) was when cards were massively overproduced, making most cards from this era worth very little.',
-    difficulty: 'beginner',
-    moduleId: 'mod_011',
-    xpReward: 10,
-  },
-  {
-    id: 'q_012',
-    question: 'What does "portfolio diversification" mean in card investing?',
-    options: ['Buying only one player\'s cards', 'Spreading investments across different players, sports, and eras', 'Only buying graded cards', 'Selling everything at once'],
-    correctIndex: 1,
-    explanation: 'Diversification means spreading your card investments across different players, sports, eras, and card types to reduce risk.',
-    difficulty: 'advanced',
-    moduleId: 'mod_012',
-    xpReward: 20,
-  },
-  {
-    id: 'q_013',
-    question: 'What is a "parallel" in card collecting?',
-    options: ['Two identical base cards', 'A variation of a base card with different color or finish', 'A card from a different sport', 'A damaged card'],
-    correctIndex: 1,
-    explanation: 'A parallel is a variation of a base card with a different color, design, or finish, often numbered to a limited quantity.',
-    difficulty: 'beginner',
-    moduleId: 'mod_001',
-    xpReward: 10,
-  },
-  {
-    id: 'q_014',
-    question: 'What are the four subgrades that BGS evaluates?',
-    options: ['Color, Size, Weight, Smell', 'Centering, Corners, Edges, Surface', 'Front, Back, Top, Bottom', 'Rarity, Age, Player, Team'],
-    correctIndex: 1,
-    explanation: 'BGS evaluates four subgrades: Centering, Corners, Edges, and Surface, each scored individually.',
-    difficulty: 'intermediate',
-    moduleId: 'mod_002',
-    xpReward: 15,
-  },
-  {
-    id: 'q_015',
-    question: 'Why should you never use rubber bands to hold cards together?',
-    options: ['They make cards invisible', 'They can leave indentations and damage the card surface', 'Rubber bands are too expensive', 'They attract bugs'],
-    correctIndex: 1,
-    explanation: 'Rubber bands can leave indentations, cause warping, and damage card surfaces and edges over time, significantly reducing their value.',
-    difficulty: 'beginner',
-    moduleId: 'mod_006',
-    xpReward: 10,
-  },
-];
-
-// ---- Mock Data: Community Challenges ----
-
-const MOCK_COMMUNITY_CHALLENGES: CommunityChallenge[] = [
-  {
-    id: 'cc_001',
-    title: 'Complete 3 Modules This Week',
-    description: 'Finish any 3 learning modules before the week ends to earn bonus XP.',
-    type: 'learning',
-    xpReward: 200,
-    participants: 1247,
-    startDate: '2026-03-09',
-    endDate: '2026-03-15',
-    active: true,
-  },
-  {
-    id: 'cc_002',
-    title: 'Glossary Scavenger Hunt',
-    description: 'Find and read 15 glossary terms from at least 5 different categories.',
-    type: 'exploration',
-    xpReward: 150,
-    participants: 892,
-    startDate: '2026-03-09',
-    endDate: '2026-03-15',
-    active: true,
-  },
-  {
-    id: 'cc_003',
-    title: 'Budget Builder Challenge',
-    description: 'Create a personalized budget plan and stick to it for a full month.',
-    type: 'financial',
-    xpReward: 300,
-    participants: 534,
-    startDate: '2026-03-01',
-    endDate: '2026-03-31',
-    active: true,
-  },
-  {
-    id: 'cc_004',
-    title: 'Quiz Marathon',
-    description: 'Answer 30 quiz questions correctly across all modules.',
-    type: 'quiz',
-    xpReward: 250,
-    participants: 1089,
-    startDate: '2026-03-09',
-    endDate: '2026-03-22',
-    active: true,
-  },
-  {
-    id: 'cc_005',
-    title: 'Mentor Meet & Greet',
-    description: 'Connect with at least 2 different mentors and complete their recommended modules.',
-    type: 'mentorship',
-    xpReward: 200,
-    participants: 345,
-    startDate: '2026-03-01',
-    endDate: '2026-03-31',
-    active: true,
-  },
-  {
-    id: 'cc_006',
-    title: 'Streak Supreme',
-    description: 'Maintain a 14-day consecutive learning streak.',
-    type: 'engagement',
-    xpReward: 400,
-    participants: 678,
-    startDate: '2026-03-01',
-    endDate: '2026-03-31',
-    active: true,
-  },
-  {
-    id: 'cc_007',
-    title: 'Fake Spotter Training',
-    description: 'Complete the counterfeit detection module and ace the quiz with 90%+ accuracy.',
-    type: 'skills',
-    xpReward: 250,
-    participants: 421,
-    startDate: '2026-03-09',
-    endDate: '2026-03-22',
-    active: true,
-  },
-  {
-    id: 'cc_008',
-    title: 'Collection Show & Tell',
-    description: 'Build a starter collection and share your picks with the community for feedback.',
-    type: 'community',
-    xpReward: 175,
-    participants: 756,
-    startDate: '2026-03-09',
-    endDate: '2026-03-22',
-    active: true,
-  },
-];
-
-// ---- Mock Data: Progress Tracker ----
-
-const MOCK_PROGRESS_TRACKER: ProgressTracker = {
-  level: 1,
-  xp: 0,
-  totalXp: 0,
-  modulesCompleted: 0,
-  achievementsUnlocked: 0,
-  streakDays: 0,
-  joinDate: '2026-03-15',
-};
-
-// ---- Level Configuration ----
-
-const LEVEL_CONFIG: { level: number; xpRequired: number; title: string }[] = [
-  { level: 1, xpRequired: 0, title: 'Rookie' },
-  { level: 2, xpRequired: 200, title: 'Novice' },
-  { level: 3, xpRequired: 500, title: 'Apprentice' },
-  { level: 4, xpRequired: 1000, title: 'Hobbyist' },
-  { level: 5, xpRequired: 1750, title: 'Enthusiast' },
-  { level: 6, xpRequired: 2750, title: 'Collector' },
-  { level: 7, xpRequired: 4000, title: 'Specialist' },
-  { level: 8, xpRequired: 5500, title: 'Expert' },
-  { level: 9, xpRequired: 7500, title: 'Master' },
-  { level: 10, xpRequired: 10000, title: 'Legend' },
-];
-
-// ---- Exported Functions ----
-
-export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
+export function getLevelConfig(level: SkillLevel): { label: string; text: string; bg: string; border: string } {
+  const configs: Record<SkillLevel, { label: string; text: string; bg: string; border: string }> = {
+    beginner: { label: 'Beginner', text: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    intermediate: { label: 'Intermediate', text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
+    advanced: { label: 'Advanced', text: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
+    expert: { label: 'Expert', text: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
+  };
+  return configs[level];
 }
 
-export function getLearningModules(): LearningModule[] {
+export function formatCurrency(val: number): string {
+  if (val >= 1_000_000) return `$${(val / 1_000_000).toFixed(2)}M`;
+  if (val >= 1_000) return `$${(val / 1_000).toFixed(1)}K`;
+  return `$${val.toFixed(2)}`;
+}
+
+export function calculateLevel(xp: number): { level: number; name: string; xpToNext: number; progress: number } {
+  let current = LEVEL_THRESHOLDS[0];
+  let next = LEVEL_THRESHOLDS[1];
+
+  for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (xp >= LEVEL_THRESHOLDS[i].xp) {
+      current = LEVEL_THRESHOLDS[i];
+      next = LEVEL_THRESHOLDS[i + 1] ?? { level: 11, xp: current.xp + 5000, name: 'Grandmaster' };
+      break;
+    }
+  }
+
+  const xpInLevel = xp - current.xp;
+  const xpNeeded = next.xp - current.xp;
+  const progress = xpNeeded > 0 ? Math.min(100, (xpInLevel / xpNeeded) * 100) : 100;
+
+  return { level: current.level, name: current.name, xpToNext: next.xp - xp, progress };
+}
+
+// ---- Exported Service Functions ----
+
+export function getLearningModules(level?: SkillLevel): LearningModule[] {
   const cached = loadData<LearningModule[]>('learning_modules');
-  if (cached) return cached;
-  saveData('learning_modules', MOCK_LEARNING_MODULES);
-  return MOCK_LEARNING_MODULES;
+  const data = cached ?? MOCK_LEARNING_MODULES;
+  if (!cached) saveData('learning_modules', data);
+  if (level) return data.filter(m => m.level === level);
+  return [...data];
 }
 
 export function getAchievements(): Achievement[] {
   const cached = loadData<Achievement[]>('achievements');
-  if (cached) return cached;
-  saveData('achievements', MOCK_ACHIEVEMENTS);
-  return MOCK_ACHIEVEMENTS;
+  const data = cached ?? MOCK_ACHIEVEMENTS;
+  if (!cached) saveData('achievements', data);
+  return [...data];
 }
 
 export function getStarterCollections(): StarterCollection[] {
   const cached = loadData<StarterCollection[]>('starter_collections');
-  if (cached) return cached;
-  saveData('starter_collections', MOCK_STARTER_COLLECTIONS);
-  return MOCK_STARTER_COLLECTIONS;
+  const data = cached ?? MOCK_STARTER_COLLECTIONS;
+  if (!cached) saveData('starter_collections', data);
+  return [...data];
 }
 
-export function getGlossaryTerms(): GlossaryTerm[] {
+export function getGlossaryTerms(letter?: string): GlossaryTerm[] {
   const cached = loadData<GlossaryTerm[]>('glossary_terms');
-  if (cached) return cached;
-  saveData('glossary_terms', MOCK_GLOSSARY_TERMS);
-  return MOCK_GLOSSARY_TERMS;
+  const data = cached ?? MOCK_GLOSSARY;
+  if (!cached) saveData('glossary_terms', data);
+  if (letter) return data.filter(t => t.term.charAt(0).toUpperCase() === letter.toUpperCase());
+  return [...data].sort((a, b) => a.term.localeCompare(b.term));
 }
 
 export function getMentorProfiles(): MentorProfile[] {
-  const cached = loadData<MentorProfile[]>('mentor_profiles');
-  if (cached) return cached;
-  saveData('mentor_profiles', MOCK_MENTOR_PROFILES);
-  return MOCK_MENTOR_PROFILES;
+  const cached = loadData<MentorProfile[]>('mentors');
+  const data = cached ?? MOCK_MENTORS;
+  if (!cached) saveData('mentors', data);
+  return [...data];
 }
 
 export function getMilestones(): CollectorMilestone[] {
   const cached = loadData<CollectorMilestone[]>('milestones');
-  if (cached) return cached;
-  saveData('milestones', MOCK_MILESTONES);
-  return MOCK_MILESTONES;
+  const data = cached ?? MOCK_MILESTONES;
+  if (!cached) saveData('milestones', data);
+  return [...data].sort((a, b) => a.order - b.order);
 }
 
 export function getSafetyTips(): SafetyTip[] {
   const cached = loadData<SafetyTip[]>('safety_tips');
-  if (cached) return cached;
-  saveData('safety_tips', MOCK_SAFETY_TIPS);
-  return MOCK_SAFETY_TIPS;
+  const data = cached ?? MOCK_SAFETY_TIPS;
+  if (!cached) saveData('safety_tips', data);
+  return [...data];
 }
 
 export function getBudgetPlans(): BudgetPlan[] {
   const cached = loadData<BudgetPlan[]>('budget_plans');
-  if (cached) return cached;
-  saveData('budget_plans', MOCK_BUDGET_PLANS);
-  return MOCK_BUDGET_PLANS;
+  const data = cached ?? MOCK_BUDGET_PLANS;
+  if (!cached) saveData('budget_plans', data);
+  return [...data];
 }
 
-export function getQuizQuestions(): QuizQuestion[] {
+export function getQuizQuestions(moduleId?: string): QuizQuestion[] {
   const cached = loadData<QuizQuestion[]>('quiz_questions');
-  if (cached) return cached;
-  saveData('quiz_questions', MOCK_QUIZ_QUESTIONS);
-  return MOCK_QUIZ_QUESTIONS;
+  const data = cached ?? MOCK_QUIZ_QUESTIONS;
+  if (!cached) saveData('quiz_questions', data);
+  if (moduleId) return data.filter(q => q.moduleId === moduleId);
+  return [...data];
 }
 
 export function getProgressTracker(): ProgressTracker {
   const cached = loadData<ProgressTracker>('progress_tracker');
   if (cached) return cached;
-  saveData('progress_tracker', MOCK_PROGRESS_TRACKER);
-  return MOCK_PROGRESS_TRACKER;
-}
 
-export function getCommunityChallengers(): CommunityChallenge[] {
-  const cached = loadData<CommunityChallenge[]>('community_challenges');
-  if (cached) return cached;
-  saveData('community_challenges', MOCK_COMMUNITY_CHALLENGES);
-  return MOCK_COMMUNITY_CHALLENGES;
-}
+  const modules = MOCK_LEARNING_MODULES;
+  const achievements = MOCK_ACHIEVEMENTS;
+  const completedModules = modules.filter(m => m.completed);
+  const unlockedAchievements = achievements.filter(a => a.unlocked);
+  const totalXp = completedModules.reduce((sum, m) => sum + m.xpReward, 0) + unlockedAchievements.reduce((sum, a) => sum + a.xpValue, 0);
+  const levelInfo = calculateLevel(totalXp);
 
-export function updateProgress(xpGained: number, moduleCompleted?: boolean, achievementUnlocked?: boolean): ProgressTracker {
-  const tracker = getProgressTracker();
-  tracker.xp += xpGained;
-  tracker.totalXp += xpGained;
-  if (moduleCompleted) {
-    tracker.modulesCompleted += 1;
-  }
-  if (achievementUnlocked) {
-    tracker.achievementsUnlocked += 1;
-  }
-  const newLevel = calculateLevel(tracker.totalXp);
-  tracker.level = newLevel;
+  const tracker: ProgressTracker = {
+    totalXp,
+    level: levelInfo.level,
+    levelName: levelInfo.name,
+    xpToNextLevel: levelInfo.xpToNext,
+    modulesCompleted: completedModules.length,
+    totalModules: modules.length,
+    achievementsUnlocked: unlockedAchievements.length,
+    totalAchievements: achievements.length,
+    streak: 5,
+    lastActive: '2026-03-15',
+  };
+
   saveData('progress_tracker', tracker);
   return tracker;
 }
 
-export function calculateLevel(totalXp: number): number {
-  let level = 1;
-  for (const config of LEVEL_CONFIG) {
-    if (totalXp >= config.xpRequired) {
-      level = config.level;
-    } else {
-      break;
-    }
+export function getCommunityChallengers(): CommunityChallenge[] {
+  const cached = loadData<CommunityChallenge[]>('community_challenges');
+  const data = cached ?? MOCK_CHALLENGES;
+  if (!cached) saveData('community_challenges', data);
+  return [...data];
+}
+
+export function updateProgress(moduleId: string, completed: boolean): ProgressTracker {
+  const modules = getLearningModules();
+  const mod = modules.find(m => m.id === moduleId);
+  if (mod) {
+    mod.completed = completed;
+    saveData('learning_modules', modules);
   }
-  return level;
+  const tracker = getProgressTracker();
+  if (completed && mod) {
+    tracker.totalXp += mod.xpReward;
+    tracker.modulesCompleted = modules.filter(m => m.completed).length;
+    const levelInfo = calculateLevel(tracker.totalXp);
+    tracker.level = levelInfo.level;
+    tracker.levelName = levelInfo.name;
+    tracker.xpToNextLevel = levelInfo.xpToNext;
+    tracker.lastActive = new Date().toISOString().split('T')[0];
+    saveData('progress_tracker', tracker);
+  }
+  return tracker;
 }
 
 export function getNextAchievement(): Achievement | null {
   const achievements = getAchievements();
-  const nextLocked = achievements.find((a) => !a.unlocked);
-  return nextLocked || null;
-}
-
-export function getLevelConfig(): { level: number; xpRequired: number; title: string }[] {
-  return LEVEL_CONFIG;
+  return achievements.find(a => !a.unlocked) ?? null;
 }

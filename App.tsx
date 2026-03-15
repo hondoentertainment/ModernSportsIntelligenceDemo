@@ -109,6 +109,18 @@ const PricePrediction = lazy(() => import('./pages/PricePrediction.tsx'));
 const InternationalArbitrage = lazy(() => import('./pages/InternationalArbitrage.tsx'));
 const BlockchainProvenance = lazy(() => import('./pages/BlockchainProvenance.tsx'));
 
+// Phases 149-158: Advanced platform features
+const TradeDeadline = lazy(() => import('./pages/TradeDeadline.tsx'));
+const CollectionAppraiser = lazy(() => import('./pages/CollectionAppraiser.tsx'));
+const SetRegistry = lazy(() => import('./pages/SetRegistry.tsx'));
+const VintageMarket = lazy(() => import('./pages/VintageMarket.tsx'));
+const SocialTrading = lazy(() => import('./pages/SocialTrading.tsx'));
+const ListingOptimizer = lazy(() => import('./pages/ListingOptimizer.tsx'));
+const TaxCalculator = lazy(() => import('./pages/TaxCalculator.tsx'));
+const SealedProduct = lazy(() => import('./pages/SealedProduct.tsx'));
+const ErrorCard = lazy(() => import('./pages/ErrorCard.tsx'));
+const AuctionSniper = lazy(() => import('./pages/AuctionSniper.tsx'));
+
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
 const Signup = lazy(() => import('./pages/Signup.tsx'));
@@ -205,6 +217,16 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
                 <Route path="/price-prediction" element={<PricePrediction />} />
                 <Route path="/international-arbitrage" element={<InternationalArbitrage />} />
                 <Route path="/blockchain-provenance" element={<BlockchainProvenance />} />
+                <Route path="/trade-deadline" element={<TradeDeadline />} />
+                <Route path="/collection-appraiser" element={<CollectionAppraiser />} />
+                <Route path="/set-registry" element={<SetRegistry />} />
+                <Route path="/vintage-market" element={<VintageMarket />} />
+                <Route path="/social-trading" element={<SocialTrading />} />
+                <Route path="/listing-optimizer" element={<ListingOptimizer />} />
+                <Route path="/tax-calculator" element={<TaxCalculator />} />
+                <Route path="/sealed-product" element={<SealedProduct />} />
+                <Route path="/error-card" element={<ErrorCard />} />
+                <Route path="/auction-sniper" element={<AuctionSniper />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

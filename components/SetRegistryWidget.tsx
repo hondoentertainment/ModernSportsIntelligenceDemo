@@ -1,156 +1,97 @@
 import React, { useMemo } from 'react';
+import { LayoutGrid, ChevronRight, Target, Search, Hash } from 'lucide-react';
 import {
-  BookOpen,
-  CheckCircle2,
-  ChevronRight,
-  Clock,
-  Star,
-} from 'lucide-react';
-import { CardInventory } from '../types';
-import {
-  loadEnrollments,
-  getSetProgress,
-  SetProgress,
+  getSetRegistries,
+  getOwnedCards,
+  getMissingCards,
+  getCompletionStats,
+  formatCurrency,
 } from '../lib/setRegistryService';
 
 interface SetRegistryWidgetProps {
-  cards: CardInventory[];
-  onClick?: () => void;
+  onOpenModal?: () => void;
 }
 
-export const SetRegistryWidget: React.FC<SetRegistryWidgetProps> = ({ cards, onClick }) => {
-  const enrollments = useMemo(() => loadEnrollments(), [cards]);
+export const SetRegistryWidget: React.FC<SetRegistryWidgetProps> = ({ onOpenModal }) => {
+  const registries = useMemo(() => getSetRegistries(), []);
+  const ownedCards = useMemo(() => getOwnedCards(), []);
+  const missingCards = useMemo(() => getMissingCards(), []);
+  const stats = useMemo(() => getCompletionStats(), []);
 
-  const progressList = useMemo<SetProgress[]>(() => {
-    return enrollments.map(e => getSetProgress(e));
-  }, [enrollments]);
+  const nearestCompletion = useMemo(() => {
+    if (registries.length === 0) return null;
+    return registries.reduce((best, r) => r.completionPercent > best.completionPercent ? r : best, registries[0]);
+  }, [registries]);
 
-  // Sort by completion descending, take top 3
-  const topSets = useMemo(() => {
-    return [...progressList]
-      .sort((a, b) => b.completionPercent - a.completionPercent)
-      .slice(0, 3);
-  }, [progressList]);
-
-  // Nearest to complete
-  const nearestComplete = useMemo(() => {
-    if (progressList.length === 0) return null;
-    return [...progressList]
-      .filter(p => p.completionPercent < 100)
-      .sort((a, b) => b.completionPercent - a.completionPercent)[0] ?? null;
-  }, [progressList]);
-
-  // Recently matched cards count
-  const recentMatches = useMemo(() => {
-    return progressList.reduce((sum, p) => sum + p.recentMatchCount, 0);
-  }, [progressList]);
-
-  const totalEnrolled = enrollments.length;
-  const completedSets = progressList.filter(p => p.completionPercent >= 100).length;
+  const avgCompletion = useMemo(() => {
+    if (registries.length === 0) return 0;
+    return registries.reduce((sum, r) => sum + r.completionPercent, 0) / registries.length;
+  }, [registries]);
 
   return (
     <button
-      onClick={onClick}
-      className="w-full text-left bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-5 animate-in slide-in-from-bottom-8 duration-700 hover:border-slate-700 transition-all group"
+      onClick={onOpenModal}
+      className="w-full text-left bg-slate-900 rounded-2xl overflow-hidden p-8 hover:border-blue-500/30 hover:bg-slate-800/60 transition-all duration-300 group border border-slate-700"
     >
       {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-2">
+          <div className="p-2 bg-blue-500/10 rounded-lg">
+            <LayoutGrid size={16} className="text-blue-400" />
+          </div>
+          <span className="text-xs font-bebas text-slate-400 uppercase tracking-wider">Set Registry</span>
+        </div>
+        <ChevronRight size={16} className="text-slate-500 group-hover:text-blue-400 transition-colors" />
+      </div>
+
+      {/* 4-stat grid */}
+      <div className="grid grid-cols-4 divide-x divide-slate-700 mb-5">
+        <div className="pr-3">
+          <p className="text-xs text-slate-400">Sets Tracked</p>
+          <p className="text-lg font-bold text-blue-400">{registries.length}</p>
+        </div>
+        <div className="px-3">
+          <p className="text-xs text-slate-400">Avg Completion</p>
+          <p className="text-lg font-bold text-white">{avgCompletion.toFixed(0)}%</p>
+        </div>
+        <div className="px-3">
+          <p className="text-xs text-slate-400">Cards Owned</p>
+          <p className="text-lg font-bold text-emerald-400">{ownedCards.length}</p>
+        </div>
+        <div className="pl-3">
+          <p className="text-xs text-slate-400">Missing Cards</p>
+          <p className="text-lg font-bold text-red-400">{missingCards.length}</p>
+        </div>
+      </div>
+
+      {/* Nearest completion highlight */}
+      {nearestCompletion && (
+        <div className="flex items-center gap-3 p-3 bg-blue-500/5 border border-blue-500/20 rounded-xl mb-4">
+          <Target size={14} className="text-blue-400 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Nearest Complete</p>
+            <p className="text-xs text-white font-medium truncate">{nearestCompletion.setName}</p>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <p className="text-xs text-slate-500">Progress</p>
+            <p className="text-sm font-bold text-blue-400">{nearestCompletion.completionPercent}%</p>
+          </div>
+        </div>
+      )}
+
+      {/* Bottom: total sets value + missing cost */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-blue-500/10 rounded-xl text-blue-400">
-            <BookOpen size={22} />
-          </div>
-          <div>
-            <h3 className="text-3xl font-bebas tracking-widest text-white leading-tight">
-              Set <span className="text-blue-400">Registry</span>
-            </h3>
-            <p className="text-[10px] font-black text-brand-muted uppercase tracking-[0.2em]">
-              Completion tracking & checklists
-            </p>
-          </div>
+        <div className="flex items-center gap-1.5">
+          <Hash size={12} className="text-blue-400" />
+          <span className="text-xs text-slate-400">Value: <span className="text-white font-bold">{formatCurrency(stats.totalValue)}</span></span>
         </div>
-        <ChevronRight
-          size={20}
-          className="text-slate-600 group-hover:text-brand-lime group-hover:translate-x-1 transition-all"
-        />
-      </div>
-
-      {/* Summary Stats */}
-      <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-bold text-blue-400 bg-blue-500/15 border border-blue-500/30">
-          <BookOpen size={14} />
-          {totalEnrolled} Set{totalEnrolled !== 1 ? 's' : ''}
-        </div>
-        <div className="h-5 w-px bg-slate-700" />
-        {completedSets > 0 && (
-          <>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-green-400">
-              <CheckCircle2 size={14} />
-              {completedSets} Complete
-            </div>
-            <div className="h-5 w-px bg-slate-700" />
-          </>
-        )}
-        {recentMatches > 0 && (
-          <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
-            <Clock size={14} />
-            {recentMatches} recent match{recentMatches !== 1 ? 'es' : ''}
-          </div>
-        )}
-        {totalEnrolled === 0 && (
-          <span className="text-xs text-slate-500">Browse sets to get started</span>
-        )}
-      </div>
-
-      {/* Nearest to Complete */}
-      {nearestComplete && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-brand-lime/5 border border-brand-lime/15 rounded-xl">
-          <Star size={14} className="text-brand-lime flex-shrink-0" />
-          <span className="text-xs text-slate-400">Nearest complete:</span>
-          <span className="text-xs text-brand-lime font-bold truncate">
-            {nearestComplete.setName}
-          </span>
-          <span className="ml-auto text-xs font-mono text-white">
-            {nearestComplete.completionPercent}%
+        <div className="flex items-center gap-1.5">
+          <Search size={12} className="text-red-400" />
+          <span className="text-xs text-slate-400">
+            Missing Cost: <span className="text-red-400 font-bold">{formatCurrency(stats.missingCost)}</span>
           </span>
         </div>
-      )}
-
-      {/* Top 3 Sets Progress */}
-      {topSets.length > 0 && (
-        <div className="space-y-3">
-          {topSets.map(sp => (
-            <div key={sp.setId} className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-300 font-medium truncate max-w-[60%]">
-                  {sp.setName}
-                </span>
-                <span className="text-slate-500 font-mono">
-                  {sp.ownedCount}/{sp.totalCards}
-                </span>
-              </div>
-              <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    sp.completionPercent >= 100
-                      ? 'bg-green-500'
-                      : sp.completionPercent >= 75
-                        ? 'bg-brand-lime'
-                        : 'bg-blue-500'
-                  }`}
-                  style={{ width: `${Math.min(100, sp.completionPercent)}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Empty State */}
-      {totalEnrolled === 0 && (
-        <div className="text-center py-2 text-xs text-slate-500">
-          Enroll in sets to track your progress toward completion
-        </div>
-      )}
+      </div>
     </button>
   );
 };

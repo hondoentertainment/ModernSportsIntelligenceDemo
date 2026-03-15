@@ -63,6 +63,14 @@ import {
   Crosshair,
   Globe,
   Shield,
+  CalendarClock,
+  FileCheck,
+  LayoutGrid,
+  Clock,
+  Camera,
+  Calculator,
+  Package,
+  AlertOctagon,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -138,6 +146,17 @@ export const NAV_ITEMS = [
   { id: 'price-prediction', label: 'Price Prediction', icon: <Crosshair size={20} />, path: '/price-prediction' },
   { id: 'international-arbitrage', label: 'Intl Arbitrage', icon: <Globe size={20} />, path: '/international-arbitrage' },
   { id: 'blockchain-provenance', label: 'Card Passport', icon: <Shield size={20} />, path: '/blockchain-provenance' },
+  // Phases 149-158: Advanced Platform Features
+  { id: 'trade-deadline', label: 'Trade Deadline', icon: <CalendarClock size={20} />, path: '/trade-deadline' },
+  { id: 'collection-appraiser', label: 'Appraiser', icon: <FileCheck size={20} />, path: '/collection-appraiser' },
+  { id: 'set-registry', label: 'Set Registry', icon: <LayoutGrid size={20} />, path: '/set-registry' },
+  { id: 'vintage-market', label: 'Vintage Market', icon: <Clock size={20} />, path: '/vintage-market' },
+  { id: 'social-trading', label: 'Social Trading', icon: <Users size={20} />, path: '/social-trading' },
+  { id: 'listing-optimizer', label: 'Listing Optimizer', icon: <Camera size={20} />, path: '/listing-optimizer' },
+  { id: 'tax-calculator', label: 'Tax Calculator', icon: <Calculator size={20} />, path: '/tax-calculator' },
+  { id: 'sealed-product', label: 'Sealed Product', icon: <Package size={20} />, path: '/sealed-product' },
+  { id: 'error-card', label: 'Error Cards', icon: <AlertOctagon size={20} />, path: '/error-card' },
+  { id: 'auction-sniper', label: 'Auction Sniper', icon: <Crosshair size={20} />, path: '/auction-sniper' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];
