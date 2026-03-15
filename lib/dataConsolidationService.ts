@@ -455,8 +455,8 @@ export { ALL_PLATFORMS, CARD_SEEDS };
 // Bridge functions to integrate data from Market Indices (Phase 86),
 // Liquidity Intelligence (Phase 68), and Consignment Router (Phase 79)
 
-import { getIndices, type MarketIndex } from './marketIndicesService';
-import { getPlatformComparison as getConsignmentComparison, type PlatformComparison as ConsignmentComparison } from './consignmentRouterService';
+import { getIndices } from './marketIndicesService';
+import { getPlatformComparison as getConsignmentComparison, type PlatformComparison as _ConsignmentComparison } from './consignmentRouterService';
 
 export interface EnrichedConsolidatedView {
   consolidatedPrice: ConsolidatedPrice;
@@ -496,7 +496,7 @@ export function getEnrichedConsolidatedView(
       football: 'MSINFL',
       hockey: 'MSINHL',
     };
-    const playerLower = player.toLowerCase();
+    const _playerLower = player.toLowerCase();
     let relevantTicker = 'MSI500';
     for (const [keyword, ticker] of Object.entries(sportKeywords)) {
       // Basic sport detection from player name context

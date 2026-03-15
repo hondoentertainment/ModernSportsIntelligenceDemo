@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Users, TrendingUp, TrendingDown, AlertTriangle, Star, ChevronRight, BarChart3, Eye, Shield, Radio } from 'lucide-react';
+import {
+  Users,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+  Star,
+  ChevronRight,
+  BarChart3,
+  Shield,
+  Radio,
+} from 'lucide-react';
 import {
   getTopInfluencers,
   getContentEvents,
@@ -9,11 +19,9 @@ import {
   getTrendingMentions,
   getMarketManipulationFlags,
   measureImpact,
-  detectAccumulation,
   platformBadgeColor,
   platformLabel,
   severityBadgeColor,
-  formatFollowers,
   formatViews,
   momentumColor,
   type Influencer,
@@ -22,10 +30,19 @@ import {
   type InfluencerRanking,
   type PlatformImpact,
   type TrendingMention,
-  type AccumulationSignal,
   type MarketManipulationFlag,
 } from '../lib/influencerImpactService.ts';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  BarChart,
+  Bar,
+} from 'recharts';
 
 const InfluencerImpact: React.FC = () => {
   const [influencers, setInfluencers] = useState<Influencer[]>([]);

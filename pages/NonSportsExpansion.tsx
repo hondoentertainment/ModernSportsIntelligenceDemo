@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Sparkles, TrendingUp, Layers, Gamepad2 } from 'lucide-react';
+import {
+  Sparkles,
+  TrendingUp,
+  Layers,
+  Gamepad2,
+} from 'lucide-react';
 import {
   getCategories,
   getCategoryMarketData,
@@ -15,7 +20,13 @@ import {
   type CategoryTrend,
 } from '../lib/nonSportsExpansionService.ts';
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, Cell,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
 } from 'recharts';
 
 const NonSportsExpansion: React.FC = () => {

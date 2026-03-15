@@ -420,7 +420,7 @@ export function getCapitalGains(year?: TaxYear): CapitalGain[] {
   return results;
 }
 
-export function getTaxBrackets(year?: TaxYear): TaxBracket[] {
+export function getTaxBrackets(_year?: TaxYear): TaxBracket[] {
   const cached = loadData<TaxBracket[]>('tax_brackets');
   if (cached) return cached;
   saveData('tax_brackets', TAX_BRACKETS);
@@ -833,4 +833,89 @@ export function getQuarterlyEstimatedPayments(): { quarter: string; dueDate: str
     { quarter: 'Q3 2026', dueDate: '2026-09-15', estimatedIncome: 0, estimatedTax: 0, status: 'upcoming' },
     { quarter: 'Q4 2026', dueDate: '2027-01-15', estimatedIncome: 0, estimatedTax: 0, status: 'upcoming' },
   ];
+}
+
+// ---- Page-compatible types & adapters (used by TaxCalculator page) ----
+
+export interface CapitalGainsSummary {
+  taxesOwed: number;
+  shortTermGains: number;
+  longTermGains: number;
+  harvestingSavings: number;
+  effectiveTaxRate: number;
+}
+
+export interface MonthlyGain {
+  month: string;
+  gains: number;
+  losses: number;
+  net: number;
+}
+
+export type HarvestingOpportunity = HarvestOpportunity;
+
+export interface ShortLongSplit {
+  type: string;
+  amount: number;
+}
+
+export function getTransactionHistory(): Transaction[] {
+  return getTransactions();
+}
+
+export function getCapitalGainsSummary(): CapitalGainsSummary {
+  const gains = getCapitalGains();
+  const shortTerm = gains.filter(g => !g.isLongTerm);
+  const longTerm = gains.filter(g => g.isLongTerm);
+  const stGains = shortTerm.reduce((s, g) => s + g.adjustedGain, 0);
+  const ltGains = longTerm.reduce((s, g) => s + g.adjustedGain, 0);
+  const harvestOps = getHarvestOpportunities();
+  const harvestingSavings = harvestOps.reduce((s, h) => s + h.potentialTaxSavings, 0);
+  const totalGain = stGains + ltGains;
+  const rate = totalGain > 0 ? Math.round((totalGain * 0.22) / totalGain * 100) : 0;
+  return {
+    taxesOwed: Math.round(stGains * 0.22 + ltGains * 0.15),
+    shortTermGains: Math.round(stGains),
+    longTermGains: Math.round(ltGains),
+    harvestingSavings: Math.round(harvestingSavings),
+    effectiveTaxRate: rate,
+  };
+}
+
+export function getMonthlyGains(): MonthlyGain[] {
+  const data = getMonthlyGainLoss();
+  return data.map(d => ({
+    month: d.month,
+    gains: d.shortTermGains + d.longTermGains,
+    losses: d.shortTermLosses + d.longTermLosses,
+    net: d.net,
+  }));
+}
+
+export function getHarvestingOpportunities(): HarvestingOpportunity[] {
+  return getHarvestOpportunities();
+}
+
+export function getForm8949Preview(): Form8949Entry[] {
+  return getForm8949Entries();
+}
+
+export function getShortLongSplit(): ShortLongSplit[] {
+  const gains = getCapitalGains();
+  const shortTerm = gains.filter(g => !g.isLongTerm).reduce((s, g) => s + Math.abs(g.adjustedGain), 0);
+  const longTerm = gains.filter(g => g.isLongTerm).reduce((s, g) => s + Math.abs(g.adjustedGain), 0);
+  return [
+    { type: 'Short-Term', amount: Math.round(shortTerm) },
+    { type: 'Long-Term', amount: Math.round(longTerm) },
+  ];
+}
+
+// ---- Widget-compatible helpers ----
+
+export function getTaxOwed(): { totalOwed: number; effectiveRate: number } {
+  const summary = getCapitalGainsSummary();
+  return {
+    totalOwed: summary.taxesOwed,
+    effectiveRate: summary.effectiveTaxRate,
+  };
 }

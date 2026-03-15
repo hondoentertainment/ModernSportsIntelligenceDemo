@@ -3,13 +3,11 @@ import {
   X,
   RefreshCw,
   ArrowRightLeft,
-  DollarSign,
   TrendingUp,
   Clock,
   CheckCircle2,
   XCircle,
   AlertTriangle,
-  ChevronRight,
   Package,
   BarChart3,
   Zap,
@@ -25,7 +23,6 @@ import {
   type GradeTranslation,
   type CrossGradeTracker,
   type GradingCompany,
-  type ArbitrageWithPrediction,
 } from '../lib/gradingArbitrageService.ts';
 import {
   BarChart,
@@ -34,7 +31,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Cell,
   Legend,
 } from 'recharts';
 

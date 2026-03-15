@@ -1,4 +1,4 @@
-import { CardInventory, Sport } from '../types';
+import { CardInventory } from '../types';
 
 // ---- Types ----
 

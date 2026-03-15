@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Radio, AlertTriangle, Eye, Flame, Zap, Users, Calendar, BarChart3, Award, TrendingUp } from 'lucide-react';
+import {
+  Radio,
+  AlertTriangle,
+  Eye,
+  Flame,
+  Zap,
+  Users,
+  Calendar,
+  BarChart3,
+  Award,
+  TrendingUp,
+} from 'lucide-react';
 import {
   getLiveBreaks,
   getRecentResults,
@@ -21,13 +32,26 @@ import {
   type BreakerProfile,
   type HitTracker,
 } from '../lib/liveBreakHubService.ts';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+} from 'recharts';
 
 const CHART_COLORS = ['#a78bfa', '#60a5fa', '#f87171', '#c084fc', '#34d399', '#fbbf24', '#22d3ee', '#fb923c'];
 
 const LiveBreakHub: React.FC = () => {
   const [breaks, setBreaks] = useState<LiveBreak[]>([]);
-  const [results, setResults] = useState<BreakResult[]>([]);
+  const [_results, setResults] = useState<BreakResult[]>([]);
   const [schedule, setSchedule] = useState<BreakSchedule[]>([]);
   const [viewerStats, setViewerStats] = useState<ViewerStats[]>([]);
   const [breakers, setBreakers] = useState<BreakerProfile[]>([]);

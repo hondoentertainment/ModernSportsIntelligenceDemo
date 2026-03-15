@@ -1,23 +1,18 @@
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   TrendingUp,
-  TrendingDown,
   Activity,
   BarChart,
   Flame,
-  Target,
   Layers,
-  Trophy,
   DollarSign,
-  Percent,
-  Calendar,
   Zap,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
 } from 'lucide-react';
 import { useInventory } from '../lib/useInventory.ts';
-import { AggregationService, PortfolioMetrics } from '../lib/aggregationService';
+import { AggregationService } from '../lib/aggregationService';
 import {
   AreaChart,
   Area,
@@ -28,7 +23,7 @@ import {
   BarChart as RechartsBarChart,
   Bar,
   Cell,
-  CartesianGrid
+  CartesianGrid,
 } from 'recharts';
 
 const Trends: React.FC = () => {

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { CalendarClock, ChevronRight, AlertTriangle, TrendingUp, DollarSign } from 'lucide-react';
+import { CalendarClock, ChevronRight, AlertTriangle, TrendingUp } from 'lucide-react';
 import {
   getTradeEvents,
   getAffectedPlayers,

@@ -4,7 +4,7 @@ import {
   getSetRegistries,
   getOwnedCards,
   getMissingCards,
-  getCompletionStats,
+  getCompletionSummary,
   formatCurrency,
 } from '../lib/setRegistryService';
 
@@ -16,7 +16,7 @@ export const SetRegistryWidget: React.FC<SetRegistryWidgetProps> = ({ onOpenModa
   const registries = useMemo(() => getSetRegistries(), []);
   const ownedCards = useMemo(() => getOwnedCards(), []);
   const missingCards = useMemo(() => getMissingCards(), []);
-  const stats = useMemo(() => getCompletionStats(), []);
+  const stats = useMemo(() => getCompletionSummary(), []);
 
   const nearestCompletion = useMemo(() => {
     if (registries.length === 0) return null;

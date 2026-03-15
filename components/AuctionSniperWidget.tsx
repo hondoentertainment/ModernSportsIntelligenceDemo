@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Crosshair, ChevronRight, Clock, Bell, DollarSign } from 'lucide-react';
+import { Crosshair, ChevronRight, Bell, DollarSign } from 'lucide-react';
 import {
   getLiveAuctions,
   getEndingSoon,

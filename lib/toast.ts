@@ -31,7 +31,7 @@ export interface ToastOptions {
     undoLabel?: string;
 }
 
-type ToastHandler = (type: ToastType, message: string, options?: ToastOptions) => void;
+type ToastHandler = (_type: ToastType, _message: string, _options?: ToastOptions) => void;
 
 let _handler: ToastHandler | null = null;
 const _recentDedupeKeys = new Map<string, number>(); // key → timestamp
@@ -77,7 +77,7 @@ export function showToast(type: ToastType, message: string, options?: ToastOptio
         _handler(type, message, options);
     } else {
         // Fallback to console if no React handler is mounted
-        const logFn = type === 'error' ? console.error : type === 'warning' ? console.warn : console.log;
+        const logFn = type === 'error' ? console.error : console.warn;
         logFn(`[Toast:${type}]`, message);
     }
 }

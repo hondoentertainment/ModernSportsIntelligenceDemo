@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import { CardInventory } from '../types';
 
-interface PortfolioSummary {
+interface _PortfolioSummary {
     totalValue: number;
     totalCost: number;
     profit: number;

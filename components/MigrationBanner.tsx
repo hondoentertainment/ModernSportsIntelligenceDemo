@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cloud, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Cloud, Loader2, CheckCircle2 } from 'lucide-react';
 import { useMigration } from '../contexts/MigrationContext';
 import { useToast } from '../contexts/ToastContext';
 

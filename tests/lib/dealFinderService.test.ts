@@ -12,7 +12,7 @@ import {
   logDealAction,
   PLATFORM_FEES,
 } from '../../lib/dealFinderService';
-import type { MarketplaceListing, Deal, ArbitrageOpportunity } from '../../lib/dealFinderService';
+import type { MarketplaceListing, Deal } from '../../lib/dealFinderService';
 import { makeCard, setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

@@ -1,11 +1,17 @@
 import React, { useMemo, useState } from 'react';
-import { ChevronRight, AlertTriangle, Zap, Target, Shield, TrendingUp } from 'lucide-react';
+import {
+  ChevronRight,
+  AlertTriangle,
+  Zap,
+  Target,
+  Shield,
+} from 'lucide-react';
 import { CardInventory } from '../types';
-import { generatePortfolioBriefing, AGENTS, AgentRole, PortfolioBriefing } from '../lib/agentFramework';
+import { generatePortfolioBriefing, AGENTS, AgentRole } from '../lib/agentFramework';
 
 interface AgentInsightsPanelProps {
   inventory: CardInventory[];
-  onCardClick?: (card: CardInventory) => void;
+  onCardClick?: (_card: CardInventory) => void;
 }
 
 const healthConfig = {

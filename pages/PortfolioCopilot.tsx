@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Bot, Sparkles, MessageSquare, AlertTriangle, Send, ChevronRight, TrendingUp, TrendingDown, Bell } from 'lucide-react';
+import {
+  Bot,
+  Sparkles,
+  MessageSquare,
+  Send,
+  ChevronRight,
+  TrendingUp,
+  TrendingDown,
+  Bell,
+} from 'lucide-react';
 import {
   getAllConversations,
   getDailyBriefing,
@@ -13,15 +22,22 @@ import {
   type DailyBriefing,
   type ProactiveNudge,
   type CopilotSuggestion,
-  type CopilotMessage,
 } from '../lib/portfolioCopilotService.ts';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 const PortfolioCopilot: React.FC = () => {
   const [conversations, setConversations] = useState<ConversationThread[]>([]);
   const [briefing, setBriefing] = useState<DailyBriefing | null>(null);
   const [nudges, setNudges] = useState<ProactiveNudge[]>([]);
-  const [suggestions, setSuggestions] = useState<CopilotSuggestion[]>([]);
+  const [_suggestions, setSuggestions] = useState<CopilotSuggestion[]>([]);
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [loading, setLoading] = useState(true);

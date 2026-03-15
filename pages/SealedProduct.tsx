@@ -25,7 +25,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 
 const CHART_COLORS = ['#8b5cf6', '#60a5fa', '#f87171', '#34d399', '#fbbf24', '#a78bfa', '#22d3ee', '#fb923c'];
 
-const SealedProduct: React.FC = () => {
+const SealedProductPage: React.FC = () => {
   const [products, setProducts] = useState<SealedProduct[]>([]);
   const [priceTrends, setPriceTrends] = useState<PriceTrend[]>([]);
   const [ripVsHold, setRipVsHold] = useState<RipVsHold[]>([]);
@@ -432,4 +432,4 @@ const SealedProduct: React.FC = () => {
   );
 };
 
-export default SealedProduct;
+export default SealedProductPage;

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { CardInventory, Sport } from '../types';
-import { CorrelationService, CorrelationPoint } from '../lib/CorrelationService';
+import { CorrelationService } from '../lib/CorrelationService';
 
 interface CorrelationTerminalProps {
     inventory: CardInventory[];

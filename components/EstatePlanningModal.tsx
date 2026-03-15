@@ -17,7 +17,6 @@ import {
   getEstatePlan,
   getEstatePerformanceContext,
   DocumentStatus,
-  EstatePerformanceContext,
 } from '../lib/estatePlanningService';
 
 interface EstatePlanningModalProps {

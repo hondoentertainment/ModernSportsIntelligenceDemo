@@ -11,12 +11,7 @@ import {
   type DragEndEvent,
   type DragOverEvent,
 } from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  useSortable,
-  arrayMove,
-} from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {
   Plus,
@@ -148,8 +143,8 @@ function Lane({
   group: CardGroup;
   cards: CardInventory[];
   stats: { count: number; totalValue: number; totalCost: number };
-  onRename: (id: string, label: string) => void;
-  onDelete: (id: string) => void;
+  onRename: (_id: string, _label: string) => void;
+  onDelete: (_id: string) => void;
   isOver: boolean;
 }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -343,7 +338,7 @@ const PortfolioBuilder: React.FC = () => {
   const poolIds = useMemo(() => filteredPool.map(c => c.id), [filteredPool]);
 
   // Find which group a card belongs to from the drag data
-  const findGroupForCard = useCallback((cardId: string): string | undefined => {
+  const _findGroupForCard = useCallback((cardId: string): string | undefined => {
     for (const group of groups) {
       if (groupedCards.grouped[group.id]?.some(c => c.id === cardId)) {
         return group.id;

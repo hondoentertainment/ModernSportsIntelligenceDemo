@@ -1,6 +1,11 @@
 
 import React, { Suspense, useState, lazy } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -130,7 +135,7 @@ const PublicPortfolio = lazy(() => import('./pages/PublicPortfolio.tsx'));
 
 // ─── App Layout ───────────────────────────────────────────────────────
 
-const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: boolean) => void }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
+const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (_val: boolean) => void }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { inventory } = useSupabaseInventory();
 
   return (

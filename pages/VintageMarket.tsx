@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Clock, AlertTriangle, TrendingUp, BarChart3, Star, Award, Archive, DollarSign, Layers, BookOpen } from 'lucide-react';
+import {
+  Clock,
+  AlertTriangle,
+  TrendingUp,
+  BarChart3,
+  Star,
+  Archive,
+  DollarSign,
+  Layers,
+  BookOpen,
+} from 'lucide-react';
 import {
   getEraIndices,
   getVintageCards,
@@ -23,7 +33,16 @@ import {
   type VintageMarketSummary,
 } from '../lib/vintageMarketService';
 import {
-  BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
 } from 'recharts';
 
 const VintageMarket: React.FC = () => {
@@ -63,7 +82,7 @@ const VintageMarket: React.FC = () => {
     return vintageCards.filter(c => c.era === selectedEra);
   }, [vintageCards, selectedEra]);
 
-  const eraColors: Record<string, string> = {
+  const _eraColors: Record<string, string> = {
     'pre-war': '#ef4444',
     'post-war': '#3b82f6',
     'vintage-60s': '#10b981',
@@ -71,7 +90,7 @@ const VintageMarket: React.FC = () => {
     'early-modern': '#a855f7',
   };
 
-  const eraLabels: Record<string, string> = {
+  const _eraLabels: Record<string, string> = {
     'pre-war': 'Pre-War (1900-1945)',
     'post-war': 'Post-War (1946-1959)',
     'vintage-60s': 'Vintage 60s',

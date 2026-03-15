@@ -36,10 +36,6 @@ import {
   getMonthlyTrendData,
   getProviderName,
   type SubscriptionProvider,
-  type BoxOpening,
-  type SubscriptionROI,
-  type ProviderComparison,
-  type BoxHit,
 } from '../lib/subscriptionBoxService';
 
 interface SubscriptionBoxModalProps {
@@ -62,7 +58,7 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
 const OverviewTab: React.FC = () => {
   const openings = useMemo(() => getBoxOpenings(), []);
   const trendData = useMemo(() => getMonthlyTrendData(), []);
-  const providers = useMemo(() => compareProviders(), []);
+  const _providers = useMemo(() => compareProviders(), []);
   const recentHits = useMemo(() => getHitHistory().slice(0, 5), []);
   const subscriptions = useMemo(() => getSubscriptions(), []);
 
@@ -390,7 +386,7 @@ const EVAnalysisTab: React.FC = () => {
   }, [trendData]);
 
   // Group EV data by provider for breakdown
-  const byProvider = useMemo(() => {
+  const _byProvider = useMemo(() => {
     const map = new Map<SubscriptionProvider, typeof evData>();
     evData.forEach(e => {
       if (!map.has(e.provider)) map.set(e.provider, []);

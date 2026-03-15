@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, Info, TrendingUp, BarChart, Shield, Target, Flame, CreditCard, ArrowUpRight, Minus } from 'lucide-react';
+import { ChevronLeft, TrendingUp, BarChart, Flame, CreditCard } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { MOCK_PLAYERS } from '../constants.tsx';
 import { getAthleteHeadshotUrl } from '../lib/mlbApi.ts';

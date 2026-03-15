@@ -1,17 +1,43 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import {
-  X, Code, Play, FlaskConical, Search, TrendingUp, TrendingDown,
-  Plus, Trash2, Copy, Save, BookOpen, BarChart3, Clock, Filter,
-  ChevronDown, AlertTriangle, Zap, Download, RotateCcw,
+  X,
+  Code,
+  Play,
+  Search,
+  TrendingUp,
+  Plus,
+  Trash2,
+  Copy,
+  Save,
+  BookOpen,
+  BarChart3,
+  Clock,
+  Filter,
 } from 'lucide-react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine,
 } from 'recharts';
 import {
-  QuantStrategy, StrategyResult, BacktestResult, ScreenerFilter, ScreenerResult,
-  runStrategy, runBacktest, runScreener, getTemplates, getSavedStrategies,
-  saveStrategy, deleteStrategy, SCREENER_FIELDS, SCREENER_OPERATORS,
+  QuantStrategy,
+  StrategyResult,
+  BacktestResult,
+  ScreenerFilter,
+  ScreenerResult,
+  runStrategy,
+  runBacktest,
+  runScreener,
+  getTemplates,
+  getSavedStrategies,
+  saveStrategy,
+  SCREENER_FIELDS,
+  SCREENER_OPERATORS,
 } from '../lib/quantWorkbenchService';
 
 // ── Props ───────────────────────────────────────────────────────────────────────
@@ -44,7 +70,7 @@ function formatPct(n: number): string {
   return `${n >= 0 ? '+' : ''}${n.toFixed(2)}%`;
 }
 
-function syntaxHighlight(code: string): string {
+function _syntaxHighlight(code: string): string {
   // Basic keyword highlighting via CSS class spans
   let html = code
     .replace(/&/g, '&amp;')
@@ -128,7 +154,7 @@ return screen(universe);`
 
   // Data
   const templates = useMemo(() => getTemplates(), []);
-  const savedStrategies = useMemo(() => getSavedStrategies(), [editorResult]);
+  const savedStrategies = useMemo(() => getSavedStrategies(), []);
   const allStrategies = useMemo(() => [...templates, ...savedStrategies], [templates, savedStrategies]);
 
   // Summary stats
@@ -375,9 +401,9 @@ return screen(universe);`
 
 interface EditorTabProps {
   code: string;
-  setCode: (code: string) => void;
+  setCode: (_code: string) => void;
   strategyName: string;
-  setStrategyName: (name: string) => void;
+  setStrategyName: (_name: string) => void;
   result: StrategyResult | null;
   isRunning: boolean;
   onRun: () => void;
@@ -579,8 +605,8 @@ interface ScreenerTabProps {
   result: ScreenerResult | null;
   isScreening: boolean;
   onAddFilter: () => void;
-  onRemoveFilter: (idx: number) => void;
-  onUpdateFilter: (idx: number, updates: Partial<ScreenerFilter>) => void;
+  onRemoveFilter: (_idx: number) => void;
+  onUpdateFilter: (_idx: number, _updates: Partial<ScreenerFilter>) => void;
   onRun: () => void;
 }
 
@@ -735,11 +761,11 @@ const ScreenerTab: React.FC<ScreenerTabProps> = ({
 interface BacktestTabProps {
   strategies: QuantStrategy[];
   selectedId: string;
-  onSelectStrategy: (id: string) => void;
+  onSelectStrategy: (_id: string) => void;
   startDate: string;
   endDate: string;
-  onStartDateChange: (d: string) => void;
-  onEndDateChange: (d: string) => void;
+  onStartDateChange: (_d: string) => void;
+  onEndDateChange: (_d: string) => void;
   result: BacktestResult | null;
   isRunning: boolean;
   onRun: () => void;
@@ -983,8 +1009,8 @@ const MetricCard: React.FC<{ label: string; value: string; color: string }> = ({
 
 interface TemplatesTabProps {
   templates: QuantStrategy[];
-  onLoad: (t: QuantStrategy) => void;
-  onRun: (t: QuantStrategy) => void;
+  onLoad: (_t: QuantStrategy) => void;
+  onRun: (_t: QuantStrategy) => void;
 }
 
 const TYPE_BADGE: Record<string, { color: string; bg: string; border: string }> = {

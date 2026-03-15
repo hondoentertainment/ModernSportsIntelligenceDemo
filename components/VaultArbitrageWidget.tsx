@@ -1,7 +1,5 @@
 import React, { useMemo } from 'react';
-import {
-  ArrowRightLeft, TrendingUp, ChevronRight, Zap, DollarSign,
-} from 'lucide-react';
+import { ArrowRightLeft, ChevronRight, Zap } from 'lucide-react';
 import {
   getVaultSummary,
   getArbitrageOpportunities,

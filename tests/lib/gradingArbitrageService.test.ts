@@ -1,4 +1,10 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  vi,
+} from 'vitest';
 import {
   getCrossGradeOpportunities,
   getGradeTranslationTable,
@@ -109,7 +115,7 @@ describe('gradingArbitrageService', () => {
       const a = getGradePremiums('Player A', 'Card');
       const b = getGradePremiums('Player B', 'Card');
       // Hash-based so different players may differ
-      const sameTop = a[0].psa === b[0].psa;
+      const _sameTop = a[0].psa === b[0].psa;
       // They can be the same if hash mod is same, but generally differ
       expect(a.length).toBe(b.length);
     });

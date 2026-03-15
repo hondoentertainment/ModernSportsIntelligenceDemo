@@ -311,7 +311,7 @@ function runMonteCarloSimulation(
   }
 
   // Pre-compute card weights and volatilities
-  const cardWeights = cards.map(c => getCardValue(c) / totalValue);
+  const _cardWeights = cards.map(c => getCardValue(c) / totalValue);
   const cardVols = cards.map(c => getCardVolatility(c));
 
   // Pre-compute shock impacts per card per month

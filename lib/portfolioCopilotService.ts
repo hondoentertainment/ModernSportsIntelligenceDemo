@@ -619,3 +619,5 @@ export {
   priorityColor,
   priorityBadgeColor,
 };
+
+// Helper functions are exported via the re-export block above

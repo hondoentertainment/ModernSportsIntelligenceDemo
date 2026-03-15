@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Camera, RefreshCw, AlertCircle } from 'lucide-react';
 
 interface CameraFeedProps {
-    onCapture: (base64: string) => void;
+    onCapture: (_base64: string) => void;
     isActive: boolean;
 }
 
@@ -23,6 +23,7 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive }) => {
             stopCamera();
         }
         return () => stopCamera();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isActive, facingMode]);
 
     const startCamera = async () => {

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Trophy, ChevronRight, Star, Lock } from 'lucide-react';
+import { Trophy, Star } from 'lucide-react';
 import { CardInventory } from '../types';
 import {
   getAchievementSummary,

@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ScanLine, Box, History, Camera, Eye, EyeOff, Layers, TrendingUp } from 'lucide-react';
+import {
+  ScanLine,
+  Box,
+  History,
+  Camera,
+  Eye,
+  EyeOff,
+  Layers,
+  TrendingUp,
+} from 'lucide-react';
 import {
   getScanHistory,
   getDisplayCases,
@@ -13,12 +22,22 @@ import {
   type CameraConfig,
   type ScanResult,
 } from '../lib/arScannerService.ts';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  BarChart,
+  Bar,
+} from 'recharts';
 
 const ArScanner: React.FC = () => {
   const [scanHistory, setScanHistory] = useState<ScanHistoryType | null>(null);
   const [displayCases, setDisplayCases] = useState<DisplayCase3D[]>([]);
-  const [overlayLayers, setOverlayLayers] = useState<OverlayLayerData[]>([]);
+  const [_overlayLayers, setOverlayLayers] = useState<OverlayLayerData[]>([]);
   const [cameraConfig, setCameraConfig] = useState<CameraConfig | null>(null);
   const [selectedCard, setSelectedCard] = useState<ScanResult | null>(null);
   const [overlay, setOverlay] = useState<AROverlay | null>(null);

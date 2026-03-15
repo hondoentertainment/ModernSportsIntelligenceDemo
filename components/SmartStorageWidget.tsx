@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
-import { Thermometer, ChevronRight, AlertTriangle, Activity } from 'lucide-react';
 import {
-  getStorageZones,
-  getEnvironmentalAlerts,
-  getSensorReadings,
-  formatCurrency,
-} from '../lib/smartStorageService';
+  Thermometer,
+  ChevronRight,
+  AlertTriangle,
+  Activity,
+} from 'lucide-react';
+import { getStorageZones, getEnvironmentalAlerts, getSensorReadings } from '../lib/smartStorageService';
 
 interface SmartStorageWidgetProps {
   onOpenModal?: () => void;

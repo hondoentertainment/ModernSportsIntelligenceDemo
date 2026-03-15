@@ -61,7 +61,7 @@ interface AchievementDef {
   category: AchievementCategoryType;
   tier: AchievementTier;
   requirement: number;
-  evaluate: (inventory: CardInventory[]) => number;
+  evaluate: (_inventory: CardInventory[]) => number;
 }
 
 const ALL_SPORTS: Sport[] = ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];

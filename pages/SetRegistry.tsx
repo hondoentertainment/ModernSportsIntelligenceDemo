@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { LayoutGrid, AlertTriangle, Target, Trophy, DollarSign, Search, CheckCircle2, Clock, Star, Package, TrendingUp, Award } from 'lucide-react';
+import {
+  LayoutGrid,
+  AlertTriangle,
+  Target,
+  Trophy,
+  Search,
+  CheckCircle2,
+  Clock,
+  Star,
+  Package,
+  TrendingUp,
+  Award,
+} from 'lucide-react';
 import {
   getSetRegistry,
   getMissingCards,
@@ -10,7 +22,6 @@ import {
   getSummaryStats,
   formatCurrency,
   formatDate,
-  getCompletionColor,
   type SetEntry,
   type MissingCard,
   type CompletionStat,
@@ -20,8 +31,16 @@ import {
   type SetRegistrySummary,
 } from '../lib/setRegistryService';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  PieChart, Pie, Cell, Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -55,7 +74,7 @@ const SetRegistry: React.FC = () => {
       setCategories(getCategoryBreakdown());
       setSummary(getSummaryStats());
       setLoading(false);
-    } catch (err) {
+    } catch  {
       setError('Failed to load Set Registry data');
       setLoading(false);
     }

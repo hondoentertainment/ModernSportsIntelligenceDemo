@@ -1,4 +1,9 @@
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from 'react';
 import {
   X,
   Upload,
@@ -30,9 +35,7 @@ import {
   ImportPreview,
   DuplicateMatch,
   ExportConfig,
-  ImportRecord,
   parseCSV,
-  autoDetectColumns,
   applyColumnMapping,
   parseEbayHistory,
   parsePSACert,
@@ -48,7 +51,7 @@ interface ImportModalProps {
   isOpen: boolean;
   onClose: () => void;
   cards: CardInventory[];
-  onImport: (cards: CardInventory[]) => void;
+  onImport: (_cards: CardInventory[]) => void;
 }
 
 type TabId = 'import' | 'mapper' | 'history' | 'export';
@@ -71,9 +74,9 @@ const SOURCE_OPTIONS: { value: ImportSource; label: string; icon: React.ReactNod
 
 const ImportTab: React.FC<{
   cards: CardInventory[];
-  onParsed: (preview: ImportPreview, source: ImportSource) => void;
-  onDirectImport: (partials: Partial<CardInventory>[], source: ImportSource) => void;
-}> = ({ cards, onParsed, onDirectImport }) => {
+  onParsed: (_preview: ImportPreview, _source: ImportSource) => void;
+  onDirectImport: (_partials: Partial<CardInventory>[], _source: ImportSource) => void;
+}> = ({ _cards, onParsed, onDirectImport }) => {
   const [source, setSource] = useState<ImportSource>('csv');
   const [textInput, setTextInput] = useState('');
   const [certNumber, setCertNumber] = useState('');
@@ -328,7 +331,7 @@ const ImportTab: React.FC<{
 
 const ColumnMapperTab: React.FC<{
   preview: ImportPreview | null;
-  onMappingApplied: (cards: Partial<CardInventory>[]) => void;
+  onMappingApplied: (_cards: Partial<CardInventory>[]) => void;
 }> = ({ preview, onMappingApplied }) => {
   const [mappings, setMappings] = useState<ColumnMapping[]>(preview?.mappings || []);
 
@@ -473,7 +476,7 @@ const ColumnMapperTab: React.FC<{
 const DuplicateReview: React.FC<{
   duplicates: DuplicateMatch[];
   pendingCards: Partial<CardInventory>[];
-  onConfirm: (actions: DuplicateMatch[]) => void;
+  onConfirm: (_actions: DuplicateMatch[]) => void;
   onSkipAll: () => void;
 }> = ({ duplicates, pendingCards, onConfirm, onSkipAll }) => {
   const [actions, setActions] = useState<DuplicateMatch[]>(duplicates);
@@ -573,9 +576,9 @@ const DuplicateReview: React.FC<{
 
 const HistoryTab: React.FC<{
   cards: CardInventory[];
-  onUndo: (importId: string) => void;
-}> = ({ cards, onUndo }) => {
-  const history = useMemo(() => getImportHistory(), [cards]);
+  onUndo: (_importId: string) => void;
+}> = ({ _cards, onUndo }) => {
+  const history = useMemo(() => getImportHistory(), []);
   const [undoing, setUndoing] = useState<string | null>(null);
 
   const SOURCE_LABELS: Record<ImportSource, string> = {
@@ -900,6 +903,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
       // Direct import
       doImport(partials, source);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cards]);
 
   const handleMappingApplied = useCallback((mappedCards: Partial<CardInventory>[]) => {
@@ -911,6 +915,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
     } else {
       doImport(mappedCards, pendingSource);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cards, pendingSource]);
 
   const doImport = useCallback((cardsToImport: Partial<CardInventory>[], source: ImportSource) => {
@@ -956,7 +961,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
     // Actually, we need a way to remove cards. Let's use a workaround:
     // call onImport with an empty array and signal the parent via localStorage
     // Better: just trigger re-render by passing remaining cards info
-    const removedIds = new Set(
+    const _removedIds = new Set(
       getImportHistory().records.length >= 0
         ? cards.filter(c => !result.remainingCards.some(r => r.id === c.id)).map(c => c.id)
         : []

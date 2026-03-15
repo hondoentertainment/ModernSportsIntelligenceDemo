@@ -2,7 +2,15 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getFriendlyAuthMessage } from '../lib/authErrors';
-import { Eye, EyeOff, Loader2, TrendingUp, Check, X, Shield } from 'lucide-react';
+import {
+  Eye,
+  EyeOff,
+  Loader2,
+  TrendingUp,
+  Check,
+  X,
+  Shield,
+} from 'lucide-react';
 
 const Signup: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -57,7 +65,7 @@ const Signup: React.FC = () => {
         }
     };
 
-    const handleGoogleSignup = async () => {
+    const _handleGoogleSignup = async () => {
         setError('');
         const { error } = await signInWithGoogle();
         if (error) {

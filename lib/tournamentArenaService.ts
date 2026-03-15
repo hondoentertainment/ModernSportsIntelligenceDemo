@@ -370,7 +370,7 @@ const MOCK_TOURNAMENT_STATS: TournamentStats = {
 
 // ── Helper Functions ─────────────────────────────────────────────────────────────
 
-function tournamentTypeLabel(type: TournamentType): string {
+export function tournamentTypeLabel(type: TournamentType): string {
   const map: Record<TournamentType, string> = {
     weekly: 'Weekly',
     monthly: 'Monthly',
@@ -390,7 +390,7 @@ function tournamentTypeColor(type: TournamentType): string {
   return map[type];
 }
 
-function tournamentTypeBadgeColor(type: TournamentType): string {
+export function tournamentTypeBadgeColor(type: TournamentType): string {
   const map: Record<TournamentType, string> = {
     weekly: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
     monthly: 'bg-blue-500/20 text-blue-400 border-blue-500/40',
@@ -400,7 +400,7 @@ function tournamentTypeBadgeColor(type: TournamentType): string {
   return map[type];
 }
 
-function statusLabel(status: TournamentStatus): string {
+export function statusLabel(status: TournamentStatus): string {
   const map: Record<TournamentStatus, string> = {
     upcoming: 'Upcoming',
     active: 'Live',
@@ -410,7 +410,7 @@ function statusLabel(status: TournamentStatus): string {
   return map[status];
 }
 
-function statusBadgeColor(status: TournamentStatus): string {
+export function statusBadgeColor(status: TournamentStatus): string {
   const map: Record<TournamentStatus, string> = {
     upcoming: 'bg-sky-500/20 text-sky-400 border-sky-500/40',
     active: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
@@ -420,7 +420,7 @@ function statusBadgeColor(status: TournamentStatus): string {
   return map[status];
 }
 
-function rankChangeIndicator(current: number, previous: number): { symbol: string; color: string } {
+export function rankChangeIndicator(current: number, previous: number): { symbol: string; color: string } {
   if (current < previous) return { symbol: `▲${previous - current}`, color: 'text-emerald-400' };
   if (current > previous) return { symbol: `▼${current - previous}`, color: 'text-red-400' };
   return { symbol: '—', color: 'text-slate-500' };
@@ -546,10 +546,8 @@ export function getTournamentStats(): TournamentStats {
 
 // Re-export helpers for use in components
 export {
-  tournamentTypeLabel,
   tournamentTypeColor,
-  tournamentTypeBadgeColor,
-  statusLabel,
-  statusBadgeColor,
-  rankChangeIndicator,
 };
+
+// ---- Page-compatible helpers (used by TournamentArena) ----
+

@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ShoppingCart, Activity, TrendingDown, AlertTriangle, Search, ExternalLink, CheckCircle, Clock, Package } from 'lucide-react';
+import {
+  ShoppingCart,
+  Activity,
+  TrendingDown,
+  Search,
+  Package,
+} from 'lucide-react';
 import {
   searchAllPlatforms,
   comparePrices,
@@ -13,7 +19,16 @@ import {
   type PlatformHealth,
   type PurchaseOrder,
 } from '../lib/marketplaceAggregatorService.ts';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
+} from 'recharts';
 
 const STATUS_COLORS: Record<string, string> = {
   online: 'text-emerald-400',
@@ -37,7 +52,7 @@ const ORDER_STATUS_BADGE: Record<string, string> = {
 
 const MarketplaceAggregator: React.FC = () => {
   const [listings, setListings] = useState<MarketplaceListing[]>([]);
-  const [comparisons, setComparisons] = useState<PriceComparison[]>([]);
+  const [_comparisons, _setComparisons] = useState<PriceComparison[]>([]);
   const [platformHealth, setPlatformHealth] = useState<PlatformHealth[]>([]);
   const [orders, setOrders] = useState<PurchaseOrder[]>([]);
   const [bestDeal, setBestDeal] = useState<MarketplaceListing | null>(null);

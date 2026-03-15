@@ -1,14 +1,38 @@
 // Phase 115: Marketplace Aggregator Modal — 5-tab layout
 import React, { useState, useMemo } from 'react';
 import {
-  X, ShoppingCart, Search, BarChart3, Package, Bookmark, Activity,
-  CheckCircle, AlertTriangle, XCircle, Zap, DollarSign, Clock,
-  Bell, BellOff, ExternalLink, ChevronDown, ChevronUp, Filter,
-  TrendingDown, ShieldCheck, Truck,
+  X,
+  ShoppingCart,
+  Search,
+  BarChart3,
+  Package,
+  Bookmark,
+  Activity,
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  Zap,
+  Clock,
+  Bell,
+  BellOff,
+  ChevronDown,
+  ChevronUp,
+  Filter,
+  Truck,
 } from 'lucide-react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
 } from 'recharts';
 import {
   searchAllPlatforms,
@@ -21,10 +45,7 @@ import {
   getPlatformLabel,
   getFeeStructure,
   MarketplacePlatform,
-  MarketplaceListing,
   PriceComparison,
-  PurchaseOrder,
-  SavedSearch,
   PlatformHealth,
 } from '../lib/marketplaceAggregatorService';
 

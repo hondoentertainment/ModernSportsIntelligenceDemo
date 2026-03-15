@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, LayoutDashboard, Package, TrendingUp, Star, BarChart3, Target, Bell, User, FileText, Zap, Settings, X } from 'lucide-react';
+import { Search, LayoutDashboard, Package, TrendingUp, Star, BarChart3, Target, Bell, User, FileText, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFocusTrap } from '../lib/useFocusTrap';
 

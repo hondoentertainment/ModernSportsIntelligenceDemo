@@ -5,7 +5,6 @@ import {
   MapPin,
   Package,
   DollarSign,
-  History,
   Printer,
   Plus,
   ShoppingCart,
@@ -15,7 +14,6 @@ import {
   Users,
   TrendingUp,
   TrendingDown,
-  ChevronDown,
   CheckCircle2,
   Search,
   Trash2,
@@ -33,13 +31,11 @@ import {
 } from 'recharts';
 import { CardInventory, TargetWatchlist } from '../types';
 import {
-  CardEvent,
   EventType,
   EventPrepItem,
   EventBudget,
   EventDeal,
   DealType,
-  EventROI,
   getUpcomingEvents,
   getAllEvents,
   getEventById,
@@ -49,7 +45,6 @@ import {
   getBudget,
   logDeal,
   getDeals,
-  calculateEventROI,
   getEventHistory,
   generateWantList,
   exportPrepListHTML,
@@ -101,7 +96,7 @@ function formatTypeLabel(type: EventType): string {
 // ---- Events Tab ----
 
 const EventsTab: React.FC<{
-  onSelectEvent: (eventId: string) => void;
+  onSelectEvent: (_eventId: string) => void;
   selectedEventId: string | null;
 }> = ({ onSelectEvent, selectedEventId }) => {
   const [filterType, setFilterType] = useState<EventType | 'all'>('all');
@@ -204,7 +199,7 @@ const EventsTab: React.FC<{
 const PrepTab: React.FC<{
   cards: CardInventory[];
   selectedEventId: string | null;
-  onSelectEvent: (eventId: string) => void;
+  onSelectEvent: (_eventId: string) => void;
 }> = ({ cards, selectedEventId, onSelectEvent }) => {
   const [search, setSearch] = useState('');
   const [prepItems, setPrepItems] = useState<EventPrepItem[]>(() => {
@@ -290,7 +285,7 @@ const PrepTab: React.FC<{
     );
   }, [activeCards, search]);
 
-  const selectedEvent = selectedEventId ? getEventById(selectedEventId) : null;
+  const _selectedEvent = selectedEventId ? getEventById(selectedEventId) : null;
 
   return (
     <div className="space-y-4">
@@ -438,7 +433,7 @@ const BUDGET_FIELDS: { key: keyof Omit<EventBudget, 'eventId' | 'notes'>; label:
 
 const BudgetTab: React.FC<{
   selectedEventId: string | null;
-  onSelectEvent: (eventId: string) => void;
+  onSelectEvent: (_eventId: string) => void;
 }> = ({ selectedEventId, onSelectEvent }) => {
   const events = useMemo(() => getUpcomingEvents(), []);
 
@@ -600,9 +595,9 @@ const DEAL_TYPES: { value: DealType; label: string; icon: React.ReactNode; color
 
 const DealsTab: React.FC<{
   selectedEventId: string | null;
-  onSelectEvent: (eventId: string) => void;
+  onSelectEvent: (_eventId: string) => void;
 }> = ({ selectedEventId, onSelectEvent }) => {
-  const events = useMemo(() => getUpcomingEvents(), []);
+  const _events = useMemo(() => getUpcomingEvents(), []);
   const allEvents = useMemo(() => getAllEvents(), []);
 
   const [deals, setDeals] = useState<EventDeal[]>(() => {

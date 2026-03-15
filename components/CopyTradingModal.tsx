@@ -10,7 +10,6 @@ import {
   Filter,
   ArrowUpRight,
   ArrowDownRight,
-  Star,
   UserPlus,
   UserCheck,
   TrendingUp,
@@ -18,7 +17,6 @@ import {
   Clock,
   Target,
   Shield,
-  Zap,
   Search,
   ArrowUp,
   ArrowDown,
@@ -29,12 +27,10 @@ import {
   getTradeSignals,
   getMirrorPortfolio,
   getCommunityBenchmark,
-  getPerformanceMetrics,
   getTradeHistory,
   followCollector,
   CollectorCategory,
   Timeframe,
-  LeaderboardEntry,
   FollowRelation,
   TradeSignal,
   CopyPortfolio,
@@ -80,7 +76,7 @@ function timeAgo(iso: string): string {
   return `${months}mo ago`;
 }
 
-function formatDate(iso: string): string {
+function _formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
@@ -89,13 +85,13 @@ function formatDate(iso: string): string {
 const LeaderboardTab: React.FC<{
   category: CollectorCategory;
   timeframe: Timeframe;
-  onCategoryChange: (c: CollectorCategory) => void;
-  onTimeframeChange: (t: Timeframe) => void;
+  onCategoryChange: (_c: CollectorCategory) => void;
+  onTimeframeChange: (_t: Timeframe) => void;
   searchQuery: string;
-  onSearchChange: (q: string) => void;
+  onSearchChange: (_q: string) => void;
   sortBy: string;
-  onSortChange: (s: string) => void;
-  onFollow: (userId: string) => void;
+  onSortChange: (_s: string) => void;
+  onFollow: (_userId: string) => void;
 }> = ({ category, timeframe, onCategoryChange, onTimeframeChange, searchQuery, onSearchChange, sortBy, onSortChange, onFollow }) => {
   const [showFilters, setShowFilters] = useState(false);
   const leaderboard = useMemo(() => getLeaderboard(category, timeframe), [category, timeframe]);

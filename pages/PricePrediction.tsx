@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { TrendingUp, TrendingDown, AlertTriangle, DollarSign, BarChart3, Activity, Target, Search } from 'lucide-react';
+import {
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+  DollarSign,
+  BarChart3,
+  Activity,
+  Target,
+  Search,
+} from 'lucide-react';
 import {
   getPricePredictions,
-  getPredictionDetails,
   generateFairOffer,
   getModelAccuracy,
   getPriceHistory,
@@ -20,8 +28,18 @@ import {
   type PredictionFactor,
 } from '../lib/pricePredictionService';
 import {
-  LineChart, Line, BarChart, Bar, ScatterChart, Scatter,
-  XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
 } from 'recharts';
 
 const PricePrediction: React.FC = () => {

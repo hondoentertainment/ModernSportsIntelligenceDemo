@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { MapPin, Wifi, WifiOff, DollarSign, ShoppingBag, Calendar, Star, TrendingUp, BarChart3, ChevronRight } from 'lucide-react';
+import {
+  MapPin,
+  Wifi,
+  WifiOff,
+  DollarSign,
+  ShoppingBag,
+  Calendar,
+  Star,
+  BarChart3,
+} from 'lucide-react';
 import {
   getUpcomingShows,
   getShowHaul,
@@ -7,7 +16,6 @@ import {
   getOfflineStatus,
   getShowVendors,
   getShowChecklist,
-  getPostShowSummary,
   type CardShow,
   type ShowHaul,
   type ShowDeal,
@@ -15,7 +23,15 @@ import {
   type ShowVendor,
   type ShowChecklist,
 } from '../lib/cardShowModeService.ts';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 const CardShowModePage: React.FC = () => {
   const [shows, setShows] = useState<CardShow[]>([]);
@@ -23,7 +39,7 @@ const CardShowModePage: React.FC = () => {
   const [deals, setDeals] = useState<ShowDeal[]>([]);
   const [offlineStatus, setOfflineStatus] = useState<OfflineSyncStatus | null>(null);
   const [vendors, setVendors] = useState<ShowVendor[]>([]);
-  const [checklist, setChecklist] = useState<ShowChecklist[]>([]);
+  const [_checklist, setChecklist] = useState<ShowChecklist[]>([]);
   const [selectedShowId, setSelectedShowId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 

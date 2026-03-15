@@ -1,14 +1,16 @@
 import React, { useMemo } from 'react';
-import { Trophy, ChevronRight, Users, Clock, Award } from 'lucide-react';
+import {
+  Trophy,
+  ChevronRight,
+  Users,
+  Clock,
+  Award,
+} from 'lucide-react';
 import {
   getActiveTournaments,
   getMyEntries,
   getTournamentHistory,
   getUpcomingTournaments,
-  tournamentTypeBadgeColor,
-  tournamentTypeLabel,
-  type Tournament,
-  type TournamentEntry,
 } from '../lib/tournamentArenaService';
 
 interface TournamentArenaWidgetProps {

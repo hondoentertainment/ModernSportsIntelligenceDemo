@@ -75,7 +75,7 @@ function loadOrInit<T>(key: string, init: () => T): T {
   try {
     const stored = localStorage.getItem(key);
     if (stored) return JSON.parse(stored);
-  } catch {}
+  } catch { /* ignore localStorage errors */ }
   const data = init();
   localStorage.setItem(key, JSON.stringify(data));
   return data;
@@ -459,6 +459,206 @@ export function getConditionCensus(cardId: string): ConditionCensus | null {
   return allCensus[cardId] ?? null;
 }
 
+// ---- Page-compatible types & adapters (used by VintageMarket page) ----
+
+export interface EraIndex {
+  id: string;
+  era: string;
+  indexValue: number;
+  change1yr: number;
+  change5yr: number;
+  totalCards: number;
+  avgGrade: number;
+  trend: 'up' | 'down' | 'stable';
+}
+
+export interface EraPerformancePoint {
+  month: string;
+  preWar: number;
+  postWar: number;
+  goldenAge: number;
+  silverAge: number;
+  bronzeAge: number;
+}
+
+export interface EraMarketCap {
+  era: string;
+  marketCap: number;
+  share: number;
+  color: string;
+}
+
+export interface NotableSet {
+  id: string;
+  name: string;
+  era: string;
+  year: number;
+  totalCards: number;
+  keyCard: string;
+  setValue: number;
+  trend: string;
+}
+
+export interface PopulationEntry {
+  grade: string;
+  count: number;
+  percentage: number;
+}
+
+export interface AuctionRecord {
+  id: string;
+  card: string;
+  grade: string;
+  price: number;
+  date: string;
+  house: string;
+  era: string;
+}
+
+export interface SignificanceRating {
+  id: string;
+  card: string;
+  era: string;
+  historicalScore: number;
+  culturalScore: number;
+  rarityScore: number;
+  overallRating: number;
+}
+
+export interface VintageMarketSummary {
+  totalMarketValue: number;
+  totalCards: number;
+  avgAppreciation1yr: number;
+  avgAppreciation5yr: number;
+  topPerformingEra: string;
+  mostActiveEra: string;
+}
+
+export function getEraIndices(): EraIndex[] {
+  const trends = getVintageMarketTrends();
+  return trends.map((t, i) => ({
+    id: `ei-${i + 1}`,
+    era: t.era,
+    indexValue: 1000 + t.avgReturn5yr * 10,
+    change1yr: t.avgReturn1yr,
+    change5yr: t.avgReturn5yr,
+    totalCards: 200 + i * 50,
+    avgGrade: 5.5 + i * 0.4,
+    trend: t.trend === 'appreciating' ? 'up' as const : t.trend === 'softening' ? 'down' as const : 'stable' as const,
+  }));
+}
+
+export function getEraPerformanceHistory(): EraPerformancePoint[] {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return months.map((m, i) => ({
+    month: m,
+    preWar: 1100 + Math.sin(i / 2) * 50 + i * 8,
+    postWar: 1000 + Math.cos(i / 3) * 40 + i * 6,
+    goldenAge: 900 + Math.sin(i / 4) * 30 + i * 4,
+    silverAge: 800 + Math.cos(i / 2) * 25 + i * 3,
+    bronzeAge: 700 + Math.sin(i / 3) * 20 + i * 2,
+  }));
+}
+
+export function getEraMarketCaps(): EraMarketCap[] {
+  return [
+    { era: 'Pre-War', marketCap: 18500000, share: 35, color: '#f59e0b' },
+    { era: 'Post-War', marketCap: 12200000, share: 23, color: '#3b82f6' },
+    { era: 'Golden Age', marketCap: 9800000, share: 18, color: '#10b981' },
+    { era: 'Silver Age', marketCap: 8100000, share: 15, color: '#8b5cf6' },
+    { era: 'Bronze Age', marketCap: 4700000, share: 9, color: '#ef4444' },
+  ];
+}
+
+export function getNotableSets(): NotableSet[] {
+  const sets = getRegistrySets();
+  return sets.map(s => ({
+    id: s.id,
+    name: s.name,
+    era: s.name.includes('T206') ? 'Pre-War' : s.name.includes('1933') ? 'Pre-War' : 'Post-War',
+    year: parseInt(s.name.match(/\d{4}/)?.[0] || '1952'),
+    totalCards: s.totalCards,
+    keyCard: s.description.split('—')[0].trim(),
+    setValue: s.value,
+    trend: 'appreciating',
+  }));
+}
+
+export function getPopulationData(): PopulationEntry[] {
+  const grades = ['PSA 10', 'PSA 9', 'PSA 8', 'PSA 7', 'PSA 6', 'PSA 5', 'PSA 4', 'PSA 3', 'PSA 2', 'PSA 1'];
+  const counts = [5, 25, 80, 180, 350, 520, 780, 1100, 1400, 1800];
+  const total = counts.reduce((a, b) => a + b, 0);
+  return grades.map((grade, i) => ({
+    grade,
+    count: counts[i],
+    percentage: Math.round((counts[i] / total) * 100 * 10) / 10,
+  }));
+}
+
+export function getAuctionRecords(): AuctionRecord[] {
+  const cards = getVintageCards();
+  return cards.slice(0, 8).map((c, i) => ({
+    id: `ar-${i + 1}`,
+    card: `${c.year} ${c.set} ${c.player}`,
+    grade: c.conditionCensus.highestKnown,
+    price: c.currentValue * (0.8 + Math.random() * 0.4),
+    date: `2024-${String(i + 1).padStart(2, '0')}-15`,
+    house: ['Heritage', 'Goldin', 'REA', 'PWCC', 'Sotheby\'s'][i % 5],
+    era: c.era.replace('_', ' '),
+  }));
+}
+
+export function getHistoricalSignificanceRatings(): SignificanceRating[] {
+  const cards = getVintageCards();
+  return cards.map((c, i) => ({
+    id: `sr-${i + 1}`,
+    card: `${c.year} ${c.set} ${c.player}`,
+    era: c.era.replace('_', ' '),
+    historicalScore: c.historicalSignificance,
+    culturalScore: Math.min(100, c.historicalSignificance + Math.floor(Math.random() * 10) - 5),
+    rarityScore: Math.round(100 - (c.conditionCensus.totalGraded / 60)),
+    overallRating: Math.round((c.historicalSignificance * 0.4 + (100 - c.conditionCensus.totalGraded / 60) * 0.3 + c.historicalSignificance * 0.3)),
+  }));
+}
+
+export function getVintageMarketSummary(): VintageMarketSummary {
+  const cards = getVintageCards();
+  const trends = getVintageMarketTrends();
+  const totalValue = cards.reduce((sum, c) => sum + c.currentValue, 0);
+  const avg1yr = Math.round(trends.reduce((s, t) => s + t.avgReturn1yr, 0) / trends.length * 10) / 10;
+  const avg5yr = Math.round(trends.reduce((s, t) => s + t.avgReturn5yr, 0) / trends.length * 10) / 10;
+  return {
+    totalMarketValue: totalValue,
+    totalCards: cards.length,
+    avgAppreciation1yr: avg1yr,
+    avgAppreciation5yr: avg5yr,
+    topPerformingEra: 'Pre-War (1900-1941)',
+    mostActiveEra: 'Silver Age (1966-1974)',
+  };
+}
+
+export function formatCurrency(value: number): string {
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
+  return `$${value.toFixed(0)}`;
+}
+
+export function formatConditionGrade(grade: string): string {
+  return grade.replace('PSA ', '').trim();
+}
+
+// ---- Widget-compatible helpers (first set removed; see Widget adapters below) ----
+
+export function getGrowthMetricsLegacy(): { overallPercent: number; dailyPercent: number; weeklyPercent: number } {
+  const trends = getVintageMarketTrends();
+  const avgReturn1yr = trends.reduce((s, t) => s + t.avgReturn1yr, 0) / (trends.length || 1);
+  return {
+    overallPercent: Math.round(avgReturn1yr * 10) / 10,
+    dailyPercent: Math.round((avgReturn1yr / 365) * 100) / 100,
+    weeklyPercent: Math.round((avgReturn1yr / 52) * 100) / 100,
+  };
+}
+
 export function getVintageStats(): VintageStats {
   const cards = getVintageCards();
   const sets = getRegistrySets();
@@ -477,4 +677,36 @@ export function getVintageStats(): VintageStats {
     portfolioAppreciation: avgAppreciation,
     registrySets: sets.length,
   };
+}
+
+// ---- Widget adapters ----
+
+export function getEraBreakdown(): { era: string; totalValue: number; cardCount: number; avgAppreciation: number }[] {
+  const cards = getVintageCards();
+  const eras: Record<string, { totalValue: number; count: number; appreciation: number }> = {};
+  cards.forEach(c => {
+    const era = c.year < 1960 ? 'Pre-1960' : c.year < 1970 ? '1960s' : c.year < 1980 ? '1970s' : 'Post-1980';
+    if (!eras[era]) eras[era] = { totalValue: 0, count: 0, appreciation: 0 };
+    eras[era].totalValue += c.currentValue;
+    eras[era].count += 1;
+    eras[era].appreciation += c.annualAppreciation;
+  });
+  return Object.entries(eras).map(([era, d]) => ({
+    era,
+    totalValue: d.totalValue,
+    cardCount: d.count,
+    avgAppreciation: d.count > 0 ? Math.round((d.appreciation / d.count) * 10) / 10 : 0,
+  }));
+}
+
+export function getGrowthMetrics(): { overallGrowth: number; bestEra: string; bestEraGrowth: number; totalMarketCap: number; avgAnnualReturn: number } {
+  const eras = getEraBreakdown();
+  const best = eras.reduce((b, e) => e.avgAppreciation > b.avgAppreciation ? e : b, eras[0] || { era: 'N/A', avgAppreciation: 0 });
+  const totalValue = eras.reduce((s, e) => s + e.totalValue, 0);
+  const avgReturn = eras.length > 0 ? eras.reduce((s, e) => s + e.avgAppreciation, 0) / eras.length : 0;
+  return { overallGrowth: 12.5, bestEra: best.era, bestEraGrowth: best.avgAppreciation, totalMarketCap: totalValue, avgAnnualReturn: Math.round(avgReturn * 10) / 10 };
+}
+
+export function getMarketCapData(): { era: string; marketCap: number; volume: number; growth: number }[] {
+  return getEraBreakdown().map(e => ({ era: e.era, marketCap: e.totalValue, volume: e.cardCount * 150, growth: e.avgAppreciation }));
 }

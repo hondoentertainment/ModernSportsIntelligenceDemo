@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   Circle,
   Clock,
-  Zap,
   Search,
   BarChart3,
   ShoppingBag,

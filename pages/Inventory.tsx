@@ -1,14 +1,11 @@
 
 import React from 'react';
-import { 
-  ArrowUpRight, 
-  Target, 
-  Layers, 
+import {
+  ArrowUpRight,
+  Target,
+  Layers,
   ChevronRight,
-  PieChart,
   Briefcase,
-  Zap,
-  Activity
 } from 'lucide-react';
 import { MOCK_INVENTORY_SUMMARY, MOCK_INVENTORY_ITEMS, MOCK_ACQUISITION_TARGETS } from '../constants.tsx';
 

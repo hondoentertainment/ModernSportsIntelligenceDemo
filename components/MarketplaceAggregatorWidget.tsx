@@ -1,14 +1,16 @@
 import React, { useMemo } from 'react';
 import {
-  ShoppingCart, TrendingDown, Activity, ChevronRight,
-  CheckCircle, AlertTriangle, XCircle, Zap,
+  ShoppingCart,
+  ChevronRight,
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  Zap,
 } from 'lucide-react';
 import {
   getBestDeal,
   getRecentListings,
   getPlatformHealth,
-  getPlatformLabel,
-  MarketplaceListing,
   PlatformHealth,
 } from '../lib/marketplaceAggregatorService';
 

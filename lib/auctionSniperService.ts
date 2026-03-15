@@ -2,7 +2,7 @@
 
 // ---- Types ----
 
-export type AuctionPlatform = 'ebay' | 'heritage' | 'goldin' | 'pwcc' | 'comc' | 'whatnot' | 'lelands' | 'scp';
+export type AuctionPlatform = 'ebay' | 'heritage' | 'goldin' | 'pwcc' | 'comc' | 'whatnot' | 'lelands' | 'scp' | 'eBay' | 'Goldin' | 'Heritage' | 'PWCC' | 'MySlabs';
 
 export interface LiveAuction {
   id: string;
@@ -16,38 +16,50 @@ export interface LiveAuction {
   timeRemaining: number; // seconds
   endTime: string;
   estimatedFinalPrice: number;
+  estimatedValue: number;
   watchers: number;
   seller: string;
   sellerRating: number;
   hasImage: boolean;
   featured: boolean;
+  potentialSavings: number;
+  itemName: string;
 }
 
 export interface BidRecommendation {
   id: string;
   auctionId: string;
+  auctionTitle: string;
   cardName: string;
   platform: AuctionPlatform;
   currentBid: number;
   maxBidSuggestion: number;
+  recommendedMaxBid: number;
+  estimatedValue: number;
   compAvgPrice: number;
   compCount: number;
-  confidence: 'high' | 'medium' | 'low';
+  confidence: number;
   reasoning: string;
   valueRating: number;
+  action: string;
+  timeRemaining: string;
 }
 
 export interface SniperAlert {
   id: string;
   auctionId: string;
+  auctionTitle: string;
   cardName: string;
   platform: AuctionPlatform;
   currentBid: number;
+  currentPrice: number;
   marketValue: number;
   discount: number;
   timeRemaining: number;
-  alertType: 'under_market' | 'ending_soon' | 'low_competition' | 'price_drop' | 'rare_find';
-  urgency: 'low' | 'medium' | 'high' | 'critical';
+  alertType: string;
+  urgency: string;
+  priority: string;
+  triggerReason: string;
   message: string;
 }
 
@@ -62,12 +74,13 @@ export interface AuctionHistory {
   seller: string;
 }
 
-export interface BidStrategy {
+export interface BidStrategyGuide {
   id: string;
   name: string;
   description: string;
   optimalSnipeTime: number; // seconds before end
   successRate: number;
+  avgWinRate: number;
   avgSavings: number;
   bestFor: string[];
   riskLevel: 'low' | 'medium' | 'high';
@@ -76,12 +89,15 @@ export interface BidStrategy {
 export interface WatchedAuction {
   id: string;
   auctionId: string;
+  title: string;
   cardName: string;
   platform: AuctionPlatform;
   currentBid: number;
+  maxBid: number;
   priceAlert: number;
   addedDate: string;
-  status: 'active' | 'won' | 'lost' | 'ended';
+  timeRemaining: number;
+  status: string;
   notes: string;
 }
 
@@ -163,7 +179,7 @@ function saveData<T>(key: string, data: T): void {
 
 // ---- Mock Data ----
 
-const LIVE_AUCTIONS: LiveAuction[] = [
+const _RAW_LIVE_AUCTIONS = [
   { id: 'la_001', platform: 'ebay', title: '2024 Topps Chrome Paul Skenes RC Auto /99 PSA 10', cardName: '2024 Topps Chrome Paul Skenes RC Auto /99', sport: 'Baseball', currentBid: 1250, startingBid: 500, bidCount: 18, timeRemaining: 3600, endTime: '2026-03-15T18:00:00Z', estimatedFinalPrice: 1800, watchers: 45, seller: 'cardvault_premium', sellerRating: 99.8, hasImage: true, featured: true },
   { id: 'la_002', platform: 'heritage', title: '1952 Topps Mickey Mantle #311 PSA 4', cardName: '1952 Topps Mickey Mantle #311', sport: 'Baseball', currentBid: 85000, startingBid: 50000, bidCount: 32, timeRemaining: 7200, endTime: '2026-03-15T19:00:00Z', estimatedFinalPrice: 120000, watchers: 210, seller: 'Heritage Auctions', sellerRating: 100, hasImage: true, featured: true },
   { id: 'la_003', platform: 'goldin', title: '2023 National Treasures Victor Wembanyama RPA /49 BGS 9.5', cardName: '2023 National Treasures Wembanyama RPA /49', sport: 'Basketball', currentBid: 15000, startingBid: 8000, bidCount: 24, timeRemaining: 5400, endTime: '2026-03-15T18:30:00Z', estimatedFinalPrice: 22000, watchers: 120, seller: 'Goldin Auctions', sellerRating: 100, hasImage: true, featured: true },
@@ -194,9 +210,15 @@ const LIVE_AUCTIONS: LiveAuction[] = [
   { id: 'la_028', platform: 'lelands', title: '1975 Topps George Brett RC #228 PSA 8', cardName: '1975 Topps George Brett RC #228', sport: 'Baseball', currentBid: 4500, startingBid: 3000, bidCount: 11, timeRemaining: 345600, endTime: '2026-03-19T17:00:00Z', estimatedFinalPrice: 6500, watchers: 40, seller: 'Lelands Auctions', sellerRating: 100, hasImage: true, featured: false },
   { id: 'la_029', platform: 'whatnot', title: '2024 Topps Chrome Rookie Auto Mystery Break', cardName: '2024 Topps Chrome Rookie Auto Break', sport: 'Baseball', currentBid: 45, startingBid: 10, bidCount: 35, timeRemaining: 300, endTime: '2026-03-15T17:05:00Z', estimatedFinalPrice: 55, watchers: 85, seller: 'break_nation_live', sellerRating: 97.0, hasImage: true, featured: false },
   { id: 'la_030', platform: 'scp', title: '2011 Topps Update Mike Trout RC #US175 PSA 10', cardName: '2011 Topps Update Mike Trout RC #US175', sport: 'Baseball', currentBid: 42000, startingBid: 30000, bidCount: 20, timeRemaining: 432000, endTime: '2026-03-20T17:00:00Z', estimatedFinalPrice: 55000, watchers: 160, seller: 'SCP Auctions', sellerRating: 100, hasImage: true, featured: true },
-];
+] as const;
+const LIVE_AUCTIONS: LiveAuction[] = _RAW_LIVE_AUCTIONS.map(a => ({
+  ...a,
+  estimatedValue: a.estimatedFinalPrice,
+  potentialSavings: Math.max(0, a.estimatedFinalPrice - a.currentBid),
+  itemName: a.cardName,
+}));
 
-const BID_RECOMMENDATIONS: BidRecommendation[] = [
+const _RAW_BID_RECOMMENDATIONS = [
   { id: 'br_001', auctionId: 'la_001', cardName: '2024 Topps Chrome Paul Skenes RC Auto /99', platform: 'ebay', currentBid: 1250, maxBidSuggestion: 1650, compAvgPrice: 1800, compCount: 12, confidence: 'high', reasoning: 'Recent comps average $1,800. Current bid is 30% below market. Strong demand for Skenes autos.', valueRating: 85 },
   { id: 'br_002', auctionId: 'la_004', cardName: '2024 Bowman Chrome 1st Jackson Holliday Auto', platform: 'ebay', currentBid: 420, maxBidSuggestion: 550, compAvgPrice: 620, compCount: 8, confidence: 'medium', reasoning: 'Holliday comps trending down slightly. Bid up to $550 for good value.', valueRating: 72 },
   { id: 'br_003', auctionId: 'la_006', cardName: '2024 Panini Prizm Caleb Williams RC Silver', platform: 'ebay', currentBid: 380, maxBidSuggestion: 450, compAvgPrice: 520, compCount: 15, confidence: 'high', reasoning: 'Williams Silver Prizm PSA 10 consistently sells $480-560. Current bid is well under market.', valueRating: 88 },
@@ -217,9 +239,20 @@ const BID_RECOMMENDATIONS: BidRecommendation[] = [
   { id: 'br_018', auctionId: 'la_005', cardName: '1986 Fleer Michael Jordan RC #57', platform: 'pwcc', currentBid: 18500, maxBidSuggestion: 22000, compAvgPrice: 26000, compCount: 15, confidence: 'high', reasoning: 'PSA 8 Jordan RC has deep market with consistent demand. Current bid is attractive.', valueRating: 86 },
   { id: 'br_019', auctionId: 'la_015', cardName: '2022 Topps Chrome Julio Rodriguez RC Auto Gold /50', platform: 'pwcc', currentBid: 5800, maxBidSuggestion: 7200, compAvgPrice: 8500, compCount: 4, confidence: 'medium', reasoning: 'J-Rod Gold /50 is scarce. Limited comps but strong demand for numbered chrome autos.', valueRating: 74 },
   { id: 'br_020', auctionId: 'la_029', cardName: '2024 Topps Chrome Rookie Auto Break', platform: 'whatnot', currentBid: 45, maxBidSuggestion: 50, compAvgPrice: 55, compCount: 50, confidence: 'low', reasoning: 'Mystery break with variable value. Only bid what you can afford to lose.', valueRating: 40 },
-];
+] as const;
+const _CONF_MAP: Record<string, number> = { high: 85, medium: 65, low: 40 };
+const _ACTION_MAP: Record<string, string> = { high: 'bid', medium: 'watch', low: 'skip' };
+const BID_RECOMMENDATIONS: BidRecommendation[] = _RAW_BID_RECOMMENDATIONS.map(r => ({
+  ...r,
+  auctionTitle: r.cardName,
+  recommendedMaxBid: r.maxBidSuggestion,
+  estimatedValue: r.compAvgPrice,
+  confidence: _CONF_MAP[r.confidence] ?? 50,
+  action: _ACTION_MAP[r.confidence] ?? 'watch',
+  timeRemaining: `${Math.floor(Math.random() * 120 + 5)}m`,
+}));
 
-const SNIPER_ALERTS: SniperAlert[] = [
+const _RAW_SNIPER_ALERTS = [
   { id: 'sa_001', auctionId: 'la_006', cardName: '2024 Panini Prizm Caleb Williams RC Silver', platform: 'ebay', currentBid: 380, marketValue: 520, discount: 27, timeRemaining: 900, alertType: 'under_market', urgency: 'critical', message: 'Caleb Williams Silver PSA 10 at 27% below market with only 15 min left!' },
   { id: 'sa_002', auctionId: 'la_007', cardName: '2023 Topps Chrome Elly De La Cruz RC Auto Refractor', platform: 'whatnot', currentBid: 850, marketValue: 1150, discount: 26, timeRemaining: 600, alertType: 'ending_soon', urgency: 'critical', message: 'EDDLC Auto Refractor ending in 10 min! Currently 26% under comp average.' },
   { id: 'sa_003', auctionId: 'la_018', cardName: '2023 Bowman Chrome 1st Jackson Chourio Auto Refractor', platform: 'whatnot', currentBid: 320, marketValue: 520, discount: 38, timeRemaining: 450, alertType: 'under_market', urgency: 'critical', message: 'Chourio 1st Auto Refractor at 38% discount! Ending in under 8 minutes.' },
@@ -235,9 +268,17 @@ const SNIPER_ALERTS: SniperAlert[] = [
   { id: 'sa_013', auctionId: 'la_001', cardName: '2024 Topps Chrome Paul Skenes RC Auto /99', platform: 'ebay', currentBid: 1250, marketValue: 1800, discount: 31, timeRemaining: 3600, alertType: 'under_market', urgency: 'medium', message: 'Skenes numbered auto 31% under comps. Strong prospect with 1 hour left.' },
   { id: 'sa_014', auctionId: 'la_023', cardName: '2025 Topps Chrome Gunnar Henderson Refractor Auto /499', platform: 'ebay', currentBid: 340, marketValue: 520, discount: 35, timeRemaining: 4800, alertType: 'price_drop', urgency: 'medium', message: 'Henderson Refractor Auto dropped from recent high. Buy-the-dip opportunity.' },
   { id: 'sa_015', auctionId: 'la_019', cardName: '2023 Upper Deck Connor McDavid Canvas Young Guns', platform: 'ebay', currentBid: 150, marketValue: 230, discount: 35, timeRemaining: 5400, alertType: 'under_market', urgency: 'low', message: 'McDavid Canvas variant at good discount. Over 1.5 hours remaining.' },
-];
+] as const;
+const _PRIORITY_MAP: Record<string, string> = { critical: 'high', high: 'high', medium: 'medium', low: 'low' };
+const SNIPER_ALERTS: SniperAlert[] = _RAW_SNIPER_ALERTS.map(a => ({
+  ...a,
+  auctionTitle: a.cardName,
+  currentPrice: a.currentBid,
+  priority: _PRIORITY_MAP[a.urgency] ?? 'low',
+  triggerReason: a.alertType.replace(/_/g, ' '),
+}));
 
-const WATCHED_AUCTIONS: WatchedAuction[] = [
+const _RAW_WATCHED_AUCTIONS = [
   { id: 'wa_001', auctionId: 'la_001', cardName: '2024 Topps Chrome Paul Skenes RC Auto /99', platform: 'ebay', currentBid: 1250, priceAlert: 1600, addedDate: '2026-03-14', status: 'active', notes: 'Target for collection. Max bid $1,600.' },
   { id: 'wa_002', auctionId: 'la_003', cardName: '2023 National Treasures Wembanyama RPA /49', platform: 'goldin', currentBid: 15000, priceAlert: 20000, addedDate: '2026-03-12', status: 'active', notes: 'High-end target. Only bid if stays under $20k.' },
   { id: 'wa_003', auctionId: 'la_005', cardName: '1986 Fleer Michael Jordan RC #57', platform: 'pwcc', currentBid: 18500, priceAlert: 23000, addedDate: '2026-03-13', status: 'active', notes: 'PSA 8 Jordan RC for long-term hold.' },
@@ -263,17 +304,29 @@ const WATCHED_AUCTIONS: WatchedAuction[] = [
   { id: 'wa_023', auctionId: 'la_014', cardName: '1969 Topps Reggie Jackson RC #260', platform: 'scp', currentBid: 3200, priceAlert: 4000, addedDate: '2026-03-12', status: 'active', notes: 'Mr. October RC. PSA 7 is solid grade for vintage.' },
   { id: 'wa_024', auctionId: 'la_028', cardName: '1975 Topps George Brett RC #228', platform: 'lelands', currentBid: 4500, priceAlert: 5800, addedDate: '2026-03-11', status: 'active', notes: 'Brett RC PSA 8. Clean example for HOF collection.' },
   { id: 'wa_025', auctionId: 'la_022', cardName: '2023 Select Concourse Patrick Mahomes Silver /199', platform: 'comc', currentBid: 125, priceAlert: 165, addedDate: '2026-03-15', status: 'active', notes: 'Mahomes Select Silver. Consistent seller.' },
-];
+] as const;
+const _STATUS_CHOICES = ['winning', 'outbid', 'watching'] as const;
+const _LIVE_MAP = new Map(LIVE_AUCTIONS.map(a => [a.id, a]));
+const WATCHED_AUCTIONS: WatchedAuction[] = _RAW_WATCHED_AUCTIONS.map((w, i) => {
+  const live = _LIVE_MAP.get(w.auctionId);
+  return {
+    ...w,
+    title: w.cardName,
+    maxBid: w.priceAlert,
+    timeRemaining: live?.timeRemaining ?? 3600 * (i + 1),
+    status: _STATUS_CHOICES[i % _STATUS_CHOICES.length],
+  };
+});
 
-const BID_STRATEGIES: BidStrategy[] = [
-  { id: 'bs_001', name: 'Last-Second Snipe', description: 'Place bid in final 3-5 seconds to prevent counter-bids. Most effective on eBay with proxy bidding.', optimalSnipeTime: 4, successRate: 72, avgSavings: 15, bestFor: ['eBay fixed auctions', 'Low watcher count', 'Cards under $500'], riskLevel: 'medium' },
-  { id: 'bs_002', name: 'Early Authority Bid', description: 'Place a strong bid early to discourage competition. Works best on heritage auction houses.', optimalSnipeTime: 86400, successRate: 58, avgSavings: 5, bestFor: ['Heritage/Goldin auctions', 'High-value vintage', 'Cards with few comps'], riskLevel: 'low' },
-  { id: 'bs_003', name: 'Proxy Max Strategy', description: 'Set your true maximum bid and let the platform proxy bid for you. Simple and stress-free.', optimalSnipeTime: 3600, successRate: 65, avgSavings: 8, bestFor: ['All platforms', 'Beginners', 'Multiple simultaneous auctions'], riskLevel: 'low' },
-  { id: 'bs_004', name: 'Odd Number Bid', description: 'Bid odd amounts like $127 or $513 to outbid round-number bidders by a small margin.', optimalSnipeTime: 30, successRate: 68, avgSavings: 12, bestFor: ['eBay', 'Cards under $1,000', 'High competition auctions'], riskLevel: 'low' },
-  { id: 'bs_005', name: 'Wait and Pounce', description: 'Monitor without bidding until final 2 minutes. Avoid driving up price with early engagement.', optimalSnipeTime: 120, successRate: 70, avgSavings: 18, bestFor: ['eBay', 'Whatnot', 'High watcher auctions'], riskLevel: 'medium' },
-  { id: 'bs_006', name: 'Multi-Auction Spread', description: 'Bid on multiple listings of the same card to increase odds of winning at least one below market.', optimalSnipeTime: 10, successRate: 85, avgSavings: 10, bestFor: ['Common cards', 'PSA 10 base', 'Volume buying'], riskLevel: 'medium' },
-  { id: 'bs_007', name: 'Off-Peak Timing', description: 'Target auctions ending during off-peak hours (weekday mornings, late night) for less competition.', optimalSnipeTime: 5, successRate: 75, avgSavings: 22, bestFor: ['eBay', 'All card types', 'Budget buyers'], riskLevel: 'low' },
-  { id: 'bs_008', name: 'Auction House Extended Bidding Counter', description: 'Heritage/Goldin extend auctions with new bids. Place bids strategically to exhaust competitors.', optimalSnipeTime: 15, successRate: 55, avgSavings: 3, bestFor: ['Heritage', 'Goldin', 'High-end cards over $5,000'], riskLevel: 'high' },
+const BID_STRATEGIES: BidStrategyGuide[] = [
+  { id: 'bs_001', name: 'Last-Second Snipe', description: 'Place bid in final 3-5 seconds to prevent counter-bids. Most effective on eBay with proxy bidding.', optimalSnipeTime: 4, successRate: 72, avgWinRate: 72, avgSavings: 15, bestFor: ['eBay fixed auctions', 'Low watcher count', 'Cards under $500'], riskLevel: 'medium' },
+  { id: 'bs_002', name: 'Early Authority Bid', description: 'Place a strong bid early to discourage competition. Works best on heritage auction houses.', optimalSnipeTime: 86400, successRate: 58, avgWinRate: 58, avgSavings: 5, bestFor: ['Heritage/Goldin auctions', 'High-value vintage', 'Cards with few comps'], riskLevel: 'low' },
+  { id: 'bs_003', name: 'Proxy Max Strategy', description: 'Set your true maximum bid and let the platform proxy bid for you. Simple and stress-free.', optimalSnipeTime: 3600, successRate: 65, avgWinRate: 65, avgSavings: 8, bestFor: ['All platforms', 'Beginners', 'Multiple simultaneous auctions'], riskLevel: 'low' },
+  { id: 'bs_004', name: 'Odd Number Bid', description: 'Bid odd amounts like $127 or $513 to outbid round-number bidders by a small margin.', optimalSnipeTime: 30, successRate: 68, avgWinRate: 68, avgSavings: 12, bestFor: ['eBay', 'Cards under $1,000', 'High competition auctions'], riskLevel: 'low' },
+  { id: 'bs_005', name: 'Wait and Pounce', description: 'Monitor without bidding until final 2 minutes. Avoid driving up price with early engagement.', optimalSnipeTime: 120, successRate: 70, avgWinRate: 70, avgSavings: 18, bestFor: ['eBay', 'Whatnot', 'High watcher auctions'], riskLevel: 'medium' },
+  { id: 'bs_006', name: 'Multi-Auction Spread', description: 'Bid on multiple listings of the same card to increase odds of winning at least one below market.', optimalSnipeTime: 10, successRate: 85, avgWinRate: 85, avgSavings: 10, bestFor: ['Common cards', 'PSA 10 base', 'Volume buying'], riskLevel: 'medium' },
+  { id: 'bs_007', name: 'Off-Peak Timing', description: 'Target auctions ending during off-peak hours (weekday mornings, late night) for less competition.', optimalSnipeTime: 5, successRate: 75, avgWinRate: 75, avgSavings: 22, bestFor: ['eBay', 'All card types', 'Budget buyers'], riskLevel: 'low' },
+  { id: 'bs_008', name: 'Auction House Extended Bidding Counter', description: 'Heritage/Goldin extend auctions with new bids. Place bids strategically to exhaust competitors.', optimalSnipeTime: 15, successRate: 55, avgWinRate: 55, avgSavings: 3, bestFor: ['Heritage', 'Goldin', 'High-end cards over $5,000'], riskLevel: 'high' },
 ];
 
 const AUCTION_STATS: AuctionStats[] = [
@@ -426,33 +479,29 @@ export function getWatchedAuctions(status?: string): WatchedAuction[] {
   return result;
 }
 
-export function getEndingSoon(withinSeconds?: number): EndingSoon[] {
+export function getEndingSoon(withinSeconds?: number): EndingSoonAuction[] {
   const threshold = withinSeconds ?? 7200; // default 2 hours
-  const cacheKey = `ending_${threshold}`;
-  const cached = loadData<EndingSoon[]>(cacheKey);
+  const cacheKey = `ending_v2_${threshold}`;
+  const cached = loadData<EndingSoonAuction[]>(cacheKey);
   if (cached) return cached;
 
-  const result: EndingSoon[] = LIVE_AUCTIONS
+  const result: EndingSoonAuction[] = LIVE_AUCTIONS
     .filter(a => a.timeRemaining <= threshold)
     .sort((a, b) => a.timeRemaining - b.timeRemaining)
     .map(a => ({
-      id: `es_${a.id}`,
-      auctionId: a.id,
-      cardName: a.cardName,
+      title: a.title,
       platform: a.platform,
       currentBid: a.currentBid,
       timeRemaining: a.timeRemaining,
       bidCount: a.bidCount,
-      estimatedFinal: a.estimatedFinalPrice,
-      isUndervalue: a.currentBid < a.estimatedFinalPrice * 0.75,
     }));
 
   saveData(cacheKey, result);
   return result;
 }
 
-export function getBidStrategies(): BidStrategy[] {
-  const cached = loadData<BidStrategy[]>('strategies');
+export function getBidStrategies(): BidStrategyGuide[] {
+  const cached = loadData<BidStrategyGuide[]>('strategies');
   if (cached) return cached;
   saveData('strategies', BID_STRATEGIES);
   return BID_STRATEGIES;
@@ -538,26 +587,203 @@ export function searchAuctions(query: string): LiveAuction[] {
   return result;
 }
 
-export function getAuctionSummary(): { totalLive: number; totalWatched: number; criticalAlerts: number; endingWithinHour: number; totalBidValue: number; avgDiscount: number } {
-  const cached = loadData<{ totalLive: number; totalWatched: number; criticalAlerts: number; endingWithinHour: number; totalBidValue: number; avgDiscount: number }>('summary');
+export function getAuctionSummary(): AuctionSummary {
+  const cached = loadData<AuctionSummary>('auction_summary_v2');
   if (cached) return cached;
 
-  const criticalAlerts = SNIPER_ALERTS.filter(a => a.urgency === 'critical').length;
-  const endingWithinHour = LIVE_AUCTIONS.filter(a => a.timeRemaining <= 3600).length;
-  const totalBidValue = LIVE_AUCTIONS.reduce((sum, a) => sum + a.currentBid, 0);
   const avgDiscount = SNIPER_ALERTS.length > 0
     ? Math.round(SNIPER_ALERTS.reduce((sum, a) => sum + a.discount, 0) / SNIPER_ALERTS.length)
-    : 0;
+    : 14;
 
-  const summary = {
-    totalLive: LIVE_AUCTIONS.length,
-    totalWatched: WATCHED_AUCTIONS.length,
-    criticalAlerts,
-    endingWithinHour,
-    totalBidValue,
-    avgDiscount,
+  const summary: AuctionSummary = {
+    totalActive: LIVE_AUCTIONS.length,
+    totalBidsPlaced: LIVE_AUCTIONS.reduce((sum, a) => sum + a.bidCount, 0),
+    winRate: 68,
+    avgSavings: avgDiscount > 0 ? avgDiscount : 14,
+    sniperWins: 42,
+    totalSaved: 12850,
   };
 
-  saveData('summary', summary);
+  saveData('auction_summary_v2', summary);
   return summary;
 }
+
+// ---- Adapter types & functions for AuctionSniper page (Phase 158) ----
+
+export interface EndingSoonAuction {
+  title: string;
+  platform: AuctionPlatform;
+  currentBid: number;
+  bidCount: number;
+  timeRemaining: number;
+}
+
+export interface AuctionByPlatform {
+  platform: string;
+  count: number;
+  avgPrice: number;
+}
+
+export interface PlatformDistribution {
+  platform: string;
+  count: number;
+}
+
+export interface HistoricalBidPattern {
+  timeLabel: string;
+  avgBids: number;
+  avgPrice: number;
+}
+
+export interface AuctionSummary {
+  totalActive: number;
+  totalBidsPlaced: number;
+  winRate: number;
+  avgSavings: number;
+  sniperWins: number;
+  totalSaved: number;
+}
+
+export function getAuctionsByPlatform(): AuctionByPlatform[] {
+  const platformMap = new Map<string, { count: number; totalPrice: number }>();
+  for (const a of LIVE_AUCTIONS) {
+    const entry = platformMap.get(a.platform) ?? { count: 0, totalPrice: 0 };
+    entry.count += 1;
+    entry.totalPrice += a.currentBid;
+    platformMap.set(a.platform, entry);
+  }
+  return Array.from(platformMap.entries()).map(([platform, data]) => ({
+    platform,
+    count: data.count,
+    avgPrice: Math.round(data.totalPrice / data.count),
+  }));
+}
+
+export function getPlatformDistribution(): PlatformDistribution[] {
+  const platformMap = new Map<string, number>();
+  for (const a of LIVE_AUCTIONS) {
+    platformMap.set(a.platform, (platformMap.get(a.platform) ?? 0) + 1);
+  }
+  return Array.from(platformMap.entries()).map(([platform, count]) => ({
+    platform,
+    count,
+  }));
+}
+
+export function getBidStrategyGuide(): BidStrategyGuide[] {
+  return getBidStrategies();
+}
+
+export function getHistoricalBidPatterns(): HistoricalBidPattern[] {
+  const labels = ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9pm'];
+  return labels.map((timeLabel, i) => ({
+    timeLabel,
+    avgBids: Math.round(8 + Math.sin(i * 0.8) * 6 + i * 1.5),
+    avgPrice: Math.round(120 + Math.cos(i * 0.5) * 40 + i * 15),
+  }));
+}
+
+
+// ---- Widget adapter functions ----
+
+export function getAlerts(): { id: string; active: boolean; message: string }[] {
+  return getSniperAlerts().map(a => ({
+    id: a.id,
+    active: a.status === 'active',
+    message: a.message,
+  }));
+}
+
+export function getSniperStats(): { winRate: number; totalBids: number; totalWins: number } {
+  const history = getAuctionHistory();
+  const won = history.filter(h => h.won);
+  return {
+    winRate: history.length > 0 ? (won.length / history.length) * 100 : 0,
+    totalBids: history.length,
+    totalWins: won.length,
+  };
+}
+
+// ---- Modal adapters ----
+
+export interface AuctionListing {
+  id: string;
+  title: string;
+  platform: AuctionPlatform;
+  currentBid: number;
+  buyNowPrice: number | null;
+  timeRemaining: string;
+  watchers: number;
+  bidCount: number;
+  imageUrl: string;
+  sport: string;
+  year: number;
+  condition: string;
+  grade: string;
+  estimatedValue: number;
+  confidence: number;
+}
+
+export interface BidHistoryAnalysis {
+  avgBidIncrement: number;
+  optimalBidTime: string;
+  bidVelocity: number;
+  lastMinuteBids: number;
+  sniperSuccessRate: number;
+  recommendedBidAmount: number;
+  recommendation: string;
+}
+
+export interface BidStrategy {
+  recommendedBid: number;
+  bidTiming: string;
+  sniperWindow: number;
+  confidence: number;
+  rationale: string;
+}
+
+export function getActiveAuctions(): AuctionListing[] {
+  return getLiveAuctions().map(a => ({
+    id: a.id,
+    title: a.title,
+    platform: (a.platform || 'ebay') as AuctionPlatform,
+    currentBid: a.currentBid,
+    buyNowPrice: a.buyNowPrice ?? null,
+    timeRemaining: a.timeLeft,
+    watchers: a.watchers,
+    bidCount: a.bidCount,
+    imageUrl: '',
+    sport: a.sport,
+    year: a.year,
+    condition: a.condition,
+    grade: a.grade || '',
+    estimatedValue: a.estimatedValue,
+    confidence: a.confidence ?? 75,
+  }));
+}
+
+export function analyzeBidHistory(_auctionId: string): BidHistoryAnalysis {
+  return {
+    avgBidIncrement: 15.5,
+    optimalBidTime: '2-5 seconds before end',
+    bidVelocity: 3.2,
+    lastMinuteBids: 8,
+    sniperSuccessRate: 72,
+    recommendedBidAmount: 195,
+    recommendation: 'Set sniper bid at $195 with 3-second window for optimal success rate',
+  };
+}
+
+export function generateBidStrategy(_auctionId: string, maxBid: number): BidStrategy {
+  return {
+    recommendedBid: Math.round(maxBid * 0.85),
+    bidTiming: 'Last 5 seconds',
+    sniperWindow: 3,
+    confidence: 78,
+    rationale: 'Based on historical bid patterns, a sniper bid at 85% of max in the last 5 seconds yields the highest win rate.',
+  };
+}
+
+// ---- Page-compatible type (used by AuctionSniperModal) ----
+
+export type BidPattern = 'organic' | 'shill_suspect' | 'proxy_war' | 'sniper_active';

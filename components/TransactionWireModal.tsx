@@ -1,15 +1,29 @@
 // Transaction Wire Modal — Full transaction list with filters and volume chart
 import React, { useState, useMemo } from 'react';
 import {
-  X, Newspaper, TrendingUp, TrendingDown, Zap, Filter, DollarSign,
-  Activity, Search,
+  X,
+  Newspaper,
+  TrendingUp,
+  TrendingDown,
+  Zap,
+  Filter,
+  Activity,
+  Search,
 } from 'lucide-react';
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
 } from 'recharts';
 import {
-  getRecentTransactions, getTransactionStats, Transaction,
-  Sport, Platform,
+  getRecentTransactions,
+  getTransactionStats,
+  Sport,
+  Platform,
 } from '../lib/transactionWireService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────

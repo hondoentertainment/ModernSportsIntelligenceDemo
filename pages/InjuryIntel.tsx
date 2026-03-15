@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { HeartPulse, AlertTriangle, Activity, Shield } from 'lucide-react';
+import {
+  HeartPulse,
+  AlertTriangle,
+  Activity,
+  Shield,
+} from 'lucide-react';
 import {
   getInjuryReports,
   getInjuryProbabilities,
   getRosterMoves,
   getRetirementWatch,
-  getHOFProbabilities,
   getCardImpact,
   getPlayerHealth,
   getUpcomingEvents,
@@ -17,7 +21,16 @@ import {
   type PlayerHealthTimeline,
   type UpcomingRosterEvent,
 } from '../lib/injuryIntelService.ts';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
+} from 'recharts';
 
 const SEVERITY_COLORS: Record<string, string> = {
   minor: 'text-yellow-400',

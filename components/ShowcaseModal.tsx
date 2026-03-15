@@ -14,19 +14,14 @@ import {
   Eye,
   Heart,
   CheckCircle2,
-  ChevronRight,
 } from 'lucide-react';
 import { CardInventory } from '../types';
 import {
   Showcase,
-  ShowcaseCard,
-  ShowcaseTheme,
   LayoutType,
-  ReactionType,
   SHOWCASE_THEMES,
   REACTION_EMOJIS,
   getShowcases,
-  getShowcase,
   createShowcase,
   updateShowcase,
   deleteShowcase,
@@ -63,10 +58,10 @@ const LAYOUT_OPTIONS: { value: LayoutType; label: string; cols: number }[] = [
 
 const ShowcasesTab: React.FC<{
   cards: CardInventory[];
-  onEdit: (showcase: Showcase) => void;
-  onDelete: (id: string) => void;
+  onEdit: (_showcase: Showcase) => void;
+  onDelete: (_id: string) => void;
   onCreate: () => void;
-  onSelect: (showcase: Showcase) => void;
+  onSelect: (_showcase: Showcase) => void;
 }> = ({ cards, onEdit, onDelete, onCreate, onSelect }) => {
   const showcases = useMemo(() => getShowcases(), []);
   const cardMap = useMemo(() => new Map(cards.map(c => [c.id, c])), [cards]);
@@ -183,7 +178,7 @@ const ShowcasesTab: React.FC<{
 const BuilderTab: React.FC<{
   cards: CardInventory[];
   showcase: Showcase | null;
-  onShowcaseUpdate: (showcase: Showcase) => void;
+  onShowcaseUpdate: (_showcase: Showcase) => void;
 }> = ({ cards, showcase, onShowcaseUpdate }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [editingCaption, setEditingCaption] = useState<string | null>(null);

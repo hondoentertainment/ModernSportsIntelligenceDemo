@@ -804,3 +804,160 @@ export function getRosterMovesByType(moveType: RosterMove['moveType']): RosterMo
   const moves = getRosterMoves();
   return moves.filter(m => m.moveType === moveType);
 }
+
+// ---- Page-compatible types & adapters (used by TradeDeadline page) ----
+
+export interface FreeAgencySigning {
+  id: string;
+  player: string;
+  fromTeam: string;
+  toTeam: string;
+  contractValue: number;
+  years: number;
+  cardImpact: number;
+  marketShift: string;
+}
+
+export interface LeagueDeadline {
+  id: string;
+  league: string;
+  deadline: string;
+  deadlineType: string;
+  completedTrades: number;
+  pendingTrades: number;
+  totalVolume: number;
+}
+
+export interface HistoricalComparison {
+  id: string;
+  season: string;
+  notableTrade: string;
+  totalTrades: number;
+  marketVolume: number;
+  avgImpact: number;
+  topCardChange: number;
+  impactRating: number;
+}
+
+export interface TradeDeadlineSummary {
+  totalTrades: number;
+  activeTrades: number;
+  cardsAffected: number;
+}
+
+export interface ValueChange {
+  tradeName: string;
+  valueIncrease: number;
+  valueDecrease: number;
+}
+
+export function getFreeAgencySignings(): FreeAgencySigning[] {
+  return getFreeAgentSignings().map(s => ({
+    id: s.id,
+    player: s.player,
+    fromTeam: s.previousTeam,
+    toTeam: s.newTeam,
+    contractValue: s.contractValue,
+    years: s.contractYears,
+    cardImpact: s.percentChange,
+    marketShift: Math.abs(s.percentChange) > 20 ? 'major' : Math.abs(s.percentChange) > 10 ? 'moderate' : 'minor',
+  }));
+}
+
+export function getLeagueDeadlines(): LeagueDeadline[] {
+  return getDeadlineCountdowns().map(d => ({
+    id: d.id,
+    league: d.league.toUpperCase(),
+    deadline: d.deadlineDate,
+    deadlineType: d.deadlineName,
+    completedTrades: d.completedMoves,
+    pendingTrades: d.expectedMoves - d.completedMoves,
+    totalVolume: d.expectedMoves * 250_000,
+  }));
+}
+
+export function getHistoricalComparisons(): HistoricalComparison[] {
+  return getHistoricalTrades().map((t, i) => ({
+    id: t.id,
+    season: `${t.year}-${(t.year + 1).toString().slice(2)}`,
+    notableTrade: `${t.playerTraded} (${t.fromTeam} → ${t.toTeam})`,
+    totalTrades: 15 + i * 3,
+    marketVolume: t.cardValueAtTrade * 10,
+    avgImpact: t.percentChange,
+    topCardChange: t.cardValueAfter - t.cardValueAtTrade,
+    impactRating: Math.min(5, Math.max(1, Math.ceil(Math.abs(t.percentChange) / 10))),
+  }));
+}
+
+export function getSummaryStats(): TradeDeadlineSummary {
+  const events = getTradeEvents();
+  const rumors = getTradeRumors();
+  return {
+    totalTrades: events.length,
+    activeTrades: rumors.filter(r => r.status === 'active').length,
+    cardsAffected: events.length * 12,
+  };
+}
+
+export function getValueChanges(): ValueChange[] {
+  return getTradeEvents().slice(0, 8).map(e => ({
+    tradeName: e.headline || e.playerTraded,
+    valueIncrease: Math.max(0, e.cardValueImpact),
+    valueDecrease: Math.abs(Math.min(0, e.cardValueImpact)),
+  }));
+}
+
+export function formatDate(dateStr: string): string {
+  try {
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+}
+
+export function getImpactColor(impact: string): string {
+  switch (impact) {
+    case 'major': return 'text-red-400';
+    case 'moderate': return 'text-amber-400';
+    case 'minor': return 'text-blue-400';
+    default: return 'text-slate-400';
+  }
+}
+
+export function getConfidenceColor(confidence: number): string {
+  if (confidence >= 80) return 'text-emerald-400';
+  if (confidence >= 50) return 'text-amber-400';
+  return 'text-red-400';
+}
+
+// ---- Widget-compatible helpers ----
+
+export function getAffectedPlayers(): { id: string; playerName: string; team: string }[] {
+  const impacts = getPlayerImpacts();
+  return impacts.map(p => ({
+    id: p.id,
+    playerName: p.player,
+    team: p.team,
+  }));
+}
+
+export function getDeadlineInfo(): { daysRemaining: number; nextDeadline: string } {
+  const deadlines = getActiveDeadlines();
+  if (deadlines.length === 0) {
+    return { daysRemaining: 0, nextDeadline: 'N/A' };
+  }
+  const next = deadlines[0];
+  const now = new Date();
+  const deadlineDate = new Date(next.deadlineDate);
+  const diffMs = deadlineDate.getTime() - now.getTime();
+  const daysRemaining = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+  return { daysRemaining, nextDeadline: next.deadlineName };
+}
+
+export function getMarketImpact(): { totalImpact: number; trendPercent: number } {
+  const events = getTradeEvents();
+  const totalImpact = events.reduce((sum, e) => sum + Math.abs(e.cardValueImpact), 0);
+  const upEvents = events.filter(e => e.impactDirection === 'up');
+  const trendPercent = events.length > 0 ? (upEvents.length / events.length) * 100 : 0;
+  return { totalImpact, trendPercent: Math.round(trendPercent * 10) / 10 };
+}

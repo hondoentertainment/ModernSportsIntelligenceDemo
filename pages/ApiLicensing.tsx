@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { KeyRound, Activity, Webhook, Gauge, AlertTriangle, Code, Shield } from 'lucide-react';
+import {
+  KeyRound,
+  Activity,
+  Webhook,
+  Gauge,
+  AlertTriangle,
+  Code,
+  Shield,
+} from 'lucide-react';
 import {
   getAPIKeys,
   getUsageMetrics,
@@ -16,7 +24,15 @@ import {
   type TierPricing,
   type APIRequest,
 } from '../lib/apiLicensingService.ts';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 const ApiLicensing: React.FC = () => {
   const [apiKeys, setApiKeys] = useState<APIKey[]>([]);
@@ -25,7 +41,7 @@ const ApiLicensing: React.FC = () => {
   const [webhooks, setWebhooks] = useState<WebhookConfig[]>([]);
   const [widgets, setWidgets] = useState<EmbedWidget[]>([]);
   const [pricing, setPricing] = useState<TierPricing[]>([]);
-  const [requests, setRequests] = useState<APIRequest[]>([]);
+  const [_requests, setRequests] = useState<APIRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('');

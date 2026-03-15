@@ -80,7 +80,7 @@ function loadStorage(): { listings: Listing[]; offers: Offer[]; sellers: SellerP
   } catch { return null; }
 }
 
-function saveStorage(data: { listings: Listing[]; offers: Offer[]; sellers: SellerProfile[] }): void {
+function _saveStorage(data: { listings: Listing[]; offers: Offer[]; sellers: SellerProfile[] }): void {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch { /* quota */ }
 }
 

@@ -1,14 +1,22 @@
 
 import React from 'react';
-import { Target, TrendingUp, TrendingDown, ExternalLink, Trash2, Check, AlertTriangle } from 'lucide-react';
+import {
+  Target,
+  TrendingUp,
+  TrendingDown,
+  ExternalLink,
+  Trash2,
+  Check,
+  AlertTriangle,
+} from 'lucide-react';
 import { TargetWatchlist } from '../types.ts';
 import Sparkline from './Sparkline.tsx';
 import { getSparklineData, getPriceTrend } from '../lib/priceHistory.ts';
 
 interface WatchlistPriceCardProps {
     target: TargetWatchlist;
-    onDelete: (id: string) => void;
-    onMarkAcquired: (id: string) => void;
+    onDelete: (_id: string) => void;
+    onMarkAcquired: (_id: string) => void;
 }
 
 const PRIORITY_STYLES: Record<string, { bg: string; text: string; border: string }> = {

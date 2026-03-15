@@ -65,7 +65,7 @@ export interface HOFStats {
 
 const STORAGE_KEY = 'msi_hof_tracker';
 
-function loadStorage(): { lastUpdated: string } {
+function _loadStorage(): { lastUpdated: string } {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);

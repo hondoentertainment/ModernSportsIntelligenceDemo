@@ -1,7 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  GraduationCap, BookOpen, Trophy, ShoppingBag, BookMarked, Users, Shield,
-  DollarSign, HelpCircle, Star, AlertTriangle, Clock, ChevronRight, Flame, Target,
+  GraduationCap,
+  BookOpen,
+  Trophy,
+  ShoppingBag,
+  BookMarked,
+  Users,
+  Shield,
+  DollarSign,
+  Star,
+  AlertTriangle,
+  Clock,
+  Flame,
+  Target,
 } from 'lucide-react';
 import {
   getLearningModules,
@@ -31,7 +42,13 @@ import {
   type ProgressTracker,
 } from '../lib/youthOnboardingService.ts';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
 } from 'recharts';
 
 const CHART_TOOLTIP_STYLE = { backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', fontSize: '12px' };
@@ -74,8 +91,8 @@ const YouthOnboarding: React.FC = () => {
     }
   }, []);
 
-  const nextAchievement = useMemo(() => getNextAchievement(), []);
-  const quizQuestions = useMemo(() => getQuizQuestions(), []);
+  const _nextAchievement = useMemo(() => getNextAchievement(), []);
+  const _quizQuestions = useMemo(() => getQuizQuestions(), []);
   const levelInfo = useMemo(() => progress ? calculateLevel(progress.totalXp) : null, [progress]);
 
   const filteredGlossary = useMemo(() => {

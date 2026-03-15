@@ -18,7 +18,7 @@ import {
 
 interface RebalanceWidgetProps {
   inventory: CardInventory[];
-  onAlertClick?: (alert: RebalanceAlert) => void;
+  onAlertClick?: (_alert: RebalanceAlert) => void;
 }
 
 const sportBarColors: Record<string, string> = {
@@ -51,7 +51,7 @@ const severityIcon: Record<string, React.ReactNode> = {
   info: <Info size={14} className="text-blue-400" />,
 };
 
-const severityDot: Record<string, string> = {
+const _severityDot: Record<string, string> = {
   critical: 'bg-red-400',
   warning: 'bg-orange-400',
   info: 'bg-blue-400',

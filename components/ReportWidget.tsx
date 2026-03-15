@@ -24,7 +24,7 @@ import {
 
 interface ReportWidgetProps {
   inventory: CardInventory[];
-  onOpenModal?: (report?: GeneratedReport) => void;
+  onOpenModal?: (_report?: GeneratedReport) => void;
 }
 
 const reportButtons: { type: ReportType; label: string; icon: React.ReactNode; color: string; bg: string; border: string }[] = [

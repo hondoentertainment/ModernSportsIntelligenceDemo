@@ -5,7 +5,6 @@ import {
   TrendingUp,
   TrendingDown,
   Activity,
-  Target,
   GitCompare,
   PieChart,
   ArrowUpRight,
@@ -30,8 +29,6 @@ import {
   getIndexComparison,
   calculatePortfolioBeta,
   MarketIndex,
-  IndexComponent,
-  PortfolioBeta,
 } from '../lib/marketIndicesService';
 
 // ---- Props ----
@@ -195,7 +192,7 @@ export const MarketIndicesModal: React.FC<MarketIndicesModalProps> = ({ isOpen, 
 
 const OverviewTab: React.FC<{
   indices: MarketIndex[];
-  onSelectIndex: (ticker: string) => void;
+  onSelectIndex: (_ticker: string) => void;
 }> = ({ indices, onSelectIndex }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -271,7 +268,7 @@ const OverviewTab: React.FC<{
 const DetailTab: React.FC<{
   indices: MarketIndex[];
   selectedTicker: string;
-  onSelectTicker: (t: string) => void;
+  onSelectTicker: (_t: string) => void;
 }> = ({ indices, selectedTicker, onSelectTicker }) => {
   const detail = useMemo(() => getIndexDetail(selectedTicker), [selectedTicker]);
 
@@ -423,7 +420,7 @@ const CompareTab: React.FC<{
   indices: MarketIndex[];
   comparison: ReturnType<typeof getIndexComparison>;
   selection: string[];
-  onToggle: (ticker: string) => void;
+  onToggle: (_ticker: string) => void;
 }> = ({ indices, comparison, selection, onToggle }) => {
   // Build chart data by normalizing all selected indices to base 100
   const chartData = useMemo(() => {
@@ -506,7 +503,7 @@ const CompareTab: React.FC<{
               <Legend
                 wrapperStyle={{ fontSize: '11px', color: '#94a3b8' }}
               />
-              {selection.map((ticker, i) => (
+              {selection.map((ticker, _i) => (
                 <Line
                   key={ticker}
                   type="monotone"
@@ -573,7 +570,7 @@ const CompareTab: React.FC<{
 const BetaTab: React.FC<{
   indices: MarketIndex[];
   selectedTicker: string;
-  onSelectTicker: (t: string) => void;
+  onSelectTicker: (_t: string) => void;
 }> = ({ indices, selectedTicker, onSelectTicker }) => {
   const beta = useMemo(() => calculatePortfolioBeta(selectedTicker), [selectedTicker]);
   const selectedIndex = indices.find(i => i.ticker === selectedTicker);

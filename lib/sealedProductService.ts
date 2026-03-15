@@ -560,3 +560,153 @@ export function getProductComparison(idA: string, idB: string): ProductCompariso
     reasoning: `Based on rating, ROI trajectory, and key rookie content comparison.`,
   };
 }
+
+// ---- Adapter types and functions for SealedProduct page (Phase 156) ----
+
+export interface PriceTrend {
+  date: string;
+  hobbyBox: number;
+  retailBox: number;
+  blaster: number;
+}
+
+export interface RoiByType {
+  productType: string;
+  avgRoi: number;
+  totalVolume: number;
+}
+
+export interface VintageItem {
+  name: string;
+  year: number;
+  sport: string;
+  currentValue: number;
+  estimatedRemaining: number;
+}
+
+export interface BreakEvenEntry {
+  productName: string;
+  cost: number;
+  breakEvenValue: number;
+  hitNeeded: string;
+}
+
+export interface ProductTypeDistribution {
+  type: string;
+  count: number;
+}
+
+export interface UpcomingRelease {
+  name: string;
+  sport: string;
+  manufacturer: string;
+  releaseDate: string;
+  hobbyBoxPrice: number;
+  hypeLevel: number;
+}
+
+export function getPriceTrends(): PriceTrend[] {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return months.map((m, i) => ({
+    date: `${m} '25`,
+    hobbyBox: 180 + Math.round(Math.sin(i * 0.5) * 30 + i * 5),
+    retailBox: 95 + Math.round(Math.sin(i * 0.7) * 15 + i * 2),
+    blaster: 38 + Math.round(Math.sin(i * 0.3) * 8 + i * 1),
+  }));
+}
+
+export function getRipVsHoldAnalysis(): (RipVsHold & { year: number; ripEV: number; holdValue: number; recommendation: string })[] {
+  return getRipVsHoldAnalyses().map(r => ({
+    ...r,
+    year: 2024,
+    ripEV: r.expectedRipValue,
+    holdValue: r.sealedValue,
+    recommendation: r.verdict === 'hold' ? 'Hold' : r.verdict === 'rip' ? 'Rip' : 'Toss-up',
+  }));
+}
+
+export function getRoiByProductType(): RoiByType[] {
+  const products = getSealedProducts();
+  const typeMap = new Map<string, { total: number; count: number }>();
+  for (const p of products) {
+    const existing = typeMap.get(p.productType) || { total: 0, count: 0 };
+    existing.total += p.priceChange1y;
+    existing.count += 1;
+    typeMap.set(p.productType, existing);
+  }
+  return Array.from(typeMap.entries()).map(([type, data]) => ({
+    productType: type,
+    avgRoi: Math.round(data.total / data.count * 10) / 10,
+    totalVolume: data.count * 150,
+  }));
+}
+
+export function getVintageShowcase(): VintageItem[] {
+  return getVintageSealed().map((v, i) => ({
+    name: v.name,
+    year: v.year,
+    sport: v.sport,
+    currentValue: v.currentPrice,
+    estimatedRemaining: Math.max(10, 500 - i * 80),
+  }));
+}
+
+export function getBreakEvenAnalysis(): BreakEvenEntry[] {
+  return getBreakEvenAnalyses().map(b => ({
+    productName: b.productName,
+    cost: b.boxCost,
+    breakEvenValue: Math.round(b.boxCost / (b.breakEvenOdds / 100)),
+    hitNeeded: `1 in ${Math.round(1 / (b.breakEvenOdds / 100))}`,
+  }));
+}
+
+export function getProductTypeDistribution(): ProductTypeDistribution[] {
+  const products = getSealedProducts();
+  const counts: Record<string, number> = {};
+  for (const p of products) {
+    counts[p.productType] = (counts[p.productType] || 0) + 1;
+  }
+  return Object.entries(counts).map(([type, count]) => ({ type, count }));
+}
+
+// ---- Widget API Functions ----
+
+export function getRoiMetrics(): { totalValue: number; avgRoi: number; bestRoi: number } {
+  const products = getSealedProducts();
+  const totalValue = products.reduce((sum, p) => sum + p.currentPrice, 0);
+  const avgRoi = products.length > 0
+    ? Math.round(products.reduce((sum, p) => sum + p.priceChange1y, 0) / products.length * 10) / 10
+    : 0;
+  const bestRoi = products.length > 0 ? Math.max(...products.map(p => p.priceChange1y)) : 0;
+  return { totalValue, avgRoi, bestRoi };
+}
+
+export function getBestHolds(): { id: string; productName: string; roiPercent: number; currentPrice: number }[] {
+  return getSealedProducts()
+    .map(p => ({
+      id: p.id,
+      productName: p.name,
+      roiPercent: p.priceChange1y,
+      currentPrice: p.currentPrice,
+    }))
+    .sort((a, b) => b.roiPercent - a.roiPercent);
+}
+
+export function getNewReleases(): { id: string; name: string; releaseDate: string; price: number; status: 'upcoming' | 'released' }[] {
+  const now = new Date();
+  return getSealedProducts()
+    .filter(p => {
+      const releaseDate = new Date(p.releaseDate);
+      const diffMs = now.getTime() - releaseDate.getTime();
+      const diffDays = diffMs / (1000 * 60 * 60 * 24);
+      return diffDays < 180;
+    })
+    .map(p => ({
+      id: p.id,
+      name: p.name,
+      releaseDate: p.releaseDate,
+      price: p.currentPrice,
+      status: (new Date(p.releaseDate) > now ? 'upcoming' : 'released') as 'upcoming' | 'released',
+    }))
+    .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
+}

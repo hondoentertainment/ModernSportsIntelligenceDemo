@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { X, Landmark, TrendingUp, TrendingDown, Users, DollarSign, Copy, Star, Shield, ArrowUpRight, ArrowDownRight, Filter } from 'lucide-react';
-import { getFractionalListings, getSharePositions, getTopCollectors, getCopyTradeSignals, getVaultStats, type FractionalListing, type TopCollector } from '../lib/fractionalVaultService.ts';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { X, Landmark, Copy, Shield } from 'lucide-react';
+import { getFractionalListings, getSharePositions, getTopCollectors, getCopyTradeSignals, getVaultStats, type FractionalListing } from '../lib/fractionalVaultService.ts';
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 
 interface Props {
   isOpen: boolean;

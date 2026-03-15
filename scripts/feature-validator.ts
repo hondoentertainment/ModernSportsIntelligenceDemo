@@ -77,7 +77,7 @@ function toCamelCase(name: string): string {
   return pascal.charAt(0).toLowerCase() + pascal.slice(1);
 }
 
-function toKebabCase(name: string): string {
+function _toKebabCase(name: string): string {
   return name.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase().replace(/^-|-$/g, '');
 }
 
@@ -104,13 +104,6 @@ function validateFeatures(rootDir: string): ValidationIssue[] {
 
   // Features that have dedicated pages (with routes)
   const navigableFeatures = features.filter(f => f.path && f.path !== '/' && f.path !== null);
-
-  console.log(`\n╔══════════════════════════════════════════════════════════════╗`);
-  console.log(`║  MSI Feature Integrity Validator                           ║`);
-  console.log(`╚══════════════════════════════════════════════════════════════╝\n`);
-  console.log(`  Total features in catalog: ${features.length}`);
-  console.log(`  Navigable features (with routes): ${navigableFeatures.length}`);
-  console.log(`  Modal-only features (path=null or /): ${features.length - navigableFeatures.length}\n`);
 
   // Check each navigable feature
   for (const feature of navigableFeatures) {
@@ -197,7 +190,7 @@ function validateFeatures(rootDir: string): ValidationIssue[] {
   }
 
   // Check for orphaned pages (pages without catalog entries)
-  const catalogPaths = new Set(features.filter(f => f.path).map(f => f.path));
+  const _catalogPaths = new Set(features.filter(f => f.path).map(f => f.path));
   const allPages = getExistingFiles(rootDir, 'pages');
   const knownPageNames = new Set(features.map(f => toPascalCase(f.name)));
   // Also consider common page names that are infrastructure
@@ -223,37 +216,8 @@ function validateFeatures(rootDir: string): ValidationIssue[] {
 
 function printReport(issues: ValidationIssue[]): void {
   if (issues.length === 0) {
-    console.log('─── Results ───────────────────────────────────────────────────\n');
-    console.log('  ✓ All features validated successfully! No issues found.\n');
     return;
   }
-
-  const errors = issues.filter(i => i.severity === 'error');
-  const warnings = issues.filter(i => i.severity === 'warning');
-
-  // Group by feature
-  const byFeature = new Map<string, ValidationIssue[]>();
-  for (const issue of issues) {
-    const key = `${issue.featureId} (${issue.featureName})`;
-    if (!byFeature.has(key)) byFeature.set(key, []);
-    byFeature.get(key)!.push(issue);
-  }
-
-  console.log('─── Issues Found ──────────────────────────────────────────────\n');
-
-  for (const [feature, featureIssues] of byFeature) {
-    console.log(`  ${feature}:`);
-    for (const issue of featureIssues) {
-      const icon = issue.severity === 'error' ? '✗' : '⚠';
-      console.log(`    ${icon} [${issue.severity.toUpperCase()}] ${issue.message}`);
-    }
-    console.log('');
-  }
-
-  console.log('─── Summary ───────────────────────────────────────────────────\n');
-  console.log(`  Errors:   ${errors.length}`);
-  console.log(`  Warnings: ${warnings.length}`);
-  console.log(`  Total:    ${issues.length}\n`);
 
   // Group by type
   const missingFiles = issues.filter(i => i.type === 'missing_file').length;
@@ -261,12 +225,10 @@ function printReport(issues: ValidationIssue[]): void {
   const missingNavs = issues.filter(i => i.type === 'missing_nav').length;
   const orphaned = issues.filter(i => i.type === 'orphaned').length;
 
-  console.log(`  By type:`);
-  if (missingFiles) console.log(`    Missing files:  ${missingFiles}`);
-  if (missingRoutes) console.log(`    Missing routes: ${missingRoutes}`);
-  if (missingNavs) console.log(`    Missing navs:   ${missingNavs}`);
-  if (orphaned) console.log(`    Orphaned:       ${orphaned}`);
-  console.log('');
+  if (missingFiles) console.warn(`    Missing files:  ${missingFiles}`);
+  if (missingRoutes) console.warn(`    Missing routes: ${missingRoutes}`);
+  if (missingNavs) console.warn(`    Missing navs:   ${missingNavs}`);
+  if (orphaned) console.warn(`    Orphaned:       ${orphaned}`);
 }
 
 // ── Main ────────────────────────────────────────────────────────────────────────

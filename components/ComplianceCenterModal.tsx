@@ -7,12 +7,10 @@ import {
   Calendar,
   Download,
   MapPin,
-  Eye,
   CheckCircle2,
   Clock,
   Flag,
   BarChart3,
-  ChevronDown,
 } from 'lucide-react';
 import {
   BarChart,
@@ -22,7 +20,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
 } from 'recharts';
 import {
   getComplianceStats,
@@ -35,10 +32,8 @@ import {
   getWashSaleAnalysis,
   ComplianceAlert,
   AMLFlag,
-  TaxEvent,
   ScheduleD,
   ComplianceStats,
-  StateGuidance,
 } from '../lib/complianceCenterService';
 
 interface ComplianceCenterModalProps {
@@ -454,7 +449,7 @@ const AlertsTab: React.FC = () => {
 };
 
 const StateTaxesTab: React.FC = () => {
-  const allStates = useMemo(() => getAllStateGuidance(), []);
+  const _allStates = useMemo(() => getAllStateGuidance(), []);
   const [selectedState, setSelectedState] = useState('CA');
   const guidance = useMemo(() => getStateGuidance(selectedState), [selectedState]);
 

@@ -726,7 +726,7 @@ export function getAllHypeDecayPredictions(): HypeDecayModel[] {
 export function getPortfolioInfluenceExposure(
   inventory: { id: string; player: string; currentValue?: number }[]
 ): PortfolioExposure[] {
-  const cardPlayerMap = new Map(inventory.map(c => [c.id, c]));
+  const _cardPlayerMap = new Map(inventory.map(c => [c.id, c]));
   const exposures: PortfolioExposure[] = [];
 
   // Match mentions to portfolio by checking card names against player names
@@ -885,3 +885,5 @@ export {
   signalColor,
   signalLabel,
 };
+
+// Helper functions are exported via the re-export block above

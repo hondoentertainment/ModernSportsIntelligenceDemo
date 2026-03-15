@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { AlertOctagon, ChevronRight, TrendingUp, Search, DollarSign } from 'lucide-react';
+import { AlertOctagon, ChevronRight, Search, DollarSign } from 'lucide-react';
 import {
   getErrorCards,
   getRecentFinds,

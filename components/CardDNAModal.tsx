@@ -1,5 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { X, Fingerprint, ShieldCheck, ShieldAlert, ShieldQuestion, Search } from 'lucide-react';
+import {
+  X,
+  Fingerprint,
+  ShieldCheck,
+  ShieldAlert,
+  ShieldQuestion,
+  Search,
+} from 'lucide-react';
 import {
   Radar,
   RadarChart,
@@ -8,11 +15,7 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from 'recharts';
-import {
-  getAllFingerprints,
-  getDNAMatches,
-  CardFingerprint,
-} from '../lib/cardDNAService';
+import { getAllFingerprints, getDNAMatches } from '../lib/cardDNAService';
 
 interface CardDNAModalProps {
   isOpen: boolean;

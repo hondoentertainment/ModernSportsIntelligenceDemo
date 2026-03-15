@@ -78,7 +78,7 @@ export interface WantListItem {
 
 // ---- Constants ----
 
-const EVENTS_KEY = 'msi_events';
+const _EVENTS_KEY = 'msi_events';
 const PREP_KEY = 'msi_event_prep';
 const BUDGET_KEY = 'msi_event_budgets';
 const DEALS_KEY = 'msi_event_deals';

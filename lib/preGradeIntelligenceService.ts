@@ -478,7 +478,7 @@ export function predictGrade(cardImageData: string): GradePrediction {
   };
 }
 
-export function getSubgradeBreakdown(cardImageData: string): SubgradeBreakdown {
+export function getSubgradeBreakdown(_cardImageData: string): SubgradeBreakdown {
   simulateDelay();
   return {
     centering: {
@@ -509,7 +509,7 @@ export function getSubgradeBreakdown(cardImageData: string): SubgradeBreakdown {
   };
 }
 
-export function analyzeConditionFactors(cardImageData: string): ConditionFactor[] {
+export function analyzeConditionFactors(_cardImageData: string): ConditionFactor[] {
   simulateDelay();
   return [
     {
@@ -717,12 +717,9 @@ export function getRecentPredictions(): GradePrediction[] {
 
 export function getPredictionAccuracy(): PredictionAccuracy {
   const verified = MOCK_PREDICTIONS.filter((p) => p.verified);
-  const total = MOCK_PREDICTIONS.length;
+  const _total = MOCK_PREDICTIONS.length;
   const verifiedCount = verified.length;
 
-  let exactMatches = 0;
-  let withinHalf = 0;
-  let withinOne = 0;
   let totalDeviation = 0;
 
   for (const pred of verified) {
@@ -730,10 +727,6 @@ export function getPredictionAccuracy(): PredictionAccuracy {
     const actualNum = pred.actualGrade ? parseGradeNumeric(pred.actualGrade) : predictedNum;
     const deviation = Math.abs(predictedNum - actualNum);
     totalDeviation += deviation;
-
-    if (deviation === 0) exactMatches++;
-    if (deviation <= 0.5) withinHalf++;
-    if (deviation <= 1.0) withinOne++;
   }
 
   const byGrade: { grade: string; predictions: number; accuracy: number }[] = [

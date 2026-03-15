@@ -288,7 +288,7 @@ export function getRiderRecommendations(
   const scheduledPolicies = policies.filter(
     p => p.type === 'scheduled' && p.status === 'active'
   );
-  const scheduledTotal = scheduledPolicies.reduce((s, p) => s + p.coverageAmount, 0);
+  const _scheduledTotal = scheduledPolicies.reduce((s, p) => s + p.coverageAmount, 0);
 
   // Cards worth over $5,000 that may need individual scheduling
   const highValueCards = cards.filter(c => {
@@ -388,7 +388,7 @@ export function getCoverageHistory(policies: InsurancePolicy[]): CoverageHistory
 
   for (let i = 11; i >= 0; i--) {
     const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const monthStr = date.toISOString().slice(0, 7); // YYYY-MM
+    const _monthStr = date.toISOString().slice(0, 7); // YYYY-MM
     const monthLabel = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
 
     // Simulate growing collection value over past 12 months

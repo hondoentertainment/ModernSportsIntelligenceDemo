@@ -1,13 +1,25 @@
 // Phase 157: Error Card & Misprint Database Page
 // Route: /error-card | Icon: AlertOctagon
 import React, { useState, useEffect, useMemo } from 'react';
-import { AlertOctagon, AlertTriangle, TrendingUp, DollarSign, Search, Shield, Clock, Eye, Star, Award, Zap, Users, CheckCircle2, FileText } from 'lucide-react';
+import {
+  AlertOctagon,
+  AlertTriangle,
+  TrendingUp,
+  Search,
+  Shield,
+  Clock,
+  Eye,
+  Award,
+  Zap,
+  Users,
+  CheckCircle2,
+  FileText,
+} from 'lucide-react';
 import {
   getErrorCards,
   getVariationGuide,
   getErrorAlerts,
   getErrorCardStats,
-  searchForErrors,
   ERROR_TYPE_META,
   RARITY_META,
   DIFFICULTY_META,
@@ -18,7 +30,16 @@ import {
   type ErrorType,
 } from '../lib/errorCardService';
 import {
-  BarChart, Bar, PieChart, Pie, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
 } from 'recharts';
 
 const ERROR_TYPE_COLORS: Record<string, string> = {
@@ -87,7 +108,7 @@ const ErrorCard: React.FC = () => {
       setAlerts(getErrorAlerts());
       setStats(getErrorCardStats());
       setLoading(false);
-    } catch (err) {
+    } catch  {
       setError('Failed to load Error Card Database');
       setLoading(false);
     }
@@ -136,7 +157,7 @@ const ErrorCard: React.FC = () => {
   }, [errorCards]);
 
   const totalErrorValue = useMemo(() => errorCards.reduce((s, c) => s + c.errorValue, 0), [errorCards]);
-  const avgMultiplier = useMemo(() => {
+  const _avgMultiplier = useMemo(() => {
     if (errorCards.length === 0) return 0;
     return errorCards.reduce((s, c) => s + c.premiumMultiplier, 0) / errorCards.length;
   }, [errorCards]);

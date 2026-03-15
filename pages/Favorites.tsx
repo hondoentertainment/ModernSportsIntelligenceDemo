@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Star, Search, Trash2, User, ChevronRight, LayoutGrid, List, CreditCard, TrendingUp, Target, RefreshCw, Plus, Loader2, Zap } from 'lucide-react';
 import { searchMLBPlayers } from '../lib/mlbApi.ts';
-import { useFavorites, CardFavorite } from '../lib/useFavorites.ts';
+import { useFavorites } from '../lib/useFavorites.ts';
 import { useInventory } from '../lib/useInventory.ts';
 import { useTargets } from '../lib/useTargets.ts';
 import { useAlerts } from '../lib/useAlerts.ts';
@@ -107,6 +107,7 @@ const Favorites: React.FC = () => {
     } finally {
       setIsSyncing(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSyncing, targets, setTargets, priceTargetHit, systemMessage]);
 
   // Compute acquisition target stats

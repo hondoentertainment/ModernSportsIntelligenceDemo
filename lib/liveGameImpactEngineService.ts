@@ -790,7 +790,7 @@ export function getPlayerPortfolioImpact(
  */
 export function getPriceProjectionTimeline(playerId: string, event: GameEvent): PriceProjection {
   const model = EVENT_IMPACT_MODEL[event.eventType] || { baseImpact: 1.0, volumeMultiplier: 1.5, category: 'offensive' as EventCategory, decayHours: 24 };
-  const popularity = getPlayerPopularity(event.playerName);
+  const _popularity = getPlayerPopularity(event.playerName);
   const baseDelta = event.cardValueDelta;
 
   // Different windows have different decay/amplification patterns

@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { X, Target, TrendingUp, Clock, Save, Info } from 'lucide-react';
+import {
+  X,
+  Target,
+  TrendingUp,
+  Clock,
+  Save,
+  Info,
+} from 'lucide-react';
 import { CardInventory, ExitPlan } from '../types';
 import { LiquidityService } from '../lib/liquidityService';
 import { LiquidityBadge } from './LiquidityBadge';
@@ -8,7 +15,7 @@ interface ExitStrategyModalProps {
     isOpen: boolean;
     onClose: () => void;
     card: CardInventory;
-    onSave: (cardId: string, exitPlan: ExitPlan) => void;
+    onSave: (_cardId: string, _exitPlan: ExitPlan) => void;
 }
 
 export const ExitStrategyModal: React.FC<ExitStrategyModalProps> = ({

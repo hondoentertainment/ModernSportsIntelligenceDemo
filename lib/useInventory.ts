@@ -71,6 +71,7 @@ export function useInventory() {
         };
         localStorage.setItem(SYNC_META_KEY, JSON.stringify(meta));
         setSyncMeta(meta);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inventory, targets]);
 
     // Listen for storage events from other tabs/components

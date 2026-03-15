@@ -5,7 +5,6 @@ import { useAuth } from '../contexts/AuthContext.tsx';
 import { useMigration } from '../contexts/MigrationContext.tsx';
 import { initializeScheduler, stopScheduler } from '../lib/syncScheduler.ts';
 import { initPriceHistory, teardownPriceHistory, isPriceHistoryInitialized } from '../lib/priceHistory.ts';
-import { bulkUpsertCards, bulkUpsertTargets } from '../lib/supabaseData.ts';
 import { isDemoMode } from '../lib/supabase.ts';
 import { showToast } from '../lib/toast.ts';
 import type { CardInventory, TargetWatchlist } from '../types.ts';
@@ -30,14 +29,14 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
     useEffect(() => {
         if (inventory.length > 0 && !isMigrating) {
             if (import.meta.env.DEV) console.warn('Initializing Automated Sync Scheduler...');
-            const scheduler = initializeScheduler(inventory, targets, {
+            const _scheduler = initializeScheduler(inventory, targets, {
                 onProgress: (p) => {
                     if (p.status === 'complete' && import.meta.env.DEV) {
                         console.warn('Automatic sync complete');
                     }
                 },
                 onComplete: async (result) => {
-                    const { inventory: updatedInventory, targets: updatedTargets, portfolio, watchlist } = result;
+                    const { inventory: updatedInventory, targets: updatedTargets, _portfolio, watchlist } = result;
                     setInventory(updatedInventory);
                     setTargets(updatedTargets);
 
@@ -65,6 +64,7 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
                 stopScheduler();
             };
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inventory, targets, isMigrating, user?.id, setInventory, setTargets, setSyncMeta]);
 
     return <>{children}</>;

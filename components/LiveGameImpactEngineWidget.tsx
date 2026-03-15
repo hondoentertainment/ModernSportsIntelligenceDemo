@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Activity, Zap, TrendingUp, TrendingDown, Radio, ChevronRight, Bell,
-  AlertTriangle, Target, Trophy
+  Activity,
+  TrendingUp,
+  TrendingDown,
+  Radio,
+  ChevronRight,
+  Bell,
+  AlertTriangle,
+  Target,
 } from 'lucide-react';
 import {
   getActiveGames,
@@ -34,7 +40,7 @@ const LiveGameImpactEngineWidget: React.FC<Props> = ({ onOpenModal }) => {
       setImpactCards(getPlayerPortfolioImpact(inventory, activeGames));
       setMilestones(getMilestoneAlerts().filter(m => m.urgency === 'imminent'));
       setLoading(false);
-    } catch (err) {
+    } catch  {
       setError('Failed to load live game data');
       setLoading(false);
     }

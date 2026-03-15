@@ -22,7 +22,6 @@ import {
   getErrorCardStats,
   ErrorCard,
   ErrorAlert,
-  VariationGuide,
   ERROR_TYPE_META,
   RARITY_META,
   DIFFICULTY_META,

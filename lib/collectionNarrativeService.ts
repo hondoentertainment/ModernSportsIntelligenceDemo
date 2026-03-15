@@ -377,7 +377,7 @@ export function getHeritageStory(inventory: CardInventory[]): HeritageStory {
 }
 
 export function exportNarrative(format: 'pdf' | 'social' | 'web'): NarrativeExport {
-  const labels: Record<string, string> = {
+  const _labels: Record<string, string> = {
     pdf: 'Museum Catalog PDF',
     social: 'Social Media Carousel',
     web: 'Embeddable Web Showcase',

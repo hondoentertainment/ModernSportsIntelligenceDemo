@@ -504,7 +504,7 @@ export function getNegotiationAdvice(cardName: string, askingPrice: number): Neg
     riskLevel = 'medium';
     advice = `Reasonable ask. Try to negotiate down to $${maxBuy} for a solid margin.`;
     talkingPoints.push(
-      `"I\'ve seen these go for around $${comp.medianPrice} recently on eBay."`,
+      `"I've seen these go for around $${comp.medianPrice} recently on eBay."`,
       `"I could do $${suggestedOffer} cash right now — saves you shipping and fees."`,
       `"Would you do $${maxBuy}? That works for both of us."`,
       `Mention you have cash and can close instantly — vendors love no-hassle deals.`,

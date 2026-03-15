@@ -5,12 +5,10 @@ import {
   Activity,
   Zap,
   RefreshCw,
-  ChevronRight,
   Flame,
   Target,
   BarChart3,
-  Calendar,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
 import {
   LineChart,
@@ -20,7 +18,6 @@ import {
   AreaChart,
   Area,
   Tooltip,
-  XAxis
 } from 'recharts';
 import { getRealTimeLeagueTrends } from '../lib/gemini.ts';
 import { MiLBProspect } from '../types.ts';
@@ -58,6 +55,7 @@ const ProspectTrends: React.FC = () => {
       console.warn('Failed to parse prospect trends', e);
       fetchTrends();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeLeague]);
 
   const hottest = useMemo(() => [...prospects].sort((a, b) => b.trendScore - a.trendScore).slice(0, 10), [prospects]);

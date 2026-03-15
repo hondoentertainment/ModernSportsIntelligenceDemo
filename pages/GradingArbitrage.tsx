@@ -2,14 +2,9 @@ import React, { useState, useMemo } from 'react';
 import {
   RefreshCw,
   ArrowRightLeft,
-  DollarSign,
   TrendingUp,
   BarChart3,
   Package,
-  ChevronRight,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
   Clock,
 } from 'lucide-react';
 import {
@@ -18,7 +13,6 @@ import {
   getGradePremiums,
   getActiveSubmissions,
   getGradingArbitrageStats,
-  type CrossGradeOpportunity,
   type GradingCompany,
 } from '../lib/gradingArbitrageService.ts';
 import {
@@ -28,7 +22,6 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 
 const companyColors: Record<GradingCompany, { text: string; bg: string; bar: string }> = {
@@ -54,7 +47,7 @@ const statusConfig: Record<string, { text: string; bg: string; label: string }> 
 
 const GradingArbitrage: React.FC = () => {
   const [selectedPlayer, setSelectedPlayer] = useState('Victor Wembanyama');
-  const [selectedCard, setSelectedCard] = useState('2023 Panini Prizm Silver RC');
+  const [selectedCard, _setSelectedCard] = useState('2023 Panini Prizm Silver RC');
 
   const opportunities = useMemo(() => getCrossGradeOpportunities(), []);
   const translations = useMemo(() => getGradeTranslationTable(), []);

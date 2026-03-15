@@ -2,7 +2,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { CardInventory, TargetWatchlist } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { isDemoMode } from './supabase';
-import { fetchCards, fetchTargets, upsertCard, deleteCard as deleteCardFromDb, upsertTarget, deleteTarget as deleteTargetFromDb, bulkUpsertCards } from './supabaseData';
+import {
+  fetchCards,
+  fetchTargets,
+  upsertCard,
+  deleteCard as deleteCardFromDb,
+  upsertTarget,
+  deleteTarget as deleteTargetFromDb,
+  bulkUpsertCards,
+} from './supabaseData';
 import { MOCK_CARDS } from '../constants';
 import { migrateToSupabase, needsMigration } from './migration';
 
@@ -71,7 +79,7 @@ export function useSupabaseInventory() {
                     ]);
                     setInventory(cards);
                     setTargets(watchlist);
-                } catch (e) {
+                } catch  {
                     setLastSyncError('Failed to fetch data from cloud');
                 }
             } else {

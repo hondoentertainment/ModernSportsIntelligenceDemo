@@ -1,7 +1,14 @@
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  ReactNode,
+} from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isDemoMode } from '../lib/supabase';
-import { migrateToSupabase, needsMigration } from '../lib/migration';
 
 interface AuthContextType {
     user: User | null;
@@ -9,12 +16,12 @@ interface AuthContextType {
     loading: boolean;
     isDemoMode: boolean;
     recoveryMode: boolean;
-    signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-    signUp: (email: string, password: string, username?: string) => Promise<{ error: AuthError | null }>;
+    signIn: (_email: string, _password: string) => Promise<{ error: AuthError | null }>;
+    signUp: (_email: string, _password: string, _username?: string) => Promise<{ error: AuthError | null }>;
     signInWithGoogle: () => Promise<{ error: AuthError | null }>;
     signOut: () => Promise<void>;
-    resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
-    updatePassword: (password: string) => Promise<{ error: AuthError | null }>;
+    resetPassword: (_email: string) => Promise<{ error: AuthError | null }>;
+    updatePassword: (_password: string) => Promise<{ error: AuthError | null }>;
     refreshSession: () => Promise<void>;
     clearRecoveryMode: () => void;
     demoLogin: () => void;

@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
 import {
   GitBranch,
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
   Shield,
   ArrowRight,
@@ -13,12 +11,6 @@ import {
   getDiversificationScoreAnalysis,
   getMacroAlerts,
   getHedgeSignals,
-  CorrelationMatrix,
-  DiversificationScore,
-  MacroAlert,
-  HedgeSignal,
-  CARD_SEGMENT_LABELS,
-  ASSET_CLASS_LABELS,
   CardSegment,
   AssetClass,
 } from '../lib/crossAssetCorrelationService';

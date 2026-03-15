@@ -1,16 +1,17 @@
 import React, { useMemo } from 'react';
-import { Users, ChevronRight, TrendingUp, AlertTriangle, Star } from 'lucide-react';
+import {
+  Users,
+  ChevronRight,
+  TrendingUp,
+  AlertTriangle,
+  Star,
+} from 'lucide-react';
 import {
   getTrendingMentions,
   getPumpDumpAlerts,
   getTopInfluencers,
   getContentEvents,
-  platformBadgeColor,
-  platformLabel,
-  momentumColor,
   formatFollowers,
-  type TrendingMention,
-  type Influencer,
 } from '../lib/influencerImpactService';
 
 interface InfluencerImpactWidgetProps {
@@ -21,7 +22,7 @@ const InfluencerImpactWidget: React.FC<InfluencerImpactWidgetProps> = ({ onOpenM
   const trending = useMemo(() => getTrendingMentions(), []);
   const alerts = useMemo(() => getPumpDumpAlerts(), []);
   const influencers = useMemo(() => getTopInfluencers(), []);
-  const recentEvents = useMemo(() => getContentEvents({ limit: 5 }), []);
+  const _recentEvents = useMemo(() => getContentEvents({ limit: 5 }), []);
 
   const topMover = trending.length > 0
     ? trending.reduce((best, t) => t.price_change_pct > best.price_change_pct ? t : best, trending[0])

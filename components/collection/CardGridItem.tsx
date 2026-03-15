@@ -1,5 +1,24 @@
 import React from 'react';
-import { Sparkles, Trophy, Trash2, Edit3, Star, Target, Tag, Search, Award, DollarSign, Zap, Users, BarChart3, FileText, Eye, TrendingUp, Gavel, Package, LineChart, AlertTriangle } from 'lucide-react';
+import {
+  Sparkles,
+  Trophy,
+  Trash2,
+  Edit3,
+  Star,
+  Target,
+  Tag,
+  Search,
+  Award,
+  DollarSign,
+  Zap,
+  Users,
+  BarChart3,
+  FileText,
+  Eye,
+  Package,
+  LineChart,
+  AlertTriangle,
+} from 'lucide-react';
 import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import ScarcityBadge from '../ScarcityBadge';
@@ -9,31 +28,31 @@ import { LiquidityService } from '../../lib/liquidityService';
 
 export interface CardGridItemProps {
   card: CardInventory;
-  getRarityTier: (c: CardInventory) => string;
-  getTierStyles: (tier: string) => { border: string; glow?: string; text: string; badge: string };
-  isFavorite: (id: string) => boolean;
-  toggleFavorite: (c: CardInventory) => void;
-  deleteCard: (id: string) => void;
-  setEditingAsset: (c: CardInventory | null) => void;
-  setIsAssetModalOpen: (v: boolean) => void;
-  handleAddToWatchlist: (c: CardInventory) => void;
-  handleUpdatePrice: (c: CardInventory) => void;
+  getRarityTier: (_c: CardInventory) => string;
+  getTierStyles: (_tier: string) => { border: string; glow?: string; text: string; badge: string };
+  isFavorite: (_id: string) => boolean;
+  toggleFavorite: (_c: CardInventory) => void;
+  deleteCard: (_id: string) => void;
+  setEditingAsset: (_c: CardInventory | null) => void;
+  setIsAssetModalOpen: (_v: boolean) => void;
+  handleAddToWatchlist: (_c: CardInventory) => void;
+  handleUpdatePrice: (_c: CardInventory) => void;
   isPricing: string | null;
-  getSparklineData: (id: string, limit?: number) => number[];
-  getPriceTrend: (id: string) => string;
-  onOpenLightbox?: (card: CardInventory) => void;
-  onOpenExitStrategy?: (card: CardInventory) => void;
-  onOpenGradingCalc?: (card: CardInventory) => void;
-  onOpenBreakEven?: (card: CardInventory) => void;
-  onInstantBuy?: (card: CardInventory) => void;
-  onOpenPredictive?: (card: CardInventory) => void;
-  onOpenThesis?: (card: CardInventory) => void;
-  onOpenMarketDepth?: (card: CardInventory) => void;
-  onOpenTaxLot?: (card: CardInventory) => void;
-  onOpenGradePrediction?: (card: CardInventory) => void;
-  onOpenPriceHistory?: (card: CardInventory) => void;
-  onOpenConsignment?: (card: CardInventory) => void;
-  onOpenAnomaly?: (card: CardInventory) => void;
+  getSparklineData: (_id: string, _limit?: number) => number[];
+  getPriceTrend: (_id: string) => string;
+  onOpenLightbox?: (_card: CardInventory) => void;
+  onOpenExitStrategy?: (_card: CardInventory) => void;
+  onOpenGradingCalc?: (_card: CardInventory) => void;
+  onOpenBreakEven?: (_card: CardInventory) => void;
+  onInstantBuy?: (_card: CardInventory) => void;
+  onOpenPredictive?: (_card: CardInventory) => void;
+  onOpenThesis?: (_card: CardInventory) => void;
+  onOpenMarketDepth?: (_card: CardInventory) => void;
+  onOpenTaxLot?: (_card: CardInventory) => void;
+  onOpenGradePrediction?: (_card: CardInventory) => void;
+  onOpenPriceHistory?: (_card: CardInventory) => void;
+  onOpenConsignment?: (_card: CardInventory) => void;
+  onOpenAnomaly?: (_card: CardInventory) => void;
 }
 
 /** Renders a single card — shared between virtualized and static grid */

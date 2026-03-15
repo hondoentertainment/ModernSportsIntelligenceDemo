@@ -31,7 +31,6 @@ import {
   InsurancePolicy,
   InsuranceClaim,
   CoverageGap,
-  PremiumEstimate,
   RiderRecommendation,
   getPolicies,
   addPolicy,
@@ -63,7 +62,7 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
   { id: 'riders', label: 'Riders', icon: <Shield size={16} /> },
 ];
 
-const SPORTS_OPTIONS: Sport[] = ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
+const _SPORTS_OPTIONS: Sport[] = ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
 
 // ---- Policies Tab ----
 

@@ -88,7 +88,7 @@ function seededRandom(seed: number, offset: number): number {
   return x - Math.floor(x);
 }
 
-function seededRange(seed: number, offset: number, min: number, max: number): number {
+function _seededRange(seed: number, offset: number, min: number, max: number): number {
   return min + seededRandom(seed, offset) * (max - min);
 }
 

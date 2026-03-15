@@ -1,11 +1,14 @@
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   Plus,
   Search,
-  Filter,
   Upload,
-  History,
   Grid,
   List,
   SortAsc,
@@ -14,11 +17,9 @@ import {
   Clock,
   XCircle,
   CheckSquare,
-  Square,
   Trash2,
   Download,
   Sparkles,
-  Loader2,
   Cloud,
   CloudOff,
   Star,
@@ -26,7 +27,12 @@ import {
   Target,
   Trophy,
 } from 'lucide-react';
-import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
+import {
+  CardInventory,
+  TargetWatchlist,
+  League,
+  ExitPlan,
+} from '../types';
 import { getEbayCardPrice } from '../lib/gemini';
 import { LEAGUES } from '../constants';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory';
@@ -57,7 +63,6 @@ import AnomalyDetailModal from '../components/AnomalyDetailModal';
 import { MarketAnomaly, detectAnomalies } from '../lib/anomalyDetectionService';
 import ConfirmDialog from '../components/ConfirmDialog';
 import CommandPalette from '../components/CommandPalette';
-import { CardGridSkeleton } from '../components/SkeletonLoader';
 import CardGridItem from '../components/collection/CardGridItem';
 import SwipeableCard from '../components/collection/SwipeableCard';
 import VirtualizedGrid from '../components/collection/VirtualizedGrid';
@@ -70,7 +75,6 @@ const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
 const CARD_ESTIMATE_HEIGHT = 480;
 const ROW_GAP = 32;
-
 
 const Collection: React.FC = () => {
 
@@ -203,7 +207,6 @@ const Collection: React.FC = () => {
     setIsTargetModalOpen(true);
   };
 
-
   const handleAddCard = (card: CardInventory) => {
     addCard(card);
     setInitialAssetData(null); // Clear after adding
@@ -215,7 +218,6 @@ const Collection: React.FC = () => {
     setIsAssetModalOpen(true);
     setIsOCRModalOpen(false);
   };
-
 
   const handleUpdatePrice = async (card: CardInventory) => {
     setIsPricing(card.id);
@@ -309,7 +311,7 @@ const Collection: React.FC = () => {
   };
 
   // Toggle bulk selection
-  const toggleSelection = (id: string) => {
+  const _toggleSelection = (id: string) => {
     setSelectedIds(prev => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);

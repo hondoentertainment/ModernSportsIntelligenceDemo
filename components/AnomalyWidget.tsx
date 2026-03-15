@@ -5,11 +5,6 @@ import {
   TrendingDown,
   Minus,
   ArrowRightLeft,
-  Target,
-  BarChart3,
-  Clock,
-  Zap,
-  AlertTriangle,
 } from 'lucide-react';
 import { CardInventory } from '../types';
 import {
@@ -23,7 +18,7 @@ import {
 
 interface AnomalyWidgetProps {
   inventory: CardInventory[];
-  onAnomalyClick?: (anomaly: MarketAnomaly) => void;
+  onAnomalyClick?: (_anomaly: MarketAnomaly) => void;
 }
 
 const severityDot: Record<AnomalySeverity, string> = {

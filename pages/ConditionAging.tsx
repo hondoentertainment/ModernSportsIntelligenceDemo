@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ShieldCheck, AlertTriangle, TrendingDown, Thermometer, Archive, Eye, BadgeDollarSign } from 'lucide-react';
+import {
+  ShieldCheck,
+  AlertTriangle,
+  TrendingDown,
+  Thermometer,
+  Archive,
+  Eye,
+  BadgeDollarSign,
+} from 'lucide-react';
 import {
   getCollectionHealthReport,
   getAllCards,
@@ -10,9 +18,7 @@ import {
   getValueAtRisk,
   getDegradationFactors,
   compareStorageMethods,
-  getDegradationLabel,
   getCaseLabel,
-  getEraLabel,
   type CollectionHealthReport,
   type CardAgingProfile,
   type StorageSetup,
@@ -21,12 +27,21 @@ import {
   type InsuranceTrigger,
   type StorageComparison,
 } from '../lib/conditionAgingService.ts';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+} from 'recharts';
 
 const ConditionAging: React.FC = () => {
   const [healthReport, setHealthReport] = useState<CollectionHealthReport | null>(null);
   const [cards, setCards] = useState<CardAgingProfile[]>([]);
-  const [environments, setEnvironments] = useState<StorageSetup[]>([]);
+  const [_environments, setEnvironments] = useState<StorageSetup[]>([]);
   const [recommendations, setRecommendations] = useState<StorageRecommendation[]>([]);
   const [envRisks, setEnvRisks] = useState<EnvironmentalRisk[]>([]);
   const [triggers, setTriggers] = useState<InsuranceTrigger[]>([]);

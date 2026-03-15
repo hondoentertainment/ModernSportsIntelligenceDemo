@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { FileCheck, ChevronRight, Award, ShieldCheck, DollarSign } from 'lucide-react';
+import { FileCheck, ChevronRight, Award, ShieldCheck } from 'lucide-react';
 import {
   getAppraisalReports,
   getGradingResults,

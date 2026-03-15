@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Radio, TrendingUp, Users, Flame, AlertTriangle, BarChart3, Activity, ChevronRight } from 'lucide-react';
+import {
+  Radio,
+  TrendingUp,
+  Users,
+  Flame,
+  BarChart3,
+  Activity,
+} from 'lucide-react';
 import {
   getTrendingTopics,
   getInfluencerAlerts,
@@ -9,7 +16,6 @@ import {
   getSentimentTimeline,
   getTopInfluencers,
   getPlatformBreakdown,
-  getSentimentColor,
   getViralStatusColor,
   getMomentumColor,
   getTierColor,
@@ -24,11 +30,19 @@ import {
   type TopInfluencer,
   type PlatformBreakdown,
 } from '../lib/hypeRadarService.ts';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 const HypeRadar: React.FC = () => {
   const [trending, setTrending] = useState<TrendingTopic[]>([]);
-  const [influencers, setInfluencers] = useState<InfluencerAlert[]>([]);
+  const [_influencers, setInfluencers] = useState<InfluencerAlert[]>([]);
   const [viral, setViral] = useState<ViralDetection[]>([]);
   const [narratives, setNarratives] = useState<NarrativeMomentumType[]>([]);
   const [hypeScores, setHypeScores] = useState<HypeScore[]>([]);

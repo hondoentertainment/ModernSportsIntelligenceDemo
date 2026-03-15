@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { CardInventory, CollaborativeThesis, AgentInsight } from "../types.ts";
+import { CardInventory, CollaborativeThesis } from "../types.ts";
 import { showToast } from "./toast.ts";
 
 const apiKey = (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) ? process.env.VITE_GEMINI_API_KEY : "";

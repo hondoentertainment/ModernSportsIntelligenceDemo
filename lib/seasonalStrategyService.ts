@@ -300,7 +300,7 @@ export function getSeasonalAlerts(cards: CardInventory[]): SeasonalAlert[] {
 
 function generateAlerts(cards: CardInventory[]): SeasonalAlert[] {
   const now = new Date();
-  const currentMonth = now.getMonth() + 1;
+  const _currentMonth = now.getMonth() + 1;
   const seed = dateSeed();
   const alerts: SeasonalAlert[] = [];
 

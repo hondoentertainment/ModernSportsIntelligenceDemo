@@ -1,13 +1,28 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Trophy, Activity, Search, ChevronRight, User, TrendingUp, Zap, Newspaper, Target, MapPin, Radio } from 'lucide-react';
-import { getLiveGames, getStandings, searchMLBPlayers, getProbablePitchers, getAthleteHeadshotUrl } from '../lib/mlbApi.ts';
+import {
+  Activity,
+  Search,
+  ChevronRight,
+  TrendingUp,
+  Zap,
+  Newspaper,
+  MapPin,
+  Radio,
+} from 'lucide-react';
+import {
+  getLiveGames,
+  getStandings,
+  searchMLBPlayers,
+  getProbablePitchers,
+  getAthleteHeadshotUrl,
+} from '../lib/mlbApi.ts';
 import { useToast } from '../contexts/ToastContext.tsx';
 
 const MLBStats: React.FC = () => {
   const [games, setGames] = useState<any[]>([]);
   const [standings, setStandings] = useState<any[]>([]);
-  const [probables, setProbables] = useState<any[]>([]);
+  const [_probables, setProbables] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +51,7 @@ const MLBStats: React.FC = () => {
 
     const interval = setInterval(fetchData, 60000);
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSearch = async () => {
@@ -43,7 +59,7 @@ const MLBStats: React.FC = () => {
     try {
       const results = await searchMLBPlayers(searchQuery);
       setSearchResults(results);
-    } catch (error) {
+    } catch  {
       addToast('error', 'Player search failed. Try again.', { dedupeKey: 'mlb_search' });
     }
   };

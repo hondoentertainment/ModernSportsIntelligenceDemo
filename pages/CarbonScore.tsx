@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Leaf, TrendingDown, Award, Recycle } from 'lucide-react';
+import {
+  Leaf,
+  TrendingDown,
+  Award,
+  Recycle,
+} from 'lucide-react';
 import {
   getCarbonFootprint,
   getSustainabilityScore,
@@ -20,7 +25,13 @@ import {
   type EcoTip,
 } from '../lib/carbonScoreService.ts';
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, Cell,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
 } from 'recharts';
 
 const CarbonScore: React.FC = () => {
@@ -51,7 +62,7 @@ const CarbonScore: React.FC = () => {
   }, []);
 
   const earnedBadges = useMemo(() => badges.filter(b => b.isEarned), [badges]);
-  const inProgressBadges = useMemo(() => badges.filter(b => !b.isEarned), [badges]);
+  const _inProgressBadges = useMemo(() => badges.filter(b => !b.isEarned), [badges]);
 
   if (loading) {
     return (

@@ -84,7 +84,7 @@ export const DealFinderWidget: React.FC<DealFinderWidgetProps> = ({ cards, onCli
       {topDeals.length > 0 && (
         <div className="space-y-2">
           {topDeals.map(deal => {
-            const badge = getScoreBadge(deal.dealScore);
+            const _badge = getScoreBadge(deal.dealScore);
             const platColors = PLATFORM_COLORS[deal.listing.platform as Platform];
             return (
               <div

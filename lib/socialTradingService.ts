@@ -382,7 +382,7 @@ export function getTopTraders(limit: number = 10): TraderProfile[] {
   return [...traders].sort((a, b) => b.reputation - a.reputation).slice(0, limit);
 }
 
-export function getMarketConsensus(player: string): MarketConsensus {
+export function getMarketConsensusForPlayer(player: string): MarketConsensus {
   const picks = getTradePicks().filter(p => p.player === player);
   const bullish = picks.filter(p => p.sentiment === 'bullish' || p.sentiment === 'very_bullish').length;
   const bearish = picks.filter(p => p.sentiment === 'bearish' || p.sentiment === 'very_bearish').length;
@@ -399,6 +399,23 @@ export function getMarketConsensus(player: string): MarketConsensus {
     currentPrice: picks[0]?.currentPrice || 0,
     consensusSentiment: bullish > bearish ? 'bullish' : bearish > bullish ? 'bearish' : 'neutral',
   };
+}
+
+export function getMarketConsensus(): MarketConsensusItem[] {
+  const picks = getTradePicks();
+  const players = [...new Set(picks.map(p => p.player))];
+  return players.slice(0, 9).map(player => {
+    const mc = getMarketConsensusForPlayer(player);
+    return {
+      cardName: mc.cardName,
+      consensus: mc.consensusSentiment as 'bullish' | 'bearish' | 'neutral',
+      currentPrice: mc.currentPrice,
+      targetPrice: mc.averageTargetPrice,
+      confidence: Math.round(Math.max(mc.bullishPercent, mc.bearishPercent, mc.neutralPercent)),
+      contributors: mc.totalVotes,
+      bullishPercent: Math.round(mc.bullishPercent),
+    };
+  });
 }
 
 export function getTrendingPicks(limit: number = 10): TradePick[] {
@@ -514,4 +531,120 @@ export function getWinningTraders(): TraderProfile[] {
 export function getTradersByTier(tier: TraderProfile['tier']): TraderProfile[] {
   const traders = getTraderProfiles();
   return traders.filter(t => t.tier === tier);
+}
+
+// ---- Page-compatible types & adapters (used by SocialTrading page) ----
+
+export interface TopTrader {
+  id: string;
+  username: string;
+  verified: boolean;
+  totalPicks: number;
+  winRate: number;
+  avgReturn: number;
+  totalProfit: number;
+  followers: number;
+  currentStreak: number;
+  reputationScore: number;
+}
+
+export interface SentimentEntry {
+  label: string;
+  value: number;
+}
+
+export interface TraderPerformancePoint {
+  traderName: string;
+  wins: number;
+  losses: number;
+  pending: number;
+}
+
+export interface MarketConsensusItem {
+  cardName: string;
+  consensus: 'bullish' | 'bearish' | 'neutral';
+  currentPrice: number;
+  targetPrice: number;
+  confidence: number;
+  contributors: number;
+  bullishPercent: number;
+}
+
+export interface SocialTradingSummary {
+  activeTraders: number;
+  totalPicks: number;
+  avgWinRate: number;
+  totalCommunityProfit: number;
+  activePolls: number;
+  activeChallenges: number;
+}
+
+export function getSentimentDistribution(): SentimentEntry[] {
+  return [
+    { label: 'Very Bullish', value: 32 },
+    { label: 'Bullish', value: 28 },
+    { label: 'Neutral', value: 18 },
+    { label: 'Bearish', value: 14 },
+    { label: 'Very Bearish', value: 8 },
+  ];
+}
+
+export function getTraderPerformance(): TraderPerformancePoint[] {
+  const traders = getTraderProfiles();
+  return traders.slice(0, 8).map(t => ({
+    traderName: t.displayName,
+    wins: Math.round(t.totalPicks * t.winRate / 100),
+    losses: Math.round(t.totalPicks * (100 - t.winRate) / 100),
+    pending: Math.round(t.totalPicks * 0.1),
+  }));
+}
+
+export function getSocialTradingSummary(): SocialTradingSummary {
+  const traders = getTraderProfiles();
+  const picks = getTradePicks();
+  const polls = getCommunityPolls();
+  const challenges = getTradingChallenges();
+  return {
+    activeTraders: traders.length,
+    totalPicks: picks.length,
+    avgWinRate: Math.round(traders.reduce((s, t) => s + t.winRate, 0) / (traders.length || 1)),
+    totalCommunityProfit: traders.reduce((s, t) => s + t.avgReturn * 1000, 0),
+    activePolls: polls.filter(p => p.status === 'active').length,
+    activeChallenges: challenges.filter(c => c.status === 'active').length,
+  };
+}
+
+export function formatTimeAgo(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffHrs = Math.floor(diffMins / 60);
+  if (diffHrs < 24) return `${diffHrs}h ago`;
+  const diffDays = Math.floor(diffHrs / 24);
+  return `${diffDays}d ago`;
+}
+
+// ---- Widget-compatible helpers ----
+
+export function getActiveTraders(): TraderProfile[] {
+  return getTraderProfiles().filter(t => t.totalPicks > 0);
+}
+
+export function getDailyPicks(): { id: string; cardName: string; outcome: 'win' | 'loss' | 'pending' }[] {
+  const picks = getTradePicks();
+  return picks.map(p => ({
+    id: p.id,
+    cardName: p.cardName,
+    outcome: p.status === 'hit' ? 'win' as const : p.status === 'missed' ? 'loss' as const : 'pending' as const,
+  }));
+}
+
+export function getTradingStats(): { communityProfit: number; accuracy: number } {
+  const summary = getSocialTradingSummary();
+  return {
+    communityProfit: summary.totalCommunityProfit,
+    accuracy: summary.avgWinRate,
+  };
 }

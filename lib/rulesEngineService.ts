@@ -315,7 +315,7 @@ export function backtestRule(rule: TradingRule, cards: CardInventory[]): Backtes
   let totalTriggers = 0;
   let totalPL = 0;
   let hits = 0;
-  let totalEvaluations = 0;
+
 
   const activeCards = cards.filter(c => c.status !== 'sold');
   const now = new Date();
@@ -340,8 +340,6 @@ export function backtestRule(rule: TradingRule, cards: CardInventory[]): Backtes
         ...card,
         currentValue: Math.round(historicalValue * 100) / 100,
       };
-
-      totalEvaluations++;
 
       if (evaluateConditions(simCard, rule.conditions)) {
         monthTriggerCount++;

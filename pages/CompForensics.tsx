@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Microscope, AlertTriangle, TrendingUp, TrendingDown, Shield, Search, FileText, Users } from 'lucide-react';
+import {
+  Microscope,
+  AlertTriangle,
+  TrendingUp,
+  TrendingDown,
+  Shield,
+  Search,
+  FileText,
+  Users,
+} from 'lucide-react';
 import {
   getTrackedCards,
   getComps,
@@ -19,7 +28,18 @@ import {
   type ForensicReport,
   type SellerReputation as SellerReputationType,
 } from '../lib/compForensicsService.ts';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ScatterChart, Scatter, Cell, Legend } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  ScatterChart,
+  Scatter,
+  Cell,
+} from 'recharts';
 
 const CompForensics: React.FC = () => {
   const [cards, setCards] = useState<CardEntry[]>([]);
@@ -54,9 +74,9 @@ const CompForensics: React.FC = () => {
   }, [selectedCardId]);
 
   const outliers = useMemo(() => detectOutliers(comps), [comps]);
-  const recentComps = useMemo(() => getRecentComps(10), []);
+  const _recentComps = useMemo(() => getRecentComps(10), []);
   const platformComparison = useMemo(() => selectedCardId ? getPlatformPriceComparison(selectedCardId) : [], [selectedCardId]);
-  const clusters = useMemo(() => getPriceClusters(comps), [comps]);
+  const _clusters = useMemo(() => getPriceClusters(comps), [comps]);
 
   const totalComps = useMemo(() => getRecentComps().length, []);
   const totalOutliers = useMemo(() => getRecentComps().filter(c => c.is_outlier).length, []);

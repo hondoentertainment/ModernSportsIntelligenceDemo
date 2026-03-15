@@ -1,13 +1,27 @@
 // Phase 95: Auction Sniper Pro Modal — 4-tab layout
 import React, { useState, useMemo } from 'react';
 import {
-  X, Gavel, Clock, AlertTriangle, TrendingUp, Shield, Target,
-  Activity, ChevronDown, ChevronUp, Award, DollarSign, Zap, Eye,
+  X,
+  Gavel,
+  Clock,
+  AlertTriangle,
+  Target,
+  Activity,
+  Award,
+  Zap,
   BarChart3,
 } from 'lucide-react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, ReferenceLine,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  ReferenceLine,
 } from 'recharts';
 import {
   getActiveAuctions,
@@ -18,8 +32,6 @@ import {
   AuctionListing,
   BidHistoryAnalysis,
   BidStrategy,
-  SniperStats,
-  AuctionHistoryRecord,
   BidPattern,
   AuctionPlatform,
 } from '../lib/auctionSniperService';
@@ -111,7 +123,7 @@ const ShillBadge: React.FC<{ risk: number }> = ({ risk }) => {
 
 // ── Tab: Live Auctions ──────────────────────────────────────────────────────────
 
-const LiveAuctionsTab: React.FC<{ auctions: AuctionListing[]; onSelect: (a: AuctionListing) => void }> = ({ auctions, onSelect }) => {
+const LiveAuctionsTab: React.FC<{ auctions: AuctionListing[]; onSelect: (_a: AuctionListing) => void }> = ({ auctions, onSelect }) => {
   const sorted = useMemo(() => [...auctions].sort((a, b) => a.timeRemaining - b.timeRemaining), [auctions]);
 
   return (

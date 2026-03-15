@@ -1,4 +1,4 @@
-import { NegotiationSession, NegotiationMessage, NegotiableItem } from '../types';
+import { NegotiationSession, NegotiableItem } from '../types';
 import { getNegotiationResponse, getAgenticOffer } from './gemini';
 
 // Mock responses for the simulated seller (fallback when Gemini unavailable)
@@ -68,12 +68,10 @@ export class NegotiationService {
         const spread = newSession.sellerAsk - offerAttributes.amount;
         const percentGap = spread / newSession.sellerAsk;
 
-        let sellerAction: 'accept' | 'counter' | 'reject' = 'counter';
         let nextAsk = newSession.sellerAsk;
 
         if (percentGap <= 0.05) {
             // Within 5%, accept
-            sellerAction = 'accept';
             newSession.status = 'accepted';
             newSession.messages.push({
                 id: crypto.randomUUID(),
@@ -84,7 +82,6 @@ export class NegotiationService {
             });
         } else if (percentGap > 0.4) {
             // User lowballed > 40%, reject or stiff counter
-            sellerAction = 'reject'; // Or strict counter
             // For simulation, let's just counter strictly
             nextAsk = Math.floor(newSession.sellerAsk * 0.95); // seller barely moves
             newSession.messages.push({

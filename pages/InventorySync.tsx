@@ -21,7 +21,7 @@ import {
   type SyncHistoryEntry,
   type PlatformCostBasis,
 } from '../lib/inventorySyncService.ts';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
 const PLATFORM_COLORS: Record<string, string> = {
   ebay: '#3b82f6',

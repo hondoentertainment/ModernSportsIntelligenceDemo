@@ -1549,6 +1549,173 @@ export function searchAppraisals(query: string): CardAppraisal[] {
   );
 }
 
+// ---- Page-facing adapter types ----
+
+export interface ValueDistribution {
+  category: string;
+  totalValue: number;
+}
+
+export interface DepreciationRate {
+  category: string;
+  rate: number;
+  projectedLoss: number;
+}
+
+export interface AppraiserSummary {
+  totalCards: number;
+  overallRiskScore: number;
+}
+
+// ---- Page-facing adapter functions ----
+
+export function getAppraisalReport(): {
+  reportId: string;
+  totalMarketValue: number;
+  highEstimate: number;
+  lowEstimate: number;
+  recommendedCoverage: number;
+  annualPremium: number;
+  deductible: number;
+  confidenceScore: number;
+  lastUpdated: string;
+} {
+  const data = ensureData();
+  const report = data.reports[0];
+  if (!report) {
+    return {
+      reportId: 'RPT-001',
+      totalMarketValue: 0,
+      highEstimate: 0,
+      lowEstimate: 0,
+      recommendedCoverage: 0,
+      annualPremium: 0,
+      deductible: 500,
+      confidenceScore: 0,
+      lastUpdated: new Date().toISOString(),
+    };
+  }
+  const totalMarket = report.totalFairMarketValue;
+  return {
+    reportId: report.id,
+    totalMarketValue: totalMarket,
+    highEstimate: report.totalInsuranceValue,
+    lowEstimate: report.totalLiquidationValue,
+    recommendedCoverage: report.totalInsuranceValue,
+    annualPremium: Math.round(report.totalInsuranceValue * 0.015),
+    deductible: 500,
+    confidenceScore: Math.max(0, 100 - report.riskScore),
+    lastUpdated: report.appraisalDate,
+  };
+}
+
+export function getValueDistribution(): ValueDistribution[] {
+  const data = ensureData();
+  const categoryMap: Record<string, number> = {};
+  for (const a of data.appraisals) {
+    const cat = a.set || 'Other';
+    categoryMap[cat] = (categoryMap[cat] || 0) + a.fairMarketValue;
+  }
+  return Object.entries(categoryMap).map(([category, totalValue]) => ({ category, totalValue }));
+}
+
+export function getDepreciationRates(): DepreciationRate[] {
+  const data = ensureData();
+  const categoryMap: Record<string, { totalRate: number; totalValue: number; count: number }> = {};
+  for (const a of data.appraisals) {
+    const cat = a.set || 'Other';
+    if (!categoryMap[cat]) categoryMap[cat] = { totalRate: 0, totalValue: 0, count: 0 };
+    categoryMap[cat].totalRate += Math.abs(a.appreciationRate);
+    categoryMap[cat].totalValue += a.fairMarketValue;
+    categoryMap[cat].count += 1;
+  }
+  return Object.entries(categoryMap).map(([category, { totalRate, totalValue, count }]) => ({
+    category,
+    rate: Math.round((totalRate / count) * 10) / 10,
+    projectedLoss: Math.round(totalValue * (totalRate / count) / 100),
+  }));
+}
+
+export function getAppraisalCertificates(): {
+  id: string;
+  certificateNumber: string;
+  cardName: string;
+  description: string;
+  fairMarketValue: number;
+  insuranceValue: number;
+  appraisalDate: string;
+  validUntil: string;
+  appraiser: string;
+}[] {
+  const data = ensureData();
+  return data.appraisals.slice(0, 6).map((a, i) => ({
+    id: `cert_${i + 1}`,
+    certificateNumber: `CERT-${String(i + 1).padStart(4, '0')}`,
+    cardName: a.cardName,
+    description: `Certified appraisal for ${a.cardName} - ${a.grader} ${a.grade}`,
+    fairMarketValue: a.fairMarketValue,
+    insuranceValue: a.insuranceValue,
+    appraisalDate: a.lastSaleDate,
+    validUntil: '2026-12-31',
+    appraiser: 'MSI Certified Appraisals',
+  }));
+}
+
+export function getSummaryStats(): AppraiserSummary {
+  const data = ensureData();
+  const avgRisk = data.risks.length > 0
+    ? Math.round(data.risks.reduce((s, r) => s + r.impactEstimate, 0) / data.risks.length)
+    : 0;
+  return {
+    totalCards: data.appraisals.length,
+    overallRiskScore: avgRisk,
+  };
+}
+
+export function formatDate(dateStr: string): string {
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+}
+
+export function getRiskColor(severity: string): string {
+  switch (severity) {
+    case 'critical': return 'text-red-500';
+    case 'high': return 'text-red-400';
+    case 'medium': return 'text-amber-400';
+    case 'low': return 'text-emerald-400';
+    default: return 'text-slate-400';
+  }
+}
+
+export function getConditionLabel(condition: string): string {
+  const labels: Record<string, string> = {
+    mint: 'Mint',
+    near_mint: 'Near Mint',
+    excellent: 'Excellent',
+    very_good: 'Very Good',
+    good: 'Good',
+    fair: 'Fair',
+    poor: 'Poor',
+  };
+  return labels[condition] || condition;
+}
+
+// ---- Widget-compatible helpers ----
+
+export function getGradingResults(): { id: string; cardName: string; grade: number; grader: string }[] {
+  const appraisals = getCardAppraisals();
+  return appraisals.map(a => ({
+    id: a.id,
+    cardName: a.cardName,
+    grade: parseFloat(a.grade) || 7.0,
+    grader: a.grader,
+  }));
+}
+
 export function getAppraisalSummaryStats(): {
   totalCardsAppraised: number;
   totalCollectionValue: number;
@@ -1575,3 +1742,5 @@ export function getAppraisalSummaryStats(): {
     activeRisks: data.risks.length,
   };
 }
+
+// (Widget adapter merged into getGradingResults above)

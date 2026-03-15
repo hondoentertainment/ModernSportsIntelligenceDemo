@@ -1,12 +1,30 @@
 import React, { useState, useMemo } from 'react';
 import {
-  X, Shield, Umbrella, TrendingDown, TrendingUp, Calculator,
-  BarChart3, Activity, AlertTriangle, DollarSign, Layers, Zap,
-  ChevronDown, Plus, Check
+  X,
+  Shield,
+  Umbrella,
+  TrendingDown,
+  TrendingUp,
+  Calculator,
+  Activity,
+  AlertTriangle,
+  Layers,
+  Zap,
+  Plus,
+  Check,
 } from 'lucide-react';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  ScatterChart, Scatter, Cell, CartesianGrid, Legend
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  ScatterChart,
+  Scatter,
+  Cell,
+  CartesianGrid,
+  Legend,
 } from 'recharts';
 import {
   getAvailableOptions,
@@ -19,12 +37,10 @@ import {
   getPlayerList,
   getPlayerPrice,
   getQuantEnrichedDerivatives,
-  type CardOption,
   type InsurancePolicy,
   type HedgeCalculation,
-  type VolatilitySurface as VolSurfaceType,
+  type VolatilitySurface as _VolSurfaceType,
   type ScenarioResult,
-  type DerivativesQuantContext,
 } from '../lib/derivativesDeskService';
 
 interface Props {

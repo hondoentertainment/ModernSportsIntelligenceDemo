@@ -19,9 +19,9 @@ import {
   type EndingSoonAuction,
   type AuctionByPlatform,
   type PlatformDistribution,
-  type BidStrategy,
+  type BidStrategyGuide,
   type WatchedAuction,
-  type BidPattern,
+  type HistoricalBidPattern,
   type AuctionSummary,
 } from '../lib/auctionSniperService.ts';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
@@ -35,9 +35,9 @@ const AuctionSniper: React.FC = () => {
   const [endingSoon, setEndingSoon] = useState<EndingSoonAuction[]>([]);
   const [byPlatform, setByPlatform] = useState<AuctionByPlatform[]>([]);
   const [platformDist, setPlatformDist] = useState<PlatformDistribution[]>([]);
-  const [strategies, setStrategies] = useState<BidStrategy[]>([]);
+  const [strategies, setStrategies] = useState<BidStrategyGuide[]>([]);
   const [watched, setWatched] = useState<WatchedAuction[]>([]);
-  const [bidPatterns, setBidPatterns] = useState<BidPattern[]>([]);
+  const [bidPatterns, setBidPatterns] = useState<HistoricalBidPattern[]>([]);
   const [summary, setSummary] = useState<AuctionSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Clock, ChevronRight, TrendingUp, Star, DollarSign } from 'lucide-react';
+import { Clock, ChevronRight, TrendingUp, Star } from 'lucide-react';
 import {
   getVintageCards,
   getMarketCapData,

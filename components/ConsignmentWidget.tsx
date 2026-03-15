@@ -1,26 +1,11 @@
 import React, { useMemo } from 'react';
-import {
-  Package,
-  Clock,
-  DollarSign,
-  TrendingUp,
-  BarChart3,
-  ArrowRight,
-  Truck,
-  ShoppingCart,
-  CheckCircle2,
-} from 'lucide-react';
+import { Package, Clock, BarChart3 } from 'lucide-react';
 import { CardInventory } from '../types';
-import {
-  ConsignmentService,
-  ConsignmentEntry,
-  ConsignmentStatus,
-  ConsignmentSummary,
-} from '../lib/consignmentService';
+import { ConsignmentService, ConsignmentStatus, ConsignmentSummary } from '../lib/consignmentService';
 
 interface ConsignmentWidgetProps {
   inventory: CardInventory[];
-  onCardClick?: (cardId: string) => void;
+  onCardClick?: (_cardId: string) => void;
 }
 
 const STATUS_DOT: Record<ConsignmentStatus, string> = {
@@ -41,13 +26,13 @@ const STATUS_LABEL: Record<ConsignmentStatus, string> = {
   disputed: 'Disputed',
 };
 
-const ConsignmentWidget: React.FC<ConsignmentWidgetProps> = ({ inventory, onCardClick }) => {
+const ConsignmentWidget: React.FC<ConsignmentWidgetProps> = ({ _inventory, onCardClick }) => {
   const summary = useMemo<ConsignmentSummary>(
     () => ConsignmentService.generateConsignmentSummary(),
-    [inventory],
+    [],
   );
 
-  const allConsignments = useMemo(() => ConsignmentService.getConsignments(), [inventory]);
+  const allConsignments = useMemo(() => ConsignmentService.getConsignments(), []);
 
   const activeConsignments = useMemo(() => {
     return allConsignments
@@ -239,7 +224,6 @@ const ConsignmentWidget: React.FC<ConsignmentWidgetProps> = ({ inventory, onCard
     </div>
   );
 };
-
 
 const MemoizedConsignmentWidget = React.memo(ConsignmentWidget);
 export { MemoizedConsignmentWidget as ConsignmentWidget };

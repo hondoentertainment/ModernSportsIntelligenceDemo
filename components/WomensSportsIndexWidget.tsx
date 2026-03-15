@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
-import { Trophy, ChevronRight, TrendingUp, Users } from 'lucide-react';
 import {
-  getMarketIndices,
-  getAthleteCards,
-  getInvestmentSignals,
-  formatCurrency,
-} from '../lib/womensSportsIndexService';
+  Trophy,
+  ChevronRight,
+  TrendingUp,
+  Users,
+} from 'lucide-react';
+import { getMarketIndices, getAthleteCards, getInvestmentSignals } from '../lib/womensSportsIndexService';
 
 interface WomensSportsIndexWidgetProps {
   onOpenModal?: () => void;

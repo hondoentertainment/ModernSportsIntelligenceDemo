@@ -295,7 +295,7 @@ export function getGameDaySnapshot(portfolioPlayers: string[]): GameDayPortfolio
 }
 
 export function getLiveImpactAlerts(): ImpactAlert[] {
-  const snapshot = getGameDaySnapshot([]);
+  const _snapshot = getGameDaySnapshot([]);
   const games = getLiveGames();
   const allAlerts: ImpactAlert[] = [];
 

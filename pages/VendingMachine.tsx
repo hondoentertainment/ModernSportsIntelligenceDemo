@@ -1,10 +1,22 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Gift, AlertTriangle, Zap, Trophy, DollarSign, Star, Clock, ShieldCheck, TrendingUp, Package, Users, Award } from 'lucide-react';
+import {
+  Gift,
+  AlertTriangle,
+  Zap,
+  Trophy,
+  DollarSign,
+  Star,
+  Clock,
+  ShieldCheck,
+  TrendingUp,
+  Package,
+  Users,
+  Award,
+} from 'lucide-react';
 import {
   getAvailablePacks,
   getPackHistory,
   getDailyDeals,
-  getPackOdds,
   getJackpotInfo,
   getLeaderboard,
   getSeasonPass,
@@ -23,8 +35,19 @@ import {
   type CollectorProfile,
 } from '../lib/vendingMachineService';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  PieChart, Pie, Cell, AreaChart, Area, Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  PieChart,
+  Pie,
+  Cell,
+  AreaChart,
+  Area,
+  Legend,
 } from 'recharts';
 
 const RARITY_COLORS: Record<string, string> = {
@@ -56,7 +79,7 @@ const VendingMachine: React.FC = () => {
       setSeasonPass(getSeasonPass());
       setProfile(getCollectorProfile());
       setLoading(false);
-    } catch (err) {
+    } catch  {
       setError('Failed to load Vending Machine data');
       setLoading(false);
     }

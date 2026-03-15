@@ -1,5 +1,11 @@
 import React, { useMemo } from 'react';
-import { Target, ChevronRight, TrendingUp, TrendingDown, Clock, Flag } from 'lucide-react';
+import {
+  Target,
+  ChevronRight,
+  TrendingUp,
+  Clock,
+  Flag,
+} from 'lucide-react';
 import { CardInventory } from '../types';
 import {
   getGoalSummary,
@@ -7,7 +13,6 @@ import {
   getTrackingColor,
   getTrackingLabel,
   GoalSummary,
-  GOAL_TYPE_LABELS,
 } from '../lib/goalPlannerService';
 
 interface GoalWidgetProps {

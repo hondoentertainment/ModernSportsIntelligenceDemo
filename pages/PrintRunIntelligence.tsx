@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Factory, AlertTriangle, TrendingUp, TrendingDown, Layers, BarChart3, Target, Package } from 'lucide-react';
+import {
+  Factory,
+  AlertTriangle,
+  TrendingUp,
+  TrendingDown,
+  Layers,
+  BarChart3,
+  Target,
+  Package,
+} from 'lucide-react';
 import {
   getProductSets,
-  getPrintRunData,
   getScarcityIndices,
   getSaturationAlerts,
   getParallelBreakdown,
@@ -11,7 +19,6 @@ import {
   getMarketAbsorption,
   getSupplyDemandMetrics,
   getInsertOdds,
-  calculateOverproductionScore,
   getManufacturerProfile,
   getManufacturerConfig,
   getSeverityConfig,
@@ -28,8 +35,21 @@ import {
   type Manufacturer,
 } from '../lib/printRunIntelligenceService.ts';
 import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, ScatterChart, Scatter,
-  XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell, Legend,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
+  Legend,
 } from 'recharts';
 
 const CHART_TOOLTIP_STYLE = { backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '8px', fontSize: '12px' };

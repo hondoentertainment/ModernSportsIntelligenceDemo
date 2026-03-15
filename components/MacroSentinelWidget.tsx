@@ -1,5 +1,14 @@
 import React, { useMemo } from 'react';
-import { Shield, TrendingUp, TrendingDown, Minus, AlertTriangle, AlertCircle, Info, ArrowRight } from 'lucide-react';
+import {
+  Shield,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  AlertTriangle,
+  AlertCircle,
+  Info,
+  ArrowRight,
+} from 'lucide-react';
 import { CardInventory } from '../types';
 import {
   generateMacroSummary,
@@ -11,7 +20,7 @@ import {
 
 interface MacroSentinelWidgetProps {
   inventory: CardInventory[];
-  onAlertClick: (alert: MacroAlert) => void;
+  onAlertClick: (_alert: MacroAlert) => void;
 }
 
 const regimeStyles: Record<MarketRegime, { color: string; bg: string; border: string }> = {

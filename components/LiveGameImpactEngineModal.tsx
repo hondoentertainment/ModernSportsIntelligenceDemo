@@ -1,8 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  X, Radio, TrendingUp, TrendingDown, Zap, Activity, Clock, Users,
-  AlertTriangle, Target, Trophy, BarChart3, History, Bell, Settings,
-  ChevronDown, ChevronUp, Eye, Percent, Volume2
+  X,
+  Radio,
+  TrendingUp,
+  TrendingDown,
+  Zap,
+  Activity,
+  AlertTriangle,
+  Target,
+  Trophy,
+  BarChart3,
+  History,
+  Bell,
+  Settings,
 } from 'lucide-react';
 import {
   getActiveGames,
@@ -13,11 +23,8 @@ import {
   getMilestoneAlerts,
   getAlertPreferences,
   updateAlertPreference,
-  getAllLiveEvents,
   getPlayerPerformances,
-  calculateRealTimeImpact,
   type LiveGame,
-  type GameEvent,
   type PortfolioImpactCard,
   type PriceProjection,
   type HistoricalCorrelation,
@@ -26,7 +33,15 @@ import {
   type PlayerPerformance,
 } from '../lib/liveGameImpactEngineService.ts';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 interface Props {
   isOpen: boolean;
@@ -69,7 +84,7 @@ const LiveGameImpactEngineModal: React.FC<Props> = ({ isOpen, onClose }) => {
       setAlertPrefs(getAlertPreferences());
       setPerformances(getPlayerPerformances());
       setLoading(false);
-    } catch (err) {
+    } catch  {
       setError('Failed to load live game data');
       setLoading(false);
     }

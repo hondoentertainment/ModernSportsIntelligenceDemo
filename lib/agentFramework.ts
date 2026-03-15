@@ -2,7 +2,6 @@ import { CardInventory } from '../types';
 import { LiquidityService } from './liquidityService';
 import { forecastPriceTrajectory, analyzeBreakoutPotential } from './predictiveAlpha';
 import { generatePopData } from './scarcityService';
-import { getCardHistory } from './priceHistory';
 
 // ── Agent Types ───────────────────────────────────────────────────────────
 

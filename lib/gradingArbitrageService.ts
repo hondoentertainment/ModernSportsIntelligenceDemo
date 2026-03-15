@@ -317,7 +317,7 @@ export function getGradeTranslationTable(): GradeTranslation[] {
   return items;
 }
 
-export function getGradePremiums(player: string, cardDesc: string): GradePremiumTable[] {
+export function getGradePremiums(player: string, _cardDesc: string): GradePremiumTable[] {
   // Simulated premium data — multipliers relative to raw card value
   const premiumSets: Record<string, GradePremiumTable[]> = {
     default: [
@@ -405,7 +405,7 @@ export function getAIEnrichedOpportunities(): ArbitrageWithPrediction[] {
   const opportunities = getCrossGradeOpportunities();
 
   // Dynamically import to avoid circular dependency issues
-  let getPredictedGrade: ((card: CardInventory) => { grade: string; confidence: number }) | null = null;
+  let getPredictedGrade: ((_card: CardInventory) => { grade: string; confidence: number }) | null = null;
   try {
     const gradePredictService = require('./gradePredictService');
     getPredictedGrade = gradePredictService.getPredictedGrade;

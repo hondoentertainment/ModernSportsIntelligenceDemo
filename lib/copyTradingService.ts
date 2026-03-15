@@ -153,7 +153,7 @@ const AVATARS = [
   '🌊', '🏔️', '🎸', '🚀', '⭐', '🔮', '🧊', '🎭', '🦊', '🐺',
 ];
 
-const STRATEGIES = [
+const _STRATEGIES = [
   'Momentum-based modern card flipping',
   'Long-term vintage hold strategy',
   'Rookie card specialist',

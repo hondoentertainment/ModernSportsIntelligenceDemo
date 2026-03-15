@@ -4,7 +4,6 @@ import {
   getVolumeMetrics,
   generatePortfolioLiquidityReport,
 } from '../../lib/marketDepthService';
-import type { MarketDepth, VolumeMetrics } from '../../lib/marketDepthService';
 import { makeCard } from '../helpers';
 
 describe('marketDepthService', () => {

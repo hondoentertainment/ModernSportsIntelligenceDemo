@@ -2,19 +2,30 @@
 // Route: /consignment-router | Icon: Route
 import React, { useState, useMemo } from 'react';
 import {
-  Route, DollarSign, Clock, Users, TrendingUp, Award, Percent,
-  ArrowRight, BarChart3, Shield, Zap, ChevronDown, ChevronUp,
+  Route,
+  DollarSign,
+  Clock,
+  Users,
+  TrendingUp,
+  Award,
+  Percent,
+  BarChart3,
+  Shield,
+  Zap,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
 } from 'recharts';
-import {
-  getConsignmentOptions,
-  getAllPlatforms,
-  ConsignmentOption,
-  PlatformProfile,
-} from '../lib/consignmentRouterService';
+import { getConsignmentOptions, ConsignmentOption } from '../lib/consignmentRouterService';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
 

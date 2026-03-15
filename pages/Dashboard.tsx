@@ -1,5 +1,12 @@
 
-import React, { Suspense, useMemo, useState, useCallback, useEffect, lazy } from 'react';
+import React, {
+  Suspense,
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  lazy,
+} from 'react';
 import {
   TrendingUp,
   ArrowUpRight,
@@ -8,7 +15,7 @@ import {
   Sparkles,
   BarChart3,
   RefreshCw,
-  Terminal
+  Terminal,
 } from 'lucide-react';
 
 import { Link } from 'react-router-dom';
@@ -16,8 +23,6 @@ import {
   AreaChart,
   Area,
   ResponsiveContainer,
-  XAxis,
-  YAxis,
   Tooltip,
   PieChart,
   Pie,
@@ -28,18 +33,15 @@ import {
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
-  PolarRadiusAxis
 } from 'recharts';
 import { calculateAlphaScore, getCollectorTier, getPortfolioDNA } from '../lib/analytics.ts';
 import { generatePortfolioSentiment } from '../lib/gemini.ts';
 import { detectSignals } from '../lib/signals.ts';
-import { MOCK_CARDS, MOCK_INVENTORY_SUMMARY } from '../constants.tsx';
 import { syncPortfolio, SyncProgress } from '../lib/marketSync.ts';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
 import { useAlerts } from '../lib/useAlerts.ts';
 import { getHistoricalDelta } from '../lib/marketHistory.ts';
 import { StatsService } from '../lib/statsService.ts';
-import { generatePortfolioReport } from '../lib/pdfExport.ts';
 import { AggregationService } from '../lib/aggregationService.ts';
 import { Cloud, CloudOff, Gavel } from 'lucide-react';
 
@@ -183,7 +185,7 @@ const Dashboard: React.FC = () => {
 
   // Personalization State
   interface UserSettings { favoriteTeam?: string; primarySport?: string }
-  const [userSettings, setUserSettings] = useState<UserSettings | null>(() => {
+  const [userSettings, _setUserSettings] = useState<UserSettings | null>(() => {
     try {
       const saved = localStorage.getItem('msi_user_settings');
       return saved ? JSON.parse(saved) : null;
@@ -245,10 +247,11 @@ const Dashboard: React.FC = () => {
 
     // Reset progress after a delay
     setTimeout(() => setSyncProgress(null), 3000);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventory, setInventory, setSyncMeta, persistSyncToCloud, createSyncAlert]);
 
   const isSyncing = syncProgress?.status === 'syncing';
-  const syncComplete = syncProgress?.status === 'complete';
+  const _syncComplete = syncProgress?.status === 'complete';
 
   // Portfolio metrics from aggregation service
   const portfolioMetrics = useMemo(() => AggregationService.calculatePortfolioMetrics(inventory), [inventory]);
@@ -257,10 +260,9 @@ const Dashboard: React.FC = () => {
   // Use real aggregated trend data for the chart
   const chartData = useMemo(() => {
     return AggregationService.getAggregatedTrendData(inventory, 14); // 14 day view for dash
-  }, [inventory, syncMeta.lastSyncTime]);
+  }, [inventory]);
 
-
-  const sportData = useMemo(() => {
+  const _sportData = useMemo(() => {
     const counts: Record<string, number> = {};
     inventory.forEach(card => {
       counts[card.sport] = (counts[card.sport] || 0) + 1;
@@ -307,7 +309,7 @@ const Dashboard: React.FC = () => {
     };
   }, [activeLeague, inventory]);
 
-  const leagueInsights = {
+  const _leagueInsights = {
     MLB: "Market is stabilizing after off-season volatility. High demand for pristine vintage assets.",
     MiLB: "Scouting velocity is up 14%. Focus on AAA breakouts before summer call-ups.",
     NBA: "Liquidity peaking as playoffs approach. Star potential drives extreme parity in mid-tier assets.",
@@ -816,7 +818,6 @@ const Dashboard: React.FC = () => {
               </div>
             )}
           </section>
-
 
           {/* ─── Below-the-fold widget sections (lazy loaded) ─── */}
           <LazyErrorBoundary compact>

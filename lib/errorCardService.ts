@@ -2,7 +2,7 @@
 
 // ---- Types ----
 
-export type ErrorType = 'misprint' | 'miscut' | 'wrong_back' | 'double_print' | 'no_name' | 'inverted' | 'color_variation' | 'blank_back' | 'test_print';
+export type ErrorType = 'misprint' | 'miscut' | 'wrong_back' | 'double_print' | 'no_name' | 'inverted' | 'color_variation' | 'blank_back' | 'test_print' | 'reversed_negative' | 'wrong_photo' | 'missing_foil' | 'sp' | 'ssp' | 'photo_variation';
 
 export interface ErrorCard {
   id: string;
@@ -15,10 +15,20 @@ export interface ErrorCard {
   baseValue: number;
   errorPremium: number;
   multiplier: number;
-  rarity: 'common' | 'uncommon' | 'rare' | 'very_rare' | 'legendary';
+  rarity: 'common' | 'uncommon' | 'rare' | 'very_rare' | 'legendary' | 'unique' | 'extremely_rare' | 'scarce' | 'common_error';
   verified: boolean;
   imageNotes: string;
   discoveryDate: string;
+  // Extended fields used by page components
+  player: string;
+  set: string;
+  manufacturer: string;
+  normalValue: number;
+  errorValue: number;
+  premiumMultiplier: number;
+  knownPopulation: number;
+  verificationDifficulty: 'easy' | 'moderate' | 'hard' | 'expert';
+  identificationTips: string[];
 }
 
 export interface ErrorCategory {
@@ -138,7 +148,76 @@ function saveData<T>(key: string, data: T): void {
 
 // ---- Mock Data ----
 
-const ERROR_CARDS: ErrorCard[] = [
+const DIFFICULTY_BY_ERROR: Record<ErrorType, 'easy' | 'moderate' | 'hard' | 'expert'> = {
+  misprint: 'easy', miscut: 'easy', wrong_back: 'moderate', double_print: 'moderate',
+  no_name: 'easy', inverted: 'easy', color_variation: 'hard', blank_back: 'easy', test_print: 'expert',
+  reversed_negative: 'easy', wrong_photo: 'moderate', missing_foil: 'easy', sp: 'hard', ssp: 'expert', photo_variation: 'hard',
+};
+
+const TIPS_BY_ERROR: Record<ErrorType, string[]> = {
+  misprint: ['Compare to standard version side by side', 'Check all text elements carefully', 'Look for missing foil stamps or logos'],
+  miscut: ['Measure borders with a ruler', 'Look for portions of adjacent cards', 'Check centering against standard tolerances'],
+  wrong_back: ['Always flip the card and verify player name and stats', 'Cross-reference card number with checklist', 'Compare bio info to front player'],
+  double_print: ['Use magnification to check for ghost/shadow images', 'Look for offset text doubling', 'Compare image sharpness to standard version'],
+  no_name: ['Check front for missing player name text', 'Look for blank areas where text should be', 'Compare to a corrected version'],
+  inverted: ['Check for reversed or upside-down images/text', 'Look at jersey numbers for mirror imaging', 'Verify logo orientations'],
+  color_variation: ['Use natural lighting for comparison', 'Place next to a standard version', 'Look for tint differences especially in borders and backgrounds'],
+  blank_back: ['Simply flip the card over to check', 'Verify the back is completely blank, not just faded', 'Hold up to light to confirm no printing at all'],
+  test_print: ['Look for registration/alignment marks', 'Check for missing serial numbers', 'Examine color scheme vs production version', 'Use UV light for hidden markings'],
+  reversed_negative: ['Check if image is horizontally flipped', 'Look for mirrored jersey numbers or logos', 'Compare text orientation to standard version'],
+  wrong_photo: ['Compare player face to known photos', 'Cross-reference jersey number with player', 'Check build and features against verified images'],
+  missing_foil: ['Compare surface reflectivity to standard version', 'Card should be matte where foil is expected', 'Tilt under light to confirm absence of foil layer'],
+  sp: ['Check back code suffix against SP code list', 'Compare photo to base version', 'Verify with checklist for known SP variations'],
+  ssp: ['Check back code suffix against SSP code list', 'Photo is typically very different from base', 'Cross-reference with confirmed SSP databases'],
+  photo_variation: ['Compare image crop and pose to base card', 'Look for different background or uniform', 'Check code on card back for variation identifier'],
+};
+
+function extractPlayerName(cardName: string): string {
+  const cleaned = cardName.replace(/\s*#\d+\s*$/, '').replace(/\s*\/\d+\s*$/, '');
+  const parts = cleaned.split(' ');
+  // Remove year at start
+  const withoutYear = parts[0] && /^\d{4}$/.test(parts[0]) ? parts.slice(1) : parts;
+  // Remove brand (1-3 words typically before player name)
+  // Heuristic: find known brand-end words and take remainder
+  const brandEnders = ['Fleer', 'Donruss', 'Topps', 'Chrome', 'Prizm', 'Heritage', 'Select', 'Deck', 'Score', 'Set', 'Optic', 'Flair', 'Treasures', 'Flawless', 'Bowman'];
+  let playerStart = 0;
+  for (let i = 0; i < withoutYear.length; i++) {
+    if (brandEnders.some(b => withoutYear[i].includes(b))) {
+      playerStart = i + 1;
+    }
+  }
+  const playerParts = withoutYear.slice(playerStart);
+  // Remove trailing suffixes like "FF", "RC", "Wrong Back", etc.
+  const suffixes = ['FF', 'RC', 'Wrong', 'Reverse', 'Negative', 'No', 'Name', 'Missing', 'Foil', 'Stamping', 'Double', 'Print', 'Blank', 'Back', 'Test', 'Color', 'Shift', 'Miscut', 'Inverted', 'Image', 'Printing', 'Error', 'Both', 'Sports', 'Position', 'Prizm', 'Pattern', 'Double-Sided', 'Front', 'Severe', 'Anomaly', 'Die-Cut', 'Bleed', 'Refractor', 'Swap', 'Auto', 'Batch', 'Parallel', 'Sheet', 'SP', 'Leak', 'Strike', 'Silver', 'Misaligned', 'Coating', 'Various', 'Switcheroo', 'Logo', 'Marks', 'Visible', 'Alignment', 'UV', 'Young', 'Guns', 'Patch', 'Card', 'Tie-Dye'];
+  const name: string[] = [];
+  for (const p of playerParts) {
+    if (suffixes.includes(p) || /^\(/.test(p)) break;
+    name.push(p);
+  }
+  return name.join(' ') || playerParts.slice(0, 2).join(' ') || 'Unknown';
+}
+
+function enrichErrorCard(raw: Omit<ErrorCard, 'player' | 'set' | 'manufacturer' | 'normalValue' | 'errorValue' | 'premiumMultiplier' | 'knownPopulation' | 'verificationDifficulty' | 'identificationTips'>): ErrorCard {
+  const player = extractPlayerName(raw.cardName);
+  const setName = `${raw.year} ${raw.brand}`;
+  return {
+    ...raw,
+    player,
+    set: setName,
+    manufacturer: raw.brand.split(' ')[0],
+    normalValue: raw.baseValue,
+    errorValue: raw.errorPremium,
+    premiumMultiplier: raw.multiplier,
+    knownPopulation: Math.max(1, Math.floor(Math.random() * 500) + 1),
+    verificationDifficulty: DIFFICULTY_BY_ERROR[raw.errorType],
+    identificationTips: TIPS_BY_ERROR[raw.errorType],
+  } as ErrorCard;
+}
+
+// Seed the random for deterministic population counts
+const _seedPops = [47, 120, 15, 340, 85, 200, 8, 95, 3, 12, 450, 28, 160, 300, 5, 220, 35, 2, 180, 75, 6, 110, 250, 400, 20, 310, 55, 1, 130, 10, 280, 42, 190, 65, 22, 150, 380, 18, 4, 90, 500, 33, 100, 260, 14, 70, 30, 7, 210, 50];
+
+const RAW_ERROR_CARDS: Array<Omit<ErrorCard, 'player' | 'set' | 'manufacturer' | 'normalValue' | 'errorValue' | 'premiumMultiplier' | 'knownPopulation' | 'verificationDifficulty' | 'identificationTips'>> = [
   { id: 'ec_001', cardName: '1989 Fleer Billy Ripken FF', year: 1989, brand: 'Fleer', sport: 'Baseball', errorType: 'misprint', description: 'Obscenity written on bat knob clearly visible on card. Multiple corrected versions exist.', baseValue: 2, errorPremium: 3000, multiplier: 1500, rarity: 'legendary', verified: true, imageNotes: 'Look at bat knob for obscene text', discoveryDate: '1989-02-01' },
   { id: 'ec_002', cardName: '1990 Donruss Reverse Negative Nolan Ryan', year: 1990, brand: 'Donruss', sport: 'Baseball', errorType: 'inverted', description: 'Card printed with reverse negative image, creating mirror-image photo.', baseValue: 1, errorPremium: 250, multiplier: 250, rarity: 'rare', verified: true, imageNotes: 'Image appears as photographic negative', discoveryDate: '1990-03-15' },
   { id: 'ec_003', cardName: '2024 Topps Chrome Missing Foil Stamping', year: 2024, brand: 'Topps Chrome', sport: 'Baseball', errorType: 'misprint', description: 'Missing foil Topps Chrome logo on front. Several confirmed from Series 1 print run.', baseValue: 3, errorPremium: 150, multiplier: 50, rarity: 'rare', verified: true, imageNotes: 'No foil stamp where Topps Chrome logo should be', discoveryDate: '2024-08-10' },
@@ -190,6 +269,12 @@ const ERROR_CARDS: ErrorCard[] = [
   { id: 'ec_049', cardName: '2022 Topps Chrome Wander Franco Printing Error', year: 2022, brand: 'Topps Chrome', sport: 'Baseball', errorType: 'misprint', description: 'Missing chrome coating on front, card appears as standard Topps base.', baseValue: 8, errorPremium: 120, multiplier: 15, rarity: 'rare', verified: true, imageNotes: 'No chrome/refractor finish', discoveryDate: '2022-07-15' },
   { id: 'ec_050', cardName: '2025 Panini Prizm Victor Wembanyama Double Strike Silver', year: 2025, brand: 'Panini Prizm', sport: 'Basketball', errorType: 'double_print', description: 'Silver Prizm with double-struck image, ghost image offset ~2mm.', baseValue: 30, errorPremium: 600, multiplier: 20, rarity: 'very_rare', verified: true, imageNotes: 'Ghost image offset from primary image', discoveryDate: '2025-11-20' },
 ];
+
+const ERROR_CARDS: ErrorCard[] = RAW_ERROR_CARDS.map((raw, i) => {
+  const card = enrichErrorCard(raw);
+  card.knownPopulation = _seedPops[i] ?? Math.floor(50 + i * 7);
+  return card;
+});
 
 const IDENTIFICATION_GUIDES: IdentificationGuide[] = [
   { errorType: 'misprint', whatToLookFor: ['Missing text elements', 'Wrong text', 'Incorrect stats', 'Missing logos', 'Wrong player photo'], commonExamples: ['Missing name', 'Wrong team', 'Incorrect card number', 'Missing foil stamp'], toolsNeeded: ['Magnifying glass', 'Comparison card for reference'], difficulty: 'easy' },
@@ -316,6 +401,12 @@ const ERROR_TYPE_CONFIG: Record<ErrorType, { label: string; text: string; bg: st
   color_variation: { label: 'Color Variation', text: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30' },
   blank_back: { label: 'Blank Back', text: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/30' },
   test_print: { label: 'Test Print', text: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
+  reversed_negative: { label: 'Reversed Negative', text: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30' },
+  wrong_photo: { label: 'Wrong Photo', text: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+  missing_foil: { label: 'Missing Foil', text: 'text-teal-400', bg: 'bg-teal-500/10', border: 'border-teal-500/30' },
+  sp: { label: 'SP', text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
+  ssp: { label: 'SSP', text: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'border-indigo-500/30' },
+  photo_variation: { label: 'Photo Variation', text: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30' },
 };
 
 const RARITY_CONFIG: Record<string, { label: string; text: string; bg: string; border: string }> = {
@@ -508,4 +599,302 @@ export function getErrorStats(): { totalErrors: number; totalNotable: number; to
 
   saveData('stats', stats);
   return stats;
+}
+
+// ---- Phase 157 Page Exports ----
+// Types, constants, and functions required by pages/ErrorCard.tsx and pages/ErrorCardIntel.tsx
+
+export type ErrorCardType = ErrorCard;
+
+export interface VariationGuide {
+  setId: string;
+  setName: string;
+  year: number;
+  variations: {
+    type: ErrorType;
+    cardNumber: string;
+    description: string;
+    howToIdentify: string;
+    valueMultiplier: number;
+    estimatedPop: number;
+  }[];
+}
+
+export interface ErrorAlert {
+  id: string;
+  urgency: 'critical' | 'high' | 'medium' | 'low';
+  type: 'new_discovery' | 'price_spike' | 'verification_needed' | 'market_opportunity';
+  date: string;
+  message: string;
+  card: {
+    player: string;
+    year: number;
+    set: string;
+    errorValue: number;
+    rarity: string;
+  };
+}
+
+export interface ErrorCardStats {
+  totalCataloged: number;
+  totalErrors: number;
+  totalVariations: number;
+  avgPremium: number;
+  highestPremium: number;
+  recentDiscoveries: number;
+}
+
+export const ERROR_TYPE_META: Record<string, { label: string; color: string; bg: string; border: string }> = {
+  misprint: { label: 'Misprint', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' },
+  miscut: { label: 'Miscut', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+  wrong_back: { label: 'Wrong Back', color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
+  double_print: { label: 'Double Print', color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
+  no_name: { label: 'No Name', color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30' },
+  inverted: { label: 'Inverted', color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
+  color_variation: { label: 'Color Variation', color: 'text-lime-400', bg: 'bg-lime-500/10', border: 'border-lime-500/30' },
+  blank_back: { label: 'Blank Back', color: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/30' },
+  test_print: { label: 'Test Print', color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
+  reversed_negative: { label: 'Reversed Negative', color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30' },
+  wrong_photo: { label: 'Wrong Photo', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+  missing_foil: { label: 'Missing Foil', color: 'text-teal-400', bg: 'bg-teal-500/10', border: 'border-teal-500/30' },
+  sp: { label: 'SP', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
+  ssp: { label: 'SSP', color: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'border-indigo-500/30' },
+  photo_variation: { label: 'Photo Variation', color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30' },
+};
+
+export const RARITY_META: Record<string, { label: string; color: string; bg: string; border: string }> = {
+  common: { label: 'Common', color: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/30' },
+  common_error: { label: 'Common Error', color: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/30' },
+  uncommon: { label: 'Uncommon', color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30' },
+  scarce: { label: 'Scarce', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
+  rare: { label: 'Rare', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
+  very_rare: { label: 'Very Rare', color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30' },
+  extremely_rare: { label: 'Extremely Rare', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' },
+  legendary: { label: 'Legendary', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+  unique: { label: 'Unique', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+};
+
+export const DIFFICULTY_META: Record<string, { label: string; color: string }> = {
+  easy: { label: 'Easy', color: 'text-green-400' },
+  moderate: { label: 'Moderate', color: 'text-amber-400' },
+  hard: { label: 'Hard', color: 'text-orange-400' },
+  expert: { label: 'Expert', color: 'text-red-400' },
+};
+
+// ---- Variation Guide Data ----
+
+const VARIATION_GUIDES: VariationGuide[] = [
+  {
+    setId: 'topps-2018-update',
+    setName: 'Topps Update Series',
+    year: 2018,
+    variations: [
+      {
+        type: 'photo_variation',
+        cardNumber: '#US252',
+        description: 'Ronald Acuna Jr. bat down SP variation — distinct from the standard bat-on-shoulder pose.',
+        howToIdentify: 'Compare bat position: standard has bat on shoulder, SP has bat pointing down. Check code on back ending in 778.',
+        valueMultiplier: 15,
+        estimatedPop: 1200,
+      },
+      {
+        type: 'ssp',
+        cardNumber: '#US250',
+        description: 'Juan Soto SSP with image showing him in a different uniform than the base card.',
+        howToIdentify: 'Soto is in a red jersey instead of the standard white. Back code ends in 054.',
+        valueMultiplier: 25,
+        estimatedPop: 350,
+      },
+    ],
+  },
+  {
+    setId: 'topps-2019-chrome',
+    setName: 'Topps Chrome',
+    year: 2019,
+    variations: [
+      {
+        type: 'sp',
+        cardNumber: '#201',
+        description: 'Fernando Tatis Jr. SP image variation — different batting stance from base.',
+        howToIdentify: 'SP shows follow-through swing vs. base card batting stance. Code ends in 663.',
+        valueMultiplier: 12,
+        estimatedPop: 900,
+      },
+      {
+        type: 'reversed_negative',
+        cardNumber: '#150',
+        description: 'Mike Trout reversed negative error — image is horizontally flipped.',
+        howToIdentify: 'Jersey number and text appear mirrored. Angels logo on wrong side of cap.',
+        valueMultiplier: 40,
+        estimatedPop: 50,
+      },
+    ],
+  },
+  {
+    setId: 'panini-2020-select',
+    setName: 'Panini Select',
+    year: 2020,
+    variations: [
+      {
+        type: 'missing_foil',
+        cardNumber: '#TC-1',
+        description: 'LeBron James Concourse missing foil die-cut — foil layer absent from card surface.',
+        howToIdentify: 'Card surface is matte where it should be reflective. Compare light reflection to standard version.',
+        valueMultiplier: 8,
+        estimatedPop: 200,
+      },
+      {
+        type: 'color_variation',
+        cardNumber: '#PM-15',
+        description: 'Luka Doncic Premier Level color shift — blue tint shifted to green across entire card.',
+        howToIdentify: 'Background color is distinctly green instead of the standard blue. Most visible in the border area.',
+        valueMultiplier: 6,
+        estimatedPop: 500,
+      },
+    ],
+  },
+  {
+    setId: 'topps-2021-series1',
+    setName: 'Topps Series 1',
+    year: 2021,
+    variations: [
+      {
+        type: 'wrong_photo',
+        cardNumber: '#27',
+        description: 'Wander Franco wrong photo error — shows a different player in the Rays uniform.',
+        howToIdentify: 'Face and build clearly do not match Franco. Compare to verified images online.',
+        valueMultiplier: 18,
+        estimatedPop: 75,
+      },
+      {
+        type: 'no_name',
+        cardNumber: '#330',
+        description: 'Shohei Ohtani missing nameplate — player name strip is completely blank.',
+        howToIdentify: 'Front nameplate area is blank/empty. All other card elements are correct.',
+        valueMultiplier: 30,
+        estimatedPop: 25,
+      },
+    ],
+  },
+];
+
+// ---- Error Alert Data ----
+
+const ERROR_ALERTS: ErrorAlert[] = [
+  {
+    id: 'alert-001',
+    urgency: 'critical',
+    type: 'new_discovery',
+    date: '2025-12-28T14:30:00Z',
+    message: 'New reversed-negative error discovered in 2024 Topps Series 2. Multiple confirmed sightings of card #450 with fully mirrored image. PSA has begun accepting submissions.',
+    card: { player: 'Elly De La Cruz', year: 2024, set: 'Topps Series 2', errorValue: 4500, rarity: 'extremely_rare' },
+  },
+  {
+    id: 'alert-002',
+    urgency: 'high',
+    type: 'price_spike',
+    date: '2025-12-26T09:15:00Z',
+    message: 'The 2018 Topps Update Acuna SP variation has surged 40% in the last 7 days after a PSA 10 sold for a record $8,200 at auction.',
+    card: { player: 'Ronald Acuna Jr.', year: 2018, set: 'Topps Update', errorValue: 8200, rarity: 'rare' },
+  },
+  {
+    id: 'alert-003',
+    urgency: 'medium',
+    type: 'verification_needed',
+    date: '2025-12-22T16:45:00Z',
+    message: 'Community reports of a possible double-print error on 2024 Bowman Chrome 1st cards. Three independent sources have submitted images. Awaiting expert review.',
+    card: { player: 'Roman Anthony', year: 2024, set: 'Bowman Chrome', errorValue: 1200, rarity: 'scarce' },
+  },
+  {
+    id: 'alert-004',
+    urgency: 'high',
+    type: 'market_opportunity',
+    date: '2025-12-20T11:00:00Z',
+    message: 'Missing foil errors from 2023 Panini Select NBA are currently undervalued relative to historical comparables. Average premium is only 5x vs. typical 8-12x for similar errors.',
+    card: { player: 'Victor Wembanyama', year: 2023, set: 'Panini Select', errorValue: 3500, rarity: 'rare' },
+  },
+  {
+    id: 'alert-005',
+    urgency: 'low',
+    type: 'new_discovery',
+    date: '2025-12-18T08:30:00Z',
+    message: 'Minor color variation identified in 2024 Topps Heritage. Slight ink density difference on card backs — may affect a larger print run.',
+    card: { player: 'Bobby Witt Jr.', year: 2024, set: 'Topps Heritage', errorValue: 150, rarity: 'common_error' },
+  },
+];
+
+// ---- Page API Functions ----
+
+export function getVariationGuide(): VariationGuide[] {
+  return VARIATION_GUIDES;
+}
+
+export function getErrorAlerts(): ErrorAlert[] {
+  return ERROR_ALERTS;
+}
+
+export function getErrorCardStats(): ErrorCardStats {
+  const cards = getErrorCards();
+  const variations = VARIATION_GUIDES.reduce((sum, g) => sum + g.variations.length, 0);
+  const multipliers = cards.map(c => c.premiumMultiplier).filter(m => m > 0);
+  const avgPremium = multipliers.length > 0
+    ? Math.round((multipliers.reduce((s, m) => s + m, 0) / multipliers.length) * 10) / 10
+    : 0;
+  const highestPremium = multipliers.length > 0 ? Math.max(...multipliers) : 0;
+  const recentCutoff = Date.now() - 30 * 24 * 3600 * 1000;
+  const recentCount = cards.filter(c => c.discoveryDate && new Date(c.discoveryDate).getTime() > recentCutoff).length;
+
+  return {
+    totalCataloged: cards.length + variations,
+    totalErrors: cards.length,
+    totalVariations: variations,
+    avgPremium,
+    highestPremium,
+    recentDiscoveries: recentCount || ERROR_ALERTS.filter(a => a.type === 'new_discovery').length,
+  };
+}
+
+export function searchForErrors(player?: string, year?: number, set?: string): ErrorCard[] {
+  let results = getErrorCards();
+  if (player) {
+    const p = player.toLowerCase();
+    results = results.filter(c => c.player.toLowerCase().includes(p));
+  }
+  if (year) {
+    results = results.filter(c => c.year === year);
+  }
+  if (set) {
+    const s = set.toLowerCase();
+    results = results.filter(c =>
+      c.set.toLowerCase().includes(s) || c.manufacturer.toLowerCase().includes(s)
+    );
+  }
+  return results;
+}
+
+// ---- Widget API Functions ----
+
+export function getPremiumMetrics(): { totalMarketValue: number; avgPremium: number; highestPremium: number } {
+  const cards = getErrorCards();
+  const totalMarketValue = cards.reduce((sum, c) => sum + c.errorValue, 0);
+  const avgPremium = cards.length > 0
+    ? Math.round(cards.reduce((sum, c) => sum + c.premiumMultiplier, 0) / cards.length * 100) / 100
+    : 0;
+  const highestPremium = cards.length > 0 ? Math.max(...cards.map(c => c.premiumMultiplier)) : 0;
+  return { totalMarketValue, avgPremium, highestPremium };
+}
+
+export function getRecentFinds(): { id: string; cardName: string; errorType: ErrorType; premiumPercent: number; discoveryDate: string }[] {
+  const cards = getErrorCards();
+  return cards
+    .filter(c => c.discoveryDate)
+    .sort((a, b) => new Date(b.discoveryDate).getTime() - new Date(a.discoveryDate).getTime())
+    .slice(0, 10)
+    .map(c => ({
+      id: c.id,
+      cardName: c.cardName,
+      errorType: c.errorType,
+      premiumPercent: c.normalValue > 0 ? Math.round((c.errorValue - c.normalValue) / c.normalValue * 100) : Math.round(c.premiumMultiplier * 100),
+      discoveryDate: c.discoveryDate,
+    }));
 }

@@ -728,28 +728,28 @@ function loadBookmarks(): Set<string> {
   try {
     const stored = localStorage.getItem(BOOKMARKS_KEY);
     if (stored) return new Set(JSON.parse(stored));
-  } catch {}
+  } catch { /* ignore localStorage errors */ }
   return new Set();
 }
 
 function saveBookmarks(bookmarks: Set<string>): void {
   try {
     localStorage.setItem(BOOKMARKS_KEY, JSON.stringify([...bookmarks]));
-  } catch {}
+  } catch { /* ignore localStorage errors */ }
 }
 
 function loadReadReports(): Set<string> {
   try {
     const stored = localStorage.getItem(STORAGE_KEY + '_read');
     if (stored) return new Set(JSON.parse(stored));
-  } catch {}
+  } catch { /* ignore localStorage errors */ }
   return new Set();
 }
 
 function saveReadReports(read: Set<string>): void {
   try {
     localStorage.setItem(STORAGE_KEY + '_read', JSON.stringify([...read]));
-  } catch {}
+  } catch { /* ignore localStorage errors */ }
 }
 
 // ---- Public API ----

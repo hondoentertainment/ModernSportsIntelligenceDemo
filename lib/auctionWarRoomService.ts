@@ -612,7 +612,7 @@ export function getBidHistory(auctionId: string): AuctionBid[] {
 export function getAuctionAnalytics(): AuctionAnalytics {
   const results = getPostAuctionReport();
   const wins = results.filter(r => r.won);
-  const losses = results.filter(r => !r.won);
+  const _losses = results.filter(r => !r.won);
   const totalSpent = wins.reduce((s, r) => s + r.hammerPrice, 0);
   const winRate = results.length > 0 ? (wins.length / results.length) * 100 : 0;
 

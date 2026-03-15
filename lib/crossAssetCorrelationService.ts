@@ -224,7 +224,7 @@ function calculateBeta(assetReturns: number[], marketReturns: number[]): number 
   return Math.max(-2, Math.min(2, cov / varM));
 }
 
-function stdDev(arr: number[]): number {
+function _stdDev(arr: number[]): number {
   if (arr.length < 2) return 0;
   const mean = arr.reduce((s, v) => s + v, 0) / arr.length;
   const variance = arr.reduce((s, v) => s + (v - mean) ** 2, 0) / (arr.length - 1);
@@ -463,7 +463,7 @@ export function getPortfolioBetas(cards: CardInventory[]): PortfolioBeta[] {
 export function getHedgeAllocations(cards: CardInventory[]): HedgeAllocation[] {
   const activeCards = cards.filter(c => c.status !== 'sold');
   const seed = portfolioSeed(activeCards);
-  const totalValue = activeCards.reduce((s, c) => s + (c.currentValue || c.purchasePrice || 100), 0);
+  const _totalValue = activeCards.reduce((s, c) => s + (c.currentValue || c.purchasePrice || 100), 0);
 
   const currentCardWeight = 1.0;
   const optimalCardWeight = Math.round(seededRange(seed, 501, 0.25, 0.45) * 100) / 100;
@@ -910,7 +910,7 @@ function segmentFromCard(card: CardInventory): CardSegment {
 
 // ---- Phase 105 Public API ----
 
-export function getCorrelationMatrix(window: TimeWindow = 90): CorrelationMatrix {
+export function getCorrelationMatrix(_window: TimeWindow = 90): CorrelationMatrix {
   const seed = dateSeed();
   const cells: CorrelationCell[] = [];
 
@@ -994,7 +994,7 @@ export function getPortfolioCorrelationAnalysis(inventory: CardInventory[]): Por
 
 export function getHedgeSignals(inventory: CardInventory[]): HedgeSignal[] {
   const activeCards = inventory.filter(c => c.status !== 'sold');
-  const seed = portfolioSeed(activeCards);
+  const _seed = portfolioSeed(activeCards);
   const portfolio = getPortfolioCorrelationAnalysis(inventory);
   const signals: HedgeSignal[] = [];
 
@@ -1176,7 +1176,7 @@ export function getDiversificationScoreAnalysis(inventory: CardInventory[]): Div
     };
   }
 
-  const totalValue = activeCards.reduce((s, c) => s + (c.currentValue || c.purchasePrice || 100), 0);
+  const _totalValue = activeCards.reduce((s, c) => s + (c.currentValue || c.purchasePrice || 100), 0);
 
   // Concentration risk: Herfindahl index (sum of squared weights)
   const segmentWeights = portfolio.map(p => p.weight);

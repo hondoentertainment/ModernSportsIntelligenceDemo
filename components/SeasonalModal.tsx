@@ -13,8 +13,6 @@ import {
 import {
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   LineChart,
   Line,
   XAxis,
@@ -23,7 +21,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  Cell,
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
@@ -33,12 +30,6 @@ import {
 import { CardInventory, Sport } from '../types';
 import {
   SeasonPhase,
-  WindowType,
-  SportSeasonalProfile,
-  SeasonalWindow,
-  SeasonalAlert,
-  PortfolioSeasonalExposure,
-  BacktestResult,
   getAllSportProfiles,
   getSeasonalWindows,
   getSeasonalAlerts,

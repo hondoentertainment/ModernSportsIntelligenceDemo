@@ -1,12 +1,17 @@
 
 import React, { useState, useMemo } from 'react';
-import { Target, TrendingUp, BarChart, ShieldAlert, Filter, Search, ChevronDown } from 'lucide-react';
+import {
+  TrendingUp,
+  BarChart,
+  Filter,
+  Search,
+} from 'lucide-react';
 import { MOCK_TEAMS } from '../constants.tsx';
 
 const Teams: React.FC = () => {
   const [leagueFilter, setLeagueFilter] = useState<string>('All');
-  const [confFilter, setConfFilter] = useState<string>('All');
-  const [divFilter, setDivFilter] = useState<string>('All');
+  const [confFilter, _setConfFilter] = useState<string>('All');
+  const [divFilter, _setDivFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const filteredTeams = useMemo(() => {
@@ -20,8 +25,8 @@ const Teams: React.FC = () => {
   }, [leagueFilter, confFilter, divFilter, searchQuery]);
 
   const leagues = useMemo(() => ['All', ...Array.from(new Set(MOCK_TEAMS.map(t => t.league)))], []);
-  const conferences = useMemo(() => ['All', ...Array.from(new Set(MOCK_TEAMS.map(t => t.conference)))], []);
-  const divisions = useMemo(() => ['All', ...Array.from(new Set(MOCK_TEAMS.map(t => t.division)))], []);
+  const _conferences = useMemo(() => ['All', ...Array.from(new Set(MOCK_TEAMS.map(t => t.conference)))], []);
+  const _divisions = useMemo(() => ['All', ...Array.from(new Set(MOCK_TEAMS.map(t => t.division)))], []);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">

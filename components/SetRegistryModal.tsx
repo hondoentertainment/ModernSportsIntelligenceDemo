@@ -11,31 +11,23 @@ import {
   ArrowLeft,
   Plus,
   Trash2,
-  TrendingUp,
   BarChart3,
-  Star,
   Filter,
 } from 'lucide-react';
 import { CardInventory, Sport } from '../types';
 import {
-  CardSet,
   SetEnrollment,
-  SetProgress,
   ParallelType,
-  MissingCard,
-  SetValueAnalysis,
-  MasterSetScore,
   getAvailableSets,
   getSetById,
   getSetCardList,
   enrollInSet,
   getSetProgress,
-  getMissingCards,
+  getMissingCardsForEnrollment,
   getParallelProgress,
   getSetValueAnalysis,
   getMasterSetScore,
   loadEnrollments,
-  saveEnrollments,
   removeEnrollment,
 } from '../lib/setRegistryService';
 
@@ -71,9 +63,9 @@ const PARALLEL_TYPES: ParallelType[] = ['base', 'refractor', 'auto', 'numbered',
 const BrowseTab: React.FC<{
   cards: CardInventory[];
   enrolledSetIds: Set<string>;
-  onEnroll: (setId: string) => void;
-  onViewDetail: (setId: string) => void;
-}> = ({ cards, enrolledSetIds, onEnroll, onViewDetail }) => {
+  onEnroll: (_setId: string) => void;
+  onViewDetail: (_setId: string) => void;
+}> = ({ _cards, enrolledSetIds, onEnroll, onViewDetail }) => {
   const [sportFilter, setSportFilter] = useState<Sport | 'All'>('All');
   const [showSportDropdown, setShowSportDropdown] = useState(false);
 
@@ -198,8 +190,8 @@ const BrowseTab: React.FC<{
 
 const MySetsTab: React.FC<{
   enrollments: SetEnrollment[];
-  onViewDetail: (setId: string) => void;
-  onRemove: (enrollmentId: string) => void;
+  onViewDetail: (_setId: string) => void;
+  onRemove: (_enrollmentId: string) => void;
 }> = ({ enrollments, onViewDetail, onRemove }) => {
   const progressData = useMemo(() => {
     return enrollments.map(e => ({
@@ -322,7 +314,7 @@ const SetDetailTab: React.FC<{
   const set = useMemo(() => getSetById(setId), [setId]);
   const setCards = useMemo(() => getSetCardList(setId), [setId]);
   const progress = useMemo(() => getSetProgress(enrollment), [enrollment]);
-  const missingCards = useMemo(() => getMissingCards(enrollment), [enrollment]);
+  const missingCards = useMemo(() => getMissingCardsForEnrollment(enrollment), [enrollment]);
   const valueAnalysis = useMemo(() => getSetValueAnalysis(enrollment), [enrollment]);
   const masterScore = useMemo(() => getMasterSetScore(enrollment), [enrollment]);
 
@@ -657,7 +649,7 @@ export const SetRegistryModal: React.FC<SetRegistryModalProps> = ({
   }, [enrollments]);
 
   const handleEnroll = useCallback((setId: string) => {
-    const enrollment = enrollInSet(setId, cards);
+    const _enrollment = enrollInSet(setId, cards);
     const updated = loadEnrollments();
     setEnrollments(updated);
     setSelectedSetId(setId);

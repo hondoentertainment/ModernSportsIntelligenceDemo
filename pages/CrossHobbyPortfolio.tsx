@@ -1,13 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Briefcase,
-  TrendingUp,
-  TrendingDown,
-  Shield,
   Grid3X3,
-  Upload,
   Sliders,
-  BarChart3,
   ChevronRight,
 } from 'lucide-react';
 import {
@@ -66,8 +61,8 @@ const CrossHobbyPortfolio: React.FC = () => {
   const diversification = useMemo(() => getDiversificationReport(portfolio), [portfolio]);
   const performance = useMemo(() => getCategoryPerformance(), []);
   const rebalancing = useMemo(() => getRebalancingRecommendations(portfolio), [portfolio]);
-  const categoryLabels = useMemo(() => getAllCategoryLabels(), []);
-  const categoryColors = useMemo(() => getAllCategoryColors(), []);
+  const _categoryLabels = useMemo(() => getAllCategoryLabels(), []);
+  const _categoryColors = useMemo(() => getAllCategoryColors(), []);
 
   const categories: AssetCategory[] = ['cards', 'memorabilia', 'autographs', 'sealed_wax', 'sneakers', 'watches', 'sports_art', 'wine'];
 

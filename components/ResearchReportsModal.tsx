@@ -14,7 +14,6 @@ import {
   Bookmark,
   AlertTriangle,
   Target,
-  BarChart3,
   Zap,
   Filter,
   Users,
@@ -611,7 +610,7 @@ export const ResearchReportsModal: React.FC<ResearchReportsModalProps> = ({ isOp
 
 const LatestResearchTab: React.FC<{
   reports: ResearchReport[];
-  onReportClick: (report: ResearchReport) => void;
+  onReportClick: (_report: ResearchReport) => void;
 }> = ({ reports, onReportClick }) => (
   <div className="space-y-3">
     {reports.map((report) => (
@@ -681,10 +680,10 @@ const ContrarianTab: React.FC<{ picks: ContrarianPick[] }> = ({ picks }) => (
 const ArchiveTab: React.FC<{
   results: ResearchReport[];
   query: string;
-  onQueryChange: (q: string) => void;
+  onQueryChange: (_q: string) => void;
   typeFilter: ReportType | 'all';
-  onTypeFilterChange: (t: ReportType | 'all') => void;
-  onReportClick: (report: ResearchReport) => void;
+  onTypeFilterChange: (_t: ReportType | 'all') => void;
+  onReportClick: (_report: ResearchReport) => void;
 }> = ({ results, query, onQueryChange, typeFilter, onTypeFilterChange, onReportClick }) => (
   <div className="space-y-4">
     {/* Search & Filters */}

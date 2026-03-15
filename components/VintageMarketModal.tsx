@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
-import { X, Clock, Award, Crown, TrendingUp, TrendingDown, Minus, BarChart3, BookOpen, DollarSign } from 'lucide-react';
+import {
+  X,
+  Clock,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  BarChart3,
+} from 'lucide-react';
 import {
   getVintageCards,
   getRegistrySets,
   getVintageMarketTrends,
   getConditionCensus,
   getVintageStats,
-  type VintageCard,
 } from '../lib/vintageMarketService';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 
 interface Props {
   isOpen: boolean;

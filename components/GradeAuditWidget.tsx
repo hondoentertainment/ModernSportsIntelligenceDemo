@@ -5,7 +5,7 @@ import { analysePortfolioGradingOpportunities } from '../lib/gradingPredictionSe
 
 interface GradeAuditWidgetProps {
   inventory: CardInventory[];
-  onCardClick: (card: CardInventory) => void;
+  onCardClick: (_card: CardInventory) => void;
 }
 
 const GradeAuditWidget: React.FC<GradeAuditWidgetProps> = ({ inventory, onCardClick }) => {

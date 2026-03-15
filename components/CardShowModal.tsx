@@ -11,15 +11,11 @@ import {
   CheckCircle2,
   Circle,
   Clock,
-  Zap,
-  Plus,
-  ChevronDown,
 } from 'lucide-react';
 import {
   getActiveDeals,
   getWantList,
   getDealStats,
-  addDeal,
   CardShowDeal,
   CardShowWantItem,
 } from '../lib/cardShowService';
@@ -88,9 +84,9 @@ const PRICE_DATABASE: Record<string, { marketValue: number; trend: 'up' | 'down'
 const CardShowModal: React.FC<CardShowModalProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabId>('price-check');
   const [searchQuery, setSearchQuery] = useState('');
-  const [deals, setDeals] = useState<CardShowDeal[]>(() => getActiveDeals());
+  const [deals, _setDeals] = useState<CardShowDeal[]>(() => getActiveDeals());
   const [wantList, setWantList] = useState<CardShowWantItem[]>(() => getWantList());
-  const stats = useMemo(() => getDealStats(), [deals]);
+  const stats = useMemo(() => getDealStats(), []);
 
   const priceResult = useMemo(() => {
     if (!searchQuery.trim()) return null;

@@ -298,7 +298,7 @@ const CollectionNarrative: React.FC = () => {
 
               {momentLinks
                 .sort((a, b) => a.year - b.year)
-                .map((ml, idx) => (
+                .map((ml, _idx) => (
                   <div key={ml.cardId} className="relative pl-16 pb-8">
                     {/* Timeline Dot */}
                     <div

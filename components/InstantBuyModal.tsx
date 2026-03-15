@@ -1,13 +1,25 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { X, Zap, Clock, TrendingUp, Shield, ArrowRight, CheckCircle2, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  X,
+  Zap,
+  Clock,
+  Shield,
+  CheckCircle2,
+  AlertTriangle,
+} from 'lucide-react';
 import { CardInventory } from '../types';
-import { generateInstantBuyQuote, isQuoteValid, recordInstantBuy, InstantBuyQuote } from '../lib/instantBuyService';
+import {
+  generateInstantBuyQuote,
+  isQuoteValid,
+  recordInstantBuy,
+  InstantBuyQuote,
+} from '../lib/instantBuyService';
 
 interface InstantBuyModalProps {
   isOpen: boolean;
   onClose: () => void;
   card: CardInventory;
-  onAccept: (card: CardInventory, payout: number) => void;
+  onAccept: (_card: CardInventory, _payout: number) => void;
 }
 
 const InstantBuyModal: React.FC<InstantBuyModalProps> = ({ isOpen, onClose, card, onAccept }) => {

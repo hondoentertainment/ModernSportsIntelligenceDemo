@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap, TrendingUp, TrendingDown, Bell, Sparkles, Activity } from 'lucide-react';
+import { Zap, TrendingUp, Bell, Sparkles, Activity } from 'lucide-react';
 
 interface HypeEvent {
     id: string;

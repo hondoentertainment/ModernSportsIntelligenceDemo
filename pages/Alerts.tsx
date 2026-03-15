@@ -5,8 +5,6 @@ import {
   Zap,
   TrendingUp,
   TrendingDown,
-  Filter,
-  CheckCircle2,
   AlertTriangle,
   Target,
   RefreshCw,
@@ -14,7 +12,7 @@ import {
   Check,
   X,
   Clock,
-  Info
+  Info,
 } from 'lucide-react';
 import { useAlerts } from '../lib/useAlerts.ts';
 import { AlertType } from '../types.ts';
@@ -41,7 +39,7 @@ const Alerts: React.FC = () => {
     }
   };
 
-  const getAlertStyles = (type: AlertType, priority: string) => {
+  const getAlertStyles = (type: AlertType, _priority: string) => {
     if (type === 'price_target') return 'bg-brand-lime/10 text-brand-lime';
     if (type === 'sync_complete') return 'bg-brand-green/10 text-brand-green';
     if (type === 'momentum') return 'bg-brand-green/10 text-brand-green';

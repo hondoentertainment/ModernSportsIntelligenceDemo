@@ -14,10 +14,8 @@ import {
   ThumbsDown,
   ArrowLeftRight,
   Check,
-  AlertTriangle,
   TrendingUp,
   TrendingDown,
-  DollarSign,
   Search,
   ChevronRight,
   Shield,
@@ -25,8 +23,6 @@ import {
 import { CardInventory } from '../types';
 import {
   TradeBlockListing,
-  TradeOffer,
-  TradeHistory,
   PackageDeal,
   getTradeBlock,
   addToTradeBlock,
@@ -109,14 +105,14 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
   const [counterInput, setCounterInput] = useState<Record<string, string>>({});
   const [selectedPackageCards, setSelectedPackageCards] = useState<string[]>([]);
   const [currentPackage, setCurrentPackage] = useState<PackageDeal | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [_refreshKey, setRefreshKey] = useState(0);
 
-  const listings = useMemo(() => getTradeBlock(), [refreshKey]);
+  const listings = useMemo(() => getTradeBlock(), []);
 
   const offers = useMemo(() => {
     if (listings.length === 0) return [];
     return generateSimulatedOffers(listings, inventory);
-  }, [listings, inventory, refreshKey]);
+  }, [listings, inventory]);
 
   const history = useMemo(() => {
     return getTradeHistory().map(h => {
@@ -131,9 +127,9 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
           : h.roi,
       };
     });
-  }, [inventory, refreshKey]);
+  }, [inventory]);
 
-  const stats = useMemo(() => getTradeStats(inventory), [inventory, refreshKey]);
+  const stats = useMemo(() => getTradeStats(inventory), [inventory]);
 
   const listedCardIds = useMemo(() => new Set(listings.map(l => l.cardId)), [listings]);
 

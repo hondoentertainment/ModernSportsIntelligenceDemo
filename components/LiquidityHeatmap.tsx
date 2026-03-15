@@ -1,11 +1,16 @@
 import React, { useMemo } from 'react';
-import { BarChart3, AlertTriangle, Clock, ChevronRight } from 'lucide-react';
+import {
+  BarChart3,
+  AlertTriangle,
+  Clock,
+  ChevronRight,
+} from 'lucide-react';
 import { CardInventory } from '../types';
 import { generatePortfolioLiquidityReport } from '../lib/marketDepthService';
 
 interface LiquidityHeatmapProps {
   inventory: CardInventory[];
-  onCardClick?: (card: CardInventory) => void;
+  onCardClick?: (_card: CardInventory) => void;
 }
 
 const LiquidityHeatmap: React.FC<LiquidityHeatmapProps> = ({ inventory, onCardClick }) => {

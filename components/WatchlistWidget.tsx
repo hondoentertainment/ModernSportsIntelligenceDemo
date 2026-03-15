@@ -19,8 +19,8 @@ interface WatchlistWidgetProps {
   onClick?: () => void;
 }
 
-export const WatchlistWidget: React.FC<WatchlistWidgetProps> = ({ inventory, onClick }) => {
-  const watchlists = useMemo(() => getWatchlists(), [inventory]);
+export const WatchlistWidget: React.FC<WatchlistWidgetProps> = ({ _inventory, onClick }) => {
+  const watchlists = useMemo(() => getWatchlists(), []);
   const analytics = useMemo(() => getWatchlistAnalytics(watchlists), [watchlists]);
   const triggeredAlerts = useMemo(() => evaluateAlerts(watchlists), [watchlists]);
 

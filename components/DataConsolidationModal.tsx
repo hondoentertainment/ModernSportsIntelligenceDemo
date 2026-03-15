@@ -1,18 +1,30 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
 } from 'recharts';
 import {
-  X, Database, Search, Zap, Activity, ShieldCheck, Clock,
-  TrendingUp, TrendingDown, CheckCircle, AlertTriangle, Repeat,
+  X,
+  Database,
+  Search,
+  Zap,
+  Activity,
+  ShieldCheck,
+  Clock,
+  TrendingUp,
+  CheckCircle,
+  AlertTriangle,
+  Repeat,
 } from 'lucide-react';
 import {
   Platform,
   ConsolidatedPrice,
-  ArbitrageOpportunity,
   TransactionRecord,
-  DataQualityReport,
-  ConsolidationStats,
   PLATFORM_COLORS,
   PLATFORM_FEES,
   CARD_SEEDS,
@@ -22,7 +34,6 @@ import {
   getDataQualityReports,
   getConsolidationStats,
   getEnrichedConsolidatedView,
-  EnrichedConsolidatedView,
 } from '../lib/dataConsolidationService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────

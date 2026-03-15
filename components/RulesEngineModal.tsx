@@ -14,9 +14,6 @@ import {
   LayoutTemplate,
   History,
   ChevronDown,
-  TrendingUp,
-  TrendingDown,
-  AlertTriangle,
 } from 'lucide-react';
 import {
   BarChart,
@@ -32,7 +29,6 @@ import {
   TradingRule,
   RuleTrigger,
   RuleCondition,
-  RuleAction,
   RuleTemplate,
   BacktestResult,
   RuleStatus,
@@ -43,7 +39,6 @@ import {
   saveRules,
   loadTriggerHistory,
   getRuleTemplates,
-  createRuleFromTemplate,
   backtestRule,
   evaluateRules,
   CONDITION_LABELS,
@@ -103,9 +98,9 @@ function conditionSummary(conditions: RuleCondition[]): string {
 
 const RulesTab: React.FC<{
   rules: TradingRule[];
-  onUpdateRules: (rules: TradingRule[]) => void;
-  onBacktest: (rule: TradingRule) => void;
-  onRunRule: (rule: TradingRule) => void;
+  onUpdateRules: (_rules: TradingRule[]) => void;
+  onBacktest: (_rule: TradingRule) => void;
+  onRunRule: (_rule: TradingRule) => void;
 }> = ({ rules, onUpdateRules, onBacktest, onRunRule }) => {
   const [statusDropdown, setStatusDropdown] = useState<string | null>(null);
 
@@ -263,7 +258,7 @@ const INITIAL_FORM: CreateFormState = {
 
 const CreateTab: React.FC<{
   formState: CreateFormState;
-  onFormChange: (form: CreateFormState) => void;
+  onFormChange: (_form: CreateFormState) => void;
   onSave: () => void;
 }> = ({ formState, onFormChange, onSave }) => {
   const form = formState;
@@ -454,7 +449,7 @@ const CreateTab: React.FC<{
 // ---- Templates Tab ----
 
 const TemplatesTab: React.FC<{
-  onUseTemplate: (template: RuleTemplate) => void;
+  onUseTemplate: (_template: RuleTemplate) => void;
 }> = ({ onUseTemplate }) => {
   const templates = useMemo(() => getRuleTemplates(), []);
 

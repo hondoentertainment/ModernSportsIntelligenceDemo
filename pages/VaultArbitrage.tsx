@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  ArrowRightLeft, DollarSign, TrendingUp, Activity, Clock, Shield,
-  ArrowRight, CheckCircle, AlertTriangle, XCircle, Package,
+  ArrowRightLeft,
+  DollarSign,
+  TrendingUp,
+  Activity,
+  ArrowRight,
+  Package,
 } from 'lucide-react';
 import {
   getVaultedCards,
@@ -18,9 +22,17 @@ import {
   type TransferRequest,
   type PlatformHealthStatus,
   type VaultSummary,
-  type NetProceedsEstimate,
 } from '../lib/vaultArbitrageService.ts';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
+} from 'recharts';
 
 const STATUS_DOT: Record<string, string> = {
   online: 'bg-emerald-500',

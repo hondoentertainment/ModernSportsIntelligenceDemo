@@ -357,7 +357,7 @@ const STORAGE_ENVIRONMENTS: StorageSetup[] = [
 
 // ---- Degradation Curve Data by Era ----
 
-const ERA_DEGRADATION_CURVES: Record<CardEra, { years: number; gradeDropOptimal: number; gradeDropPoor: number }[]> = {
+const _ERA_DEGRADATION_CURVES: Record<CardEra, { years: number; gradeDropOptimal: number; gradeDropPoor: number }[]> = {
   pre_war: [
     { years: 5, gradeDropOptimal: 0.1, gradeDropPoor: 0.8 },
     { years: 10, gradeDropOptimal: 0.2, gradeDropPoor: 1.5 },

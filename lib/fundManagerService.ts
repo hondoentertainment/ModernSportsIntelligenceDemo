@@ -442,7 +442,7 @@ function computeWaterfall(
   paidInCapital: number,
   hurdleRate: number,
   carryRate: number,
-  lpSplit: number
+  _lpSplit: number
 ): WaterfallDistribution[] {
   const tiers: WaterfallDistribution[] = [];
   let remaining = totalDistributable;

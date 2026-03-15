@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Box, Package, Star, TrendingUp, TrendingDown, AlertTriangle, Trophy, DollarSign } from 'lucide-react';
+import {
+  Box,
+  Package,
+  Star,
+  TrendingUp,
+  DollarSign,
+} from 'lucide-react';
 import {
   getSubscriptions,
   getBoxOpenings,
@@ -16,13 +22,21 @@ import {
   type ProviderComparison,
   type BoxHit,
 } from '../lib/subscriptionBoxService.ts';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, AreaChart, Area, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 const SubscriptionBox: React.FC = () => {
   const [subscriptions, setSubscriptions] = useState<SubscriptionTier[]>([]);
   const [openings, setOpenings] = useState<BoxOpening[]>([]);
   const [roiData, setRoiData] = useState<SubscriptionROI[]>([]);
-  const [evData, setEvData] = useState<EVAnalysis[]>([]);
+  const [_evData, setEvData] = useState<EVAnalysis[]>([]);
   const [providers, setProviders] = useState<ProviderComparison[]>([]);
   const [hitHistory, setHitHistory] = useState<BoxHit[]>([]);
   const [trendData, setTrendData] = useState<{ month: string; spent: number; value: number; profit: number; roi: number }[]>([]);

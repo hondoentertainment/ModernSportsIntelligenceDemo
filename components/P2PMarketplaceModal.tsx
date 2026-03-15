@@ -1,22 +1,29 @@
 // P2P Marketplace Modal — Listing grid with filters and quick offer interface
 import React, { useState, useMemo } from 'react';
 import {
-  X, ShoppingCart, Search, Filter, Tag, Eye, Heart, MessageSquare,
-  TrendingUp, Star, DollarSign, Send, ChevronDown, Shield,
+  X,
+  ShoppingCart,
+  Search,
+  Filter,
+  Tag,
+  Eye,
+  Heart,
+  MessageSquare,
+  Star,
+  DollarSign,
+  Send,
+  ChevronDown,
+  Shield,
 } from 'lucide-react';
 import {
-  getActiveListings,
   getListingDealScore,
   getListingsByFilters,
-  getOffers,
   getTopSellers,
   getListingsWithDealRoomOptions,
   getCombinedMarketStats,
   Listing,
   Sport,
   CardGrade,
-  CardCondition,
-  ListingWithDealRoomOption,
 } from '../lib/p2pMarketplaceService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
@@ -243,7 +250,7 @@ const P2PMarketplaceModal: React.FC<P2PMarketplaceModalProps> = ({ isOpen, onClo
 
   const topSellers = useMemo(() => getTopSellers().slice(0, 4), []);
   const dealRoomListings = useMemo(() => getListingsWithDealRoomOptions(), []);
-  const combinedStats = useMemo(() => getCombinedMarketStats(), []);
+  const _combinedStats = useMemo(() => getCombinedMarketStats(), []);
   const dealRoomEligible = useMemo(() => dealRoomListings.filter(l => l.eligibleForDealRoom), [dealRoomListings]);
 
   if (!isOpen) return null;

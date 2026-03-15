@@ -17,12 +17,20 @@ export interface ListingAnalysis {
   photoScore: number;
   titleScore: number;
   descriptionScore: number;
+  pricingScore: number;
+  seoScore: number;
   overallScore: number;
   issues: string[];
   improvements: string[];
   estimatedViewIncrease: number;
   estimatedSaleSpeedIncrease: number;
+  estimatedSales: number;
+  estimatedViews: number;
   analyzedDate: string;
+  listingDate: string;
+  photoQuality: 'poor' | 'fair' | 'good' | 'excellent';
+  improvementTips: string[];
+  missingKeywords: string[];
 }
 
 export interface PhotoScore {
@@ -62,6 +70,11 @@ export interface PricingRecommendation {
   cardName: string;
   currentPrice: number;
   suggestedPrice: number;
+  recommendedPrice: number;
+  competitorLow: number;
+  competitorAvg: number;
+  competitorHigh: number;
+  demandLevel: 'low' | 'medium' | 'high' | 'very_high';
   minPrice: number;
   maxPrice: number;
   marketAverage: number;
@@ -75,6 +88,7 @@ export interface CompetitorListing {
   id: string;
   cardName: string;
   platform: Platform;
+  seller: string;
   sellerName: string;
   sellerRating: number;
   price: number;
@@ -82,11 +96,13 @@ export interface CompetitorListing {
   totalPrice: number;
   photoCount: number;
   photoQuality: 'poor' | 'fair' | 'good' | 'excellent';
+  photoScore: number;
   titleQuality: number;
   daysListed: number;
   watchers: number;
   bestOffer: boolean;
   freeShipping: boolean;
+  sold: boolean;
 }
 
 export interface ListingTemplate {
@@ -119,6 +135,7 @@ export interface SEOKeyword {
   searchVolume: number;
   competition: 'low' | 'medium' | 'high';
   relevanceScore: number;
+  relevance: number;
   trending: boolean;
   category: string;
   platform: Platform;
@@ -128,6 +145,11 @@ export interface SEOKeyword {
 export interface TimingRecommendation {
   id: string;
   platform: Platform;
+  dayOfWeek: string;
+  hour: number;
+  score: number;
+  avgViews: number;
+  avgSales: number;
   bestDayOfWeek: string;
   bestTimeOfDay: string;
   worstDayOfWeek: string;
@@ -316,11 +338,38 @@ const MOCK_COMPETITORS: CompetitorListing[] = [
 
 // ---- Service Functions ----
 
+function qualityFromPhotoScore(score: number): 'poor' | 'fair' | 'good' | 'excellent' {
+  if (score >= 85) return 'excellent';
+  if (score >= 70) return 'good';
+  if (score >= 50) return 'fair';
+  return 'poor';
+}
+
+function enrichAnalysis(a: typeof MOCK_ANALYSES[number]): ListingAnalysis {
+  const pricingScore = Math.min(100, Math.round((a.overallScore + a.photoScore) / 2 + 5));
+  const seoScore = Math.min(100, Math.round(a.titleScore * 0.9));
+  return {
+    ...a,
+    pricingScore,
+    seoScore,
+    estimatedSales: Math.max(1, Math.round(a.overallScore / 20)),
+    estimatedViews: Math.round(a.estimatedViewIncrease * 8 + 100),
+    listingDate: a.analyzedDate,
+    photoQuality: qualityFromPhotoScore(a.photoScore),
+    improvementTips: a.improvements.slice(0, 3),
+    missingKeywords: a.issues
+      .filter(i => i.toLowerCase().includes('missing') || i.toLowerCase().includes('no '))
+      .map(i => i.replace(/^(Title )?[Mm]issing /,'').replace(/^No /,''))
+      .slice(0, 4),
+  } as ListingAnalysis;
+}
+
 export function getListingAnalyses(): ListingAnalysis[] {
   const cached = loadData<ListingAnalysis[]>('listing_analyses');
-  if (cached) return cached;
-  saveData('listing_analyses', MOCK_ANALYSES);
-  return MOCK_ANALYSES;
+  if (cached && cached.length > 0 && 'pricingScore' in cached[0]) return cached;
+  const enriched = MOCK_ANALYSES.map(enrichAnalysis);
+  saveData('listing_analyses', enriched);
+  return enriched;
 }
 
 export function getAnalysisById(id: string): ListingAnalysis | undefined {
@@ -345,11 +394,22 @@ export function getTitleSuggestionsByListing(listingId: string): TitleSuggestion
   return suggestions.filter(s => s.listingId === listingId);
 }
 
+function enrichCompetitor(c: typeof MOCK_COMPETITORS[number]): CompetitorListing {
+  const qualityToScore: Record<string, number> = { excellent: 92, good: 78, fair: 60, poor: 40 };
+  return {
+    ...c,
+    seller: c.sellerName,
+    photoScore: qualityToScore[c.photoQuality] ?? 70,
+    sold: c.daysListed <= 5,
+  } as CompetitorListing;
+}
+
 export function getCompetitorListings(): CompetitorListing[] {
   const cached = loadData<CompetitorListing[]>('competitor_listings');
-  if (cached) return cached;
-  saveData('competitor_listings', MOCK_COMPETITORS);
-  return MOCK_COMPETITORS;
+  if (cached && cached.length > 0 && 'seller' in cached[0]) return cached;
+  const enriched = MOCK_COMPETITORS.map(enrichCompetitor);
+  saveData('competitor_listings', enriched);
+  return enriched;
 }
 
 export function getCompetitorsByCard(cardName: string): CompetitorListing[] {
@@ -492,11 +552,27 @@ export function getPhotoScoreByListing(listingId: string): PhotoScore | undefine
   return scores.find(s => s.listingId === listingId);
 }
 
+function enrichTiming(t: typeof MOCK_TIMING[number]): TimingRecommendation {
+  const hourMatch = t.bestTimeOfDay.match(/(\d+):/);
+  const hour = hourMatch ? parseInt(hourMatch[1], 10) : 19;
+  const demandToScore: Record<string, number> = { very_high: 95, high: 85, moderate: 70, low: 50 };
+  const score = demandToScore[t.currentDemand] ?? 70;
+  return {
+    ...t,
+    dayOfWeek: t.bestDayOfWeek,
+    hour,
+    score,
+    avgViews: Math.round(score * 3.5),
+    avgSales: Math.round(score * 0.4),
+  } as TimingRecommendation;
+}
+
 export function getTimingRecommendations(): TimingRecommendation[] {
   const cached = loadData<TimingRecommendation[]>('timing_recommendations');
-  if (cached) return cached;
-  saveData('timing_recommendations', MOCK_TIMING);
-  return MOCK_TIMING;
+  if (cached && cached.length > 0 && 'dayOfWeek' in cached[0]) return cached;
+  const enriched = MOCK_TIMING.map(enrichTiming);
+  saveData('timing_recommendations', enriched);
+  return enriched;
 }
 
 export function getTimingByPlatform(platform: Platform): TimingRecommendation | undefined {
@@ -540,5 +616,183 @@ export function getOptimizedVsUnoptimizedStats(): { optimized: { avgDays: number
       avgDays: unopt.length > 0 ? Math.round(unopt.reduce((sum, s) => sum + (s.daysToSell || 0), 0) / unopt.length) : 0,
       avgViews: unopt.length > 0 ? Math.round(unopt.reduce((sum, s) => sum + s.views, 0) / unopt.length) : 0,
     },
+  };
+}
+
+// ---- Page-compatible types & adapters (used by ListingOptimizer page) ----
+
+export interface PhotoTip {
+  id: string;
+  category: string;
+  tip: string;
+  impact: 'high' | 'medium' | 'low';
+  score: number;
+}
+
+export interface PlatformDistribution {
+  platform: string;
+  listings: number;
+}
+
+export interface ScoreImprovement {
+  category: string;
+  before: number;
+  after: number;
+}
+
+export interface ListingOptimizerSummary {
+  totalListings: number;
+  avgScore: number;
+  improvementOpportunities: number;
+  topPlatform: string;
+  avgPhotoScore: number;
+}
+
+export const PLATFORM_META: Record<string, { label: string; color: string }> = {
+  ebay: { label: 'eBay', color: '#3b82f6' },
+  comc: { label: 'COMC', color: '#22c55e' },
+  myslabs: { label: 'MySlabs', color: '#a855f7' },
+  mercari: { label: 'Mercari', color: '#ef4444' },
+  whatnot: { label: 'Whatnot', color: '#f97316' },
+  facebook: { label: 'Facebook', color: '#1877f2' },
+  instagram: { label: 'Instagram', color: '#e1306c' },
+  pwcc: { label: 'PWCC', color: '#14b8a6' },
+};
+
+export const QUALITY_META: Record<string, { label: string; color: string }> = {
+  excellent: { label: 'Excellent', color: 'text-emerald-400' },
+  good: { label: 'Good', color: 'text-blue-400' },
+  fair: { label: 'Fair', color: 'text-amber-400' },
+  poor: { label: 'Poor', color: 'text-red-400' },
+};
+
+export function getPhotoTips(): PhotoTip[] {
+  return [
+    { id: 'pt1', category: 'Lighting', tip: 'Use natural daylight or a lightbox for consistent, even illumination', impact: 'high', score: 92 },
+    { id: 'pt2', category: 'Background', tip: 'Use a plain black or white background to make the card stand out', impact: 'high', score: 88 },
+    { id: 'pt3', category: 'Focus', tip: 'Enable macro mode and ensure the full card surface is sharp', impact: 'high', score: 85 },
+    { id: 'pt4', category: 'Angle', tip: 'Shoot directly overhead to avoid perspective distortion', impact: 'medium', score: 78 },
+    { id: 'pt5', category: 'Resolution', tip: 'Upload at least 1600x1200px images for zoom capability', impact: 'medium', score: 74 },
+    { id: 'pt6', category: 'Edges', tip: 'Show all four corners clearly for condition assessment', impact: 'medium', score: 70 },
+    { id: 'pt7', category: 'Color', tip: 'Avoid filters; keep colors true to the actual card', impact: 'low', score: 65 },
+    { id: 'pt8', category: 'Multiple Angles', tip: 'Include front, back, and close-up shots of key features', impact: 'high', score: 90 },
+  ];
+}
+
+export function getPricingRecommendations(): PricingRecommendation[] {
+  const analyses = getListingAnalyses();
+  return analyses.map((a, i) => ({
+    id: `pr-${a.id}`,
+    listingId: a.id,
+    cardName: a.cardName,
+    currentPrice: a.currentPrice,
+    recommendedPrice: a.suggestedPrice,
+    competitorLow: Math.round(a.currentPrice * 0.8),
+    competitorAvg: Math.round(a.currentPrice * 1.02),
+    competitorHigh: Math.round(a.currentPrice * 1.3),
+    demandLevel: i % 4 === 0 ? 'very_high' : i % 3 === 0 ? 'high' : i % 2 === 0 ? 'medium' : 'low',
+    confidence: 60 + Math.round(Math.random() * 35),
+    suggestedPrice: a.suggestedPrice,
+    minPrice: Math.round(a.currentPrice * 0.7),
+    maxPrice: Math.round(a.currentPrice * 1.4),
+    marketAverage: Math.round(a.currentPrice * 1.05),
+    recentSales: [a.currentPrice, a.suggestedPrice],
+    strategy: 'competitive' as const,
+    reasoning: 'Based on recent comparable sales and market trends.',
+  }));
+}
+
+export function getPlatformDistribution(): PlatformDistribution[] {
+  const analyses = getListingAnalyses();
+  const counts: Record<string, number> = {};
+  analyses.forEach(a => { counts[a.platform] = (counts[a.platform] || 0) + 1; });
+  return Object.entries(counts).map(([platform, listings]) => ({ platform, listings }));
+}
+
+export function getSEOKeywords(): SEOKeyword[] {
+  const keywords = [
+    { keyword: 'PSA 10', volume: 45000, comp: 'high' as const, rel: 95, trend: true, cat: 'grading' },
+    { keyword: 'rookie card', volume: 38000, comp: 'high' as const, rel: 90, trend: true, cat: 'type' },
+    { keyword: 'auto', volume: 32000, comp: 'medium' as const, rel: 85, trend: false, cat: 'feature' },
+    { keyword: 'numbered', volume: 18000, comp: 'medium' as const, rel: 80, trend: true, cat: 'feature' },
+    { keyword: 'refractor', volume: 15000, comp: 'low' as const, rel: 75, trend: false, cat: 'variant' },
+    { keyword: 'prizm', volume: 28000, comp: 'high' as const, rel: 88, trend: true, cat: 'product' },
+    { keyword: 'topps chrome', volume: 22000, comp: 'medium' as const, rel: 82, trend: false, cat: 'product' },
+    { keyword: 'case hit', volume: 9000, comp: 'low' as const, rel: 70, trend: true, cat: 'rarity' },
+  ];
+  return keywords.map((kw, i) => ({
+    id: `seo-${i}`,
+    keyword: kw.keyword,
+    searchVolume: kw.volume,
+    competition: kw.comp,
+    relevanceScore: kw.rel,
+    relevance: kw.rel,
+    trending: kw.trend,
+    category: kw.cat,
+    platform: 'ebay' as Platform,
+    ctrImpact: kw.rel * 0.8,
+  }));
+}
+
+export function getScoreImprovements(): ScoreImprovement[] {
+  return [
+    { category: 'Title', before: 52, after: 88 },
+    { category: 'Photos', before: 45, after: 82 },
+    { category: 'Description', before: 38, after: 79 },
+    { category: 'Pricing', before: 61, after: 85 },
+    { category: 'SEO', before: 33, after: 76 },
+  ];
+}
+
+export function getOptimizerSummary(): ListingOptimizerSummary {
+  const analyses = getListingAnalyses();
+  const photos = getPhotoScores();
+  return {
+    totalListings: analyses.length,
+    avgScore: analyses.length > 0 ? Math.round(analyses.reduce((s, a) => s + a.overallScore, 0) / analyses.length) : 0,
+    improvementOpportunities: analyses.filter(a => a.overallScore < 75).length,
+    topPlatform: 'eBay',
+    avgPhotoScore: photos.length > 0 ? Math.round(photos.reduce((s, p) => s + p.overallScore, 0) / photos.length) : 0,
+  };
+}
+
+// ---- Widget API Functions ----
+
+export function getListingScores(): { id: string; listingTitle: string; score: number; platform: Platform }[] {
+  return getListingAnalyses().map(a => ({
+    id: a.id,
+    listingTitle: a.currentTitle,
+    score: a.overallScore,
+    platform: a.platform,
+  }));
+}
+
+export function getOptimizedListings(): { id: string; listingTitle: string; revenueBoost: number; platform: Platform }[] {
+  return getListingAnalyses()
+    .filter(a => a.overallScore >= 75)
+    .map(a => ({
+      id: a.id,
+      listingTitle: a.suggestedTitle || a.currentTitle,
+      revenueBoost: a.estimatedViewIncrease > 0 ? a.estimatedViewIncrease : Math.round((a.suggestedPrice - a.currentPrice) / a.currentPrice * 100),
+      platform: a.platform,
+    }));
+}
+
+export function getRevenueMetrics(): { totalRevenue: number; boostPercent: number } {
+  const analyses = getListingAnalyses();
+  const totalRevenue = analyses.reduce((sum, a) => sum + a.estimatedSales * a.suggestedPrice, 0);
+  const boostPercent = analyses.length > 0
+    ? Math.round(analyses.reduce((sum, a) => sum + a.estimatedViewIncrease, 0) / analyses.length)
+    : 0;
+  return { totalRevenue, boostPercent };
+}
+
+export function getListingSummary(): { totalCount: number; pendingCount: number; optimizedCount: number } {
+  const analyses = getListingAnalyses();
+  const optimized = analyses.filter(a => a.overallScore >= 75).length;
+  return {
+    totalCount: analyses.length,
+    pendingCount: analyses.length - optimized,
+    optimizedCount: optimized,
   };
 }

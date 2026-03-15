@@ -24,7 +24,6 @@ import {
   getAuthenticationHistory,
   getDNAStats,
   getCounterfeitAlerts,
-  CardFingerprint,
 } from '../lib/cardDNAService';
 
 function confidenceColor(value: number): string {

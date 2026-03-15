@@ -1,14 +1,17 @@
 import React, { useMemo } from 'react';
-import { Users, ChevronRight, TrendingUp, TrendingDown, Zap, Shield } from 'lucide-react';
+import {
+  Users,
+  ChevronRight,
+  TrendingUp,
+  TrendingDown,
+  Zap,
+  Shield,
+} from 'lucide-react';
 import {
   getAllMentions,
   getSocialAlphaSignals,
   platformIcon,
   platformColor,
-  signalColor,
-  signalLabel,
-  type InfluenceMention,
-  type SocialAlphaSignal,
 } from '../lib/influenceGraphService';
 
 interface InfluenceGraphWidgetProps {

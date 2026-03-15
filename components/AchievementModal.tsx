@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { X, Trophy, Star, Filter, ArrowUpDown } from 'lucide-react';
+import { X, Trophy, Star, ArrowUpDown } from 'lucide-react';
 import { CardInventory } from '../types';
 import {
   Achievement,

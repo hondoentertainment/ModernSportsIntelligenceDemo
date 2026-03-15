@@ -427,7 +427,7 @@ export const SCREENER_OPERATORS: { value: ScreenerFilter['operator']; label: str
 // ── Service Functions ───────────────────────────────────────────────────────────
 
 export function runStrategy(code: string): StrategyResult {
-  const startTime = Date.now();
+  const _startTime = Date.now();
   const rand = seededRandom(hashStr(code));
 
   // Simulate execution delay

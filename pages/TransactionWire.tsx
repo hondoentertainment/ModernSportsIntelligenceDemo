@@ -1,15 +1,33 @@
 // Transaction Wire — Full page: Bloomberg-style transaction ticker for sports cards
 import React, { useState, useMemo } from 'react';
 import {
-  Newspaper, TrendingUp, TrendingDown, DollarSign, Zap, Activity,
-  BarChart3, Filter, Search, ArrowUpRight, ArrowDownRight, Globe,
+  Newspaper,
+  TrendingUp,
+  TrendingDown,
+  Zap,
+  Activity,
+  BarChart3,
+  Filter,
+  Search,
+  ArrowUpRight,
+  ArrowDownRight,
 } from 'lucide-react';
 import {
-  AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
 } from 'recharts';
 import {
-  getRecentTransactions, getTransactionStats, getTopMovers,
-  Transaction, Sport, Platform, TopMover,
+  getRecentTransactions,
+  getTransactionStats,
+  getTopMovers,
+  Sport,
+  Platform,
+  TopMover,
 } from '../lib/transactionWireService';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────

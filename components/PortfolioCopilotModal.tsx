@@ -1,11 +1,26 @@
 import React, { useState, useMemo } from 'react';
 import {
-  X, Bot, MessageSquare, Sparkles, Bell, Clock,
-  Send, TrendingUp, TrendingDown, AlertTriangle,
-  Search, Mic, Zap,
+  X,
+  Bot,
+  MessageSquare,
+  Sparkles,
+  Bell,
+  Clock,
+  Send,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+  Search,
+  Mic,
+  Zap,
 } from 'lucide-react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
 } from 'recharts';
 import {
@@ -13,17 +28,9 @@ import {
   getDailyBriefing,
   getProactiveNudges,
   getCopilotSuggestions,
-  sendMessage,
-  getIntentFromQuery,
   intentLabel,
-  intentColor,
   intentBadgeColor,
-  priorityColor,
   priorityBadgeColor,
-  type ConversationThread,
-  type CopilotMessage,
-  type CopilotSuggestion,
-  type CopilotIntent,
 } from '../lib/portfolioCopilotService';
 
 interface Props {
@@ -42,7 +49,7 @@ const PortfolioCopilotModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const conversations = useMemo(() => getAllConversations(), []);
   const briefing = useMemo(() => getDailyBriefing(), []);
   const nudges = useMemo(() => getProactiveNudges(), []);
-  const suggestions = useMemo(() => getCopilotSuggestions(), []);
+  const _suggestions = useMemo(() => getCopilotSuggestions(), []);
 
   const activeThread = useMemo(
     () => conversations.find(t => t.id === selectedThread) ?? conversations[0],

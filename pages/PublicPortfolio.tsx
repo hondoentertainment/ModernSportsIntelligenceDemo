@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Shield, Trophy, LayoutGrid, List as ListIcon, Search, Filter, Share2, Copy, CheckCircle2 } from 'lucide-react';
+import { Shield, LayoutGrid, List as ListIcon, Search, Share2, CheckCircle2 } from 'lucide-react';
 import { CardInventory, UserProfile, League } from '../types';
 import { fetchPublicProfile, fetchPublicInventory, generateShareLink } from '../lib/socialService';
 import CardImage from '../components/CardImage';

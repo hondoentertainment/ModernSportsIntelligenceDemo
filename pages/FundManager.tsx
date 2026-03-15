@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Landmark, Users, LineChart, DollarSign, AlertTriangle } from 'lucide-react';
+import {
+  Landmark,
+  Users,
+  LineChart,
+  DollarSign,
+  AlertTriangle,
+} from 'lucide-react';
 import {
   getFunds,
   getSyndicates,
@@ -21,7 +27,6 @@ import {
   type Distribution,
   type WaterfallDistribution,
 } from '../lib/fundManagerService.ts';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 const FundManager: React.FC = () => {
   const [funds, setFunds] = useState<Fund[]>([]);
@@ -29,8 +34,8 @@ const FundManager: React.FC = () => {
   const [metrics, setMetrics] = useState<FundMetrics[]>([]);
   const [investors, setInvestors] = useState<LPInvestor[]>([]);
   const [positions, setPositions] = useState<FundPosition[]>([]);
-  const [capitalCalls, setCapitalCalls] = useState<CapitalCall[]>([]);
-  const [distributions, setDistributions] = useState<Distribution[]>([]);
+  const [_capitalCalls, setCapitalCalls] = useState<CapitalCall[]>([]);
+  const [_distributions, setDistributions] = useState<Distribution[]>([]);
   const [selectedFundId, setSelectedFundId] = useState<string | null>(null);
   const [waterfall, setWaterfall] = useState<WaterfallDistribution[]>([]);
   const [loading, setLoading] = useState(true);

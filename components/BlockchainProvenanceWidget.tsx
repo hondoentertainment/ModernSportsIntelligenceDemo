@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
-import { Fingerprint, ChevronRight, ShieldCheck, Activity } from 'lucide-react';
 import {
-  getCardPassports,
-  getRecentVerifications,
-  getNetworkStats,
-  formatCurrency,
-} from '../lib/blockchainProvenanceService';
+  Fingerprint,
+  ChevronRight,
+  ShieldCheck,
+  Activity,
+} from 'lucide-react';
+import { getCardPassports, getRecentVerifications, getNetworkStats } from '../lib/blockchainProvenanceService';
 
 interface BlockchainProvenanceWidgetProps {
   onOpenModal?: () => void;

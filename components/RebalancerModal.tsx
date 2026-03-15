@@ -10,7 +10,13 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+} from 'recharts';
 import {
   getPortfolioAllocations,
   getRebalanceRecommendations,
@@ -18,7 +24,6 @@ import {
   getPortfolioHealthScore,
   getAttributionEnrichedContext,
   RebalanceAction,
-  RebalanceRecommendation,
 } from '../lib/portfolioRebalancerService';
 
 interface RebalancerModalProps {

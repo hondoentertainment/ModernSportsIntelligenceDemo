@@ -162,7 +162,7 @@ function saveData<T>(key: string, data: T): void {
 
 // ---- Mock Challenges ----
 
-function makeChallenges(moduleId: string, category: TrainingCategory, difficulty: Difficulty): TrainingChallenge[] {
+function makeChallenges(moduleId: string, _category: TrainingCategory, _difficulty: Difficulty): TrainingChallenge[] {
   const challengeSets: Record<string, TrainingChallenge[]> = {
     mod_001: [
       { id: 'ch_001', moduleId: 'mod_001', cardName: '1986 Fleer Michael Jordan RC', cardYear: 1986, cardImage: 'jordan_86_fleer.jpg', is_authentic: false, defect_annotations: ['Dot pattern inconsistency at 40x magnification', 'Color saturation 12% higher than authentic', 'Paper stock slightly thinner'], explanation: 'This is a high-quality reprint. The dot pattern under magnification shows modern printing technology versus original offset lithography.', difficulty: 'beginner', xpReward: 10 },

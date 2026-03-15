@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Trophy, Users, TrendingUp, TrendingDown, Award, Clock, Eye, ChevronRight, BarChart3, Star, Calendar } from 'lucide-react';
+import {
+  Trophy,
+  Users,
+  TrendingUp,
+  Award,
+  Clock,
+  ChevronRight,
+  BarChart3,
+  Star,
+  Calendar,
+} from 'lucide-react';
 import {
   getActiveTournaments,
   getUpcomingTournaments,
@@ -21,7 +31,15 @@ import {
   type WinningStrategy,
   type SeasonalChampionship,
 } from '../lib/tournamentArenaService.ts';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 const TournamentArena: React.FC = () => {
   const [activeTournaments, setActiveTournaments] = useState<Tournament[]>([]);
@@ -63,7 +81,7 @@ const TournamentArena: React.FC = () => {
     [myEntries, selectedTournamentId]
   );
 
-  const stats = useMemo(() => getTournamentStats(), []);
+  const _stats = useMemo(() => getTournamentStats(), []);
 
   const pnlChartData = useMemo(() => {
     if (!selectedEntry) return [];

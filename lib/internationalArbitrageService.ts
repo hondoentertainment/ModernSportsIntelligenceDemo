@@ -187,7 +187,7 @@ export function getMarketConfig(market: Market): { label: string; text: string; 
   return map[market];
 }
 
-function getRiskConfig(risk: RiskLevel): { label: string; text: string; bg: string; border: string } {
+export function getRiskConfig(risk: RiskLevel): { label: string; text: string; bg: string; border: string } {
   const map: Record<RiskLevel, { label: string; text: string; bg: string; border: string }> = {
     low: { label: 'Low', text: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
     medium: { label: 'Medium', text: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
@@ -441,7 +441,7 @@ export function getMarketListings(market?: Market, limit?: number): MarketListin
   return listings;
 }
 
-export function getHistoricalArbitrage(cardId?: string): { month: string; avgSpread: number; volume: number }[] {
+export function getHistoricalArbitrage(_cardId?: string): { month: string; avgSpread: number; volume: number }[] {
   const months = ['Sep 2025', 'Oct 2025', 'Nov 2025', 'Dec 2025', 'Jan 2026', 'Feb 2026', 'Mar 2026'];
   return months.map((month, i) => ({
     month,
@@ -476,4 +476,3 @@ export function getArbitrageResult(): ArbitrageResult {
   };
 }
 
-export { getRiskConfig };

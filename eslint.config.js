@@ -33,6 +33,7 @@ export default [
 
       // General safety
       'no-undef': 'off', // TypeScript handles this
+      'no-unused-vars': 'off', // TypeScript version handles this with underscore pattern
     },
   },
   {
@@ -44,6 +45,6 @@ export default [
     },
   },
   {
-    ignores: ['dist/', 'node_modules/', 'loadInventory.js'],
+    ignores: ['dist/', 'node_modules/', 'loadInventory.js', 'scripts/templates/'],
   },
 ];

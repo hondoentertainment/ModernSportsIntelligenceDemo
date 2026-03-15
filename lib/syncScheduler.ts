@@ -4,7 +4,15 @@
  */
 
 import { CardInventory, TargetWatchlist } from '../types.ts';
-import { syncPortfolio, SyncProgress, SyncResult, isSyncStale, getSyncMeta, syncWatchlistPrices, WatchlistSyncResult } from './marketSync';
+import {
+  syncPortfolio,
+  SyncProgress,
+  SyncResult,
+  isSyncStale,
+  getSyncMeta,
+  syncWatchlistPrices,
+  WatchlistSyncResult,
+} from './marketSync';
 
 export type SyncInterval = 'manual' | 'hourly' | 'daily' | 'weekly';
 
@@ -168,14 +176,14 @@ export class SyncScheduler {
     private config: SyncSchedulerConfig;
     private inventory: CardInventory[] = [];
     private targets: TargetWatchlist[] = [];
-    private onProgress?: (progress: SyncProgress) => void;
-    private onComplete?: (result: SyncCompleteResult) => void;
+    private onProgress?: (_progress: SyncProgress) => void;
+    private onComplete?: (_result: SyncCompleteResult) => void;
 
     constructor(
         config?: Partial<SyncSchedulerConfig>,
         callbacks?: {
-            onProgress?: (progress: SyncProgress) => void;
-            onComplete?: (result: SyncCompleteResult) => void;
+            onProgress?: (_progress: SyncProgress) => void;
+            onComplete?: (_result: SyncCompleteResult) => void;
         }
     ) {
         this.config = { ...DEFAULT_CONFIG, ...config };
@@ -183,7 +191,7 @@ export class SyncScheduler {
         this.onComplete = callbacks?.onComplete;
     }
 
-    setCallbacks(callbacks?: { onProgress?: (progress: SyncProgress) => void; onComplete?: (result: SyncCompleteResult) => void }) {
+    setCallbacks(callbacks?: { onProgress?: (_progress: SyncProgress) => void; onComplete?: (_result: SyncCompleteResult) => void }) {
         if (callbacks?.onProgress) this.onProgress = callbacks.onProgress;
         if (callbacks?.onComplete) this.onComplete = callbacks.onComplete;
     }
@@ -365,8 +373,8 @@ export function initializeScheduler(
     inventory: CardInventory[],
     targets: TargetWatchlist[],
     callbacks?: {
-        onProgress?: (progress: SyncProgress) => void;
-        onComplete?: (result: SyncCompleteResult) => void;
+        onProgress?: (_progress: SyncProgress) => void;
+        onComplete?: (_result: SyncCompleteResult) => void;
     }
 ): SyncScheduler {
     const scheduler = getScheduler();

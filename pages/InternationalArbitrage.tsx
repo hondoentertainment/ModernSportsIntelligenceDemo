@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Globe, AlertTriangle, TrendingUp, TrendingDown, DollarSign, Ship, Shield, BarChart3, ArrowRightLeft } from 'lucide-react';
+import {
+  Globe,
+  AlertTriangle,
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  Ship,
+  Shield,
+  BarChart3,
+  ArrowRightLeft,
+} from 'lucide-react';
 import {
   getArbitrageOpportunities,
   getMarketProfiles,
@@ -28,8 +38,18 @@ import {
   type ArbitrageResult,
 } from '../lib/internationalArbitrageService';
 import {
-  BarChart, Bar, PieChart, Pie, LineChart, Line,
-  XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
 } from 'recharts';
 
 const CHART_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#a855f7', '#06b6d4', '#f43f5e', '#6366f1'];
@@ -37,7 +57,7 @@ const CHART_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#a855f7', '#0
 const InternationalArbitrage: React.FC = () => {
   const [opportunities, setOpportunities] = useState<ArbitrageOpportunity[]>([]);
   const [marketProfiles, setMarketProfiles] = useState<MarketProfile[]>([]);
-  const [currencyRates, setCurrencyRates] = useState<CurrencyRate[]>([]);
+  const [_currencyRates, setCurrencyRates] = useState<CurrencyRate[]>([]);
   const [shippingRoutes, setShippingRoutes] = useState<ShippingRoute[]>([]);
   const [customsDuties, setCustomsDuties] = useState<CustomsDuty[]>([]);
   const [platformFees, setPlatformFees] = useState<PlatformFee[]>([]);
@@ -95,7 +115,7 @@ const InternationalArbitrage: React.FC = () => {
 
   const profitByPairData = useMemo(() => {
     if (!arbResult) return [];
-    return arbResult.marketPairStats.slice(0, 8).map((pair, i) => ({
+    return arbResult.marketPairStats.slice(0, 8).map((pair, _i) => ({
       name: pair.pair.length > 20 ? pair.pair.slice(0, 18) + '...' : pair.pair,
       value: Math.round(pair.avgProfit),
       count: pair.count,
@@ -399,7 +419,7 @@ const InternationalArbitrage: React.FC = () => {
                   outerRadius={100}
                   dataKey="value"
                   nameKey="name"
-                  label={({ name, value }) => `$${value}`}
+                  label={({ _name, value }) => `$${value}`}
                   labelLine={{ stroke: '#64748b' }}
                 >
                   {profitByPairData.map((_, index) => (

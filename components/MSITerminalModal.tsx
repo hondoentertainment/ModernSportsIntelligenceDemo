@@ -1,16 +1,40 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import {
-  X, Terminal, ChevronRight, Command, Zap, Clock, Hash, Search,
-  TrendingUp, TrendingDown, AlertTriangle, BarChart3, Layers, History,
-  PanelLeftClose, PanelLeftOpen, Maximize2, Minimize2
+  X,
+  Terminal,
+  ChevronRight,
+  Command,
+  Clock,
+  Hash,
+  AlertTriangle,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Area, AreaChart, PieChart, Pie, Cell
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Area,
+  AreaChart,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
 import {
-  executeCommand, getAutocompleteSuggestions, getCommandHistory,
-  clearCommandHistory, CommandResult, getCommandRegistry
+  executeCommand,
+  getAutocompleteSuggestions,
+  clearCommandHistory,
+  CommandResult,
 } from '../lib/msiTerminalService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
@@ -30,8 +54,8 @@ interface HistoryEntry {
 
 const MONO: React.CSSProperties = { fontFamily: "'Courier New', monospace" };
 const TERM_GREEN = '#00ff41';
-const TERM_GREEN_DIM = '#00cc33';
-const TERM_GREEN_DARK = '#004d00';
+const _TERM_GREEN_DIM = '#00cc33';
+const _TERM_GREEN_DARK = '#004d00';
 
 // ── Sub-components for result rendering ─────────────────────────────────────────
 
@@ -701,7 +725,7 @@ const TableView: React.FC<{ data: any }> = ({ data }) => {
 
   // Trend
   if (data.type === 'trend') {
-    const signalColor = (v: string) => v === 'BULLISH' || v === 'BUY' || v === 'INCREASING' ? 'text-emerald-400' : 'text-red-400';
+    const _signalColor = (v: string) => v === 'BULLISH' || v === 'BUY' || v === 'INCREASING' ? 'text-emerald-400' : 'text-red-400';
     return (
       <div className="space-y-3">
         <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>{data.player} — Trend Signals</div>
@@ -1127,7 +1151,7 @@ const MSITerminalModal: React.FC<MSITerminalModalProps> = ({ isOpen, onClose }) 
     const m = Math.floor(diff / 60);
     const s = diff % 60;
     return `${m}m ${s}s`;
-  }, [sessionStart, entries]); // recalc on new entries
+  }, [sessionStart]); // recalc on new entries
 
   if (!isOpen) return null;
 

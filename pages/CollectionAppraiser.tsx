@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { FileCheck, AlertTriangle, DollarSign, Shield, TrendingDown, Award, BarChart3, ShieldCheck, AlertCircle, Layers, CheckCircle2, Scale } from 'lucide-react';
+import {
+  FileCheck,
+  AlertTriangle,
+  DollarSign,
+  Shield,
+  TrendingDown,
+  Award,
+  ShieldCheck,
+  AlertCircle,
+  Layers,
+  CheckCircle2,
+  Scale,
+} from 'lucide-react';
 import {
   getAppraisalReport,
   getCardAppraisals,
@@ -11,7 +23,6 @@ import {
   getSummaryStats,
   formatCurrency,
   formatDate,
-  getRiskColor,
   getConditionLabel,
   type AppraisalReport,
   type CardAppraisal,
@@ -23,8 +34,16 @@ import {
   type AppraiserSummary,
 } from '../lib/collectionAppraiserService';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  PieChart, Pie, Cell, Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -60,7 +79,7 @@ const CollectionAppraiser: React.FC = () => {
       setCertificates(getAppraisalCertificates());
       setSummary(getSummaryStats());
       setLoading(false);
-    } catch (err) {
+    } catch  {
       setError('Failed to load Collection Appraiser data');
       setLoading(false);
     }

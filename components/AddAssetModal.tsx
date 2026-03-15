@@ -1,20 +1,30 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, Trophy, DollarSign, Star, FileText, Layers, Tag, Upload, Hash, Calendar } from 'lucide-react';
+import {
+  X,
+  Trophy,
+  DollarSign,
+  Star,
+  FileText,
+  Layers,
+  Tag,
+  Hash,
+  Calendar,
+} from 'lucide-react';
 import { CardInventory, Sport, League } from '../types.ts';
 
 interface AddAssetModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAdd: (card: CardInventory) => void;
+    onAdd: (_card: CardInventory) => void;
     editCard?: CardInventory | null;
     initialData?: Partial<CardInventory> | null;
-    onUpdate?: (id: string, updates: Partial<CardInventory>) => void;
+    onUpdate?: (_id: string, _updates: Partial<CardInventory>) => void;
 }
 
 const SPORTS: Sport[] = ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
 const LEAGUES: League[] = ['MLB', 'MiLB', 'NBA', 'NFL', 'Other'];
-const CONDITIONS = ['Gem Mint', 'Mint', 'Near Mint', 'Excellent', 'Very Good', 'Good', 'Fair', 'Poor'];
+const _CONDITIONS = ['Gem Mint', 'Mint', 'Near Mint', 'Excellent', 'Very Good', 'Good', 'Fair', 'Poor'];
 const GRADERS = ['PSA', 'BGS', 'SGC', 'CGC', 'TAG', 'Raw'];
 
 const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, editCard, initialData, onUpdate }) => {

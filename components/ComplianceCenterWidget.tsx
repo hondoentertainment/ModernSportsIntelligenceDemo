@@ -1,5 +1,11 @@
 import React, { useMemo } from 'react';
-import { FileCheck, ChevronRight, AlertTriangle, Shield, Calendar } from 'lucide-react';
+import {
+  FileCheck,
+  ChevronRight,
+  AlertTriangle,
+  Shield,
+  Calendar,
+} from 'lucide-react';
 import { getComplianceStats, getComplianceAlerts } from '../lib/complianceCenterService';
 
 interface ComplianceCenterWidgetProps {
@@ -12,7 +18,7 @@ function scoreColor(score: number): string {
   return 'text-red-400';
 }
 
-function scoreBg(score: number): string {
+function _scoreBg(score: number): string {
   if (score >= 80) return 'bg-emerald-500';
   if (score >= 60) return 'bg-amber-500';
   return 'bg-red-500';

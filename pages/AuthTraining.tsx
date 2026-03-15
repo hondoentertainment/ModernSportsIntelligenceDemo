@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { GraduationCap, AlertTriangle, Target, Flame, Trophy, BookOpen, Users, Award, Star } from 'lucide-react';
+import {
+  GraduationCap,
+  AlertTriangle,
+  Target,
+  Trophy,
+  BookOpen,
+  Users,
+  Award,
+  Star,
+} from 'lucide-react';
 import {
   getUserProgress,
   getTrainingModules,
@@ -23,9 +32,16 @@ import {
   type EraGuide,
   type LeaderboardEntry,
   type Badge,
-  type AccuracyTrend,
 } from '../lib/authTrainingService.ts';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 const AuthTraining: React.FC = () => {
   const [progress, setProgress] = useState<UserProgress | null>(null);

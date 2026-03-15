@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Settings, Heart, History, Shield, LogOut, Save, Bell, Eye, Palette, Check, Zap, Share2, Copy, Globe, Smartphone, CreditCard, ChevronRight, Cloud, Database, RefreshCw } from 'lucide-react';
+import { User, Settings, Heart, History, Shield, LogOut, Save, Eye, Check, Zap, Share2, Copy, Globe, Smartphone, CreditCard, ChevronRight, Cloud, Database, RefreshCw } from 'lucide-react';
 import { useMigration } from '../contexts/MigrationContext';
 import { useAuth } from '../contexts/AuthContext';
 import { MOCK_TEAMS, SPORTS } from '../constants';

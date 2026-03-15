@@ -8,9 +8,7 @@ import {
   AlertTriangle,
   Star,
   Award,
-  DollarSign,
   Send,
-  Clock,
   ShoppingCart,
 } from 'lucide-react';
 import { CardInventory } from '../types';
@@ -52,7 +50,7 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
   isOpen,
   onClose,
   card,
-  inventory,
+  _inventory,
 }) => {
   const [selectedHouseId, setSelectedHouseId] = useState('');
   const [askingPrice, setAskingPrice] = useState(0);
@@ -159,7 +157,7 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {comparisons.map((comp, i) => {
+                  {comparisons.map((comp, _i) => {
                     const isOptimal = optimalHouse?.id === comp.houseId;
                     return (
                       <tr

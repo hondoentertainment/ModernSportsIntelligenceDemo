@@ -1,7 +1,7 @@
-import { GoogleGenAI, Type, GoogleSearchRetrieval } from "@google/genai";
-import { CardInventory, PricingAnalysis, TargetWatchlist } from "../types.ts";
-import { ebayApi } from "./ebayApi.ts";
-import { showToast } from "./toast.ts";
+import { GoogleGenAI, Type, GoogleSearchRetrieval } from '@google/genai';
+import { CardInventory, PricingAnalysis, TargetWatchlist } from '../types.ts';
+import { ebayApi } from './ebayApi.ts';
+import { showToast } from './toast.ts';
 
 const apiKey = (typeof process !== 'undefined' && process.env && process.env.VITE_GEMINI_API_KEY) ? process.env.VITE_GEMINI_API_KEY : "";
 const ai = new GoogleGenAI({ apiKey });
@@ -80,7 +80,7 @@ const MOCK_PROSPECTS: Record<string, ProspectData[]> = {
   ]
 };
 
-export async function getEbayCardPrice(card: CardInventory, signal?: AbortSignal): Promise<PricingAnalysis | null> {
+export async function getEbayCardPrice(card: CardInventory, _signal?: AbortSignal): Promise<PricingAnalysis | null> {
   // Try eBay API first if configured
   if (ebayApi.config) {
     try {
@@ -169,7 +169,7 @@ export async function getEbayCardPrice(card: CardInventory, signal?: AbortSignal
  * Uses the target's player name and card description to estimate current market value.
  * Tries eBay API first, falls back to AI analysis.
  */
-export async function getWatchlistItemPrice(target: TargetWatchlist, signal?: AbortSignal): Promise<PricingAnalysis | null> {
+export async function getWatchlistItemPrice(target: TargetWatchlist, _signal?: AbortSignal): Promise<PricingAnalysis | null> {
   // Try eBay API first if configured
   if (ebayApi.config) {
     try {
@@ -246,7 +246,7 @@ export async function getWatchlistItemPrice(target: TargetWatchlist, signal?: Ab
   }
 }
 
-export async function getRealTimeLeagueTrends(league: string, signal?: AbortSignal): Promise<ProspectData[]> {
+export async function getRealTimeLeagueTrends(league: string, _signal?: AbortSignal): Promise<ProspectData[]> {
   const prompt = `Perform a live search for the top 50 athletes/prospects in the ${league} as of today.
   
   For each athlete, identify:
@@ -320,7 +320,7 @@ export async function getRealTimeLeagueTrends(league: string, signal?: AbortSign
   }
 }
 
-export async function generatePortfolioSentiment(inventory: CardInventory[], signal?: AbortSignal): Promise<string> {
+export async function generatePortfolioSentiment(inventory: CardInventory[], _signal?: AbortSignal): Promise<string> {
   if (inventory.length === 0) return "Awaiting data ingestion to generate market signals.";
 
   const inventorySummary = inventory.map(c =>
@@ -353,7 +353,7 @@ export async function generatePortfolioSentiment(inventory: CardInventory[], sig
  * imageBase64: Base64 string of the image (no prefix)
  * mimeType: e.g. "image/jpeg"
  */
-export async function parseCardImage(imageBase64: string, mimeType: string = "image/jpeg", signal?: AbortSignal): Promise<Partial<CardInventory> | null> {
+export async function parseCardImage(imageBase64: string, mimeType: string = "image/jpeg", _signal?: AbortSignal): Promise<Partial<CardInventory> | null> {
   const prompt = `Act as a professional card grader and cataloger. Analyze this image of a sports card and extract the following details in JSON format. 
   
   SPECIAL FOCUS: If this is a baseball card, look for Minor League (MiLB) indicators such as "1st Bowman", "Pro Debut", "Heritage Minor League", or "Draft".
@@ -404,7 +404,7 @@ export async function parseCardImage(imageBase64: string, mimeType: string = "im
 /**
  * Deep Search: Finds cards or players similar to the input using AI reasoning.
  */
-export async function findSimilarCards(query: string, inventory: CardInventory[] = [], signal?: AbortSignal): Promise<SimilarCardResult[]> {
+export async function findSimilarCards(query: string, _inventory: CardInventory[] = [], _signal?: AbortSignal): Promise<SimilarCardResult[]> {
   const prompt = `Act as an expert sports card scout and market analyst. 
   Perform a deep similarity search for: "${query}"
   
@@ -479,7 +479,7 @@ export async function getNegotiationResponse(
   maxWillingToPay: number,
   sellerCurrentAsk: number,
   recentMessages: string[],
-  signal?: AbortSignal
+  _signal?: AbortSignal
 ): Promise<NegotiationSellerResponse | null> {
   const prompt = `You are simulating a sports card seller in a negotiation. 
   
@@ -551,7 +551,7 @@ export async function getAgenticOffer(
   userMaxBudget: number,
   userCurrentOffer: number,
   recentMessages: string[],
-  signal?: AbortSignal
+  _signal?: AbortSignal
 ): Promise<AgenticOfferResponse | null> {
   const prompt = `You are an expert sports card investment agent negotiating ON BEHALF of your client (the user).
   

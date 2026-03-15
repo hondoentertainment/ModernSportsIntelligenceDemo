@@ -11,7 +11,6 @@ import {
   Layers,
   Zap,
   Globe,
-  ArrowRight,
   AlertTriangle,
   CheckCircle2,
   Info,
@@ -26,7 +25,7 @@ import {
   Legend,
   CartesianGrid,
 } from 'recharts';
-import { CardInventory, Sport } from '../types';
+import { CardInventory } from '../types';
 import {
   getFullDashboard,
   CorrelationDashboard,
@@ -42,9 +41,7 @@ import {
   AlternativeAsset,
   MARKET_LABELS,
   ALT_LABELS,
-  REGIME_LABELS,
   saveCorrelationSettings,
-  loadCorrelationSettings,
   saveDashboardSnapshot,
 } from '../lib/crossAssetCorrelationService';
 
@@ -103,7 +100,7 @@ function formatPct(value: number): string {
 
 // ---- Matrix Tab ----
 
-const MatrixTab: React.FC<{ correlations: AssetCorrelation[]; window: TimeWindow; onWindowChange: (w: TimeWindow) => void }> = ({
+const MatrixTab: React.FC<{ correlations: AssetCorrelation[]; window: TimeWindow; onWindowChange: (_w: TimeWindow) => void }> = ({
   correlations,
   window,
   onWindowChange,

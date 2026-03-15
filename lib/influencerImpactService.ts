@@ -258,7 +258,7 @@ const MOCK_TRENDING_MENTIONS: TrendingMention[] = [
 
 // ── Helper Functions ─────────────────────────────────────────────────────────────
 
-function platformLabel(platform: Platform): string {
+export function platformLabel(platform: Platform): string {
   const map: Record<Platform, string> = {
     youtube: 'YouTube',
     tiktok: 'TikTok',
@@ -280,7 +280,7 @@ function platformColor(platform: Platform): string {
   return map[platform];
 }
 
-function platformBadgeColor(platform: Platform): string {
+export function platformBadgeColor(platform: Platform): string {
   const map: Record<Platform, string> = {
     youtube: 'bg-red-500/20 text-red-400 border-red-500/40',
     tiktok: 'bg-pink-500/20 text-pink-400 border-pink-500/40',
@@ -291,7 +291,7 @@ function platformBadgeColor(platform: Platform): string {
   return map[platform];
 }
 
-function severityBadgeColor(severity: AlertSeverity): string {
+export function severityBadgeColor(severity: AlertSeverity): string {
   const map: Record<AlertSeverity, string> = {
     critical: 'bg-red-500/20 text-red-400 border-red-500/40',
     high: 'bg-orange-500/20 text-orange-400 border-orange-500/40',
@@ -301,19 +301,19 @@ function severityBadgeColor(severity: AlertSeverity): string {
   return map[severity];
 }
 
-function formatFollowers(n: number): string {
+export function formatFollowers(n: number): string {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
   if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
   return n.toString();
 }
 
-function formatViews(n: number): string {
+export function formatViews(n: number): string {
   if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
   if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
   return n.toString();
 }
 
-function momentumColor(momentum: 'accelerating' | 'stable' | 'decelerating'): string {
+export function momentumColor(momentum: 'accelerating' | 'stable' | 'decelerating'): string {
   const map = { accelerating: 'text-emerald-400', stable: 'text-amber-400', decelerating: 'text-red-400' };
   return map[momentum];
 }
@@ -443,13 +443,5 @@ export function getInfluencerCorrelation(id1: string, id2: string): { influencer
   };
 }
 
-// Re-export helpers for use in components
-export {
-  platformLabel,
-  platformColor,
-  platformBadgeColor,
-  severityBadgeColor,
-  formatFollowers,
-  formatViews,
-  momentumColor,
-};
+// Helper functions are exported at their declarations above
+

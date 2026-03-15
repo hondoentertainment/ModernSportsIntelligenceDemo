@@ -1,31 +1,115 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { CalendarClock, AlertTriangle, TrendingUp, TrendingDown, Clock, Shield, DollarSign, Activity, Users, Flame, BarChart3, ArrowRightLeft } from 'lucide-react';
 import {
-  getTradeEvents,
+  CalendarClock,
+  AlertTriangle,
+  TrendingUp,
+  Clock,
+  Activity,
+  Users,
+  Flame,
+  BarChart3,
+  ArrowRightLeft,
+} from 'lucide-react';
+import {
+  getTradeEvents as _getTradeEvents,
   getFreeAgencySignings,
-  getMarketReactions,
-  getTradeRumors,
+  getMarketReactions as _getMarketReactions,
+  getTradeRumors as _getTradeRumors,
   getLeagueDeadlines,
   getHistoricalComparisons,
   getSummaryStats,
   getValueChanges,
   formatCurrency,
   formatDate,
-  getImpactColor,
-  getConfidenceColor,
-  type TradeEvent,
   type FreeAgencySigning,
-  type MarketReaction,
-  type TradeRumor,
   type LeagueDeadline,
   type HistoricalComparison,
   type TradeDeadlineSummary,
   type ValueChange,
 } from '../lib/tradeDeadlineService';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-  LineChart, Line, Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  LineChart,
+  Line,
+  Legend,
 } from 'recharts';
+
+// Page-local adapted types to match UI expectations
+interface TradeEvent {
+  id: string;
+  title: string;
+  date: string;
+  league: string;
+  impactLevel: string;
+  marketImpact: number;
+  description: string;
+  playersInvolved: string[];
+  fromTeam: string;
+  toTeam: string;
+  cardsAffected: number;
+}
+
+interface MarketReaction {
+  date: string;
+  marketIndex: number;
+  tradingVolume: number;
+  sentimentScore: number;
+}
+
+interface TradeRumor {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  confidence: number;
+  source: string;
+  players: string[];
+  estimatedImpact: number;
+}
+
+function getTradeEvents(): TradeEvent[] {
+  return _getTradeEvents().map(e => ({
+    id: e.id,
+    title: e.headline,
+    date: e.date,
+    league: e.league.toUpperCase(),
+    impactLevel: Math.abs(e.cardValueImpact) > 500 ? 'major' : Math.abs(e.cardValueImpact) > 200 ? 'moderate' : 'minor',
+    marketImpact: e.cardValueImpact,
+    description: e.tradeDetails,
+    playersInvolved: [e.playerTraded, ...e.assetsReceived.slice(0, 2)],
+    fromTeam: e.fromTeam,
+    toTeam: e.toTeam,
+    cardsAffected: Math.ceil(Math.abs(e.cardValueImpact) / 50),
+  }));
+}
+
+function getMarketReactions(): MarketReaction[] {
+  return _getMarketReactions().map(r => ({
+    date: r.timestamp.split('T')[0],
+    marketIndex: 100 + r.priceMovement,
+    tradingVolume: r.volumeSpike,
+    sentimentScore: r.marketSentiment === 'bullish' ? 75 : r.marketSentiment === 'bearish' ? 25 : 50,
+  }));
+}
+
+function getTradeRumors(): TradeRumor[] {
+  return _getTradeRumors().map(r => ({
+    id: r.id,
+    title: `${r.playerName} to ${r.rumoredTeams[0] || 'TBD'}`,
+    description: r.description,
+    status: r.status,
+    confidence: r.confidence,
+    source: r.source,
+    players: [r.playerName],
+    estimatedImpact: r.potentialCardImpact,
+  }));
+}
 
 const IMPACT_BADGES: Record<string, { bg: string; text: string }> = {
   major: { bg: 'bg-red-500/20', text: 'text-red-400' },
@@ -57,7 +141,7 @@ const TradeDeadline: React.FC = () => {
       setSummary(getSummaryStats());
       setValueChanges(getValueChanges());
       setLoading(false);
-    } catch (err) {
+    } catch  {
       setError('Failed to load Trade Deadline data');
       setLoading(false);
     }

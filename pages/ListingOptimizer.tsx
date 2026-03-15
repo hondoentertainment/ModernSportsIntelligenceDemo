@@ -1,7 +1,19 @@
 // Phase 154: Card Photography & Listing Optimizer Page
 // Route: /listing-optimizer | Icon: Camera
 import React, { useState, useEffect, useMemo } from 'react';
-import { Camera, AlertTriangle, TrendingUp, DollarSign, Search, Star, Clock, Eye, Target, BarChart3, Award, Zap, Tag, Globe } from 'lucide-react';
+import {
+  Camera,
+  AlertTriangle,
+  TrendingUp,
+  DollarSign,
+  Search,
+  Clock,
+  Eye,
+  Target,
+  Zap,
+  Tag,
+  Globe,
+} from 'lucide-react';
 import {
   getListingAnalyses,
   getPhotoTips,
@@ -26,10 +38,19 @@ import {
   type ListingOptimizerSummary,
 } from '../lib/listingOptimizerService';
 import {
-  BarChart, Bar, PieChart, Pie, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
 } from 'recharts';
 
-const SCORE_COLORS = ['#ef4444', '#f59e0b', '#3b82f6', '#22c55e', '#10b981'];
+const _SCORE_COLORS = ['#ef4444', '#f59e0b', '#3b82f6', '#22c55e', '#10b981'];
 
 function scoreColor(score: number): string {
   if (score >= 90) return 'text-emerald-400';
@@ -79,7 +100,7 @@ const ListingOptimizer: React.FC = () => {
       setImprovements(getScoreImprovements());
       setSummary(getOptimizerSummary());
       setLoading(false);
-    } catch (err) {
+    } catch  {
       setError('Failed to load Listing Optimizer data');
       setLoading(false);
     }

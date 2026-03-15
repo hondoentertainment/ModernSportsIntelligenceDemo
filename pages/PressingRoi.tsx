@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
-  Wrench, TrendingUp, DollarSign, Shield, Star, Clock, AlertTriangle,
-  CheckCircle, BarChart3, Users, Layers,
+  Wrench,
+  TrendingUp,
+  Shield,
+  Star,
+  AlertTriangle,
+  CheckCircle,
+  BarChart3,
+  Users,
+  Layers,
 } from 'lucide-react';
 import {
   getAllAssessments,
@@ -20,7 +27,16 @@ import {
   type RestorationRisk,
   type PressingStats,
 } from '../lib/pressingRoiService.ts';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
+} from 'recharts';
 
 const RISK_BADGE: Record<string, string> = {
   low: 'bg-emerald-500/20 text-emerald-400',

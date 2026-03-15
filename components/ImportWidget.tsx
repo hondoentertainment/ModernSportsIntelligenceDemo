@@ -24,8 +24,8 @@ const SOURCE_LABELS: Record<ImportSource, string> = {
   manual_json: 'JSON',
 };
 
-export const ImportWidget: React.FC<ImportWidgetProps> = ({ cards, onClick }) => {
-  const history = useMemo(() => getImportHistory(), [cards]);
+export const ImportWidget: React.FC<ImportWidgetProps> = ({ _cards, onClick }) => {
+  const history = useMemo(() => getImportHistory(), []);
 
   const lastImport = useMemo(() => {
     if (history.records.length === 0) return null;

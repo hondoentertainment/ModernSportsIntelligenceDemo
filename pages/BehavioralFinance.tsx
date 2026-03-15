@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Brain, AlertTriangle, Shield, TrendingUp, TrendingDown, Clock, Target, BarChart3, Activity } from 'lucide-react';
+import {
+  Brain,
+  AlertTriangle,
+  Shield,
+  TrendingUp,
+  TrendingDown,
+  Clock,
+  Target,
+  BarChart3,
+  Activity,
+} from 'lucide-react';
 import {
   getBehavioralProfile,
   detectBiases,
@@ -21,7 +31,16 @@ import {
   type OverpaymentEntry,
   type Nudge,
 } from '../lib/behavioralFinanceService.ts';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ScatterChart, Scatter, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Cell,
+} from 'recharts';
 
 const BehavioralFinance: React.FC = () => {
   const [profile, setProfile] = useState<BehavioralProfile | null>(null);
@@ -50,7 +69,7 @@ const BehavioralFinance: React.FC = () => {
     }
   }, []);
 
-  const biasBreakdown = useMemo(() => getBiasBreakdown(), []);
+  const _biasBreakdown = useMemo(() => getBiasBreakdown(), []);
   const spendingPatterns = useMemo(() => getSpendingPatterns(), []);
 
   const spendByHour = useMemo(() => {

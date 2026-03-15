@@ -1,14 +1,12 @@
 import React, { useMemo } from 'react';
-import { Bot, ChevronRight, Bell, MessageSquare, Sparkles } from 'lucide-react';
 import {
-  getDailyBriefing,
-  getProactiveNudges,
-  getCopilotSuggestions,
-  priorityColor,
-  intentBadgeColor,
-  type ProactiveNudge,
-  type CopilotSuggestion,
-} from '../lib/portfolioCopilotService';
+  Bot,
+  ChevronRight,
+  Bell,
+  MessageSquare,
+  Sparkles,
+} from 'lucide-react';
+import { getDailyBriefing, getProactiveNudges, getCopilotSuggestions } from '../lib/portfolioCopilotService';
 
 interface PortfolioCopilotWidgetProps {
   onOpenModal?: () => void;

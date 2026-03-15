@@ -8,7 +8,6 @@ import {
   BarChart3,
   Target,
   Layers,
-  Clock,
 } from 'lucide-react';
 import {
   ComposedChart,
@@ -24,12 +23,7 @@ import {
   Legend,
 } from 'recharts';
 import { CardInventory } from '../types';
-import {
-  generatePriceHistory,
-  PriceDataPoint,
-  calculateMovingAverage,
-  calculateBollingerBands,
-} from '../lib/priceChartService';
+import { generatePriceHistory, calculateMovingAverage, calculateBollingerBands } from '../lib/priceChartService';
 import {
   calculateRSI,
   calculateMACD,
@@ -38,13 +32,6 @@ import {
   generateVolumeProfile,
   generateTASignals,
   getOverallTASentiment,
-  TASignal,
-  TASentiment,
-  FibonacciLevels,
-  RSIResult,
-  MACDResult,
-  CandlestickPattern,
-  VolumeProfile,
 } from '../lib/technicalAnalysisService';
 
 interface TechnicalAnalysisModalProps {

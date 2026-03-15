@@ -393,7 +393,7 @@ function getStoredMessages(): StoredMessages {
 
 function generateSimulatedThreads(): StoredMessages {
   const profiles = generateCollectorProfiles();
-  const seed = dateSeed();
+  const _seed = dateSeed();
   const threads: ChatThread[] = [];
   const messages: DirectMessage[] = [];
 
@@ -639,7 +639,7 @@ export function getActivityFeed(scope: 'global' | 'following'): ActivityFeedItem
 
   const items: ActivityFeedItem[] = [];
 
-  const activityTemplates: { type: ActivityType; template: (name: string, player: string, sport: Sport, value: number) => string }[] = [
+  const activityTemplates: { type: ActivityType; template: (_name: string, _player: string, _sport: Sport, _value: number) => string }[] = [
     { type: 'listing', template: (_, player, _s, value) => `Listed a ${player} card for $${value.toLocaleString()}` },
     { type: 'trade', template: (_, player) => `Completed a trade involving ${player}` },
     { type: 'achievement', template: () => `Earned the "Set Builder" achievement` },

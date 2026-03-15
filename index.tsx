@@ -1,8 +1,11 @@
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { validateEnv } from './lib/envValidation.ts';
 import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
+
+validateEnv();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

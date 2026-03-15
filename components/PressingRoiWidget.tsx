@@ -1,11 +1,6 @@
 import React, { useMemo } from 'react';
-import {
-  Wrench, TrendingUp, ChevronRight, Zap, Target,
-} from 'lucide-react';
-import {
-  getPressingStats,
-  type PressingStats,
-} from '../lib/pressingRoiService';
+import { Wrench, ChevronRight, Zap } from 'lucide-react';
+import { getPressingStats, type PressingStats } from '../lib/pressingRoiService';
 
 interface PressingRoiWidgetProps {
   onClick?: () => void;
