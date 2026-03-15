@@ -261,6 +261,16 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (_val: boo
                 <Route path="/error-card" element={<ErrorCard />} />
                 <Route path="/auction-sniper" element={<AuctionSniper />} />
                 <Route path="/audit-dossier" element={<CollectorAuditDossier />} />
+                <Route path="/real-time-price-engine" element={<RealTimePriceEngine />} />
+                <Route path="/ai-card-scanner" element={<AiCardScanner />} />
+                <Route path="/cross-platform-arbitrage" element={<CrossPlatformArbitrage />} />
+                <Route path="/predictive-price-engine" element={<PredictivePriceEngine />} />
+                <Route path="/tax-report" element={<TaxReport />} />
+                <Route path="/grade-prediction" element={<GradePredictionPage />} />
+                <Route path="/smart-notifications" element={<SmartNotifications />} />
+                <Route path="/consensus-pricing" element={<ConsensusPricing />} />
+                <Route path="/live-break-roi" element={<LiveBreakRoi />} />
+                <Route path="/portfolio-benchmark" element={<PortfolioBenchmark />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

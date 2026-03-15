@@ -1,26 +1,3 @@
-import React, { useMemo } from 'react';
-import {
-  Shield,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  AlertTriangle,
-  AlertCircle,
-  Info,
-  ArrowRight,
-} from 'lucide-react';
-import { CardInventory } from '../types';
-import {
-  generateMacroSummary,
-  MacroAlert,
-  MacroIndicator,
-  MarketRegime,
-  ExposureLevel,
-} from '../lib/macroSentinelService';
-
-interface MacroSentinelWidgetProps {
-  inventory: CardInventory[];
-  onAlertClick: (_alert: MacroAlert) => void;
 import React, { useState, useEffect } from 'react';
 import { Activity, TrendingUp, TrendingDown, AlertTriangle, ShieldAlert, Cpu } from 'lucide-react';
 import { MacroSignal, MacroTrend } from '../types.ts';
