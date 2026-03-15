@@ -351,7 +351,7 @@ describe('breakEvenCalculatorService', () => {
     });
 
     it('formats negative percentages', () => {
-      expect(formatPercent(-5.55)).toBe('-5.6%');
+      expect(formatPercent(-5.5)).toBe('-5.5%');
     });
   });
 

@@ -512,7 +512,10 @@ function computeExpectedROI(expectedProfit: number, baseCost: number): number {
 // ─── Public API ────────────────────────────────────────────────────────────
 
 export function getScenarios(): BreakEvenScenario[] {
-  return [...MOCK_SCENARIOS];
+  return MOCK_SCENARIOS.map((s) => ({
+    ...s,
+    estimatedGrades: s.estimatedGrades.map((g) => ({ ...g })),
+  }));
 }
 
 export interface CalculateBreakEvenParams {
