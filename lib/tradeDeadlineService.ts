@@ -370,6 +370,10 @@ const MOCK_DEADLINE_COUNTDOWNS: DeadlineCountdown[] = [
   { id: 'dc-2', league: 'mlb', deadlineName: 'MLB Trade Deadline', deadlineDate: '2026-07-31T16:00:00Z', daysRemaining: 138, hoursRemaining: 3312, isActive: true, expectedMoves: 50, completedMoves: 0 },
   { id: 'dc-3', league: 'nfl', deadlineName: 'NFL Free Agency Opens', deadlineDate: '2026-03-11T16:00:00Z', daysRemaining: 0, hoursRemaining: 0, isActive: false, expectedMoves: 80, completedMoves: 95 },
   { id: 'dc-4', league: 'nhl', deadlineName: 'NHL Trade Deadline', deadlineDate: '2026-03-09T15:00:00Z', daysRemaining: 0, hoursRemaining: 0, isActive: false, expectedMoves: 25, completedMoves: 28 },
+  { id: 'dc-5', league: 'nba', deadlineName: 'NBA Buyout Deadline', deadlineDate: '2026-03-01T23:59:59Z', daysRemaining: 0, hoursRemaining: 0, isActive: false, expectedMoves: 12, completedMoves: 8 },
+  { id: 'dc-6', league: 'mlb', deadlineName: 'MLB Opening Day', deadlineDate: '2026-03-26T13:00:00Z', daysRemaining: 11, hoursRemaining: 264, isActive: true, expectedMoves: 15, completedMoves: 8 },
+  { id: 'dc-7', league: 'nfl', deadlineName: 'NFL Draft', deadlineDate: '2026-04-23T20:00:00Z', daysRemaining: 39, hoursRemaining: 936, isActive: true, expectedMoves: 60, completedMoves: 0 },
+  { id: 'dc-8', league: 'nhl', deadlineName: 'NHL Playoffs Begin', deadlineDate: '2026-04-15T19:00:00Z', daysRemaining: 31, hoursRemaining: 744, isActive: true, expectedMoves: 5, completedMoves: 0 },
 ];
 
 // ---- Mock Data: Historical Trades (15) ----
