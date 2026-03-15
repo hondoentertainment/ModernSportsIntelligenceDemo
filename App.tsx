@@ -155,6 +155,26 @@ const ConsignmentMarket = lazy(() => import('./pages/ConsignmentMarket.tsx'));
 const GradingPrep = lazy(() => import('./pages/GradingPrep.tsx'));
 const ParallelUniverse = lazy(() => import('./pages/ParallelUniverse.tsx'));
 const AchievementSystem = lazy(() => import('./pages/AchievementSystem.tsx'));
+const SentimentVelocity = lazy(() => import('./pages/SentimentVelocity.tsx'));
+
+// v4.0: Multi-Sport & Infrastructure
+const GradingVisionEngine = lazy(() => import('./pages/GradingVisionEngine.tsx'));
+const NotificationCenter = lazy(() => import('./pages/NotificationCenter.tsx'));
+const DashboardBuilder = lazy(() => import('./pages/DashboardBuilder.tsx'));
+const MarketplaceIntegrations = lazy(() => import('./pages/MarketplaceIntegrations.tsx'));
+const InsuranceAppraisal = lazy(() => import('./pages/InsuranceAppraisal.tsx'));
+const OfflineManager = lazy(() => import('./pages/OfflineManager.tsx'));
+
+// v4.0: Industry-First Features
+const ProvenanceDna = lazy(() => import('./pages/ProvenanceDna.tsx'));
+const EmotionalThermometer = lazy(() => import('./pages/EmotionalThermometer.tsx'));
+const CardWeather = lazy(() => import('./pages/CardWeather.tsx'));
+const DeadMoneyDetector = lazy(() => import('./pages/DeadMoneyDetector.tsx'));
+const MicroArbitrageSwarm = lazy(() => import('./pages/MicroArbitrageSwarm.tsx'));
+const GenerationalWealth = lazy(() => import('./pages/GenerationalWealth.tsx'));
+const CardAgingLab = lazy(() => import('./pages/CardAgingLab.tsx'));
+const PhantomBacktester = lazy(() => import('./pages/PhantomBacktester.tsx'));
+const CollectorMatchmaker = lazy(() => import('./pages/CollectorMatchmaker.tsx'));
 
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
@@ -315,6 +335,24 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/grading-prep" element={<GradingPrep />} />
                 <Route path="/parallel-universe" element={<ParallelUniverse />} />
                 <Route path="/achievement-system" element={<AchievementSystem />} />
+                <Route path="/sentiment-velocity" element={<SentimentVelocity />} />
+                {/* v4.0: Multi-Sport & Infrastructure */}
+                <Route path="/grading-vision-engine" element={<GradingVisionEngine />} />
+                <Route path="/notification-center" element={<NotificationCenter />} />
+                <Route path="/dashboard-builder" element={<DashboardBuilder />} />
+                <Route path="/marketplace-integrations" element={<MarketplaceIntegrations />} />
+                <Route path="/insurance-appraisal" element={<InsuranceAppraisal />} />
+                <Route path="/offline-manager" element={<OfflineManager />} />
+                {/* v4.0: Industry-First Features */}
+                <Route path="/provenance-dna" element={<ProvenanceDna />} />
+                <Route path="/emotional-thermometer" element={<EmotionalThermometer />} />
+                <Route path="/card-weather" element={<CardWeather />} />
+                <Route path="/dead-money-detector" element={<DeadMoneyDetector />} />
+                <Route path="/micro-arbitrage-swarm" element={<MicroArbitrageSwarm />} />
+                <Route path="/generational-wealth" element={<GenerationalWealth />} />
+                <Route path="/card-aging-lab" element={<CardAgingLab />} />
+                <Route path="/phantom-backtester" element={<PhantomBacktester />} />
+                <Route path="/collector-matchmaker" element={<CollectorMatchmaker />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

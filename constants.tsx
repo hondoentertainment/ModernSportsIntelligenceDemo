@@ -182,6 +182,23 @@ export const NAV_ITEMS = [
   { id: 'portfolio-benchmark', label: 'Benchmark', icon: <Percent size={20} />, path: '/portfolio-benchmark' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
+  // v4.0: Multi-Sport & Infrastructure
+  { id: 'grading-vision-engine', label: 'Vision Grading', icon: <ScanEye size={20} />, path: '/grading-vision-engine' },
+  { id: 'notification-center', label: 'Notifications', icon: <BellRing size={20} />, path: '/notification-center' },
+  { id: 'dashboard-builder', label: 'Dashboard Builder', icon: <LayoutGrid size={20} />, path: '/dashboard-builder' },
+  { id: 'marketplace-integrations', label: 'Marketplaces', icon: <ShoppingCart size={20} />, path: '/marketplace-integrations' },
+  { id: 'insurance-appraisal', label: 'Insurance', icon: <Shield size={20} />, path: '/insurance-appraisal' },
+  { id: 'offline-manager', label: 'Offline Mode', icon: <RefreshCw size={20} />, path: '/offline-manager' },
+  // v4.0: Industry-First Features
+  { id: 'provenance-dna', label: 'Provenance DNA', icon: <Fingerprint size={20} />, path: '/provenance-dna' },
+  { id: 'emotional-thermometer', label: 'Emotion Meter', icon: <Thermometer size={20} />, path: '/emotional-thermometer' },
+  { id: 'card-weather', label: 'Card Weather', icon: <Activity size={20} />, path: '/card-weather' },
+  { id: 'dead-money-detector', label: 'Dead Money', icon: <AlertOctagon size={20} />, path: '/dead-money-detector' },
+  { id: 'micro-arbitrage-swarm', label: 'Swarm Network', icon: <Globe size={20} />, path: '/micro-arbitrage-swarm' },
+  { id: 'generational-wealth', label: 'Estate Planner', icon: <Landmark size={20} />, path: '/generational-wealth' },
+  { id: 'card-aging-lab', label: 'Aging Lab', icon: <Timer size={20} />, path: '/card-aging-lab' },
+  { id: 'phantom-backtester', label: 'Backtester', icon: <LineChart size={20} />, path: '/phantom-backtester' },
+  { id: 'collector-matchmaker', label: 'Matchmaker', icon: <Users size={20} />, path: '/collector-matchmaker' },
 ];
 
 export const LEAGUES: readonly string[] = ['MLB', 'MiLB', 'NBA', 'NFL', 'Other'];
