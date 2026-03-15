@@ -730,3 +730,62 @@ export function getTopMovers(direction: 'up' | 'down'): PlayerImpact[] {
   const filtered = impacts.filter(i => i.trending === direction);
   return filtered.sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange)).slice(0, 10);
 }
+
+export function getLeagueSummary(league: League): typeof MOCK_LEAGUE_SUMMARIES.nba {
+  return MOCK_LEAGUE_SUMMARIES[league];
+}
+
+export function getValueTimeline(): typeof MOCK_VALUE_TIMELINE {
+  return MOCK_VALUE_TIMELINE;
+}
+
+export function getTradeImpactAnalysis(): typeof MOCK_TRADE_IMPACT_ANALYSIS {
+  return MOCK_TRADE_IMPACT_ANALYSIS;
+}
+
+export function getUnreadAlerts(): WatchlistAlert[] {
+  const alerts = getWatchlistAlerts();
+  return alerts.filter(a => !a.read);
+}
+
+export function getActiveRumors(): TradeRumor[] {
+  const rumors = getTradeRumors();
+  return rumors.filter(r => r.status === 'active');
+}
+
+export function getActiveDeadlines(): DeadlineCountdown[] {
+  const countdowns = getDeadlineCountdowns();
+  return countdowns.filter(c => c.isActive);
+}
+
+export function getRecentTradeEvents(days: number): TradeEvent[] {
+  const events = getTradeEvents();
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  return events.filter(e => new Date(e.date) >= cutoff);
+}
+
+export function getPlayerImpactByName(playerName: string): PlayerImpact | null {
+  const impacts = getPlayerImpacts();
+  return impacts.find(i => i.playerName === playerName) || null;
+}
+
+export function getTeamImpactByName(teamName: string): TeamImpact | null {
+  const teamImpacts = getTeamImpacts();
+  return teamImpacts.find(t => t.teamName === teamName) || null;
+}
+
+export function getRumorsByConfidence(minConfidence: number): TradeRumor[] {
+  const rumors = getTradeRumors();
+  return rumors.filter(r => r.confidence >= minConfidence).sort((a, b) => b.confidence - a.confidence);
+}
+
+export function getMarketReactionsByType(eventType: 'trade' | 'signing' | 'rumor'): MarketReaction[] {
+  const reactions = getMarketReactions();
+  return reactions.filter(r => r.eventType === eventType);
+}
+
+export function getHighPriorityAlerts(): WatchlistAlert[] {
+  const alerts = getWatchlistAlerts();
+  return alerts.filter(a => a.priority === 'high' || a.priority === 'urgent');
+}
