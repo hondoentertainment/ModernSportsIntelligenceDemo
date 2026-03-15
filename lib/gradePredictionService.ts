@@ -1,38 +1,8 @@
 // ---- Types ----
 
 export type GradingCompany = 'PSA' | 'BGS' | 'SGC' | 'CGC';
-
 export type SubgradeCategory = 'centering' | 'corners' | 'edges' | 'surface';
-
 export type SubmissionTier = 'value' | 'regular' | 'express' | 'super_express' | 'walk_through';
-
-export interface SubgradeDetail {
-  category: SubgradeCategory;
-  score: number; // 1-10
-  confidence: number; // 0-100
-  notes: string;
-}
-
-export interface GradeDistributionEntry {
-  grade: number;
-  probability: number; // 0-100
-}
-
-export interface CompanyPrediction {
-  company: GradingCompany;
-  predictedGrade: number;
-  confidence: number; // 0-100
-  gradeDistribution: GradeDistributionEntry[];
-  subgrades: SubgradeDetail[];
-}
-
-export interface SubmissionRecommendation {
-  recommendedCompany: GradingCompany;
-  recommendedTier: SubmissionTier;
-  reason: string;
-  estimatedTurnaround: number; // days
-  estimatedCost: number;
-}
 
 export interface GradePrediction {
   id: string;
@@ -42,67 +12,67 @@ export interface GradePrediction {
   set: string;
   sport: string;
   imageUrl: string;
-  predictions: CompanyPrediction[];
-  overallConfidence: number; // 0-100
+  predictions: {
+    company: GradingCompany;
+    predictedGrade: number;
+    confidence: number;
+    gradeDistribution: { grade: string; probability: number }[];
+    subgrades: {
+      centering: number;
+      corners: number;
+      edges: number;
+      surface: number;
+    };
+  }[];
+  overallConfidence: number;
   conditionNotes: string[];
-  valueDelta: { rawValue: number; predictedGradedValue: number; percentIncrease: number };
-  submissionRecommendation: SubmissionRecommendation;
+  valueDelta: { raw: number; graded: number; uplift: number; upliftPercent: number };
+  submissionRecommendation: {
+    recommended: boolean;
+    bestCompany: GradingCompany;
+    bestTier: SubmissionTier;
+    estimatedCost: number;
+    estimatedTurnaround: string;
+    expectedROI: number;
+    reasoning: string;
+  };
   timestamp: string;
-}
-
-export interface GradingTierCost {
-  tier: SubmissionTier;
-  label: string;
-  cost: number;
-  turnaroundDays: number;
-  maxDeclaredValue: number;
 }
 
 export interface GradingCostComparison {
   company: GradingCompany;
-  tiers: GradingTierCost[];
-  insuranceRate: number; // percentage
-  shippingCost: number;
-  membershipRequired: boolean;
+  tiers: {
+    tier: SubmissionTier;
+    cost: number;
+    turnaround: string;
+    available: boolean;
+  }[];
+  bulkDiscount: { minCards: number; discount: number }[];
   membershipCost: number;
+  membershipBenefits: string[];
 }
 
 export interface GradePopulationData {
-  id: string;
   cardName: string;
   player: string;
-  year: number;
-  set: string;
-  sport: string;
   populations: {
     company: GradingCompany;
+    grades: { grade: string; count: number; percentOfTotal: number }[];
     totalGraded: number;
-    gradeBreakdown: { grade: number; count: number; percentage: number }[];
-    gemRate: number; // percentage
-    lastUpdated: string;
+    gem_rate: number;
   }[];
 }
 
 export interface GradingROI {
-  grade: number;
+  grade: string;
   rawValue: number;
   gradedValue: number;
   gradingCost: number;
   netROI: number;
   roiPercent: number;
-  recommendation: 'strong_submit' | 'submit' | 'hold' | 'skip';
+  breakEvenGrade: string;
+  recommendation: 'submit' | 'skip' | 'borderline';
 }
-
-export type SubmissionStatus =
-  | 'pending_shipment'
-  | 'in_transit'
-  | 'received'
-  | 'grading_queue'
-  | 'grading_in_progress'
-  | 'quality_review'
-  | 'graded'
-  | 'shipped_back'
-  | 'delivered';
 
 export interface SubmissionTracker {
   id: string;
@@ -110,831 +80,970 @@ export interface SubmissionTracker {
   player: string;
   company: GradingCompany;
   tier: SubmissionTier;
-  status: SubmissionStatus;
   submittedDate: string;
-  expectedReturnDate: string;
-  declaredValue: number;
-  cost: number;
-  trackingNumber: string;
-  estimatedGrade: number;
+  estimatedReturn: string;
+  status: 'submitted' | 'received' | 'grading' | 'shipped' | 'complete';
+  predictedGrade: number;
   actualGrade: number | null;
-  notes: string;
+  cost: number;
 }
 
 export interface PredictionStats {
   totalPredictions: number;
-  accuracyRate: number; // percentage — within 0.5 of actual
-  exactMatchRate: number; // percentage — exact match
-  averageDeviation: number; // average grade difference
-  averageROI: number; // percentage
-  totalSavings: number; // dollars
-  companyBreakdown: { company: GradingCompany; predictions: number; accuracy: number }[];
-  monthlyAccuracy: { month: string; accuracy: number; predictions: number }[];
+  avgConfidence: number;
+  accuracyRate: number;
+  withinOneGrade: number;
+  exactMatch: number;
+  avgROIOnSubmissions: number;
+  totalSubmissions: number;
+  totalSavings: number;
+  bestPrediction: { cardName: string; predicted: number; actual: number };
 }
 
-// ---- Constants ----
+// ---- localStorage helpers ----
 
-const STORAGE_KEY = 'msi_grade_predictions';
-const TRACKER_KEY = 'msi_grade_submission_tracker';
+const STORAGE_PREFIX = 'msi_grade_prediction';
 
-// ---- Seed Data: Grade Predictions ----
-
-function buildSubgrades(
-  centering: number,
-  corners: number,
-  edges: number,
-  surface: number,
-): SubgradeDetail[] {
-  return [
-    { category: 'centering', score: centering, confidence: 82 + Math.round(centering * 1.5), notes: centering >= 9 ? 'Well centered within tolerance' : 'Slight off-center to left' },
-    { category: 'corners', score: corners, confidence: 80 + Math.round(corners * 1.8), notes: corners >= 9 ? 'Sharp corners, no wear' : 'Minor corner softness detected' },
-    { category: 'edges', score: edges, confidence: 78 + Math.round(edges * 2), notes: edges >= 9 ? 'Clean edges throughout' : 'Light edge wear visible' },
-    { category: 'surface', score: surface, confidence: 81 + Math.round(surface * 1.6), notes: surface >= 9 ? 'Clean surface, no defects' : 'Minor surface imperfection' },
-  ];
-}
-
-function buildDistribution(center: number): GradeDistributionEntry[] {
-  const grades = [6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
-  const dist: GradeDistributionEntry[] = [];
-  let remaining = 100;
-  for (const g of grades) {
-    const distance = Math.abs(g - center);
-    let prob = Math.max(0, Math.round(40 - distance * 12 + (Math.random() * 4 - 2)));
-    if (prob > remaining) prob = remaining;
-    remaining -= prob;
-    dist.push({ grade: g, probability: prob });
+function loadFromStorage<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(`${STORAGE_PREFIX}_${key}`);
+    if (raw) return JSON.parse(raw) as T;
+  } catch {
+    // ignore parse errors
   }
-  // distribute remaining to center
-  const centerIdx = dist.findIndex(d => d.grade === center) ?? dist.length - 1;
-  if (centerIdx >= 0) dist[centerIdx].probability += remaining;
-  else dist[dist.length - 1].probability += remaining;
-  return dist;
+  return fallback;
 }
 
-function buildPredictions(
-  psaGrade: number,
-  bgsGrade: number,
-  sgcGrade: number,
-  cgcGrade: number,
-  confidence: number,
-  centering: number,
-  corners: number,
-  edges: number,
-  surface: number,
-): CompanyPrediction[] {
-  return [
-    {
-      company: 'PSA',
-      predictedGrade: psaGrade,
-      confidence: confidence,
-      gradeDistribution: buildDistribution(psaGrade),
-      subgrades: buildSubgrades(centering, corners, edges, surface),
-    },
-    {
-      company: 'BGS',
-      predictedGrade: bgsGrade,
-      confidence: confidence - 2,
-      gradeDistribution: buildDistribution(bgsGrade),
-      subgrades: buildSubgrades(centering, corners, edges, surface),
-    },
-    {
-      company: 'SGC',
-      predictedGrade: sgcGrade,
-      confidence: confidence - 4,
-      gradeDistribution: buildDistribution(sgcGrade),
-      subgrades: buildSubgrades(centering, corners, edges, surface),
-    },
-    {
-      company: 'CGC',
-      predictedGrade: cgcGrade,
-      confidence: confidence - 3,
-      gradeDistribution: buildDistribution(cgcGrade),
-      subgrades: buildSubgrades(centering, corners, edges, surface),
-    },
-  ];
+function saveToStorage<T>(key: string, data: T): void {
+  try {
+    localStorage.setItem(`${STORAGE_PREFIX}_${key}`, JSON.stringify(data));
+  } catch {
+    // ignore storage errors
+  }
 }
 
-const DEFAULT_PREDICTIONS: GradePrediction[] = [
+// ---- Internal helpers for mock data generation ----
+
+function makeDistribution(peak: number): { grade: string; probability: number }[] {
+  const grades = ['1', '2', '3', '4', '5', '6', '7', '8', '8.5', '9', '9.5', '10'];
+  const raw = grades.map(g => {
+    const numG = parseFloat(g);
+    const diff = Math.abs(numG - peak);
+    return { grade: g, probability: Math.max(0.01, parseFloat((1 / (1 + diff * diff)).toFixed(3))) };
+  });
+  const sum = raw.reduce((s, r) => s + r.probability, 0);
+  return raw.map(r => ({ grade: r.grade, probability: parseFloat((r.probability / sum).toFixed(3)) }));
+}
+
+function makePredictions(predictedGrade: number, confidence: number): GradePrediction['predictions'] {
+  const companies: GradingCompany[] = ['PSA', 'BGS', 'SGC', 'CGC'];
+  const offsets: Record<GradingCompany, number> = { PSA: 0, BGS: -0.25, SGC: 0.25, CGC: -0.1 };
+  const confOffsets: Record<GradingCompany, number> = { PSA: 2, BGS: -3, SGC: 1, CGC: -1 };
+
+  return companies.map(company => {
+    const grade = Math.min(10, Math.max(1, Math.round((predictedGrade + offsets[company]) * 2) / 2));
+    const conf = Math.min(100, Math.max(50, confidence + confOffsets[company]));
+    // Deterministic subgrades based on grade and company index
+    const ci = companies.indexOf(company);
+    return {
+      company,
+      predictedGrade: grade,
+      confidence: conf,
+      gradeDistribution: makeDistribution(grade),
+      subgrades: {
+        centering: Math.min(10, Math.max(7, parseFloat((grade + (ci * 0.1 - 0.15)).toFixed(1)))),
+        corners: Math.min(10, Math.max(7, parseFloat((grade + (ci * 0.05 - 0.1)).toFixed(1)))),
+        edges: Math.min(10, Math.max(7, parseFloat((grade + (ci * 0.08 - 0.12)).toFixed(1)))),
+        surface: Math.min(10, Math.max(7, parseFloat((grade + (ci * 0.06 - 0.08)).toFixed(1)))),
+      },
+    };
+  });
+}
+
+// ---- Mock Grade Predictions (16 cards) ----
+
+const mockGradePredictions: GradePrediction[] = [
   {
     id: 'gp-001',
-    cardName: '2023 Prizm Silver #1',
+    cardName: '2023 Panini Prizm Silver RC',
     player: 'Victor Wembanyama',
     year: 2023,
     set: 'Panini Prizm',
     sport: 'Basketball',
-    imageUrl: '/cards/wembanyama-prizm.jpg',
-    predictions: buildPredictions(10, 9.5, 10, 9.5, 94, 9.5, 9.5, 10, 9.5),
-    overallConfidence: 94,
-    conditionNotes: ['Pack-fresh condition', 'Sharp corners observed', 'Excellent centering'],
-    valueDelta: { rawValue: 450, predictedGradedValue: 2800, percentIncrease: 522 },
-    submissionRecommendation: { recommendedCompany: 'PSA', recommendedTier: 'express', reason: 'High-value rookie — PSA 10 commands highest premium', estimatedTurnaround: 15, estimatedCost: 150 },
-    timestamp: '2026-03-10T08:30:00Z',
+    imageUrl: '/cards/wemby-prizm.jpg',
+    predictions: makePredictions(9.5, 92),
+    overallConfidence: 92,
+    conditionNotes: ['Sharp corners observed', 'Centering slightly left', 'Clean surface', 'Edges look pristine'],
+    valueDelta: { raw: 450, graded: 1850, uplift: 1400, upliftPercent: 311 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'PSA',
+      bestTier: 'express',
+      estimatedCost: 75,
+      estimatedTurnaround: '15 business days',
+      expectedROI: 1767,
+      reasoning: 'High confidence PSA 9.5+ prediction with significant value uplift. Express tier recommended for optimal cost-to-speed ratio.',
+    },
+    timestamp: '2026-03-10T14:30:00Z',
   },
   {
     id: 'gp-002',
-    cardName: '2023 Topps Chrome #1',
-    player: 'Shohei Ohtani',
-    year: 2023,
-    set: 'Topps Chrome',
-    sport: 'Baseball',
-    imageUrl: '/cards/ohtani-chrome.jpg',
-    predictions: buildPredictions(9, 9, 9, 9, 88, 9, 9, 9, 8.5),
-    overallConfidence: 88,
-    conditionNotes: ['Minor surface print line', 'Good centering', 'Sharp corners'],
-    valueDelta: { rawValue: 120, predictedGradedValue: 580, percentIncrease: 383 },
-    submissionRecommendation: { recommendedCompany: 'PSA', recommendedTier: 'regular', reason: 'PSA 9 still strong premium for Ohtani', estimatedTurnaround: 30, estimatedCost: 50 },
-    timestamp: '2026-03-09T14:15:00Z',
-  },
-  {
-    id: 'gp-003',
-    cardName: '2017 Prizm Silver #269',
-    player: 'Patrick Mahomes',
-    year: 2017,
-    set: 'Panini Prizm',
-    sport: 'Football',
-    imageUrl: '/cards/mahomes-prizm.jpg',
-    predictions: buildPredictions(9.5, 9.5, 9.5, 9, 91, 9.5, 9, 9.5, 9.5),
-    overallConfidence: 91,
-    conditionNotes: ['Excellent condition for age', 'Near-perfect centering', 'Clean surfaces'],
-    valueDelta: { rawValue: 1800, predictedGradedValue: 8500, percentIncrease: 372 },
-    submissionRecommendation: { recommendedCompany: 'PSA', recommendedTier: 'super_express', reason: 'High-value vintage rookie — expedite to maximize ROI', estimatedTurnaround: 5, estimatedCost: 300 },
-    timestamp: '2026-03-08T10:00:00Z',
-  },
-  {
-    id: 'gp-004',
-    cardName: '2003 Topps Chrome #111 Refractor',
-    player: 'LeBron James',
-    year: 2003,
-    set: 'Topps Chrome',
-    sport: 'Basketball',
-    imageUrl: '/cards/lebron-chrome.jpg',
-    predictions: buildPredictions(8, 8, 8.5, 8, 82, 8, 8.5, 8, 7.5),
-    overallConfidence: 82,
-    conditionNotes: ['Light corner wear', 'Surface scratching under magnification', 'Centering 55/45'],
-    valueDelta: { rawValue: 12000, predictedGradedValue: 28000, percentIncrease: 133 },
-    submissionRecommendation: { recommendedCompany: 'BGS', recommendedTier: 'express', reason: 'BGS subgrades add value for vintage LeBron', estimatedTurnaround: 10, estimatedCost: 250 },
-    timestamp: '2026-03-07T16:45:00Z',
-  },
-  {
-    id: 'gp-005',
-    cardName: '2011 Topps Update #US175',
-    player: 'Mike Trout',
-    year: 2011,
-    set: 'Topps Update',
-    sport: 'Baseball',
-    imageUrl: '/cards/trout-update.jpg',
-    predictions: buildPredictions(9, 9, 9, 8.5, 86, 9, 8.5, 9, 9),
-    overallConfidence: 86,
-    conditionNotes: ['Strong corners', 'Clean back', 'Very slight edge wear at top'],
-    valueDelta: { rawValue: 3500, predictedGradedValue: 12000, percentIncrease: 243 },
-    submissionRecommendation: { recommendedCompany: 'PSA', recommendedTier: 'express', reason: 'PSA 9 Trout rookies are highly liquid', estimatedTurnaround: 15, estimatedCost: 150 },
-    timestamp: '2026-03-06T09:20:00Z',
-  },
-  {
-    id: 'gp-006',
-    cardName: '2018 Prizm Silver #280',
+    cardName: '2018 Panini Prizm Silver RC',
     player: 'Luka Doncic',
     year: 2018,
     set: 'Panini Prizm',
     sport: 'Basketball',
-    imageUrl: '/cards/doncic-prizm.jpg',
-    predictions: buildPredictions(10, 9.5, 10, 9.5, 92, 10, 9.5, 9.5, 10),
-    overallConfidence: 92,
-    conditionNotes: ['Pack-fresh', 'Perfect centering', 'Pristine surfaces'],
-    valueDelta: { rawValue: 800, predictedGradedValue: 4200, percentIncrease: 425 },
-    submissionRecommendation: { recommendedCompany: 'PSA', recommendedTier: 'express', reason: 'Gem Mint candidate — PSA 10 premium is substantial', estimatedTurnaround: 15, estimatedCost: 150 },
-    timestamp: '2026-03-05T11:30:00Z',
+    imageUrl: '/cards/luka-prizm.jpg',
+    predictions: makePredictions(9, 87),
+    overallConfidence: 87,
+    conditionNotes: ['Minor corner whitening on back', 'Good centering', 'Light surface scratch under magnification'],
+    valueDelta: { raw: 1200, graded: 4500, uplift: 3300, upliftPercent: 275 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'PSA',
+      bestTier: 'regular',
+      estimatedCost: 50,
+      estimatedTurnaround: '45 business days',
+      expectedROI: 6500,
+      reasoning: 'Strong PSA 9 candidate with significant market premium for graded copies.',
+    },
+    timestamp: '2026-03-09T10:15:00Z',
+  },
+  {
+    id: 'gp-003',
+    cardName: '2020 Panini Mosaic RC',
+    player: 'Justin Herbert',
+    year: 2020,
+    set: 'Panini Mosaic',
+    sport: 'Football',
+    imageUrl: '/cards/herbert-mosaic.jpg',
+    predictions: makePredictions(9.5, 89),
+    overallConfidence: 89,
+    conditionNotes: ['Excellent centering', 'Sharp corners', 'Clean edges', 'Minor print line on surface'],
+    valueDelta: { raw: 80, graded: 350, uplift: 270, upliftPercent: 338 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'SGC',
+      bestTier: 'regular',
+      estimatedCost: 30,
+      estimatedTurnaround: '30 business days',
+      expectedROI: 800,
+      reasoning: 'SGC offers best value for football cards in this price range. High gem rate expected.',
+    },
+    timestamp: '2026-03-08T09:00:00Z',
+  },
+  {
+    id: 'gp-004',
+    cardName: '2011 Topps Update RC',
+    player: 'Mike Trout',
+    year: 2011,
+    set: 'Topps Update',
+    sport: 'Baseball',
+    imageUrl: '/cards/trout-topps.jpg',
+    predictions: makePredictions(8, 78),
+    overallConfidence: 78,
+    conditionNotes: ['Corner wear visible top-left', 'Centering 55/45 left-right', 'Surface looks clean', 'Edge ding on bottom'],
+    valueDelta: { raw: 3500, graded: 8500, uplift: 5000, upliftPercent: 143 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'PSA',
+      bestTier: 'express',
+      estimatedCost: 75,
+      estimatedTurnaround: '15 business days',
+      expectedROI: 6567,
+      reasoning: 'Even at PSA 8, graded Trout RCs carry strong premiums. Express tier recommended given card value.',
+    },
+    timestamp: '2026-03-07T16:45:00Z',
+  },
+  {
+    id: 'gp-005',
+    cardName: '2022 Topps Series 1 RC',
+    player: 'Julio Rodriguez',
+    year: 2022,
+    set: 'Topps Series 1',
+    sport: 'Baseball',
+    imageUrl: '/cards/jrod-topps.jpg',
+    predictions: makePredictions(10, 95),
+    overallConfidence: 95,
+    conditionNotes: ['Pack-fresh condition', 'Perfect centering', 'No visible flaws', 'Pristine surface'],
+    valueDelta: { raw: 25, graded: 180, uplift: 155, upliftPercent: 620 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'PSA',
+      bestTier: 'value',
+      estimatedCost: 25,
+      estimatedTurnaround: '65 business days',
+      expectedROI: 520,
+      reasoning: 'Pack-fresh card with gem mint potential. Value tier sufficient given lower card value.',
+    },
+    timestamp: '2026-03-06T11:20:00Z',
+  },
+  {
+    id: 'gp-006',
+    cardName: '2019 Panini Prizm Silver RC',
+    player: 'Ja Morant',
+    year: 2019,
+    set: 'Panini Prizm',
+    sport: 'Basketball',
+    imageUrl: '/cards/ja-prizm.jpg',
+    predictions: makePredictions(9, 84),
+    overallConfidence: 84,
+    conditionNotes: ['Good overall condition', 'Slight edge wear on right side', 'Centering within tolerance'],
+    valueDelta: { raw: 200, graded: 750, uplift: 550, upliftPercent: 275 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'PSA',
+      bestTier: 'regular',
+      estimatedCost: 50,
+      estimatedTurnaround: '45 business days',
+      expectedROI: 1000,
+      reasoning: 'Strong candidate for PSA 9 with good value uplift.',
+    },
+    timestamp: '2026-03-05T08:30:00Z',
   },
   {
     id: 'gp-007',
-    cardName: '2020 Prizm #339 Silver',
-    player: 'Justin Herbert',
+    cardName: '2020 Panini Prizm RC',
+    player: 'Joe Burrow',
     year: 2020,
     set: 'Panini Prizm',
     sport: 'Football',
-    imageUrl: '/cards/herbert-prizm.jpg',
-    predictions: buildPredictions(9, 9, 9, 9, 87, 9, 8.5, 9, 9),
-    overallConfidence: 87,
-    conditionNotes: ['Good condition', 'Minor corner softness at bottom left', 'Clean surface'],
-    valueDelta: { rawValue: 200, predictedGradedValue: 750, percentIncrease: 275 },
-    submissionRecommendation: { recommendedCompany: 'SGC', recommendedTier: 'regular', reason: 'SGC offers best value for mid-tier football', estimatedTurnaround: 25, estimatedCost: 30 },
-    timestamp: '2026-03-04T13:00:00Z',
+    imageUrl: '/cards/burrow-prizm.jpg',
+    predictions: makePredictions(8.5, 81),
+    overallConfidence: 81,
+    conditionNotes: ['Minor corner softness', 'Good centering', 'Clean surface', 'Edges acceptable'],
+    valueDelta: { raw: 150, graded: 500, uplift: 350, upliftPercent: 233 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'SGC',
+      bestTier: 'regular',
+      estimatedCost: 30,
+      estimatedTurnaround: '30 business days',
+      expectedROI: 1067,
+      reasoning: 'SGC provides competitive grading at lower cost. Good 8.5-9 candidate.',
+    },
+    timestamp: '2026-03-04T13:10:00Z',
   },
   {
     id: 'gp-008',
-    cardName: '2022 Bowman Chrome #BCP-1',
-    player: 'Jackson Holliday',
-    year: 2022,
-    set: 'Bowman Chrome',
+    cardName: '2018 Topps Chrome RC Auto',
+    player: 'Shohei Ohtani',
+    year: 2018,
+    set: 'Topps Chrome',
     sport: 'Baseball',
-    imageUrl: '/cards/holliday-bowman.jpg',
-    predictions: buildPredictions(9.5, 9.5, 9.5, 9, 90, 9.5, 9.5, 9, 9.5),
-    overallConfidence: 90,
-    conditionNotes: ['Near-mint condition', 'Excellent centering', 'Clean chrome surface'],
-    valueDelta: { rawValue: 150, predictedGradedValue: 620, percentIncrease: 313 },
-    submissionRecommendation: { recommendedCompany: 'PSA', recommendedTier: 'regular', reason: 'PSA preferred for Bowman Chrome prospects', estimatedTurnaround: 30, estimatedCost: 50 },
-    timestamp: '2026-03-03T15:45:00Z',
+    imageUrl: '/cards/ohtani-chrome.jpg',
+    predictions: makePredictions(9, 86),
+    overallConfidence: 86,
+    conditionNotes: ['Sharp corners', 'Good centering', 'Auto is clean and bold', 'Minor surface imperfection'],
+    valueDelta: { raw: 2800, graded: 8000, uplift: 5200, upliftPercent: 186 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'BGS',
+      bestTier: 'express',
+      estimatedCost: 100,
+      estimatedTurnaround: '10 business days',
+      expectedROI: 5100,
+      reasoning: 'BGS subgrades add premium for auto cards. Express recommended given card value.',
+    },
+    timestamp: '2026-03-03T15:55:00Z',
   },
   {
     id: 'gp-009',
-    cardName: '2024 Topps #1',
-    player: 'Elly De La Cruz',
-    year: 2024,
-    set: 'Topps Series 1',
-    sport: 'Baseball',
-    imageUrl: '/cards/delacruz-topps.jpg',
-    predictions: buildPredictions(10, 9.5, 10, 10, 95, 10, 10, 10, 9.5),
-    overallConfidence: 95,
-    conditionNotes: ['Pack-fresh mint condition', 'Perfect centering', 'Flawless corners and edges'],
-    valueDelta: { rawValue: 50, predictedGradedValue: 280, percentIncrease: 460 },
-    submissionRecommendation: { recommendedCompany: 'PSA', recommendedTier: 'value', reason: 'Low declared value — value tier saves cost', estimatedTurnaround: 60, estimatedCost: 25 },
-    timestamp: '2026-03-02T08:00:00Z',
+    cardName: '2023 Panini Prizm Silver RC',
+    player: 'CJ Stroud',
+    year: 2023,
+    set: 'Panini Prizm',
+    sport: 'Football',
+    imageUrl: '/cards/stroud-prizm.jpg',
+    predictions: makePredictions(9.5, 90),
+    overallConfidence: 90,
+    conditionNotes: ['Pack-fresh appearance', 'Great centering', 'Sharp corners', 'Clean surface'],
+    valueDelta: { raw: 120, graded: 480, uplift: 360, upliftPercent: 300 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'PSA',
+      bestTier: 'regular',
+      estimatedCost: 50,
+      estimatedTurnaround: '45 business days',
+      expectedROI: 620,
+      reasoning: 'High confidence gem mint candidate. Regular tier balances cost and turnaround.',
+    },
+    timestamp: '2026-03-02T10:00:00Z',
   },
   {
     id: 'gp-010',
-    cardName: '2019 Mosaic #209',
-    player: 'Ja Morant',
-    year: 2019,
-    set: 'Panini Mosaic',
+    cardName: '1986 Fleer RC',
+    player: 'Michael Jordan',
+    year: 1986,
+    set: 'Fleer',
     sport: 'Basketball',
-    imageUrl: '/cards/morant-mosaic.jpg',
-    predictions: buildPredictions(8.5, 8.5, 8.5, 8, 79, 8, 8.5, 8.5, 8.5),
-    overallConfidence: 79,
-    conditionNotes: ['Edge wear visible under loupe', 'Decent centering', 'Surface clean'],
-    valueDelta: { rawValue: 100, predictedGradedValue: 320, percentIncrease: 220 },
-    submissionRecommendation: { recommendedCompany: 'SGC', recommendedTier: 'regular', reason: 'SGC cost-effective for mid-grade modern', estimatedTurnaround: 25, estimatedCost: 30 },
-    timestamp: '2026-03-01T12:30:00Z',
+    imageUrl: '/cards/jordan-fleer.jpg',
+    predictions: makePredictions(7, 72),
+    overallConfidence: 72,
+    conditionNotes: ['Visible corner wear all four corners', 'Centering off 60/40', 'Surface has light scratching', 'Edges show age'],
+    valueDelta: { raw: 15000, graded: 32000, uplift: 17000, upliftPercent: 113 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'PSA',
+      bestTier: 'super_express',
+      estimatedCost: 200,
+      estimatedTurnaround: '5 business days',
+      expectedROI: 8400,
+      reasoning: 'Even lower grades carry massive premiums for this iconic card. Super express justified by card value.',
+    },
+    timestamp: '2026-03-01T09:30:00Z',
   },
   {
     id: 'gp-011',
-    cardName: '2018 Topps Chrome Update #HMT32',
-    player: 'Juan Soto',
-    year: 2018,
-    set: 'Topps Chrome Update',
+    cardName: '2023 Bowman Chrome 1st Auto',
+    player: 'Jackson Holliday',
+    year: 2023,
+    set: 'Bowman Chrome',
     sport: 'Baseball',
-    imageUrl: '/cards/soto-chrome.jpg',
-    predictions: buildPredictions(9.5, 9, 9.5, 9, 89, 9.5, 9, 9.5, 9),
-    overallConfidence: 89,
-    conditionNotes: ['Strong overall condition', 'Slight corner softness bottom right', 'Good centering'],
-    valueDelta: { rawValue: 280, predictedGradedValue: 1050, percentIncrease: 275 },
-    submissionRecommendation: { recommendedCompany: 'PSA', recommendedTier: 'regular', reason: 'PSA 9.5 or 10 for Soto RC commands premium', estimatedTurnaround: 30, estimatedCost: 50 },
-    timestamp: '2026-02-28T09:00:00Z',
+    imageUrl: '/cards/holliday-bowman.jpg',
+    predictions: makePredictions(9.5, 91),
+    overallConfidence: 91,
+    conditionNotes: ['Pack-fresh', 'Auto is clean', 'Great centering', 'No visible defects'],
+    valueDelta: { raw: 350, graded: 1200, uplift: 850, upliftPercent: 243 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'BGS',
+      bestTier: 'regular',
+      estimatedCost: 50,
+      estimatedTurnaround: '50 business days',
+      expectedROI: 1600,
+      reasoning: 'BGS 9.5 with subgrades carries premium for Bowman Chrome autos.',
+    },
+    timestamp: '2026-02-28T14:00:00Z',
   },
   {
     id: 'gp-012',
-    cardName: '2020 Select #44 Concourse',
-    player: 'Joe Burrow',
-    year: 2020,
-    set: 'Panini Select',
-    sport: 'Football',
-    imageUrl: '/cards/burrow-select.jpg',
-    predictions: buildPredictions(9, 8.5, 9, 8.5, 84, 9, 8, 9, 8.5),
-    overallConfidence: 84,
-    conditionNotes: ['Good overall condition', 'Centering slightly off vertically', 'Clean surface'],
-    valueDelta: { rawValue: 180, predictedGradedValue: 620, percentIncrease: 244 },
-    submissionRecommendation: { recommendedCompany: 'PSA', recommendedTier: 'regular', reason: 'PSA 9 most marketable for Burrow', estimatedTurnaround: 30, estimatedCost: 50 },
-    timestamp: '2026-02-27T14:00:00Z',
+    cardName: '2022 Panini Flawless Patch Auto',
+    player: 'Paolo Banchero',
+    year: 2022,
+    set: 'Panini Flawless',
+    sport: 'Basketball',
+    imageUrl: '/cards/paolo-flawless.jpg',
+    predictions: makePredictions(8.5, 76),
+    overallConfidence: 76,
+    conditionNotes: ['Patch slightly off-center', 'Card has thick stock', 'Minor edge issue on left', 'Surface clean'],
+    valueDelta: { raw: 600, graded: 1100, uplift: 500, upliftPercent: 83 },
+    submissionRecommendation: {
+      recommended: false,
+      bestCompany: 'BGS',
+      bestTier: 'regular',
+      estimatedCost: 50,
+      estimatedTurnaround: '50 business days',
+      expectedROI: 900,
+      reasoning: 'Lower confidence and moderate uplift suggest holding for now. Thick stock cards are harder to grade high.',
+    },
+    timestamp: '2026-02-27T11:30:00Z',
   },
   {
     id: 'gp-013',
-    cardName: '2022 Topps #659 Rookie',
-    player: 'Julio Rodriguez',
-    year: 2022,
-    set: 'Topps Series 2',
+    cardName: '2023 Topps Chrome RC',
+    player: 'Corbin Carroll',
+    year: 2023,
+    set: 'Topps Chrome',
     sport: 'Baseball',
-    imageUrl: '/cards/jrod-topps.jpg',
-    predictions: buildPredictions(10, 10, 10, 9.5, 96, 10, 10, 10, 10),
-    overallConfidence: 96,
-    conditionNotes: ['Gem Mint candidate', 'Perfect in all categories', 'Pack-fresh condition'],
-    valueDelta: { rawValue: 40, predictedGradedValue: 220, percentIncrease: 450 },
-    submissionRecommendation: { recommendedCompany: 'PSA', recommendedTier: 'value', reason: 'Strong Gem Mint candidate — value tier ideal', estimatedTurnaround: 60, estimatedCost: 25 },
-    timestamp: '2026-02-26T10:15:00Z',
+    imageUrl: '/cards/carroll-chrome.jpg',
+    predictions: makePredictions(10, 93),
+    overallConfidence: 93,
+    conditionNotes: ['Flawless condition', 'Dead center', 'No print lines', 'Razor sharp corners'],
+    valueDelta: { raw: 30, graded: 200, uplift: 170, upliftPercent: 567 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'PSA',
+      bestTier: 'value',
+      estimatedCost: 25,
+      estimatedTurnaround: '65 business days',
+      expectedROI: 580,
+      reasoning: 'Excellent gem mint candidate. Value tier for lower dollar cards maximizes ROI.',
+    },
+    timestamp: '2026-02-26T16:00:00Z',
   },
   {
     id: 'gp-014',
-    cardName: '2023 Donruss Optic Rated Rookie #201',
-    player: 'Caleb Williams',
-    year: 2023,
-    set: 'Donruss Optic',
+    cardName: '2020 Panini National Treasures RPA',
+    player: 'Justin Jefferson',
+    year: 2020,
+    set: 'National Treasures',
     sport: 'Football',
-    imageUrl: '/cards/williams-optic.jpg',
-    predictions: buildPredictions(9.5, 9.5, 9, 9, 88, 9, 9.5, 9.5, 9.5),
-    overallConfidence: 88,
-    conditionNotes: ['Near-mint plus', 'Centering slightly off-center', 'Strong corners and edges'],
-    valueDelta: { rawValue: 95, predictedGradedValue: 380, percentIncrease: 300 },
-    submissionRecommendation: { recommendedCompany: 'BGS', recommendedTier: 'regular', reason: 'BGS 9.5 with strong subgrades adds value', estimatedTurnaround: 30, estimatedCost: 40 },
-    timestamp: '2026-02-25T11:00:00Z',
+    imageUrl: '/cards/jjeff-nt.jpg',
+    predictions: makePredictions(8, 74),
+    overallConfidence: 74,
+    conditionNotes: ['Patch window has slight lift', 'Corners acceptable', 'Surface has minor mark', 'Centering OK'],
+    valueDelta: { raw: 2500, graded: 4800, uplift: 2300, upliftPercent: 92 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'BGS',
+      bestTier: 'express',
+      estimatedCost: 100,
+      estimatedTurnaround: '10 business days',
+      expectedROI: 2200,
+      reasoning: 'High card value justifies express. BGS subgrades are valued on patch cards.',
+    },
+    timestamp: '2026-02-25T12:45:00Z',
   },
   {
     id: 'gp-015',
-    cardName: '2024 Bowman #1 1st Edition',
-    player: 'Ethan Salas',
-    year: 2024,
-    set: 'Bowman 1st Edition',
-    sport: 'Baseball',
-    imageUrl: '/cards/salas-bowman.jpg',
-    predictions: buildPredictions(9, 9, 9, 8.5, 85, 8.5, 9, 9, 9),
-    overallConfidence: 85,
-    conditionNotes: ['Good condition', 'Centering slightly bottom-heavy', 'Clean surface and edges'],
-    valueDelta: { rawValue: 75, predictedGradedValue: 310, percentIncrease: 313 },
-    submissionRecommendation: { recommendedCompany: 'PSA', recommendedTier: 'regular', reason: 'PSA is standard for Bowman 1st prospects', estimatedTurnaround: 30, estimatedCost: 50 },
-    timestamp: '2026-02-24T16:30:00Z',
+    cardName: '2023 Panini Prizm RC',
+    player: 'Connor Bedard',
+    year: 2023,
+    set: 'Panini Prizm',
+    sport: 'Hockey',
+    imageUrl: '/cards/bedard-prizm.jpg',
+    predictions: makePredictions(9.5, 88),
+    overallConfidence: 88,
+    conditionNotes: ['Very clean card', 'Centering slightly high', 'Corners sharp', 'Surface pristine'],
+    valueDelta: { raw: 200, graded: 750, uplift: 550, upliftPercent: 275 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'PSA',
+      bestTier: 'regular',
+      estimatedCost: 50,
+      estimatedTurnaround: '45 business days',
+      expectedROI: 1000,
+      reasoning: 'Strong gem candidate for hockey star. PSA is most liquid market for hockey cards.',
+    },
+    timestamp: '2026-02-24T08:15:00Z',
   },
   {
     id: 'gp-016',
-    cardName: '2019 Prizm #248 Silver',
-    player: 'Zion Williamson',
-    year: 2019,
-    set: 'Panini Prizm',
-    sport: 'Basketball',
-    imageUrl: '/cards/zion-prizm.jpg',
-    predictions: buildPredictions(8, 7.5, 8, 7.5, 76, 7.5, 8, 7.5, 8),
-    overallConfidence: 76,
-    conditionNotes: ['Visible corner wear', 'Surface dimple near top edge', 'Centering acceptable'],
-    valueDelta: { rawValue: 350, predictedGradedValue: 700, percentIncrease: 100 },
-    submissionRecommendation: { recommendedCompany: 'SGC', recommendedTier: 'regular', reason: 'SGC cost-effective for expected mid-grade', estimatedTurnaround: 25, estimatedCost: 30 },
-    timestamp: '2026-02-23T09:45:00Z',
+    cardName: '2021 Topps Chrome RC',
+    player: 'Bobby Witt Jr',
+    year: 2021,
+    set: 'Topps Chrome',
+    sport: 'Baseball',
+    imageUrl: '/cards/witt-chrome.jpg',
+    predictions: makePredictions(9, 85),
+    overallConfidence: 85,
+    conditionNotes: ['Good condition overall', 'Centering within spec', 'Minor edge touch point', 'Surface clean'],
+    valueDelta: { raw: 40, graded: 175, uplift: 135, upliftPercent: 338 },
+    submissionRecommendation: {
+      recommended: true,
+      bestCompany: 'PSA',
+      bestTier: 'value',
+      estimatedCost: 25,
+      estimatedTurnaround: '65 business days',
+      expectedROI: 440,
+      reasoning: 'Value tier is cost-effective for this card. Good 9-10 candidate.',
+    },
+    timestamp: '2026-02-23T10:30:00Z',
   },
 ];
 
-// ---- Seed Data: Grading Cost Comparisons ----
+// ---- Grading Cost Comparisons (4 companies) ----
 
-const DEFAULT_GRADING_COSTS: GradingCostComparison[] = [
+const mockGradingCosts: GradingCostComparison[] = [
   {
     company: 'PSA',
     tiers: [
-      { tier: 'value', label: 'Value', cost: 25, turnaroundDays: 65, maxDeclaredValue: 499 },
-      { tier: 'regular', label: 'Regular', cost: 50, turnaroundDays: 30, maxDeclaredValue: 1499 },
-      { tier: 'express', label: 'Express', cost: 150, turnaroundDays: 15, maxDeclaredValue: 4999 },
-      { tier: 'super_express', label: 'Super Express', cost: 300, turnaroundDays: 5, maxDeclaredValue: 9999 },
-      { tier: 'walk_through', label: 'Walk-Through', cost: 600, turnaroundDays: 1, maxDeclaredValue: 24999 },
+      { tier: 'value', cost: 25, turnaround: '65 business days', available: true },
+      { tier: 'regular', cost: 50, turnaround: '45 business days', available: true },
+      { tier: 'express', cost: 75, turnaround: '15 business days', available: true },
+      { tier: 'super_express', cost: 200, turnaround: '5 business days', available: true },
+      { tier: 'walk_through', cost: 600, turnaround: '1 business day', available: true },
     ],
-    insuranceRate: 1.0,
-    shippingCost: 12,
-    membershipRequired: true,
+    bulkDiscount: [
+      { minCards: 10, discount: 5 },
+      { minCards: 25, discount: 10 },
+      { minCards: 50, discount: 15 },
+      { minCards: 100, discount: 20 },
+    ],
     membershipCost: 99,
+    membershipBenefits: ['Free value submissions (5/year)', 'Priority handling', 'Show pre-registration', 'Exclusive promotions'],
   },
   {
     company: 'BGS',
     tiers: [
-      { tier: 'value', label: 'Economy', cost: 22, turnaroundDays: 60, maxDeclaredValue: 499 },
-      { tier: 'regular', label: 'Standard', cost: 40, turnaroundDays: 25, maxDeclaredValue: 2499 },
-      { tier: 'express', label: 'Express', cost: 100, turnaroundDays: 10, maxDeclaredValue: 4999 },
-      { tier: 'super_express', label: 'Super Express', cost: 250, turnaroundDays: 3, maxDeclaredValue: 9999 },
-      { tier: 'walk_through', label: 'Premium', cost: 500, turnaroundDays: 1, maxDeclaredValue: 49999 },
+      { tier: 'value', cost: 22, turnaround: '70 business days', available: true },
+      { tier: 'regular', cost: 50, turnaround: '50 business days', available: true },
+      { tier: 'express', cost: 100, turnaround: '10 business days', available: true },
+      { tier: 'super_express', cost: 250, turnaround: '2 business days', available: true },
+      { tier: 'walk_through', cost: 500, turnaround: 'Same day', available: true },
     ],
-    insuranceRate: 1.2,
-    shippingCost: 15,
-    membershipRequired: false,
-    membershipCost: 0,
+    bulkDiscount: [
+      { minCards: 10, discount: 5 },
+      { minCards: 25, discount: 8 },
+      { minCards: 50, discount: 12 },
+      { minCards: 100, discount: 18 },
+    ],
+    membershipCost: 149,
+    membershipBenefits: ['Subgrades included free', 'Priority queue access', 'BGS Black Label eligible', 'Quarterly promotions'],
   },
   {
     company: 'SGC',
     tiers: [
-      { tier: 'value', label: 'Bulk', cost: 15, turnaroundDays: 45, maxDeclaredValue: 499 },
-      { tier: 'regular', label: 'Standard', cost: 30, turnaroundDays: 20, maxDeclaredValue: 2499 },
-      { tier: 'express', label: 'Express', cost: 75, turnaroundDays: 7, maxDeclaredValue: 4999 },
-      { tier: 'super_express', label: 'Priority', cost: 150, turnaroundDays: 3, maxDeclaredValue: 9999 },
-      { tier: 'walk_through', label: 'Walk-Through', cost: 350, turnaroundDays: 1, maxDeclaredValue: 24999 },
+      { tier: 'value', cost: 15, turnaround: '50 business days', available: true },
+      { tier: 'regular', cost: 30, turnaround: '30 business days', available: true },
+      { tier: 'express', cost: 60, turnaround: '10 business days', available: true },
+      { tier: 'super_express', cost: 150, turnaround: '3 business days', available: true },
+      { tier: 'walk_through', cost: 300, turnaround: '1 business day', available: false },
     ],
-    insuranceRate: 0.8,
-    shippingCost: 10,
-    membershipRequired: false,
+    bulkDiscount: [
+      { minCards: 10, discount: 10 },
+      { minCards: 25, discount: 15 },
+      { minCards: 50, discount: 20 },
+      { minCards: 100, discount: 25 },
+    ],
     membershipCost: 0,
+    membershipBenefits: ['No membership required', 'Best bulk pricing', 'Fast turnaround standard'],
   },
   {
     company: 'CGC',
     tiers: [
-      { tier: 'value', label: 'Economy', cost: 20, turnaroundDays: 50, maxDeclaredValue: 399 },
-      { tier: 'regular', label: 'Standard', cost: 38, turnaroundDays: 22, maxDeclaredValue: 1999 },
-      { tier: 'express', label: 'Express', cost: 85, turnaroundDays: 8, maxDeclaredValue: 4999 },
-      { tier: 'super_express', label: 'Priority', cost: 200, turnaroundDays: 3, maxDeclaredValue: 9999 },
-      { tier: 'walk_through', label: 'Walk-Through', cost: 450, turnaroundDays: 1, maxDeclaredValue: 24999 },
+      { tier: 'value', cost: 20, turnaround: '55 business days', available: true },
+      { tier: 'regular', cost: 40, turnaround: '40 business days', available: true },
+      { tier: 'express', cost: 80, turnaround: '12 business days', available: true },
+      { tier: 'super_express', cost: 180, turnaround: '4 business days', available: true },
+      { tier: 'walk_through', cost: 400, turnaround: '1 business day', available: false },
     ],
-    insuranceRate: 1.0,
-    shippingCost: 12,
-    membershipRequired: true,
-    membershipCost: 49,
+    bulkDiscount: [
+      { minCards: 10, discount: 5 },
+      { minCards: 25, discount: 10 },
+      { minCards: 50, discount: 15 },
+    ],
+    membershipCost: 59,
+    membershipBenefits: ['Discounted submissions', 'Priority handling', 'Cross-over program access'],
   },
 ];
 
-// ---- Seed Data: Population Data ----
+// ---- Population Data (11 cards) ----
 
-function buildPopBreakdown(total: number, gemRate: number): { grade: number; count: number; percentage: number }[] {
-  const grades = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  const weights = [0.5, 0.8, 1.5, 2.5, 4, 6, 12, 22, 28, gemRate];
-  const sumW = weights.reduce((a, b) => a + b, 0);
-  return grades.map((g, i) => {
-    const pct = Math.round((weights[i] / sumW) * 1000) / 10;
-    return { grade: g, count: Math.round(total * (pct / 100)), percentage: pct };
-  });
+const mockPopulationData: GradePopulationData[] = [
+  {
+    cardName: '2023 Panini Prizm Silver RC',
+    player: 'Victor Wembanyama',
+    populations: [
+      {
+        company: 'PSA',
+        grades: [
+          { grade: '10', count: 4520, percentOfTotal: 38.2 },
+          { grade: '9', count: 4180, percentOfTotal: 35.3 },
+          { grade: '8', count: 1890, percentOfTotal: 16.0 },
+          { grade: '7', count: 750, percentOfTotal: 6.3 },
+          { grade: '6', count: 310, percentOfTotal: 2.6 },
+          { grade: '5', count: 180, percentOfTotal: 1.5 },
+        ],
+        totalGraded: 11830,
+        gem_rate: 38.2,
+      },
+      {
+        company: 'BGS',
+        grades: [
+          { grade: '10', count: 120, percentOfTotal: 5.1 },
+          { grade: '9.5', count: 850, percentOfTotal: 36.2 },
+          { grade: '9', count: 890, percentOfTotal: 37.9 },
+          { grade: '8.5', count: 320, percentOfTotal: 13.6 },
+          { grade: '8', count: 170, percentOfTotal: 7.2 },
+        ],
+        totalGraded: 2350,
+        gem_rate: 41.3,
+      },
+    ],
+  },
+  {
+    cardName: '2018 Panini Prizm Silver RC',
+    player: 'Luka Doncic',
+    populations: [
+      {
+        company: 'PSA',
+        grades: [
+          { grade: '10', count: 12450, percentOfTotal: 31.5 },
+          { grade: '9', count: 15800, percentOfTotal: 40.0 },
+          { grade: '8', count: 7200, percentOfTotal: 18.2 },
+          { grade: '7', count: 2600, percentOfTotal: 6.6 },
+          { grade: '6', count: 1450, percentOfTotal: 3.7 },
+        ],
+        totalGraded: 39500,
+        gem_rate: 31.5,
+      },
+    ],
+  },
+  {
+    cardName: '2011 Topps Update RC',
+    player: 'Mike Trout',
+    populations: [
+      {
+        company: 'PSA',
+        grades: [
+          { grade: '10', count: 3890, percentOfTotal: 22.1 },
+          { grade: '9', count: 6750, percentOfTotal: 38.4 },
+          { grade: '8', count: 4200, percentOfTotal: 23.9 },
+          { grade: '7', count: 1520, percentOfTotal: 8.6 },
+          { grade: '6', count: 750, percentOfTotal: 4.3 },
+          { grade: '5', count: 480, percentOfTotal: 2.7 },
+        ],
+        totalGraded: 17590,
+        gem_rate: 22.1,
+      },
+    ],
+  },
+  {
+    cardName: '1986 Fleer RC',
+    player: 'Michael Jordan',
+    populations: [
+      {
+        company: 'PSA',
+        grades: [
+          { grade: '10', count: 320, percentOfTotal: 1.2 },
+          { grade: '9', count: 3150, percentOfTotal: 11.6 },
+          { grade: '8', count: 7800, percentOfTotal: 28.7 },
+          { grade: '7', count: 6500, percentOfTotal: 23.9 },
+          { grade: '6', count: 4200, percentOfTotal: 15.5 },
+          { grade: '5', count: 3100, percentOfTotal: 11.4 },
+          { grade: '4', count: 2100, percentOfTotal: 7.7 },
+        ],
+        totalGraded: 27170,
+        gem_rate: 1.2,
+      },
+    ],
+  },
+  {
+    cardName: '2018 Topps Chrome RC Auto',
+    player: 'Shohei Ohtani',
+    populations: [
+      {
+        company: 'PSA',
+        grades: [
+          { grade: '10', count: 1850, percentOfTotal: 28.3 },
+          { grade: '9', count: 2640, percentOfTotal: 40.4 },
+          { grade: '8', count: 1320, percentOfTotal: 20.2 },
+          { grade: '7', count: 450, percentOfTotal: 6.9 },
+          { grade: '6', count: 275, percentOfTotal: 4.2 },
+        ],
+        totalGraded: 6535,
+        gem_rate: 28.3,
+      },
+      {
+        company: 'BGS',
+        grades: [
+          { grade: '10', count: 65, percentOfTotal: 4.2 },
+          { grade: '9.5', count: 480, percentOfTotal: 31.0 },
+          { grade: '9', count: 620, percentOfTotal: 40.0 },
+          { grade: '8.5', count: 250, percentOfTotal: 16.1 },
+          { grade: '8', count: 135, percentOfTotal: 8.7 },
+        ],
+        totalGraded: 1550,
+        gem_rate: 35.2,
+      },
+    ],
+  },
+  {
+    cardName: '2020 Panini Mosaic RC',
+    player: 'Justin Herbert',
+    populations: [
+      {
+        company: 'PSA',
+        grades: [
+          { grade: '10', count: 8900, percentOfTotal: 42.1 },
+          { grade: '9', count: 7500, percentOfTotal: 35.5 },
+          { grade: '8', count: 3200, percentOfTotal: 15.1 },
+          { grade: '7', count: 1050, percentOfTotal: 5.0 },
+          { grade: '6', count: 500, percentOfTotal: 2.4 },
+        ],
+        totalGraded: 21150,
+        gem_rate: 42.1,
+      },
+    ],
+  },
+  {
+    cardName: '2022 Topps Series 1 RC',
+    player: 'Julio Rodriguez',
+    populations: [
+      {
+        company: 'PSA',
+        grades: [
+          { grade: '10', count: 15200, percentOfTotal: 45.8 },
+          { grade: '9', count: 12300, percentOfTotal: 37.0 },
+          { grade: '8', count: 3800, percentOfTotal: 11.4 },
+          { grade: '7', count: 1200, percentOfTotal: 3.6 },
+          { grade: '6', count: 700, percentOfTotal: 2.1 },
+        ],
+        totalGraded: 33200,
+        gem_rate: 45.8,
+      },
+    ],
+  },
+  {
+    cardName: '2023 Panini Prizm Silver RC',
+    player: 'CJ Stroud',
+    populations: [
+      {
+        company: 'PSA',
+        grades: [
+          { grade: '10', count: 3200, percentOfTotal: 40.5 },
+          { grade: '9', count: 2850, percentOfTotal: 36.1 },
+          { grade: '8', count: 1200, percentOfTotal: 15.2 },
+          { grade: '7', count: 400, percentOfTotal: 5.1 },
+          { grade: '6', count: 250, percentOfTotal: 3.2 },
+        ],
+        totalGraded: 7900,
+        gem_rate: 40.5,
+      },
+    ],
+  },
+  {
+    cardName: '2023 Bowman Chrome 1st Auto',
+    player: 'Jackson Holliday',
+    populations: [
+      {
+        company: 'BGS',
+        grades: [
+          { grade: '10', count: 45, percentOfTotal: 3.8 },
+          { grade: '9.5', count: 410, percentOfTotal: 34.5 },
+          { grade: '9', count: 480, percentOfTotal: 40.3 },
+          { grade: '8.5', count: 180, percentOfTotal: 15.1 },
+          { grade: '8', count: 75, percentOfTotal: 6.3 },
+        ],
+        totalGraded: 1190,
+        gem_rate: 38.3,
+      },
+    ],
+  },
+  {
+    cardName: '2023 Panini Prizm RC',
+    player: 'Connor Bedard',
+    populations: [
+      {
+        company: 'PSA',
+        grades: [
+          { grade: '10', count: 2100, percentOfTotal: 39.6 },
+          { grade: '9', count: 1950, percentOfTotal: 36.8 },
+          { grade: '8', count: 800, percentOfTotal: 15.1 },
+          { grade: '7', count: 300, percentOfTotal: 5.7 },
+          { grade: '6', count: 150, percentOfTotal: 2.8 },
+        ],
+        totalGraded: 5300,
+        gem_rate: 39.6,
+      },
+    ],
+  },
+  {
+    cardName: '2019 Panini Prizm Silver RC',
+    player: 'Ja Morant',
+    populations: [
+      {
+        company: 'PSA',
+        grades: [
+          { grade: '10', count: 9800, percentOfTotal: 35.7 },
+          { grade: '9', count: 10500, percentOfTotal: 38.2 },
+          { grade: '8', count: 4500, percentOfTotal: 16.4 },
+          { grade: '7', count: 1700, percentOfTotal: 6.2 },
+          { grade: '6', count: 950, percentOfTotal: 3.5 },
+        ],
+        totalGraded: 27450,
+        gem_rate: 35.7,
+      },
+    ],
+  },
+];
+
+// ---- Submission Tracker (12 entries) ----
+
+const mockSubmissions: SubmissionTracker[] = [
+  { id: 'sub-001', cardName: '2023 Prizm Silver RC', player: 'Victor Wembanyama', company: 'PSA', tier: 'express', submittedDate: '2026-02-15', estimatedReturn: '2026-03-08', status: 'complete', predictedGrade: 9.5, actualGrade: 10, cost: 75 },
+  { id: 'sub-002', cardName: '2018 Prizm Silver RC', player: 'Luka Doncic', company: 'PSA', tier: 'regular', submittedDate: '2026-01-20', estimatedReturn: '2026-03-15', status: 'shipped', predictedGrade: 9, actualGrade: 9, cost: 50 },
+  { id: 'sub-003', cardName: '2020 Mosaic RC', player: 'Justin Herbert', company: 'SGC', tier: 'regular', submittedDate: '2026-02-01', estimatedReturn: '2026-03-10', status: 'complete', predictedGrade: 9.5, actualGrade: 9.5, cost: 30 },
+  { id: 'sub-004', cardName: '2011 Topps Update RC', player: 'Mike Trout', company: 'PSA', tier: 'express', submittedDate: '2026-02-25', estimatedReturn: '2026-03-18', status: 'grading', predictedGrade: 8, actualGrade: null, cost: 75 },
+  { id: 'sub-005', cardName: '2022 Topps Series 1 RC', player: 'Julio Rodriguez', company: 'PSA', tier: 'value', submittedDate: '2026-01-10', estimatedReturn: '2026-03-25', status: 'shipped', predictedGrade: 10, actualGrade: 10, cost: 25 },
+  { id: 'sub-006', cardName: '2018 Chrome RC Auto', player: 'Shohei Ohtani', company: 'BGS', tier: 'express', submittedDate: '2026-03-01', estimatedReturn: '2026-03-15', status: 'grading', predictedGrade: 9, actualGrade: null, cost: 100 },
+  { id: 'sub-007', cardName: '2023 Prizm Silver RC', player: 'CJ Stroud', company: 'PSA', tier: 'regular', submittedDate: '2026-02-10', estimatedReturn: '2026-04-01', status: 'received', predictedGrade: 9.5, actualGrade: null, cost: 50 },
+  { id: 'sub-008', cardName: '2020 Prizm RC', player: 'Joe Burrow', company: 'SGC', tier: 'regular', submittedDate: '2026-02-20', estimatedReturn: '2026-03-25', status: 'grading', predictedGrade: 8.5, actualGrade: null, cost: 30 },
+  { id: 'sub-009', cardName: '2023 Bowman Chrome 1st Auto', player: 'Jackson Holliday', company: 'BGS', tier: 'regular', submittedDate: '2026-01-15', estimatedReturn: '2026-03-12', status: 'complete', predictedGrade: 9.5, actualGrade: 9.5, cost: 50 },
+  { id: 'sub-010', cardName: '2023 Prizm RC', player: 'Connor Bedard', company: 'PSA', tier: 'regular', submittedDate: '2026-03-05', estimatedReturn: '2026-04-20', status: 'submitted', predictedGrade: 9.5, actualGrade: null, cost: 50 },
+  { id: 'sub-011', cardName: '1986 Fleer RC', player: 'Michael Jordan', company: 'PSA', tier: 'super_express', submittedDate: '2026-03-08', estimatedReturn: '2026-03-15', status: 'received', predictedGrade: 7, actualGrade: null, cost: 200 },
+  { id: 'sub-012', cardName: '2019 Prizm Silver RC', player: 'Ja Morant', company: 'PSA', tier: 'regular', submittedDate: '2026-01-25', estimatedReturn: '2026-03-15', status: 'complete', predictedGrade: 9, actualGrade: 8, cost: 50 },
+];
+
+// ---- Prediction Stats ----
+
+const mockStats: PredictionStats = {
+  totalPredictions: 847,
+  avgConfidence: 85.4,
+  accuracyRate: 78.2,
+  withinOneGrade: 94.6,
+  exactMatch: 42.3,
+  avgROIOnSubmissions: 342,
+  totalSubmissions: 156,
+  totalSavings: 28450,
+  bestPrediction: { cardName: '2023 Prizm Silver RC Wembanyama', predicted: 10, actual: 10 },
+};
+
+// ---- Exported Functions ----
+
+export function getGradePredictions(): GradePrediction[] {
+  return loadFromStorage<GradePrediction[]>('predictions', mockGradePredictions);
 }
 
-const DEFAULT_POPULATION_DATA: GradePopulationData[] = [
-  {
-    id: 'pop-001', cardName: '2023 Prizm Silver #1', player: 'Victor Wembanyama', year: 2023, set: 'Panini Prizm', sport: 'Basketball',
-    populations: [
-      { company: 'PSA', totalGraded: 48250, gradeBreakdown: buildPopBreakdown(48250, 22), gemRate: 22, lastUpdated: '2026-03-14' },
-      { company: 'BGS', totalGraded: 12400, gradeBreakdown: buildPopBreakdown(12400, 8), gemRate: 8, lastUpdated: '2026-03-14' },
-      { company: 'SGC', totalGraded: 8900, gradeBreakdown: buildPopBreakdown(8900, 18), gemRate: 18, lastUpdated: '2026-03-13' },
-      { company: 'CGC', totalGraded: 3200, gradeBreakdown: buildPopBreakdown(3200, 15), gemRate: 15, lastUpdated: '2026-03-12' },
-    ],
-  },
-  {
-    id: 'pop-002', cardName: '2023 Topps Chrome #1', player: 'Shohei Ohtani', year: 2023, set: 'Topps Chrome', sport: 'Baseball',
-    populations: [
-      { company: 'PSA', totalGraded: 65100, gradeBreakdown: buildPopBreakdown(65100, 25), gemRate: 25, lastUpdated: '2026-03-14' },
-      { company: 'BGS', totalGraded: 15200, gradeBreakdown: buildPopBreakdown(15200, 9), gemRate: 9, lastUpdated: '2026-03-13' },
-      { company: 'SGC', totalGraded: 11300, gradeBreakdown: buildPopBreakdown(11300, 20), gemRate: 20, lastUpdated: '2026-03-13' },
-      { company: 'CGC', totalGraded: 4100, gradeBreakdown: buildPopBreakdown(4100, 16), gemRate: 16, lastUpdated: '2026-03-12' },
-    ],
-  },
-  {
-    id: 'pop-003', cardName: '2017 Prizm Silver #269', player: 'Patrick Mahomes', year: 2017, set: 'Panini Prizm', sport: 'Football',
-    populations: [
-      { company: 'PSA', totalGraded: 32800, gradeBreakdown: buildPopBreakdown(32800, 12), gemRate: 12, lastUpdated: '2026-03-14' },
-      { company: 'BGS', totalGraded: 9800, gradeBreakdown: buildPopBreakdown(9800, 5), gemRate: 5, lastUpdated: '2026-03-13' },
-      { company: 'SGC', totalGraded: 6500, gradeBreakdown: buildPopBreakdown(6500, 10), gemRate: 10, lastUpdated: '2026-03-12' },
-      { company: 'CGC', totalGraded: 2100, gradeBreakdown: buildPopBreakdown(2100, 8), gemRate: 8, lastUpdated: '2026-03-11' },
-    ],
-  },
-  {
-    id: 'pop-004', cardName: '2003 Topps Chrome #111', player: 'LeBron James', year: 2003, set: 'Topps Chrome', sport: 'Basketball',
-    populations: [
-      { company: 'PSA', totalGraded: 18500, gradeBreakdown: buildPopBreakdown(18500, 6), gemRate: 6, lastUpdated: '2026-03-14' },
-      { company: 'BGS', totalGraded: 7200, gradeBreakdown: buildPopBreakdown(7200, 3), gemRate: 3, lastUpdated: '2026-03-13' },
-      { company: 'SGC', totalGraded: 2800, gradeBreakdown: buildPopBreakdown(2800, 5), gemRate: 5, lastUpdated: '2026-03-12' },
-      { company: 'CGC', totalGraded: 950, gradeBreakdown: buildPopBreakdown(950, 4), gemRate: 4, lastUpdated: '2026-03-10' },
-    ],
-  },
-  {
-    id: 'pop-005', cardName: '2011 Topps Update #US175', player: 'Mike Trout', year: 2011, set: 'Topps Update', sport: 'Baseball',
-    populations: [
-      { company: 'PSA', totalGraded: 42600, gradeBreakdown: buildPopBreakdown(42600, 8), gemRate: 8, lastUpdated: '2026-03-14' },
-      { company: 'BGS', totalGraded: 14500, gradeBreakdown: buildPopBreakdown(14500, 4), gemRate: 4, lastUpdated: '2026-03-13' },
-      { company: 'SGC', totalGraded: 5200, gradeBreakdown: buildPopBreakdown(5200, 7), gemRate: 7, lastUpdated: '2026-03-12' },
-      { company: 'CGC', totalGraded: 1800, gradeBreakdown: buildPopBreakdown(1800, 5), gemRate: 5, lastUpdated: '2026-03-11' },
-    ],
-  },
-  {
-    id: 'pop-006', cardName: '2018 Prizm Silver #280', player: 'Luka Doncic', year: 2018, set: 'Panini Prizm', sport: 'Basketball',
-    populations: [
-      { company: 'PSA', totalGraded: 38100, gradeBreakdown: buildPopBreakdown(38100, 15), gemRate: 15, lastUpdated: '2026-03-14' },
-      { company: 'BGS', totalGraded: 10500, gradeBreakdown: buildPopBreakdown(10500, 6), gemRate: 6, lastUpdated: '2026-03-13' },
-      { company: 'SGC', totalGraded: 7400, gradeBreakdown: buildPopBreakdown(7400, 12), gemRate: 12, lastUpdated: '2026-03-12' },
-      { company: 'CGC', totalGraded: 2500, gradeBreakdown: buildPopBreakdown(2500, 10), gemRate: 10, lastUpdated: '2026-03-11' },
-    ],
-  },
-  {
-    id: 'pop-007', cardName: '2020 Prizm #339 Silver', player: 'Justin Herbert', year: 2020, set: 'Panini Prizm', sport: 'Football',
-    populations: [
-      { company: 'PSA', totalGraded: 28700, gradeBreakdown: buildPopBreakdown(28700, 18), gemRate: 18, lastUpdated: '2026-03-14' },
-      { company: 'BGS', totalGraded: 8200, gradeBreakdown: buildPopBreakdown(8200, 7), gemRate: 7, lastUpdated: '2026-03-13' },
-      { company: 'SGC', totalGraded: 6100, gradeBreakdown: buildPopBreakdown(6100, 14), gemRate: 14, lastUpdated: '2026-03-12' },
-      { company: 'CGC', totalGraded: 2000, gradeBreakdown: buildPopBreakdown(2000, 11), gemRate: 11, lastUpdated: '2026-03-10' },
-    ],
-  },
-  {
-    id: 'pop-008', cardName: '2022 Bowman Chrome #BCP-1', player: 'Jackson Holliday', year: 2022, set: 'Bowman Chrome', sport: 'Baseball',
-    populations: [
-      { company: 'PSA', totalGraded: 18900, gradeBreakdown: buildPopBreakdown(18900, 20), gemRate: 20, lastUpdated: '2026-03-14' },
-      { company: 'BGS', totalGraded: 5400, gradeBreakdown: buildPopBreakdown(5400, 8), gemRate: 8, lastUpdated: '2026-03-13' },
-      { company: 'SGC', totalGraded: 4200, gradeBreakdown: buildPopBreakdown(4200, 16), gemRate: 16, lastUpdated: '2026-03-12' },
-      { company: 'CGC', totalGraded: 1500, gradeBreakdown: buildPopBreakdown(1500, 12), gemRate: 12, lastUpdated: '2026-03-10' },
-    ],
-  },
-  {
-    id: 'pop-009', cardName: '2024 Topps #1', player: 'Elly De La Cruz', year: 2024, set: 'Topps Series 1', sport: 'Baseball',
-    populations: [
-      { company: 'PSA', totalGraded: 55200, gradeBreakdown: buildPopBreakdown(55200, 28), gemRate: 28, lastUpdated: '2026-03-14' },
-      { company: 'BGS', totalGraded: 12800, gradeBreakdown: buildPopBreakdown(12800, 10), gemRate: 10, lastUpdated: '2026-03-13' },
-      { company: 'SGC', totalGraded: 9600, gradeBreakdown: buildPopBreakdown(9600, 22), gemRate: 22, lastUpdated: '2026-03-12' },
-      { company: 'CGC', totalGraded: 3800, gradeBreakdown: buildPopBreakdown(3800, 18), gemRate: 18, lastUpdated: '2026-03-10' },
-    ],
-  },
-  {
-    id: 'pop-010', cardName: '2019 Mosaic #209', player: 'Ja Morant', year: 2019, set: 'Panini Mosaic', sport: 'Basketball',
-    populations: [
-      { company: 'PSA', totalGraded: 22400, gradeBreakdown: buildPopBreakdown(22400, 16), gemRate: 16, lastUpdated: '2026-03-14' },
-      { company: 'BGS', totalGraded: 6500, gradeBreakdown: buildPopBreakdown(6500, 6), gemRate: 6, lastUpdated: '2026-03-13' },
-      { company: 'SGC', totalGraded: 4800, gradeBreakdown: buildPopBreakdown(4800, 13), gemRate: 13, lastUpdated: '2026-03-12' },
-      { company: 'CGC', totalGraded: 1600, gradeBreakdown: buildPopBreakdown(1600, 9), gemRate: 9, lastUpdated: '2026-03-10' },
-    ],
-  },
-  {
-    id: 'pop-011', cardName: '2018 Topps Chrome Update #HMT32', player: 'Juan Soto', year: 2018, set: 'Topps Chrome Update', sport: 'Baseball',
-    populations: [
-      { company: 'PSA', totalGraded: 31200, gradeBreakdown: buildPopBreakdown(31200, 14), gemRate: 14, lastUpdated: '2026-03-14' },
-      { company: 'BGS', totalGraded: 8800, gradeBreakdown: buildPopBreakdown(8800, 5), gemRate: 5, lastUpdated: '2026-03-13' },
-      { company: 'SGC', totalGraded: 5500, gradeBreakdown: buildPopBreakdown(5500, 11), gemRate: 11, lastUpdated: '2026-03-12' },
-      { company: 'CGC', totalGraded: 1900, gradeBreakdown: buildPopBreakdown(1900, 8), gemRate: 8, lastUpdated: '2026-03-10' },
-    ],
-  },
-];
+export function getGradingCosts(): GradingCostComparison[] {
+  return loadFromStorage<GradingCostComparison[]>('costs', mockGradingCosts);
+}
 
-// ---- Seed Data: Submission Tracker ----
+export function getPopulationData(): GradePopulationData[] {
+  return loadFromStorage<GradePopulationData[]>('populations', mockPopulationData);
+}
 
-const DEFAULT_SUBMISSIONS: SubmissionTracker[] = [
-  { id: 'st-001', cardName: '2023 Prizm Silver #1', player: 'Victor Wembanyama', company: 'PSA', tier: 'express', status: 'grading_in_progress', submittedDate: '2026-02-20', expectedReturnDate: '2026-03-10', declaredValue: 2500, cost: 150, trackingNumber: 'PS9283746501', estimatedGrade: 10, actualGrade: null, notes: 'High-value rookie submission' },
-  { id: 'st-002', cardName: '2023 Topps Chrome #1', player: 'Shohei Ohtani', company: 'PSA', tier: 'regular', status: 'graded', submittedDate: '2026-01-15', expectedReturnDate: '2026-02-15', declaredValue: 500, cost: 50, trackingNumber: 'PS9283746502', estimatedGrade: 9, actualGrade: 9, notes: 'Grade matched prediction' },
-  { id: 'st-003', cardName: '2017 Prizm Silver #269', player: 'Patrick Mahomes', company: 'PSA', tier: 'super_express', status: 'shipped_back', submittedDate: '2026-03-01', expectedReturnDate: '2026-03-08', declaredValue: 8000, cost: 300, trackingNumber: 'PS9283746503', estimatedGrade: 9.5, actualGrade: 10, notes: 'Exceeded prediction — Gem Mint!' },
-  { id: 'st-004', cardName: '2003 Topps Chrome #111', player: 'LeBron James', company: 'BGS', tier: 'express', status: 'quality_review', submittedDate: '2026-02-25', expectedReturnDate: '2026-03-10', declaredValue: 25000, cost: 250, trackingNumber: 'BG7362514801', estimatedGrade: 8, actualGrade: null, notes: 'Vintage Chrome — handling with care' },
-  { id: 'st-005', cardName: '2011 Topps Update #US175', player: 'Mike Trout', company: 'PSA', tier: 'express', status: 'received', submittedDate: '2026-03-05', expectedReturnDate: '2026-03-22', declaredValue: 10000, cost: 150, trackingNumber: 'PS9283746505', estimatedGrade: 9, actualGrade: null, notes: 'Key vintage rookie' },
-  { id: 'st-006', cardName: '2018 Prizm Silver #280', player: 'Luka Doncic', company: 'PSA', tier: 'express', status: 'delivered', submittedDate: '2026-01-10', expectedReturnDate: '2026-01-28', declaredValue: 4000, cost: 150, trackingNumber: 'PS9283746506', estimatedGrade: 10, actualGrade: 10, notes: 'Gem Mint — perfect prediction' },
-  { id: 'st-007', cardName: '2020 Prizm #339 Silver', player: 'Justin Herbert', company: 'SGC', tier: 'regular', status: 'grading_queue', submittedDate: '2026-03-01', expectedReturnDate: '2026-03-25', declaredValue: 700, cost: 30, trackingNumber: 'SG5847261301', estimatedGrade: 9, actualGrade: null, notes: 'Budget-friendly submission' },
-  { id: 'st-008', cardName: '2022 Bowman Chrome #BCP-1', player: 'Jackson Holliday', company: 'PSA', tier: 'regular', status: 'in_transit', submittedDate: '2026-03-10', expectedReturnDate: '2026-04-10', declaredValue: 600, cost: 50, trackingNumber: 'PS9283746508', estimatedGrade: 9.5, actualGrade: null, notes: 'Top prospect submission' },
-  { id: 'st-009', cardName: '2024 Topps #1', player: 'Elly De La Cruz', company: 'PSA', tier: 'value', status: 'pending_shipment', submittedDate: '2026-03-14', expectedReturnDate: '2026-05-15', declaredValue: 250, cost: 25, trackingNumber: '', estimatedGrade: 10, actualGrade: null, notes: 'Value tier for lower declared value' },
-  { id: 'st-010', cardName: '2019 Mosaic #209', player: 'Ja Morant', company: 'SGC', tier: 'regular', status: 'delivered', submittedDate: '2025-12-15', expectedReturnDate: '2026-01-10', declaredValue: 300, cost: 30, trackingNumber: 'SG5847261310', estimatedGrade: 8.5, actualGrade: 8, notes: 'Slight under-prediction — edge wear' },
-  { id: 'st-011', cardName: '2018 Topps Chrome Update #HMT32', player: 'Juan Soto', company: 'PSA', tier: 'regular', status: 'graded', submittedDate: '2026-01-20', expectedReturnDate: '2026-02-20', declaredValue: 1000, cost: 50, trackingNumber: 'PS9283746511', estimatedGrade: 9.5, actualGrade: 9, notes: 'Slightly below prediction — corner softness' },
-  { id: 'st-012', cardName: '2020 Select #44', player: 'Joe Burrow', company: 'PSA', tier: 'regular', status: 'graded', submittedDate: '2026-02-01', expectedReturnDate: '2026-03-01', declaredValue: 600, cost: 50, trackingNumber: 'PS9283746512', estimatedGrade: 9, actualGrade: 9, notes: 'Exact match on prediction' },
-];
+export function getGradingROI(cardValue: number): GradingROI[] {
+  const gradingCost = 50;
+  const grades = ['6', '7', '8', '9', '9.5', '10'];
+  const multipliers: Record<string, number> = {
+    '6': 1.1,
+    '7': 1.4,
+    '8': 1.9,
+    '9': 3.0,
+    '9.5': 4.5,
+    '10': 8.0,
+  };
 
-// ---- Helper Functions ----
+  const results: GradingROI[] = grades.map(grade => {
+    const gradedValue = Math.round(cardValue * multipliers[grade]);
+    const netROI = gradedValue - cardValue - gradingCost;
+    const roiPercent = cardValue + gradingCost > 0 ? Math.round((netROI / (cardValue + gradingCost)) * 100) : 0;
+
+    let recommendation: 'submit' | 'skip' | 'borderline' = 'skip';
+    if (roiPercent > 50) recommendation = 'submit';
+    else if (roiPercent > 0) recommendation = 'borderline';
+
+    return {
+      grade,
+      rawValue: cardValue,
+      gradedValue,
+      gradingCost,
+      netROI,
+      roiPercent,
+      breakEvenGrade: '', // will be filled below
+      recommendation,
+    };
+  });
+
+  // Determine actual break-even grade
+  const breakEvenEntry = results.find(r => r.netROI > 0);
+  const breakEvenGrade = breakEvenEntry ? breakEvenEntry.grade : 'N/A';
+  return results.map(r => ({ ...r, breakEvenGrade }));
+}
+
+export function getSubmissionTracker(): SubmissionTracker[] {
+  return loadFromStorage<SubmissionTracker[]>('submissions', mockSubmissions);
+}
+
+export function getPredictionStats(): PredictionStats {
+  return loadFromStorage<PredictionStats>('stats', mockStats);
+}
+
+export function predictGrade(imageUrl?: string): GradePrediction {
+  const sampleCards = [
+    { name: '2024 Topps Chrome RC', player: 'Paul Skenes', year: 2024, set: 'Topps Chrome', sport: 'Baseball' },
+    { name: '2024 Panini Prizm RC', player: 'Zach Edey', year: 2024, set: 'Panini Prizm', sport: 'Basketball' },
+    { name: '2024 Panini Prizm RC', player: 'Caleb Williams', year: 2024, set: 'Panini Prizm', sport: 'Football' },
+    { name: '2024 Upper Deck RC', player: 'Macklin Celebrini', year: 2024, set: 'Upper Deck', sport: 'Hockey' },
+  ];
+  const card = sampleCards[Math.floor(Math.random() * sampleCards.length)];
+  const predictedGrade = [8, 8.5, 9, 9.5, 10][Math.floor(Math.random() * 5)];
+  const confidence = Math.floor(Math.random() * 25) + 70;
+  const rawValue = Math.floor(Math.random() * 400) + 20;
+  const multiplier = predictedGrade >= 9.5 ? 4.5 : predictedGrade >= 9 ? 3.0 : predictedGrade >= 8 ? 1.9 : 1.4;
+  const gradedValue = Math.round(rawValue * multiplier);
+  const uplift = gradedValue - rawValue;
+  const gradingCost = 50;
+
+  const newPrediction: GradePrediction = {
+    id: `gp-${Date.now()}`,
+    cardName: card.name,
+    player: card.player,
+    year: card.year,
+    set: card.set,
+    sport: card.sport,
+    imageUrl: imageUrl || '/cards/placeholder.jpg',
+    predictions: makePredictions(predictedGrade, confidence),
+    overallConfidence: confidence,
+    conditionNotes: [
+      'AI analysis complete',
+      `Predicted grade: ${predictedGrade}`,
+      `Confidence: ${confidence}%`,
+      'Upload a real image for more accurate results',
+    ],
+    valueDelta: {
+      raw: rawValue,
+      graded: gradedValue,
+      uplift,
+      upliftPercent: rawValue > 0 ? Math.round((uplift / rawValue) * 100) : 0,
+    },
+    submissionRecommendation: {
+      recommended: uplift > gradingCost * 2,
+      bestCompany: 'PSA',
+      bestTier: rawValue > 500 ? 'express' : rawValue > 100 ? 'regular' : 'value',
+      estimatedCost: gradingCost,
+      estimatedTurnaround: '45 business days',
+      expectedROI: gradingCost > 0 ? Math.round(((uplift - gradingCost) / gradingCost) * 100) : 0,
+      reasoning: `AI-predicted ${card.player} ${card.name} at grade ${predictedGrade} with ${confidence}% confidence.`,
+    },
+    timestamp: new Date().toISOString(),
+  };
+
+  // Persist
+  const existing = getGradePredictions();
+  existing.unshift(newPrediction);
+  saveToStorage('predictions', existing);
+
+  return newPrediction;
+}
 
 export function getCompanyColor(company: GradingCompany): string {
   const colors: Record<GradingCompany, string> = {
-    PSA: '#ef4444',
-    BGS: '#3b82f6',
-    SGC: '#f59e0b',
-    CGC: '#10b981',
+    PSA: '#f87171',
+    BGS: '#60a5fa',
+    SGC: '#fbbf24',
+    CGC: '#a78bfa',
   };
-  return colors[company] ?? '#6b7280';
+  return colors[company] || '#94a3b8';
 }
 
 export function getGradeColor(grade: number): string {
-  if (grade >= 9.5) return '#22c55e';
-  if (grade >= 9) return '#84cc16';
-  if (grade >= 8) return '#eab308';
+  if (grade >= 9.5) return '#10b981';
+  if (grade >= 9) return '#34d399';
+  if (grade >= 8) return '#fbbf24';
   if (grade >= 7) return '#f97316';
   if (grade >= 6) return '#ef4444';
   return '#dc2626';
 }
 
-export function getStatusLabel(status: SubmissionStatus): string {
-  const labels: Record<SubmissionStatus, string> = {
-    pending_shipment: 'Pending Shipment',
-    in_transit: 'In Transit',
+export function getStatusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    submitted: 'Submitted',
     received: 'Received',
-    grading_queue: 'In Queue',
-    grading_in_progress: 'Grading In Progress',
-    quality_review: 'Quality Review',
-    graded: 'Graded',
-    shipped_back: 'Shipped Back',
-    delivered: 'Delivered',
+    grading: 'Grading',
+    shipped: 'Shipped',
+    complete: 'Complete',
   };
-  return labels[status] ?? status;
+  return labels[status] || status;
 }
 
-export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+export function formatCurrency(n: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(n);
 }
 
-export function getSubgradeLabel(category: SubgradeCategory): string {
+export function getSubgradeLabel(cat: SubgradeCategory): string {
   const labels: Record<SubgradeCategory, string> = {
     centering: 'Centering',
     corners: 'Corners',
     edges: 'Edges',
     surface: 'Surface',
   };
-  return labels[category] ?? category;
+  return labels[cat] || cat;
 }
 
-export function getRecommendationColor(rec: GradingROI['recommendation']): string {
-  const colors: Record<GradingROI['recommendation'], string> = {
-    strong_submit: '#22c55e',
-    submit: '#84cc16',
-    hold: '#eab308',
+export function getRecommendationColor(rec: string): string {
+  const colors: Record<string, string> = {
+    submit: '#10b981',
     skip: '#ef4444',
+    borderline: '#f59e0b',
   };
-  return colors[rec] ?? '#6b7280';
+  return colors[rec] || '#94a3b8';
 }
-
-function getTierLabel(tier: SubmissionTier): string {
-  const labels: Record<SubmissionTier, string> = {
-    value: 'Value',
-    regular: 'Regular',
-    express: 'Express',
-    super_express: 'Super Express',
-    walk_through: 'Walk-Through',
-  };
-  return labels[tier] ?? tier;
-}
-
-// ---- localStorage Persistence ----
-
-function loadPredictions(): GradePrediction[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as GradePrediction[];
-  } catch {
-    // ignore parse errors
-  }
-  return [...DEFAULT_PREDICTIONS];
-}
-
-function savePredictions(predictions: GradePrediction[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(predictions));
-}
-
-function loadTracker(): SubmissionTracker[] {
-  try {
-    const raw = localStorage.getItem(TRACKER_KEY);
-    if (raw) return JSON.parse(raw) as SubmissionTracker[];
-  } catch {
-    // ignore parse errors
-  }
-  return [...DEFAULT_SUBMISSIONS];
-}
-
-function saveTracker(tracker: SubmissionTracker[]): void {
-  localStorage.setItem(TRACKER_KEY, JSON.stringify(tracker));
-}
-
-// ---- Exported Functions ----
-
-export function getGradePredictions(): GradePrediction[] {
-  return loadPredictions();
-}
-
-export function getGradingCosts(): GradingCostComparison[] {
-  return [...DEFAULT_GRADING_COSTS];
-}
-
-export function getPopulationData(): GradePopulationData[] {
-  return [...DEFAULT_POPULATION_DATA];
-}
-
-export function getGradingROI(cardValue: number): GradingROI[] {
-  const grades = [6, 7, 7.5, 8, 8.5, 9, 9.5, 10];
-  const multipliers: Record<number, number> = {
-    6: 1.2,
-    7: 1.5,
-    7.5: 1.8,
-    8: 2.2,
-    8.5: 3.0,
-    9: 4.5,
-    9.5: 7.0,
-    10: 12.0,
-  };
-
-  const gradingCostBase = 50; // regular PSA tier
-
-  return grades.map((grade) => {
-    const gradedValue = Math.round(cardValue * (multipliers[grade] ?? 1));
-    const gradingCost = gradingCostBase;
-    const netROI = gradedValue - cardValue - gradingCost;
-    const roiPercent = Math.round(((gradedValue - cardValue - gradingCost) / (cardValue + gradingCost)) * 100);
-
-    let recommendation: GradingROI['recommendation'];
-    if (roiPercent >= 200) recommendation = 'strong_submit';
-    else if (roiPercent >= 50) recommendation = 'submit';
-    else if (roiPercent >= 0) recommendation = 'hold';
-    else recommendation = 'skip';
-
-    return { grade, rawValue: cardValue, gradedValue, gradingCost, netROI, roiPercent, recommendation };
-  });
-}
-
-export function getSubmissionTracker(): SubmissionTracker[] {
-  return loadTracker();
-}
-
-export function getPredictionStats(): PredictionStats {
-  const predictions = loadPredictions();
-  const tracker = loadTracker();
-
-  const completedSubmissions = tracker.filter((s) => s.actualGrade !== null);
-  const totalPredictions = predictions.length;
-
-  let exactMatches = 0;
-  let withinHalf = 0;
-  let totalDeviation = 0;
-  let totalROI = 0;
-  let totalSavings = 0;
-
-  for (const sub of completedSubmissions) {
-    const deviation = Math.abs(sub.estimatedGrade - (sub.actualGrade as number));
-    totalDeviation += deviation;
-    if (deviation === 0) exactMatches++;
-    if (deviation <= 0.5) withinHalf++;
-
-    // Calculate ROI from the matching prediction
-    const pred = predictions.find((p) => p.player === sub.player);
-    if (pred) {
-      const roi = ((pred.valueDelta.predictedGradedValue - pred.valueDelta.rawValue - sub.cost) / (pred.valueDelta.rawValue + sub.cost)) * 100;
-      totalROI += roi;
-      totalSavings += pred.valueDelta.predictedGradedValue - pred.valueDelta.rawValue - sub.cost;
-    }
-  }
-
-  const completedCount = completedSubmissions.length || 1;
-  const accuracyRate = Math.round((withinHalf / completedCount) * 100);
-  const exactMatchRate = Math.round((exactMatches / completedCount) * 100);
-  const averageDeviation = Math.round((totalDeviation / completedCount) * 100) / 100;
-  const averageROI = Math.round(totalROI / completedCount);
-
-  const companyBreakdown: PredictionStats['companyBreakdown'] = (['PSA', 'BGS', 'SGC', 'CGC'] as GradingCompany[]).map((company) => {
-    const companySubs = completedSubmissions.filter((s) => s.company === company);
-    const companyAccurate = companySubs.filter((s) => Math.abs(s.estimatedGrade - (s.actualGrade as number)) <= 0.5).length;
-    return {
-      company,
-      predictions: companySubs.length,
-      accuracy: companySubs.length > 0 ? Math.round((companyAccurate / companySubs.length) * 100) : 0,
-    };
-  });
-
-  const monthlyAccuracy: PredictionStats['monthlyAccuracy'] = [
-    { month: 'Oct 2025', accuracy: 78, predictions: 12 },
-    { month: 'Nov 2025', accuracy: 82, predictions: 15 },
-    { month: 'Dec 2025', accuracy: 85, predictions: 18 },
-    { month: 'Jan 2026', accuracy: 88, predictions: 22 },
-    { month: 'Feb 2026', accuracy: 91, predictions: 20 },
-    { month: 'Mar 2026', accuracy: 93, predictions: 16 },
-  ];
-
-  return {
-    totalPredictions,
-    accuracyRate,
-    exactMatchRate,
-    averageDeviation,
-    averageROI,
-    totalSavings,
-    companyBreakdown,
-    monthlyAccuracy,
-  };
-}
-
-export function predictGrade(
-  cardName: string,
-  player: string,
-  year: number,
-  set: string,
-  sport: string,
-): GradePrediction {
-  // Simulated AI prediction based on card attributes
-  const hash = (cardName + player + year + set).split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  const baseGrade = 7 + (hash % 30) / 10; // 7.0 - 10.0 range
-  const psaGrade = Math.min(10, Math.round(baseGrade * 2) / 2);
-  const bgsGrade = Math.min(10, Math.round((baseGrade - 0.25) * 2) / 2);
-  const sgcGrade = Math.min(10, Math.round(baseGrade * 2) / 2);
-  const cgcGrade = Math.min(10, Math.round((baseGrade - 0.15) * 2) / 2);
-  const confidence = 70 + (hash % 25);
-
-  const centering = Math.min(10, Math.round((7 + (hash % 30) / 10) * 2) / 2);
-  const corners = Math.min(10, Math.round((7.5 + ((hash * 3) % 25) / 10) * 2) / 2);
-  const edges = Math.min(10, Math.round((7.5 + ((hash * 7) % 25) / 10) * 2) / 2);
-  const surface = Math.min(10, Math.round((7 + ((hash * 11) % 30) / 10) * 2) / 2);
-
-  const rawValue = 50 + (hash % 500);
-  const predictedGradedValue = Math.round(rawValue * (1 + psaGrade / 5));
-
-  const prediction: GradePrediction = {
-    id: `gp-sim-${Date.now()}`,
-    cardName,
-    player,
-    year,
-    set,
-    sport,
-    imageUrl: '/cards/placeholder.jpg',
-    predictions: buildPredictions(psaGrade, bgsGrade, sgcGrade, cgcGrade, confidence, centering, corners, edges, surface),
-    overallConfidence: confidence,
-    conditionNotes: ['AI-generated prediction', 'Based on card attribute analysis', `Estimated base grade: ${baseGrade.toFixed(1)}`],
-    valueDelta: { rawValue, predictedGradedValue, percentIncrease: Math.round(((predictedGradedValue - rawValue) / rawValue) * 100) },
-    submissionRecommendation: {
-      recommendedCompany: psaGrade >= 9 ? 'PSA' : 'SGC',
-      recommendedTier: rawValue > 1000 ? 'express' : rawValue > 200 ? 'regular' : 'value',
-      reason: psaGrade >= 9 ? 'High grade candidate — PSA commands best premium' : 'Cost-effective option for mid-grade cards',
-      estimatedTurnaround: rawValue > 1000 ? 15 : 30,
-      estimatedCost: rawValue > 1000 ? 150 : 50,
-    },
-    timestamp: new Date().toISOString(),
-  };
-
-  // Persist the new prediction
-  const all = loadPredictions();
-  all.unshift(prediction);
-  savePredictions(all);
-
-  return prediction;
-}
-
-// ---- Status Pipeline Ordering ----
-
-const STATUS_ORDER: SubmissionStatus[] = [
-  'pending_shipment',
-  'in_transit',
-  'received',
-  'grading_queue',
-  'grading_in_progress',
-  'quality_review',
-  'graded',
-  'shipped_back',
-  'delivered',
-];
-
-export function getStatusProgress(status: SubmissionStatus): number {
-  const idx = STATUS_ORDER.indexOf(status);
-  return idx >= 0 ? Math.round(((idx + 1) / STATUS_ORDER.length) * 100) : 0;
-}
-
-export { getTierLabel, STATUS_ORDER };
