@@ -75,7 +75,7 @@ const PATTERN_CONFIG: Record<BidPattern, { label: string; color: string; bg: str
   sniper_active:  { label: 'Sniper Active', color: 'text-blue-400',    bg: 'bg-blue-500/20',    border: 'border-blue-500/30' },
 };
 
-const PLATFORM_COLOR: Record<AuctionPlatform, string> = {
+const PLATFORM_COLOR: Partial<Record<AuctionPlatform, string>> = {
   eBay: 'text-blue-400',
   Goldin: 'text-amber-400',
   Heritage: 'text-purple-400',
@@ -143,7 +143,7 @@ const LiveAuctionsTab: React.FC<{ auctions: AuctionListing[]; onSelect: (_a: Auc
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className="text-sm font-semibold text-white truncate">{auction.player}</span>
-                  <span className={`text-[10px] font-bold ${PLATFORM_COLOR[auction.platform]}`}>{auction.platform}</span>
+                  <span className={`text-[10px] font-bold ${PLATFORM_COLOR[auction.platform] ?? 'text-slate-400'}`}>{auction.platform}</span>
                   <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded border ${patt.bg} ${patt.color} ${patt.border}`}>
                     {patt.label.toUpperCase()}
                   </span>
@@ -528,7 +528,7 @@ const HistoryTab: React.FC = () => {
                       <X size={12} className="text-red-400 flex-shrink-0" />
                     )}
                     <span className="text-sm font-semibold text-white truncate">{record.player}</span>
-                    <span className={`text-[10px] font-bold ${PLATFORM_COLOR[record.platform]}`}>{record.platform}</span>
+                    <span className={`text-[10px] font-bold ${PLATFORM_COLOR[record.platform] ?? 'text-slate-400'}`}>{record.platform}</span>
                   </div>
                   <p className="text-xs text-slate-400 truncate ml-5">{record.cardDescription} &middot; {record.grade}</p>
                 </div>

@@ -382,6 +382,11 @@ const PLATFORM_CONFIG: Record<AuctionPlatform, { label: string; text: string; bg
   whatnot: { label: 'Whatnot', text: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30' },
   lelands: { label: 'Lelands', text: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
   scp: { label: 'SCP', text: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' },
+  eBay: { label: 'eBay', text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
+  Goldin: { label: 'Goldin', text: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
+  Heritage: { label: 'Heritage', text: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+  PWCC: { label: 'PWCC', text: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30' },
+  MySlabs: { label: 'MySlabs', text: 'text-rose-400', bg: 'bg-rose-500/10', border: 'border-rose-500/30' },
 };
 
 const URGENCY_CONFIG: Record<string, { label: string; text: string; bg: string; border: string }> = {
@@ -507,20 +512,24 @@ export function getBidStrategies(): BidStrategyGuide[] {
   return BID_STRATEGIES;
 }
 
-export function getAuctionHistory(cardName?: string, platform?: AuctionPlatform): AuctionHistory[] {
-  const cacheKey = `history_${cardName ?? 'all'}_${platform ?? 'all'}`;
-  const cached = loadData<AuctionHistory[]>(cacheKey);
-  if (cached) return cached;
-
-  let result = AUCTION_HISTORY;
-  if (cardName) result = result.filter(h => h.cardName.toLowerCase().includes(cardName.toLowerCase()));
-  if (platform) result = result.filter(h => h.platform === platform);
-
-  saveData(cacheKey, result);
-  return result;
+export function getAuctionHistory(_cardName?: string, _platform?: AuctionPlatform): AuctionHistoryRecord[] {
+  return _getAuctionHistoryRecords();
 }
 
-export function getAuctionStats(platform?: AuctionPlatform): AuctionStats[] {
+export function getAuctionStats(listingsOrPlatform?: AuctionListing[] | AuctionPlatform): AuctionStats[] | { total: number; endingSoon: number; avgDealScore: number; totalValue: number } {
+  // New overload: accept AuctionListing[] and return summary stats
+  if (Array.isArray(listingsOrPlatform)) {
+    const listings = listingsOrPlatform;
+    if (listings.length === 0) return { total: 0, endingSoon: 0, avgDealScore: 0, totalValue: 0 };
+    return {
+      total: listings.length,
+      endingSoon: listings.filter(l => l.timeRemaining <= 3600).length,
+      avgDealScore: Math.round(listings.reduce((s, l) => s + l.dealScore, 0) / listings.length),
+      totalValue: listings.reduce((s, l) => s + l.currentBid, 0),
+    };
+  }
+  // Legacy overload: accept optional platform string
+  const platform = listingsOrPlatform;
   const cacheKey = platform ? `stats_${platform}` : 'stats_all';
   const cached = loadData<AuctionStats[]>(cacheKey);
   if (cached) return cached;
@@ -689,101 +698,325 @@ export function getHistoricalBidPatterns(): HistoricalBidPattern[] {
 export function getAlerts(): { id: string; active: boolean; message: string }[] {
   return getSniperAlerts().map(a => ({
     id: a.id,
-    active: a.status === 'active',
+    active: a.urgency === 'high' || a.urgency === 'critical',
     message: a.message,
   }));
 }
 
-export function getSniperStats(): { winRate: number; totalBids: number; totalWins: number } {
-  const history = getAuctionHistory();
-  const won = history.filter(h => h.won);
-  return {
-    winRate: history.length > 0 ? (won.length / history.length) * 100 : 0,
-    totalBids: history.length,
-    totalWins: won.length,
-  };
-}
+// ---- Modal types ----
 
-// ---- Modal adapters ----
+export type BidPattern = 'organic' | 'shill_suspect' | 'proxy_war' | 'sniper_active';
 
 export interface AuctionListing {
   id: string;
-  title: string;
   platform: AuctionPlatform;
-  currentBid: number;
-  buyNowPrice: number | null;
-  timeRemaining: string;
-  watchers: number;
-  bidCount: number;
-  imageUrl: string;
-  sport: string;
-  year: number;
-  condition: string;
+  player: string;
+  cardDescription: string;
   grade: string;
-  estimatedValue: number;
-  confidence: number;
+  currentBid: number;
+  bidCount: number;
+  timeRemaining: number;
+  endTime: string;
+  sellerRating: number;
+  estimatedFMV: number;
+  dealScore: number;
+  bidPattern: BidPattern;
+  shillRisk: number;
+  watchers: number;
+  image: string;
+  potentialSavings: number;
+  itemName: string;
 }
 
 export interface BidHistoryAnalysis {
+  auctionId: string;
+  pattern: BidPattern;
+  bids: { amount: number; bidder: string; isNewBidder: boolean; timestamp: string }[];
   avgBidIncrement: number;
-  optimalBidTime: string;
-  bidVelocity: number;
-  lastMinuteBids: number;
-  sniperSuccessRate: number;
-  recommendedBidAmount: number;
-  recommendation: string;
+  velocityChange: number;
+  shillIndicators: string[];
 }
 
 export interface BidStrategy {
-  recommendedBid: number;
-  bidTiming: string;
-  sniperWindow: number;
+  auctionId: string;
+  strategy: 'early_bid' | 'mid_game' | 'snipe' | 'proxy';
+  maxBid: number;
+  snipeTime: number;
   confidence: number;
-  rationale: string;
+  reasoning: string;
 }
+
+// ---- Modal data ----
+
+const AUCTION_LISTING_DATA: AuctionListing[] = [
+  { id: 'al_001', platform: 'eBay', player: 'Mike Trout', cardDescription: '2011 Topps Update RC #US175', grade: 'PSA 10', currentBid: 4200, bidCount: 28, timeRemaining: 1800, endTime: '2026-03-15T17:30:00Z', sellerRating: 99.2, estimatedFMV: 5500, dealScore: 78, bidPattern: 'organic', shillRisk: 12, watchers: 45, image: '', potentialSavings: 1300, itemName: '2011 Topps Update Mike Trout RC #US175 PSA 10' },
+  { id: 'al_002', platform: 'Goldin', player: 'Victor Wembanyama', cardDescription: '2023 Panini Prizm Silver RC', grade: 'PSA 10', currentBid: 850, bidCount: 18, timeRemaining: 3600, endTime: '2026-03-15T18:00:00Z', sellerRating: 100, estimatedFMV: 1200, dealScore: 72, bidPattern: 'proxy_war', shillRisk: 25, watchers: 62, image: '', potentialSavings: 350, itemName: '2023 Panini Prizm Silver Victor Wembanyama RC PSA 10' },
+  { id: 'al_003', platform: 'Heritage', player: 'Mickey Mantle', cardDescription: '1952 Topps #311', grade: 'PSA 4', currentBid: 85000, bidCount: 32, timeRemaining: 7200, endTime: '2026-03-15T19:00:00Z', sellerRating: 100, estimatedFMV: 125000, dealScore: 82, bidPattern: 'organic', shillRisk: 8, watchers: 210, image: '', potentialSavings: 40000, itemName: '1952 Topps Mickey Mantle #311 PSA 4' },
+  { id: 'al_004', platform: 'eBay', player: 'Shohei Ohtani', cardDescription: '2018 Topps Chrome RC Auto', grade: 'PSA 10', currentBid: 28000, bidCount: 22, timeRemaining: 900, endTime: '2026-03-15T17:15:00Z', sellerRating: 98.5, estimatedFMV: 38000, dealScore: 75, bidPattern: 'sniper_active', shillRisk: 18, watchers: 88, image: '', potentialSavings: 10000, itemName: '2018 Topps Chrome Shohei Ohtani RC Auto PSA 10' },
+  { id: 'al_005', platform: 'PWCC', player: 'Michael Jordan', cardDescription: '1986 Fleer RC #57', grade: 'PSA 8', currentBid: 19500, bidCount: 15, timeRemaining: 14400, endTime: '2026-03-15T21:00:00Z', sellerRating: 100, estimatedFMV: 26000, dealScore: 68, bidPattern: 'organic', shillRisk: 5, watchers: 72, image: '', potentialSavings: 6500, itemName: '1986 Fleer Michael Jordan RC #57 PSA 8' },
+  { id: 'al_006', platform: 'eBay', player: 'Caleb Williams', cardDescription: '2024 Panini Prizm Silver RC', grade: 'PSA 10', currentBid: 380, bidCount: 24, timeRemaining: 600, endTime: '2026-03-15T17:10:00Z', sellerRating: 99.0, estimatedFMV: 550, dealScore: 70, bidPattern: 'shill_suspect', shillRisk: 65, watchers: 35, image: '', potentialSavings: 170, itemName: '2024 Panini Prizm Silver Caleb Williams RC PSA 10' },
+  { id: 'al_007', platform: 'Goldin', player: 'Luka Doncic', cardDescription: '2022 Panini Flawless Patch Auto /25', grade: 'BGS 9', currentBid: 8500, bidCount: 19, timeRemaining: 10800, endTime: '2026-03-15T20:00:00Z', sellerRating: 100, estimatedFMV: 13000, dealScore: 74, bidPattern: 'organic', shillRisk: 10, watchers: 58, image: '', potentialSavings: 4500, itemName: '2022 Panini Flawless Luka Doncic Patch Auto /25 BGS 9' },
+  { id: 'al_008', platform: 'eBay', player: 'Paul Skenes', cardDescription: '2024 Topps Chrome RC Auto /99', grade: 'PSA 10', currentBid: 1250, bidCount: 20, timeRemaining: 2400, endTime: '2026-03-15T17:40:00Z', sellerRating: 99.5, estimatedFMV: 1900, dealScore: 76, bidPattern: 'proxy_war', shillRisk: 30, watchers: 40, image: '', potentialSavings: 650, itemName: '2024 Topps Chrome Paul Skenes RC Auto /99 PSA 10' },
+  { id: 'al_009', platform: 'Heritage', player: 'Babe Ruth', cardDescription: '1933 Goudey #53', grade: 'SGC 3', currentBid: 45000, bidCount: 28, timeRemaining: 86400, endTime: '2026-03-16T17:00:00Z', sellerRating: 100, estimatedFMV: 68000, dealScore: 80, bidPattern: 'organic', shillRisk: 3, watchers: 175, image: '', potentialSavings: 23000, itemName: '1933 Goudey Babe Ruth #53 SGC 3' },
+  { id: 'al_010', platform: 'MySlabs', player: 'Connor Bedard', cardDescription: '2024 Upper Deck Young Guns RC', grade: 'PSA 10', currentBid: 280, bidCount: 16, timeRemaining: 1200, endTime: '2026-03-15T17:20:00Z', sellerRating: 97.8, estimatedFMV: 420, dealScore: 71, bidPattern: 'organic', shillRisk: 15, watchers: 22, image: '', potentialSavings: 140, itemName: '2024 Upper Deck Connor Bedard Young Guns RC PSA 10' },
+  { id: 'al_011', platform: 'eBay', player: 'Jayden Daniels', cardDescription: '2024 Panini Prizm Silver RC', grade: 'PSA 10', currentBid: 185, bidCount: 14, timeRemaining: 3000, endTime: '2026-03-15T17:50:00Z', sellerRating: 98.8, estimatedFMV: 300, dealScore: 65, bidPattern: 'organic', shillRisk: 20, watchers: 18, image: '', potentialSavings: 115, itemName: '2024 Panini Prizm Silver Jayden Daniels RC PSA 10' },
+  { id: 'al_012', platform: 'PWCC', player: 'Derek Jeter', cardDescription: '1993 SP Foil RC #279', grade: 'PSA 9', currentBid: 12500, bidCount: 13, timeRemaining: 28800, endTime: '2026-03-16T01:00:00Z', sellerRating: 100, estimatedFMV: 18500, dealScore: 73, bidPattern: 'sniper_active', shillRisk: 8, watchers: 65, image: '', potentialSavings: 6000, itemName: '1993 SP Foil Derek Jeter RC #279 PSA 9' },
+  { id: 'al_013', platform: 'eBay', player: 'Gunnar Henderson', cardDescription: '2025 Topps Chrome Refractor Auto /499', grade: 'PSA 10', currentBid: 340, bidCount: 17, timeRemaining: 4800, endTime: '2026-03-15T18:20:00Z', sellerRating: 99.3, estimatedFMV: 520, dealScore: 69, bidPattern: 'organic', shillRisk: 22, watchers: 28, image: '', potentialSavings: 180, itemName: '2025 Topps Chrome Gunnar Henderson Refractor Auto /499 PSA 10' },
+  { id: 'al_014', platform: 'Goldin', player: 'Trevor Lawrence', cardDescription: '2021 National Treasures RPA /99', grade: 'BGS 9', currentBid: 3200, bidCount: 11, timeRemaining: 43200, endTime: '2026-03-16T05:00:00Z', sellerRating: 100, estimatedFMV: 5000, dealScore: 67, bidPattern: 'organic', shillRisk: 14, watchers: 42, image: '', potentialSavings: 1800, itemName: '2021 National Treasures Trevor Lawrence RPA /99 BGS 9' },
+  { id: 'al_015', platform: 'eBay', player: 'Julio Rodriguez', cardDescription: '2022 Topps Chrome RC Auto Gold /50', grade: 'PSA 10', currentBid: 5800, bidCount: 18, timeRemaining: 21600, endTime: '2026-03-15T23:00:00Z', sellerRating: 100, estimatedFMV: 8200, dealScore: 71, bidPattern: 'shill_suspect', shillRisk: 55, watchers: 50, image: '', potentialSavings: 2400, itemName: '2022 Topps Chrome Julio Rodriguez RC Auto Gold /50 PSA 10' },
+];
+
+function _getAuctionListings(): AuctionListing[] {
+  const cached = loadData<AuctionListing[]>('auction_listings_v2');
+  if (cached) return cached;
+  const sorted = [...AUCTION_LISTING_DATA].sort((a, b) => a.timeRemaining - b.timeRemaining);
+  saveData('auction_listings_v2', sorted);
+  return sorted;
+}
+
+// ---- Modal functions ----
 
 export function getActiveAuctions(): AuctionListing[] {
-  return getLiveAuctions().map(a => ({
-    id: a.id,
-    title: a.title,
-    platform: (a.platform || 'ebay') as AuctionPlatform,
-    currentBid: a.currentBid,
-    buyNowPrice: a.buyNowPrice ?? null,
-    timeRemaining: a.timeLeft,
-    watchers: a.watchers,
-    bidCount: a.bidCount,
-    imageUrl: '',
-    sport: a.sport,
-    year: a.year,
-    condition: a.condition,
-    grade: a.grade || '',
-    estimatedValue: a.estimatedValue,
-    confidence: a.confidence ?? 75,
-  }));
+  return _getAuctionListings();
 }
 
-export function analyzeBidHistory(_auctionId: string): BidHistoryAnalysis {
+export function analyzeBidHistory(auctionId: string): BidHistoryAnalysis {
+  const auction = _getAuctionListings().find(a => a.id === auctionId);
+  if (!auction) {
+    return {
+      auctionId,
+      pattern: 'organic',
+      bids: [],
+      avgBidIncrement: 0,
+      velocityChange: 0,
+      shillIndicators: [],
+    };
+  }
+
+  const bidCount = auction.bidCount;
+  const bids: BidHistoryAnalysis['bids'] = [];
+  const bidders = ['card_shark_42', 'vintage_vault', 'rookie_hunter', 'grail_chaser', 'slabbed_up', 'top_loader', 'gem_mint_99'];
+  let currentAmount = auction.currentBid * 0.3;
+  const increment = (auction.currentBid - currentAmount) / Math.max(bidCount - 1, 1);
+
+  for (let i = 0; i < bidCount; i++) {
+    const jitter = increment * (0.6 + Math.sin(i * 1.5) * 0.4);
+    currentAmount += i === 0 ? 0 : jitter;
+    bids.push({
+      amount: Math.round(Math.min(currentAmount, auction.currentBid) * 100) / 100,
+      bidder: bidders[i % bidders.length],
+      isNewBidder: i < 3 || i % 4 === 0,
+      timestamp: new Date(Date.now() - (bidCount - i) * 600000).toISOString(),
+    });
+  }
+  if (bids.length > 0) bids[bids.length - 1].amount = auction.currentBid;
+
+  const increments = bids.slice(1).map((b, i) => b.amount - bids[i].amount);
+  const avgInc = increments.length > 0 ? increments.reduce((s, v) => s + v, 0) / increments.length : 0;
+
+  const shillIndicators: string[] = [];
+  if (auction.shillRisk > 50) {
+    shillIndicators.push('Rapid bid escalation detected in final bidding phase');
+    shillIndicators.push('Same bidder pattern: losing bidder consistently raises by minimum increment');
+  }
+  if (auction.shillRisk > 30) {
+    shillIndicators.push('New account bidding aggressively within first 24 hours');
+  }
+
   return {
-    avgBidIncrement: 15.5,
-    optimalBidTime: '2-5 seconds before end',
-    bidVelocity: 3.2,
-    lastMinuteBids: 8,
-    sniperSuccessRate: 72,
-    recommendedBidAmount: 195,
-    recommendation: 'Set sniper bid at $195 with 3-second window for optimal success rate',
+    auctionId,
+    pattern: auction.bidPattern,
+    bids,
+    avgBidIncrement: Math.round(avgInc * 100) / 100,
+    velocityChange: auction.shillRisk > 50 ? 85 : auction.shillRisk > 30 ? 35 : -10,
+    shillIndicators,
   };
 }
 
-export function generateBidStrategy(_auctionId: string, maxBid: number): BidStrategy {
+export function generateBidStrategy(auctionId: string, maxBudget: number): BidStrategy {
+  const auction = _getAuctionListings().find(a => a.id === auctionId);
+  if (!auction) {
+    return {
+      auctionId,
+      strategy: 'snipe',
+      maxBid: 0,
+      snipeTime: 5,
+      confidence: 0,
+      reasoning: 'Auction not found.',
+    };
+  }
+
+  const belowFMV = auction.currentBid < auction.estimatedFMV;
+  const effectiveMax = Math.min(maxBudget, auction.estimatedFMV * 0.95);
+  const maxBid = Math.min(effectiveMax, maxBudget);
+
+  let strategy: BidStrategy['strategy'];
+  let snipeTime: number;
+  let confidence: number;
+  let reasoning: string;
+
+  if (auction.shillRisk > 60) {
+    strategy = 'snipe';
+    snipeTime = Math.min(5, Math.max(2, Math.round(auction.shillRisk / 20)));
+    confidence = belowFMV ? Math.min(95, 40 + auction.dealScore * 0.5) : 25;
+    reasoning = `High shill risk (${auction.shillRisk}%) detected. Recommending last-second snipe at ${snipeTime}s to avoid price manipulation. ${belowFMV ? 'Current bid is below FMV, making this a viable target.' : 'Caution: price may already be inflated.'}`;
+  } else if (auction.timeRemaining < 1800) {
+    strategy = 'snipe';
+    snipeTime = 5;
+    confidence = belowFMV ? Math.min(95, 50 + auction.dealScore * 0.4) : 30;
+    reasoning = `Auction ending soon (${Math.floor(auction.timeRemaining / 60)}m remaining). Snipe strategy recommended to avoid triggering counter-bids. ${belowFMV ? 'Good value below FMV.' : 'Consider if price justifies the bid.'}`;
+  } else if (auction.dealScore >= 70 && auction.bidCount < 10) {
+    strategy = 'early_bid';
+    snipeTime = 300;
+    confidence = Math.min(95, 55 + auction.dealScore * 0.3);
+    reasoning = `Strong deal score (${auction.dealScore}) with low competition (${auction.bidCount} bids). An early authoritative bid may discourage other bidders.`;
+  } else if (auction.bidPattern === 'proxy_war') {
+    strategy = 'proxy';
+    snipeTime = 30;
+    confidence = Math.min(95, 35 + auction.dealScore * 0.3);
+    reasoning = 'Proxy war detected between bidders. Set a firm proxy bid at your max and let the system handle incremental bidding. Avoid emotional escalation.';
+  } else {
+    strategy = 'mid_game';
+    snipeTime = 60;
+    confidence = Math.min(95, 45 + auction.dealScore * 0.3);
+    reasoning = `Standard auction dynamics. Place a competitive bid during mid-auction to establish presence, then monitor. Current bid is ${belowFMV ? 'below' : 'near'} fair market value.`;
+  }
+
+  confidence = Math.max(15, Math.round(confidence));
+  if (maxBid < auction.currentBid) {
+    confidence = Math.max(15, Math.round(confidence * 0.4));
+    reasoning += ' Budget is below current bid — low probability of winning.';
+  }
+
   return {
-    recommendedBid: Math.round(maxBid * 0.85),
-    bidTiming: 'Last 5 seconds',
-    sniperWindow: 3,
-    confidence: 78,
-    rationale: 'Based on historical bid patterns, a sniper bid at 85% of max in the last 5 seconds yields the highest win rate.',
+    auctionId,
+    strategy,
+    maxBid: Math.round(maxBid * 100) / 100,
+    snipeTime,
+    confidence,
+    reasoning,
   };
 }
 
-// ---- Page-compatible type (used by AuctionSniperModal) ----
+// ---- Sniper stats (modal-compatible) ----
 
-export type BidPattern = 'organic' | 'shill_suspect' | 'proxy_war' | 'sniper_active';
+interface SniperStatsResult {
+  winRate: number;
+  totalBids: number;
+  totalWins: number;
+  totalTracked: number;
+  totalWon: number;
+  avgSavingsVsFMV: number;
+  totalSaved: number;
+  bestDeal: { player: string; savings: number; platform: AuctionPlatform };
+}
+
+export function getSniperStats(): SniperStatsResult {
+  const history = _getAuctionHistoryRecords();
+  const won = history.filter(h => h.won);
+  const totalTracked = history.length;
+  const totalWon = won.length;
+  const winRate = totalTracked > 0 ? Math.round((totalWon / totalTracked) * 1000) / 10 : 0;
+  const totalSaved = won.reduce((sum, h) => sum + h.savings, 0);
+  const avgSavingsVsFMV = won.length > 0
+    ? Math.round(won.reduce((sum, h) => sum + (h.estimatedFMV > 0 ? ((h.estimatedFMV - h.finalPrice) / h.estimatedFMV) * 100 : 0), 0) / won.length * 10) / 10
+    : 0;
+
+  let bestDeal = { player: 'N/A', savings: 0, platform: 'eBay' as AuctionPlatform };
+  for (const h of won) {
+    if (h.savings > bestDeal.savings) {
+      bestDeal = { player: h.player, savings: h.savings, platform: h.platform };
+    }
+  }
+
+  return {
+    winRate,
+    totalBids: totalTracked,
+    totalWins: totalWon,
+    totalTracked,
+    totalWon,
+    avgSavingsVsFMV,
+    totalSaved,
+    bestDeal,
+  };
+}
+
+// ---- Auction history (modal-compatible) ----
+
+export interface AuctionHistoryRecord {
+  id: string;
+  player: string;
+  platform: AuctionPlatform;
+  cardDescription: string;
+  grade: string;
+  finalPrice: number;
+  estimatedFMV: number;
+  maxBidPlaced: number;
+  won: boolean;
+  savings: number;
+  endedAt: string;
+}
+
+const AUCTION_HISTORY_RECORDS: AuctionHistoryRecord[] = [
+  { id: 'ahr_001', player: 'Mike Trout', platform: 'eBay', cardDescription: '2011 Topps Update RC #US175', grade: 'PSA 10', finalPrice: 4800, estimatedFMV: 5500, maxBidPlaced: 5200, won: true, savings: 700, endedAt: '2026-03-14T18:00:00Z' },
+  { id: 'ahr_002', player: 'Victor Wembanyama', platform: 'Goldin', cardDescription: '2023 Panini Prizm Silver RC', grade: 'PSA 10', finalPrice: 1100, estimatedFMV: 1200, maxBidPlaced: 1150, won: true, savings: 100, endedAt: '2026-03-14T16:00:00Z' },
+  { id: 'ahr_003', player: 'Shohei Ohtani', platform: 'eBay', cardDescription: '2018 Topps Chrome RC Auto', grade: 'PSA 10', finalPrice: 39000, estimatedFMV: 38000, maxBidPlaced: 36000, won: false, savings: 0, endedAt: '2026-03-13T20:00:00Z' },
+  { id: 'ahr_004', player: 'Caleb Williams', platform: 'eBay', cardDescription: '2024 Panini Prizm Silver RC', grade: 'PSA 10', finalPrice: 480, estimatedFMV: 550, maxBidPlaced: 520, won: true, savings: 70, endedAt: '2026-03-13T17:00:00Z' },
+  { id: 'ahr_005', player: 'Michael Jordan', platform: 'PWCC', cardDescription: '1986 Fleer RC #57', grade: 'PSA 8', finalPrice: 24000, estimatedFMV: 26000, maxBidPlaced: 25000, won: true, savings: 2000, endedAt: '2026-03-12T21:00:00Z' },
+  { id: 'ahr_006', player: 'Paul Skenes', platform: 'eBay', cardDescription: '2024 Topps Chrome RC Auto /99', grade: 'PSA 10', finalPrice: 1850, estimatedFMV: 1900, maxBidPlaced: 1800, won: false, savings: 0, endedAt: '2026-03-12T18:00:00Z' },
+  { id: 'ahr_007', player: 'Connor Bedard', platform: 'eBay', cardDescription: '2024 Upper Deck Young Guns RC', grade: 'PSA 10', finalPrice: 350, estimatedFMV: 420, maxBidPlaced: 400, won: true, savings: 70, endedAt: '2026-03-11T19:00:00Z' },
+  { id: 'ahr_008', player: 'Luka Doncic', platform: 'Goldin', cardDescription: '2022 Panini Flawless Patch Auto /25', grade: 'BGS 9', finalPrice: 12800, estimatedFMV: 13000, maxBidPlaced: 12500, won: false, savings: 0, endedAt: '2026-03-11T16:00:00Z' },
+  { id: 'ahr_009', player: 'Derek Jeter', platform: 'Heritage', cardDescription: '1993 SP Foil RC #279', grade: 'PSA 9', finalPrice: 16500, estimatedFMV: 18500, maxBidPlaced: 17500, won: true, savings: 2000, endedAt: '2026-03-10T20:00:00Z' },
+  { id: 'ahr_010', player: 'Jayden Daniels', platform: 'eBay', cardDescription: '2024 Panini Prizm Silver RC', grade: 'PSA 10', finalPrice: 275, estimatedFMV: 300, maxBidPlaced: 290, won: true, savings: 25, endedAt: '2026-03-10T17:00:00Z' },
+  { id: 'ahr_011', player: 'Julio Rodriguez', platform: 'PWCC', cardDescription: '2022 Topps Chrome RC Auto Gold /50', grade: 'PSA 10', finalPrice: 7800, estimatedFMV: 8200, maxBidPlaced: 8000, won: true, savings: 400, endedAt: '2026-03-09T22:00:00Z' },
+  { id: 'ahr_012', player: 'Babe Ruth', platform: 'Heritage', cardDescription: '1933 Goudey #53', grade: 'SGC 3', finalPrice: 72000, estimatedFMV: 68000, maxBidPlaced: 65000, won: false, savings: 0, endedAt: '2026-03-09T18:00:00Z' },
+  { id: 'ahr_013', player: 'Trevor Lawrence', platform: 'Goldin', cardDescription: '2021 National Treasures RPA /99', grade: 'BGS 9', finalPrice: 4600, estimatedFMV: 5000, maxBidPlaced: 4800, won: true, savings: 400, endedAt: '2026-03-08T20:00:00Z' },
+  { id: 'ahr_014', player: 'Gunnar Henderson', platform: 'eBay', cardDescription: '2025 Topps Chrome Refractor Auto /499', grade: 'PSA 10', finalPrice: 490, estimatedFMV: 520, maxBidPlaced: 500, won: true, savings: 30, endedAt: '2026-03-08T17:00:00Z' },
+  { id: 'ahr_015', player: 'Mickey Mantle', platform: 'Heritage', cardDescription: '1952 Topps #311', grade: 'PSA 4', finalPrice: 130000, estimatedFMV: 125000, maxBidPlaced: 120000, won: false, savings: 0, endedAt: '2026-03-07T20:00:00Z' },
+  { id: 'ahr_016', player: 'Chet Holmgren', platform: 'eBay', cardDescription: '2023 Panini Prizm Silver RC', grade: 'PSA 10', finalPrice: 95, estimatedFMV: 115, maxBidPlaced: 110, won: true, savings: 20, endedAt: '2026-03-07T17:00:00Z' },
+  { id: 'ahr_017', player: 'Patrick Mahomes', platform: 'eBay', cardDescription: '2023 Select Concourse Silver /199', grade: 'PSA 10', finalPrice: 165, estimatedFMV: 185, maxBidPlaced: 180, won: true, savings: 20, endedAt: '2026-03-06T19:00:00Z' },
+  { id: 'ahr_018', player: 'Ethan Salas', platform: 'eBay', cardDescription: '2025 Bowman Chrome 1st Auto /150', grade: 'PSA 10', finalPrice: 720, estimatedFMV: 780, maxBidPlaced: 750, won: true, savings: 60, endedAt: '2026-03-06T17:00:00Z' },
+  { id: 'ahr_019', player: 'Roberto Clemente', platform: 'Heritage', cardDescription: '1955 Topps RC #164', grade: 'PSA 5', finalPrice: 33000, estimatedFMV: 35000, maxBidPlaced: 32000, won: false, savings: 0, endedAt: '2026-03-05T20:00:00Z' },
+  { id: 'ahr_020', player: 'Jackson Holliday', platform: 'eBay', cardDescription: '2024 Bowman Chrome 1st Auto', grade: 'PSA 10', finalPrice: 550, estimatedFMV: 620, maxBidPlaced: 600, won: true, savings: 70, endedAt: '2026-03-05T17:00:00Z' },
+];
+
+function _getAuctionHistoryRecords(): AuctionHistoryRecord[] {
+  const cached = loadData<AuctionHistoryRecord[]>('auction_history_records_v2');
+  if (cached) return cached;
+  const sorted = [...AUCTION_HISTORY_RECORDS].sort(
+    (a, b) => new Date(b.endedAt).getTime() - new Date(a.endedAt).getTime()
+  );
+  saveData('auction_history_records_v2', sorted);
+  return sorted;
+}
+
+// ---- Additional exports needed by components and tests ----
+
+export function analyzeListing(listing: AuctionListing): AuctionListing & { strategy: string } {
+  let strategy: string;
+  if (listing.dealScore >= 75) strategy = 'snipe';
+  else if (listing.dealScore >= 50) strategy = 'early_bid';
+  else if (listing.dealScore >= 25) strategy = 'watch';
+  else strategy = 'skip';
+  return { ...listing, strategy };
+}
+
+export function getAuctionAlerts(listings: AuctionListing[]): { type: string; message: string; auctionId: string }[] {
+  const alerts: { type: string; message: string; auctionId: string }[] = [];
+  for (const l of listings) {
+    if (l.timeRemaining < 600) {
+      alerts.push({ type: 'ending', message: `${l.player} auction ending in ${Math.floor(l.timeRemaining / 60)}m`, auctionId: l.id });
+    }
+    if (l.shillRisk >= 60) {
+      alerts.push({ type: 'shill', message: `Shill risk ${l.shillRisk}% on ${l.player}`, auctionId: l.id });
+    }
+    if (l.dealScore >= 80) {
+      alerts.push({ type: 'deal', message: `Deal score ${l.dealScore} on ${l.player}`, auctionId: l.id });
+    }
+  }
+  return alerts;
+}
+
+export function generateMockAuctions(_existing: AuctionListing[]): AuctionListing[] {
+  return getActiveAuctions();
+}
