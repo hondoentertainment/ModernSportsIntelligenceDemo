@@ -144,6 +144,18 @@ const GradingTurnaround = lazy(() => import('./pages/GradingTurnaround.tsx'));
 const MarketReplay = lazy(() => import('./pages/MarketReplay.tsx'));
 const ScanToValue = lazy(() => import('./pages/ScanToValue.tsx'));
 
+// Phases 179-188: Engagement & monetization features
+const HobbyIncome = lazy(() => import('./pages/HobbyIncome.tsx'));
+const CardShowPlanner = lazy(() => import('./pages/CardShowPlanner.tsx'));
+const RipFlipSim = lazy(() => import('./pages/RipFlipSim.tsx'));
+const SocialFeed = lazy(() => import('./pages/SocialFeed.tsx'));
+const SlabVerification = lazy(() => import('./pages/SlabVerification.tsx'));
+const PortfolioStressTest = lazy(() => import('./pages/PortfolioStressTest.tsx'));
+const ConsignmentMarket = lazy(() => import('./pages/ConsignmentMarket.tsx'));
+const GradingPrep = lazy(() => import('./pages/GradingPrep.tsx'));
+const ParallelUniverse = lazy(() => import('./pages/ParallelUniverse.tsx'));
+const AchievementSystem = lazy(() => import('./pages/AchievementSystem.tsx'));
+
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
 const Signup = lazy(() => import('./pages/Signup.tsx'));
@@ -293,6 +305,16 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (_val: boo
                 <Route path="/grading-turnaround" element={<GradingTurnaround />} />
                 <Route path="/market-replay" element={<MarketReplay />} />
                 <Route path="/scan-to-value" element={<ScanToValue />} />
+                <Route path="/hobby-income" element={<HobbyIncome />} />
+                <Route path="/card-show-planner" element={<CardShowPlanner />} />
+                <Route path="/rip-flip-sim" element={<RipFlipSim />} />
+                <Route path="/social-feed" element={<SocialFeed />} />
+                <Route path="/slab-verification" element={<SlabVerification />} />
+                <Route path="/portfolio-stress-test" element={<PortfolioStressTest />} />
+                <Route path="/consignment-market" element={<ConsignmentMarket />} />
+                <Route path="/grading-prep" element={<GradingPrep />} />
+                <Route path="/parallel-universe" element={<ParallelUniverse />} />
+                <Route path="/achievement-system" element={<AchievementSystem />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
