@@ -789,3 +789,18 @@ export function getHighPriorityAlerts(): WatchlistAlert[] {
   const alerts = getWatchlistAlerts();
   return alerts.filter(a => a.priority === 'high' || a.priority === 'urgent');
 }
+
+export function getConfirmedRumors(): TradeRumor[] {
+  const rumors = getTradeRumors();
+  return rumors.filter(r => r.status === 'confirmed');
+}
+
+export function getHistoricalTradesByLeague(league: League): HistoricalTrade[] {
+  const trades = getHistoricalTrades();
+  return trades.filter(t => t.league === league);
+}
+
+export function getRosterMovesByType(moveType: RosterMove['moveType']): RosterMove[] {
+  const moves = getRosterMoves();
+  return moves.filter(m => m.moveType === moveType);
+}
