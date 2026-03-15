@@ -106,6 +106,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Apply the trigger to profiles table
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON profiles;
 CREATE TRIGGER update_profiles_updated_at
   BEFORE UPDATE ON profiles
   FOR EACH ROW

@@ -4,6 +4,7 @@ import {
   groupByTier,
   getCategories,
   FEATURE_CATALOG,
+  DISCOVERABLE_FEATURE_CATALOG,
   TIER_CONFIG,
 } from '../../lib/featureCatalog';
 
@@ -77,13 +78,13 @@ describe('featureCatalog', () => {
     });
 
     it('finds features by tier', () => {
-      const results = searchFeatures('Industry-First');
+      const results = searchFeatures('Bloomberg-Grade');
       expect(results.length).toBeGreaterThan(0);
     });
 
     it('search is case insensitive', () => {
-      const upper = searchFeatures('AUCTION');
-      const lower = searchFeatures('auction');
+      const upper = searchFeatures('AUDIT');
+      const lower = searchFeatures('audit');
       expect(upper.length).toBe(lower.length);
     });
 
@@ -141,6 +142,13 @@ describe('featureCatalog', () => {
       expect(cats).toContain('Trading');
       expect(cats).toContain('AI');
       expect(cats).toContain('Portfolio');
+    });
+  });
+
+  describe('DISCOVERABLE_FEATURE_CATALOG', () => {
+    it('only exposes a curated release surface', () => {
+      expect(DISCOVERABLE_FEATURE_CATALOG.length).toBeGreaterThan(10);
+      expect(DISCOVERABLE_FEATURE_CATALOG.length).toBeLessThan(FEATURE_CATALOG.length);
     });
   });
 });

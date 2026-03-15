@@ -69,11 +69,8 @@ import {
   Calculator,
   Package,
   AlertOctagon,
-  DollarSign,
-  BellRing,
-  Award,
-  Percent,
-  Play,
+  Shield,
+  Sparkles
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -94,6 +91,7 @@ export const NAV_ITEMS = [
   { id: 'leaderboard', label: 'Leaderboard', icon: <Trophy size={20} />, path: '/leaderboard' },
   { id: 'compare', label: 'Compare', icon: <GitCompare size={20} />, path: '/compare' },
   { id: 'warroom', label: 'Analyst War Room', icon: <Activity size={20} />, path: '/war-room' },
+  { id: 'phaseops', label: 'Phase Ops', icon: <Shield size={20} />, path: '/phase-ops' },
   { id: 'alerts', label: 'Alerts', icon: <Bell size={20} />, path: '/alerts' },
   { id: 'liveimpact', label: 'Live Game Impact', icon: <Radio size={20} />, path: '/live-impact' },
   { id: 'visiongrading', label: 'Vision Grading Lab', icon: <ScanEye size={20} />, path: '/vision-grading' },
@@ -107,9 +105,14 @@ export const NAV_ITEMS = [
   { id: 'provenance-intelligence', label: 'Provenance Chain', icon: <Fingerprint size={20} />, path: '/provenance-intelligence' },
   { id: 'copy-trading', label: 'Copy Trading', icon: <Users size={20} />, path: '/copy-trading' },
   { id: 'predictive-market-maker', label: 'Market Maker', icon: <LineChart size={20} />, path: '/predictive-market-maker' },
+  { id: 'liquidity-twin', label: 'Liquidity Twin', icon: <Zap size={20} />, path: '/liquidity-twin' },
   { id: 'influence-graph', label: 'Influence Graph', icon: <Share2 size={20} />, path: '/influence-graph' },
+  { id: 'counterparty-trust-graph', label: 'Trust Graph', icon: <Share2 size={20} />, path: '/counterparty-trust-graph' },
   { id: 'cross-hobby-portfolio', label: 'Cross-Hobby Portfolio', icon: <Briefcase size={20} />, path: '/cross-hobby-portfolio' },
+  { id: 'portfolio-scenario-theater', label: 'Scenario Theater', icon: <Activity size={20} />, path: '/portfolio-scenario-theater' },
   { id: 'autonomous-acquisition', label: 'AI Acquisition', icon: <Bot size={20} />, path: '/autonomous-acquisition' },
+  { id: 'private-deal-room-agent', label: 'Private Deal Room', icon: <Shield size={20} />, path: '/private-deal-room-agent' },
+  { id: 'catalyst-market', label: 'Catalyst Market', icon: <TrendingUp size={20} />, path: '/catalyst-market' },
   { id: 'collection-narrative', label: 'Heritage Story', icon: <BookHeart size={20} />, path: '/collection-narrative' },
   // Phases 114-128: Next-Gen
   { id: 'portfolio-copilot', label: 'AI Copilot', icon: <Bot size={20} />, path: '/portfolio-copilot' },
@@ -160,17 +163,7 @@ export const NAV_ITEMS = [
   { id: 'sealed-product', label: 'Sealed Product', icon: <Package size={20} />, path: '/sealed-product' },
   { id: 'error-card', label: 'Error Cards', icon: <AlertOctagon size={20} />, path: '/error-card' },
   { id: 'auction-sniper', label: 'Auction Sniper', icon: <Crosshair size={20} />, path: '/auction-sniper' },
-  // Phases 159-168: Competitive Feature Suite
-  { id: 'real-time-price-engine', label: 'Price Engine', icon: <DollarSign size={20} />, path: '/real-time-price-engine' },
-  { id: 'ai-card-scanner', label: 'AI Scanner', icon: <ScanLine size={20} />, path: '/ai-card-scanner' },
-  { id: 'cross-platform-arbitrage', label: 'Arbitrage Alerts', icon: <ArrowLeftRight size={20} />, path: '/cross-platform-arbitrage' },
-  { id: 'predictive-price-engine', label: 'Price Forecast', icon: <Brain size={20} />, path: '/predictive-price-engine' },
-  { id: 'tax-report', label: 'Tax Report', icon: <Calculator size={20} />, path: '/tax-report' },
-  { id: 'grade-prediction', label: 'Grade Predict', icon: <Award size={20} />, path: '/grade-prediction' },
-  { id: 'smart-notifications', label: 'Smart Alerts', icon: <BellRing size={20} />, path: '/smart-notifications' },
-  { id: 'consensus-pricing', label: 'Consensus Price', icon: <Users size={20} />, path: '/consensus-pricing' },
-  { id: 'live-break-roi', label: 'Break ROI', icon: <Play size={20} />, path: '/live-break-roi' },
-  { id: 'portfolio-benchmark', label: 'Benchmark', icon: <Percent size={20} />, path: '/portfolio-benchmark' },
+  { id: 'frontier-lab', label: 'Frontier Lab', icon: <Sparkles size={20} />, path: '/frontier-lab' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];
@@ -440,3 +433,4 @@ export const MOCK_ACQUISITION_TARGETS = [
     image: 'https://img.mlbstatic.com/mlb-photos/person/702616.jpg'
   }
 ];
+

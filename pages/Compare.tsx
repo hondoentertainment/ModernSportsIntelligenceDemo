@@ -24,6 +24,7 @@ import {
 import { useInventory } from '../lib/useInventory.ts';
 import { CardInventory } from '../types.ts';
 import { generateCompareAnalysis } from '../lib/compareAnalysis.ts';
+import { getCardHistory } from '../lib/priceHistory';
 import CardImage from '../components/CardImage.tsx';
 import ImageLightbox from '../components/ImageLightbox.tsx';
 
@@ -54,23 +55,40 @@ const Compare: React.FC = () => {
     setSearchParams(params, { replace: true });
   }, [card1Id, card2Id, setSearchParams]);
 
-  // Generate mock historical data for chart
+  // Generate historical data for chart from real price history
   const historicalData = useMemo(() => {
     if (!card1 || !card2) return [];
-    const months = ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'];
-    return months.map((month, i) => {
-      const progress = i / (months.length - 1);
-      const card1Start = card1.purchasePrice || 100;
-      const card1End = card1.currentValue || card1Start;
-      const card2Start = card2.purchasePrice || 100;
-      const card2End = card2.currentValue || card2Start;
-      // Simulate some volatility
-      const noise1 = 1 + (Math.sin(i * 1.5) * 0.05);
-      const noise2 = 1 + (Math.cos(i * 1.8) * 0.05);
+
+    // Get real history for both cards
+    const history1 = [...getCardHistory(card1.id)].reverse(); // reverse for chronological order
+    const history2 = [...getCardHistory(card2.id)].reverse();
+
+    // If no history exists, fall back to a single point (current value)
+    if (history1.length === 0 && history2.length === 0) {
+      return [{
+        month: 'Current',
+        [card1.player]: card1.currentValue || card1.purchasePrice,
+        [card2.player]: card2.currentValue || card2.purchasePrice
+      }];
+    }
+
+    // Combine and sort all unique timestamps
+    const allTimestamps = Array.from(new Set([
+      ...history1.map(s => s.timestamp.split('T')[0]),
+      ...history2.map(s => s.timestamp.split('T')[0])
+    ])).sort();
+
+    // Map timestamps to chart data points
+    return allTimestamps.map(date => {
+      // Find the latest snapshot for each card on or before this date
+      const s1 = history1.filter(s => s.timestamp.split('T')[0] <= date).slice(-1)[0];
+      const s2 = history2.filter(s => s.timestamp.split('T')[0] <= date).slice(-1)[0];
+
+      const d = new Date(date);
       return {
-        month,
-        [card1.player]: Math.round((card1Start + (card1End - card1Start) * progress) * noise1),
-        [card2.player]: Math.round((card2Start + (card2End - card2Start) * progress) * noise2),
+        month: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        [card1.player]: s1?.value ?? card1.purchasePrice,
+        [card2.player]: s2?.value ?? card2.purchasePrice,
       };
     });
   }, [card1, card2]);

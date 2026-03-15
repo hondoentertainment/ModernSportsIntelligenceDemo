@@ -1,6 +1,8 @@
 
 export type Sport = 'Baseball' | 'Basketball' | 'Football' | 'Hockey' | 'Soccer';
 export type League = 'MLB' | 'MiLB' | 'NBA' | 'NFL' | 'Other';
+export type AssetClass = 'Sports Cards' | 'Luxury Watches' | 'Fine Art' | 'Wine & Spirits';
+
 
 export interface ExitPlan {
   id: string;
@@ -19,6 +21,7 @@ export interface PopReport {
   source: 'simulated' | 'psa' | 'bgs';
   badge?: 'Apex' | 'Low Pop' | 'Standard';
 }
+
 
 export interface CardInventory {
   id: string;
@@ -39,16 +42,21 @@ export interface CardInventory {
   currentValue?: number;
   lastValuationDate?: string;
   valuationConfidence?: number;
+  pricingRationale?: string;
   notes?: string;
   image?: string;
   searchUrl?: string;
-  // Professional Grade Fields
+  // Fiscal Intelligence (Phase 27)
+  realizedGainLoss?: number;
+  taxCategory?: 'Short Term' | 'Long Term';
+  overheadCost?: number; // Sum of grading, insurance, shipping
   taxBasis?: number;
   gradingFees?: number;
   shippingFees?: number;
-  status?: 'active' | 'sold';
+  insuranceFees?: number;
   salePrice?: number;
   saleDate?: string;
+  status?: 'active' | 'sold';
   // Portfolio Builder Groups
   group?: string;
   groupOrder?: number;
@@ -62,6 +70,22 @@ export interface CardInventory {
   liquidityScore?: number; // 0-100
   exitPlan?: ExitPlan;
   exitPlanId?: string;
+  // Arbitrage Intelligence (Phase 22)
+  opportunityScore?: number; // 0-100
+  arbitrageDelta?: number; // Percentage deviation from mean
+  // Vault Intelligence (Phase 25)
+  isVaulted?: boolean;
+  vaultProvider?: 'PWCC' | 'PSA' | 'Goldin' | 'Other';
+  vaultAssetId?: string;
+  vaultInstantLiquidityPrice?: number;
+}
+
+export type VaultProvider = 'PWCC' | 'PSA' | 'Goldin' | 'Other';
+
+export interface VaultAsset extends CardInventory {
+  isVaulted: true;
+  vaultProvider: VaultProvider;
+  vaultAssetId: string;
 }
 
 export interface TargetWatchlist {
@@ -78,6 +102,10 @@ export interface TargetWatchlist {
   createdAt: string;
   image?: string;
   searchUrl?: string;
+  // Arbitrage Intelligence (Phase 22)
+  opportunityScore?: number; // 0-100
+  arbitrageDelta?: number; // Percentage deviation from mean
+  pricingRationale?: string;
 }
 
 export interface MiLBProspect {
@@ -118,6 +146,11 @@ export interface PricingAnalysis {
   salesCount: number;
   lastUpdated: string;
   searchUrl?: string; // Deep link to eBay for manual verification
+  rationale?: string; // AI-generated rationale for this valuation
+  salesData?: any[]; // Granular sales data used for analysis
+  valuationSource?: 'ebay-api' | 'gemini' | 'fallback';
+  valuationTimestamp?: string;
+  quality?: ValuationQuality;
 }
 
 export type AlertType = 'price_target' | 'sync_complete' | 'trend' | 'momentum' | 'warning' | 'system';
@@ -150,6 +183,9 @@ export interface UserProfile {
   portfolioValue: number;
   roi: number;
   tier?: string;
+  // Fiscal Settings
+  estimatedTaxRate?: number; // 0-1
+  isTaxResident?: boolean;
 }
 
 export interface LeaderboardEntry {
@@ -177,7 +213,128 @@ export interface CollaborativeThesis {
   riskAssessment: string;
   recommendedAction: string;
   agents: AgentInsight[];
+  executionPlan?: AutonomousAction[];
   createdAt: string;
+}
+
+export interface RiskCollar {
+  maxBudget: number;
+  maxSpendPerAsset: number;
+  riskTolerance: 'Conservative' | 'Balanced' | 'Aggressive';
+  autoSellThreshold?: number; // Percentage gain/loss
+  minActionConfidence?: number; // 0-1
+  requireApprovalAbove?: number; // Dollar threshold
+  maxDailyActions?: number;
+  blockedPlayers?: string[];
+  blockedSports?: Sport[];
+}
+
+export interface AutoPilotConfig {
+  isActive: boolean;
+  collar: RiskCollar;
+  lastExecution?: string;
+}
+
+export interface AutonomousAction {
+  id: string;
+  type: 'BUY' | 'SELL' | 'REBALANCE' | 'HOLD';
+  assetName: string;
+  amount: number;
+  rationale: string;
+  timestamp: string;
+  status: 'pending' | 'executed' | 'failed';
+  confidence?: number;
+  cycleId?: string;
+  idempotencyKey?: string;
+  policyDecision?: 'approved' | 'blocked' | 'needs_approval';
+  policyReason?: string;
+  approvalActor?: string;
+  approvalNote?: string;
+  approvalUpdatedAt?: string;
+  scenarioTag?: string;
+  estimatedEdgePct?: number;
+}
+
+export interface SwarmInsight {
+  id: string;
+  title: string;
+  description: string;
+  sentiment: 'bullish' | 'bearish' | 'neutral';
+  confidence: number;
+  impactScore: number;
+  tags: string[];
+  participatingAgents: string[];
+}
+
+export interface IntelligenceSwarm {
+  id: string;
+  name: string;
+  description: string;
+  memberCount: number;
+  activeInsights: SwarmInsight[];
+  recentAlpha: string[];
+  tier: 'Elite' | 'Institutional' | 'Private';
+}
+
+export type GuildRole = 'Owner' | 'Analyst' | 'Member';
+
+export interface GuildMember {
+  userId: string;
+  displayName: string;
+  role: GuildRole;
+  joinedAt: string;
+}
+
+export interface ProposalVote {
+  userId: string;
+  vote: 'approve' | 'reject';
+  votedAt: string;
+}
+
+export interface ContributionLedgerEntry {
+  id: string;
+  proposalId: string;
+  userId: string;
+  amount: number;
+  status: 'held' | 'released' | 'returned';
+  createdAt: string;
+}
+
+export interface GuildGovernance {
+  quorumPercent: number;
+  minApprovals: number;
+  approvalWindowHours: number;
+  vetoEnabled?: boolean;
+}
+
+export interface JointAcquisitionProposal {
+  id: string;
+  targetCardId: string;
+  title?: string;
+  targetAssetName?: string;
+  targetPrice: number;
+  currentFunding: number;
+  minEntry: number;
+  proposedBy?: string;
+  proposalMemo?: string;
+  payoutWaterfall?: {
+    managerCarryPercent: number;
+    reservePercent: number;
+    distributionModel: 'pro_rata' | 'priority_return';
+  };
+  participants: {
+    userId: string;
+    share: number;
+    amount: number;
+  }[];
+  votes?: ProposalVote[];
+  quorumPercent?: number;
+  approvalStatus?: 'pending' | 'approved' | 'rejected';
+  approvalDeadline?: string;
+  ledgerEntries?: ContributionLedgerEntry[];
+  status: 'open' | 'funded' | 'completed' | 'cancelled';
+  expiryDate: string;
+  agentEvaluation: CollaborativeThesis;
 }
 
 export interface NegotiationMessage {
@@ -219,3 +376,401 @@ export interface NegotiationSession {
   createdAt: string;
   updatedAt: string;
 }
+
+export type MacroTrend = 'bullish' | 'bearish' | 'neutral';
+
+export interface MacroSignal {
+  id: string;
+  indicator: string;
+  value: string;
+  trend: MacroTrend;
+  impact: 'High' | 'Medium' | 'Low';
+  description: string;
+  aiAnalysis?: string;
+  updatedAt: string;
+}
+
+export interface VisualDefect {
+  type: 'Centering' | 'Corners' | 'Edges' | 'Surface';
+  location: string;
+  severity: 'Minor' | 'Moderate' | 'Severe';
+  description: string;
+}
+
+export interface VisualAuditResult {
+  predictedGrade: string;
+  confidenceScore: number;
+  subgrades: {
+    centering: number;
+    corners: number;
+    edges: number;
+    surface: number;
+  };
+  defects: VisualDefect[];
+  summary: string;
+  estimatedGradingPremium?: number;
+}
+
+export interface GradingPremiumAnalysis {
+  cardId: string;
+  rawPrice: number;
+  psa10Price: number;
+  psa9Price: number;
+  bgs95Price: number;
+  gradingFees: number;
+  potentialNetGain: number;
+  recommendation: 'Submit' | 'Hold Raw' | 'Sell Now';
+  rationale: string;
+  updatedAt: string;
+}
+
+export interface ArbitrageNode {
+  id: string;
+  sourceAsset: {
+    name: string;
+    assetClass: AssetClass;
+    currentValue: number;
+    image?: string;
+  };
+  targetAsset: {
+    name: string;
+    assetClass: AssetClass;
+    currentValue: number;
+    image?: string;
+  };
+  correlationDelta: number; // Percentage
+  opportunityScore: number; // 0-100
+  rationale: string;
+  status: 'active' | 'closed';
+  createdAt: string;
+}
+
+export interface CrossAssetInsight {
+  id: string;
+  summary: string;
+  liquidityFlightStatus: 'Stable' | 'Volatile' | 'Critical';
+  topArbitrageNodes: ArbitrageNode[];
+  agents: AgentInsight[];
+  createdAt: string;
+}
+
+export type AuditCategory = 'portfolio' | 'valuation' | 'autonomy' | 'auth' | 'system';
+
+export interface AuditEvent {
+  id?: string;
+  userId?: string;
+  category: AuditCategory;
+  action: string;
+  entityType: string;
+  entityId?: string;
+  metadata?: Record<string, unknown>;
+  createdAt?: string;
+}
+
+
+
+
+
+export interface ValuationQuality {
+  isStale: boolean;
+  freshnessHours: number;
+  confidenceTier: 'High' | 'Medium' | 'Low';
+  qualityScore: number; // 0-100
+  warnings: string[];
+}
+
+export type MarketplaceVenue = 'ebay' | 'pwcc' | 'goldin' | 'private' | 'internal';
+export type TrustEdgeType = 'transaction' | 'referral' | 'guild' | 'brokered' | 'social' | 'provenance';
+export type CounterpartyRiskLevel = 'low' | 'medium' | 'high';
+export type CatalystSeverity = 'watch' | 'actionable' | 'urgent';
+export type ScenarioTemplateKind = 'liquidity' | 'market' | 'player' | 'macro' | 'custom';
+
+export interface CounterpartyProfile {
+  id: string;
+  ownerUserId?: string | null;
+  displayName: string;
+  handle?: string;
+  marketplaceVenue: MarketplaceVenue;
+  externalReference?: string;
+  verificationTier: 'unverified' | 'verified' | 'institutional';
+  trustScore: number;
+  reputationScore: number;
+  successfulDeals: number;
+  disputedDeals: number;
+  avgResponseHours?: number;
+  avgCloseDays?: number;
+  totalVolumeUsd?: number;
+  fraudFlags?: number;
+  riskLevel: CounterpartyRiskLevel;
+  notes?: string;
+  lastInteractionAt?: string;
+  createdAt: string;
+}
+
+export interface CounterpartyEdge {
+  id: string;
+  sourceCounterpartyId: string;
+  targetCounterpartyId: string;
+  edgeType: TrustEdgeType;
+  weight: number;
+  trustDelta: number;
+  evidenceCount: number;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface TrustEvent {
+  id: string;
+  counterpartyId: string;
+  eventType: 'sale_completed' | 'offer_accepted' | 'dispute' | 'chargeback' | 'referral' | 'provenance_verified' | 'response_time';
+  impactScore: number;
+  referenceType?: 'listing' | 'offer' | 'deal_room' | 'execution' | 'manual';
+  referenceId?: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface MarketplaceListingRecord {
+  id: string;
+  ownerUserId?: string | null;
+  counterpartyId?: string | null;
+  sourceVenue: MarketplaceVenue;
+  externalListingId?: string | null;
+  title: string;
+  player: string;
+  cardDescription: string;
+  sport: Sport;
+  year?: number;
+  setName?: string;
+  grade?: string;
+  condition?: string;
+  askingPrice: number;
+  estimatedMarketValue?: number;
+  currency: string;
+  status: 'active' | 'pending' | 'sold' | 'archived';
+  listingUrl?: string;
+  imageUrl?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface ListingOfferRecord {
+  id: string;
+  listingId: string;
+  buyerCounterpartyId?: string | null;
+  sellerCounterpartyId?: string | null;
+  amount: number;
+  currency: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'countered' | 'expired';
+  message?: string;
+  sourceVenue: MarketplaceVenue;
+  createdAt: string;
+  updatedAt?: string;
+  expiresAt?: string;
+}
+
+export interface DealRoomAttachment {
+  id: string;
+  roomId: string;
+  storagePath: string;
+  filename: string;
+  mimeType?: string;
+  uploadedBy?: string | null;
+  uploadedAt: string;
+}
+
+export interface DealRoomRecord {
+  id: string;
+  ownerUserId?: string | null;
+  listingId?: string | null;
+  title: string;
+  roomType: 'buy' | 'sell' | 'swap' | 'auction';
+  status: 'active' | 'negotiating' | 'pending_close' | 'closed' | 'expired';
+  cardPlayer: string;
+  cardDescription: string;
+  cardGrade?: string;
+  estimatedValue?: number;
+  askingPrice?: number;
+  currentBid?: number;
+  isEncrypted: boolean;
+  createdAt: string;
+  expiresAt?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface DealRoomParticipantRecord {
+  id: string;
+  roomId: string;
+  userId?: string | null;
+  counterpartyId?: string | null;
+  displayName: string;
+  role: 'seller' | 'buyer' | 'broker' | 'observer';
+  isVerified: boolean;
+  joinedAt: string;
+}
+
+export interface DealRoomMessageRecord {
+  id: string;
+  roomId: string;
+  senderParticipantId?: string | null;
+  senderDisplayName: string;
+  messageType: 'message' | 'offer' | 'counter' | 'accept' | 'reject' | 'system';
+  content: string;
+  offerAmount?: number;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface LiquidityTwinSnapshot {
+  id: string;
+  assetId: string;
+  assetName: string;
+  sourceVenue: MarketplaceVenue;
+  midpointValue: number;
+  bestBid?: number;
+  bestAsk?: number;
+  spreadPct: number;
+  liquidityScore: number;
+  timeToExitDays: number;
+  slippagePct: number;
+  recommendedVenue: MarketplaceVenue;
+  confidence: number;
+  compsUsed: number;
+  generatedAt: string;
+}
+
+export interface CatalystMarketEvent {
+  id: string;
+  assetId?: string | null;
+  assetName: string;
+  catalystType: CatalystType;
+  headline: string;
+  narrative: string;
+  confidence: number;
+  expectedMovePct: number;
+  downsidePct: number;
+  severity: CatalystSeverity;
+  triggerWindow: string;
+  source: 'engine' | 'manual' | 'external';
+  linkedListingId?: string | null;
+  linkedDealRoomId?: string | null;
+  createdAt: string;
+}
+
+export interface ScenarioSnapshot {
+  id: string;
+  ownerUserId?: string | null;
+  name: string;
+  templateKind: ScenarioTemplateKind;
+  description?: string;
+  inputs: Record<string, unknown>;
+  summary?: string;
+  createdAt: string;
+}
+
+export interface ScenarioRunRecord {
+  id: string;
+  ownerUserId?: string | null;
+  snapshotId?: string | null;
+  scenarioName: string;
+  scenarioKind: ScenarioTemplateKind;
+  portfolioValue: number;
+  projectedValue: number;
+  navDelta: number;
+  riskScore?: number;
+  summary?: string;
+  inputs: Record<string, unknown>;
+  outputs: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface ExecutionIntentRecord {
+  id: string;
+  ownerUserId?: string | null;
+  actionType: 'buy' | 'list' | 'cancel' | 'counter';
+  venue: MarketplaceVenue;
+  assetId?: string | null;
+  assetName: string;
+  quantity: number;
+  limitPrice: number;
+  maxSlippagePct?: number;
+  status: 'draft' | 'pending_approval' | 'submitted' | 'filled' | 'failed' | 'cancelled';
+  rationale?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}
+
+export interface ExecutionApprovalRecord {
+  id: string;
+  intentId: string;
+  decision: 'approve' | 'reject';
+  actorUserId?: string | null;
+  actorLabel: string;
+  note?: string;
+  createdAt: string;
+}
+
+export interface ExecutionFillRecord {
+  id: string;
+  intentId: string;
+  venue: MarketplaceVenue;
+  fillQuantity: number;
+  fillPrice: number;
+  fees?: number;
+  state: 'submitted' | 'filled' | 'partial' | 'failed' | 'cancelled';
+  externalOrderId?: string | null;
+  createdAt: string;
+}
+
+export type FrontierFeatureCategory =
+  | 'Risk'
+  | 'Trust'
+  | 'Finance'
+  | 'Operations'
+  | 'Market Structure'
+  | 'Strategy';
+
+export type FrontierFeatureTier = 'Competitive Moat' | 'Industry-First';
+export type FrontierFeatureStage = 'recommended' | 'designing' | 'production-ready';
+export type FrontierFeatureComplexity = 'medium' | 'high';
+export type FrontierChecklistStatus = 'ready' | 'needs-build';
+
+export interface FrontierChecklistItem {
+  label: string;
+  detail: string;
+  status: FrontierChecklistStatus;
+}
+
+export interface FrontierFeatureBlueprint {
+  id: string;
+  name: string;
+  tagline: string;
+  category: FrontierFeatureCategory;
+  tier: FrontierFeatureTier;
+  complexity: FrontierFeatureComplexity;
+  competitionGap: string;
+  whyDifferent: string;
+  userOutcome: string;
+  moatScore: number;
+  dataSources: string[];
+  operatorWorkflow: string[];
+  productionChecklist: FrontierChecklistItem[];
+  successMetrics: string[];
+  complianceNotes: string[];
+}
+
+export interface FrontierFeatureState {
+  featureId: string;
+  stage: FrontierFeatureStage;
+  note: string;
+  updatedAt: string;
+}
+
+export interface FrontierFeatureView extends FrontierFeatureBlueprint {
+  stage: FrontierFeatureStage;
+  note: string;
+  updatedAt?: string;
+  launchReadiness: number;
+}
+

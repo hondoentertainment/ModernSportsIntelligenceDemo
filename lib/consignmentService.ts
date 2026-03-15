@@ -69,9 +69,60 @@ export interface HouseComparison {
   isSpecialist: boolean;
 }
 
+export interface ExitChannelComparison {
+  channelId: string;
+  channelName: string;
+  channelType: 'consignment' | 'marketplace' | 'vault';
+  estimatedSalePrice: number;
+  feeRate: number;
+  fixedFee: number;
+  fees: number;
+  shippingCost: number;
+  insuranceCost: number;
+  expectedNet: number;
+  breakEvenSalePrice: number;
+  daysToCash: number;
+  confidence: 'high' | 'medium' | 'low';
+  notes: string;
+  isSpecialist?: boolean;
+}
+
 // ── Constants ──────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'msi_consignments';
+
+const DEFAULT_MARKETPLACE_CHANNELS = [
+  {
+    channelId: 'ebay',
+    channelName: 'eBay Direct Listing',
+    channelType: 'marketplace' as const,
+    feeRate: 0.13,
+    fixedFee: 0.3,
+    daysToCash: 8,
+    confidence: 'high' as const,
+    notes: 'High reach with standard marketplace fees and seller-managed shipping.',
+  },
+  {
+    channelId: 'myslabs-direct',
+    channelName: 'MySlabs Direct',
+    channelType: 'marketplace' as const,
+    feeRate: 0.01,
+    fixedFee: 0.0,
+    daysToCash: 5,
+    confidence: 'medium' as const,
+    notes: 'Lower fees but narrower buyer pool for faster hobby-native sales.',
+  },
+  {
+    channelId: 'comc',
+    channelName: 'COMC Cash-Out',
+    channelType: 'marketplace' as const,
+    feeRate: 0.05,
+    fixedFee: 1.0,
+    daysToCash: 21,
+    confidence: 'medium' as const,
+    notes: 'Managed marketplace workflow with slower cash conversion.',
+  },
+];
 
 const HOUSES: ConsignmentHouse[] = [
   {
@@ -139,6 +190,20 @@ function loadConsignments(): ConsignmentEntry[] {
 
 function saveConsignments(entries: ConsignmentEntry[]): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+}
+
+function calculateBreakEvenSalePrice(card: CardInventory, feeRate: number, fixedFee: number, shippingCost = 0, insuranceCost = 0): number {
+  const costBasis =
+    (card.taxBasis || card.purchasePrice || 0) +
+    (card.gradingFees || 0) +
+    (card.shippingFees || 0) +
+    (card.insuranceFees || 0);
+  const fixedCosts = fixedFee + shippingCost + insuranceCost;
+  const netMultiplier = 1 - feeRate;
+  if (netMultiplier <= 0) {
+    return costBasis + fixedCosts;
+  }
+  return (costBasis + fixedCosts) / netMultiplier;
 }
 
 // ── Service ────────────────────────────────────────────────────────────
@@ -291,6 +356,78 @@ export const ConsignmentService = {
         isSpecialist: house.specialties.includes(sport),
       };
     }).sort((a, b) => b.netProceeds - a.netProceeds);
+  },
+
+  compareExitChannels(card: CardInventory): ExitChannelComparison[] {
+    const estimatedSalePrice = card.currentValue ?? card.purchasePrice;
+    const shippingCost = card.shippingFees ?? 15;
+    const insuranceCost = card.insuranceFees ?? Math.max(5, Math.round(estimatedSalePrice * 0.01));
+
+    const consignmentChannels: ExitChannelComparison[] = HOUSES.map((house) => {
+      const fees = estimatedSalePrice * (house.commissionRate / 100) + house.fixedFee;
+      return {
+        channelId: house.id,
+        channelName: house.name,
+        channelType: 'consignment',
+        estimatedSalePrice,
+        feeRate: house.commissionRate / 100,
+        fixedFee: house.fixedFee,
+        fees,
+        shippingCost,
+        insuranceCost,
+        expectedNet: estimatedSalePrice - fees - shippingCost - insuranceCost,
+        breakEvenSalePrice: calculateBreakEvenSalePrice(
+          card,
+          house.commissionRate / 100,
+          house.fixedFee,
+          shippingCost,
+          insuranceCost
+        ),
+        daysToCash: house.avgDaysToSell,
+        confidence: house.rating >= 4.5 ? 'high' : 'medium',
+        notes: house.specialties.includes(card.sport)
+          ? 'Strong specialty match for this sport.'
+          : 'Viable house, but not a primary specialist for this asset.',
+        isSpecialist: house.specialties.includes(card.sport),
+      };
+    });
+
+    const marketplaceChannels: ExitChannelComparison[] = DEFAULT_MARKETPLACE_CHANNELS.map((channel) => {
+      const fees = estimatedSalePrice * channel.feeRate + channel.fixedFee;
+      return {
+        channelId: channel.channelId,
+        channelName: channel.channelName,
+        channelType: channel.channelType,
+        estimatedSalePrice,
+        feeRate: channel.feeRate,
+        fixedFee: channel.fixedFee,
+        fees,
+        shippingCost,
+        insuranceCost,
+        expectedNet: estimatedSalePrice - fees - shippingCost - insuranceCost,
+        breakEvenSalePrice: calculateBreakEvenSalePrice(
+          card,
+          channel.feeRate,
+          channel.fixedFee,
+          shippingCost,
+          insuranceCost
+        ),
+        daysToCash: channel.daysToCash,
+        confidence: channel.confidence,
+        notes: channel.notes,
+      };
+    });
+
+    const channels = [...consignmentChannels, ...marketplaceChannels];
+    return channels.sort((a, b) => {
+      if (b.expectedNet !== a.expectedNet) return b.expectedNet - a.expectedNet;
+      return a.daysToCash - b.daysToCash;
+    });
+  },
+
+  recommendExitChannel(card: CardInventory): ExitChannelComparison {
+    const channels = this.compareExitChannels(card);
+    return channels[0];
   },
 
   getOptimalHouse(card: CardInventory): ConsignmentHouse {

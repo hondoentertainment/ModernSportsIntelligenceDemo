@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Lock, Loader2, Check, X, TrendingUp, Eye, EyeOff, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { Lock, Loader2, Check, X, TrendingUp, Eye, EyeOff, AlertTriangle, ArrowLeft, Shield } from 'lucide-react';
 
 const ResetPassword: React.FC = () => {
     const [password, setPassword] = useState('');
@@ -144,7 +144,10 @@ const ResetPassword: React.FC = () => {
 
                 {error && (
                     <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 animate-in fade-in slide-in-from-top-2">
-                        <p className="text-red-400 text-sm text-center font-medium">{error}</p>
+                        <div className="flex items-start gap-3">
+                            <Shield className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                            <p className="text-red-400 text-sm font-medium">{error}</p>
+                        </div>
                     </div>
                 )}
 

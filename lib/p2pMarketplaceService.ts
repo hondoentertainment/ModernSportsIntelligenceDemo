@@ -2,6 +2,16 @@
 // Community-driven sports card trading with listings, offers, reputation system,
 // deal scoring, and marketplace analytics.
 
+import {
+  fetchCounterparties,
+  fetchListingOffers,
+  fetchMarketplaceListings,
+  insertTrustEvent,
+  upsertCounterpartyProfile,
+  upsertListingOffer,
+  upsertMarketplaceListing,
+} from './differentiatorData';
+
 // ── Interfaces ──────────────────────────────────────────────────────────────────
 
 export type ListingStatus = 'active' | 'sold' | 'pending';
@@ -414,3 +424,223 @@ export default {
   escalateToDealRoom,
   getCombinedMarketStats,
 };
+
+function mapVenueToSport(venueSport?: string): Sport {
+  switch (venueSport) {
+    case 'Baseball':
+    case 'Football':
+    case 'Hockey':
+    case 'Soccer':
+      return venueSport;
+    default:
+      return 'Basketball';
+  }
+}
+
+function mapRiskToVerified(trustScore: number): boolean {
+  return trustScore >= 70;
+}
+
+function mapCounterpartyToSellerProfile(counterparty: Awaited<ReturnType<typeof fetchCounterparties>>[number]): SellerProfile {
+  return {
+    id: counterparty.id,
+    username: counterparty.displayName,
+    rating: Number((counterparty.trustScore / 20).toFixed(1)),
+    totalSales: counterparty.successfulDeals,
+    totalVolume: counterparty.totalVolumeUsd || 0,
+    memberSince: counterparty.createdAt,
+    verified: mapRiskToVerified(counterparty.trustScore),
+    avatar: '🤝',
+    responseTime: counterparty.avgResponseHours ? `< ${Math.max(1, Math.round(counterparty.avgResponseHours))} hour${counterparty.avgResponseHours >= 2 ? 's' : ''}` : '< 24 hours',
+    completionRate: Math.max(0, 100 - (counterparty.disputedDeals * 5)),
+    activeListing: 0,
+  };
+}
+
+function mapListingRecordToListing(record: Awaited<ReturnType<typeof fetchMarketplaceListings>>[number], sellerName?: string): Listing {
+  return {
+    id: record.id,
+    seller: sellerName || 'MSI Market',
+    sellerId: record.counterpartyId || record.ownerUserId || 'market',
+    player: record.player,
+    cardDescription: record.cardDescription,
+    askingPrice: record.askingPrice,
+    marketValue: record.estimatedMarketValue || record.askingPrice,
+    images: record.imageUrl ? [record.imageUrl] : [],
+    sport: mapVenueToSport(record.sport),
+    grade: (record.grade as CardGrade) || 'Raw',
+    condition: (record.condition as CardCondition) || 'Near Mint',
+    createdAt: record.createdAt,
+    status: record.status as ListingStatus,
+    views: Number(record.metadata?.views || 0),
+    watchers: Number(record.metadata?.watchers || 0),
+    offerCount: Number(record.metadata?.offerCount || 0),
+    year: record.year || new Date().getFullYear(),
+    set: record.setName || 'Unknown Set',
+  };
+}
+
+function mapOfferRecordToOffer(record: Awaited<ReturnType<typeof fetchListingOffers>>[number], listingTitle: string): Offer {
+  return {
+    id: record.id,
+    listingId: record.listingId,
+    buyer: ((record as any).metadata?.buyerName as string) || 'Marketplace Buyer',
+    buyerId: record.buyerCounterpartyId || 'buyer',
+    amount: record.amount,
+    status: record.status,
+    message: record.message || '',
+    createdAt: record.createdAt,
+    expiresAt: record.expiresAt || new Date(Date.now() + 3 * 86400000).toISOString(),
+    listingTitle,
+  };
+}
+
+export async function getActiveListingsAsync(userId?: string): Promise<Listing[]> {
+  const [listings, counterparties] = await Promise.all([
+    fetchMarketplaceListings(userId),
+    fetchCounterparties(userId),
+  ]);
+  const sellerMap = new Map(counterparties.map(counterparty => [counterparty.id, counterparty.displayName]));
+  return listings
+    .filter(listing => listing.status === 'active')
+    .map(listing => mapListingRecordToListing(listing, sellerMap.get(listing.counterpartyId || '')))
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export async function getTopSellersAsync(userId?: string): Promise<SellerProfile[]> {
+  const [counterparties, listings] = await Promise.all([
+    fetchCounterparties(userId),
+    fetchMarketplaceListings(userId),
+  ]);
+  const counts = listings.reduce<Record<string, number>>((acc, listing) => {
+    const key = listing.counterpartyId || '';
+    if (key) acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+
+  return counterparties
+    .map(counterparty => ({
+      ...mapCounterpartyToSellerProfile(counterparty),
+      activeListing: counts[counterparty.id] || 0,
+    }))
+    .sort((a, b) => b.rating - a.rating);
+}
+
+export async function getOffersAsync(listingId?: string): Promise<Offer[]> {
+  const [offers, listings] = await Promise.all([
+    fetchListingOffers(listingId),
+    fetchMarketplaceListings(),
+  ]);
+  const listingMap = new Map(listings.map(listing => [listing.id, listing.title]));
+  return offers.map(offer => mapOfferRecordToOffer(offer, listingMap.get(offer.listingId) || 'Marketplace Listing'));
+}
+
+export async function createMarketplaceListing(input: {
+  ownerUserId?: string | null;
+  sellerName: string;
+  marketplaceVenue?: 'ebay' | 'private' | 'internal';
+  title: string;
+  player: string;
+  cardDescription: string;
+  sport: Sport;
+  askingPrice: number;
+  estimatedMarketValue?: number;
+  year?: number;
+  set?: string;
+  grade?: CardGrade;
+  condition?: CardCondition;
+  imageUrl?: string;
+  listingUrl?: string;
+}): Promise<Listing> {
+  const sellerProfile = {
+    id: crypto.randomUUID(),
+    ownerUserId: input.ownerUserId || null,
+    displayName: input.sellerName,
+    marketplaceVenue: input.marketplaceVenue || 'internal',
+    verificationTier: 'verified' as const,
+    trustScore: 78,
+    reputationScore: 80,
+    successfulDeals: 0,
+    disputedDeals: 0,
+    riskLevel: 'low' as const,
+    createdAt: new Date().toISOString(),
+  };
+  await upsertCounterpartyProfile(sellerProfile);
+
+  const listingRecord = {
+    id: crypto.randomUUID(),
+    ownerUserId: input.ownerUserId || null,
+    counterpartyId: sellerProfile.id,
+    sourceVenue: input.marketplaceVenue || 'internal',
+    title: input.title,
+    player: input.player,
+    cardDescription: input.cardDescription,
+    sport: input.sport,
+    year: input.year,
+    setName: input.set,
+    grade: input.grade,
+    condition: input.condition,
+    askingPrice: input.askingPrice,
+    estimatedMarketValue: input.estimatedMarketValue,
+    currency: 'USD',
+    status: 'active' as const,
+    listingUrl: input.listingUrl,
+    imageUrl: input.imageUrl,
+    metadata: { views: 0, watchers: 0, offerCount: 0 },
+    createdAt: new Date().toISOString(),
+  };
+
+  await upsertMarketplaceListing(listingRecord);
+  return mapListingRecordToListing(listingRecord, sellerProfile.displayName);
+}
+
+export async function submitMarketplaceOffer(input: {
+  ownerUserId?: string | null;
+  listing: Listing;
+  buyerName: string;
+  amount: number;
+  message: string;
+}): Promise<Offer> {
+  const buyerProfile = {
+    id: crypto.randomUUID(),
+    ownerUserId: input.ownerUserId || null,
+    displayName: input.buyerName,
+    marketplaceVenue: 'private' as const,
+    verificationTier: 'verified' as const,
+    trustScore: 72,
+    reputationScore: 74,
+    successfulDeals: 0,
+    disputedDeals: 0,
+    riskLevel: 'medium' as const,
+    createdAt: new Date().toISOString(),
+  };
+  await upsertCounterpartyProfile(buyerProfile);
+
+  const record = {
+    id: crypto.randomUUID(),
+    listingId: input.listing.id,
+    buyerCounterpartyId: buyerProfile.id,
+    sellerCounterpartyId: input.listing.sellerId,
+    amount: input.amount,
+    currency: 'USD',
+    status: 'pending' as const,
+    message: input.message,
+    sourceVenue: 'private' as const,
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 3 * 86400000).toISOString(),
+  };
+
+  await upsertListingOffer(record, input.ownerUserId);
+  await insertTrustEvent({
+    id: crypto.randomUUID(),
+    counterpartyId: buyerProfile.id,
+    eventType: 'offer_accepted',
+    impactScore: 2,
+    referenceType: 'offer',
+    referenceId: record.id,
+    notes: `Offer submitted for ${input.listing.player}`,
+    createdAt: new Date().toISOString(),
+  }, input.ownerUserId);
+
+  return mapOfferRecordToOffer(record, `${input.listing.player} ${input.listing.cardDescription}`);
+}

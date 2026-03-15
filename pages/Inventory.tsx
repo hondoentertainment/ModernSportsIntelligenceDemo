@@ -1,16 +1,22 @@
 
 import React from 'react';
+import React, { useState } from 'react';
 import {
   ArrowUpRight,
   Target,
   Layers,
   ChevronRight,
   Briefcase,
+  Zap,
+  Activity,
+  Search
 } from 'lucide-react';
 import { MOCK_INVENTORY_SUMMARY, MOCK_INVENTORY_ITEMS, MOCK_ACQUISITION_TARGETS } from '../constants.tsx';
+import GradingAuditModal from '../components/GradingAuditModal';
 
 const Inventory: React.FC = () => {
-  const formatCurrency = (val: number) => 
+  const [isGradingAuditOpen, setIsGradingAuditOpen] = useState(false);
+  const formatCurrency = (val: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
 
   return (
@@ -19,6 +25,15 @@ const Inventory: React.FC = () => {
         <div>
           <h1 className="text-3xl font-black tracking-tight mb-2 text-white">Portfolio Intelligence</h1>
           <p className="text-brand-muted max-w-2xl">Asset tracking merged with performance-driven acquisition strategy.</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setIsGradingAuditOpen(true)}
+            className="flex items-center gap-3 px-6 py-4 bg-brand-charcoal border border-brand-lime/30 text-brand-lime font-black rounded-2xl transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[10px] group"
+          >
+            <Search size={16} className="group-hover:animate-pulse" />
+            Visual Audit
+          </button>
         </div>
       </div>
 
@@ -69,9 +84,9 @@ const Inventory: React.FC = () => {
                       <div>
                         <h3 className="font-bold text-lg leading-tight mb-1">{item.cardName}</h3>
                         <div className="flex items-center gap-2">
-                           <span className="px-2 py-0.5 rounded bg-brand-lime/10 border border-brand-lime/20 text-[10px] font-bold text-brand-lime uppercase tracking-widest">
-                             {item.status}
-                           </span>
+                          <span className="px-2 py-0.5 rounded bg-brand-lime/10 border border-brand-lime/20 text-[10px] font-bold text-brand-lime uppercase tracking-widest">
+                            {item.status}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -96,7 +111,7 @@ const Inventory: React.FC = () => {
                   <div className="flex items-center justify-between border-t border-slate-800/50 pt-4">
                     <p className="text-sm font-black text-white">{formatCurrency(target.targetPrice)}</p>
                     <button className="p-2 bg-slate-900 border border-slate-800 rounded-xl hover:bg-brand-lime transition-all">
-                       <ArrowUpRight size={16} />
+                      <ArrowUpRight size={16} />
                     </button>
                   </div>
                 </div>
@@ -105,14 +120,23 @@ const Inventory: React.FC = () => {
           </section>
 
           <section className="bg-brand-lime/5 border border-brand-lime/20 rounded-3xl p-6 text-center">
-             <Briefcase className="mx-auto text-brand-lime mb-4" size={32} />
-             <h3 className="font-bold mb-2 text-white">Strategy Rebalancing</h3>
-             <button className="w-full py-3 bg-slate-950 border border-slate-800 hover:border-brand-lime/50 rounded-xl text-xs font-bold transition-all uppercase tracking-widest text-brand-lime">
-               Execute Rebalance
-             </button>
+            <Briefcase className="mx-auto text-brand-lime mb-4" size={32} />
+            <h3 className="font-bold mb-2 text-white">Strategy Rebalancing</h3>
+            <button className="w-full py-3 bg-slate-950 border border-slate-800 hover:border-brand-lime/50 rounded-xl text-xs font-bold transition-all uppercase tracking-widest text-brand-lime">
+              Execute Rebalance
+            </button>
           </section>
         </div>
       </div>
+
+      <GradingAuditModal
+        isOpen={isGradingAuditOpen}
+        onClose={() => setIsGradingAuditOpen(false)}
+        onComplete={(res) => {
+          console.log('Visual Audit Complete:', res);
+          setIsGradingAuditOpen(false);
+        }}
+      />
     </div>
   );
 };

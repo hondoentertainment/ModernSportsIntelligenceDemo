@@ -143,7 +143,11 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "purchaseDate": "2021-07-05",
     "currentValue": 1200,
     "lastValuationDate": "2026-01-25",
-    "image": "C:/Users/kyle/.gemini/antigravity/brain/19a627cc-0ff5-4066-bc35-415dec26f7cc/julio_rodriguez_hero_card_1769998796559.png"
+    "image": "C:/Users/kyle/.gemini/antigravity/brain/19a627cc-0ff5-4066-bc35-415dec26f7cc/julio_rodriguez_hero_card_1769998796559.png",
+    "isVaulted": true,
+    "vaultProvider": "PWCC",
+    "vaultAssetId": "PWCC-VOULT-7782",
+    "vaultInstantLiquidityPrice": 1050
   },
   {
     "id": "10",
@@ -471,7 +475,11 @@ export const PREPOPULATED_CARDS: CardInventory[] = [
     "purchaseDate": "2021-05-25",
     "currentValue": 515,
     "lastValuationDate": "2026-01-25",
-    "image": "C:/Users/kyle/.gemini/antigravity/brain/19a627cc-0ff5-4066-bc35-415dec26f7cc/gunnar_henderson_hero_card_1769998814134.png"
+    "image": "C:/Users/kyle/.gemini/antigravity/brain/19a627cc-0ff5-4066-bc35-415dec26f7cc/gunnar_henderson_hero_card_1769998814134.png",
+    "isVaulted": true,
+    "vaultProvider": "PSA",
+    "vaultAssetId": "PSA-VLT-1102",
+    "vaultInstantLiquidityPrice": 460
   },
   {
     "id": "111",

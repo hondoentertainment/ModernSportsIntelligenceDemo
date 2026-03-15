@@ -21,6 +21,8 @@ import { useSupabaseInventory } from './lib/useSupabaseInventory.ts';
 import LazyErrorBoundary from './components/LazyErrorBoundary.tsx';
 import { PageLoadingFallback } from './components/LazyLoadFallback.tsx';
 import GuidedTour from './components/GuidedTour.tsx';
+import InstitutionalWallHUD from './components/InstitutionalWallHUD.tsx';
+import GrailShowcase from './components/GrailShowcase.tsx';
 
 // ─── Lazy-loaded Page Components ──────────────────────────────────────
 // Critical path: Dashboard loads first, everything else is code-split
@@ -53,25 +55,17 @@ const Leaderboard = lazy(() => import('./pages/Leaderboard.tsx'));
 // Alerts & tools
 const Alerts = lazy(() => import('./pages/Alerts.tsx'));
 const AnalystWarRoom = lazy(() => import('./components/AnalystWarRoom.tsx'));
+const GuildDashboard = lazy(() => import('./pages/GuildDashboard.tsx'));
 
-// Live & advanced features
-const LiveImpact = lazy(() => import('./pages/LiveImpact.tsx'));
-const FractionalVault = lazy(() => import('./pages/FractionalVault.tsx'));
-const ProvenanceChain = lazy(() => import('./pages/ProvenanceChain.tsx'));
-const LiveBreaks = lazy(() => import('./pages/LiveBreaks.tsx'));
+// Feature discovery and release-ready advanced features
 const FeatureDirectory = lazy(() => import('./pages/FeatureDirectory.tsx'));
-
-// Phases 104-113: Industry-first features
-const LiveGameImpactEngine = lazy(() => import('./pages/LiveGameImpactEngine.tsx'));
-const CrossAssetCorrelation = lazy(() => import('./pages/CrossAssetCorrelation.tsx'));
-const PreGradeIntelligence = lazy(() => import('./pages/PreGradeIntelligence.tsx'));
-const ProvenanceChainIntelligence = lazy(() => import('./pages/ProvenanceChainIntelligence.tsx'));
-const CopyTrading = lazy(() => import('./pages/CopyTrading.tsx'));
-const PredictiveMarketMaker = lazy(() => import('./pages/PredictiveMarketMaker.tsx'));
-const InfluenceGraph = lazy(() => import('./pages/InfluenceGraph.tsx'));
-const CrossHobbyPortfolio = lazy(() => import('./pages/CrossHobbyPortfolio.tsx'));
-const AutonomousAcquisition = lazy(() => import('./pages/AutonomousAcquisition.tsx'));
 const CollectionNarrative = lazy(() => import('./pages/CollectionNarrative.tsx'));
+const LiquidityTwin = lazy(() => import('./pages/LiquidityTwin.tsx'));
+const CatalystMarket = lazy(() => import('./pages/CatalystMarket.tsx'));
+const CounterpartyTrustGraph = lazy(() => import('./pages/CounterpartyTrustGraph.tsx'));
+const PortfolioScenarioTheater = lazy(() => import('./pages/PortfolioScenarioTheater.tsx'));
+const PrivateDealRoomAgent = lazy(() => import('./pages/PrivateDealRoomAgent.tsx'));
+const CollectorAuditDossier = lazy(() => import('./pages/CollectorAuditDossier.tsx'));
 
 // Phases 114-128: Next-gen features
 const PortfolioCopilot = lazy(() => import('./pages/PortfolioCopilot.tsx'));
@@ -149,6 +143,11 @@ const PublicPortfolio = lazy(() => import('./pages/PublicPortfolio.tsx'));
 
 const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (_val: boolean) => void }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { inventory } = useSupabaseInventory();
+  const [isWallHUDOpen, setIsWallHUDOpen] = useState(false);
+  const [selectedGrail, setSelectedGrail] = useState<any>(null);
+
+  // Expose a way to open grail via window for testing/demo
+  (window as any).openGrail = (card: any) => setSelectedGrail(card);
 
   return (
     <div className="flex h-screen overflow-hidden bg-brand-charcoal text-slate-100 font-sans selection:bg-brand-lime/30 luminous-container">
@@ -157,9 +156,33 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (_val: boo
       <Sidebar isOpen={isSidebarOpen} toggle={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       <div className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
-        <Header />
+        <Header onToggleWallHUD={() => setIsWallHUDOpen(true)} />
         <MarketTicker inventory={inventory} />
         <MigrationBanner />
+
+        {isWallHUDOpen && (
+          <InstitutionalWallHUD
+            onClose={() => setIsWallHUDOpen(false)}
+            inventoryCount={inventory.length}
+            totalMarketValue={`$${inventory.reduce((acc, curr) => acc + (parseFloat(curr.market_value?.replace(/[^0-9.]/g, '') || '0')), 0).toLocaleString()}`}
+          />
+        )}
+
+        {selectedGrail && (
+          <GrailShowcase
+            isOpen={!!selectedGrail}
+            onClose={() => setSelectedGrail(null)}
+            card={{
+              name: selectedGrail.name || selectedGrail.card_name || 'Grail Asset',
+              player: selectedGrail.player_name || 'Elite Athlete',
+              year: selectedGrail.year || '2024',
+              set: selectedGrail.set_name || 'Panini Prizm',
+              grade: selectedGrail.grade || 'PSA 10',
+              image: selectedGrail.image_url || 'https://images.unsplash.com/photo-1510133769062-80c1e26dcb6e?q=80&w=2070&auto=format&fit=crop',
+              marketValue: selectedGrail.market_value || '$12,500.00'
+            }}
+          />
+        )}
 
         <main className="flex-1 p-4 md:p-8 page-container overflow-y-auto pb-24 md:pb-8">
           <LazyErrorBoundary>
@@ -183,21 +206,14 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (_val: boo
                 <Route path="/compare" element={<Compare />} />
                 <Route path="/alerts" element={<Alerts />} />
                 <Route path="/war-room" element={<AnalystWarRoom />} />
+                <Route path="/guilds" element={<GuildDashboard />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/live-impact" element={<LiveImpact />} />
-                <Route path="/fractional-vault" element={<FractionalVault />} />
-                <Route path="/provenance" element={<ProvenanceChain />} />
-                <Route path="/live-breaks" element={<LiveBreaks />} />
                 <Route path="/features" element={<FeatureDirectory />} />
-                <Route path="/live-game-impact-engine" element={<LiveGameImpactEngine />} />
-                <Route path="/cross-asset-correlation" element={<CrossAssetCorrelation />} />
-                <Route path="/pre-grade-intelligence" element={<PreGradeIntelligence />} />
-                <Route path="/provenance-intelligence" element={<ProvenanceChainIntelligence />} />
-                <Route path="/copy-trading" element={<CopyTrading />} />
-                <Route path="/predictive-market-maker" element={<PredictiveMarketMaker />} />
-                <Route path="/influence-graph" element={<InfluenceGraph />} />
-                <Route path="/cross-hobby-portfolio" element={<CrossHobbyPortfolio />} />
-                <Route path="/autonomous-acquisition" element={<AutonomousAcquisition />} />
+                <Route path="/liquidity-twin" element={<LiquidityTwin />} />
+                <Route path="/counterparty-trust-graph" element={<CounterpartyTrustGraph />} />
+                <Route path="/portfolio-scenario-theater" element={<PortfolioScenarioTheater />} />
+                <Route path="/private-deal-room-agent" element={<PrivateDealRoomAgent />} />
+                <Route path="/catalyst-market" element={<CatalystMarket />} />
                 <Route path="/collection-narrative" element={<CollectionNarrative />} />
                 <Route path="/portfolio-copilot" element={<PortfolioCopilot />} />
                 <Route path="/marketplace-aggregator" element={<MarketplaceAggregator />} />
@@ -244,16 +260,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (_val: boo
                 <Route path="/sealed-product" element={<SealedProduct />} />
                 <Route path="/error-card" element={<ErrorCard />} />
                 <Route path="/auction-sniper" element={<AuctionSniper />} />
-                <Route path="/real-time-price-engine" element={<RealTimePriceEngine />} />
-                <Route path="/ai-card-scanner" element={<AiCardScanner />} />
-                <Route path="/cross-platform-arbitrage" element={<CrossPlatformArbitrage />} />
-                <Route path="/predictive-price-engine" element={<PredictivePriceEngine />} />
-                <Route path="/tax-report" element={<TaxReport />} />
-                <Route path="/grade-prediction" element={<GradePredictionPage />} />
-                <Route path="/smart-notifications" element={<SmartNotifications />} />
-                <Route path="/consensus-pricing" element={<ConsensusPricing />} />
-                <Route path="/live-break-roi" element={<LiveBreakRoi />} />
-                <Route path="/portfolio-benchmark" element={<PortfolioBenchmark />} />
+                <Route path="/audit-dossier" element={<CollectorAuditDossier />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
@@ -305,3 +312,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

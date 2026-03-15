@@ -14,12 +14,14 @@ const DeepSearch: React.FC = () => {
     const [results, setResults] = useState<any[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
+    const [searchError, setSearchError] = useState<string | null>(null);
     const [lightboxResult, setLightboxResult] = useState<{ image?: string; name: string; team?: string; league?: string } | null>(null);
 
     const handleDeepSearch = useCallback(async () => {
         if (!query.trim()) return;
         setIsSearching(true);
         setHasSearched(true);
+        setSearchError(null);
         try {
             const searchResults = await findSimilarCards(query, inventory);
             setResults(searchResults);
@@ -28,7 +30,9 @@ const DeepSearch: React.FC = () => {
             }
         } catch (error) {
             console.error('Deep search failed:', error);
-            addToast('error', 'Deep search failed. Check your connection.', { dedupeKey: 'deepsearch_page' });
+            const message = error instanceof Error ? error.message : 'Deep search failed. Check your connection.';
+            setSearchError(message);
+            addToast('error', message, { dedupeKey: 'deepsearch_page' });
         } finally {
             setIsSearching(false);
         }
@@ -59,6 +63,12 @@ const DeepSearch: React.FC = () => {
 
             {/* Search HUD */}
             <div className="max-w-4xl mx-auto space-y-6">
+                {searchError && (
+                    <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-sm text-red-100">
+                        <div className="font-semibold">Search request failed</div>
+                        <p className="mt-2 text-red-200/90">{searchError}</p>
+                    </div>
+                )}
                 <div className="relative group">
                     <div className="absolute -inset-1 bg-gradient-to-r from-brand-blue to-brand-lime rounded-[2.5rem] blur opacity-25 group-focus-within:opacity-100 transition duration-1000 group-focus-within:duration-200"></div>
                     <div className="relative bg-brand-charcoal border border-slate-800 rounded-[2.5rem] p-4 flex items-center gap-4">
