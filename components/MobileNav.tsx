@@ -3,15 +3,15 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Download } from 'lucide-react';
 import { NAV_ITEMS } from '../constants.tsx';
+import { MOBILE_NAV_IDS } from '../lib/productSurface';
 import { usePWAInstall } from '../lib/usePWAInstall';
 
 const MobileNav: React.FC = () => {
   const location = useLocation();
   const { isInstallable, promptInstall } = usePWAInstall();
 
-  // Filter for key mobile items using updated IDs from CardX
   const mobileItems = NAV_ITEMS.filter(item =>
-    ['dashboard', 'collection', 'mlbstats', 'prospects', 'favorites'].includes(item.id)
+    MOBILE_NAV_IDS.includes(item.id as typeof MOBILE_NAV_IDS[number])
   );
 
   return (

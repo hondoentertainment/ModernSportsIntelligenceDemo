@@ -142,6 +142,20 @@ export class CorrelationService {
             });
         }
 
+        // 4. Alpha Deviation Hedge (Phase 21 NEW)
+        const volatileLeagues = ['NBA', 'NFL'];
+        const highBetaWeight = activeCards.filter(c => volatileLeagues.includes(c.league)).length / activeCards.length;
+        if (highBetaWeight > 0.6) {
+            recommendations.push({
+                id: 'hedge-4',
+                type: 'Diversification',
+                impact: 'Medium',
+                title: 'Beta Exposure Warning',
+                description: 'Your portfolio is 60%+ weighted in high-volatility leagues.',
+                action: 'Acquire MLB or Vintage assets to dampen seasonal price shocks.'
+            });
+        }
+
         return recommendations;
     }
 

@@ -85,6 +85,23 @@ const Billing: React.FC = () => {
   const aiLimit = tierConfig?.limits.aiValuations ?? 10;
   const aiUsed = subscription?.ai_valuations_used ?? 0;
 
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-3xl space-y-6 rounded-3xl border border-slate-800 bg-slate-950 p-8 text-center">
+        <h1 className="text-3xl font-black text-white">Billing requires an authenticated account</h1>
+        <p className="text-sm text-slate-400">
+          Sign in with a live account to manage subscriptions, create checkout sessions, and access the customer portal.
+        </p>
+        <Link
+          to="/login"
+          className="inline-flex items-center gap-2 rounded-xl bg-brand-lime px-5 py-3 font-bold text-brand-charcoal transition-all hover:bg-brand-green"
+        >
+          Go to Login <ChevronRight size={18} />
+        </Link>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">

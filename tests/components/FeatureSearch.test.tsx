@@ -14,6 +14,7 @@ vi.mock('../../lib/useFocusTrap', () => ({
 }));
 
 import FeatureSearch from '../../components/FeatureSearch';
+import { DISCOVERABLE_FEATURE_CATALOG } from '../../lib/featureCatalog';
 
 describe('FeatureSearch', () => {
   beforeEach(() => {
@@ -81,9 +82,9 @@ describe('FeatureSearch', () => {
     expect(mockNavigate).toHaveBeenCalled();
   });
 
-  it('has View All 103 Features link', () => {
+  it('has view-all link for the current feature count', () => {
     render(<FeatureSearch />);
     fireEvent.click(screen.getByLabelText('Search features (Ctrl+K)'));
-    expect(screen.getByText(/View All 103 Features/)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`View All ${DISCOVERABLE_FEATURE_CATALOG.length} Features`))).toBeInTheDocument();
   });
 });

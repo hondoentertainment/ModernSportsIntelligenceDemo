@@ -3,6 +3,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import { NAV_ITEMS } from '../constants.tsx';
+import { PRIMARY_NAV_IDS } from '../lib/productSurface';
 import { useAlerts } from '../lib/useAlerts.ts';
 
 interface SidebarProps {
@@ -13,6 +14,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
   const location = useLocation();
   const { unreadCount } = useAlerts();
+  const primaryNavItems = NAV_ITEMS.filter(item => PRIMARY_NAV_IDS.includes(item.id as typeof PRIMARY_NAV_IDS[number]));
 
   return (
     <>
@@ -38,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
         </div>
 
         <nav aria-label="Primary" className="flex-1 px-3 space-y-1.5 mt-4">
-          {NAV_ITEMS.map((item) => {
+          {primaryNavItems.map((item) => {
             const isActive = location.pathname === item.path ||
               (item.path !== '/' && location.pathname.startsWith(item.path));
             return (
@@ -83,26 +85,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
           </div>
         </div>
       </aside>
-
-      {/* Mobile Bottom Navigation */}
-      <nav aria-label="Mobile navigation" className="fixed bottom-0 left-0 right-0 z-50 bg-brand-charcoal/90 backdrop-blur-xl border-t border-slate-800 md:hidden flex justify-around items-center p-2 pb-6">
-        {NAV_ITEMS.filter(item => ['dashboard', 'collection', 'alerts', 'profile'].includes(item.id)).map((item) => {
-          const isActive = location.pathname === item.path ||
-            (item.path !== '/' && location.pathname.startsWith(item.path));
-          return (
-            <Link
-              key={item.id}
-              to={item.path}
-              className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all ${isActive ? 'text-brand-lime' : 'text-slate-500'}`}
-            >
-              <div className={`${isActive ? 'scale-110' : ''} transition-transform`}>
-                {item.icon}
-              </div>
-              <span className="text-[9px] font-black uppercase tracking-tighter">{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
     </>
   );
 };

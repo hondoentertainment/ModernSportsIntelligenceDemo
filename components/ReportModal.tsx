@@ -16,12 +16,14 @@ import {
   ChevronDown,
   Check,
   AlertCircle,
+  BriefcaseBusiness,
 } from 'lucide-react';
 import { CardInventory, Sport } from '../types';
 import {
   ReportType,
   ReportConfig,
   GeneratedReport,
+  generateCollectorAuditDossier,
   generatePortfolioSummary,
   generateTaxReport,
   generateInsuranceReport,
@@ -79,6 +81,14 @@ const reportTypeConfig: Record<ReportType, { label: string; icon: React.ReactNod
     border: 'border-purple-500/30',
     description: 'Time-weighted return, Sharpe ratio, max drawdown, benchmark comparison',
   },
+  collector_audit_dossier: {
+    label: 'Collector Audit Dossier',
+    icon: <BriefcaseBusiness size={18} />,
+    color: 'text-cyan-400',
+    bg: 'bg-cyan-500/10',
+    border: 'border-cyan-500/30',
+    description: 'Unified collector operating record for tax posture, insurance readiness, and exit planning',
+  },
 };
 
 const reportTypeBadge: Record<ReportType, { label: string; color: string; bg: string }> = {
@@ -86,6 +96,7 @@ const reportTypeBadge: Record<ReportType, { label: string; color: string; bg: st
   tax: { label: 'Tax', color: 'text-amber-400', bg: 'bg-amber-500/10' },
   insurance: { label: 'Insurance', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
   performance: { label: 'Performance', color: 'text-purple-400', bg: 'bg-purple-500/10' },
+  collector_audit_dossier: { label: 'Dossier', color: 'text-cyan-400', bg: 'bg-cyan-500/10' },
 };
 
 function triggerDownload(content: string, filename: string, mimeType: string) {
@@ -148,6 +159,9 @@ export const ReportModal: React.FC<ReportModalProps> = ({
           break;
         case 'performance':
           report = generatePerformanceReport(inventory, config);
+          break;
+        case 'collector_audit_dossier':
+          report = generateCollectorAuditDossier(inventory, config);
           break;
       }
 
@@ -520,6 +534,16 @@ export const ReportModal: React.FC<ReportModalProps> = ({
                       <h4 className="text-sm font-bold text-white border-b border-slate-700 pb-2">
                         {section.title}
                       </h4>
+                      {(section.sourceType || section.sourceNote) && (
+                        <div className="flex flex-wrap items-center gap-2 text-[10px] text-slate-400">
+                          {section.sourceType && (
+                            <span className="px-2 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 font-black uppercase tracking-widest">
+                              {section.sourceType.replace(/-/g, ' ')}
+                            </span>
+                          )}
+                          {section.sourceNote && <span>{section.sourceNote}</span>}
+                        </div>
+                      )}
 
                       {/* Summary metrics */}
                       {section.summary && (
@@ -534,9 +558,9 @@ export const ReportModal: React.FC<ReportModalProps> = ({
                                 <span className={`text-sm font-mono font-bold ${
                                   isNeg ? 'text-red-400' : isPos ? 'text-green-400' : 'text-white'
                                 }`}>
-                                  {typeof value === 'number' && (key.includes('Value') || key.includes('Cost') || key.includes('P&L') || key.includes('Gain') || key.includes('Loss') || key.includes('Net'))
+                                  {typeof value === 'number' && (key.includes('Value') || key.includes('Cost') || key.includes('P&L') || key.includes('Gain') || key.includes('Loss') || key.includes('Net') || key.includes('Liability') || key.includes('Premium') || key.includes('Gap') || key.includes('Replacement'))
                                     ? formatCurrencyValue(value)
-                                    : typeof value === 'number' && key.includes('%')
+                                    : typeof value === 'number' && (key.includes('%') || key.includes('Percent'))
                                       ? `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
                                       : value
                                   }
@@ -577,11 +601,13 @@ export const ReportModal: React.FC<ReportModalProps> = ({
                                       col.includes('proceeds') || col.includes('Proceeds') ||
                                       col.includes('gainLoss') || col.includes('replacement') ||
                                       col.includes('Replacement') || col.includes('alpha') ||
-                                      col.includes('Fees')
+                                      col.includes('Fees') || col.includes('liability') ||
+                                      col.includes('gapAmount') || col.includes('coveredAmount') ||
+                                      col.includes('expectedNet') || col.includes('breakEvenSalePrice')
                                     );
                                     const isPct = typeof val === 'number' && (
                                       col.includes('Percent') || col.includes('Pct') ||
-                                      col === 'allocation' || col === 'percentage' || col === 'return'
+                                      col === 'allocation' || col === 'percentage' || col === 'return' || col === 'gapPercent'
                                     );
 
                                     let display: string;

@@ -3,6 +3,11 @@ import { CardInventory, TargetWatchlist } from '../types.ts';
 import { getEbayCardPrice, getWatchlistItemPrice } from './gemini.ts';
 import { recordBatchSnapshots } from './priceHistory.ts';
 import { showToast } from './toast.ts';
+import { CardInventory, PricingAnalysis, TargetWatchlist } from "../types.ts";
+import { getEbayCardPrice, getWatchlistItemPrice } from "./gemini.ts";
+import { recordBatchSnapshots } from "./priceHistory.ts";
+import { showToast } from "./toast.ts";
+import { incrementCounter, recordMetric } from "./telemetryService.ts";
 
 export interface SyncProgress {
     total: number;
@@ -68,7 +73,8 @@ async function syncCardValue(card: CardInventory): Promise<CardInventory> {
                 ...card,
                 currentValue: analysis.estimatedValue,
                 lastValuationDate: analysis.lastUpdated,
-                valuationConfidence: analysis.confidence
+                valuationConfidence: analysis.confidence,
+                pricingRationale: analysis.rationale
             };
         }
 
@@ -159,6 +165,10 @@ export async function syncPortfolio(
     if (onProgress) onProgress(progress);
 
     // Surface sync results to the user
+    recordMetric('sync.portfolio.duration_ms', endTime - startTime);
+    recordMetric('sync.portfolio.failed_count', errors.length);
+    incrementCounter('sync.portfolio.total');
+
     if (errors.length > 0) {
         showToast('warning', `Portfolio sync done — ${errors.length} card${errors.length > 1 ? 's' : ''} failed to update.`, { dedupeKey: 'sync_partial' });
     } else {
@@ -238,6 +248,7 @@ export async function syncWatchlistPrices(
                         ...target,
                         currentMarketPrice: analysis.estimatedValue,
                         searchUrl: analysis.searchUrl,
+                        pricingRationale: analysis.rationale
                     };
                 }
                 failedCount++;
@@ -270,10 +281,17 @@ export async function syncWatchlistPrices(
         return updated || t;
     });
 
+    const duration = Date.now() - startTime;
+    recordMetric('sync.watchlist.duration_ms', duration);
+    recordMetric('sync.watchlist.failed_count', failedCount);
+    incrementCounter('sync.watchlist.total');
+
     return {
         updatedTargets: finalTargets,
         priceHits,
         failedCount,
-        duration: Date.now() - startTime,
+        duration,
     };
 }
+
+

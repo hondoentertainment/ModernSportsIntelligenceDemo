@@ -76,6 +76,15 @@ export interface CoverageHistory {
   ratio: number;
 }
 
+export interface CoverageSnapshot {
+  policies: InsurancePolicy[];
+  coverageGaps: CoverageGap[];
+  premiumEstimate: PremiumEstimate;
+  riderRecommendations: RiderRecommendation[];
+  renewalReminders: RenewalReminder[];
+  totalCollectionValue: number;
+}
+
 // ---- Constants ----
 
 const POLICIES_KEY = 'msi_insurance_policies';
@@ -415,6 +424,23 @@ export function getCoverageHistory(policies: InsurancePolicy[]): CoverageHistory
   }
 
   return history;
+}
+
+export function buildCoverageSnapshot(cards: CardInventory[]): CoverageSnapshot {
+  const policies = getPolicies();
+  const totalCollectionValue = cards.reduce(
+    (sum, card) => sum + (card.currentValue ?? card.purchasePrice),
+    0
+  );
+
+  return {
+    policies,
+    coverageGaps: analyzeCoverageGaps(policies, cards),
+    premiumEstimate: estimatePremium(totalCollectionValue),
+    riderRecommendations: getRiderRecommendations(cards, policies),
+    renewalReminders: getRenewalReminders(policies),
+    totalCollectionValue,
+  };
 }
 
 // ---- Seed Data ----

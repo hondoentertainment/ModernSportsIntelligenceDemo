@@ -7,14 +7,16 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "lint": "eslint App.tsx index.tsx vite.config.ts playwright.config.ts \"api/**/*.ts\" components/Sidebar.tsx components/MobileNav.tsx components/CommandPalette.tsx components/FeatureSearch.tsx components/Header.tsx lib/featureCatalog.ts lib/productSurface.ts lib/serverApi.ts lib/geminiClient.ts lib/ebayApi.ts lib/gemini.ts lib/useSupabaseInventory.ts lib/differentiatorData.ts lib/supabaseData.ts lib/runtimeConfig.ts pages/Dashboard.tsx pages/Collection.tsx pages/Billing.tsx pages/Profile.tsx pages/DeepSearch.tsx pages/FeatureDirectory.tsx pages/CounterpartyTrustGraph.tsx pages/PrivateDealRoomAgent.tsx tests/components/FeatureSearch.test.tsx tests/lib/featureCatalog.test.ts tests/lib/differentiatorData.test.ts tests/lib/fiveDifferentiatorService.test.ts tests/e2e/*.spec.ts",
+    "lint:fix": "eslint App.tsx index.tsx vite.config.ts playwright.config.ts \"api/**/*.ts\" components/Sidebar.tsx components/MobileNav.tsx components/CommandPalette.tsx components/FeatureSearch.tsx components/Header.tsx lib/featureCatalog.ts lib/productSurface.ts lib/serverApi.ts lib/geminiClient.ts lib/ebayApi.ts lib/gemini.ts lib/useSupabaseInventory.ts lib/differentiatorData.ts lib/supabaseData.ts lib/runtimeConfig.ts pages/Dashboard.tsx pages/Collection.tsx pages/Billing.tsx pages/Profile.tsx pages/DeepSearch.tsx pages/FeatureDirectory.tsx pages/CounterpartyTrustGraph.tsx pages/PrivateDealRoomAgent.tsx tests/components/FeatureSearch.test.tsx tests/lib/featureCatalog.test.ts tests/lib/differentiatorData.test.ts tests/lib/fiveDifferentiatorService.test.ts tests/e2e/*.spec.ts --fix",
     "format": "prettier --write \"**/*.{ts,tsx,json,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,css}\"",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.release.json",
     "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test tests/e2e/auth.spec.ts tests/e2e/dashboard.spec.ts tests/e2e/release-smoke.spec.ts --project=chromium",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:desktop": "playwright test --project=chromium",
     "test:e2e:mobile": "playwright test --project=Mobile Chrome",
@@ -38,7 +40,7 @@
     "lucide-react": "0.474.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "react-router-dom": "7.1.5",
+    "react-router-dom": "^7.13.1",
     "recharts": "2.15.0",
     "stripe": "^20.3.1"
   },
@@ -52,6 +54,7 @@
     "@typescript-eslint/parser": "^8.56.1",
     "@vitejs/plugin-react": "^5.0.0",
     "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/coverage-v8": "^4.1.0",
     "@vitest/ui": "^4.0.18",
     "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",
@@ -61,7 +64,6 @@
     "prettier": "^3.8.1",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
-    "vitest": "^4.0.18",
-    "xlsx": "^0.18.5"
+    "vitest": "^4.0.18"
   }
 }

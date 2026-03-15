@@ -173,6 +173,7 @@ export function getTimeUntilNextSync(): {
  */
 export class SyncScheduler {
     private intervalId: number | null = null;
+    private isSyncing = false;
     private config: SyncSchedulerConfig;
     private inventory: CardInventory[] = [];
     private targets: TargetWatchlist[] = [];
@@ -248,6 +249,11 @@ export class SyncScheduler {
      * Perform a sync
      */
     private async performSync(): Promise<void> {
+        if (this.isSyncing) {
+            if (import.meta.env.DEV) console.warn('Sync scheduler: Skipping — sync already in progress');
+            return;
+        }
+        this.isSyncing = true;
         try {
             if (import.meta.env.DEV) console.warn('Sync scheduler: Performing sync...');
 
@@ -311,6 +317,8 @@ export class SyncScheduler {
 
         } catch (error) {
             console.error('Sync scheduler: Sync failed:', error);
+        } finally {
+            this.isSyncing = false;
         }
     }
 
