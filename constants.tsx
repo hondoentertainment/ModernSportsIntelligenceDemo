@@ -69,6 +69,11 @@ import {
   Calculator,
   Package,
   AlertOctagon,
+  DollarSign,
+  BellRing,
+  Award,
+  Percent,
+  Play,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -155,6 +160,17 @@ export const NAV_ITEMS = [
   { id: 'sealed-product', label: 'Sealed Product', icon: <Package size={20} />, path: '/sealed-product' },
   { id: 'error-card', label: 'Error Cards', icon: <AlertOctagon size={20} />, path: '/error-card' },
   { id: 'auction-sniper', label: 'Auction Sniper', icon: <Crosshair size={20} />, path: '/auction-sniper' },
+  // Phases 159-168: Competitive Feature Suite
+  { id: 'real-time-price-engine', label: 'Price Engine', icon: <DollarSign size={20} />, path: '/real-time-price-engine' },
+  { id: 'ai-card-scanner', label: 'AI Scanner', icon: <ScanLine size={20} />, path: '/ai-card-scanner' },
+  { id: 'cross-platform-arbitrage', label: 'Arbitrage Alerts', icon: <ArrowLeftRight size={20} />, path: '/cross-platform-arbitrage' },
+  { id: 'predictive-price-engine', label: 'Price Forecast', icon: <Brain size={20} />, path: '/predictive-price-engine' },
+  { id: 'tax-report', label: 'Tax Report', icon: <Calculator size={20} />, path: '/tax-report' },
+  { id: 'grade-prediction', label: 'Grade Predict', icon: <Award size={20} />, path: '/grade-prediction' },
+  { id: 'smart-notifications', label: 'Smart Alerts', icon: <BellRing size={20} />, path: '/smart-notifications' },
+  { id: 'consensus-pricing', label: 'Consensus Price', icon: <Users size={20} />, path: '/consensus-pricing' },
+  { id: 'live-break-roi', label: 'Break ROI', icon: <Play size={20} />, path: '/live-break-roi' },
+  { id: 'portfolio-benchmark', label: 'Benchmark', icon: <Percent size={20} />, path: '/portfolio-benchmark' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];

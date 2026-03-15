@@ -126,6 +126,18 @@ const SealedProduct = lazy(() => import('./pages/SealedProduct.tsx'));
 const ErrorCard = lazy(() => import('./pages/ErrorCard.tsx'));
 const AuctionSniper = lazy(() => import('./pages/AuctionSniper.tsx'));
 
+// Phases 159-168: Competitive Feature Suite
+const RealTimePriceEngine = lazy(() => import('./pages/RealTimePriceEngine.tsx'));
+const AiCardScanner = lazy(() => import('./pages/AiCardScanner.tsx'));
+const CrossPlatformArbitrage = lazy(() => import('./pages/CrossPlatformArbitrage.tsx'));
+const PredictivePriceEngine = lazy(() => import('./pages/PredictivePriceEngine.tsx'));
+const TaxReport = lazy(() => import('./pages/TaxReport.tsx'));
+const GradePredictionPage = lazy(() => import('./pages/GradePrediction.tsx'));
+const SmartNotifications = lazy(() => import('./pages/SmartNotifications.tsx'));
+const ConsensusPricing = lazy(() => import('./pages/ConsensusPricing.tsx'));
+const LiveBreakRoi = lazy(() => import('./pages/LiveBreakRoi.tsx'));
+const PortfolioBenchmark = lazy(() => import('./pages/PortfolioBenchmark.tsx'));
+
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
 const Signup = lazy(() => import('./pages/Signup.tsx'));
@@ -232,6 +244,16 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (_val: boo
                 <Route path="/sealed-product" element={<SealedProduct />} />
                 <Route path="/error-card" element={<ErrorCard />} />
                 <Route path="/auction-sniper" element={<AuctionSniper />} />
+                <Route path="/real-time-price-engine" element={<RealTimePriceEngine />} />
+                <Route path="/ai-card-scanner" element={<AiCardScanner />} />
+                <Route path="/cross-platform-arbitrage" element={<CrossPlatformArbitrage />} />
+                <Route path="/predictive-price-engine" element={<PredictivePriceEngine />} />
+                <Route path="/tax-report" element={<TaxReport />} />
+                <Route path="/grade-prediction" element={<GradePredictionPage />} />
+                <Route path="/smart-notifications" element={<SmartNotifications />} />
+                <Route path="/consensus-pricing" element={<ConsensusPricing />} />
+                <Route path="/live-break-roi" element={<LiveBreakRoi />} />
+                <Route path="/portfolio-benchmark" element={<PortfolioBenchmark />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
