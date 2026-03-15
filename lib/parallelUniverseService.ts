@@ -411,7 +411,7 @@ function loadCards(): ParallelCard[] {
   } catch {
     // ignore parse errors
   }
-  return [...MOCK_CARDS];
+  return JSON.parse(JSON.stringify(MOCK_CARDS));
 }
 
 function saveCards(cards: ParallelCard[]): void {
@@ -425,7 +425,7 @@ function loadSets(): ParallelSet[] {
   } catch {
     // ignore parse errors
   }
-  return [...MOCK_SETS];
+  return JSON.parse(JSON.stringify(MOCK_SETS));
 }
 
 // ---- Exported Functions ----
