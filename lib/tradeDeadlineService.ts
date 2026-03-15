@@ -363,6 +363,90 @@ const MOCK_TEAM_IMPACTS: TeamImpact[] = [
   { id: 'ti-20', teamName: 'Chicago Bulls', league: 'nba', overallImpact: -20, playerChanges: 3, averageCardValueChange: -18.0, championshipOddsChange: -6.0, description: 'LaVine and Vucevic trades signal full teardown rebuild' },
 ];
 
+// ---- Mock Data: League Transaction Summaries ----
+
+const MOCK_LEAGUE_SUMMARIES = {
+  nba: {
+    totalTradesMade: 42,
+    totalPlayersTraded: 68,
+    biggestTrade: 'Lauri Markkanen to Warriors',
+    totalSalaryMoved: 485000000,
+    averageCardImpact: 18.5,
+    topGainers: ['Lauri Markkanen', 'Darius Garland', 'Brandon Ingram', 'Pascal Siakam', 'Cam Johnson'],
+    topDecliners: ['Jonathan Kuminga', 'Michael Porter Jr', 'Tobias Harris'],
+    deadlineBuyers: ['Golden State Warriors', 'Denver Nuggets', 'Philadelphia 76ers', 'Los Angeles Lakers', 'Sacramento Kings'],
+    deadlineSellers: ['Chicago Bulls', 'Washington Wizards', 'Brooklyn Nets', 'New Orleans Pelicans'],
+    surpriseMoves: ['Garland to Spurs pairing with Wembanyama', 'Bridges from Knicks to Kings'],
+    marketImpactScore: 85,
+  },
+  mlb: {
+    totalTradesMade: 18,
+    totalPlayersTraded: 35,
+    biggestTrade: 'Vladimir Guerrero Jr to Dodgers',
+    totalSalaryMoved: 320000000,
+    averageCardImpact: 22.0,
+    topGainers: ['Vladimir Guerrero Jr', 'Garrett Crochet', 'Luis Robert Jr', 'Roki Sasaki', 'Ethan Salas'],
+    topDecliners: ['Fernando Tatis Jr', 'Nolan Arenado', 'Wyatt Langford'],
+    deadlineBuyers: ['Los Angeles Dodgers', 'New York Yankees', 'Boston Red Sox', 'San Diego Padres'],
+    deadlineSellers: ['Chicago White Sox', 'Toronto Blue Jays', 'St. Louis Cardinals'],
+    surpriseMoves: ['Roki Sasaki to Dodgers on discount', 'Vlad Jr trade before spring training'],
+    marketImpactScore: 92,
+  },
+  nfl: {
+    totalTradesMade: 12,
+    totalPlayersTraded: 14,
+    biggestTrade: 'Saquon Barkley to Eagles (FA)',
+    totalSalaryMoved: 580000000,
+    averageCardImpact: 8.5,
+    topGainers: ['Saquon Barkley', 'Derrick Henry', 'Haason Reddick', 'Josh Jacobs'],
+    topDecliners: ['Aaron Rodgers', 'Deshaun Watson', 'Russell Wilson', 'Tua Tagovailoa'],
+    deadlineBuyers: ['Philadelphia Eagles', 'Baltimore Ravens', 'Detroit Lions', 'Pittsburgh Steelers'],
+    deadlineSellers: ['New York Jets', 'Cleveland Browns', 'Miami Dolphins'],
+    surpriseMoves: ['Barkley to rival Eagles', 'Watson release with massive dead cap'],
+    marketImpactScore: 72,
+  },
+  nhl: {
+    totalTradesMade: 28,
+    totalPlayersTraded: 42,
+    biggestTrade: 'Elias Pettersson to Hurricanes',
+    totalSalaryMoved: 125000000,
+    averageCardImpact: 15.0,
+    topGainers: ['Elias Pettersson', 'Mikko Rantanen', 'Patrick Kane', 'Jakob Chychrun'],
+    topDecliners: ['Connor Bedard', 'Tyler Bertuzzi', 'Alex Ovechkin'],
+    deadlineBuyers: ['Carolina Hurricanes', 'Colorado Avalanche', 'Toronto Maple Leafs'],
+    deadlineSellers: ['Vancouver Canucks', 'Ottawa Senators', 'Chicago Blackhawks'],
+    surpriseMoves: ['Hurricanes double-dip with Pettersson and Rantanen', 'Kane retirement'],
+    marketImpactScore: 78,
+  },
+};
+
+// ---- Mock Data: Value Movement Timeline ----
+
+const MOCK_VALUE_TIMELINE = [
+  { date: '2025-12-01', totalMarketIndex: 100.0, tradeActivity: 'low', keyEvent: 'Pre-offseason baseline' },
+  { date: '2025-12-08', totalMarketIndex: 104.5, tradeActivity: 'high', keyEvent: 'Juan Soto signs record deal with Mets' },
+  { date: '2025-12-12', totalMarketIndex: 106.2, tradeActivity: 'medium', keyEvent: 'Max Fried signs with Yankees' },
+  { date: '2025-12-18', totalMarketIndex: 107.8, tradeActivity: 'medium', keyEvent: 'Willy Adames signs with Giants' },
+  { date: '2025-12-22', totalMarketIndex: 108.5, tradeActivity: 'medium', keyEvent: 'Corbin Burnes signs with Diamondbacks' },
+  { date: '2026-01-05', totalMarketIndex: 109.2, tradeActivity: 'medium', keyEvent: 'Blake Snell signs with Dodgers' },
+  { date: '2026-01-10', totalMarketIndex: 109.8, tradeActivity: 'low', keyEvent: 'Pete Alonso returns to Mets' },
+  { date: '2026-01-15', totalMarketIndex: 115.5, tradeActivity: 'high', keyEvent: 'Guerrero Jr traded to Dodgers' },
+  { date: '2026-01-18', totalMarketIndex: 118.2, tradeActivity: 'high', keyEvent: 'Roki Sasaki signs with Dodgers' },
+  { date: '2026-02-01', totalMarketIndex: 119.0, tradeActivity: 'medium', keyEvent: 'Derrick Rose announces retirement' },
+  { date: '2026-02-03', totalMarketIndex: 120.5, tradeActivity: 'high', keyEvent: 'NBA trade deadline week begins' },
+  { date: '2026-02-04', totalMarketIndex: 122.8, tradeActivity: 'high', keyEvent: 'Ingram to 76ers, Vucevic to Hawks' },
+  { date: '2026-02-05', totalMarketIndex: 126.5, tradeActivity: 'high', keyEvent: 'Garland to Spurs, LaVine to Nuggets' },
+  { date: '2026-02-06', totalMarketIndex: 132.0, tradeActivity: 'high', keyEvent: 'NBA deadline day: Markkanen, Murray, Siakam, Kuzma' },
+  { date: '2026-02-10', totalMarketIndex: 133.5, tradeActivity: 'medium', keyEvent: 'Luis Robert Jr traded to Yankees' },
+  { date: '2026-02-20', totalMarketIndex: 135.0, tradeActivity: 'medium', keyEvent: 'Garrett Crochet traded to Padres' },
+  { date: '2026-02-25', totalMarketIndex: 136.2, tradeActivity: 'medium', keyEvent: 'Mikko Rantanen traded to Hurricanes' },
+  { date: '2026-02-28', totalMarketIndex: 137.5, tradeActivity: 'medium', keyEvent: 'Patrick Kane retires, Chychrun to Leafs' },
+  { date: '2026-03-03', totalMarketIndex: 139.0, tradeActivity: 'high', keyEvent: 'Pettersson traded to Hurricanes' },
+  { date: '2026-03-09', totalMarketIndex: 140.2, tradeActivity: 'medium', keyEvent: 'NHL trade deadline passes' },
+  { date: '2026-03-11', totalMarketIndex: 141.5, tradeActivity: 'high', keyEvent: 'NFL free agency opens' },
+  { date: '2026-03-15', totalMarketIndex: 142.0, tradeActivity: 'medium', keyEvent: 'Current market state' },
+];
+
 // ---- Mock Data: Deadline Countdowns ----
 
 const MOCK_DEADLINE_COUNTDOWNS: DeadlineCountdown[] = [
