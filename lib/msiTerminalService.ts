@@ -247,7 +247,7 @@ function generatePlayerNews(player: PlayerRecord): { headline: string; source: s
   ];
   const sources = ['CardWire', 'BlowoutBuzz', 'PSA News', 'Beckett Live', 'Sports Card Investor', 'MSI Research'];
   const selected = templates.sort(() => rng() - 0.5).slice(0, 5);
-  return selected.map((item, i) => ({
+  return selected.map((item, _i) => ({
     headline: item.t,
     source: pick(sources, rng),
     time: `${Math.floor(rng() * 12) + 1}h ago`,
@@ -719,7 +719,7 @@ export function executeCommand(input: string): CommandResult {
     const playerQuery = parts.length > 1 ? parts.slice(0, -1).join(' ') : parts[0];
 
     // Check if last word is a known player command
-    const playerCommands: Record<string, (p: PlayerRecord) => CommandResult> = {
+    const playerCommands: Record<string, (_p: PlayerRecord) => CommandResult> = {
       GO: (p) => ({ command: input, timestamp, resultType: 'player_data', data: { type: 'quicklook', ...generatePlayerQuickLook(p, new Date().toDateString()) }, executionTime: performance.now() - start }),
       LOOK: (p) => ({ command: input, timestamp, resultType: 'player_data', data: { type: 'quicklook', ...generatePlayerQuickLook(p, new Date().toDateString()) }, executionTime: performance.now() - start }),
       QL: (p) => ({ command: input, timestamp, resultType: 'player_data', data: { type: 'quicklook', ...generatePlayerQuickLook(p, new Date().toDateString()) }, executionTime: performance.now() - start }),

@@ -1,11 +1,22 @@
 import React, { useState, useMemo } from 'react';
 import {
-  Users, TrendingUp, TrendingDown, Zap, Shield,
-  Clock, Activity, AlertTriangle, BarChart3, Eye,
+  Users,
+  TrendingUp,
+  TrendingDown,
+  Zap,
+  Activity,
+  Eye,
 } from 'lucide-react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, BarChart, Bar,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
 } from 'recharts';
 import {
   getTopInfluencers,
@@ -13,19 +24,15 @@ import {
   getAllMentions,
   getAllHypeDecayPredictions,
   getSocialAlphaSignals,
-  getAttributionReport,
   getMentionedCardIds,
   formatFollowers,
   tierColor,
   platformIcon,
   platformColor,
   phaseLabel,
-  phaseColor,
   actionLabel,
   actionColor,
-  signalColor,
   signalLabel,
-  type Influencer,
   type CardCategory,
 } from '../lib/influenceGraphService';
 
@@ -51,7 +58,7 @@ const InfluenceGraph: React.FC = () => {
   const mentions = useMemo(() => getAllMentions(), []);
   const hypeDecays = useMemo(() => getAllHypeDecayPredictions(), []);
   const signals = useMemo(() => getSocialAlphaSignals(), []);
-  const cardIds = useMemo(() => getMentionedCardIds(), []);
+  const _cardIds = useMemo(() => getMentionedCardIds(), []);
 
   const selectedImpact = useMemo(
     () => selectedInfluencer ? getInfluencerImpact(selectedInfluencer) : null,

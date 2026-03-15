@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { PieChart, ChevronRight, TrendingUp, Target, Award } from 'lucide-react';
+import { PieChart, ChevronRight, TrendingUp, Award } from 'lucide-react';
 import {
   getReturnAttribution,
   getAlphaBeta,

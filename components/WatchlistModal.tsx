@@ -28,7 +28,6 @@ import { CardInventory, Sport } from '../types';
 import {
   Watchlist,
   WatchlistItem,
-  TriggeredAlert,
   MarketScanResult,
   PriceAlertRule,
   getWatchlists,
@@ -37,7 +36,6 @@ import {
   addToWatchlist,
   removeFromWatchlist,
   createAlertRule,
-  deleteAlertRule,
   evaluateAlerts,
   scanMarket,
   getWatchlistAnalytics,
@@ -100,9 +98,9 @@ const MiniSparkline: React.FC<{ data: number[]; positive: boolean }> = ({ data, 
   );
 };
 
-export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose, inventory }) => {
+export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose, _inventory }) => {
   const [activeTab, setActiveTab] = useState<TabKey>('watchlists');
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [_refreshKey, setRefreshKey] = useState(0);
 
   // Watchlists tab state
   const [expandedWatchlist, setExpandedWatchlist] = useState<string | null>(null);
@@ -134,7 +132,7 @@ export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose,
 
   const refresh = useCallback(() => setRefreshKey(k => k + 1), []);
 
-  const watchlists = useMemo(() => getWatchlists(), [refreshKey, inventory]);
+  const watchlists = useMemo(() => getWatchlists(), []);
   const alerts = useMemo(() => evaluateAlerts(watchlists), [watchlists]);
   const analytics = useMemo(() => getWatchlistAnalytics(watchlists), [watchlists]);
 

@@ -1,5 +1,4 @@
 import { CardInventory } from '../types';
-import { ScarcityService } from './scarcityService';
 
 export interface GradingCandidate {
   card: CardInventory;

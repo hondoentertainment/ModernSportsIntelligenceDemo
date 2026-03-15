@@ -1,18 +1,27 @@
 import React, { useState, useMemo } from 'react';
 import {
-  GitBranch, TrendingUp, Users, BarChart3, ArrowUpRight, ArrowDownRight,
-  Calendar, Target, Shield, Zap,
+  GitBranch,
+  TrendingUp,
+  Users,
+  BarChart3,
+  ArrowUpRight,
+  ArrowDownRight,
+  Calendar,
+  Target,
+  Shield,
+  Zap,
 } from 'lucide-react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Legend,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
 } from 'recharts';
-import {
-  getPlayerTrajectory,
-  getAllPlayerTrajectories,
-  getPlayerIds,
-  PlayerTrajectoryData,
-} from '../lib/playerTrajectoryService';
+import { getPlayerTrajectory, getAllPlayerTrajectories, getPlayerIds } from '../lib/playerTrajectoryService';
 
 function scoreBadge(score: number): { label: string; cls: string } {
   if (score >= 90) return { label: 'ELITE', cls: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' };

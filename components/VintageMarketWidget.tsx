@@ -1,80 +1,98 @@
-import React from 'react';
-import { Clock, ChevronRight, Award, Crown } from 'lucide-react';
-import { getVintageStats, getVintageCards, getVintageMarketTrends } from '../lib/vintageMarketService';
+import React, { useMemo } from 'react';
+import { Clock, ChevronRight, TrendingUp, Star } from 'lucide-react';
+import {
+  getVintageCards,
+  getMarketCapData,
+  getEraBreakdown,
+  getGrowthMetrics,
+  formatCurrency,
+} from '../lib/vintageMarketService';
 
-interface Props {
+interface VintageMarketWidgetProps {
   onOpenModal?: () => void;
 }
 
-const VintageMarketWidget: React.FC<Props> = ({ onOpenModal }) => {
-  const stats = getVintageStats();
-  const cards = getVintageCards();
-  const trends = getVintageMarketTrends();
+export const VintageMarketWidget: React.FC<VintageMarketWidgetProps> = ({ onOpenModal }) => {
+  const cards = useMemo(() => getVintageCards(), []);
+  const marketCap = useMemo(() => getMarketCapData(), []);
+  const eras = useMemo(() => getEraBreakdown(), []);
+  const growth = useMemo(() => getGrowthMetrics(), []);
 
-  const topCard = cards.reduce((a, b) => (a.currentValue > b.currentValue ? a : b));
-  const appreciatingEras = trends.filter(t => t.trend === 'appreciating').length;
+  const topEra = useMemo(() => {
+    if (eras.length === 0) return null;
+    return eras.reduce((best, e) => e.totalValue > best.totalValue ? e : best, eras[0]);
+  }, [eras]);
 
-  const eraColors: Record<string, string> = {
-    pre_war: 'text-amber-400',
-    post_war: 'text-blue-400',
-    golden_age: 'text-yellow-400',
-    silver_age: 'text-slate-300',
-    bronze_age: 'text-orange-400',
-  };
+  const mostValuable = useMemo(() => {
+    if (cards.length === 0) return null;
+    return cards.reduce((best, c) => c.currentValue > best.currentValue ? c : best, cards[0]);
+  }, [cards]);
 
   return (
-    <div
+    <button
       onClick={onOpenModal}
-      className="bg-slate-800/50 border border-slate-700/30 rounded-xl p-4 hover:border-amber-500/30 transition-all cursor-pointer group"
+      className="w-full text-left bg-slate-900 rounded-2xl overflow-hidden p-8 hover:border-amber-500/30 hover:bg-slate-800/60 transition-all duration-300 group border border-slate-700"
     >
-      <div className="flex items-center justify-between mb-3">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-amber-500/20">
+          <div className="p-2 bg-amber-500/10 rounded-lg">
             <Clock size={16} className="text-amber-400" />
           </div>
-          <h3 className="text-sm font-semibold text-slate-200">Vintage Market Scanner</h3>
+          <span className="text-xs font-bebas text-slate-400 uppercase tracking-wider">Vintage Market</span>
         </div>
-        <ChevronRight size={14} className="text-slate-500 group-hover:text-amber-400 transition-colors" />
+        <ChevronRight size={16} className="text-slate-500 group-hover:text-amber-400 transition-colors" />
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mb-3">
-        <div className="bg-slate-900/50 rounded-lg p-2 text-center">
-          <p className="text-[10px] text-slate-500">Vintage Value</p>
-          <p className="text-lg font-bold text-amber-400">
-            ${stats.totalVintageValue >= 1000000
-              ? `${(stats.totalVintageValue / 1000000).toFixed(1)}M`
-              : `${(stats.totalVintageValue / 1000).toFixed(0)}K`}
-          </p>
+      {/* 4-stat grid */}
+      <div className="grid grid-cols-4 divide-x divide-slate-700 mb-5">
+        <div className="pr-3">
+          <p className="text-xs text-slate-400">Cards Tracked</p>
+          <p className="text-lg font-bold text-amber-400">{cards.length}</p>
         </div>
-        <div className="bg-slate-900/50 rounded-lg p-2 text-center">
-          <p className="text-[10px] text-slate-500">5yr Appreciation</p>
-          <p className="text-lg font-bold text-emerald-400">+{stats.portfolioAppreciation}%</p>
+        <div className="px-3">
+          <p className="text-xs text-slate-400">Market Cap</p>
+          <p className="text-lg font-bold text-white">{formatCurrency(marketCap.total)}</p>
+        </div>
+        <div className="px-3">
+          <p className="text-xs text-slate-400">Top Era</p>
+          <p className="text-lg font-bold text-emerald-400">{topEra ? topEra.name : 'N/A'}</p>
+        </div>
+        <div className="pl-3">
+          <p className="text-xs text-slate-400">Growth</p>
+          <p className="text-lg font-bold text-violet-400">+{growth.overallPercent.toFixed(1)}%</p>
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-xs border-t border-slate-700/30 pt-2 mb-2">
-        <div className="flex items-center gap-2">
-          <Crown size={10} className="text-amber-400" />
-          <div>
-            <p className="text-slate-300 font-medium">{topCard.year} {topCard.player}</p>
-            <p className="text-[10px] text-slate-500">{topCard.set}</p>
+      {/* Most valuable card highlight */}
+      {mostValuable && (
+        <div className="flex items-center gap-3 p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl mb-4">
+          <Star size={14} className="text-amber-400 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-black text-amber-400 uppercase tracking-widest">Most Valuable</p>
+            <p className="text-xs text-white font-medium truncate">{mostValuable.cardName}</p>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <p className="text-xs text-slate-500">Value</p>
+            <p className="text-sm font-bold text-amber-400">{formatCurrency(mostValuable.currentValue)}</p>
           </div>
         </div>
-        <span className={`text-[10px] font-semibold ${eraColors[topCard.era] || 'text-slate-400'}`}>
-          ${(topCard.currentValue / 1000000).toFixed(1)}M
-        </span>
-      </div>
+      )}
 
-      <div className="flex items-center justify-between text-xs border-t border-slate-700/30 pt-2">
-        <div className="flex items-center gap-1.5 text-slate-400">
-          <Award size={10} />
-          <span>Era Trends</span>
+      {/* Bottom: market trend + era count */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
+          <TrendingUp size={12} className="text-emerald-400" />
+          <span className="text-xs text-slate-400">24h: <span className="text-emerald-400 font-bold">+{growth.dailyPercent.toFixed(1)}%</span></span>
         </div>
-        <span className="text-[10px] font-semibold text-emerald-400">
-          {appreciatingEras}/{trends.length} Appreciating
-        </span>
+        <div className="flex items-center gap-1.5">
+          <Clock size={12} className="text-amber-400" />
+          <span className="text-xs text-slate-400">
+            Eras: <span className="text-white font-bold">{eras.length} tracked</span>
+          </span>
+        </div>
       </div>
-    </div>
+    </button>
   );
 };
 

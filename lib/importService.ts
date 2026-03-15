@@ -612,7 +612,7 @@ export function detectDuplicates(
 
 export function executeImport(
   cards: Partial<CardInventory>[],
-  existingCards: CardInventory[]
+  _existingCards: CardInventory[]
 ): { importRecord: ImportRecord; newCards: CardInventory[] } {
   const importId = generateImportId();
   const now = new Date().toISOString();

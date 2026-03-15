@@ -73,7 +73,7 @@ export interface MasterSetScore {
   percentOfMax: number;
 }
 
-export interface MissingCard {
+export interface SetMissingCardInfo {
   cardNumber: string;
   player: string;
   team: string;
@@ -613,7 +613,7 @@ export function getSetProgress(enrollment: SetEnrollment): SetProgress {
   };
 }
 
-export function getMissingCards(enrollment: SetEnrollment): MissingCard[] {
+export function getMissingCardsForEnrollment(enrollment: SetEnrollment): SetMissingCardInfo[] {
   const set = getSetById(enrollment.setId);
   if (!set) return [];
 
@@ -767,4 +767,228 @@ export function removeEnrollment(enrollmentId: string): void {
   const enrollments = loadEnrollments();
   const filtered = enrollments.filter(e => e.id !== enrollmentId);
   saveEnrollments(filtered);
+}
+
+// ---- Adapter types and functions for SetRegistry page (Phase 151) ----
+
+export interface SetEntry {
+  id: string;
+  name: string;
+  year: number;
+  sport: string;
+  manufacturer: string;
+  totalCards: number;
+  ownedCount: number;
+  missingCount: number;
+  completionPct: number;
+  totalValue: number;
+  estimatedCostToComplete: number;
+}
+
+export interface MissingCard {
+  id: string;
+  name: string;
+  setName: string;
+  cardNumber: string;
+  lowestPrice: number;
+  avgPrice: number;
+  activeListings: number;
+  availability: 'high' | 'medium' | 'low';
+  priority: 'high' | 'medium' | 'low';
+}
+
+export interface CompletionStat {
+  setName: string;
+  completionPct: number;
+  setValue: number;
+}
+
+export interface SetChallenge {
+  id: string;
+  name: string;
+  description: string;
+  status: 'completed' | 'in_progress' | 'not_started';
+  progressPct: number;
+  reward: string;
+  deadline?: string;
+}
+
+export interface Milestone {
+  id: string;
+  title: string;
+  description: string;
+  achieved: boolean;
+  achievedDate?: string;
+  reward: string;
+}
+
+export interface CategoryBreakdown {
+  category: string;
+  cardCount: number;
+}
+
+export interface SetRegistrySummary {
+  totalSets: number;
+  totalCards: number;
+  completedSets: number;
+}
+
+export function getSetRegistry(): SetEntry[] {
+  return SET_DATABASE.map(set => {
+    const cards = getSetCards(set);
+    const seed = hashString(set.id + 'registry');
+    const ownedCount = Math.floor(seededRange(seed, 1, cards.length * 0.3, cards.length * 0.95));
+    const missingCount = cards.length - ownedCount;
+    const completionPct = Math.round((ownedCount / cards.length) * 1000) / 10;
+    const totalValue = Math.round(cards.slice(0, ownedCount).reduce((s, c) => s + c.estimatedValue, 0) * 100) / 100;
+    const costToComplete = Math.round(cards.slice(ownedCount).reduce((s, c) => s + c.estimatedValue, 0) * 100) / 100;
+
+    return {
+      id: set.id,
+      name: set.name,
+      year: set.year,
+      sport: set.sport,
+      manufacturer: set.manufacturer,
+      totalCards: cards.length,
+      ownedCount,
+      missingCount,
+      completionPct,
+      totalValue,
+      estimatedCostToComplete: costToComplete,
+    };
+  });
+}
+
+export function getCompletionStats(): CompletionStat[] {
+  return getSetRegistry().map(entry => ({
+    setName: entry.name,
+    completionPct: entry.completionPct,
+    setValue: entry.totalValue,
+  }));
+}
+
+export function getSetChallenges(): SetChallenge[] {
+  const challenges: SetChallenge[] = [
+    { id: 'ch1', name: 'Complete a Base Set', description: 'Reach 100% completion on any base set.', status: 'in_progress', progressPct: 72, reward: '50 XP', deadline: '2025-12-31' },
+    { id: 'ch2', name: 'Collect 10 Autographs', description: 'Own 10 autograph cards across all sets.', status: 'completed', progressPct: 100, reward: '100 XP' },
+    { id: 'ch3', name: 'Master Set Hunter', description: 'Collect every parallel type in a single set.', status: 'not_started', progressPct: 0, reward: '200 XP', deadline: '2026-06-30' },
+    { id: 'ch4', name: 'Rookie Rush', description: 'Collect 25 rookie cards from 2024 sets.', status: 'in_progress', progressPct: 56, reward: '75 XP', deadline: '2025-09-30' },
+    { id: 'ch5', name: 'Multi-Sport Collector', description: 'Have active enrollments in 5 different sports.', status: 'in_progress', progressPct: 80, reward: '150 XP' },
+  ];
+  return challenges;
+}
+
+export function getMilestones(): Milestone[] {
+  return [
+    { id: 'm1', title: 'First Set Enrolled', description: 'Enrolled in your first card set.', achieved: true, achievedDate: '2024-03-15', reward: '10 XP' },
+    { id: 'm2', title: '100 Cards Collected', description: 'Owned 100 cards across all sets.', achieved: true, achievedDate: '2024-06-01', reward: '25 XP' },
+    { id: 'm3', title: '50% Completion', description: 'Reached 50% completion on any set.', achieved: true, achievedDate: '2024-08-20', reward: '50 XP' },
+    { id: 'm4', title: 'First Complete Set', description: 'Completed a full base set at 100%.', achieved: false, reward: '100 XP' },
+    { id: 'm5', title: '1000 Cards Collected', description: 'Owned 1000 cards across all sets.', achieved: false, reward: '200 XP' },
+    { id: 'm6', title: 'Master Collector', description: 'Completed 5 full sets.', achieved: false, reward: '500 XP' },
+  ];
+}
+
+export function getCategoryBreakdown(): CategoryBreakdown[] {
+  let base = 0, inserts = 0, autographs = 0, parallels = 0, rookies = 0, memorabilia = 0, short_prints = 0;
+  for (const set of SET_DATABASE) {
+    const seed = hashString(set.id + 'cat');
+    base += set.baseCount;
+    inserts += set.insertCount;
+    autographs += set.autoCount;
+    parallels += set.numberedCount;
+    rookies += Math.floor(seededRange(seed, 1, 10, 40));
+    memorabilia += Math.floor(seededRange(seed, 2, 5, 15));
+    short_prints += Math.floor(seededRange(seed, 3, 3, 12));
+  }
+  return [
+    { category: 'Base', cardCount: base },
+    { category: 'Inserts', cardCount: inserts },
+    { category: 'Autographs', cardCount: autographs },
+    { category: 'Parallels', cardCount: parallels },
+    { category: 'Rookies', cardCount: rookies },
+    { category: 'Memorabilia', cardCount: memorabilia },
+    { category: 'Short_Prints', cardCount: short_prints },
+  ];
+}
+
+export function getSummaryStats(): SetRegistrySummary {
+  const registry = getSetRegistry();
+  return {
+    totalSets: registry.length,
+    totalCards: registry.reduce((s, e) => s + e.ownedCount, 0),
+    completedSets: registry.filter(e => e.completionPct >= 100).length,
+  };
+}
+
+export function formatCurrency(value: number): string {
+  return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+export function formatDate(dateStr: string): string {
+  try {
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+}
+
+export function getCompletionColor(pct: number): string {
+  if (pct >= 100) return 'text-emerald-400';
+  if (pct >= 75) return 'text-blue-400';
+  if (pct >= 50) return 'text-amber-400';
+  return 'text-red-400';
+}
+
+// ---- Widget adapter functions ----
+
+export function getSetRegistries(): { setName: string; completionPercent: number }[] {
+  return getSetRegistry().map(e => ({
+    setName: e.name,
+    completionPercent: e.completionPct,
+  }));
+}
+
+export function getOwnedCards(): { id: string }[] {
+  const registry = getSetRegistry();
+  const total = registry.reduce((s, e) => s + e.ownedCount, 0);
+  return Array.from({ length: total }, (_, i) => ({ id: `owned-${i}` }));
+}
+
+export function getCompletionSummary(): { totalValue: number; missingCost: number } {
+  const registry = getSetRegistry();
+  const totalValue = registry.reduce((s, e) => s + e.totalValue, 0);
+  const missingCost = registry.reduce((s, e) => s + e.estimatedCostToComplete, 0);
+  return { totalValue: Math.round(totalValue * 100) / 100, missingCost: Math.round(missingCost * 100) / 100 };
+}
+
+export function getMissingCards(): MissingCard[] {
+  const registry = getSetRegistry();
+  const result: MissingCard[] = [];
+  for (const entry of registry) {
+    const set = getSetById(entry.id);
+    if (!set) continue;
+    const cards = getSetCards(set);
+    const missing = cards.slice(entry.ownedCount);
+    for (const sc of missing) {
+      const seed = hashString(sc.cardNumber + sc.player + set.id);
+      const lowestPrice = Math.round(sc.estimatedValue * 0.8 * 100) / 100;
+      const avgPrice = Math.round(sc.estimatedValue * 100) / 100;
+      const listings = Math.floor(seededRange(seed, 1, 1, 20));
+      const avail: 'high' | 'medium' | 'low' = listings > 10 ? 'high' : listings > 4 ? 'medium' : 'low';
+      const prio: 'high' | 'medium' | 'low' = sc.isAuto || sc.isNumbered ? 'high' : sc.isInsert ? 'medium' : 'low';
+      result.push({
+        id: `${set.id}-${sc.cardNumber}`,
+        name: sc.player,
+        setName: set.name,
+        cardNumber: sc.cardNumber,
+        lowestPrice,
+        avgPrice,
+        activeListings: listings,
+        availability: avail,
+        priority: prio,
+      });
+    }
+  }
+  return result.slice(0, 30);
 }

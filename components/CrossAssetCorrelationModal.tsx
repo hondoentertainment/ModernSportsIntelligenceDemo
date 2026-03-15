@@ -26,12 +26,6 @@ import {
   getHistoricalMacroImpact,
   getOptimalAllocation,
   CorrelationMatrix,
-  PortfolioCorrelation,
-  DiversificationScore,
-  HedgeSignal,
-  MacroAlert,
-  HistoricalMacroImpact,
-  OptimalAllocation,
   CARD_SEGMENT_LABELS,
   ASSET_CLASS_LABELS,
   CardSegment,
@@ -64,7 +58,7 @@ function corrColor(v: number): string {
   return 'bg-blue-500/30 text-blue-300';
 }
 
-function corrBg(v: number): string {
+function _corrBg(v: number): string {
   const abs = Math.abs(v);
   if (abs >= 0.6) return v > 0 ? '#ef444460' : '#3b82f660';
   if (abs >= 0.3) return v > 0 ? '#f9731640' : '#06b6d440';

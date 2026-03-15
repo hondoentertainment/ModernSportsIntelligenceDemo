@@ -6,16 +6,13 @@ import {
   Zap,
   Clock,
   TrendingUp,
-  TrendingDown,
   DollarSign,
   AlertTriangle,
-  Target,
   Calendar,
   Shield,
   ArrowRight,
   ChevronDown,
   Package,
-  Users,
 } from 'lucide-react';
 import {
   BarChart,
@@ -45,14 +42,7 @@ import {
   saveLiquiditySettings,
   loadLiquiditySettings,
   LiquidityScoreDetail,
-  MarketDepthLevel,
-  ExitVelocityPoint,
-  ListingRecommendation,
-  PortfolioLiquidityReport,
-  IlliquidityOpportunity,
-  SeasonalLiquidityProfile,
   EmergencyLiquidationPlan,
-  LiquiditySettings,
 } from '../lib/liquidityService';
 
 interface LiquidityModalProps {
@@ -123,7 +113,7 @@ const CardAnalysisTab: React.FC<{
     );
   }
 
-  const val = card.currentValue || card.purchasePrice || 0;
+  const _val = card.currentValue || card.purchasePrice || 0;
   const badge = tierBadge(score.tier);
 
   // Order book chart data
@@ -464,7 +454,7 @@ const SeasonalTab: React.FC = () => {
   const [selectedSport, setSelectedSport] = useState<Sport>('Baseball');
 
   const profile = profiles.find(p => p.sport === selectedSport) || profiles[0];
-  const colors = sportTailwind[selectedSport];
+  const _colors = sportTailwind[selectedSport];
 
   const chartData = profile.data.map(d => ({
     month: d.month,

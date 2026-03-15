@@ -1,4 +1,9 @@
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from 'react';
 import {
   X,
   ScanLine,
@@ -14,8 +19,6 @@ import {
   XCircle,
   TrendingUp,
   Clock,
-  Award,
-  Target,
   Shield,
   ChevronDown,
   ArrowRight,
@@ -32,19 +35,12 @@ import {
 } from 'recharts';
 import {
   predictGrade,
-  getSubgradeBreakdown,
-  analyzeConditionFactors,
   calculateGradingROI,
   getRecentPredictions,
   getPredictionAccuracy,
   getGradingServices,
   type GradePrediction,
-  type SubgradeBreakdown,
-  type ConditionFactor,
   type GradingROI,
-  type GradingRecommendation,
-  type PredictionAccuracy,
-  type GradingService,
 } from '../lib/preGradeIntelligenceService';
 
 interface PreGradeIntelligenceModalProps {
@@ -65,7 +61,7 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
 // ---- Scan Tab ----
 
 const ScanTab: React.FC<{
-  onScanComplete: (prediction: GradePrediction) => void;
+  onScanComplete: (_prediction: GradePrediction) => void;
 }> = ({ onScanComplete }) => {
   const [dragOver, setDragOver] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

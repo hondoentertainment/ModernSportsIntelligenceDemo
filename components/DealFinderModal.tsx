@@ -10,7 +10,6 @@ import {
   Filter,
   ChevronDown,
   AlertTriangle,
-  CheckCircle2,
   Eye,
   ShoppingCart,
   XCircle,
@@ -92,8 +91,8 @@ function getRiskBadge(risk: ArbitrageOpportunity['riskLevel']): { label: string;
 const DealsTab: React.FC<{
   deals: Deal[];
   filters: DealFilter;
-  onFilterChange: (f: DealFilter) => void;
-  onAction: (deal: Deal, action: DealHistory['action']) => void;
+  onFilterChange: (_f: DealFilter) => void;
+  onAction: (_deal: Deal, _action: DealHistory['action']) => void;
 }> = ({ deals, filters, onFilterChange, onAction }) => {
   const [showFilters, setShowFilters] = useState(false);
 
@@ -558,7 +557,7 @@ export const DealFinderModal: React.FC<DealFinderModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<TabId>('deals');
   const [filters, setFilters] = useState<DealFilter>({ sortBy: 'score' });
-  const [historyVersion, setHistoryVersion] = useState(0);
+  const [_historyVersion, setHistoryVersion] = useState(0);
 
   const listings = useMemo(() => generateListings(cards), [cards]);
   const deals = useMemo(() => findDeals(listings, filters), [listings, filters]);
@@ -579,7 +578,7 @@ export const DealFinderModal: React.FC<DealFinderModalProps> = ({
     return getDealAlerts(listings, watchlist);
   }, [listings, cards]);
 
-  const history = useMemo(() => getDealHistory(), [historyVersion]);
+  const history = useMemo(() => getDealHistory(), []);
 
   const handleDealAction = useCallback((deal: Deal, action: DealHistory['action']) => {
     logDealAction(deal.id, action, deal.listing, deal.dealScore, deal.savingsAmount);

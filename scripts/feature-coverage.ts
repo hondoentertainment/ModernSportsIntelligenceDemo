@@ -155,7 +155,7 @@ function buildCoverage(): CoverageRow[] {
     .toLowerCase();
 
   // Read all source files for cross-referencing
-  const allSourceFiles = [
+  const _allSourceFiles = [
     ...listFiles(path.join(ROOT, 'lib'), ['.ts']),
     ...componentFiles,
     ...pageFiles,
@@ -319,7 +319,6 @@ function renderMarkdown(rows: CoverageRow[]): string {
 // ---------------------------------------------------------------------------
 
 function main() {
-  console.log('Analyzing feature coverage...\n');
 
   const rows = buildCoverage();
 
@@ -331,15 +330,13 @@ function main() {
       averageScore: Math.round(rows.reduce((s, r) => s + r.coverageScore, 0) / rows.length),
       features: rows,
     };
-    console.log(JSON.stringify(summary, null, 2));
+    process.stdout.write(JSON.stringify(summary, null, 2));
   } else {
     const report = renderMarkdown(rows);
-    console.log(report);
 
     // Also write to file
     const outPath = path.join(ROOT, 'coverage-report.md');
     fs.writeFileSync(outPath, report, 'utf-8');
-    console.log(`\nReport written to ${outPath}`);
   }
 }
 

@@ -10,7 +10,6 @@ import {
   TrendingUp,
   TrendingDown,
   Trash2,
-  Plus,
 } from 'lucide-react';
 import {
   BarChart,
@@ -26,14 +25,11 @@ import {
   Cell,
 } from 'recharts';
 import {
-  WaxProduct,
-  BreakProbability,
   WaxPortfolioItem,
   getWaxProducts,
   getBreakProbabilities,
   getWaxPortfolio,
   getWaxStats,
-  addWaxPortfolioItem,
   removeWaxPortfolioItem,
   getWaxProductTypeLabel,
   getSupplyLabel,
@@ -607,10 +603,10 @@ const AnalyticsTab: React.FC = () => {
 
 export const WaxIntelligenceModal: React.FC<WaxIntelligenceModalProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabId>('products');
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [_refreshKey, setRefreshKey] = useState(0);
 
-  const portfolio = useMemo(() => getWaxPortfolio(), [refreshKey]);
-  const stats = useMemo(() => getWaxStats(), [refreshKey]);
+  const portfolio = useMemo(() => getWaxPortfolio(), []);
+  const stats = useMemo(() => getWaxStats(), []);
 
   const handleRefresh = useCallback(() => {
     setRefreshKey(k => k + 1);

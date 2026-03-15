@@ -163,7 +163,7 @@ function buildMonthlyData(): MonthlyAttributionPoint[] {
 }
 
 function aggregateFactors(months: MonthlyAttributionPoint[]): AttributionFactor[] {
-  return FACTOR_NAMES.map((name, idx) => {
+  return FACTOR_NAMES.map((name, _idx) => {
     const contribution = round(months.reduce((s, m) => s + (m[name] as number), 0));
     return {
       name,

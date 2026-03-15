@@ -46,7 +46,7 @@ export function generateDailySchedule(date: Date = new Date()): GameMatchup[] {
     };
 
     const games: GameMatchup[] = [];
-    const leagues = ['NBA', 'MLB'];
+    const _leagues = ['NBA', 'MLB'];
 
     // Generate 4-6 games per day
     const numGames = 4 + Math.floor(random() * 3);
@@ -79,7 +79,7 @@ export function generateDailySchedule(date: Date = new Date()): GameMatchup[] {
         const template = templates[Math.floor(random() * templates.length)];
 
         // Determine Simulated Status
-        const now = new Date();
+        const _now = new Date();
         const gameTime = new Date(date);
         gameTime.setHours(hour, min);
 

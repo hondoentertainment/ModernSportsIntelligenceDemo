@@ -1,6 +1,11 @@
 
 import React, { Suspense, useState, lazy } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -62,6 +67,59 @@ const PortfolioScenarioTheater = lazy(() => import('./pages/PortfolioScenarioThe
 const PrivateDealRoomAgent = lazy(() => import('./pages/PrivateDealRoomAgent.tsx'));
 const CollectorAuditDossier = lazy(() => import('./pages/CollectorAuditDossier.tsx'));
 
+// Phases 114-128: Next-gen features
+const PortfolioCopilot = lazy(() => import('./pages/PortfolioCopilot.tsx'));
+const MarketplaceAggregator = lazy(() => import('./pages/MarketplaceAggregator.tsx'));
+const SubscriptionBox = lazy(() => import('./pages/SubscriptionBox.tsx'));
+const CollectorDna = lazy(() => import('./pages/CollectorDna.tsx'));
+const AuctionWarRoom = lazy(() => import('./pages/AuctionWarRoom.tsx'));
+const GradingTracker = lazy(() => import('./pages/GradingTracker.tsx'));
+const DealerDashboard = lazy(() => import('./pages/DealerDashboard.tsx'));
+const FundManager = lazy(() => import('./pages/FundManager.tsx'));
+const ApiLicensing = lazy(() => import('./pages/ApiLicensing.tsx'));
+const CardShowModePage = lazy(() => import('./pages/CardShowModePage.tsx'));
+const ArScanner = lazy(() => import('./pages/ArScanner.tsx'));
+const HypeRadar = lazy(() => import('./pages/HypeRadar.tsx'));
+const NonSportsExpansion = lazy(() => import('./pages/NonSportsExpansion.tsx'));
+const InjuryIntel = lazy(() => import('./pages/InjuryIntel.tsx'));
+const CarbonScore = lazy(() => import('./pages/CarbonScore.tsx'));
+
+// Phases 129-138: Competitive differentiators
+const VaultArbitrage = lazy(() => import('./pages/VaultArbitrage.tsx'));
+const PressingRoi = lazy(() => import('./pages/PressingRoi.tsx'));
+const BehavioralFinance = lazy(() => import('./pages/BehavioralFinance.tsx'));
+const CompForensics = lazy(() => import('./pages/CompForensics.tsx'));
+const TournamentArena = lazy(() => import('./pages/TournamentArena.tsx'));
+const InfluencerImpact = lazy(() => import('./pages/InfluencerImpact.tsx'));
+const ConditionAging = lazy(() => import('./pages/ConditionAging.tsx'));
+const AuthTraining = lazy(() => import('./pages/AuthTraining.tsx'));
+const InventorySync = lazy(() => import('./pages/InventorySync.tsx'));
+const RookieClassIndex = lazy(() => import('./pages/RookieClassIndex.tsx'));
+
+// Phases 139-148: Production-grade expansion
+const VendingMachine = lazy(() => import('./pages/VendingMachine.tsx'));
+const WomensSportsIndex = lazy(() => import('./pages/WomensSportsIndex.tsx'));
+const GradingAuditor = lazy(() => import('./pages/GradingAuditor.tsx'));
+const SmartStorage = lazy(() => import('./pages/SmartStorage.tsx'));
+const PrintRunIntelligence = lazy(() => import('./pages/PrintRunIntelligence.tsx'));
+const YouthOnboarding = lazy(() => import('./pages/YouthOnboarding.tsx'));
+const LiveBreakHub = lazy(() => import('./pages/LiveBreakHub.tsx'));
+const PricePrediction = lazy(() => import('./pages/PricePrediction.tsx'));
+const InternationalArbitrage = lazy(() => import('./pages/InternationalArbitrage.tsx'));
+const BlockchainProvenance = lazy(() => import('./pages/BlockchainProvenance.tsx'));
+
+// Phases 149-158: Advanced platform features
+const TradeDeadline = lazy(() => import('./pages/TradeDeadline.tsx'));
+const CollectionAppraiser = lazy(() => import('./pages/CollectionAppraiser.tsx'));
+const SetRegistry = lazy(() => import('./pages/SetRegistry.tsx'));
+const VintageMarket = lazy(() => import('./pages/VintageMarket.tsx'));
+const SocialTrading = lazy(() => import('./pages/SocialTrading.tsx'));
+const ListingOptimizer = lazy(() => import('./pages/ListingOptimizer.tsx'));
+const TaxCalculator = lazy(() => import('./pages/TaxCalculator.tsx'));
+const SealedProduct = lazy(() => import('./pages/SealedProduct.tsx'));
+const ErrorCard = lazy(() => import('./pages/ErrorCard.tsx'));
+const AuctionSniper = lazy(() => import('./pages/AuctionSniper.tsx'));
+
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
 const Signup = lazy(() => import('./pages/Signup.tsx'));
@@ -71,7 +129,7 @@ const PublicPortfolio = lazy(() => import('./pages/PublicPortfolio.tsx'));
 
 // ─── App Layout ───────────────────────────────────────────────────────
 
-const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: boolean) => void }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
+const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (_val: boolean) => void }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { inventory } = useSupabaseInventory();
   const [isWallHUDOpen, setIsWallHUDOpen] = useState(false);
   const [selectedGrail, setSelectedGrail] = useState<any>(null);
@@ -145,6 +203,51 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
                 <Route path="/private-deal-room-agent" element={<PrivateDealRoomAgent />} />
                 <Route path="/catalyst-market" element={<CatalystMarket />} />
                 <Route path="/collection-narrative" element={<CollectionNarrative />} />
+                <Route path="/portfolio-copilot" element={<PortfolioCopilot />} />
+                <Route path="/marketplace-aggregator" element={<MarketplaceAggregator />} />
+                <Route path="/subscription-box" element={<SubscriptionBox />} />
+                <Route path="/collector-dna" element={<CollectorDna />} />
+                <Route path="/auction-war-room" element={<AuctionWarRoom />} />
+                <Route path="/grading-tracker" element={<GradingTracker />} />
+                <Route path="/dealer-dashboard" element={<DealerDashboard />} />
+                <Route path="/fund-manager" element={<FundManager />} />
+                <Route path="/api-licensing" element={<ApiLicensing />} />
+                <Route path="/card-show-mode" element={<CardShowModePage />} />
+                <Route path="/ar-scanner" element={<ArScanner />} />
+                <Route path="/hype-radar" element={<HypeRadar />} />
+                <Route path="/non-sports" element={<NonSportsExpansion />} />
+                <Route path="/injury-intel" element={<InjuryIntel />} />
+                <Route path="/carbon-score" element={<CarbonScore />} />
+                <Route path="/vault-arbitrage" element={<VaultArbitrage />} />
+                <Route path="/pressing-roi" element={<PressingRoi />} />
+                <Route path="/behavioral-finance" element={<BehavioralFinance />} />
+                <Route path="/comp-forensics" element={<CompForensics />} />
+                <Route path="/tournament-arena" element={<TournamentArena />} />
+                <Route path="/influencer-impact" element={<InfluencerImpact />} />
+                <Route path="/condition-aging" element={<ConditionAging />} />
+                <Route path="/auth-training" element={<AuthTraining />} />
+                <Route path="/inventory-sync" element={<InventorySync />} />
+                <Route path="/rookie-class-index" element={<RookieClassIndex />} />
+                <Route path="/vending-machine" element={<VendingMachine />} />
+                <Route path="/womens-sports-index" element={<WomensSportsIndex />} />
+                <Route path="/grading-auditor" element={<GradingAuditor />} />
+                <Route path="/smart-storage" element={<SmartStorage />} />
+                <Route path="/print-run-intelligence" element={<PrintRunIntelligence />} />
+                <Route path="/youth-onboarding" element={<YouthOnboarding />} />
+                <Route path="/live-break-hub" element={<LiveBreakHub />} />
+                <Route path="/price-prediction" element={<PricePrediction />} />
+                <Route path="/international-arbitrage" element={<InternationalArbitrage />} />
+                <Route path="/blockchain-provenance" element={<BlockchainProvenance />} />
+                <Route path="/trade-deadline" element={<TradeDeadline />} />
+                <Route path="/collection-appraiser" element={<CollectionAppraiser />} />
+                <Route path="/set-registry" element={<SetRegistry />} />
+                <Route path="/vintage-market" element={<VintageMarket />} />
+                <Route path="/social-trading" element={<SocialTrading />} />
+                <Route path="/listing-optimizer" element={<ListingOptimizer />} />
+                <Route path="/tax-calculator" element={<TaxCalculator />} />
+                <Route path="/sealed-product" element={<SealedProduct />} />
+                <Route path="/error-card" element={<ErrorCard />} />
+                <Route path="/auction-sniper" element={<AuctionSniper />} />
                 <Route path="/audit-dossier" element={<CollectorAuditDossier />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>

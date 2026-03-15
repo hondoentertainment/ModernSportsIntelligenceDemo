@@ -1,9 +1,5 @@
 import React, { useMemo } from 'react';
-import {
-  AreaChart,
-  Area,
-  ResponsiveContainer,
-} from 'recharts';
+import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import {
   TrendingUp,
   TrendingDown,
@@ -13,14 +9,11 @@ import {
   Zap,
 } from 'lucide-react';
 import { CardInventory } from '../types';
-import {
-  generatePriceHistory,
-  calculateStatistics,
-} from '../lib/priceChartService';
+import { generatePriceHistory, calculateStatistics } from '../lib/priceChartService';
 
 interface PriceHistoryWidgetProps {
   inventory: CardInventory[];
-  onCardClick?: (card: CardInventory) => void;
+  onCardClick?: (_card: CardInventory) => void;
 }
 
 interface CardMover {
@@ -118,7 +111,7 @@ const MiniSparkline: React.FC<{
 
 const MoverRow: React.FC<{
   mover: CardMover;
-  onClick?: (card: CardInventory) => void;
+  onClick?: (_card: CardInventory) => void;
 }> = ({ mover, onClick }) => {
   const isUp = mover.changePct >= 0;
   return (

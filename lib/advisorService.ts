@@ -62,7 +62,7 @@ const FEEDBACK_KEY = 'msi_advisor_feedback';
 const ALL_SPORTS: Sport[] = ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
 const ALL_DECADES = [1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020];
 const MAJOR_MANUFACTURERS = ['Topps', 'Panini', 'Upper Deck', 'Bowman', 'Donruss', 'Fleer'];
-const GRADE_TIERS = ['PSA 10', 'PSA 9', 'BGS 9.5', 'BGS 10', 'SGC 10', 'Raw'];
+const _GRADE_TIERS = ['PSA 10', 'PSA 9', 'BGS 9.5', 'BGS 10', 'SGC 10', 'Raw'];
 
 // ---- Deterministic seed helpers ----
 
@@ -162,7 +162,7 @@ export function getFeedbackStats(): { totalFeedback: number; positiveRate: numbe
 
 export function analyzeGaps(inventory: CardInventory[]): CollectionGap[] {
   const gaps: CollectionGap[] = [];
-  const seed = dateSeed();
+  const _seed = dateSeed();
 
   if (inventory.length === 0) {
     gaps.push({
@@ -306,7 +306,7 @@ export function getBuyRecommendations(inventory: CardInventory[], strategy: Stra
   for (const card of inventory) {
     sportCounts[card.sport] = (sportCounts[card.sport] || 0) + 1;
   }
-  const totalCards = inventory.length;
+  const _totalCards = inventory.length;
 
   const count = Math.floor(seededRange(seed, 200, 5, 10));
 
@@ -614,7 +614,7 @@ export function generateWeeklyDigest(inventory: CardInventory[], strategy: Strat
           gradedRatio * 40 + highValueRatio * 40 + (1 - risk.compositeScore / 100) * 20
         );
         break;
-      case 'aggressive':
+      case 'aggressive': {
         // Recent cards, undervalued cards, diverse sports
         const recentRatio = activeCards.filter(c => c.year >= 2020).length / totalCards;
         const undervaluedRatio = activeCards.filter(c => {
@@ -625,13 +625,14 @@ export function generateWeeklyDigest(inventory: CardInventory[], strategy: Strat
           recentRatio * 35 + undervaluedRatio * 30 + sportCoverage * 35
         );
         break;
+      }
       case 'long_term':
         // Vintage cards, graded, high value
         strategyAlignment = Math.round(
           vintageRatio * 40 + gradedRatio * 30 + highValueRatio * 30
         );
         break;
-      case 'completion':
+      case 'completion': {
         // Sport coverage, manufacturer diversity, era coverage
         const mfgs = new Set(activeCards.map(c => c.manufacturer)).size;
         const decades = new Set(activeCards.map(c => Math.floor(c.year / 10) * 10)).size;
@@ -641,6 +642,7 @@ export function generateWeeklyDigest(inventory: CardInventory[], strategy: Strat
           sportCoverage * 40 + mfgCoverage * 30 + decadeCoverage * 30
         );
         break;
+      }
     }
     strategyAlignment = Math.min(100, Math.max(0, strategyAlignment));
   }

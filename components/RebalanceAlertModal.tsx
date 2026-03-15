@@ -17,8 +17,6 @@ import {
   getRebalanceSuggestions,
   calculateRebalanceCost,
   acknowledgeAlert,
-  RebalanceSuggestion,
-  RebalanceCostEstimate,
 } from '../lib/rebalancingAlertService';
 
 interface RebalanceAlertModalProps {
@@ -72,7 +70,7 @@ const RebalanceAlertModal: React.FC<RebalanceAlertModalProps> = ({
   alert,
   inventory,
 }) => {
-  const suggestions = useMemo(() => {
+  const _suggestions = useMemo(() => {
     if (!alert || !inventory.length) return [];
     return getRebalanceSuggestions(inventory).filter((s) => s.sport === alert.sport);
   }, [alert, inventory]);

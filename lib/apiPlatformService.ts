@@ -650,7 +650,7 @@ export function deleteWebhook(webhookId: string): WebhookConfig[] {
   return webhooks;
 }
 
-export function testWebhook(webhookId: string): { success: boolean; statusCode: number; latency: number } {
+export function testWebhook(_webhookId: string): { success: boolean; statusCode: number; latency: number } {
   // Simulated test
   const success = Math.random() > 0.15;
   return {

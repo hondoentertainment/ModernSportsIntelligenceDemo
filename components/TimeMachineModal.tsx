@@ -26,7 +26,6 @@ import {
   PortfolioSnapshot,
   SnapshotComparison,
   DecisionJournalEntry,
-  WhatIfAnalysis,
   getSnapshots,
   generateHistoricalSnapshots,
   captureSnapshot,

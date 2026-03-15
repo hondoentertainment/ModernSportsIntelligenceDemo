@@ -5,7 +5,6 @@ import {
   ShieldAlert,
   AlertTriangle,
   CheckCircle2,
-  ChevronDown,
   ChevronRight,
   Search,
   ClipboardCheck,
@@ -16,10 +15,7 @@ import {
 import { CardInventory } from '../types';
 import {
   AuthScore,
-  CertVerification,
-  RiskFactor,
   AuthAlert,
-  AuthChecklist,
   calculateAuthScore,
   verifyCert,
   getRiskFactors,
@@ -123,7 +119,7 @@ const OverviewTab: React.FC<{
   cards: CardInventory[];
   alerts: AuthAlert[];
   collectionScore: ReturnType<typeof getCollectionAuthScore>;
-  onSelectCard: (cardId: string) => void;
+  onSelectCard: (_cardId: string) => void;
 }> = ({ cards, alerts, collectionScore, onSelectCard }) => {
   const [sortBy, setSortBy] = useState<'score' | 'severity'>('severity');
 

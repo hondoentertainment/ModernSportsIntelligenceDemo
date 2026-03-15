@@ -1,22 +1,57 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import {
-  X, Users, Filter, TrendingUp, ArrowUpRight, Bell, Star,
-  Layers, BarChart3, ChevronDown, ChevronRight, Trash2,
-  Plus, Eye, GitCompare, Target, Search,
+  X,
+  Users,
+  Filter,
+  ArrowUpRight,
+  Bell,
+  Star,
+  Layers,
+  BarChart3,
+  ChevronDown,
+  ChevronRight,
+  Trash2,
+  Plus,
+  GitCompare,
+  Target,
+  Search,
 } from 'lucide-react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, BarChart, Bar, Cell, Legend,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Cell,
+  Legend,
 } from 'recharts';
 import { CardInventory, Sport } from '../types';
 import {
-  Prospect, ProspectStage, StashEntry,
-  getAllProspects, getProspectById, getProspectsBySport, getProspectsByStage,
-  getPipelineFunnel, getDraftBoard, getCallUpAlerts, getStageLabel,
-  getValueAtStage, compareProspects,
-  getStashEntries, addStashEntry, removeStashEntry, getStashSummary,
-  followProspect, unfollowProspect, isProspectFollowed, acknowledgeAlert,
-  CallUpAlert, PipelineFunnelStage, DraftBoardEntry,
+  Prospect,
+  ProspectStage,
+  StashEntry,
+  getAllProspects,
+  getProspectById,
+  getPipelineFunnel,
+  getDraftBoard,
+  getCallUpAlerts,
+  getStageLabel,
+  getValueAtStage,
+  compareProspects,
+  getStashEntries,
+  addStashEntry,
+  removeStashEntry,
+  getStashSummary,
+  followProspect,
+  unfollowProspect,
+  isProspectFollowed,
+  acknowledgeAlert,
+  CallUpAlert,
+  PipelineFunnelStage,
 } from '../lib/prospectPipelineService';
 
 interface ProspectModalProps {
@@ -38,7 +73,7 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
 const SPORTS: (Sport | 'All')[] = ['All', 'Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
 const STAGES: (ProspectStage | 'all')[] = ['all', 'amateur', 'drafted', 'minor_league', 'call_up', 'rookie'];
 
-function sportColor(sport: string): string {
+function _sportColor(sport: string): string {
   switch (sport) {
     case 'Baseball':   return '#ef4444';
     case 'Basketball': return '#f97316';
@@ -70,7 +105,7 @@ function stageBadge(stage: ProspectStage): { label: string; cls: string } {
   }
 }
 
-const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, cards }) => {
+const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }) => {
   const [activeTab, setActiveTab] = useState<TabId>('pipeline');
   const [sportFilter, setSportFilter] = useState<Sport | 'All'>('All');
   const [stageFilter, setStageFilter] = useState<ProspectStage | 'all'>('all');
@@ -107,8 +142,8 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, cards })
   );
 
   const alerts = useMemo(() => getCallUpAlerts(), []);
-  const stashEntries = useMemo(() => getStashEntries(), [activeTab]);
-  const stashSummary = useMemo(() => getStashSummary(), [stashEntries]);
+  const stashEntries = useMemo(() => getStashEntries(), []);
+  const stashSummary = useMemo(() => getStashSummary(), []);
 
   const comparison = useMemo(() => {
     if (!compareA || !compareB) return null;

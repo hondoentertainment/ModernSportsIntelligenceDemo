@@ -1,12 +1,17 @@
 // P2P Marketplace Widget — Compact dashboard card
 import React, { useMemo } from 'react';
-import { ShoppingCart, ChevronRight, Tag, MessageSquare, TrendingUp, Eye } from 'lucide-react';
+import {
+  ShoppingCart,
+  ChevronRight,
+  Tag,
+  MessageSquare,
+  TrendingUp,
+} from 'lucide-react';
 import {
   getActiveListings,
   getOffers,
   getMarketplaceStats,
   getListingDealScore,
-  Listing,
 } from '../lib/p2pMarketplaceService';
 
 interface P2PMarketplaceWidgetProps {

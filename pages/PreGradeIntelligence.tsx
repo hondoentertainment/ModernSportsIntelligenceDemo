@@ -1,4 +1,9 @@
-import React, { useState, useMemo, useCallback, useRef } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from 'react';
 import {
   ScanLine,
   Camera,
@@ -9,17 +14,12 @@ import {
   TrendingUp,
   Shield,
   Target,
-  Award,
   CheckCircle2,
   AlertTriangle,
   XCircle,
   Clock,
-  ArrowRight,
-  ChevronDown,
   Building2,
   History,
-  Sparkles,
-  Sliders,
 } from 'lucide-react';
 import {
   BarChart,
@@ -40,9 +40,6 @@ import {
   getBestGradingService,
   type GradePrediction,
   type GradingROI,
-  type GradeDistribution,
-  type PredictionAccuracy,
-  type GradingService,
   type GradingServiceCost,
 } from '../lib/preGradeIntelligenceService';
 

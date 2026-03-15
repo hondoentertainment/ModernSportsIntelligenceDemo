@@ -13,7 +13,6 @@ import {
   getPortfolioLiquidityReport,
   computeAllLiquidityScores,
   detectIlliquidityOpportunities,
-  LiquidityScoreDetail,
   PortfolioLiquidityReport,
 } from '../lib/liquidityService';
 
@@ -50,7 +49,7 @@ export const LiquidityWidget: React.FC<LiquidityWidgetProps> = ({ cards, onClick
     [cards],
   );
 
-  const scores = useMemo(() => computeAllLiquidityScores(cards), [cards]);
+  const _scores = useMemo(() => computeAllLiquidityScores(cards), [cards]);
 
   const illiquidOpps = useMemo(
     () => detectIlliquidityOpportunities(cards),

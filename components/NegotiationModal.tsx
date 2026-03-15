@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Send, Bot, DollarSign, CheckCircle2, ShoppingBag, Loader2, ThumbsUp, ThumbsDown, Minus, Zap } from 'lucide-react';
+import {
+  X,
+  Send,
+  Bot,
+  DollarSign,
+  CheckCircle2,
+  ShoppingBag,
+  Loader2,
+  ThumbsUp,
+  ThumbsDown,
+  Minus,
+  Zap,
+} from 'lucide-react';
 import { NegotiationSession, NegotiableItem } from '../types';
 import { NegotiationService } from '../lib/negotiationService';
 import CardImage from './CardImage.tsx';
@@ -9,7 +21,7 @@ interface NegotiationModalProps {
     isOpen: boolean;
     onClose: () => void;
     targetItem: NegotiableItem | null;
-    onSuccess: (finalPrice: number) => void;
+    onSuccess: (_finalPrice: number) => void;
 }
 
 const SENTIMENT_ICONS = {
@@ -64,7 +76,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
             if (updatedSession.status === 'accepted') {
                 setStep('result');
             }
-        } catch (e) {
+        } catch  {
             const fallback = NegotiationService.processUserOffer(session, { amount });
             setSession(fallback);
             if (fallback.status === 'accepted') setStep('result');
@@ -73,7 +85,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
         }
     };
 
-    const handleWalkAway = () => {
+    const _handleWalkAway = () => {
         onClose();
     };
 

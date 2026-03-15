@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { TaxLotService } from '../../lib/taxLotService';
-import type { CostBasisMethod } from '../../lib/taxLotService';
 import { makeCard } from '../helpers';
 
 describe('TaxLotService', () => {

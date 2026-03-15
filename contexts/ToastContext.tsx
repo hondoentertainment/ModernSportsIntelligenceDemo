@@ -1,13 +1,27 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+  ReactNode,
+} from 'react';
 import { registerToastHandler, unregisterToastHandler } from '../lib/toast';
 import type { Toast, ToastType, ToastOptions } from '../lib/toast';
-import { CheckCircle2, AlertTriangle, XCircle, Info, X } from 'lucide-react';
+import {
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  Info,
+  X,
+} from 'lucide-react';
 
 // ─── Context ─────────────────────────────────────────────────────────────────
 
 interface ToastContextType {
-    addToast: (type: ToastType, message: string, options?: ToastOptions) => void;
-    removeToast: (id: string) => void;
+    addToast: (_type: ToastType, _message: string, _options?: ToastOptions) => void;
+    removeToast: (_id: string) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -85,9 +99,10 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
     // Cleanup all timers on unmount
     useEffect(() => {
+        const timers = timersRef.current;
         return () => {
-            timersRef.current.forEach(t => clearTimeout(t));
-            timersRef.current.clear();
+            timers.forEach(t => clearTimeout(t));
+            timers.clear();
         };
     }, []);
 
@@ -148,7 +163,7 @@ const COLOR_MAP: Record<ToastType, { bg: string; border: string; icon: string; t
 
 interface ToastContainerProps {
     toasts: Toast[];
-    onDismiss: (id: string) => void;
+    onDismiss: (_id: string) => void;
 }
 
 const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onDismiss }) => {

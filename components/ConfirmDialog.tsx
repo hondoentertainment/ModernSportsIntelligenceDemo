@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, Trash2, Tag, X } from 'lucide-react';
+import { AlertTriangle, Trash2, Tag } from 'lucide-react';
 import { useFocusTrap } from '../lib/useFocusTrap';
 
 interface ConfirmDialogProps {

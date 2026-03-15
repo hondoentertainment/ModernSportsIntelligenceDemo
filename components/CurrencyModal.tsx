@@ -27,7 +27,6 @@ import {
 import { CardInventory } from '../types';
 import {
   CurrencyCode,
-  CurrencyInfo,
   CURRENCIES,
   CURRENCY_CODES,
   getSelectedCurrency,
@@ -45,7 +44,6 @@ import {
   getInternationalAlerts,
   CrossBorderComparison,
   DutyEstimate,
-  InternationalAlert,
 } from '../lib/currencyService';
 
 // ── Types ────────────────────────────────────────────────────────────────────────
@@ -71,7 +69,7 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
 const ConverterTab: React.FC<{
   cards: CardInventory[];
   activeCurrency: CurrencyCode;
-  onCurrencyChange: (code: CurrencyCode) => void;
+  onCurrencyChange: (_code: CurrencyCode) => void;
 }> = ({ cards, activeCurrency, onCurrencyChange }) => {
   const [fromCurrency, setFromCurrency] = useState<CurrencyCode>('USD');
   const [toCurrency, setToCurrency] = useState<CurrencyCode>(activeCurrency === 'USD' ? 'EUR' : activeCurrency);
@@ -470,7 +468,7 @@ const DutyTab: React.FC = () => {
         </p>
         <div className="grid grid-cols-2 gap-2">
           {countries.map(c => {
-            const info = calculateImportDuty(0, c.code);
+            const _info = calculateImportDuty(0, c.code);
             return (
               <div
                 key={c.code}

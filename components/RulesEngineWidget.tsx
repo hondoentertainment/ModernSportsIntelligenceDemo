@@ -33,7 +33,7 @@ const statusIcons: Record<string, React.ReactNode> = {
   dry_run: <FlaskConical size={10} />,
 };
 
-export const RulesEngineWidget: React.FC<RulesEngineWidgetProps> = ({ cards, onClick }) => {
+export const RulesEngineWidget: React.FC<RulesEngineWidgetProps> = ({ _cards, onClick }) => {
   const rules = useMemo(() => loadRules(), []);
   const triggers = useMemo(() => loadTriggerHistory(), []);
 

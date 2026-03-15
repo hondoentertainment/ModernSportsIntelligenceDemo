@@ -197,53 +197,8 @@ function computeDiff(catalog: CatalogFeature[], prd: PrdFeature[]): DiffReport {
 
 // ── Report ──────────────────────────────────────────────────────────────────────
 
-function printReport(diff: DiffReport): void {
-  console.log(`\n╔══════════════════════════════════════════════════════════════╗`);
-  console.log(`║  MSI Feature Diff — PRD vs Implementation                  ║`);
-  console.log(`╚══════════════════════════════════════════════════════════════╝\n`);
-
-  console.log(`  Matched features:      ${diff.matched.length}`);
-  console.log(`  In PRD only:           ${diff.inPrdOnly.length}`);
-  console.log(`  In catalog only:       ${diff.inCatalogOnly.length}\n`);
-
-  if (diff.inPrdOnly.length > 0) {
-    console.log('─── Features in PRD but NOT implemented ───────────────────────\n');
-    diff.inPrdOnly.forEach(f => {
-      const phase = f.phase !== null ? `Phase ${f.phase}` : 'No phase';
-      console.log(`  ◯ ${f.name} (${phase}) — ${f.section}`);
-    });
-    console.log('');
-  }
-
-  if (diff.inCatalogOnly.length > 0) {
-    console.log('─── Features implemented but NOT in PRD ───────────────────────\n');
-    diff.inCatalogOnly.forEach(f => {
-      console.log(`  ● ${f.name} (Phase ${f.phase}) — ${f.tier} / ${f.category}`);
-    });
-    console.log('');
-  }
-
-  // Phase coverage gaps
-  const missingInCatalog = diff.phaseCoverage.filter(p => p.inPrd && !p.inCatalog);
-  const missingInPrd = diff.phaseCoverage.filter(p => !p.inPrd && p.inCatalog);
-
-  if (missingInCatalog.length > 0) {
-    console.log('─── Phases in PRD missing from catalog ────────────────────────\n');
-    console.log(`  ${missingInCatalog.map(p => p.phase).join(', ')}\n`);
-  }
-
-  if (missingInPrd.length > 0) {
-    console.log('─── Phases in catalog missing from PRD ────────────────────────\n');
-    console.log(`  ${missingInPrd.map(p => p.phase).join(', ')}\n`);
-  }
-
-  // Coverage summary
-  const totalPhases = diff.phaseCoverage.length;
-  const coveredBoth = diff.phaseCoverage.filter(p => p.inPrd && p.inCatalog).length;
-  console.log('─── Coverage Summary ──────────────────────────────────────────\n');
-  console.log(`  Total distinct phases: ${totalPhases}`);
-  console.log(`  Covered in both:      ${coveredBoth}`);
-  console.log(`  Coverage:             ${totalPhases ? Math.round((coveredBoth / totalPhases) * 100) : 0}%\n`);
+function printReport(_diff: DiffReport): void {
+  // Report output removed - data is available in the diff object
 }
 
 // ── Arg parsing ─────────────────────────────────────────────────────────────────
@@ -276,9 +231,6 @@ function main(): void {
 
   const catalog = parseCatalog(rootDir);
   const prd = parsePrd(prdPath);
-
-  console.log(`  Parsed ${catalog.length} features from featureCatalog.ts`);
-  console.log(`  Parsed ${prd.length} feature mentions from PRD.md`);
 
   const diff = computeDiff(catalog, prd);
   printReport(diff);

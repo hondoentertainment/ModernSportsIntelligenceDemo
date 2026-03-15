@@ -9,7 +9,7 @@ export interface CardGroup {
 }
 
 const STORAGE_KEY = 'msi_card_groups';
-const GROUP_ORDER_KEY = 'msi_group_order';
+const _GROUP_ORDER_KEY = 'msi_group_order';
 
 const DEFAULT_GROUPS: CardGroup[] = [
   { id: 'grade-next', label: 'Grade Next', color: '#d9f99d', icon: 'trophy' },
@@ -47,7 +47,7 @@ function saveGroups(groups: CardGroup[]) {
  */
 export function useCardGroups(
   inventory: CardInventory[],
-  updateCard: (id: string, updates: Partial<CardInventory>) => void,
+  updateCard: (_id: string, _updates: Partial<CardInventory>) => void,
 ) {
   const [groups, setGroups] = useState<CardGroup[]>(loadGroups);
 

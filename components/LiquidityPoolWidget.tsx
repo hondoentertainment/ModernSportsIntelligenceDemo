@@ -1,11 +1,17 @@
 import React, { useMemo } from 'react';
-import { Zap, TrendingUp, DollarSign, Activity, ArrowRight } from 'lucide-react';
+import {
+  Zap,
+  TrendingUp,
+  DollarSign,
+  Activity,
+  ArrowRight,
+} from 'lucide-react';
 import { CardInventory } from '../types';
-import { generatePortfolioQuotes, getLiquidityPoolStats, InstantBuyQuote } from '../lib/instantBuyService';
+import { generatePortfolioQuotes, getLiquidityPoolStats } from '../lib/instantBuyService';
 
 interface LiquidityPoolWidgetProps {
   inventory: CardInventory[];
-  onInstantBuy: (card: CardInventory) => void;
+  onInstantBuy: (_card: CardInventory) => void;
 }
 
 const LiquidityPoolWidget: React.FC<LiquidityPoolWidgetProps> = ({ inventory, onInstantBuy }) => {
@@ -17,7 +23,7 @@ const LiquidityPoolWidget: React.FC<LiquidityPoolWidgetProps> = ({ inventory, on
     [quotes]
   );
 
-  const bestQuote = quotes[0];
+  const _bestQuote = quotes[0];
 
   if (inventory.length === 0) return null;
 

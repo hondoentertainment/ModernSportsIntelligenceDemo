@@ -13,7 +13,6 @@ import {
   Star,
   Shield,
   Activity,
-  Swords,
   CheckCircle2,
   Clock,
   ChevronDown,
@@ -22,7 +21,6 @@ import { CardInventory, Sport } from '../types';
 import {
   LeaderboardCategory,
   PercentileRanking,
-  LeaderboardEntry,
   ChallengeProgress,
   getPercentileRanking,
   getLeaderboardWithUser,

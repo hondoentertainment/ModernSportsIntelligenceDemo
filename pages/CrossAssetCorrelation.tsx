@@ -5,15 +5,12 @@ import {
   Shield,
   Activity,
   Sliders,
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
   ArrowRight,
   ArrowLeft,
   Info,
   CheckCircle2,
   Target,
-  Zap,
   Globe,
 } from 'lucide-react';
 import { CardInventory } from '../types';
@@ -25,12 +22,6 @@ import {
   getMacroAlerts,
   getHistoricalMacroImpact,
   getOptimalAllocation,
-  CorrelationMatrix,
-  PortfolioCorrelation,
-  DiversificationScore,
-  HedgeSignal,
-  MacroAlert,
-  OptimalAllocation,
   CARD_SEGMENT_LABELS,
   ASSET_CLASS_LABELS,
   CardSegment,
@@ -106,7 +97,7 @@ const CrossAssetCorrelation: React.FC<CrossAssetCorrelationPageProps> = ({
   const [riskTolerance, setRiskTolerance] = useState<'conservative' | 'moderate' | 'aggressive'>('moderate');
   const [budget, setBudget] = useState<number>(5000);
   const [selectedEvent, setSelectedEvent] = useState('fed_rate_2022');
-  const [loading, setLoading] = useState(false);
+  const [_loading, _setLoading] = useState(false);
 
   const matrix = useMemo(() => getCorrelationMatrix(timeWindow), [timeWindow]);
   const portfolioCorr = useMemo(() => getPortfolioCorrelationAnalysis(inventory), [inventory]);

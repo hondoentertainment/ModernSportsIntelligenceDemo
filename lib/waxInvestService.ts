@@ -424,7 +424,7 @@ export function getWaxAlerts(portfolio: WaxPortfolioEntryWithValue[]): WaxAlert[
   const seed = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
 
   // Price drop alerts for portfolio items
-  portfolio.forEach((entry, idx) => {
+  portfolio.forEach((entry, _idx) => {
     if (entry.roi < -10) {
       alerts.push({
         id: `wa_drop_${entry.id}`,
@@ -450,7 +450,7 @@ export function getWaxAlerts(portfolio: WaxPortfolioEntryWithValue[]): WaxAlert[
 
   // New release alerts from upcoming calendar
   const calendar = getReleaseCalendar();
-  calendar.slice(0, 2).forEach((release, idx) => {
+  calendar.slice(0, 2).forEach((release, _idx) => {
     const releaseDate = new Date(release.releaseDate);
     const daysUntil = Math.ceil((releaseDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     if (daysUntil <= 30) {

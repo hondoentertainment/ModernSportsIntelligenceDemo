@@ -1,11 +1,16 @@
 import React, { useMemo } from 'react';
-import { Target, TrendingUp, ArrowUpRight, Zap, AlertTriangle } from 'lucide-react';
+import {
+  Target,
+  TrendingUp,
+  Zap,
+  AlertTriangle,
+} from 'lucide-react';
 import { CardInventory } from '../types';
-import { generatePredictiveSummary, analyzeBreakoutPotential } from '../lib/predictiveAlpha';
+import { generatePredictiveSummary } from '../lib/predictiveAlpha';
 
 interface BreakoutRadarProps {
   inventory: CardInventory[];
-  onCardClick?: (card: CardInventory) => void;
+  onCardClick?: (_card: CardInventory) => void;
 }
 
 const sentimentConfig = {

@@ -2,17 +2,39 @@
 // Route: /p2p-marketplace | Icon: ShoppingCart
 import React, { useState, useMemo } from 'react';
 import {
-  ShoppingCart, Search, Filter, Star, Tag, Eye, Heart, MessageSquare,
-  TrendingUp, DollarSign, Send, X, ChevronDown, Users, BarChart3,
-  Package, Clock, Shield, Award, ArrowUpDown, CheckCircle, XCircle,
+  ShoppingCart,
+  Search,
+  Filter,
+  Star,
+  Tag,
+  Eye,
+  Heart,
+  MessageSquare,
+  TrendingUp,
+  DollarSign,
+  Send,
+  X,
+  Users,
+  BarChart3,
+  Package,
+  Clock,
+  Award,
+  ArrowUpDown,
+  CheckCircle,
+  XCircle,
   AlertCircle,
 } from 'lucide-react';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
 } from 'recharts';
 import {
   getActiveListings,
-  getAllListings,
   getMyListings,
   getOffers,
   getMyOffers,
@@ -327,7 +349,7 @@ interface FilterState {
   search: string;
 }
 
-const FilterSidebar: React.FC<{ filters: FilterState; onChange: (f: FilterState) => void }> = ({ filters, onChange }) => {
+const FilterSidebar: React.FC<{ filters: FilterState; onChange: (_f: FilterState) => void }> = ({ filters, onChange }) => {
   const update = (patch: Partial<FilterState>) => onChange({ ...filters, ...patch });
 
   return (

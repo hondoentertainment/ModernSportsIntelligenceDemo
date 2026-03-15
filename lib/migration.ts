@@ -52,7 +52,7 @@ function getLocalStorageData<T>(key: string): T | null {
 /**
  * Save data to localStorage
  */
-function setLocalStorageData<T>(key: string, data: T): void {
+function _setLocalStorageData<T>(key: string, data: T): void {
     try {
         localStorage.setItem(key, JSON.stringify(data));
     } catch (e) {
@@ -63,7 +63,7 @@ function setLocalStorageData<T>(key: string, data: T): void {
 /**
  * Migrate a single card to Supabase
  */
-async function migrateCard(card: CardInventory, userId: string): Promise<boolean> {
+async function _migrateCard(card: CardInventory, userId: string): Promise<boolean> {
     try {
         const { error } = await supabase
             .from('cards')
@@ -110,7 +110,7 @@ async function migrateCard(card: CardInventory, userId: string): Promise<boolean
 /**
  * Migrate a single target to Supabase
  */
-async function migrateTarget(target: TargetWatchlist, userId: string): Promise<boolean> {
+async function _migrateTarget(target: TargetWatchlist, userId: string): Promise<boolean> {
     try {
         const { error } = await supabase
             .from('targets')

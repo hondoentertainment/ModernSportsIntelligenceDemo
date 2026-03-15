@@ -58,7 +58,7 @@ export interface MarketSentimentOverview {
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
 
-function getSentimentLevel(score: number): SentimentLevel {
+function _getSentimentLevel(score: number): SentimentLevel {
   if (score >= 60) return 'very_positive';
   if (score >= 20) return 'positive';
   if (score >= -20) return 'neutral';

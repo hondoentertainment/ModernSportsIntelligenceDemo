@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Palette,
   Grid3X3,
-  Spotlight,
   Layers,
   TrendingUp,
   TrendingDown,
@@ -22,7 +21,6 @@ import {
   getShowcaseStats,
   ShowcaseCard,
   ShowcaseTheme,
-  DisplayMode,
 } from '../lib/arShowcaseService';
 
 type ViewMode = 'grid' | 'spotlight' | 'stack';
@@ -274,7 +272,7 @@ const StatCard: React.FC<{
 const GridView: React.FC<{
   cards: ShowcaseCard[];
   hoveredCard: string | null;
-  onHover: (id: string | null) => void;
+  onHover: (_id: string | null) => void;
 }> = ({ cards, hoveredCard, onHover }) => (
   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
     {cards.map((card) => (
@@ -318,7 +316,7 @@ const GridView: React.FC<{
 const SpotlightView: React.FC<{
   cards: ShowcaseCard[];
   activeIndex: number;
-  onChangeIndex: (index: number) => void;
+  onChangeIndex: (_index: number) => void;
 }> = ({ cards, activeIndex, onChangeIndex }) => {
   const activeCard = cards[activeIndex];
 
@@ -400,7 +398,7 @@ const SpotlightView: React.FC<{
 const StackView: React.FC<{
   cards: ShowcaseCard[];
   hoveredCard: string | null;
-  onHover: (id: string | null) => void;
+  onHover: (_id: string | null) => void;
 }> = ({ cards, hoveredCard, onHover }) => (
   <div className="flex justify-center py-8">
     <div className="relative" style={{ perspective: '1200px', width: '300px', height: '420px' }}>

@@ -1,6 +1,12 @@
 // Transaction Wire Widget — Compact dashboard feed of latest transactions
 import React, { useMemo } from 'react';
-import { Newspaper, ChevronRight, TrendingUp, TrendingDown, Zap } from 'lucide-react';
+import {
+  Newspaper,
+  ChevronRight,
+  TrendingUp,
+  TrendingDown,
+  Zap,
+} from 'lucide-react';
 import { getRecentTransactions, getTransactionStats, Transaction } from '../lib/transactionWireService';
 
 interface TransactionWireWidgetProps {
@@ -12,7 +18,7 @@ function formatPrice(price: number): string {
   return `$${price.toLocaleString()}`;
 }
 
-function formatTimeAgo(timestamp: string): string {
+function _formatTimeAgo(timestamp: string): string {
   const diff = Date.now() - new Date(timestamp).getTime();
   const mins = Math.floor(diff / 60_000);
   if (mins < 1) return 'Just now';

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   X,
   Fingerprint,
@@ -9,11 +9,8 @@ import {
   Clock,
   AlertTriangle,
   CheckCircle2,
-  ExternalLink,
   Upload,
   Eye,
-  TrendingUp,
-  TrendingDown,
   MapPin,
   Hash,
   Calendar,
@@ -33,10 +30,6 @@ import {
   verifyBeforePurchase,
   registerCard,
   type DigitalTwin,
-  type ProvenanceRecord,
-  type FraudAlert,
-  type CrossPlatformSighting,
-  type AuthenticityScore,
   type VerificationResult,
 } from '../lib/provenanceChainService.ts';
 
@@ -71,7 +64,7 @@ function scoreColor(score: number): string {
   return 'text-red-400';
 }
 
-function scoreBgColor(score: number): string {
+function _scoreBgColor(score: number): string {
   if (score >= 90) return 'bg-emerald-500/20 text-emerald-400';
   if (score >= 70) return 'bg-amber-500/20 text-amber-400';
   return 'bg-red-500/20 text-red-400';
@@ -105,7 +98,7 @@ function eventIcon(eventType: string): string {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-const ScoreBar: React.FC<{ label: string; score: number; weight: number; notes: string }> = ({ label, score, weight, notes }) => (
+const _ScoreBar: React.FC<{ label: string; score: number; weight: number; notes: string }> = ({ label, score, weight, notes }) => (
   <div className="space-y-1">
     <div className="flex items-center justify-between text-xs">
       <span className="text-slate-300">{label} <span className="text-slate-600">({(weight * 100).toFixed(0)}%)</span></span>
@@ -125,7 +118,7 @@ const ScoreBar: React.FC<{ label: string; score: number; weight: number; notes: 
 // Registry Tab
 // ---------------------------------------------------------------------------
 
-const RegistryTab: React.FC<{ cards: DigitalTwin[]; onSelectCard: (id: string) => void }> = ({ cards, onSelectCard }) => {
+const RegistryTab: React.FC<{ cards: DigitalTwin[]; onSelectCard: (_id: string) => void }> = ({ cards, onSelectCard }) => {
   const stats = getRegistryStats();
   const totalValue = cards.reduce((s, c) => s + c.currentValue, 0);
 

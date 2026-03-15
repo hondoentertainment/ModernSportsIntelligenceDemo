@@ -1,15 +1,38 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import {
-  Terminal, ChevronRight, Command, Zap, Clock, Hash,
-  TrendingUp, AlertTriangle, PanelLeftClose, PanelLeftOpen, X
+  Terminal,
+  ChevronRight,
+  Command,
+  Zap,
+  Clock,
+  Hash,
+  AlertTriangle,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import {
-  LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
 } from 'recharts';
 import {
-  executeCommand, getAutocompleteSuggestions, getCommandHistory,
-  clearCommandHistory, CommandResult
+  executeCommand,
+  getAutocompleteSuggestions,
+  clearCommandHistory,
+  CommandResult,
 } from '../lib/msiTerminalService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
@@ -432,7 +455,7 @@ const MSITerminal: React.FC = () => {
   const sessionTime = useMemo(() => {
     const diff = Math.floor((Date.now() - new Date(sessionStart).getTime()) / 1000);
     return `${Math.floor(diff / 60)}m ${diff % 60}s`;
-  }, [sessionStart, entries]);
+  }, [sessionStart]);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700 pb-20">

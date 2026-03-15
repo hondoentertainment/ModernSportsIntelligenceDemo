@@ -1,9 +1,14 @@
 
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Plus,
   Search,
-  Filter,
   Upload,
   Trash2,
   Sparkles,
@@ -17,11 +22,24 @@ import {
   Edit3,
   CheckCircle2,
   Clock,
+  XCircle,
+  CheckSquare,
+  Trash2,
+  Download,
+  Sparkles,
+  Cloud,
+  CloudOff,
   Star,
   Calculator,
   Share2,
   BriefcaseBusiness
 } from 'lucide-react';
+import {
+  CardInventory,
+  TargetWatchlist,
+  League,
+  ExitPlan,
+} from '../types';
 import { Link } from 'react-router-dom';
 import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
 import { getEbayCardPrice } from '../lib/gemini';
@@ -42,6 +60,27 @@ import ScarcityBadge from '../components/ScarcityBadge';
 import GradingAuditModal from '../components/GradingAuditModal';
 import { LiquidityBadge } from '../components/LiquidityBadge';
 import { ExitStrategyModal } from '../components/ExitStrategyModal';
+import GradingCalculatorModal from '../components/GradingCalculatorModal';
+import BreakEvenModal from '../components/BreakEvenModal';
+import InstantBuyModal from '../components/InstantBuyModal';
+import PredictiveAlphaModal from '../components/PredictiveAlphaModal';
+import AgentThesisModal from '../components/AgentThesisModal';
+import MarketDepthModal from '../components/MarketDepthModal';
+import TaxReportModal from '../components/TaxReportModal';
+import GradingPredictionModal from '../components/GradingPredictionModal';
+import PriceHistoryModal from '../components/PriceHistoryModal';
+import ConsignmentModal from '../components/ConsignmentModal';
+import AnomalyDetailModal from '../components/AnomalyDetailModal';
+import { MarketAnomaly, detectAnomalies } from '../lib/anomalyDetectionService';
+import ConfirmDialog from '../components/ConfirmDialog';
+import CommandPalette from '../components/CommandPalette';
+import CardGridItem from '../components/collection/CardGridItem';
+import SwipeableCard from '../components/collection/SwipeableCard';
+import VirtualizedGrid from '../components/collection/VirtualizedGrid';
+import { useKeyboardShortcuts } from '../lib/useKeyboardShortcuts';
+
+type SortField = 'player' | 'value' | 'purchasePrice' | 'date' | 'roi' | 'league';
+type SortDir = 'asc' | 'desc';
 import { LiquidityService } from '../lib/liquidityService';
 import { OpportunityBadge } from '../components/OpportunityBadge';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -466,7 +505,6 @@ const Collection: React.FC = () => {
     setIsTargetModalOpen(true);
   };
 
-
   const handleAddCard = (card: CardInventory) => {
     addCard(card);
     setInitialAssetData(null); // Clear after adding
@@ -478,7 +516,6 @@ const Collection: React.FC = () => {
     setIsAssetModalOpen(true);
     setIsOCRModalOpen(false);
   };
-
 
   const handleUpdatePrice = async (card: CardInventory) => {
     setIsPricing(card.id);
@@ -509,6 +546,74 @@ const Collection: React.FC = () => {
   };
 
   const deleteCard = (id: string) => {
+    const card = inventory.find(c => c.id === id);
+    if (!card) return;
+    setConfirmState({
+      open: true,
+      title: 'Remove Asset',
+      message: `Remove "${card.player} (${card.year} ${card.set})" from your collection? This can be undone for 8 seconds.`,
+      onConfirm: () => {
+        removeCard(id);
+        setConfirmState(prev => ({ ...prev, open: false }));
+        addToast('success', `${card.player} removed from collection.`, {
+          onUndo: () => { addCard(card); },
+          undoLabel: 'Undo Remove'
+        });
+      }
+    });
+  };
+
+  // Bulk delete
+  const handleBulkDelete = () => {
+    if (selectedIds.size === 0) return;
+    const cards = inventory.filter(c => selectedIds.has(c.id));
+    setConfirmState({
+      open: true,
+      title: `Remove ${selectedIds.size} Assets`,
+      message: `Remove ${selectedIds.size} selected assets from your collection?`,
+      onConfirm: () => {
+        cards.forEach(c => removeCard(c.id));
+        setConfirmState(prev => ({ ...prev, open: false }));
+        setSelectedIds(new Set());
+        setBulkMode(false);
+        addToast('success', `${cards.length} assets removed.`, {
+          onUndo: () => { cards.forEach(c => addCard(c)); }
+        });
+      }
+    });
+  };
+
+  // Bulk export to JSON
+  const handleBulkExport = () => {
+    const cards = bulkMode && selectedIds.size > 0
+      ? inventory.filter(c => selectedIds.has(c.id))
+      : inventory.filter(c => c.status !== 'sold');
+    const blob = new Blob([JSON.stringify(cards, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `msi_collection_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    addToast('success', `Exported ${cards.length} cards to JSON.`);
+  };
+
+  // Toggle bulk selection
+  const _toggleSelection = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  // Select all visible cards
+  const selectAll = () => {
+    if (selectedIds.size === filteredInventory.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredInventory.map(c => c.id)));
     if (confirm('Are you sure you want to remove this asset from your collection?')) {
       removeCard(id);
     }

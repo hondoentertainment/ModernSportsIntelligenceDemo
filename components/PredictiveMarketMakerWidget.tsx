@@ -3,8 +3,11 @@
 
 import React, { useMemo } from 'react';
 import {
-  Activity, TrendingUp, TrendingDown, BarChart3,
-  ChevronRight, ArrowUpRight, ArrowDownRight, Gauge,
+  Activity,
+  BarChart3,
+  ArrowUpRight,
+  ArrowDownRight,
+  Gauge,
 } from 'lucide-react';
 import { CardInventory } from '../types';
 import {
@@ -28,7 +31,7 @@ function liquidityColor(score: number): string {
   return 'text-red-400';
 }
 
-function liquidityBg(score: number): string {
+function _liquidityBg(score: number): string {
   if (score >= 70) return 'bg-emerald-500';
   if (score >= 40) return 'bg-amber-500';
   return 'bg-red-500';

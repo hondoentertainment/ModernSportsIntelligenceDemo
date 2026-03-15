@@ -64,7 +64,7 @@ const SNAPSHOT_KEY = 'msi_benchmark_snapshots';
 const CHALLENGE_KEY = 'msi_challenge_progress';
 const COMMUNITY_SIZE = 500;
 
-const CATEGORY_LABELS: Record<LeaderboardCategory, string> = {
+export const CATEGORY_LABELS: Record<LeaderboardCategory, string> = {
   roi: 'Total ROI',
   portfolio_value: 'Portfolio Value',
   diversification: 'Diversification',
@@ -73,7 +73,7 @@ const CATEGORY_LABELS: Record<LeaderboardCategory, string> = {
   achievement_points: 'Achievement Points',
 };
 
-export { CATEGORY_LABELS };
+// CATEGORY_LABELS already exported above
 
 // ---- Deterministic seed helpers ----
 
@@ -332,7 +332,7 @@ export function getPercentileRanking(inventory: CardInventory[]): PercentileRank
     'grading_score', 'trading_activity', 'achievement_points',
   ];
 
-  const profileValueGetters: Record<LeaderboardCategory, (p: CommunityProfile) => number> = {
+  const profileValueGetters: Record<LeaderboardCategory, (_p: CommunityProfile) => number> = {
     roi: p => p.totalROI,
     portfolio_value: p => p.portfolioValue,
     diversification: p => p.diversificationScore,
@@ -388,7 +388,7 @@ export function getLeaderboard(
 ): LeaderboardEntry[] {
   const profiles = generateCommunityProfiles();
 
-  const valueGetters: Record<LeaderboardCategory, (p: CommunityProfile) => number> = {
+  const valueGetters: Record<LeaderboardCategory, (_p: CommunityProfile) => number> = {
     roi: p => p.totalROI,
     portfolio_value: p => p.portfolioValue,
     diversification: p => p.diversificationScore,
@@ -417,7 +417,7 @@ export function getLeaderboardWithUser(
   const profiles = generateCommunityProfiles();
   const userMetrics = calculateUserMetrics(inventory);
 
-  const valueGetters: Record<LeaderboardCategory, (p: CommunityProfile) => number> = {
+  const valueGetters: Record<LeaderboardCategory, (_p: CommunityProfile) => number> = {
     roi: p => p.totalROI,
     portfolio_value: p => p.portfolioValue,
     diversification: p => p.diversificationScore,

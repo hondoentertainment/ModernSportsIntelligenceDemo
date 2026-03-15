@@ -1,11 +1,11 @@
 
+import React from 'react';
 import React, { useState } from 'react';
 import {
   ArrowUpRight,
   Target,
   Layers,
   ChevronRight,
-  PieChart,
   Briefcase,
   Zap,
   Activity,

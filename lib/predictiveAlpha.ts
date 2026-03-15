@@ -52,7 +52,7 @@ export interface PredictivePortfolioSummary {
 
 // ── Momentum Calculation ──────────────────────────────────────────────────
 
-function calculateMomentum(cardId: string, currentValue: number): number {
+function calculateMomentum(cardId: string, _currentValue: number): number {
   const history = getCardHistory(cardId);
   if (history.length < 2) return 0;
 
@@ -220,7 +220,7 @@ export function forecastPriceTrajectory(card: CardInventory): PriceTrajectory {
 export function analyzeBreakoutPotential(card: CardInventory): BreakoutAnalysis {
   const factors: BreakoutFactor[] = [];
   const momentum = calculateMomentum(card.id, card.currentValue || card.purchasePrice || 0);
-  const liquidityScore = LiquidityService.calculateLiquidityScore(card);
+  const _liquidityScore = LiquidityService.calculateLiquidityScore(card);
 
   // Factor 1: Prospect Status (MiLB/young player)
   const isProspect = card.league === 'MiLB' || (card.year >= 2022 && (card.league as string) !== 'MiLB');

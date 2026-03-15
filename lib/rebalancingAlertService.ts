@@ -379,7 +379,7 @@ export function acknowledgeAlert(alertId: string): RebalanceAlert[] {
 
 export function persistAlerts(alerts: RebalanceAlert[]): void {
   const existing = getAlertHistory();
-  const existingIds = new Set(existing.map((a) => a.id));
+  const _existingIds = new Set(existing.map((a) => a.id));
 
   // Merge: keep acknowledged state from existing, add new ones
   const merged: RebalanceAlert[] = [];

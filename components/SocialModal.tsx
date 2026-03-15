@@ -1,4 +1,9 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, {
+  useMemo,
+  useState,
+  useRef,
+  useEffect,
+} from 'react';
 import {
   X,
   Users,
@@ -401,7 +406,7 @@ const MessagesTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
 
 // ---- Trade Matches Tab ----
 
-const TradesTab: React.FC<{ cards: CardInventory[]; onOpenThread: (collectorId: string) => void }> = ({ cards, onOpenThread }) => {
+const TradesTab: React.FC<{ cards: CardInventory[]; onOpenThread: (_collectorId: string) => void }> = ({ cards, onOpenThread }) => {
   const matches = useMemo(() => getTradeMatches(cards), [cards]);
 
   return (

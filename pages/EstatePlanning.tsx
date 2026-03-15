@@ -10,7 +10,6 @@ import {
   CircleDot,
   DollarSign,
   TrendingUp,
-  Camera,
 } from 'lucide-react';
 import {
   PieChart,
@@ -31,7 +30,6 @@ import {
   getEstateValuation,
   getDocumentChecklist,
   DocumentStatus,
-  Beneficiary,
 } from '../lib/estatePlanningService';
 
 const PIE_COLORS = ['#84cc16', '#22d3ee', '#f59e0b', '#a78bfa'];

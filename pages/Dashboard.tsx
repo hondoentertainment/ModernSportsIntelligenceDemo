@@ -1,4 +1,12 @@
 
+import React, {
+  Suspense,
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  lazy,
+} from 'react';
 import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import {
   CreditCard,
@@ -14,6 +22,7 @@ import {
   BarChart3,
   Package,
   RefreshCw,
+  Terminal,
   CheckCircle2,
   Clock,
   Camera,
@@ -28,8 +37,6 @@ import {
   AreaChart,
   Area,
   ResponsiveContainer,
-  XAxis,
-  YAxis,
   Tooltip,
   PieChart,
   Pie,
@@ -40,12 +47,10 @@ import {
   RadarChart,
   PolarGrid,
   PolarAngleAxis,
-  PolarRadiusAxis
 } from 'recharts';
 import { calculateAlphaScore, getCollectorTier, getPortfolioDNA } from '../lib/analytics.ts';
 import { generatePortfolioSentiment } from '../lib/gemini.ts';
 import { detectSignals } from '../lib/signals.ts';
-import { MOCK_CARDS, MOCK_INVENTORY_SUMMARY } from '../constants.tsx';
 import { syncPortfolio, SyncProgress } from '../lib/marketSync.ts';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
 import { useAlerts } from '../lib/useAlerts.ts';
@@ -56,7 +61,6 @@ import OCRIngestionModal from '../components/OCRIngestionModal.tsx';
 import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
 import { getHistoricalDelta } from '../lib/marketHistory.ts';
 import { StatsService } from '../lib/statsService.ts';
-import { generatePortfolioReport } from '../lib/pdfExport.ts';
 import { AggregationService } from '../lib/aggregationService.ts';
 import { Cloud, CloudOff, Gavel } from 'lucide-react';
 import CardImage from '../components/CardImage.tsx';
@@ -123,6 +127,8 @@ const Dashboard: React.FC = () => {
   const [marketSentiment, setMarketSentiment] = useState('Analyzing portfolio alpha signals...');
 
   // Personalization State
+  interface UserSettings { favoriteTeam?: string; primarySport?: string }
+  const [userSettings, _setUserSettings] = useState<UserSettings | null>(() => {
   const [userSettings, setUserSettings] = useState<any>(() => {
     try {
       const saved = localStorage.getItem('msi_user_settings');
@@ -185,10 +191,11 @@ const Dashboard: React.FC = () => {
 
     // Reset progress after a delay
     setTimeout(() => setSyncProgress(null), 3000);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventory, setInventory, setSyncMeta, persistSyncToCloud, createSyncAlert]);
 
   const isSyncing = syncProgress?.status === 'syncing';
-  const syncComplete = syncProgress?.status === 'complete';
+  const _syncComplete = syncProgress?.status === 'complete';
 
   // Portfolio metrics from aggregation service
   const portfolioMetrics = useMemo(() => AggregationService.calculatePortfolioMetrics(inventory), [inventory]);
@@ -197,11 +204,12 @@ const Dashboard: React.FC = () => {
   // Use real aggregated trend data for the chart
   const chartData = useMemo(() => {
     return AggregationService.getAggregatedTrendData(inventory, 14); // 14 day view for dash
+  }, [inventory]);
   }, [inventory, syncMeta.lastSyncTime]);
 
   const recentCards = inventory.slice(-3).reverse();
 
-  const sportData = useMemo(() => {
+  const _sportData = useMemo(() => {
     const counts: Record<string, number> = {};
     inventory.forEach(card => {
       counts[card.sport] = (counts[card.sport] || 0) + 1;
@@ -248,7 +256,7 @@ const Dashboard: React.FC = () => {
     };
   }, [activeLeague, inventory]);
 
-  const leagueInsights = {
+  const _leagueInsights = {
     MLB: "Market is stabilizing after off-season volatility. High demand for pristine vintage assets.",
     MiLB: "Scouting velocity is up 14%. Focus on AAA breakouts before summer call-ups.",
     NBA: "Liquidity peaking as playoffs approach. Star potential drives extreme parity in mid-tier assets.",
@@ -950,6 +958,134 @@ const Dashboard: React.FC = () => {
             )}
           </section>
 
+          {/* ─── Below-the-fold widget sections (lazy loaded) ─── */}
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Predictive Alpha Engine */}
+              <BreakoutRadar
+                inventory={inventory}
+                onCardClick={(card) => { setPredictiveCard(card); setIsPredictiveOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Multi-Agent Intelligence */}
+              <AgentInsightsPanel
+                inventory={inventory}
+                onCardClick={(card) => { setThesisCard(card); setIsThesisOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Liquidity Intelligence */}
+              <LiquidityHeatmap
+                inventory={inventory}
+                onCardClick={(card) => { setMarketDepthCard(card); setIsMarketDepthOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Liquidity Pool */}
+              <LiquidityPoolWidget
+                inventory={inventory}
+                onInstantBuy={(card) => { setInstantBuyCard(card); setIsInstantBuyOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Fiscal Intelligence */}
+              <TaxSummaryWidget
+                inventory={inventory}
+                onCardClick={(card) => { setTaxLotCard(card); setIsTaxLotOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Visual Audit Simulation */}
+              <GradeAuditWidget
+                inventory={inventory}
+                onCardClick={(card) => { setGradePredCard(card); setIsGradePredOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Portfolio Rebalancing */}
+              <RebalanceWidget
+                inventory={inventory}
+                onAlertClick={(alert) => { setRebalAlert(alert); setIsRebalAlertOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Auction Sniper Intelligence */}
+              <AuctionSniperWidget
+                inventory={inventory}
+                onListingClick={(listing) => {
+                  setAuctionListing(listing);
+                  getAnalyzeListing().then(fn => setAuctionAnalysis(fn(listing)));
+                  setIsAuctionSniperOpen(true);
+                }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Price History Charts */}
+              <PriceHistoryWidget
+                inventory={inventory}
+                onCardClick={(card) => { setPriceHistCard(card); setIsPriceHistOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Consignment Tracker */}
+              <ConsignmentWidget inventory={inventory} />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Collection Achievements */}
+              <AchievementWidget
+                inventory={inventory}
+                onViewAll={() => setIsAchievementOpen(true)}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Market Anomaly Detection */}
+              <AnomalyWidget
+                inventory={inventory}
+                onAnomalyClick={(anomaly) => { setAnomalyDetail(anomaly); setIsAnomalyOpen(true); }}
+              />
+            </Suspense>
+          </LazyErrorBoundary>
+
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              {/* Recents Section */}
+              <RecentlyIngested inventory={inventory} />
+            </Suspense>
+          </LazyErrorBoundary>
 
           {/* Recents Section */}
           <section className="reveal-section" style={{ animationDelay: '600ms' }}>

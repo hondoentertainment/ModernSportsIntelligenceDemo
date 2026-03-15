@@ -1,11 +1,19 @@
 import React, { useMemo, useState } from 'react';
-import { FileText, ArrowUpRight, ArrowDownRight, TrendingDown, Scale, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  FileText,
+  ArrowUpRight,
+  ArrowDownRight,
+  TrendingDown,
+  Scale,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react';
 import { CardInventory } from '../types';
 import { TaxLotService, CostBasisMethod } from '../lib/taxLotService';
 
 interface TaxSummaryWidgetProps {
   inventory: CardInventory[];
-  onCardClick?: (card: CardInventory) => void;
+  onCardClick?: (_card: CardInventory) => void;
 }
 
 const TaxSummaryWidget: React.FC<TaxSummaryWidgetProps> = ({ inventory, onCardClick }) => {

@@ -7,8 +7,6 @@ import {
   Shield,
   Upload,
   Sliders,
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
   Check,
   ChevronRight,
@@ -33,8 +31,6 @@ import {
 import {
   AssetCategory,
   RiskTolerance,
-  CrossHobbyPortfolio,
-  CategoryAllocation,
   AssetImportData,
   getUnifiedPortfolio,
   getCategoryAllocation,

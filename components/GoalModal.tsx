@@ -5,7 +5,6 @@ import {
   Plus,
   Trash2,
   TrendingUp,
-  TrendingDown,
   Clock,
   Flag,
   DollarSign,
@@ -15,12 +14,10 @@ import {
   Users,
   CheckCircle2,
   AlertTriangle,
-  ChevronDown,
   Calendar,
   Layers,
 } from 'lucide-react';
 import {
-  LineChart,
   Line,
   AreaChart,
   Area,
@@ -35,14 +32,9 @@ import { CardInventory } from '../types';
 import {
   CollectionGoal,
   GoalType,
-  GoalMilestone,
-  GapAnalysis,
-  GoalTemplate,
   ArchetypeId,
   TrackingStatus,
-  getGoals,
   createGoal,
-  updateGoal,
   deleteGoal,
   refreshGoals,
   analyzeGap,
@@ -201,8 +193,8 @@ const CreateGoalForm: React.FC<{
 
 const GoalCard: React.FC<{
   goal: CollectionGoal;
-  onSelect: (id: string) => void;
-  onDelete: (id: string) => void;
+  onSelect: (_id: string) => void;
+  onDelete: (_id: string) => void;
 }> = ({ goal, onSelect, onDelete }) => {
   const colors = getTrackingColor(goal.trackingStatus);
   const days = daysRemaining(goal.targetDate);
@@ -284,7 +276,7 @@ const GoalCard: React.FC<{
 const GoalsTab: React.FC<{
   goals: CollectionGoal[];
   cards: CardInventory[];
-  onSelect: (id: string) => void;
+  onSelect: (_id: string) => void;
   onRefresh: () => void;
 }> = ({ goals, cards, onSelect, onRefresh }) => {
   const handleDelete = useCallback((id: string) => {
@@ -354,7 +346,7 @@ const GoalsTab: React.FC<{
 const ProgressTab: React.FC<{
   goals: CollectionGoal[];
   selectedGoalId: string | null;
-  onSelectGoal: (id: string) => void;
+  onSelectGoal: (_id: string) => void;
 }> = ({ goals, selectedGoalId, onSelectGoal }) => {
   const activeGoals = goals.filter(g => g.status === 'active');
   const selected = selectedGoalId

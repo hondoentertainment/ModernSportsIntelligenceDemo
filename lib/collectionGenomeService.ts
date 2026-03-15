@@ -67,7 +67,7 @@ const TYPE_LABELS: Record<CollectorType, string> = {
   diversifier: 'Diversifier',
 };
 
-const TYPE_DESCRIPTIONS: Record<CollectorType, string> = {
+const _TYPE_DESCRIPTIONS: Record<CollectorType, string> = {
   trophy_hunter: 'You pursue the most prestigious, high-value cards regardless of market conditions. PSA 10s, rare parallels, and iconic rookie cards dominate your portfolio.',
   value_investor: 'You seek undervalued cards with strong fundamentals and long-term upside. Patient accumulation of mispriced assets is your hallmark strategy.',
   prospect_speculator: 'You bet on future potential, loading up on young talent before breakout seasons. High risk, high reward defines your approach.',
@@ -312,7 +312,6 @@ import {
   getAllFingerprints,
   type DNAStats,
   type CounterfeitAlert,
-  type CardFingerprint,
 } from './cardDNAService';
 
 export interface GenomeDNAInsights {
@@ -332,7 +331,7 @@ export interface GenomeDNAInsights {
 export function getGenomeDNAInsights(): GenomeDNAInsights {
   const dnaStats = getDNAStats();
   const alerts = getCounterfeitAlerts();
-  const fingerprints = getAllFingerprints();
+  const _fingerprints = getAllFingerprints();
 
   const avgConfidence = dnaStats.averageConfidence;
   const authRate = dnaStats.totalScanned > 0

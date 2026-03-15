@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Calendar, Target, Zap, Clock, ShieldCheck, Activity, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Calendar, Target, Zap, Clock, Activity, ChevronRight, ChevronLeft } from 'lucide-react';
 import { generateDailySchedule, GameMatchup } from '../lib/matchupEngine.ts';
 
 const Games: React.FC = () => {

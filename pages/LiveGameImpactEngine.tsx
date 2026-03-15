@@ -1,7 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Radio, TrendingUp, TrendingDown, Activity, Clock, Target, Trophy,
-  BarChart3, History, Bell, Zap, AlertTriangle, RefreshCw, ChevronRight
+  Radio,
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  Target,
+  Trophy,
+  BarChart3,
+  History,
+  Bell,
+  Zap,
+  AlertTriangle,
+  RefreshCw,
+  ChevronRight,
 } from 'lucide-react';
 import {
   getActiveGames,
@@ -12,10 +23,8 @@ import {
   getMilestoneAlerts,
   getAlertPreferences,
   updateAlertPreference,
-  getAllLiveEvents,
   getPlayerPerformances,
   type LiveGame,
-  type GameEvent,
   type PortfolioImpactCard,
   type PriceProjection,
   type HistoricalCorrelation,
@@ -24,7 +33,15 @@ import {
   type PlayerPerformance,
 } from '../lib/liveGameImpactEngineService.ts';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, Cell } from 'recharts';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 const LiveGameImpactEngine: React.FC = () => {
   const [games, setGames] = useState<LiveGame[]>([]);
@@ -32,7 +49,7 @@ const LiveGameImpactEngine: React.FC = () => {
   const [milestones, setMilestones] = useState<MilestoneAlert[]>([]);
   const [correlations, setCorrelations] = useState<HistoricalCorrelation[]>([]);
   const [alertPrefs, setAlertPrefs] = useState<AlertPreference[]>([]);
-  const [performances, setPerformances] = useState<PlayerPerformance[]>([]);
+  const [_performances, setPerformances] = useState<PlayerPerformance[]>([]);
   const [selectedProjection, setSelectedProjection] = useState<PriceProjection | null>(null);
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const [historyFilter, setHistoryFilter] = useState<string>('');
@@ -56,7 +73,7 @@ const LiveGameImpactEngine: React.FC = () => {
       setLoading(false);
       setPulse(true);
       setTimeout(() => setPulse(false), 500);
-    } catch (err) {
+    } catch  {
       setError('Failed to load live game data');
       setLoading(false);
     }

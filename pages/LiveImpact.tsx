@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Radio, TrendingUp, TrendingDown, Zap, Activity, Clock, RefreshCw } from 'lucide-react';
+import { Radio, TrendingUp, TrendingDown, Zap } from 'lucide-react';
 import { getLiveGames, getGameDaySnapshot, getLiveImpactAlerts, type LiveGame } from '../lib/liveGameImpactService.ts';
-import LiveGameImpactWidget from '../components/LiveGameImpactWidget.tsx';
 import LiveGameImpactModal from '../components/LiveGameImpactModal.tsx';
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 
 const LiveImpact: React.FC = () => {
   const [games, setGames] = useState<LiveGame[]>([]);

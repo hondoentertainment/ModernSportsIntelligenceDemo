@@ -1,14 +1,33 @@
 
 import React, { useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
-import { ShieldCheck, TrendingUp, AlertTriangle, Target, Briefcase, GitCompare, ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+  PieChart,
+  Pie,
+} from 'recharts';
+import {
+  ShieldCheck,
+  TrendingUp,
+  AlertTriangle,
+  Target,
+  Briefcase,
+  GitCompare,
+  ArrowUpRight,
+  Activity,
+} from 'lucide-react';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
 import { AggregationService } from '../lib/aggregationService.ts';
 
 const PortfolioAudit: React.FC = () => {
     const { inventory } = useSupabaseInventory();
 
-    const metrics = useMemo(() => AggregationService.calculatePortfolioMetrics(inventory), [inventory]);
+    const _metrics = useMemo(() => AggregationService.calculatePortfolioMetrics(inventory), [inventory]);
     const benchmarks = useMemo(() => AggregationService.getBenchmarkComparison(inventory), [inventory]);
 
     const diversityData = useMemo(() => {

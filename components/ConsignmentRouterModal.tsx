@@ -1,20 +1,27 @@
 // Consignment Router Modal — platform comparison table + fee breakdown
 import React, { useState, useMemo } from 'react';
 import {
-  X, Route, DollarSign, Clock, Users, TrendingUp, Award,
-  ArrowUpRight, ArrowDownRight, BarChart3, Percent, ChevronDown, ChevronUp,
+  X,
+  Route,
+  DollarSign,
+  Clock,
+  Users,
+  TrendingUp,
+  Award,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
 } from 'recharts';
-import {
-  getConsignmentOptions,
-  getPlatformComparison,
-  getLiquidityEnrichedConsignment,
-  ConsignmentOption,
-  PlatformComparison,
-  LiquidityEnrichedConsignment,
-} from '../lib/consignmentRouterService';
+import { getConsignmentOptions, getLiquidityEnrichedConsignment, ConsignmentOption } from '../lib/consignmentRouterService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 

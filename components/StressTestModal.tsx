@@ -26,18 +26,14 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
   ReferenceLine,
 } from 'recharts';
-import { CardInventory, Sport } from '../types';
+import { CardInventory } from '../types';
 import {
   StressScenario,
   StressTestResult,
   ScenarioShock,
   TimeHorizon,
-  PercentileBand,
-  ConcentrationRisk,
-  HedgingRecommendation,
   runStressTest,
   getAllScenarios,
   createCustomScenario,
@@ -173,7 +169,7 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({ isOpen, onClos
     { target: 'all', magnitude: -0.20, durationMonths: 6, recoveryMonths: 12 },
   ]);
 
-  const scenarios = useMemo(() => getAllScenarios(), [result]);
+  const scenarios = useMemo(() => getAllScenarios(), []);
 
   const handleRunTest = useCallback(() => {
     if (cards.length === 0) return;

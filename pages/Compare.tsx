@@ -1,8 +1,26 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { GitCompare, ArrowRightLeft, TrendingUp, TrendingDown, DollarSign, Trophy, Star, ChevronDown, Sparkles, Share2, Check, Loader2 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import {
+  GitCompare,
+  ArrowRightLeft,
+  TrendingUp,
+  Trophy,
+  ChevronDown,
+  Sparkles,
+  Share2,
+  Check,
+  Loader2,
+} from 'lucide-react';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
 import { useInventory } from '../lib/useInventory.ts';
 import { CardInventory } from '../types.ts';
 import { generateCompareAnalysis } from '../lib/compareAnalysis.ts';
@@ -112,9 +130,9 @@ const Compare: React.FC = () => {
     label
   }: {
     selectedCard: CardInventory | undefined;
-    onSelect: (id: string) => void;
+    onSelect: (_id: string) => void;
     isOpen: boolean;
-    setIsOpen: (open: boolean) => void;
+    setIsOpen: (_open: boolean) => void;
     excludeId: string | null;
     label: string;
   }) => (

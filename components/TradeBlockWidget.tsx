@@ -21,7 +21,7 @@ interface TradeBlockWidgetProps {
 }
 
 export const TradeBlockWidget: React.FC<TradeBlockWidgetProps> = ({ inventory, onClick }) => {
-  const stats = useMemo(() => getTradeStats(inventory), [inventory]);
+  const _stats = useMemo(() => getTradeStats(inventory), [inventory]);
 
   const listings = useMemo(() => getTradeBlock(), []);
 
@@ -56,7 +56,7 @@ export const TradeBlockWidget: React.FC<TradeBlockWidgetProps> = ({ inventory, o
   }, [listings, inventory]);
 
   // Recompute stats after offer generation
-  const liveStats = useMemo(() => getTradeStats(inventory), [inventory, listings]);
+  const liveStats = useMemo(() => getTradeStats(inventory), [inventory]);
 
   return (
     <button

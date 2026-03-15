@@ -7,8 +7,6 @@ import {
   Calendar,
   Plus,
   Trash2,
-  TrendingUp,
-  TrendingDown,
   ChevronDown,
   AlertCircle,
 } from 'lucide-react';
@@ -28,7 +26,6 @@ import {
   SealedProduct,
   WaxPortfolioEntryWithValue,
   HoldVsRipAnalysis,
-  ProductRelease,
   getWaxPortfolio,
   getSealedProducts,
   addToWaxPortfolio,
@@ -58,7 +55,7 @@ const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
 
 const PortfolioTab: React.FC<{
   portfolio: WaxPortfolioEntryWithValue[];
-  onRemove: (entryId: string) => void;
+  onRemove: (_entryId: string) => void;
 }> = ({ portfolio, onRemove }) => {
   const totalValue = portfolio.reduce((s, e) => s + e.currentTotalValue, 0);
   const totalCost = portfolio.reduce((s, e) => s + e.totalCost, 0);
@@ -146,7 +143,7 @@ const PortfolioTab: React.FC<{
 // ---- Browse Tab ----
 
 const BrowseTab: React.FC<{
-  onAdd: (productId: string, quantity: number, costBasis: number) => void;
+  onAdd: (_productId: string, _quantity: number, _costBasis: number) => void;
 }> = ({ onAdd }) => {
   const products = useMemo(() => getSealedProducts(), []);
   const [sportFilter, setSportFilter] = useState<string>('all');
@@ -472,7 +469,7 @@ const CalendarTab: React.FC = () => {
         const sc = getSportColor(release.sport);
         const releaseDate = new Date(release.releaseDate);
         const daysUntil = Math.ceil((releaseDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        const dateStr = releaseDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const _dateStr = releaseDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
         return (
           <div
@@ -539,9 +536,9 @@ const CalendarTab: React.FC = () => {
 
 export const WaxInvestModal: React.FC<WaxInvestModalProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabId>('portfolio');
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [_refreshKey, setRefreshKey] = useState(0);
 
-  const portfolio = useMemo(() => getWaxPortfolio(), [refreshKey]);
+  const portfolio = useMemo(() => getWaxPortfolio(), []);
 
   const handleRemove = useCallback((entryId: string) => {
     removeFromWaxPortfolio(entryId);

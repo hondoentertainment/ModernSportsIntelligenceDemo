@@ -1,11 +1,23 @@
 import React, { useState, useMemo } from 'react';
 import {
-  X, Users, TrendingUp, TrendingDown, Minus, Zap, Shield,
-  BarChart3, Bell, Clock, AlertTriangle, Activity, Settings,
+  X,
+  Users,
+  Shield,
+  Bell,
+  Clock,
+  Activity,
+  Settings,
 } from 'lucide-react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
 } from 'recharts';
 import {
   getTopInfluencers,
@@ -19,14 +31,9 @@ import {
   platformIcon,
   platformColor,
   phaseLabel,
-  phaseColor,
   actionLabel,
   actionColor,
-  signalColor,
   signalLabel,
-  type Influencer,
-  type InfluenceMention,
-  type HypeDecayModel,
   type CardCategory,
 } from '../lib/influenceGraphService';
 
@@ -46,7 +53,7 @@ const CATEGORY_FILTERS: { label: string; value: CardCategory | 'all' }[] = [
   { label: 'Soccer', value: 'soccer' },
 ];
 
-const priorityBadge = (p: string) => {
+const _priorityBadge = (p: string) => {
   const map: Record<string, string> = {
     critical: 'bg-red-500/20 text-red-400 border-red-500/40',
     high: 'bg-orange-500/20 text-orange-400 border-orange-500/40',

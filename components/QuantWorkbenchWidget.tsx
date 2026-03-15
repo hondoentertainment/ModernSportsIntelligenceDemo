@@ -11,8 +11,7 @@ const QuantWorkbenchWidget: React.FC<QuantWorkbenchWidgetProps> = ({ onOpenModal
     const strategies = getSavedStrategies();
     const lastResult = strategies
       .filter(s => s.lastResult)
-      .sort((a, b) => (b.lastRun || '').localeCompare(a.lastRun || ''))
-      [0];
+      .sort((a, b) => (b.lastRun || '').localeCompare(a.lastRun || ''))[0];
 
     let lastReturn: string | null = null;
     if (lastResult?.lastResult?.resultType === 'chart' && Array.isArray(lastResult.lastResult.output)) {

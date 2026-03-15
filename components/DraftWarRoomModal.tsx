@@ -1,10 +1,29 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import {
-  X, Users, Target, Zap, TrendingUp, TrendingDown,
-  Calendar, Star, Shield, Clock, ChevronDown, ChevronUp, MapPin,
-  AlertTriangle, ArrowUpRight, ArrowDownRight
+  X,
+  Users,
+  Target,
+  TrendingUp,
+  Calendar,
+  Star,
+  Shield,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  MapPin,
+  AlertTriangle,
+  ArrowUpRight,
+  ArrowDownRight,
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 import {
   getDraftEvents,
   getDraftProspects,
@@ -16,14 +35,9 @@ import {
   unwatchProspect,
   isProspectWatched,
   getProspectTrajectoryComparisons,
-  type DraftProspect,
-  type LandingSpotAnalysis,
-  type DraftNightStrategy,
-  type DraftEvent,
   type CardPresence,
   type LandingSpotFit,
   type DraftStrategy,
-  type ProspectTrajectoryComparison,
 } from '../lib/draftWarRoomService';
 
 interface Props {

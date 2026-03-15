@@ -3,7 +3,6 @@ import {
   X,
   PieChart,
   TrendingUp,
-  TrendingDown,
   Target,
   Award,
   Activity,
@@ -323,7 +322,7 @@ function AlphaBetaTab({
   decomposition: PerformanceDecomposition;
   scatterData: { portfolioReturn: number; benchmarkReturn: number; month: string }[];
   period: Period;
-  setPeriod: (p: Period) => void;
+  setPeriod: (_p: Period) => void;
 }) {
   const pieData = [
     { name: 'Skill (Alpha)', value: decomposition.percentSkill, color: '#84cc16' },

@@ -1,4 +1,8 @@
 
+import { CardInventory, TargetWatchlist } from '../types.ts';
+import { getEbayCardPrice, getWatchlistItemPrice } from './gemini.ts';
+import { recordBatchSnapshots } from './priceHistory.ts';
+import { showToast } from './toast.ts';
 import { CardInventory, PricingAnalysis, TargetWatchlist } from "../types.ts";
 import { getEbayCardPrice, getWatchlistItemPrice } from "./gemini.ts";
 import { recordBatchSnapshots } from "./priceHistory.ts";
@@ -38,9 +42,9 @@ export interface PortfolioSnapshot {
  */
 async function throttledParallel<T, R>(
     items: T[],
-    fn: (item: T) => Promise<R>,
+    fn: (_item: T) => Promise<R>,
     limit: number,
-    onProgress?: (current: number, total: number) => void
+    onProgress?: (_current: number, _total: number) => void
 ): Promise<R[]> {
     const results: R[] = [];
 
@@ -86,7 +90,7 @@ async function syncCardValue(card: CardInventory): Promise<CardInventory> {
  */
 export async function syncPortfolio(
     inventory: CardInventory[],
-    onProgress?: (progress: SyncProgress) => void
+    onProgress?: (_progress: SyncProgress) => void
 ): Promise<{ inventory: CardInventory[]; result: SyncResult }> {
     const startTime = Date.now();
     const errors: string[] = [];
@@ -111,7 +115,7 @@ export async function syncPortfolio(
             return updated;
         },
         CONCURRENT_LIMIT,
-        (current, total) => {
+        (current, _total) => {
             progress.current = current;
             if (onProgress) onProgress({ ...progress });
         }
@@ -228,7 +232,7 @@ export interface WatchlistSyncResult {
  */
 export async function syncWatchlistPrices(
     targets: TargetWatchlist[],
-    onProgress?: (current: number, total: number) => void
+    onProgress?: (_current: number, _total: number) => void
 ): Promise<WatchlistSyncResult> {
     const startTime = Date.now();
     const activeTargets = targets.filter(t => t.status === 'active');

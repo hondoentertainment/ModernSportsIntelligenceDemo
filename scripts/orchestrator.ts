@@ -154,9 +154,7 @@ function generateFiles(rootDir: string, spec: FeatureSpec): GeneratedFile[] {
   // 1. Service
   const serviceTemplate = fs.readFileSync(path.join(templatesDir, 'service.template.ts'), 'utf-8');
   const servicePath = path.join(rootDir, 'lib', `${camel}Service.ts`);
-  if (fs.existsSync(servicePath)) {
-    console.log(`  ⊘ Service already exists: lib/${camel}Service.ts (skipping)`);
-  } else {
+  if (!fs.existsSync(servicePath)) {
     fs.writeFileSync(servicePath, applyTemplate(serviceTemplate, spec));
     generated.push({ path: servicePath, description: `lib/${camel}Service.ts` });
   }
@@ -164,9 +162,7 @@ function generateFiles(rootDir: string, spec: FeatureSpec): GeneratedFile[] {
   // 2. Widget
   const widgetTemplate = fs.readFileSync(path.join(templatesDir, 'widget.template.tsx'), 'utf-8');
   const widgetPath = path.join(rootDir, 'components', `${pascal}Widget.tsx`);
-  if (fs.existsSync(widgetPath)) {
-    console.log(`  ⊘ Widget already exists: components/${pascal}Widget.tsx (skipping)`);
-  } else {
+  if (!fs.existsSync(widgetPath)) {
     fs.writeFileSync(widgetPath, applyTemplate(widgetTemplate, spec));
     generated.push({ path: widgetPath, description: `components/${pascal}Widget.tsx` });
   }
@@ -174,9 +170,7 @@ function generateFiles(rootDir: string, spec: FeatureSpec): GeneratedFile[] {
   // 3. Modal
   const modalTemplate = fs.readFileSync(path.join(templatesDir, 'modal.template.tsx'), 'utf-8');
   const modalPath = path.join(rootDir, 'components', `${pascal}Modal.tsx`);
-  if (fs.existsSync(modalPath)) {
-    console.log(`  ⊘ Modal already exists: components/${pascal}Modal.tsx (skipping)`);
-  } else {
+  if (!fs.existsSync(modalPath)) {
     fs.writeFileSync(modalPath, applyTemplate(modalTemplate, spec));
     generated.push({ path: modalPath, description: `components/${pascal}Modal.tsx` });
   }
@@ -184,9 +178,7 @@ function generateFiles(rootDir: string, spec: FeatureSpec): GeneratedFile[] {
   // 4. Page
   const pageTemplate = fs.readFileSync(path.join(templatesDir, 'page.template.tsx'), 'utf-8');
   const pagePath = path.join(rootDir, 'pages', `${pascal}.tsx`);
-  if (fs.existsSync(pagePath)) {
-    console.log(`  ⊘ Page already exists: pages/${pascal}.tsx (skipping)`);
-  } else {
+  if (!fs.existsSync(pagePath)) {
     fs.writeFileSync(pagePath, applyTemplate(pageTemplate, spec));
     generated.push({ path: pagePath, description: `pages/${pascal}.tsx` });
   }
@@ -204,7 +196,6 @@ function wireAppTsx(rootDir: string, spec: FeatureSpec): boolean {
 
   // Check if already wired
   if (content.includes(`import('./pages/${pascal}.tsx')`)) {
-    console.log(`  ⊘ App.tsx already has lazy import for ${pascal} (skipping)`);
     return false;
   }
 
@@ -252,7 +243,6 @@ function wireConstants(rootDir: string, spec: FeatureSpec): boolean {
 
   // Check if already wired
   if (content.includes(`id: '${navId}'`)) {
-    console.log(`  ⊘ constants.tsx already has nav item '${navId}' (skipping)`);
     return false;
   }
 
@@ -300,7 +290,6 @@ function wireFeatureCatalog(rootDir: string, spec: FeatureSpec): boolean {
 
   // Check if already wired
   if (content.includes(`id: '${featureId}'`)) {
-    console.log(`  ⊘ featureCatalog.ts already has feature '${featureId}' (skipping)`);
     return false;
   }
 
@@ -396,70 +385,33 @@ export function orchestrate(spec: FeatureSpec, rootDir?: string): { success: boo
   const root = rootDir || path.resolve(process.cwd());
   const errors: string[] = [];
 
-  console.log(`\n╔══════════════════════════════════════════════════════════════╗`);
-  console.log(`║  MSI Orchestrator — Feature Builder                        ║`);
-  console.log(`╚══════════════════════════════════════════════════════════════╝\n`);
-  console.log(`  Feature:     ${spec.name}`);
-  console.log(`  Phase:       ${spec.phase}`);
-  console.log(`  Tier:        ${normalizeTier(spec.tier)}`);
-  console.log(`  Category:    ${spec.category}`);
-  console.log(`  Icon:        ${spec.icon}`);
-  console.log(`  Description: ${spec.description}\n`);
-
   // Step 1: Generate files
-  console.log('─── Step 1: Generating files ───────────────────────────────────\n');
   const generated = generateFiles(root, spec);
-  generated.forEach(f => console.log(`  ✓ Created ${f.description}`));
-  if (generated.length === 0) {
-    console.log('  (all files already exist)');
-  }
-  console.log('');
+  generated.forEach(f => console.warn(`  ✓ Created ${f.description}`));
 
   // Step 2: Wire into App.tsx
-  console.log('─── Step 2: Wiring App.tsx ─────────────────────────────────────\n');
-  if (wireAppTsx(root, spec)) {
-    console.log(`  ✓ Added lazy import and route to App.tsx`);
-  }
-  console.log('');
+  wireAppTsx(root, spec);
 
   // Step 3: Wire into constants.tsx
-  console.log('─── Step 3: Wiring constants.tsx ───────────────────────────────\n');
-  if (wireConstants(root, spec)) {
-    console.log(`  ✓ Added nav item to constants.tsx`);
-  }
-  console.log('');
+  wireConstants(root, spec);
 
   // Step 4: Wire into featureCatalog.ts
-  console.log('─── Step 4: Wiring featureCatalog.ts ───────────────────────────\n');
-  if (wireFeatureCatalog(root, spec)) {
-    console.log(`  ✓ Added feature entry to featureCatalog.ts`);
-  }
-  console.log('');
+  wireFeatureCatalog(root, spec);
 
   // Step 5: Validate cross-references
-  console.log('─── Step 5: Validating cross-references ────────────────────────\n');
   const validationErrors = validateCrossReferences(root, spec);
-  if (validationErrors.length === 0) {
-    console.log('  ✓ All cross-references valid');
-  } else {
+  if (validationErrors.length > 0) {
     validationErrors.forEach(e => {
-      console.log(`  ✗ ${e}`);
       errors.push(e);
     });
   }
-  console.log('');
 
   // Step 6: Type check
-  console.log('─── Step 6: Type checking ──────────────────────────────────────\n');
   const generatedPaths = generated.map(g => g.path);
   const typeCheck = runTypeCheck(root, generatedPaths);
-  if (typeCheck.success) {
-    console.log('  ✓ Type check passed');
-  } else {
-    console.log(`  ✗ Type check errors:\n${typeCheck.output}`);
+  if (!typeCheck.success) {
     errors.push('Type check failed for generated files');
   }
-  console.log('');
 
   // Summary
   const allFiles = [
@@ -472,18 +424,10 @@ export function orchestrate(spec: FeatureSpec, rootDir?: string): { success: boo
     'lib/featureCatalog.ts (modified)',
   ];
 
-  console.log('═══════════════════════════════════════════════════════════════\n');
   if (errors.length === 0) {
-    console.log('  ✓ SUCCESS — Feature fully generated and wired!\n');
-    console.log('  Files touched:');
-    allFiles.forEach(f => console.log(`    • ${f}`));
-    console.log(`\n  Route: ${toRoutePath(spec.name)}`);
-    console.log(`  Nav ID: ${toNavId(spec.name)}`);
-    console.log(`  Feature ID: ${toFeatureId(spec.name)}\n`);
+    allFiles.forEach(f => console.warn(`    • ${f}`));
   } else {
-    console.log(`  ✗ COMPLETED WITH ${errors.length} ERROR(S):\n`);
-    errors.forEach(e => console.log(`    • ${e}`));
-    console.log('');
+    errors.forEach(e => console.warn(`    • ${e}`));
   }
 
   return {

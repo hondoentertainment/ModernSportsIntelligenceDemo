@@ -1,4 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+} from 'vitest';
 import {
   generateCommunityProfiles,
   calculateUserMetrics,
@@ -7,7 +13,6 @@ import {
   getMonthlyChallenge,
   evaluateChallengeProgress,
   getCommunityStats,
-  getDealSummary,
 } from '../../lib/benchmarkService';
 import type { LeaderboardCategory } from '../../lib/benchmarkService';
 import { makeCard, setupLocalStorageMock } from '../helpers';

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { CloudRain, Thermometer, Wind, AlertTriangle, TrendingUp, MapPin, Award } from 'lucide-react';
+import { CloudRain, Thermometer, AlertTriangle, TrendingUp, Award } from 'lucide-react';
 import {
   getWeatherStats,
   getWeatherGameImpacts,

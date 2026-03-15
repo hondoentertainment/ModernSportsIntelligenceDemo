@@ -1,7 +1,7 @@
 // Consignment Router Widget — compact dashboard card
 import React, { useMemo } from 'react';
 import { Route, ChevronRight, DollarSign, TrendingUp } from 'lucide-react';
-import { getConsignmentOptions, ConsignmentOption } from '../lib/consignmentRouterService';
+import { getConsignmentOptions } from '../lib/consignmentRouterService';
 
 interface ConsignmentRouterWidgetProps {
   onOpenModal: () => void;

@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import { CardInventory } from '../types';
 import {
-  CurrencyCode,
   CURRENCIES,
   getSelectedCurrency,
   getAllExchangeRates,

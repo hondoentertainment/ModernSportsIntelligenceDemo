@@ -20,7 +20,6 @@ import {
   ChevronDown,
   ChevronUp,
   FileWarning,
-  ExternalLink,
 } from 'lucide-react';
 import {
   getMyRegisteredCards,
@@ -30,8 +29,6 @@ import {
   getCrossPlatformSightings,
   verifyBeforePurchase,
   registerCard,
-  type DigitalTwin,
-  type FraudAlert,
   type VerificationResult,
 } from '../lib/provenanceChainService.ts';
 

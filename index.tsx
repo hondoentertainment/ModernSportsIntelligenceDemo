@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { validateEnv } from './lib/envValidation.ts';
 import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
 import { validateRuntimeConfig } from './lib/runtimeConfig';
@@ -10,6 +11,8 @@ if (!configValidation.ok) {
     console.warn(`[RuntimeConfig:${issue.key}] ${issue.message}`);
   });
 }
+
+validateEnv();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

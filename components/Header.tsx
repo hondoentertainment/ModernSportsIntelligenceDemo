@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Search, Bell, ChevronDown, User, LogOut, Settings, Terminal } from 'lucide-react';
 import { Search, Bell, ChevronDown, User, LogOut, Settings, Terminal, Zap, Shield, Sparkles, Maximize2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory';

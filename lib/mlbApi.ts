@@ -238,8 +238,8 @@ export async function getProbablePitchers(
  * @param playerId The MLB player ID
  * @param size The size of the image (66x90, 213x320, or 426x640)
  */
-export function getAthleteHeadshotUrl(playerId: number, size: 'small' | 'medium' | 'large' = 'medium'): string {
-  const sizeMap = {
+export function getAthleteHeadshotUrl(playerId: number, _size: 'small' | 'medium' | 'large' = 'medium'): string {
+  const _sizeMap = {
     small: '66x90',
     medium: '213x320',
     large: '426x640'

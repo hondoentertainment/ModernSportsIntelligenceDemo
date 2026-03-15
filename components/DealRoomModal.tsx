@@ -1,16 +1,42 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  X, MessageSquare, Lock, Shield, Send, DollarSign,
-  Plus, Search, Filter, Clock, Users, CheckCircle,
-  AlertTriangle, ArrowUpRight, ArrowDownRight, BarChart3,
-  Eye, Bell, Star, TrendingUp, ChevronLeft
+  X,
+  MessageSquare,
+  Lock,
+  Shield,
+  Send,
+  DollarSign,
+  Plus,
+  Filter,
+  Clock,
+  Users,
+  CheckCircle,
+  BarChart3,
+  Eye,
+  Bell,
+  TrendingUp,
+  ChevronLeft,
 } from 'lucide-react';
 import {
-  DealRoom, DealMessage, IOIBroadcast,
-  getDealRooms, createDealRoom, sendMessage, makeOffer,
-  getIOIBoard, broadcastIOI, getDealFlowStats, getMonthlyVolume
+  DealRoom,
+  DealMessage,
+  getDealRooms,
+  createDealRoom,
+  sendMessage,
+  makeOffer,
+  getIOIBoard,
+  getDealFlowStats,
+  getMonthlyVolume,
 } from '../lib/dealRoomService';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 
 interface Props {
   isOpen: boolean;
@@ -140,7 +166,7 @@ const ChatRoom: React.FC<{ room: DealRoom; onBack: () => void }> = ({ room, onBa
             <span>E2E</span>
           </div>
           <div className="flex -space-x-1.5">
-            {room.participants.slice(0, 4).map((p, i) => (
+            {room.participants.slice(0, 4).map((p, _i) => (
               <div key={p.id} className={`w-6 h-6 rounded-full border-2 border-slate-800 flex items-center justify-center text-[9px] font-bold ${p.verified ? 'bg-amber-500/30 text-amber-300' : 'bg-slate-700 text-slate-400'}`}>
                 {p.name[0]}
               </div>

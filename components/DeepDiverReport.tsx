@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search, TrendingUp, Shield, Zap, Sparkles, FileDown, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, Shield, Zap, Sparkles, FileDown, ArrowUpRight } from 'lucide-react';
 
 interface DeepDiverReportProps {
     cardName?: string;

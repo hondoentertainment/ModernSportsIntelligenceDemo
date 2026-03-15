@@ -1,10 +1,15 @@
 import React, { useMemo } from 'react';
-import { FileText, ChevronRight, BookOpen, Star, TrendingUp } from 'lucide-react';
+import {
+  FileText,
+  ChevronRight,
+  BookOpen,
+  Star,
+  TrendingUp,
+} from 'lucide-react';
 import {
   getRecentReports,
   getContrarianPicks,
   getUnreadCount,
-  ResearchReport,
   ReportType,
 } from '../lib/researchReportsService';
 

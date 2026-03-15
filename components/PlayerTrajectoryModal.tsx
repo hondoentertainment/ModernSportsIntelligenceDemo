@@ -1,16 +1,23 @@
 import React, { useState, useMemo } from 'react';
-import { X, GitBranch, TrendingUp, Users, BarChart3, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, Legend,
+  X,
+  GitBranch,
+  Users,
+  BarChart3,
+  ArrowUpRight,
+  ArrowDownRight,
+} from 'lucide-react';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
 } from 'recharts';
-import {
-  getPlayerTrajectory,
-  getAllPlayerTrajectories,
-  getPlayerIds,
-  PlayerTrajectoryData,
-  PlayerComparable,
-} from '../lib/playerTrajectoryService';
+import { getPlayerTrajectory, getPlayerIds } from '../lib/playerTrajectoryService';
 
 interface PlayerTrajectoryModalProps {
   isOpen: boolean;

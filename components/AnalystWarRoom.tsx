@@ -34,6 +34,7 @@ const AnalystWarRoom: React.FC = () => {
         if (inventory.length > 0 && !thesis) {
             generateThesis();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inventory]);
 
     // Polling for autopilot status changes (simplified for demo)

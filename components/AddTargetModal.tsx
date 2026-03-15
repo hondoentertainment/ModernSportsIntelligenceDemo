@@ -1,15 +1,22 @@
 
 import React, { useState } from 'react';
-import { X, Target, DollarSign, Star, FileText, Trophy } from 'lucide-react';
+import {
+  X,
+  Target,
+  DollarSign,
+  Star,
+  FileText,
+  Trophy,
+} from 'lucide-react';
 import { TargetWatchlist, Sport, League } from '../types.ts';
 
 interface AddTargetModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAdd: (target: Omit<TargetWatchlist, 'id' | 'createdAt' | 'status'>) => void;
+    onAdd: (_target: Omit<TargetWatchlist, 'id' | 'createdAt' | 'status'>) => void;
     editTarget?: TargetWatchlist | null;
     initialData?: Partial<TargetWatchlist> | null;
-    onUpdate?: (id: string, updates: Partial<TargetWatchlist>) => void;
+    onUpdate?: (_id: string, _updates: Partial<TargetWatchlist>) => void;
 }
 
 const SPORTS: Sport[] = ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];

@@ -187,7 +187,7 @@ function generateFingerprint(): CardFingerprint {
   };
 }
 
-function formatCurrency(n: number): string {
+function _formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 }
 
@@ -582,7 +582,7 @@ export function getAuthenticityScore(cardId: string): AuthenticityScore {
 
 export function getRegistryStats(): RegistryStats {
   const totalValue = MOCK_TWINS.reduce((s, t) => s + t.currentValue, 0);
-  const fraudValue = MOCK_FRAUD_ALERTS.reduce((s, a) => s + a.estimatedValueAtRisk, 0);
+  const _fraudValue = MOCK_FRAUD_ALERTS.reduce((s, a) => s + a.estimatedValueAtRisk, 0);
   return {
     totalCardsRegistered: MOCK_TWINS.length + 1847, // simulated broader registry
     fraudPrevented: 23,

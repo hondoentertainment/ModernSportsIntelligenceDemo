@@ -6,7 +6,6 @@ import {
   Shield,
   TrendingUp,
   Receipt,
-  Clock,
   Download,
   Printer,
   FileJson,
@@ -135,7 +134,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
   const [generating, setGenerating] = useState(false);
   const [sportDropdownOpen, setSportDropdownOpen] = useState(false);
 
-  const history = useMemo(() => getReportHistory(), [activeTab, currentReport]);
+  const history = useMemo(() => getReportHistory(), []);
 
   const handleGenerate = useCallback(() => {
     setGenerating(true);

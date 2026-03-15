@@ -26,8 +26,6 @@ import {
   calculateMovingAverage,
   calculateBollingerBands,
   ChartTimeRange,
-  PriceDataPoint,
-  PriceStatistics,
   ChartAnnotation,
 } from '../lib/priceChartService';
 
@@ -72,7 +70,7 @@ interface ChartDataPoint {
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, _label }: any) => {
   if (!active || !payload || !payload.length) return null;
   const data = payload[0]?.payload as ChartDataPoint | undefined;
   if (!data) return null;

@@ -523,7 +523,7 @@ export function getHarvestCalendar(cards: CardInventory[], bracketInfo: TaxBrack
 
   return MONTH_NAMES.map((name, i) => {
     const monthOffset = (i - currentMonth + 12) % 12;
-    const seed = dateSeed() + i;
+    const _seed = dateSeed() + i;
 
     // Cards whose long-term threshold falls in this month
     const approachingLT = losses.filter(l => {

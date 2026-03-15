@@ -17,7 +17,6 @@ import {
   getAllSportProfiles,
   getSeasonalWindows,
   getSeasonalAlerts,
-  SportSeasonalProfile,
 } from '../lib/seasonalStrategyService';
 
 interface SeasonalWidgetProps {

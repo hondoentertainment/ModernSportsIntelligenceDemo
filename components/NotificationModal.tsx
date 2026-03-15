@@ -16,7 +16,6 @@ import {
   ChevronRight,
   Clock,
   Eye,
-  EyeOff,
   Settings,
   FileText,
   Trash2,
@@ -27,9 +26,7 @@ import {
   Notification,
   NotificationCategory,
   NotificationPriority,
-  NotificationGroup,
   DeliveryPreference,
-  DailyDigest,
   NotificationPreferences,
   getActiveNotifications,
   getNotifications,
@@ -38,7 +35,6 @@ import {
   markAsRead,
   markAllAsRead,
   dismissNotification,
-  searchNotifications,
   generateDailyDigest,
   loadPreferences,
   savePreferences,
@@ -109,9 +105,9 @@ function formatDate(dateStr: string): string {
 
 const NotificationRow: React.FC<{
   notification: Notification;
-  onRead: (id: string) => void;
-  onDismiss: (id: string) => void;
-  onAction: (notification: Notification, actionType: string) => void;
+  onRead: (_id: string) => void;
+  onDismiss: (_id: string) => void;
+  onAction: (_notification: Notification, _actionType: string) => void;
 }> = ({ notification, onRead, onDismiss, onAction }) => {
   const pCfg = priorityConfig[notification.priority];
   const catCfg = categoryConfig[notification.category];
@@ -861,7 +857,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                 </button>
                 <button
                   onClick={() => {
-                    const defaults = loadPreferences();
+                    const _defaults = loadPreferences();
                     // Reset to factory defaults
                     const fresh: NotificationPreferences = {
                       categories: {

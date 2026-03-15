@@ -386,11 +386,7 @@ export function daysUntilDraft(dateStr: string): number {
 // ── Cross-reference: Player Trajectory (Phase 77) ────────────────────────────
 // Bridge functions to integrate trajectory projections with draft prospect analysis
 
-import {
-  getAllPlayerTrajectories,
-  type PlayerTrajectoryData,
-  type PlayerComparable,
-} from './playerTrajectoryService';
+import { getAllPlayerTrajectories } from './playerTrajectoryService';
 
 export interface ProspectTrajectoryComparison {
   prospectId: string;

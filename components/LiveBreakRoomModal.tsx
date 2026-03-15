@@ -1,6 +1,21 @@
 import React, { useState } from 'react';
-import { X, Tv, Users, Flame, Timer, Gavel, Star, Shield, Target, Crosshair, MessageSquare, DollarSign, TrendingUp, AlertTriangle } from 'lucide-react';
-import { getLiveBreakRooms, getLiveAuctions, getBreakRoomStats, getAuctionStats, getSnipeBots, type LiveBreakRoom, type LiveAuction } from '../lib/liveBreakRoomService.ts';
+import {
+  X,
+  Tv,
+  Users,
+  Flame,
+  Timer,
+  Star,
+  Crosshair,
+  AlertTriangle,
+} from 'lucide-react';
+import {
+  getLiveBreakRooms,
+  getLiveAuctions,
+  getBreakRoomStats,
+  getAuctionStats,
+  getSnipeBots,
+} from '../lib/liveBreakRoomService.ts';
 
 interface Props {
   isOpen: boolean;
@@ -9,8 +24,8 @@ interface Props {
 
 const LiveBreakRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [tab, setTab] = useState<'breaks' | 'auctions' | 'sniper' | 'stats'>('breaks');
-  const [selectedBreak, setSelectedBreak] = useState<string | null>(null);
-  const [selectedAuction, setSelectedAuction] = useState<string | null>(null);
+  const [_selectedBreak, _setSelectedBreak] = useState<string | null>(null);
+  const [_selectedAuction, _setSelectedAuction] = useState<string | null>(null);
 
   if (!isOpen) return null;
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScanEye, Camera, ChevronRight, Star, AlertCircle } from 'lucide-react';
+import { ScanEye, Camera, ChevronRight, Star } from 'lucide-react';
 import { getGradingHistory } from '../lib/visionGradingService.ts';
 
 interface Props {

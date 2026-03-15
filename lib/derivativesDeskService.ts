@@ -135,7 +135,7 @@ function blackScholes(
 
 // ---- localStorage helpers ----
 
-const LS_OPTIONS = 'msi_derivatives_options';
+const _LS_OPTIONS = 'msi_derivatives_options';
 const LS_INSURANCE = 'msi_derivatives_insurance';
 const LS_STATS = 'msi_derivatives_stats';
 

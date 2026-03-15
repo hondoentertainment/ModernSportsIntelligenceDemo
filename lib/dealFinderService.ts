@@ -178,7 +178,7 @@ export function logDealAction(
 
 // ---- Listing Generation ----
 
-const SELLER_NAMES = [
+const _SELLER_NAMES = [
   'CardKingPro', 'SlabMaster99', 'VintageFinds', 'GradedGold', 'DiamondCards',
   'TopShelfSports', 'MintCondition', 'AllStarCards', 'PremiumSlabs', 'CardVaultHQ',
   'EliteBreaks', 'ProCardDeals', 'RookieInvestor', 'HallOfFameCards', 'BigLeagueSlabs',

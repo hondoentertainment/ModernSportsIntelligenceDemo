@@ -266,7 +266,7 @@ export class CorrelationService {
         // Generate hedge nodes
         const nodes: HedgeNode[] = [];
         const overweightSports = concentrationBreakdown.filter(c => c.weight > 0.4);
-        const underweightSports = concentrationBreakdown.filter(c => c.weight < 0.2);
+        const _underweightSports = concentrationBreakdown.filter(c => c.weight < 0.2);
         const allSports: Sport[] = ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
         const missingSports = allSports.filter(s => !concentrationBreakdown.find(c => c.sport === s));
 

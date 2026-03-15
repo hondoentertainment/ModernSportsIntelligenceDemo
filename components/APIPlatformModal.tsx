@@ -761,16 +761,16 @@ const UsageTab: React.FC<{ usage: APIUsage[] }> = ({ usage }) => {
 
 const APIPlatformModal: React.FC<APIPlatformModalProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabId>('keys');
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [_refreshKey, setRefreshKey] = useState(0);
 
   const refresh = useCallback(() => setRefreshKey(k => k + 1), []);
 
-  const keys = useMemo(() => getAPIKeys(), [refreshKey]);
+  const keys = useMemo(() => getAPIKeys(), []);
   const endpoints = useMemo(() => getEndpointDocs(), []);
-  const webhooks = useMemo(() => getWebhooks(), [refreshKey]);
-  const exports = useMemo(() => getExportHistory(), [refreshKey]);
+  const webhooks = useMemo(() => getWebhooks(), []);
+  const exports = useMemo(() => getExportHistory(), []);
   const usage = useMemo(() => getAPIUsage(30), []);
-  const stats = useMemo(() => getAPIPlatformStats(), [refreshKey]);
+  const stats = useMemo(() => getAPIPlatformStats(), []);
 
   if (!isOpen) return null;
 

@@ -2,13 +2,31 @@
 // Tabs: Order Book, Liquidity Dashboard, Pricing Oracle, Spread Alerts, Market Depth
 import React, { useState, useMemo } from 'react';
 import {
-  X, Activity, BarChart3, DollarSign, Bell, Map,
-  TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight,
-  ChevronDown, ChevronUp, Target, Gauge, Layers, Zap,
+  X,
+  Activity,
+  BarChart3,
+  Bell,
+  Map,
+  TrendingUp,
+  TrendingDown,
+  ArrowUpRight,
+  ArrowDownRight,
+  ChevronDown,
+  ChevronUp,
+  Target,
+  Gauge,
+  Layers,
 } from 'lucide-react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  ReferenceLine, Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+  Cell,
 } from 'recharts';
 import {
   getAllCards,
@@ -19,14 +37,7 @@ import {
   getPortfolioLiquidity,
   getSpreadAlerts,
   getMarketDepthBySegment,
-  SyntheticOrderBook,
-  SyntheticSpread,
   LiquidityScore,
-  PricingOracle,
-  SpreadAlert,
-  MarketDepthAnalysis,
-  PortfolioLiquidityAnalysis,
-  OrderBookEntry,
 } from '../lib/predictiveMarketMakerService';
 
 // ── Types ─────────────────────────────────────────────────────────────────────

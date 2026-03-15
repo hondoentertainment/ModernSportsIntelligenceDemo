@@ -1,6 +1,13 @@
 
 import React, { useState, useRef } from 'react';
-import { X, Camera, Upload, Loader2, CheckCircle2, AlertCircle, Sparkles, ChevronRight, Activity, Image as ImageIcon } from 'lucide-react';
+import {
+  X,
+  Upload,
+  AlertCircle,
+  Sparkles,
+  Activity,
+  Image as _ImageIcon,
+} from 'lucide-react';
 import { parseCardImage } from '../lib/gemini.ts';
 import { CardInventory } from '../types.ts';
 import CameraFeed from './CameraFeed.tsx';
@@ -8,7 +15,7 @@ import CameraFeed from './CameraFeed.tsx';
 interface OCRIngestionModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSuccess: (card: Partial<CardInventory>) => void;
+    onSuccess: (_card: Partial<CardInventory>) => void;
 }
 
 const OCRIngestionModal: React.FC<OCRIngestionModalProps> = ({ isOpen, onClose, onSuccess }) => {
@@ -57,7 +64,7 @@ const OCRIngestionModal: React.FC<OCRIngestionModalProps> = ({ isOpen, onClose, 
                 setError("Alpha engine could not resolve card metadata. Please try a clearer photo or manual entry.");
                 setIsScanning(false);
             }
-        } catch (err) {
+        } catch  {
             setError("Vision system offline or parsing failed. Check network connectivity.");
             setIsScanning(false);
         }

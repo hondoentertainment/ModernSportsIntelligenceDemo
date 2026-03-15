@@ -5,8 +5,6 @@ import {
   ShieldCheck,
   Target,
   TrendingUp,
-  TrendingDown,
-  BarChart3,
   Calendar,
   ThumbsUp,
   ThumbsDown,
@@ -25,11 +23,6 @@ import {
 import { CardInventory } from '../types';
 import {
   StrategyProfile,
-  CollectionGap,
-  BuyRecommendation,
-  SellRecommendation,
-  RiskAssessment,
-  WeeklyDigest,
   getStrategy,
   setStrategy,
   getBuyRecommendations,
@@ -150,7 +143,7 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({ isOpen, onClose, inv
   const gaps = useMemo(() => analyzeGaps(inventory), [inventory]);
   const risk = useMemo(() => assessRisk(inventory), [inventory]);
   const digest = useMemo(() => generateWeeklyDigest(inventory, currentStrategy), [inventory, currentStrategy]);
-  const feedbackStats = useMemo(() => getFeedbackStats(), [feedbackGiven]);
+  const feedbackStats = useMemo(() => getFeedbackStats(), []);
 
   const handleStrategySelect = useCallback((strategy: StrategyProfile) => {
     setStrategy(strategy);

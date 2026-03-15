@@ -112,7 +112,7 @@ export interface NotificationSummary {
 
 // ---- Constants ----
 
-const STORAGE_KEY = 'msi_notification_center';
+const _STORAGE_KEY = 'msi_notification_center';
 const PREFS_KEY = 'msi_notification_prefs';
 const DIGEST_KEY = 'msi_notification_digests';
 const READ_KEY = 'msi_notification_read_ids';
