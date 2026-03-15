@@ -1,54 +1,69 @@
-// Phase 156 – Wax & Sealed Product Investment Tracker Service
+// Phase 156: Wax & Sealed Product Investment Tracker
+// Track sealed product investments, ROI calculations, rip vs hold analysis, vintage sealed, and market trends
 
 // ---- Types ----
 
-export type ProductType = 'hobby_box' | 'retail_box' | 'blaster' | 'mega_box' | 'case' | 'pack' | 'cello' | 'fat_pack';
+export type ProductType = 'hobby_box' | 'retail_box' | 'blaster' | 'mega_box' | 'hanger' | 'cello' | 'fat_pack' | 'case' | 'pack' | 'starter_kit';
 
 export interface SealedProduct {
   id: string;
   name: string;
-  sport: 'baseball' | 'basketball' | 'football' | 'hockey' | 'soccer' | 'multi';
   year: number;
+  sport: 'basketball' | 'baseball' | 'football' | 'hockey' | 'soccer' | 'multi_sport';
   brand: string;
   productType: ProductType;
+  releaseDate: string;
   releasePrice: number;
   currentPrice: number;
   allTimeHigh: number;
   allTimeLow: number;
-  estimatedSupply: number;
-  sealed: boolean;
-  description: string;
+  priceChange30d: number;
+  priceChange90d: number;
+  priceChange1y: number;
+  estimatedPrintRun: number | null;
+  keyRookies: string[];
+  rating: number;
+  available: boolean;
+  vintage: boolean;
 }
 
 export interface PriceHistory {
+  id: string;
   productId: string;
   date: string;
   price: number;
+  volume: number;
+  source: string;
 }
 
 export interface ROICalculation {
+  id: string;
   productId: string;
   productName: string;
   purchasePrice: number;
-  currentPrice: number;
-  roi: number;
+  currentValue: number;
+  totalROI: number;
   annualizedROI: number;
-  holdingYears: number;
-  totalReturn: number;
+  holdingPeriodDays: number;
+  breakEvenPrice: number;
+  projectedValue12m: number;
+  riskLevel: 'low' | 'medium' | 'high' | 'very_high';
+  recommendation: 'strong_hold' | 'hold' | 'neutral' | 'sell' | 'strong_sell';
 }
 
 export interface RipVsHold {
+  id: string;
   productId: string;
   productName: string;
   sealedValue: number;
   expectedRipValue: number;
-  hitRate: number;
-  avgHitValue: number;
-  avgBaseValue: number;
-  cardsPerBox: number;
-  hitsPerBox: number;
-  recommendation: 'rip' | 'hold' | 'neutral';
-  confidence: number;
+  ripValueHigh: number;
+  ripValueLow: number;
+  ripValueMedian: number;
+  holdAdvantage: number;
+  ripOddsPositive: number;
+  keyHits: { card: string; odds: string; value: number }[];
+  verdict: 'hold' | 'rip' | 'toss_up';
   reasoning: string;
 }
 
@@ -57,87 +72,103 @@ export interface ProductRelease {
   name: string;
   sport: string;
   brand: string;
+  productType: ProductType;
   releaseDate: string;
   estimatedHobbyPrice: number;
-  productType: ProductType;
+  estimatedRetailPrice: number;
   keyRookies: string[];
-  hype: 'low' | 'medium' | 'high' | 'extreme';
+  hypeLevel: 'low' | 'medium' | 'high' | 'extreme';
+  preorderAvailable: boolean;
+  description: string;
 }
 
 export interface MarketTrend {
   id: string;
   category: string;
-  trend: 'rising' | 'falling' | 'stable' | 'volatile';
+  trend: 'rising' | 'stable' | 'declining';
   changePercent: number;
-  period: string;
+  timeframe: string;
   description: string;
-  impactLevel: 'low' | 'medium' | 'high';
+  affectedProducts: string[];
 }
 
 export interface SupplyEstimate {
+  id: string;
   productId: string;
   productName: string;
-  totalProduced: number;
-  estimatedSealed: number;
-  sealedPercentage: number;
-  yearlyDeclineRate: number;
-  scarcityRating: 'common' | 'uncommon' | 'scarce' | 'rare' | 'ultra_rare';
+  estimatedTotal: number;
+  estimatedRemaining: number;
+  percentOpened: number;
+  scarcityRating: 'abundant' | 'common' | 'moderate' | 'scarce' | 'very_scarce' | 'extremely_rare';
+  yearsSinceRelease: number;
+  annualDepletion: number;
 }
 
 export interface BreakEvenAnalysis {
+  id: string;
   productId: string;
   productName: string;
   boxCost: number;
-  avgCardValue: number;
-  cardsNeeded: number;
-  probabilityBreakEven: number;
-  topHitNeeded: number;
-  recommendation: string;
+  averageHitValue: number;
+  topHitValue: number;
+  bottomHitValue: number;
+  hitsPerBox: number;
+  breakEvenOdds: number;
+  expectedReturn: number;
+  bestCaseReturn: number;
+  worstCaseReturn: number;
+  verdict: 'favorable' | 'neutral' | 'unfavorable';
 }
 
 export interface VintageSealed {
   id: string;
   name: string;
-  sport: string;
   year: number;
+  sport: string;
   productType: ProductType;
   currentPrice: number;
-  priceOneYearAgo: number;
-  priceFiveYearsAgo: number;
-  estimatedRemaining: number;
+  priceIn2020: number;
+  priceIn2015: number;
+  priceIn2010: number | null;
+  appreciationRate: number;
   keyCards: string[];
-  investmentGrade: 'A+' | 'A' | 'B+' | 'B' | 'C+' | 'C';
+  condition: 'factory_sealed' | 'bbce_wrapped' | 'authenticated' | 'loose_pack';
+  authenticator: string | null;
+  rarity: 'scarce' | 'very_scarce' | 'extremely_rare' | 'legendary';
+  description: string;
 }
 
 export interface InvestmentRating {
+  id: string;
   productId: string;
   productName: string;
   overallRating: number;
-  supplyScore: number;
-  demandScore: number;
-  rookieScore: number;
-  brandScore: number;
-  valueScore: number;
-  recommendation: 'strong_buy' | 'buy' | 'hold' | 'sell' | 'strong_sell';
+  rookieStrength: number;
+  brandReputation: number;
+  printRunScore: number;
+  historicalPerformance: number;
+  marketDemand: number;
+  grade: 'A+' | 'A' | 'B+' | 'B' | 'C+' | 'C' | 'D' | 'F';
+  summary: string;
 }
 
 export interface ProductComparison {
+  id: string;
   productAId: string;
   productBId: string;
   productAName: string;
   productBName: string;
-  priceRatio: number;
-  roiComparison: number;
-  supplyComparison: string;
-  winner: 'A' | 'B' | 'tie';
+  priceAdvantage: string;
+  roiAdvantage: string;
+  rookieAdvantage: string;
+  scarcityAdvantage: string;
+  overallWinner: string;
   reasoning: string;
 }
 
-// ---- Constants ----
+// ---- Storage Helpers ----
 
 const STORAGE_KEY = 'msi_sealed_product';
-
-// ---- localStorage helpers ----
 
 function loadData<T>(key: string): T | null {
   try {
@@ -153,677 +184,379 @@ function saveData<T>(key: string, data: T): void {
   try {
     localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
   } catch {
-    // quota exceeded
+    // Storage full or unavailable
   }
 }
 
-// ---- Format Helpers ----
+// ---- Helpers ----
 
 export function formatCurrency(value: number): string {
-  if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
-  if (value >= 1000) return `$${(value / 1000).toFixed(1)}k`;
-  return `$${value.toFixed(0)}`;
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(1)}K`;
+  return `$${value.toFixed(2)}`;
 }
 
-// ---- Mock Data ----
+export function getProductTypeLabel(type: ProductType): { label: string; text: string; bg: string; border: string } {
+  switch (type) {
+    case 'hobby_box': return { label: 'Hobby Box', text: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30' };
+    case 'retail_box': return { label: 'Retail Box', text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' };
+    case 'blaster': return { label: 'Blaster', text: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30' };
+    case 'mega_box': return { label: 'Mega Box', text: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30' };
+    case 'hanger': return { label: 'Hanger', text: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' };
+    case 'cello': return { label: 'Cello Pack', text: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30' };
+    case 'fat_pack': return { label: 'Fat Pack', text: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30' };
+    case 'case': return { label: 'Case', text: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' };
+    case 'pack': return { label: 'Pack', text: 'text-gray-400', bg: 'bg-gray-500/10', border: 'border-gray-500/30' };
+    case 'starter_kit': return { label: 'Starter Kit', text: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' };
+  }
+}
 
-const SEALED_PRODUCTS: SealedProduct[] = [
-  { id: 'sp_001', name: '2024 Topps Chrome Baseball Hobby Box', sport: 'baseball', year: 2024, brand: 'Topps', productType: 'hobby_box', releasePrice: 250, currentPrice: 310, allTimeHigh: 380, allTimeLow: 230, estimatedSupply: 85000, sealed: true, description: 'Flagship chrome hobby with 2 autos per box. Strong rookie class.' },
-  { id: 'sp_002', name: '2024 Panini Prizm NBA Hobby Box', sport: 'basketball', year: 2024, brand: 'Panini', productType: 'hobby_box', releasePrice: 1200, currentPrice: 1450, allTimeHigh: 1800, allTimeLow: 1100, estimatedSupply: 42000, sealed: true, description: 'Premium NBA hobby with 2 autos and 10 silvers. Loaded rookie class.' },
-  { id: 'sp_003', name: '2024 Panini Prizm NFL Hobby Box', sport: 'football', year: 2024, brand: 'Panini', productType: 'hobby_box', releasePrice: 800, currentPrice: 750, allTimeHigh: 950, allTimeLow: 680, estimatedSupply: 55000, sealed: true, description: 'NFL flagship with Caleb Williams, Jayden Daniels RC class.' },
-  { id: 'sp_004', name: '2024 Topps Series 1 Baseball Hobby Box', sport: 'baseball', year: 2024, brand: 'Topps', productType: 'hobby_box', releasePrice: 90, currentPrice: 105, allTimeHigh: 130, allTimeLow: 85, estimatedSupply: 150000, sealed: true, description: 'Flagship Topps with SP variations and autos.' },
-  { id: 'sp_005', name: '2024 Bowman Chrome Baseball Hobby Box', sport: 'baseball', year: 2024, brand: 'Bowman', productType: 'hobby_box', releasePrice: 275, currentPrice: 350, allTimeHigh: 420, allTimeLow: 260, estimatedSupply: 60000, sealed: true, description: 'Top prospect 1st Bowman Chrome autos. Key product for prospect investors.' },
-  { id: 'sp_006', name: '2024 Select NFL Hobby Box', sport: 'football', year: 2024, brand: 'Panini', productType: 'hobby_box', releasePrice: 550, currentPrice: 480, allTimeHigh: 620, allTimeLow: 420, estimatedSupply: 48000, sealed: true, description: 'Tiered design with die-cuts and prizm parallels.' },
-  { id: 'sp_007', name: '2024 Topps Chrome Baseball Blaster Box', sport: 'baseball', year: 2024, brand: 'Topps', productType: 'blaster', releasePrice: 40, currentPrice: 55, allTimeHigh: 65, allTimeLow: 35, estimatedSupply: 350000, sealed: true, description: 'Retail blaster with exclusive refractors.' },
-  { id: 'sp_008', name: '2024 Panini Prizm NBA Retail Box', sport: 'basketball', year: 2024, brand: 'Panini', productType: 'retail_box', releasePrice: 130, currentPrice: 165, allTimeHigh: 200, allTimeLow: 120, estimatedSupply: 120000, sealed: true, description: 'Retail 24-pack box with silver prizm inserts.' },
-  { id: 'sp_009', name: '2024 Donruss Optic NFL Hobby Box', sport: 'football', year: 2024, brand: 'Panini', productType: 'hobby_box', releasePrice: 450, currentPrice: 420, allTimeHigh: 500, allTimeLow: 380, estimatedSupply: 52000, sealed: true, description: 'Optic parallels with Rated Rookies.' },
-  { id: 'sp_010', name: '2024 Topps Heritage Baseball Hobby Box', sport: 'baseball', year: 2024, brand: 'Topps', productType: 'hobby_box', releasePrice: 110, currentPrice: 95, allTimeHigh: 125, allTimeLow: 85, estimatedSupply: 80000, sealed: true, description: 'Retro design with real one autos and relics.' },
-  { id: 'sp_011', name: '2023 Topps Chrome Baseball Hobby Case (12 boxes)', sport: 'baseball', year: 2023, brand: 'Topps', productType: 'case', releasePrice: 2700, currentPrice: 3800, allTimeHigh: 4200, allTimeLow: 2600, estimatedSupply: 8000, sealed: true, description: 'Full case of 2023 Chrome. Elly De La Cruz RC year.' },
-  { id: 'sp_012', name: '2023 Panini Prizm NBA Hobby Box', sport: 'basketball', year: 2023, brand: 'Panini', productType: 'hobby_box', releasePrice: 1100, currentPrice: 1800, allTimeHigh: 2200, allTimeLow: 1050, estimatedSupply: 35000, sealed: true, description: 'Wembanyama RC class. Most anticipated NBA product in years.' },
-  { id: 'sp_013', name: '2022 Bowman Chrome Baseball Hobby Box', sport: 'baseball', year: 2022, brand: 'Bowman', productType: 'hobby_box', releasePrice: 220, currentPrice: 280, allTimeHigh: 340, allTimeLow: 200, estimatedSupply: 50000, sealed: true, description: 'Strong prospect class with 1st Bowman Chrome autos.' },
-  { id: 'sp_014', name: '2022 Topps Chrome Baseball Hobby Case (12 boxes)', sport: 'baseball', year: 2022, brand: 'Topps', productType: 'case', releasePrice: 2400, currentPrice: 3200, allTimeHigh: 3500, allTimeLow: 2300, estimatedSupply: 7500, sealed: true, description: 'Full case with Julio Rodriguez Chrome RC autos.' },
-  { id: 'sp_015', name: '2021 Panini Prizm NFL Hobby Box', sport: 'football', year: 2021, brand: 'Panini', productType: 'hobby_box', releasePrice: 600, currentPrice: 850, allTimeHigh: 1100, allTimeLow: 550, estimatedSupply: 38000, sealed: true, description: 'Trevor Lawrence, Mac Jones RC class.' },
-  { id: 'sp_016', name: '2020 Panini Prizm NFL Hobby Box', sport: 'football', year: 2020, brand: 'Panini', productType: 'hobby_box', releasePrice: 550, currentPrice: 4500, allTimeHigh: 6200, allTimeLow: 500, estimatedSupply: 12000, sealed: true, description: 'Joe Burrow, Justin Herbert RC class. Legendary product.' },
-  { id: 'sp_017', name: '2020 Panini Prizm NBA Hobby Box', sport: 'basketball', year: 2020, brand: 'Panini', productType: 'hobby_box', releasePrice: 750, currentPrice: 3200, allTimeHigh: 5500, allTimeLow: 700, estimatedSupply: 15000, sealed: true, description: 'Ja Morant, Zion Williamson RC class.' },
-  { id: 'sp_018', name: '2019 Topps Chrome Baseball Hobby Box', sport: 'baseball', year: 2019, brand: 'Topps', productType: 'hobby_box', releasePrice: 200, currentPrice: 450, allTimeHigh: 580, allTimeLow: 180, estimatedSupply: 28000, sealed: true, description: 'Fernando Tatis Jr., Vlad Jr. RC class.' },
-  { id: 'sp_019', name: '2018 Panini Prizm NBA Hobby Box', sport: 'basketball', year: 2018, brand: 'Panini', productType: 'hobby_box', releasePrice: 500, currentPrice: 8500, allTimeHigh: 12000, allTimeLow: 450, estimatedSupply: 8000, sealed: true, description: 'Luka Doncic, Trae Young RC class. Iconic product.' },
-  { id: 'sp_020', name: '2017 Panini Prizm NFL Hobby Box', sport: 'football', year: 2017, brand: 'Panini', productType: 'hobby_box', releasePrice: 300, currentPrice: 5800, allTimeHigh: 7500, allTimeLow: 280, estimatedSupply: 10000, sealed: true, description: 'Patrick Mahomes RC class. Gold standard product.' },
-  { id: 'sp_021', name: '2024 Panini Prizm NFL Mega Box', sport: 'football', year: 2024, brand: 'Panini', productType: 'mega_box', releasePrice: 70, currentPrice: 85, allTimeHigh: 100, allTimeLow: 60, estimatedSupply: 200000, sealed: true, description: 'Retail mega with exclusive neon green prizms.' },
-  { id: 'sp_022', name: '2024 Topps Chrome Baseball Fat Pack Box', sport: 'baseball', year: 2024, brand: 'Topps', productType: 'fat_pack', releasePrice: 60, currentPrice: 72, allTimeHigh: 80, allTimeLow: 55, estimatedSupply: 180000, sealed: true, description: 'Fat pack box with exclusive pink refractors.' },
-  { id: 'sp_023', name: '2024 Upper Deck Series 1 NHL Hobby Box', sport: 'hockey', year: 2024, brand: 'Upper Deck', productType: 'hobby_box', releasePrice: 110, currentPrice: 130, allTimeHigh: 150, allTimeLow: 100, estimatedSupply: 45000, sealed: true, description: 'Young Guns rookies and Canvas inserts.' },
-  { id: 'sp_024', name: '2024 Topps Chrome UEFA Champions League Hobby Box', sport: 'soccer', year: 2024, brand: 'Topps', productType: 'hobby_box', releasePrice: 200, currentPrice: 240, allTimeHigh: 280, allTimeLow: 190, estimatedSupply: 35000, sealed: true, description: 'UCL chrome autos with global appeal.' },
-  { id: 'sp_025', name: '2023 Bowman Chrome Baseball Hobby Case (12 boxes)', sport: 'baseball', year: 2023, brand: 'Bowman', productType: 'case', releasePrice: 3000, currentPrice: 4200, allTimeHigh: 4800, allTimeLow: 2900, estimatedSupply: 6000, sealed: true, description: 'Full case of prospect-heavy Bowman Chrome.' },
-  { id: 'sp_026', name: '2025 Topps Series 1 Baseball Hobby Box', sport: 'baseball', year: 2025, brand: 'Topps', productType: 'hobby_box', releasePrice: 95, currentPrice: 120, allTimeHigh: 145, allTimeLow: 90, estimatedSupply: 160000, sealed: true, description: 'Roki Sasaki SP RC. First Fanatics-era Topps flagship.' },
-  { id: 'sp_027', name: '2025 Panini Prizm NBA Hobby Box', sport: 'basketball', year: 2025, brand: 'Panini', productType: 'hobby_box', releasePrice: 1300, currentPrice: 1550, allTimeHigh: 1700, allTimeLow: 1250, estimatedSupply: 40000, sealed: true, description: 'Cooper Flagg, Ace Bailey RC class.' },
-  { id: 'sp_028', name: '2025 Panini Prizm NFL Hobby Box', sport: 'football', year: 2025, brand: 'Panini', productType: 'hobby_box', releasePrice: 850, currentPrice: 920, allTimeHigh: 1050, allTimeLow: 820, estimatedSupply: 50000, sealed: true, description: 'Shedeur Sanders, Travis Hunter RC class.' },
-  { id: 'sp_029', name: '2024 Panini Prizm NBA Cello Pack (12 cards)', sport: 'basketball', year: 2024, brand: 'Panini', productType: 'cello', releasePrice: 12, currentPrice: 18, allTimeHigh: 22, allTimeLow: 10, estimatedSupply: 500000, sealed: true, description: 'Retail cello packs with silver prizm chance.' },
-  { id: 'sp_030', name: '2024 Bowman Baseball Mega Box', sport: 'baseball', year: 2024, brand: 'Bowman', productType: 'mega_box', releasePrice: 50, currentPrice: 68, allTimeHigh: 75, allTimeLow: 45, estimatedSupply: 175000, sealed: true, description: 'Mega box with exclusive mojo refractors.' },
-  { id: 'sp_031', name: '2023 Topps Chrome Baseball Hobby Box', sport: 'baseball', year: 2023, brand: 'Topps', productType: 'hobby_box', releasePrice: 240, currentPrice: 340, allTimeHigh: 400, allTimeLow: 225, estimatedSupply: 70000, sealed: true, description: 'Elly De La Cruz, Corbin Carroll Chrome RC autos.' },
-  { id: 'sp_032', name: '2022 Panini Prizm NBA Hobby Box', sport: 'basketball', year: 2022, brand: 'Panini', productType: 'hobby_box', releasePrice: 950, currentPrice: 1100, allTimeHigh: 1400, allTimeLow: 850, estimatedSupply: 32000, sealed: true, description: 'Paolo Banchero, Chet Holmgren RC class.' },
-  { id: 'sp_033', name: '2021 Topps Chrome Baseball Hobby Box', sport: 'baseball', year: 2021, brand: 'Topps', productType: 'hobby_box', releasePrice: 210, currentPrice: 380, allTimeHigh: 550, allTimeLow: 190, estimatedSupply: 55000, sealed: true, description: 'Julio Rodriguez prospect era Chrome.' },
-  { id: 'sp_034', name: '2019 Panini Prizm NFL Hobby Box', sport: 'football', year: 2019, brand: 'Panini', productType: 'hobby_box', releasePrice: 400, currentPrice: 1200, allTimeHigh: 1600, allTimeLow: 380, estimatedSupply: 22000, sealed: true, description: 'Kyler Murray, Josh Allen 2nd year class.' },
-  { id: 'sp_035', name: '2024 Panini National Treasures NBA Hobby Box', sport: 'basketball', year: 2024, brand: 'Panini', productType: 'hobby_box', releasePrice: 4200, currentPrice: 4800, allTimeHigh: 5500, allTimeLow: 4000, estimatedSupply: 5000, sealed: true, description: 'Ultra-premium with RPA cards and patch autos.' },
-  { id: 'sp_036', name: '2024 Topps Bowman Chrome University Football Hobby Box', sport: 'football', year: 2024, brand: 'Bowman', productType: 'hobby_box', releasePrice: 180, currentPrice: 210, allTimeHigh: 250, allTimeLow: 170, estimatedSupply: 65000, sealed: true, description: 'College football prospect autos.' },
-  { id: 'sp_037', name: '2023 Panini Prizm NFL Hobby Box', sport: 'football', year: 2023, brand: 'Panini', productType: 'hobby_box', releasePrice: 750, currentPrice: 680, allTimeHigh: 850, allTimeLow: 620, estimatedSupply: 45000, sealed: true, description: 'CJ Stroud, Bryce Young RC class.' },
-  { id: 'sp_038', name: '2025 Topps Chrome Baseball Hobby Box', sport: 'baseball', year: 2025, brand: 'Topps', productType: 'hobby_box', releasePrice: 265, currentPrice: 290, allTimeHigh: 310, allTimeLow: 255, estimatedSupply: 80000, sealed: true, description: 'Roki Sasaki Chrome RC autos. Highly anticipated.' },
-  { id: 'sp_039', name: '2025 Bowman Chrome Baseball Hobby Box', sport: 'baseball', year: 2025, brand: 'Bowman', productType: 'hobby_box', releasePrice: 290, currentPrice: 315, allTimeHigh: 340, allTimeLow: 280, estimatedSupply: 58000, sealed: true, description: 'Next-gen prospect 1st Bowman Chrome autos.' },
-  { id: 'sp_040', name: '2024 Panini Prizm NBA Hobby Case (12 boxes)', sport: 'basketball', year: 2024, brand: 'Panini', productType: 'case', releasePrice: 13200, currentPrice: 16500, allTimeHigh: 19000, allTimeLow: 12800, estimatedSupply: 3500, sealed: true, description: 'Full case guarantees multiple premium hits.' },
+export function getRiskLabel(risk: string): { text: string; color: string } {
+  switch (risk) {
+    case 'low': return { text: 'Low Risk', color: 'text-green-400' };
+    case 'medium': return { text: 'Medium Risk', color: 'text-yellow-400' };
+    case 'high': return { text: 'High Risk', color: 'text-orange-400' };
+    case 'very_high': return { text: 'Very High Risk', color: 'text-red-400' };
+    default: return { text: 'Unknown', color: 'text-gray-400' };
+  }
+}
+
+// ---- Mock Data: Sealed Products (40) ----
+
+const MOCK_SEALED_PRODUCTS: SealedProduct[] = [
+  { id: 'sp-1', name: '2023-24 Panini Prizm Basketball Hobby Box', year: 2023, sport: 'basketball', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2024-09-15', releasePrice: 450, currentPrice: 520, allTimeHigh: 620, allTimeLow: 420, priceChange30d: 5.2, priceChange90d: 12.8, priceChange1y: 15.6, estimatedPrintRun: 85000, keyRookies: ['Victor Wembanyama', 'Chet Holmgren', 'Brandon Miller'], rating: 4.5, available: true, vintage: false },
+  { id: 'sp-2', name: '2024 Topps Chrome Baseball Hobby Box', year: 2024, sport: 'baseball', brand: 'Topps Chrome', productType: 'hobby_box', releaseDate: '2024-11-01', releasePrice: 280, currentPrice: 320, allTimeHigh: 350, allTimeLow: 260, priceChange30d: 3.8, priceChange90d: 8.5, priceChange1y: 14.3, estimatedPrintRun: 120000, keyRookies: ['Paul Skenes', 'Jackson Merrill', 'Colton Cowser'], rating: 4.2, available: true, vintage: false },
+  { id: 'sp-3', name: '2024 Panini Prizm Football Hobby Box', year: 2024, sport: 'football', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2025-01-20', releasePrice: 650, currentPrice: 580, allTimeHigh: 720, allTimeLow: 550, priceChange30d: -2.5, priceChange90d: -8.2, priceChange1y: -10.8, estimatedPrintRun: 95000, keyRookies: ['Caleb Williams', 'Jayden Daniels', 'Marvin Harrison Jr'], rating: 3.8, available: true, vintage: false },
+  { id: 'sp-4', name: '2023-24 Panini National Treasures Basketball Hobby Box', year: 2023, sport: 'basketball', brand: 'National Treasures', productType: 'hobby_box', releaseDate: '2024-12-10', releasePrice: 4200, currentPrice: 4800, allTimeHigh: 5200, allTimeLow: 4000, priceChange30d: 8.5, priceChange90d: 14.3, priceChange1y: 20.0, estimatedPrintRun: 8000, keyRookies: ['Victor Wembanyama', 'Chet Holmgren', 'Scoot Henderson'], rating: 4.8, available: true, vintage: false },
+  { id: 'sp-5', name: '2024 Bowman Chrome Baseball Hobby Box', year: 2024, sport: 'baseball', brand: 'Bowman Chrome', productType: 'hobby_box', releaseDate: '2024-10-15', releasePrice: 320, currentPrice: 380, allTimeHigh: 410, allTimeLow: 300, priceChange30d: 6.2, priceChange90d: 15.2, priceChange1y: 18.8, estimatedPrintRun: 100000, keyRookies: ['Ethan Salas (prospect)', 'Travis Bazzana (prospect)', 'Charlie Condon (prospect)'], rating: 4.4, available: true, vintage: false },
+  { id: 'sp-6', name: '2023-24 Upper Deck Series 1 Hockey Hobby Box', year: 2023, sport: 'hockey', brand: 'Upper Deck', productType: 'hobby_box', releaseDate: '2023-11-08', releasePrice: 125, currentPrice: 180, allTimeHigh: 200, allTimeLow: 110, priceChange30d: 4.5, priceChange90d: 18.5, priceChange1y: 44.0, estimatedPrintRun: 60000, keyRookies: ['Connor Bedard', 'Leo Carlsson', 'Logan Cooley'], rating: 4.6, available: true, vintage: false },
+  { id: 'sp-7', name: '2024 Topps Series 1 Baseball Hobby Box', year: 2024, sport: 'baseball', brand: 'Topps', productType: 'hobby_box', releaseDate: '2024-02-14', releasePrice: 115, currentPrice: 145, allTimeHigh: 165, allTimeLow: 105, priceChange30d: 2.1, priceChange90d: 6.8, priceChange1y: 26.1, estimatedPrintRun: 200000, keyRookies: ['Paul Skenes', 'Evan Carter', 'Corbin Carroll'], rating: 3.9, available: true, vintage: false },
+  { id: 'sp-8', name: '2024 Panini Prizm Football Blaster Box', year: 2024, sport: 'football', brand: 'Panini Prizm', productType: 'blaster', releaseDate: '2025-02-01', releasePrice: 40, currentPrice: 35, allTimeHigh: 55, allTimeLow: 32, priceChange30d: -5.4, priceChange90d: -12.5, priceChange1y: -12.5, estimatedPrintRun: 500000, keyRookies: ['Caleb Williams', 'Jayden Daniels'], rating: 3.2, available: true, vintage: false },
+  { id: 'sp-9', name: '2023-24 Panini Prizm Basketball Blaster Box', year: 2023, sport: 'basketball', brand: 'Panini Prizm', productType: 'blaster', releaseDate: '2024-10-01', releasePrice: 40, currentPrice: 48, allTimeHigh: 58, allTimeLow: 35, priceChange30d: 2.1, priceChange90d: 8.0, priceChange1y: 20.0, estimatedPrintRun: 600000, keyRookies: ['Victor Wembanyama'], rating: 3.5, available: true, vintage: false },
+  { id: 'sp-10', name: '2024 Topps Chrome Baseball Mega Box', year: 2024, sport: 'baseball', brand: 'Topps Chrome', productType: 'mega_box', releaseDate: '2024-11-15', releasePrice: 55, currentPrice: 62, allTimeHigh: 70, allTimeLow: 50, priceChange30d: 3.3, priceChange90d: 7.5, priceChange1y: 12.7, estimatedPrintRun: 350000, keyRookies: ['Paul Skenes', 'Jackson Merrill'], rating: 3.8, available: true, vintage: false },
+  { id: 'sp-11', name: '2025 Topps Series 1 Baseball Hobby Box', year: 2025, sport: 'baseball', brand: 'Topps', productType: 'hobby_box', releaseDate: '2025-02-12', releasePrice: 120, currentPrice: 145, allTimeHigh: 155, allTimeLow: 115, priceChange30d: 8.2, priceChange90d: 20.8, priceChange1y: 0, estimatedPrintRun: 180000, keyRookies: ['Ethan Salas', 'Travis Bazzana', 'Charlie Condon'], rating: 4.3, available: true, vintage: false },
+  { id: 'sp-12', name: '2024-25 Panini Prizm Basketball Hobby Box', year: 2024, sport: 'basketball', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2025-09-15', releasePrice: 475, currentPrice: 475, allTimeHigh: 475, allTimeLow: 475, priceChange30d: 0, priceChange90d: 0, priceChange1y: 0, estimatedPrintRun: null, keyRookies: ['Zaccharie Risacher', 'Alex Sarr', 'Reed Sheppard'], rating: 4.0, available: false, vintage: false },
+  { id: 'sp-13', name: '2023 Bowman Baseball Hobby Box', year: 2023, sport: 'baseball', brand: 'Bowman', productType: 'hobby_box', releaseDate: '2023-06-14', releasePrice: 250, currentPrice: 350, allTimeHigh: 380, allTimeLow: 220, priceChange30d: 5.5, priceChange90d: 12.0, priceChange1y: 40.0, estimatedPrintRun: 110000, keyRookies: ['Ethan Salas (prospect)', 'Dylan Crews (prospect)'], rating: 4.3, available: true, vintage: false },
+  { id: 'sp-14', name: '2023-24 Upper Deck Series 2 Hockey Hobby Box', year: 2023, sport: 'hockey', brand: 'Upper Deck', productType: 'hobby_box', releaseDate: '2024-03-20', releasePrice: 125, currentPrice: 150, allTimeHigh: 165, allTimeLow: 115, priceChange30d: 3.2, priceChange90d: 10.5, priceChange1y: 20.0, estimatedPrintRun: 55000, keyRookies: ['Connor Bedard', 'Brock Faber'], rating: 4.1, available: true, vintage: false },
+  { id: 'sp-15', name: '2024 Panini National Treasures Football Hobby Box', year: 2024, sport: 'football', brand: 'National Treasures', productType: 'hobby_box', releaseDate: '2025-06-15', releasePrice: 4800, currentPrice: 4800, allTimeHigh: 4800, allTimeLow: 4800, priceChange30d: 0, priceChange90d: 0, priceChange1y: 0, estimatedPrintRun: null, keyRookies: ['Caleb Williams', 'Jayden Daniels', 'Drake Maye'], rating: 4.2, available: false, vintage: false },
+  { id: 'sp-16', name: '2024 Topps Heritage Baseball Hobby Box', year: 2024, sport: 'baseball', brand: 'Topps Heritage', productType: 'hobby_box', releaseDate: '2024-03-06', releasePrice: 95, currentPrice: 88, allTimeHigh: 110, allTimeLow: 80, priceChange30d: -2.2, priceChange90d: -5.4, priceChange1y: -7.4, estimatedPrintRun: 150000, keyRookies: ['Evan Carter', 'Corbin Carroll'], rating: 3.4, available: true, vintage: false },
+  { id: 'sp-17', name: '2023 Topps Chrome Update Baseball Hobby Box', year: 2023, sport: 'baseball', brand: 'Topps Chrome', productType: 'hobby_box', releaseDate: '2024-04-10', releasePrice: 320, currentPrice: 290, allTimeHigh: 365, allTimeLow: 275, priceChange30d: -3.0, priceChange90d: -5.5, priceChange1y: -9.4, estimatedPrintRun: 90000, keyRookies: ['Corbin Carroll', 'Elly De La Cruz', 'Evan Carter'], rating: 3.6, available: true, vintage: false },
+  { id: 'sp-18', name: '2020 Panini Prizm Football Hobby Box', year: 2020, sport: 'football', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2021-01-15', releasePrice: 550, currentPrice: 680, allTimeHigh: 1200, allTimeLow: 450, priceChange30d: -1.5, priceChange90d: -8.1, priceChange1y: -12.3, estimatedPrintRun: 75000, keyRookies: ['Justin Herbert', 'Joe Burrow', 'Tua Tagovailoa'], rating: 3.9, available: true, vintage: false },
+  { id: 'sp-19', name: '2018-19 Panini Prizm Basketball Hobby Box', year: 2018, sport: 'basketball', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2019-09-20', releasePrice: 300, currentPrice: 1800, allTimeHigh: 2800, allTimeLow: 280, priceChange30d: 2.8, priceChange90d: 5.5, priceChange1y: 12.5, estimatedPrintRun: 50000, keyRookies: ['Luka Doncic', 'Trae Young', 'Shai Gilgeous-Alexander'], rating: 4.8, available: true, vintage: false },
+  { id: 'sp-20', name: '2003-04 Topps Chrome Basketball Hobby Box', year: 2003, sport: 'basketball', brand: 'Topps Chrome', productType: 'hobby_box', releaseDate: '2004-02-01', releasePrice: 80, currentPrice: 18500, allTimeHigh: 28000, allTimeLow: 60, priceChange30d: 1.2, priceChange90d: 4.5, priceChange1y: 8.2, estimatedPrintRun: 25000, keyRookies: ['LeBron James', 'Carmelo Anthony', 'Dwyane Wade'], rating: 5.0, available: false, vintage: true },
+  { id: 'sp-21', name: '2017 Panini Prizm Football Hobby Box', year: 2017, sport: 'football', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2018-01-10', releasePrice: 250, currentPrice: 2200, allTimeHigh: 3500, allTimeLow: 220, priceChange30d: 1.8, priceChange90d: 3.2, priceChange1y: -5.5, estimatedPrintRun: 40000, keyRookies: ['Patrick Mahomes', 'Deshaun Watson', 'Mitchell Trubisky'], rating: 4.7, available: true, vintage: false },
+  { id: 'sp-22', name: '2022 Bowman Chrome Baseball Hobby Box', year: 2022, sport: 'baseball', brand: 'Bowman Chrome', productType: 'hobby_box', releaseDate: '2022-10-19', releasePrice: 280, currentPrice: 310, allTimeHigh: 340, allTimeLow: 250, priceChange30d: 2.0, priceChange90d: 6.5, priceChange1y: 10.7, estimatedPrintRun: 100000, keyRookies: ['Elly De La Cruz (prospect)', 'Jackson Holliday (prospect)'], rating: 4.1, available: true, vintage: false },
+  { id: 'sp-23', name: '2024-25 Upper Deck Series 1 Hockey Hobby Box', year: 2024, sport: 'hockey', brand: 'Upper Deck', productType: 'hobby_box', releaseDate: '2024-11-13', releasePrice: 130, currentPrice: 155, allTimeHigh: 170, allTimeLow: 125, priceChange30d: 5.4, priceChange90d: 12.2, priceChange1y: 19.2, estimatedPrintRun: 58000, keyRookies: ['Macklin Celebrini', 'Matvei Michkov', 'Cutter Gauthier'], rating: 4.3, available: true, vintage: false },
+  { id: 'sp-24', name: '2020-21 Panini Prizm Basketball Hobby Box', year: 2020, sport: 'basketball', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2021-09-10', releasePrice: 400, currentPrice: 480, allTimeHigh: 750, allTimeLow: 380, priceChange30d: 1.5, priceChange90d: 5.2, priceChange1y: 8.8, estimatedPrintRun: 80000, keyRookies: ['Anthony Edwards', 'LaMelo Ball', 'Tyrese Haliburton'], rating: 4.3, available: true, vintage: false },
+  { id: 'sp-25', name: '2024 Topps Chrome UCL Soccer Hobby Box', year: 2024, sport: 'soccer', brand: 'Topps Chrome', productType: 'hobby_box', releaseDate: '2024-12-04', releasePrice: 200, currentPrice: 240, allTimeHigh: 260, allTimeLow: 190, priceChange30d: 4.3, priceChange90d: 15.0, priceChange1y: 20.0, estimatedPrintRun: 45000, keyRookies: ['Lamine Yamal', 'Endrick', 'Arda Guler'], rating: 4.2, available: true, vintage: false },
+  { id: 'sp-26', name: '2023-24 Panini Prizm Basketball Mega Box', year: 2023, sport: 'basketball', brand: 'Panini Prizm', productType: 'mega_box', releaseDate: '2024-10-15', releasePrice: 65, currentPrice: 72, allTimeHigh: 85, allTimeLow: 55, priceChange30d: 3.0, priceChange90d: 8.2, priceChange1y: 10.8, estimatedPrintRun: 400000, keyRookies: ['Victor Wembanyama'], rating: 3.6, available: true, vintage: false },
+  { id: 'sp-27', name: '2024 Bowman Baseball Hobby Box', year: 2024, sport: 'baseball', brand: 'Bowman', productType: 'hobby_box', releaseDate: '2024-06-12', releasePrice: 260, currentPrice: 290, allTimeHigh: 310, allTimeLow: 240, priceChange30d: 3.5, priceChange90d: 8.8, priceChange1y: 11.5, estimatedPrintRun: 115000, keyRookies: ['Travis Bazzana (prospect)', 'Charlie Condon (prospect)'], rating: 4.0, available: true, vintage: false },
+  { id: 'sp-28', name: '2019-20 Panini Prizm Basketball Hobby Box', year: 2019, sport: 'basketball', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2020-09-15', releasePrice: 350, currentPrice: 550, allTimeHigh: 900, allTimeLow: 320, priceChange30d: -1.5, priceChange90d: -3.5, priceChange1y: -8.3, estimatedPrintRun: 70000, keyRookies: ['Zion Williamson', 'Ja Morant', 'RJ Barrett'], rating: 3.8, available: true, vintage: false },
+  { id: 'sp-29', name: '2022-23 Panini Prizm Basketball Hobby Box', year: 2022, sport: 'basketball', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2023-09-13', releasePrice: 425, currentPrice: 380, allTimeHigh: 480, allTimeLow: 350, priceChange30d: -2.6, priceChange90d: -5.0, priceChange1y: -10.6, estimatedPrintRun: 90000, keyRookies: ['Paolo Banchero', 'Jalen Williams', 'Bennedict Mathurin'], rating: 3.5, available: true, vintage: false },
+  { id: 'sp-30', name: '2025 Panini Prizm Football Hobby Box', year: 2025, sport: 'football', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2026-01-15', releasePrice: 675, currentPrice: 710, allTimeHigh: 750, allTimeLow: 660, priceChange30d: 2.2, priceChange90d: 5.2, priceChange1y: 0, estimatedPrintRun: null, keyRookies: ['Shedeur Sanders', 'Cam Ward', 'Travis Hunter'], rating: 4.1, available: true, vintage: false },
+  { id: 'sp-31', name: '2024 Panini Prizm WNBA Hobby Box', year: 2024, sport: 'basketball', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2024-12-20', releasePrice: 150, currentPrice: 220, allTimeHigh: 250, allTimeLow: 140, priceChange30d: 8.0, priceChange90d: 22.0, priceChange1y: 46.7, estimatedPrintRun: 30000, keyRookies: ['Caitlin Clark', 'Angel Reese', 'Cameron Brink'], rating: 4.5, available: true, vintage: false },
+  { id: 'sp-32', name: '2023 Topps Chrome Baseball Sapphire Edition', year: 2023, sport: 'baseball', brand: 'Topps Chrome', productType: 'hobby_box', releaseDate: '2024-01-15', releasePrice: 400, currentPrice: 350, allTimeHigh: 450, allTimeLow: 320, priceChange30d: -3.0, priceChange90d: -8.5, priceChange1y: -12.5, estimatedPrintRun: 20000, keyRookies: ['Corbin Carroll', 'Elly De La Cruz'], rating: 3.8, available: true, vintage: false },
+  { id: 'sp-33', name: '2021 Topps Chrome Baseball Hobby Box', year: 2021, sport: 'baseball', brand: 'Topps Chrome', productType: 'hobby_box', releaseDate: '2021-10-29', releasePrice: 250, currentPrice: 280, allTimeHigh: 400, allTimeLow: 220, priceChange30d: 1.0, priceChange90d: 2.5, priceChange1y: -5.0, estimatedPrintRun: 130000, keyRookies: ['Bobby Witt Jr', 'Julio Rodriguez', 'Riley Greene'], rating: 3.7, available: true, vintage: false },
+  { id: 'sp-34', name: '2024 Panini Flawless Basketball Hobby Box', year: 2024, sport: 'basketball', brand: 'Panini Flawless', productType: 'hobby_box', releaseDate: '2025-05-01', releasePrice: 8500, currentPrice: 8500, allTimeHigh: 8500, allTimeLow: 8500, priceChange30d: 0, priceChange90d: 0, priceChange1y: 0, estimatedPrintRun: 2500, keyRookies: ['Victor Wembanyama', 'Chet Holmgren'], rating: 4.5, available: false, vintage: false },
+  { id: 'sp-35', name: '2023 Bowman Chrome Baseball HTA Choice Box', year: 2023, sport: 'baseball', brand: 'Bowman Chrome', productType: 'hobby_box', releaseDate: '2023-11-15', releasePrice: 450, currentPrice: 520, allTimeHigh: 580, allTimeLow: 420, priceChange30d: 4.0, priceChange90d: 10.5, priceChange1y: 15.6, estimatedPrintRun: 15000, keyRookies: ['Ethan Salas (prospect)', 'Dylan Crews (prospect)'], rating: 4.4, available: true, vintage: false },
+  { id: 'sp-36', name: '2024 Panini Select Football Hobby Box', year: 2024, sport: 'football', brand: 'Panini Select', productType: 'hobby_box', releaseDate: '2025-03-01', releasePrice: 500, currentPrice: 475, allTimeHigh: 540, allTimeLow: 460, priceChange30d: -2.0, priceChange90d: -5.0, priceChange1y: 0, estimatedPrintRun: 70000, keyRookies: ['Caleb Williams', 'Jayden Daniels', 'Bo Nix'], rating: 3.7, available: true, vintage: false },
+  { id: 'sp-37', name: '2023 Panini Prizm Draft Picks Football Hobby Box', year: 2023, sport: 'football', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2023-10-20', releasePrice: 200, currentPrice: 165, allTimeHigh: 230, allTimeLow: 150, priceChange30d: -4.0, priceChange90d: -10.0, priceChange1y: -17.5, estimatedPrintRun: 80000, keyRookies: ['Caleb Williams (college)', 'Drake Maye (college)'], rating: 3.2, available: true, vintage: false },
+  { id: 'sp-38', name: '2025 Bowman Chrome Baseball Hobby Box', year: 2025, sport: 'baseball', brand: 'Bowman Chrome', productType: 'hobby_box', releaseDate: '2025-10-15', releasePrice: 340, currentPrice: 340, allTimeHigh: 340, allTimeLow: 340, priceChange30d: 0, priceChange90d: 0, priceChange1y: 0, estimatedPrintRun: null, keyRookies: ['TBD 2025 Draft Class'], rating: 3.8, available: false, vintage: false },
+  { id: 'sp-39', name: '2024 Topps Series 2 Baseball Hobby Box', year: 2024, sport: 'baseball', brand: 'Topps', productType: 'hobby_box', releaseDate: '2024-06-12', releasePrice: 115, currentPrice: 105, allTimeHigh: 130, allTimeLow: 95, priceChange30d: -2.8, priceChange90d: -6.5, priceChange1y: -8.7, estimatedPrintRun: 180000, keyRookies: ['Paul Skenes', 'Jackson Chourio'], rating: 3.5, available: true, vintage: false },
+  { id: 'sp-40', name: '2024-25 Upper Deck Series 2 Hockey Hobby Box', year: 2024, sport: 'hockey', brand: 'Upper Deck', productType: 'hobby_box', releaseDate: '2025-03-19', releasePrice: 130, currentPrice: 135, allTimeHigh: 140, allTimeLow: 125, priceChange30d: 3.8, priceChange90d: 3.8, priceChange1y: 0, estimatedPrintRun: 50000, keyRookies: ['Macklin Celebrini', 'Matvei Michkov'], rating: 4.0, available: true, vintage: false },
 ];
 
-function generatePriceHistory(): PriceHistory[] {
-  const history: PriceHistory[] = [];
+// ---- Mock Data: Upcoming Releases (15) ----
 
-  SEALED_PRODUCTS.forEach(product => {
-    const yearsBack = Math.min(2026 - product.year, 5);
-    const startDate = new Date(`${2026 - yearsBack}-01-01`);
-    const endDate = new Date('2026-03-15');
-    const startPrice = product.releasePrice;
-    const endPrice = product.currentPrice;
-    const totalMonths = Math.round((endDate.getTime() - startDate.getTime()) / (30 * 24 * 3600000));
-
-    for (let m = 0; m <= totalMonths; m++) {
-      const date = new Date(startDate.getTime() + m * 30 * 24 * 3600000);
-      if (date > endDate) break;
-
-      const progress = m / Math.max(1, totalMonths);
-      const basePrice = startPrice + (endPrice - startPrice) * progress;
-      const seed = (product.id.charCodeAt(3) * 17 + m * 13) % 100;
-      const variance = (seed - 50) / 50 * basePrice * 0.08;
-      const price = Math.max(basePrice * 0.7, Math.round((basePrice + variance) * 100) / 100);
-
-      history.push({
-        productId: product.id,
-        date: date.toISOString().split('T')[0],
-        price,
-      });
-    }
-  });
-
-  return history;
-}
-
-const PRICE_HISTORY = generatePriceHistory();
-
-const RIP_VS_HOLD: RipVsHold[] = [
-  { productId: 'sp_001', productName: '2024 Topps Chrome Baseball Hobby Box', sealedValue: 310, expectedRipValue: 195, hitRate: 8.3, avgHitValue: 45, avgBaseValue: 0.50, cardsPerBox: 24, hitsPerBox: 2, recommendation: 'hold', confidence: 78, reasoning: 'Sealed premium is significant. Expected rip value averages well below sealed price. Hold for long-term appreciation.' },
-  { productId: 'sp_002', productName: '2024 Panini Prizm NBA Hobby Box', sealedValue: 1450, expectedRipValue: 980, hitRate: 5.5, avgHitValue: 120, avgBaseValue: 2.50, cardsPerBox: 144, hitsPerBox: 2, recommendation: 'hold', confidence: 85, reasoning: 'Premium NBA product with strong sealed demand. Ripping destroys significant value. Hold sealed.' },
-  { productId: 'sp_003', productName: '2024 Panini Prizm NFL Hobby Box', sealedValue: 750, expectedRipValue: 820, hitRate: 6.2, avgHitValue: 95, avgBaseValue: 1.80, cardsPerBox: 144, hitsPerBox: 2, recommendation: 'rip', confidence: 62, reasoning: 'Currently below release price with decent EV. Worth ripping if seeking specific rookies.' },
-  { productId: 'sp_005', productName: '2024 Bowman Chrome Baseball Hobby Box', sealedValue: 350, expectedRipValue: 280, hitRate: 7.5, avgHitValue: 65, avgBaseValue: 0.75, cardsPerBox: 18, hitsPerBox: 2, recommendation: 'hold', confidence: 72, reasoning: 'Bowman Chrome holds sealed value well historically. Prospect autos drive long-term growth.' },
-  { productId: 'sp_012', productName: '2023 Panini Prizm NBA Hobby Box', sealedValue: 1800, expectedRipValue: 1200, hitRate: 4.8, avgHitValue: 180, avgBaseValue: 3.50, cardsPerBox: 144, hitsPerBox: 2, recommendation: 'hold', confidence: 92, reasoning: 'Wembanyama RC class. Sealed is king. Never rip this product — hold for 5-10 years.' },
-  { productId: 'sp_016', productName: '2020 Panini Prizm NFL Hobby Box', sealedValue: 4500, expectedRipValue: 2800, hitRate: 3.5, avgHitValue: 350, avgBaseValue: 5.00, cardsPerBox: 144, hitsPerBox: 2, recommendation: 'hold', confidence: 95, reasoning: 'Herbert/Burrow class is legendary. $4500 sealed is a fraction of potential. Never rip.' },
-  { productId: 'sp_019', productName: '2018 Panini Prizm NBA Hobby Box', sealedValue: 8500, expectedRipValue: 5200, hitRate: 2.8, avgHitValue: 650, avgBaseValue: 8.00, cardsPerBox: 144, hitsPerBox: 2, recommendation: 'hold', confidence: 98, reasoning: 'Luka Doncic class. Ultra-premium sealed product. Sealed value will continue to climb.' },
-  { productId: 'sp_026', productName: '2025 Topps Series 1 Baseball Hobby Box', sealedValue: 120, expectedRipValue: 130, hitRate: 12.0, avgHitValue: 25, avgBaseValue: 0.30, cardsPerBox: 24, hitsPerBox: 1, recommendation: 'rip', confidence: 58, reasoning: 'Close to release price with Sasaki SP chase. Ripping is viable for the experience.' },
-  { productId: 'sp_007', productName: '2024 Topps Chrome Baseball Blaster Box', sealedValue: 55, expectedRipValue: 35, hitRate: 15.0, avgHitValue: 8, avgBaseValue: 0.25, cardsPerBox: 8, hitsPerBox: 0, recommendation: 'hold', confidence: 65, reasoning: 'Small retail box but sealed blasters appreciate. Better as sealed investment.' },
-  { productId: 'sp_035', productName: '2024 Panini National Treasures NBA Hobby Box', sealedValue: 4800, expectedRipValue: 5200, hitRate: 100, avgHitValue: 650, avgBaseValue: 0, cardsPerBox: 8, hitsPerBox: 8, recommendation: 'rip', confidence: 70, reasoning: 'All hits product. EV slightly favors ripping due to RPA chase. High variance but positive EV.' },
+const MOCK_RELEASES: ProductRelease[] = [
+  { id: 'pr-1', name: '2025 Topps Series 2 Baseball', sport: 'baseball', brand: 'Topps', productType: 'hobby_box', releaseDate: '2026-06-10', estimatedHobbyPrice: 120, estimatedRetailPrice: 30, keyRookies: ['Ethan Salas', 'Travis Bazzana', 'Jac Caglianone'], hypeLevel: 'high', preorderAvailable: false, description: 'Second series featuring key rookie debuts from the 2026 MLB season.' },
+  { id: 'pr-2', name: '2025-26 Panini Prizm Basketball', sport: 'basketball', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2026-09-15', estimatedHobbyPrice: 500, estimatedRetailPrice: 42, keyRookies: ['Cooper Flagg', 'Dylan Harper', 'Ace Bailey'], hypeLevel: 'extreme', preorderAvailable: false, description: 'The flagship basketball product featuring the highly anticipated 2025 NBA Draft class led by Cooper Flagg.' },
+  { id: 'pr-3', name: '2026 Topps Series 1 Baseball', sport: 'baseball', brand: 'Topps', productType: 'hobby_box', releaseDate: '2026-02-12', estimatedHobbyPrice: 125, estimatedRetailPrice: 30, keyRookies: ['Ethan Salas', 'Travis Bazzana', 'Charlie Condon'], hypeLevel: 'high', preorderAvailable: true, description: 'First product of the 2026 season featuring the strongest rookie class in years.' },
+  { id: 'pr-4', name: '2025 Panini National Treasures Football', sport: 'football', brand: 'National Treasures', productType: 'hobby_box', releaseDate: '2026-06-01', estimatedHobbyPrice: 5000, estimatedRetailPrice: 0, keyRookies: ['Shedeur Sanders', 'Cam Ward', 'Travis Hunter'], hypeLevel: 'high', preorderAvailable: false, description: 'The premium football product featuring on-card RPAs from the 2025 NFL Draft class.' },
+  { id: 'pr-5', name: '2025 Bowman Chrome Baseball', sport: 'baseball', brand: 'Bowman Chrome', productType: 'hobby_box', releaseDate: '2026-10-15', estimatedHobbyPrice: 350, estimatedRetailPrice: 0, keyRookies: ['2026 Draft Class Prospects'], hypeLevel: 'medium', preorderAvailable: false, description: 'Annual prospect-focused product with 1st Bowman Chrome cards.' },
+  { id: 'pr-6', name: '2025-26 Upper Deck Series 1 Hockey', sport: 'hockey', brand: 'Upper Deck', productType: 'hobby_box', releaseDate: '2025-11-12', estimatedHobbyPrice: 135, estimatedRetailPrice: 35, keyRookies: ['2025 NHL Draft Picks'], hypeLevel: 'medium', preorderAvailable: true, description: 'The premier hockey product with Young Guns rookie cards.' },
+  { id: 'pr-7', name: '2025 Panini Prizm Football', sport: 'football', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2026-01-15', estimatedHobbyPrice: 675, estimatedRetailPrice: 42, keyRookies: ['Shedeur Sanders', 'Cam Ward', 'Travis Hunter'], hypeLevel: 'high', preorderAvailable: true, description: 'The flagship football product with Silver Prizm parallels and auto hits.' },
+  { id: 'pr-8', name: '2025 Topps Chrome Baseball', sport: 'baseball', brand: 'Topps Chrome', productType: 'hobby_box', releaseDate: '2025-11-01', estimatedHobbyPrice: 290, estimatedRetailPrice: 55, keyRookies: ['Paul Skenes', 'Jackson Merrill', 'Shota Imanaga'], hypeLevel: 'medium', preorderAvailable: true, description: 'Chrome refractor versions of 2025 Topps base rookies.' },
+  { id: 'pr-9', name: '2024-25 Panini National Treasures Basketball', sport: 'basketball', brand: 'National Treasures', productType: 'hobby_box', releaseDate: '2025-12-10', estimatedHobbyPrice: 4500, estimatedRetailPrice: 0, keyRookies: ['Zaccharie Risacher', 'Alex Sarr', 'Reed Sheppard'], hypeLevel: 'high', preorderAvailable: false, description: 'The premium basketball product with on-card RPAs and patch cards.' },
+  { id: 'pr-10', name: '2025 Bowman Baseball', sport: 'baseball', brand: 'Bowman', productType: 'hobby_box', releaseDate: '2025-06-11', estimatedHobbyPrice: 270, estimatedRetailPrice: 35, keyRookies: ['2025 Draft Class', 'International Prospects'], hypeLevel: 'medium', preorderAvailable: true, description: 'The annual prospect product with 1st Bowman cards for new draft picks.' },
+  { id: 'pr-11', name: '2025 Panini Prizm WNBA', sport: 'basketball', brand: 'Panini Prizm', productType: 'hobby_box', releaseDate: '2025-12-15', estimatedHobbyPrice: 175, estimatedRetailPrice: 40, keyRookies: ['Paige Bueckers', 'JuJu Watkins'], hypeLevel: 'extreme', preorderAvailable: false, description: 'WNBA product featuring the most anticipated draft class in league history.' },
+  { id: 'pr-12', name: '2026 Bowman Chrome Baseball', sport: 'baseball', brand: 'Bowman Chrome', productType: 'hobby_box', releaseDate: '2026-10-20', estimatedHobbyPrice: 360, estimatedRetailPrice: 0, keyRookies: ['2026 Draft Prospects'], hypeLevel: 'medium', preorderAvailable: false, description: 'Chrome prospect cards from the latest Bowman Baseball release.' },
+  { id: 'pr-13', name: '2025 Topps Chrome UCL Soccer', sport: 'soccer', brand: 'Topps Chrome', productType: 'hobby_box', releaseDate: '2025-12-03', estimatedHobbyPrice: 210, estimatedRetailPrice: 55, keyRookies: ['Lamine Yamal', 'Endrick', 'New Signings'], hypeLevel: 'medium', preorderAvailable: false, description: 'Champions League chrome cards featuring top European soccer talent.' },
+  { id: 'pr-14', name: '2025-26 Panini Flawless Basketball', sport: 'basketball', brand: 'Panini Flawless', productType: 'hobby_box', releaseDate: '2026-05-01', estimatedHobbyPrice: 9000, estimatedRetailPrice: 0, keyRookies: ['Zaccharie Risacher', 'Alex Sarr'], hypeLevel: 'high', preorderAvailable: false, description: 'Ultra-premium product with encased gems and flawless diamond embedded cards.' },
+  { id: 'pr-15', name: '2025 Panini Select Football', sport: 'football', brand: 'Panini Select', productType: 'hobby_box', releaseDate: '2026-03-01', estimatedHobbyPrice: 525, estimatedRetailPrice: 0, keyRookies: ['Shedeur Sanders', 'Cam Ward', 'Travis Hunter'], hypeLevel: 'medium', preorderAvailable: false, description: 'Multi-tier football product with Concourse, Premier, and Club levels.' },
 ];
 
-const PRODUCT_RELEASES: ProductRelease[] = [
-  { id: 'pr_001', name: '2025 Topps Chrome Baseball Hobby', sport: 'Baseball', brand: 'Topps', releaseDate: '2025-09-15', estimatedHobbyPrice: 265, productType: 'hobby_box', keyRookies: ['Roki Sasaki', 'Charlie Condon', 'Travis Bazzana'], hype: 'extreme' },
-  { id: 'pr_002', name: '2025 Bowman Chrome Baseball Hobby', sport: 'Baseball', brand: 'Bowman', releaseDate: '2025-10-20', estimatedHobbyPrice: 290, productType: 'hobby_box', keyRookies: ['Konnor Griffin', 'Jac Caglianone', 'Braden Montgomery'], hype: 'high' },
-  { id: 'pr_003', name: '2025 Panini Prizm NFL Hobby', sport: 'Football', brand: 'Panini', releaseDate: '2026-01-15', estimatedHobbyPrice: 850, productType: 'hobby_box', keyRookies: ['Shedeur Sanders', 'Travis Hunter', 'Cam Ward'], hype: 'extreme' },
-  { id: 'pr_004', name: '2025 Panini Prizm NBA Hobby', sport: 'Basketball', brand: 'Panini', releaseDate: '2025-08-01', estimatedHobbyPrice: 1300, productType: 'hobby_box', keyRookies: ['Cooper Flagg', 'Ace Bailey', 'Dylan Harper'], hype: 'extreme' },
-  { id: 'pr_005', name: '2026 Topps Series 1 Baseball Hobby', sport: 'Baseball', brand: 'Topps', releaseDate: '2026-02-05', estimatedHobbyPrice: 100, productType: 'hobby_box', keyRookies: ['TBD Rookies'], hype: 'medium' },
-  { id: 'pr_006', name: '2025 Panini National Treasures NFL', sport: 'Football', brand: 'Panini', releaseDate: '2026-04-01', estimatedHobbyPrice: 4500, productType: 'hobby_box', keyRookies: ['Shedeur Sanders', 'Travis Hunter'], hype: 'high' },
-  { id: 'pr_007', name: '2025 Topps Stadium Club Baseball', sport: 'Baseball', brand: 'Topps', releaseDate: '2025-11-10', estimatedHobbyPrice: 120, productType: 'hobby_box', keyRookies: ['Roki Sasaki', 'Paul Skenes'], hype: 'medium' },
-  { id: 'pr_008', name: '2026 Panini Prizm NBA Hobby', sport: 'Basketball', brand: 'Panini', releaseDate: '2026-08-01', estimatedHobbyPrice: 1400, productType: 'hobby_box', keyRookies: ['TBD 2026 Draft Class'], hype: 'medium' },
-  { id: 'pr_009', name: '2025 Donruss Optic NFL Hobby', sport: 'Football', brand: 'Panini', releaseDate: '2026-03-20', estimatedHobbyPrice: 475, productType: 'hobby_box', keyRookies: ['Shedeur Sanders', 'Cam Ward'], hype: 'medium' },
-  { id: 'pr_010', name: '2025 Topps Heritage Baseball', sport: 'Baseball', brand: 'Topps', releaseDate: '2025-04-15', estimatedHobbyPrice: 115, productType: 'hobby_box', keyRookies: ['Roki Sasaki'], hype: 'medium' },
-  { id: 'pr_011', name: '2026 Bowman Baseball Hobby', sport: 'Baseball', brand: 'Bowman', releaseDate: '2026-05-10', estimatedHobbyPrice: 200, productType: 'hobby_box', keyRookies: ['2026 Draft Prospects'], hype: 'high' },
-  { id: 'pr_012', name: '2025 Select NBA Hobby', sport: 'Basketball', brand: 'Panini', releaseDate: '2025-12-01', estimatedHobbyPrice: 700, productType: 'hobby_box', keyRookies: ['Cooper Flagg', 'Ace Bailey'], hype: 'high' },
-  { id: 'pr_013', name: '2025 Panini Mosaic NFL Hobby', sport: 'Football', brand: 'Panini', releaseDate: '2025-11-15', estimatedHobbyPrice: 350, productType: 'hobby_box', keyRookies: ['Shedeur Sanders', 'Travis Hunter'], hype: 'medium' },
-  { id: 'pr_014', name: '2026 Topps Chrome UEFA Champions League', sport: 'Soccer', brand: 'Topps', releaseDate: '2026-06-01', estimatedHobbyPrice: 220, productType: 'hobby_box', keyRookies: ['Lamine Yamal', 'Endrick'], hype: 'high' },
-  { id: 'pr_015', name: '2025 Upper Deck Series 2 NHL Hobby', sport: 'Hockey', brand: 'Upper Deck', releaseDate: '2025-12-10', estimatedHobbyPrice: 115, productType: 'hobby_box', keyRookies: ['Macklin Celebrini'], hype: 'medium' },
+// ---- Mock Data: Vintage Sealed Products (30) ----
+
+const MOCK_VINTAGE_SEALED: VintageSealed[] = [
+  { id: 'vs-1', name: '1986-87 Fleer Basketball Wax Box', year: 1986, sport: 'basketball', productType: 'hobby_box', currentPrice: 850000, priceIn2020: 520000, priceIn2015: 125000, priceIn2010: 45000, appreciationRate: 18.5, keyCards: ['Michael Jordan RC #57', 'Charles Barkley RC', 'Patrick Ewing RC'], condition: 'factory_sealed', authenticator: 'BBCE', rarity: 'legendary', description: 'The holy grail of sealed basketball product. Contains Jordan rookies.' },
+  { id: 'vs-2', name: '1986-87 Fleer Basketball Wax Pack', year: 1986, sport: 'basketball', productType: 'pack', currentPrice: 22000, priceIn2020: 15000, priceIn2015: 5000, priceIn2010: 1800, appreciationRate: 16.8, keyCards: ['Michael Jordan RC #57'], condition: 'authenticated', authenticator: 'PSA', rarity: 'very_scarce', description: 'Single sealed pack from the iconic 1986-87 Fleer set.' },
+  { id: 'vs-3', name: '1952 Topps Baseball Wax Pack', year: 1952, sport: 'baseball', productType: 'pack', currentPrice: 75000, priceIn2020: 55000, priceIn2015: 25000, priceIn2010: 12000, appreciationRate: 14.2, keyCards: ['Mickey Mantle #311', 'Willie Mays #261'], condition: 'authenticated', authenticator: 'PSA', rarity: 'legendary', description: 'Incredibly rare pack from the most valuable vintage baseball set.' },
+  { id: 'vs-4', name: '1996-97 Topps Chrome Basketball Hobby Box', year: 1996, sport: 'basketball', productType: 'hobby_box', currentPrice: 185000, priceIn2020: 95000, priceIn2015: 18000, priceIn2010: 5500, appreciationRate: 22.5, keyCards: ['Kobe Bryant RC #138', 'Allen Iverson RC', 'Steve Nash RC'], condition: 'factory_sealed', authenticator: 'BBCE', rarity: 'extremely_rare', description: 'Contains Kobe Bryant Chrome rookies. One of the most sought-after sealed boxes.' },
+  { id: 'vs-5', name: '2003-04 Topps Chrome Basketball Hobby Box', year: 2003, sport: 'basketball', productType: 'hobby_box', currentPrice: 18500, priceIn2020: 8500, priceIn2015: 1200, priceIn2010: 400, appreciationRate: 28.5, keyCards: ['LeBron James RC #111', 'Dwyane Wade RC', 'Carmelo Anthony RC'], condition: 'factory_sealed', authenticator: null, rarity: 'very_scarce', description: 'LeBron James Chrome rookie box. Most valuable modern sealed product.' },
+  { id: 'vs-6', name: '1979-80 O-Pee-Chee Hockey Wax Box', year: 1979, sport: 'hockey', productType: 'hobby_box', currentPrice: 220000, priceIn2020: 145000, priceIn2015: 55000, priceIn2010: 22000, appreciationRate: 15.8, keyCards: ['Wayne Gretzky RC #18'], condition: 'bbce_wrapped', authenticator: 'BBCE', rarity: 'legendary', description: 'Contains the Gretzky rookie. Holy grail of hockey sealed product.' },
+  { id: 'vs-7', name: '1955 Topps Baseball 5-Cent Wax Pack', year: 1955, sport: 'baseball', productType: 'pack', currentPrice: 28000, priceIn2020: 18000, priceIn2015: 8000, priceIn2010: 3500, appreciationRate: 13.5, keyCards: ['Roberto Clemente RC #164', 'Sandy Koufax RC'], condition: 'authenticated', authenticator: 'PSA', rarity: 'extremely_rare', description: 'Vintage pack containing potential Clemente and Koufax rookies.' },
+  { id: 'vs-8', name: '1993 SP Baseball Foil Box', year: 1993, sport: 'baseball', productType: 'hobby_box', currentPrice: 8500, priceIn2020: 3200, priceIn2015: 1500, priceIn2010: 800, appreciationRate: 16.2, keyCards: ['Derek Jeter RC #279'], condition: 'factory_sealed', authenticator: null, rarity: 'scarce', description: 'Contains the iconic Derek Jeter SP rookie card.' },
+  { id: 'vs-9', name: '1989 Upper Deck Baseball High Number Box', year: 1989, sport: 'baseball', productType: 'hobby_box', currentPrice: 1800, priceIn2020: 1200, priceIn2015: 600, priceIn2010: 250, appreciationRate: 12.5, keyCards: ['Ken Griffey Jr RC #1'], condition: 'factory_sealed', authenticator: null, rarity: 'scarce', description: 'Classic 90s product with the iconic Griffey Jr rookie.' },
+  { id: 'vs-10', name: '1969 Topps Basketball Wax Pack', year: 1969, sport: 'basketball', productType: 'pack', currentPrice: 42000, priceIn2020: 28000, priceIn2015: 12000, priceIn2010: 5000, appreciationRate: 14.8, keyCards: ['Lew Alcindor RC #25'], condition: 'authenticated', authenticator: 'PSA', rarity: 'legendary', description: 'Extremely rare pack from the Kareem Abdul-Jabbar rookie year.' },
+  { id: 'vs-11', name: '2009-10 Panini National Treasures Basketball Hobby Box', year: 2009, sport: 'basketball', productType: 'hobby_box', currentPrice: 95000, priceIn2020: 25000, priceIn2015: 4000, priceIn2010: null, appreciationRate: 35.2, keyCards: ['Stephen Curry RC /99', 'James Harden RC'], condition: 'factory_sealed', authenticator: null, rarity: 'extremely_rare', description: 'Ultra-low production Curry rookie NT box. Astronomical appreciation.' },
+  { id: 'vs-12', name: '1966 Topps Baseball Wax Box', year: 1966, sport: 'baseball', productType: 'hobby_box', currentPrice: 180000, priceIn2020: 120000, priceIn2015: 55000, priceIn2010: 25000, appreciationRate: 13.2, keyCards: ['Roberto Clemente', 'Willie Mays', 'Hank Aaron'], condition: 'bbce_wrapped', authenticator: 'BBCE', rarity: 'legendary', description: 'Vintage baseball wax from the golden era. Extremely scarce.' },
+  { id: 'vs-13', name: '2000-01 SP Authentic Basketball Hobby Box', year: 2000, sport: 'basketball', productType: 'hobby_box', currentPrice: 5800, priceIn2020: 2500, priceIn2015: 800, priceIn2010: 350, appreciationRate: 18.5, keyCards: ['Kobe Bryant auto', 'Kevin Garnett auto'], condition: 'factory_sealed', authenticator: null, rarity: 'scarce', description: 'Early auto-focused product with strong HOF content.' },
+  { id: 'vs-14', name: '1980 Topps Baseball Wax Box', year: 1980, sport: 'baseball', productType: 'hobby_box', currentPrice: 12000, priceIn2020: 6500, priceIn2015: 3000, priceIn2010: 1500, appreciationRate: 14.0, keyCards: ['Rickey Henderson RC #482'], condition: 'bbce_wrapped', authenticator: 'BBCE', rarity: 'very_scarce', description: 'Contains the stolen base king Rickey Henderson rookie.' },
+  { id: 'vs-15', name: '2013-14 Panini Prizm Basketball Hobby Box', year: 2013, sport: 'basketball', productType: 'hobby_box', currentPrice: 28000, priceIn2020: 8000, priceIn2015: 450, priceIn2010: null, appreciationRate: 42.5, keyCards: ['Giannis Antetokounmpo RC #290', 'CJ McCollum RC'], condition: 'factory_sealed', authenticator: null, rarity: 'very_scarce', description: 'First year of Prizm basketball. Contains the Giannis rookie. Massive appreciation.' },
+  { id: 'vs-16', name: '1971 Topps Baseball Wax Box', year: 1971, sport: 'baseball', productType: 'hobby_box', currentPrice: 85000, priceIn2020: 52000, priceIn2015: 22000, priceIn2010: 10000, appreciationRate: 14.5, keyCards: ['Hank Aaron', 'Roberto Clemente', 'Nolan Ryan'], condition: 'bbce_wrapped', authenticator: 'BBCE', rarity: 'extremely_rare', description: 'Black-bordered set makes high-grade cards extremely scarce.' },
+  { id: 'vs-17', name: '2017 Panini Prizm Football Hobby Box', year: 2017, sport: 'football', productType: 'hobby_box', currentPrice: 2200, priceIn2020: 800, priceIn2015: 0, priceIn2010: null, appreciationRate: 28.0, keyCards: ['Patrick Mahomes RC #269', 'Deshaun Watson RC'], condition: 'factory_sealed', authenticator: null, rarity: 'scarce', description: 'The Mahomes rookie Prizm box. One of the best modern football sealed investments.' },
+  { id: 'vs-18', name: '1957 Topps Baseball Wax Pack', year: 1957, sport: 'baseball', productType: 'pack', currentPrice: 18000, priceIn2020: 12000, priceIn2015: 5500, priceIn2010: 2500, appreciationRate: 13.8, keyCards: ['Mickey Mantle', 'Ted Williams', 'Hank Aaron'], condition: 'authenticated', authenticator: 'PSA', rarity: 'extremely_rare', description: 'Vintage pack with multiple HOF possibilities.' },
+  { id: 'vs-19', name: '1984-85 Star Company Basketball Bag Set', year: 1984, sport: 'basketball', productType: 'starter_kit', currentPrice: 45000, priceIn2020: 25000, priceIn2015: 8000, priceIn2010: 3500, appreciationRate: 17.5, keyCards: ['Michael Jordan XRC', 'Charles Barkley XRC'], condition: 'factory_sealed', authenticator: null, rarity: 'very_scarce', description: 'Pre-Fleer Jordan card set. Technically his first cards.' },
+  { id: 'vs-20', name: '2018-19 Panini Prizm Basketball Hobby Box', year: 2018, sport: 'basketball', productType: 'hobby_box', currentPrice: 1800, priceIn2020: 650, priceIn2015: 0, priceIn2010: null, appreciationRate: 25.0, keyCards: ['Luka Doncic RC #280', 'Trae Young RC', 'Shai Gilgeous-Alexander RC'], condition: 'factory_sealed', authenticator: null, rarity: 'scarce', description: 'The Luka Prizm box. One of the strongest modern sealed investments.' },
+  { id: 'vs-21', name: '1975 Topps Baseball Cello Box', year: 1975, sport: 'baseball', productType: 'cello', currentPrice: 32000, priceIn2020: 18000, priceIn2015: 8000, priceIn2010: 4000, appreciationRate: 13.8, keyCards: ['George Brett RC', 'Robin Yount RC'], condition: 'bbce_wrapped', authenticator: 'BBCE', rarity: 'very_scarce', description: 'Multi-color mini-card set with key HOF rookies.' },
+  { id: 'vs-22', name: '2011 Topps Update Baseball Hobby Box', year: 2011, sport: 'baseball', productType: 'hobby_box', currentPrice: 2800, priceIn2020: 1200, priceIn2015: 180, priceIn2010: null, appreciationRate: 22.0, keyCards: ['Mike Trout RC #US175', 'Jose Altuve RC'], condition: 'factory_sealed', authenticator: null, rarity: 'scarce', description: 'The Mike Trout rookie box. Still one of the best modern baseball investments.' },
+  { id: 'vs-23', name: '1961 Topps Baseball Wax Pack', year: 1961, sport: 'baseball', productType: 'pack', currentPrice: 8500, priceIn2020: 5500, priceIn2015: 2500, priceIn2010: 1200, appreciationRate: 13.0, keyCards: ['Mickey Mantle', 'Roger Maris', 'Roberto Clemente'], condition: 'authenticated', authenticator: 'PSA', rarity: 'extremely_rare', description: 'Pack from the legendary Maris/Mantle home run chase season.' },
+  { id: 'vs-24', name: '1981 Topps Football Grocery Rack Pack', year: 1981, sport: 'football', productType: 'fat_pack', currentPrice: 4500, priceIn2020: 2800, priceIn2015: 1200, priceIn2010: 500, appreciationRate: 14.5, keyCards: ['Joe Montana RC #216'], condition: 'authenticated', authenticator: 'BBCE', rarity: 'very_scarce', description: 'Rack pack with Montana rookie potential. Rare format.' },
+  { id: 'vs-25', name: '1956 Topps Baseball Wax Box', year: 1956, sport: 'baseball', productType: 'hobby_box', currentPrice: 450000, priceIn2020: 280000, priceIn2015: 120000, priceIn2010: 55000, appreciationRate: 14.2, keyCards: ['Mickey Mantle #135', 'Willie Mays #130', 'Roberto Clemente'], condition: 'factory_sealed', authenticator: 'BBCE', rarity: 'legendary', description: 'One of the rarest vintage baseball sealed products in existence.' },
+  { id: 'vs-26', name: '1998-99 Topps Chrome Basketball Hobby Box', year: 1998, sport: 'basketball', productType: 'hobby_box', currentPrice: 6500, priceIn2020: 3200, priceIn2015: 800, priceIn2010: 300, appreciationRate: 20.5, keyCards: ['Dirk Nowitzki RC', 'Vince Carter RC', 'Paul Pierce RC'], condition: 'factory_sealed', authenticator: null, rarity: 'scarce', description: 'Late 90s Chrome box with strong HOF rookie content.' },
+  { id: 'vs-27', name: '2020-21 Panini Prizm Basketball Hobby Box', year: 2020, sport: 'basketball', productType: 'hobby_box', currentPrice: 480, priceIn2020: 400, priceIn2015: 0, priceIn2010: null, appreciationRate: 3.8, keyCards: ['Anthony Edwards RC', 'LaMelo Ball RC'], condition: 'factory_sealed', authenticator: null, rarity: 'scarce', description: 'Edwards and Ball rookie box. Moderate appreciation so far.' },
+  { id: 'vs-28', name: '1987 Topps Baseball Wax Case (20 boxes)', year: 1987, sport: 'baseball', productType: 'case', currentPrice: 3200, priceIn2020: 2000, priceIn2015: 1200, priceIn2010: 600, appreciationRate: 11.2, keyCards: ['Barry Bonds RC', 'Bo Jackson RC', 'Rafael Palmeiro RC'], condition: 'factory_sealed', authenticator: null, rarity: 'scarce', description: 'Full case of classic junk wax era product. Appreciating as nostalgia grows.' },
+  { id: 'vs-29', name: '1990 Topps Football Wax Box', year: 1990, sport: 'football', productType: 'hobby_box', currentPrice: 450, priceIn2020: 250, priceIn2015: 120, priceIn2010: 60, appreciationRate: 13.5, keyCards: ['Emmitt Smith RC', 'Junior Seau RC', 'Cortez Kennedy RC'], condition: 'factory_sealed', authenticator: null, rarity: 'scarce', description: 'Junk wax era football but contains Emmitt Smith rookie. Steady appreciation.' },
+  { id: 'vs-30', name: '2014-15 Panini Prizm Basketball Hobby Box', year: 2014, sport: 'basketball', productType: 'hobby_box', currentPrice: 5200, priceIn2020: 1800, priceIn2015: 250, priceIn2010: null, appreciationRate: 28.5, keyCards: ['Nikola Jokic RC', 'Joel Embiid RC', 'Andrew Wiggins RC'], condition: 'factory_sealed', authenticator: null, rarity: 'scarce', description: 'Jokic rookie Prizm box. Late-bloomer appreciation as Jokic became MVP.' },
 ];
 
-const MARKET_TRENDS: MarketTrend[] = [
-  { id: 'mt_001', category: 'NBA Sealed Hobby Boxes', trend: 'rising', changePercent: 14.2, period: 'Last 6 months', description: 'NBA hobby boxes trending up with Cooper Flagg hype cycle driving demand across all years.', impactLevel: 'high' },
-  { id: 'mt_002', category: 'NFL Sealed Hobby Boxes', trend: 'stable', changePercent: 2.1, period: 'Last 6 months', description: 'NFL sealed market stable as collectors await 2025 Prizm release with Shedeur Sanders class.', impactLevel: 'medium' },
-  { id: 'mt_003', category: 'Baseball Chrome Products', trend: 'rising', changePercent: 8.7, period: 'Last 6 months', description: 'Topps Chrome and Bowman Chrome sealed rising on Roki Sasaki rookie season excitement.', impactLevel: 'high' },
-  { id: 'mt_004', category: 'Vintage Sealed Wax', trend: 'rising', changePercent: 18.5, period: 'Last 12 months', description: 'Vintage wax packs and boxes continue to surge as supply dwindles and new collectors enter market.', impactLevel: 'high' },
-  { id: 'mt_005', category: 'Retail Sealed Products', trend: 'falling', changePercent: -5.3, period: 'Last 3 months', description: 'Retail blasters and mega boxes declining as overproduction concerns mount.', impactLevel: 'medium' },
-  { id: 'mt_006', category: 'Ultra-Premium Sealed', trend: 'rising', changePercent: 11.4, period: 'Last 6 months', description: 'National Treasures, Flawless, and other ultra-premium sealed rising as wealthy collectors invest.', impactLevel: 'medium' },
-  { id: 'mt_007', category: 'Soccer Sealed Products', trend: 'rising', changePercent: 22.8, period: 'Last 12 months', description: 'Global soccer card market booming. UCL Chrome and Topps Merlin leading sealed demand.', impactLevel: 'high' },
-  { id: 'mt_008', category: 'Hockey Sealed Products', trend: 'stable', changePercent: -0.8, period: 'Last 6 months', description: 'NHL sealed relatively flat. Macklin Celebrini provides some excitement.', impactLevel: 'low' },
-  { id: 'mt_009', category: 'Sealed Cases (Full Cases)', trend: 'rising', changePercent: 15.6, period: 'Last 12 months', description: 'Full sealed cases increasingly popular as investment vehicles. Premium over individual boxes growing.', impactLevel: 'high' },
-  { id: 'mt_010', category: 'Panini Last Year Products', trend: 'rising', changePercent: 25.3, period: 'Last 6 months', description: 'Final Panini NFL/NBA licensed products gaining scarcity premium as Fanatics transition approaches.', impactLevel: 'high' },
-  { id: 'mt_011', category: 'Bowman 1st Chrome Prospect Boxes', trend: 'rising', changePercent: 9.2, period: 'Last 6 months', description: 'Bowman Chrome sealed popular with prospect investors targeting next generation of stars.', impactLevel: 'medium' },
-  { id: 'mt_012', category: 'Retail Cello/Fat Packs', trend: 'falling', changePercent: -8.1, period: 'Last 3 months', description: 'Individual cello and fat packs losing value as market shifts focus to hobby-grade products.', impactLevel: 'low' },
-  { id: 'mt_013', category: '2020-2021 Sealed Football', trend: 'rising', changePercent: 12.4, period: 'Last 6 months', description: 'Burrow, Herbert, and Lawrence era sealed products climbing as players establish Hall of Fame trajectories.', impactLevel: 'high' },
-  { id: 'mt_014', category: '2018-2019 Sealed Basketball', trend: 'rising', changePercent: 16.9, period: 'Last 12 months', description: 'Luka Doncic era sealed continues historic appreciation. 2018 Prizm becoming blue-chip sealed investment.', impactLevel: 'high' },
-  { id: 'mt_015', category: 'Sealed Product Storage Services', trend: 'rising', changePercent: 30.2, period: 'Last 12 months', description: 'Third-party sealed storage and authentication services booming as market matures.', impactLevel: 'medium' },
-  { id: 'mt_016', category: 'International Sealed Demand', trend: 'rising', changePercent: 19.7, period: 'Last 12 months', description: 'Asian and European collectors driving global demand for US sports sealed products.', impactLevel: 'high' },
-  { id: 'mt_017', category: 'Blaster Box Exclusives', trend: 'stable', changePercent: 1.5, period: 'Last 6 months', description: 'Target and Walmart exclusive blasters holding value but not appreciating meaningfully.', impactLevel: 'low' },
-  { id: 'mt_018', category: 'Heritage and Retro Sealed', trend: 'falling', changePercent: -3.8, period: 'Last 6 months', description: 'Heritage and retro-themed sealed products declining as collectors prefer chrome products.', impactLevel: 'low' },
-  { id: 'mt_019', category: 'Sealed Product Authentication', trend: 'rising', changePercent: 45.0, period: 'Last 12 months', description: 'BBCE and other sealed authentication services seeing record demand as counterfeits increase.', impactLevel: 'medium' },
-  { id: 'mt_020', category: 'Group Break Market Impact', trend: 'stable', changePercent: 3.2, period: 'Last 6 months', description: 'Group breaks consuming significant sealed supply, reducing long-term sealed availability.', impactLevel: 'medium' },
+// ---- Mock Data: ROI Calculations ----
+
+const MOCK_ROI: ROICalculation[] = [
+  { id: 'roi-1', productId: 'sp-19', productName: '2018-19 Panini Prizm Basketball Hobby Box', purchasePrice: 300, currentValue: 1800, totalROI: 500.0, annualizedROI: 29.2, holdingPeriodDays: 2370, breakEvenPrice: 300, projectedValue12m: 2100, riskLevel: 'low', recommendation: 'strong_hold' },
+  { id: 'roi-2', productId: 'sp-20', productName: '2003-04 Topps Chrome Basketball Hobby Box', purchasePrice: 80, currentValue: 18500, totalROI: 23025.0, annualizedROI: 28.5, holdingPeriodDays: 8035, breakEvenPrice: 80, projectedValue12m: 20000, riskLevel: 'low', recommendation: 'strong_hold' },
+  { id: 'roi-3', productId: 'sp-1', productName: '2023-24 Panini Prizm Basketball Hobby Box', purchasePrice: 450, currentValue: 520, totalROI: 15.6, annualizedROI: 10.4, holdingPeriodDays: 547, breakEvenPrice: 450, projectedValue12m: 600, riskLevel: 'medium', recommendation: 'hold' },
+  { id: 'roi-4', productId: 'sp-3', productName: '2024 Panini Prizm Football Hobby Box', purchasePrice: 650, currentValue: 580, totalROI: -10.8, annualizedROI: -9.2, holdingPeriodDays: 420, breakEvenPrice: 650, projectedValue12m: 620, riskLevel: 'high', recommendation: 'neutral' },
+  { id: 'roi-5', productId: 'sp-21', productName: '2017 Panini Prizm Football Hobby Box', purchasePrice: 250, currentValue: 2200, totalROI: 780.0, annualizedROI: 31.5, holdingPeriodDays: 2985, breakEvenPrice: 250, projectedValue12m: 2400, riskLevel: 'low', recommendation: 'hold' },
+  { id: 'roi-6', productId: 'sp-31', productName: '2024 Panini Prizm WNBA Hobby Box', purchasePrice: 150, currentValue: 220, totalROI: 46.7, annualizedROI: 52.0, holdingPeriodDays: 320, breakEvenPrice: 150, projectedValue12m: 300, riskLevel: 'medium', recommendation: 'strong_hold' },
+  { id: 'roi-7', productId: 'sp-28', productName: '2019-20 Panini Prizm Basketball Hobby Box', purchasePrice: 350, currentValue: 550, totalROI: 57.1, annualizedROI: 9.5, holdingPeriodDays: 2005, breakEvenPrice: 350, projectedValue12m: 500, riskLevel: 'high', recommendation: 'sell' },
+  { id: 'roi-8', productId: 'sp-6', productName: '2023-24 Upper Deck Series 1 Hockey Hobby Box', purchasePrice: 125, currentValue: 180, totalROI: 44.0, annualizedROI: 18.5, holdingPeriodDays: 858, breakEvenPrice: 125, projectedValue12m: 210, riskLevel: 'low', recommendation: 'hold' },
 ];
 
-const VINTAGE_SEALED: VintageSealed[] = [
-  { id: 'vs_001', name: '1986 Fleer Basketball Wax Pack', sport: 'basketball', year: 1986, productType: 'pack', currentPrice: 25000, priceOneYearAgo: 20000, priceFiveYearsAgo: 8000, estimatedRemaining: 500, keyCards: ['Michael Jordan RC', 'Charles Barkley RC', 'Karl Malone RC'], investmentGrade: 'A+' },
-  { id: 'vs_002', name: '1986 Fleer Basketball Wax Box (36 packs)', sport: 'basketball', year: 1986, productType: 'hobby_box', currentPrice: 1200000, priceOneYearAgo: 950000, priceFiveYearsAgo: 350000, estimatedRemaining: 15, keyCards: ['Michael Jordan RC', 'Full Set'], investmentGrade: 'A+' },
-  { id: 'vs_003', name: '1952 Topps Baseball Wax Pack', sport: 'baseball', year: 1952, productType: 'pack', currentPrice: 85000, priceOneYearAgo: 72000, priceFiveYearsAgo: 35000, estimatedRemaining: 50, keyCards: ['Mickey Mantle RC', 'Willie Mays'], investmentGrade: 'A+' },
-  { id: 'vs_004', name: '1984 Topps Football Wax Box', sport: 'football', year: 1984, productType: 'hobby_box', currentPrice: 35000, priceOneYearAgo: 28000, priceFiveYearsAgo: 12000, estimatedRemaining: 200, keyCards: ['Dan Marino RC', 'John Elway RC'], investmentGrade: 'A' },
-  { id: 'vs_005', name: '1979 O-Pee-Chee Hockey Wax Box', sport: 'hockey', year: 1979, productType: 'hobby_box', currentPrice: 180000, priceOneYearAgo: 150000, priceFiveYearsAgo: 55000, estimatedRemaining: 30, keyCards: ['Wayne Gretzky RC'], investmentGrade: 'A+' },
-  { id: 'vs_006', name: '1993 SP Baseball Foil Pack', sport: 'baseball', year: 1993, productType: 'pack', currentPrice: 450, priceOneYearAgo: 380, priceFiveYearsAgo: 120, estimatedRemaining: 8000, keyCards: ['Derek Jeter RC'], investmentGrade: 'B+' },
-  { id: 'vs_007', name: '1993 SP Baseball Foil Box', sport: 'baseball', year: 1993, productType: 'hobby_box', currentPrice: 12000, priceOneYearAgo: 9500, priceFiveYearsAgo: 3200, estimatedRemaining: 500, keyCards: ['Derek Jeter RC'], investmentGrade: 'A' },
-  { id: 'vs_008', name: '1996 Topps Chrome Basketball Box', sport: 'basketball', year: 1996, productType: 'hobby_box', currentPrice: 95000, priceOneYearAgo: 80000, priceFiveYearsAgo: 25000, estimatedRemaining: 150, keyCards: ['Kobe Bryant RC', 'Allen Iverson RC', 'Steve Nash RC'], investmentGrade: 'A+' },
-  { id: 'vs_009', name: '1998 SP Authentic Football Box', sport: 'football', year: 1998, productType: 'hobby_box', currentPrice: 55000, priceOneYearAgo: 45000, priceFiveYearsAgo: 15000, estimatedRemaining: 120, keyCards: ['Peyton Manning RC Auto'], investmentGrade: 'A' },
-  { id: 'vs_010', name: '2003 Topps Chrome Basketball Box', sport: 'basketball', year: 2003, productType: 'hobby_box', currentPrice: 75000, priceOneYearAgo: 62000, priceFiveYearsAgo: 18000, estimatedRemaining: 250, keyCards: ['LeBron James RC Refractor'], investmentGrade: 'A+' },
-  { id: 'vs_011', name: '2000 Bowman Chrome Baseball Box', sport: 'baseball', year: 2000, productType: 'hobby_box', currentPrice: 8500, priceOneYearAgo: 7200, priceFiveYearsAgo: 2800, estimatedRemaining: 800, keyCards: ['Adrian Gonzalez 1st', 'Chase Utley 1st'], investmentGrade: 'B+' },
-  { id: 'vs_012', name: '1980 Topps Basketball Wax Box', sport: 'basketball', year: 1980, productType: 'hobby_box', currentPrice: 150000, priceOneYearAgo: 120000, priceFiveYearsAgo: 40000, estimatedRemaining: 40, keyCards: ['Larry Bird RC', 'Magic Johnson RC'], investmentGrade: 'A+' },
-  { id: 'vs_013', name: '2009 Bowman Chrome Baseball Box', sport: 'baseball', year: 2009, productType: 'hobby_box', currentPrice: 5500, priceOneYearAgo: 4800, priceFiveYearsAgo: 1500, estimatedRemaining: 1200, keyCards: ['Mike Trout 1st Bowman Chrome'], investmentGrade: 'A' },
-  { id: 'vs_014', name: '1971 Topps Baseball Wax Pack', sport: 'baseball', year: 1971, productType: 'pack', currentPrice: 3500, priceOneYearAgo: 2800, priceFiveYearsAgo: 1200, estimatedRemaining: 2000, keyCards: ['Nolan Ryan', 'Hank Aaron', 'Roberto Clemente'], investmentGrade: 'B+' },
-  { id: 'vs_015', name: '1987 Topps Baseball Wax Case (20 boxes)', sport: 'baseball', year: 1987, productType: 'case', currentPrice: 2200, priceOneYearAgo: 1800, priceFiveYearsAgo: 800, estimatedRemaining: 3000, keyCards: ['Barry Bonds RC', 'Bo Jackson RC', 'Mark McGwire RC'], investmentGrade: 'B' },
-  { id: 'vs_016', name: '2011 Bowman Chrome Baseball Box', sport: 'baseball', year: 2011, productType: 'hobby_box', currentPrice: 4200, priceOneYearAgo: 3600, priceFiveYearsAgo: 1100, estimatedRemaining: 1500, keyCards: ['Bryce Harper 1st Bowman Chrome', 'Mike Trout'], investmentGrade: 'A' },
-  { id: 'vs_017', name: '2012 Panini Prizm Basketball Box', sport: 'basketball', year: 2012, productType: 'hobby_box', currentPrice: 28000, priceOneYearAgo: 22000, priceFiveYearsAgo: 5000, estimatedRemaining: 400, keyCards: ['First Prizm Set Ever', 'Anthony Davis RC'], investmentGrade: 'A' },
-  { id: 'vs_018', name: '1990 Topps Football Wax Box', sport: 'football', year: 1990, productType: 'hobby_box', currentPrice: 250, priceOneYearAgo: 200, priceFiveYearsAgo: 60, estimatedRemaining: 15000, keyCards: ['Emmitt Smith RC', 'Junior Seau RC'], investmentGrade: 'C+' },
-  { id: 'vs_019', name: '2014 Bowman Chrome Baseball Box', sport: 'baseball', year: 2014, productType: 'hobby_box', currentPrice: 3800, priceOneYearAgo: 3200, priceFiveYearsAgo: 900, estimatedRemaining: 2000, keyCards: ['Mookie Betts 1st', 'Jacob deGrom 1st'], investmentGrade: 'B+' },
-  { id: 'vs_020', name: '1996 Topps Chrome Football Box', sport: 'football', year: 1996, productType: 'hobby_box', currentPrice: 8000, priceOneYearAgo: 6500, priceFiveYearsAgo: 2200, estimatedRemaining: 600, keyCards: ['Ray Lewis RC Refractor', 'Marvin Harrison RC'], investmentGrade: 'B+' },
-  { id: 'vs_021', name: '2001 Bowman Chrome Football Box', sport: 'football', year: 2001, productType: 'hobby_box', currentPrice: 22000, priceOneYearAgo: 18000, priceFiveYearsAgo: 6000, estimatedRemaining: 350, keyCards: ['Drew Brees RC', 'LaDainian Tomlinson RC', 'Michael Vick RC'], investmentGrade: 'A' },
-  { id: 'vs_022', name: '2017 Bowman Chrome Baseball Box', sport: 'baseball', year: 2017, productType: 'hobby_box', currentPrice: 2800, priceOneYearAgo: 2400, priceFiveYearsAgo: 550, estimatedRemaining: 3000, keyCards: ['Ronald Acuna Jr 1st', 'Juan Soto 1st'], investmentGrade: 'A' },
-  { id: 'vs_023', name: '1969 Topps Baseball Wax Pack', sport: 'baseball', year: 1969, productType: 'pack', currentPrice: 5500, priceOneYearAgo: 4500, priceFiveYearsAgo: 2000, estimatedRemaining: 1500, keyCards: ['Reggie Jackson RC', 'Nolan Ryan 2nd Year'], investmentGrade: 'A' },
-  { id: 'vs_024', name: '2013 Panini Prizm Football Box', sport: 'football', year: 2013, productType: 'hobby_box', currentPrice: 6500, priceOneYearAgo: 5200, priceFiveYearsAgo: 1800, estimatedRemaining: 700, keyCards: ['Early Prizm Football', 'Le\'Veon Bell RC'], investmentGrade: 'B+' },
-  { id: 'vs_025', name: '1981 Topps Baseball Traded Set Box', sport: 'baseball', year: 1981, productType: 'hobby_box', currentPrice: 1200, priceOneYearAgo: 1000, priceFiveYearsAgo: 400, estimatedRemaining: 5000, keyCards: ['Tim Raines RC', 'Fernando Valenzuela RC'], investmentGrade: 'C+' },
-  { id: 'vs_026', name: '2004 Bowman Chrome Baseball Box', sport: 'baseball', year: 2004, productType: 'hobby_box', currentPrice: 3500, priceOneYearAgo: 2900, priceFiveYearsAgo: 800, estimatedRemaining: 1800, keyCards: ['Zack Greinke 1st', 'Justin Verlander 1st'], investmentGrade: 'B' },
-  { id: 'vs_027', name: '1955 Topps Baseball Wax Pack', sport: 'baseball', year: 1955, productType: 'pack', currentPrice: 45000, priceOneYearAgo: 38000, priceFiveYearsAgo: 15000, estimatedRemaining: 100, keyCards: ['Roberto Clemente RC', 'Sandy Koufax RC'], investmentGrade: 'A+' },
-  { id: 'vs_028', name: '2015 Panini Prizm NFL Box', sport: 'football', year: 2015, productType: 'hobby_box', currentPrice: 2200, priceOneYearAgo: 1800, priceFiveYearsAgo: 450, estimatedRemaining: 2500, keyCards: ['Marcus Mariota RC', 'Jameis Winston RC', 'Todd Gurley RC'], investmentGrade: 'B' },
-  { id: 'vs_029', name: '1961 Topps Football Wax Pack', sport: 'football', year: 1961, productType: 'pack', currentPrice: 8500, priceOneYearAgo: 7000, priceFiveYearsAgo: 3000, estimatedRemaining: 300, keyCards: ['Mike Ditka RC', 'Fran Tarkenton RC'], investmentGrade: 'A' },
-  { id: 'vs_030', name: '2005 Topps Chrome Football Box', sport: 'football', year: 2005, productType: 'hobby_box', currentPrice: 9500, priceOneYearAgo: 7800, priceFiveYearsAgo: 2500, estimatedRemaining: 450, keyCards: ['Aaron Rodgers RC Refractor', 'DeMarcus Ware RC'], investmentGrade: 'A' },
-];
+// ---- Service Functions ----
 
-const SUPPLY_ESTIMATES: SupplyEstimate[] = SEALED_PRODUCTS.slice(0, 20).map(p => {
-  const yearsSince = 2026 - p.year;
-  const declineRate = p.productType === 'hobby_box' ? 12 : p.productType === 'case' ? 8 : 18;
-  const remainingPct = Math.max(5, Math.round(100 * Math.pow((100 - declineRate) / 100, yearsSince)));
-  const estSealed = Math.round(p.estimatedSupply * remainingPct / 100);
-
-  let scarcity: SupplyEstimate['scarcityRating'] = 'common';
-  if (estSealed < 500) scarcity = 'ultra_rare';
-  else if (estSealed < 2000) scarcity = 'rare';
-  else if (estSealed < 10000) scarcity = 'scarce';
-  else if (estSealed < 50000) scarcity = 'uncommon';
-
-  return {
-    productId: p.id,
-    productName: p.name,
-    totalProduced: p.estimatedSupply,
-    estimatedSealed: estSealed,
-    sealedPercentage: remainingPct,
-    yearlyDeclineRate: declineRate,
-    scarcityRating: scarcity,
-  };
-});
-
-// ---- Config Helpers ----
-
-const PRODUCT_TYPE_CONFIG: Record<ProductType, { label: string; text: string; bg: string; border: string }> = {
-  hobby_box: { label: 'Hobby Box', text: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
-  retail_box: { label: 'Retail Box', text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
-  blaster: { label: 'Blaster', text: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
-  mega_box: { label: 'Mega Box', text: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'border-indigo-500/30' },
-  case: { label: 'Case', text: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
-  pack: { label: 'Pack', text: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30' },
-  cello: { label: 'Cello', text: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30' },
-  fat_pack: { label: 'Fat Pack', text: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
-};
-
-// ---- Public API ----
-
-export function getProductTypeConfig(type: ProductType): { label: string; text: string; bg: string; border: string } {
-  return PRODUCT_TYPE_CONFIG[type];
+export function getSealedProducts(): SealedProduct[] {
+  const cached = loadData<SealedProduct[]>('sealed_products');
+  if (cached) return cached;
+  saveData('sealed_products', MOCK_SEALED_PRODUCTS);
+  return MOCK_SEALED_PRODUCTS;
 }
 
-export function getSealedProducts(sport?: string, productType?: ProductType): SealedProduct[] {
-  const cacheKey = `products_${sport ?? 'all'}_${productType ?? 'all'}`;
-  const cached = loadData<SealedProduct[]>(cacheKey);
-  if (cached) return cached;
-
-  let results = SEALED_PRODUCTS;
-  if (sport) results = results.filter(p => p.sport === sport);
-  if (productType) results = results.filter(p => p.productType === productType);
-
-  saveData(cacheKey, results);
-  return results;
+export function getSealedProductById(id: string): SealedProduct | undefined {
+  const products = getSealedProducts();
+  return products.find(p => p.id === id);
 }
 
-export function getPriceHistory(productId?: string): PriceHistory[] {
-  const cacheKey = `price_history_${productId ?? 'all'}`;
-  const cached = loadData<PriceHistory[]>(cacheKey);
-  if (cached) return cached;
-
-  let results = PRICE_HISTORY;
-  if (productId) results = results.filter(ph => ph.productId === productId);
-
-  saveData(cacheKey, results);
-  return results;
+export function getSealedProductsBySport(sport: SealedProduct['sport']): SealedProduct[] {
+  const products = getSealedProducts();
+  return products.filter(p => p.sport === sport);
 }
 
-export function getROICalculations(): ROICalculation[] {
-  const cacheKey = 'roi_calculations';
-  const cached = loadData<ROICalculation[]>(cacheKey);
-  if (cached) return cached;
-
-  const calculations: ROICalculation[] = SEALED_PRODUCTS.map(product => {
-    const roi = ((product.currentPrice - product.releasePrice) / product.releasePrice) * 100;
-    const yearsSinceRelease = Math.max(0.25, (2026 - product.year) + 0.21);
-    const annualizedROI = Math.round((Math.pow(1 + roi / 100, 1 / yearsSinceRelease) - 1) * 10000) / 100;
-    const totalReturn = product.currentPrice - product.releasePrice;
-
-    return {
-      productId: product.id,
-      productName: product.name,
-      purchasePrice: product.releasePrice,
-      currentPrice: product.currentPrice,
-      roi: Math.round(roi * 100) / 100,
-      annualizedROI,
-      holdingYears: Math.round(yearsSinceRelease * 10) / 10,
-      totalReturn,
-    };
-  });
-
-  saveData(cacheKey, calculations);
-  return calculations;
+export function getSealedProductsByType(type: ProductType): SealedProduct[] {
+  const products = getSealedProducts();
+  return products.filter(p => p.productType === type);
 }
 
-export function getRipVsHoldAnalysis(): RipVsHold[] {
-  const cached = loadData<RipVsHold[]>('rip_vs_hold');
+export function getUpcomingReleases(): ProductRelease[] {
+  const cached = loadData<ProductRelease[]>('upcoming_releases');
   if (cached) return cached;
-  saveData('rip_vs_hold', RIP_VS_HOLD);
-  return RIP_VS_HOLD;
+  saveData('upcoming_releases', MOCK_RELEASES);
+  return MOCK_RELEASES;
 }
 
-export function getProductReleases(): ProductRelease[] {
-  const cached = loadData<ProductRelease[]>('releases');
-  if (cached) return cached;
-  saveData('releases', PRODUCT_RELEASES);
-  return PRODUCT_RELEASES;
-}
-
-export function getMarketTrends(): MarketTrend[] {
-  const cached = loadData<MarketTrend[]>('trends');
-  if (cached) return cached;
-  saveData('trends', MARKET_TRENDS);
-  return MARKET_TRENDS;
-}
-
-export function getSupplyEstimates(): SupplyEstimate[] {
-  const cached = loadData<SupplyEstimate[]>('supply');
-  if (cached) return cached;
-  saveData('supply', SUPPLY_ESTIMATES);
-  return SUPPLY_ESTIMATES;
+export function getUpcomingReleasesBySport(sport: string): ProductRelease[] {
+  const releases = getUpcomingReleases();
+  return releases.filter(r => r.sport === sport);
 }
 
 export function getVintageSealed(): VintageSealed[] {
-  const cached = loadData<VintageSealed[]>('vintage');
+  const cached = loadData<VintageSealed[]>('vintage_sealed');
   if (cached) return cached;
-  saveData('vintage', VINTAGE_SEALED);
-  return VINTAGE_SEALED;
+  saveData('vintage_sealed', MOCK_VINTAGE_SEALED);
+  return MOCK_VINTAGE_SEALED;
 }
 
-export function getBreakEvenAnalysis(): BreakEvenAnalysis[] {
-  const cacheKey = 'break_even';
-  const cached = loadData<BreakEvenAnalysis[]>(cacheKey);
+export function getVintageSealedBySport(sport: string): VintageSealed[] {
+  const vintage = getVintageSealed();
+  return vintage.filter(v => v.sport === sport);
+}
+
+export function getROICalculations(): ROICalculation[] {
+  const cached = loadData<ROICalculation[]>('roi_calculations');
   if (cached) return cached;
-
-  const analyses: BreakEvenAnalysis[] = RIP_VS_HOLD.map(rvh => {
-    const product = SEALED_PRODUCTS.find(p => p.id === rvh.productId);
-    if (!product) return null;
-
-    const avgCardValue = rvh.avgBaseValue;
-    const cardsNeeded = avgCardValue > 0 ? Math.ceil(product.currentPrice / avgCardValue) : 999;
-    const probabilityBreakEven = Math.round(Math.min(95, Math.max(5, (rvh.expectedRipValue / rvh.sealedValue) * 50)));
-    const topHitNeeded = Math.round(product.currentPrice - (rvh.cardsPerBox - rvh.hitsPerBox) * rvh.avgBaseValue - (rvh.hitsPerBox - 1) * rvh.avgHitValue);
-
-    return {
-      productId: product.id,
-      productName: product.name,
-      boxCost: product.currentPrice,
-      avgCardValue,
-      cardsNeeded,
-      probabilityBreakEven,
-      topHitNeeded: Math.max(0, topHitNeeded),
-      recommendation: probabilityBreakEven >= 50 ? 'Ripping offers reasonable break-even odds' : 'Sealed value exceeds average rip return — hold sealed',
-    };
-  }).filter(Boolean) as BreakEvenAnalysis[];
-
-  saveData(cacheKey, analyses);
-  return analyses;
+  saveData('roi_calculations', MOCK_ROI);
+  return MOCK_ROI;
 }
 
-export function getInvestmentRatings(): InvestmentRating[] {
-  const cacheKey = 'ratings';
-  const cached = loadData<InvestmentRating[]>(cacheKey);
+export function getTopROIProducts(limit: number = 10): ROICalculation[] {
+  const roi = getROICalculations();
+  return [...roi].sort((a, b) => b.totalROI - a.totalROI).slice(0, limit);
+}
+
+export function getTopAppreciatingSealed(limit: number = 10): SealedProduct[] {
+  const products = getSealedProducts();
+  return [...products].sort((a, b) => b.priceChange1y - a.priceChange1y).slice(0, limit);
+}
+
+export function getTopDepreciatingSealed(limit: number = 10): SealedProduct[] {
+  const products = getSealedProducts();
+  return [...products].filter(p => p.priceChange1y < 0).sort((a, b) => a.priceChange1y - b.priceChange1y).slice(0, limit);
+}
+
+export function getHighHypeReleases(): ProductRelease[] {
+  const releases = getUpcomingReleases();
+  return releases.filter(r => r.hypeLevel === 'high' || r.hypeLevel === 'extreme');
+}
+
+export function getAvailableProducts(): SealedProduct[] {
+  const products = getSealedProducts();
+  return products.filter(p => p.available);
+}
+
+export function getVintageByRarity(rarity: VintageSealed['rarity']): VintageSealed[] {
+  const vintage = getVintageSealed();
+  return vintage.filter(v => v.rarity === rarity);
+}
+
+// ---- Mock Data: Price Histories (25) ----
+
+const MOCK_PRICE_HISTORIES: PriceHistory[] = [
+  { id: 'ph-1', productId: 'sp-1', date: '2025-09-15', price: 450, volume: 120, source: 'eBay' },
+  { id: 'ph-2', productId: 'sp-1', date: '2025-10-15', price: 465, volume: 98, source: 'eBay' },
+  { id: 'ph-3', productId: 'sp-1', date: '2025-11-15', price: 480, volume: 85, source: 'eBay' },
+  { id: 'ph-4', productId: 'sp-1', date: '2025-12-15', price: 490, volume: 110, source: 'eBay' },
+  { id: 'ph-5', productId: 'sp-1', date: '2026-01-15', price: 495, volume: 92, source: 'eBay' },
+  { id: 'ph-6', productId: 'sp-1', date: '2026-02-15', price: 510, volume: 105, source: 'eBay' },
+  { id: 'ph-7', productId: 'sp-1', date: '2026-03-15', price: 520, volume: 88, source: 'eBay' },
+  { id: 'ph-8', productId: 'sp-19', date: '2024-03-15', price: 1200, volume: 25, source: 'eBay' },
+  { id: 'ph-9', productId: 'sp-19', date: '2024-06-15', price: 1350, volume: 20, source: 'eBay' },
+  { id: 'ph-10', productId: 'sp-19', date: '2024-09-15', price: 1500, volume: 18, source: 'eBay' },
+  { id: 'ph-11', productId: 'sp-19', date: '2024-12-15', price: 1650, volume: 15, source: 'eBay' },
+  { id: 'ph-12', productId: 'sp-19', date: '2025-03-15', price: 1600, volume: 22, source: 'eBay' },
+  { id: 'ph-13', productId: 'sp-19', date: '2025-06-15', price: 1700, volume: 18, source: 'eBay' },
+  { id: 'ph-14', productId: 'sp-19', date: '2025-09-15', price: 1750, volume: 14, source: 'eBay' },
+  { id: 'ph-15', productId: 'sp-19', date: '2025-12-15', price: 1780, volume: 12, source: 'eBay' },
+  { id: 'ph-16', productId: 'sp-19', date: '2026-03-15', price: 1800, volume: 10, source: 'eBay' },
+  { id: 'ph-17', productId: 'sp-3', date: '2025-03-15', price: 680, volume: 65, source: 'eBay' },
+  { id: 'ph-18', productId: 'sp-3', date: '2025-06-15', price: 650, volume: 55, source: 'eBay' },
+  { id: 'ph-19', productId: 'sp-3', date: '2025-09-15', price: 620, volume: 48, source: 'eBay' },
+  { id: 'ph-20', productId: 'sp-3', date: '2025-12-15', price: 600, volume: 52, source: 'eBay' },
+  { id: 'ph-21', productId: 'sp-3', date: '2026-03-15', price: 580, volume: 45, source: 'eBay' },
+  { id: 'ph-22', productId: 'sp-31', date: '2025-01-15', price: 155, volume: 80, source: 'eBay' },
+  { id: 'ph-23', productId: 'sp-31', date: '2025-04-15', price: 170, volume: 95, source: 'eBay' },
+  { id: 'ph-24', productId: 'sp-31', date: '2025-07-15', price: 190, volume: 110, source: 'eBay' },
+  { id: 'ph-25', productId: 'sp-31', date: '2026-03-15', price: 220, volume: 88, source: 'eBay' },
+];
+
+// ---- Mock Data: Rip vs Hold Analysis (10) ----
+
+const MOCK_RIP_VS_HOLD: RipVsHold[] = [
+  { id: 'rvh-1', productId: 'sp-1', productName: '2023-24 Panini Prizm Basketball Hobby Box', sealedValue: 520, expectedRipValue: 380, ripValueHigh: 2500, ripValueLow: 85, ripValueMedian: 280, holdAdvantage: 36.8, ripOddsPositive: 22, keyHits: [{ card: 'Wembanyama Silver Prizm Auto', odds: '1:480', value: 8500 }, { card: 'Wembanyama Base RC PSA 10', odds: '1:12', value: 1800 }, { card: 'Random Silver Prizm', odds: '1:4', value: 120 }], verdict: 'hold', reasoning: 'Expected rip value is well below sealed price. Only 22% chance of breaking even. Hold sealed for appreciation.' },
+  { id: 'rvh-2', productId: 'sp-4', productName: '2023-24 Panini National Treasures Basketball Hobby Box', sealedValue: 4800, expectedRipValue: 3200, ripValueHigh: 85000, ripValueLow: 400, ripValueMedian: 2200, holdAdvantage: 50.0, ripOddsPositive: 18, keyHits: [{ card: 'Wembanyama RPA /99', odds: '1:99', value: 45000 }, { card: 'Wembanyama Logoman 1/1', odds: '1:250', value: 250000 }, { card: 'Random RPA', odds: '1:4', value: 800 }], verdict: 'hold', reasoning: 'Ultra-premium product with massive sealed appreciation potential. Lottery ticket odds on ripping.' },
+  { id: 'rvh-3', productId: 'sp-2', productName: '2024 Topps Chrome Baseball Hobby Box', sealedValue: 320, expectedRipValue: 290, ripValueHigh: 3500, ripValueLow: 65, ripValueMedian: 210, holdAdvantage: 10.3, ripOddsPositive: 35, keyHits: [{ card: 'Skenes Chrome Auto Refractor', odds: '1:288', value: 3500 }, { card: 'Paul Skenes Base RC', odds: '1:6', value: 62 }, { card: 'Random Auto', odds: '1:12', value: 150 }], verdict: 'toss_up', reasoning: 'Close to break-even on rip. Decent chase cards but sealed appreciation is modest. Personal preference call.' },
+  { id: 'rvh-4', productId: 'sp-9', productName: '2023-24 Panini Prizm Basketball Blaster Box', sealedValue: 48, expectedRipValue: 35, ripValueHigh: 800, ripValueLow: 5, ripValueMedian: 18, holdAdvantage: 37.1, ripOddsPositive: 15, keyHits: [{ card: 'Wembanyama Base RC', odds: '1:24', value: 180 }, { card: 'Random Prizm Parallel', odds: '1:8', value: 25 }], verdict: 'hold', reasoning: 'Retail products rarely break even on rips. Sealed blasters appreciate as supply dries up.' },
+  { id: 'rvh-5', productId: 'sp-6', productName: '2023-24 Upper Deck Series 1 Hockey Hobby Box', sealedValue: 180, expectedRipValue: 160, ripValueHigh: 2500, ripValueLow: 30, ripValueMedian: 110, holdAdvantage: 12.5, ripOddsPositive: 30, keyHits: [{ card: 'Connor Bedard Young Guns', odds: '1:6', value: 180 }, { card: 'Bedard Canvas YG', odds: '1:48', value: 450 }, { card: 'Random Young Guns', odds: '1:4', value: 25 }], verdict: 'toss_up', reasoning: 'Bedard YG odds are decent enough to consider ripping. But sealed appreciation has been strong.' },
+  { id: 'rvh-6', productId: 'sp-3', productName: '2024 Panini Prizm Football Hobby Box', sealedValue: 580, expectedRipValue: 420, ripValueHigh: 5000, ripValueLow: 80, ripValueMedian: 310, holdAdvantage: 38.1, ripOddsPositive: 20, keyHits: [{ card: 'Caleb Williams Silver Prizm Auto', odds: '1:360', value: 4500 }, { card: 'Jayden Daniels RC', odds: '1:6', value: 95 }, { card: 'Random Auto', odds: '1:12', value: 100 }], verdict: 'hold', reasoning: 'Weak rookie class depressing rip values. Hold sealed and wait for class to develop.' },
+  { id: 'rvh-7', productId: 'sp-31', productName: '2024 Panini Prizm WNBA Hobby Box', sealedValue: 220, expectedRipValue: 180, ripValueHigh: 3000, ripValueLow: 25, ripValueMedian: 120, holdAdvantage: 22.2, ripOddsPositive: 28, keyHits: [{ card: 'Caitlin Clark Silver Prizm Auto', odds: '1:240', value: 3000 }, { card: 'Clark Base RC PSA 10', odds: '1:8', value: 145 }, { card: 'Angel Reese Auto', odds: '1:48', value: 250 }], verdict: 'hold', reasoning: 'WNBA sealed product is appreciating rapidly. Low print run makes holding very attractive.' },
+  { id: 'rvh-8', productId: 'sp-11', productName: '2025 Topps Series 1 Baseball Hobby Box', sealedValue: 145, expectedRipValue: 130, ripValueHigh: 2000, ripValueLow: 20, ripValueMedian: 85, holdAdvantage: 11.5, ripOddsPositive: 32, keyHits: [{ card: 'Ethan Salas RC Auto', odds: '1:576', value: 2000 }, { card: 'Bazzana Base RC', odds: '1:6', value: 42 }, { card: 'Random Auto', odds: '1:24', value: 80 }], verdict: 'toss_up', reasoning: 'Strong rookie class makes ripping fun. But sealed product has been appreciating well post-release.' },
+  { id: 'rvh-9', productId: 'sp-30', productName: '2025 Panini Prizm Football Hobby Box', sealedValue: 710, expectedRipValue: 550, ripValueHigh: 8000, ripValueLow: 90, ripValueMedian: 380, holdAdvantage: 29.0, ripOddsPositive: 22, keyHits: [{ card: 'Travis Hunter Silver Prizm Auto', odds: '1:360', value: 6000 }, { card: 'Shedeur Sanders RC', odds: '1:6', value: 72 }, { card: 'Cam Ward Auto', odds: '1:48', value: 800 }], verdict: 'hold', reasoning: 'Hyped draft class but early sealed appreciation suggests hold. Let the class prove themselves first.' },
+  { id: 'rvh-10', productId: 'sp-5', productName: '2024 Bowman Chrome Baseball Hobby Box', sealedValue: 380, expectedRipValue: 320, ripValueHigh: 5000, ripValueLow: 50, ripValueMedian: 220, holdAdvantage: 18.8, ripOddsPositive: 28, keyHits: [{ card: 'Salas 1st Bowman Chrome Auto', odds: '1:480', value: 5000 }, { card: 'Bazzana 1st Bowman Chrome', odds: '1:12', value: 30 }, { card: 'Random 1st Bowman Chrome Auto', odds: '1:24', value: 200 }], verdict: 'hold', reasoning: 'Prospect product appreciates well over time. Rip values are below sealed. Hold for long-term gains.' },
+];
+
+// ---- Mock Data: Break-Even Analyses (8) ----
+
+const MOCK_BREAK_EVEN: BreakEvenAnalysis[] = [
+  { id: 'be-1', productId: 'sp-1', productName: '2023-24 Panini Prizm Basketball Hobby Box', boxCost: 520, averageHitValue: 280, topHitValue: 8500, bottomHitValue: 15, hitsPerBox: 2, breakEvenOdds: 22, expectedReturn: -140, bestCaseReturn: 7980, worstCaseReturn: -490, verdict: 'unfavorable' },
+  { id: 'be-2', productId: 'sp-2', productName: '2024 Topps Chrome Baseball Hobby Box', boxCost: 320, averageHitValue: 150, topHitValue: 3500, bottomHitValue: 10, hitsPerBox: 2, breakEvenOdds: 35, expectedReturn: -20, bestCaseReturn: 3180, worstCaseReturn: -300, verdict: 'neutral' },
+  { id: 'be-3', productId: 'sp-4', productName: '2023-24 Panini National Treasures Basketball', boxCost: 4800, averageHitValue: 3200, topHitValue: 250000, bottomHitValue: 200, hitsPerBox: 8, breakEvenOdds: 18, expectedReturn: -1600, bestCaseReturn: 245200, worstCaseReturn: -4400, verdict: 'unfavorable' },
+  { id: 'be-4', productId: 'sp-6', productName: '2023-24 Upper Deck Series 1 Hockey', boxCost: 180, averageHitValue: 80, topHitValue: 2500, bottomHitValue: 5, hitsPerBox: 1, breakEvenOdds: 30, expectedReturn: -100, bestCaseReturn: 2320, worstCaseReturn: -175, verdict: 'unfavorable' },
+  { id: 'be-5', productId: 'sp-11', productName: '2025 Topps Series 1 Baseball', boxCost: 145, averageHitValue: 65, topHitValue: 2000, bottomHitValue: 5, hitsPerBox: 1, breakEvenOdds: 32, expectedReturn: -80, bestCaseReturn: 1855, worstCaseReturn: -140, verdict: 'unfavorable' },
+  { id: 'be-6', productId: 'sp-31', productName: '2024 Panini Prizm WNBA', boxCost: 220, averageHitValue: 90, topHitValue: 3000, bottomHitValue: 10, hitsPerBox: 2, breakEvenOdds: 28, expectedReturn: -40, bestCaseReturn: 2780, worstCaseReturn: -200, verdict: 'neutral' },
+  { id: 'be-7', productId: 'sp-30', productName: '2025 Panini Prizm Football', boxCost: 710, averageHitValue: 275, topHitValue: 8000, bottomHitValue: 20, hitsPerBox: 2, breakEvenOdds: 22, expectedReturn: -160, bestCaseReturn: 7290, worstCaseReturn: -670, verdict: 'unfavorable' },
+  { id: 'be-8', productId: 'sp-5', productName: '2024 Bowman Chrome Baseball', boxCost: 380, averageHitValue: 160, topHitValue: 5000, bottomHitValue: 15, hitsPerBox: 2, breakEvenOdds: 28, expectedReturn: -60, bestCaseReturn: 4620, worstCaseReturn: -350, verdict: 'neutral' },
+];
+
+// ---- Mock Data: Supply Estimates (10) ----
+
+const MOCK_SUPPLY_ESTIMATES: SupplyEstimate[] = [
+  { id: 'se-1', productId: 'sp-1', productName: '2023-24 Panini Prizm Basketball Hobby Box', estimatedTotal: 85000, estimatedRemaining: 42000, percentOpened: 50.6, scarcityRating: 'common', yearsSinceRelease: 1.5, annualDepletion: 28667 },
+  { id: 'se-2', productId: 'sp-19', productName: '2018-19 Panini Prizm Basketball Hobby Box', estimatedTotal: 50000, estimatedRemaining: 5000, percentOpened: 90.0, scarcityRating: 'scarce', yearsSinceRelease: 6.5, annualDepletion: 6923 },
+  { id: 'se-3', productId: 'sp-20', productName: '2003-04 Topps Chrome Basketball Hobby Box', estimatedTotal: 25000, estimatedRemaining: 500, percentOpened: 98.0, scarcityRating: 'extremely_rare', yearsSinceRelease: 22, annualDepletion: 1114 },
+  { id: 'se-4', productId: 'sp-4', productName: '2023-24 Panini National Treasures Basketball', estimatedTotal: 8000, estimatedRemaining: 3500, percentOpened: 56.3, scarcityRating: 'moderate', yearsSinceRelease: 1.3, annualDepletion: 3462 },
+  { id: 'se-5', productId: 'sp-21', productName: '2017 Panini Prizm Football Hobby Box', estimatedTotal: 40000, estimatedRemaining: 4500, percentOpened: 88.8, scarcityRating: 'scarce', yearsSinceRelease: 8, annualDepletion: 4438 },
+  { id: 'se-6', productId: 'sp-6', productName: '2023-24 Upper Deck Series 1 Hockey Hobby Box', estimatedTotal: 60000, estimatedRemaining: 25000, percentOpened: 58.3, scarcityRating: 'common', yearsSinceRelease: 2.4, annualDepletion: 14583 },
+  { id: 'se-7', productId: 'sp-31', productName: '2024 Panini Prizm WNBA Hobby Box', estimatedTotal: 30000, estimatedRemaining: 12000, percentOpened: 60.0, scarcityRating: 'moderate', yearsSinceRelease: 1.2, annualDepletion: 15000 },
+  { id: 'se-8', productId: 'sp-28', productName: '2019-20 Panini Prizm Basketball Hobby Box', estimatedTotal: 70000, estimatedRemaining: 8000, percentOpened: 88.6, scarcityRating: 'scarce', yearsSinceRelease: 5.5, annualDepletion: 11273 },
+  { id: 'se-9', productId: 'sp-3', productName: '2024 Panini Prizm Football Hobby Box', estimatedTotal: 95000, estimatedRemaining: 55000, percentOpened: 42.1, scarcityRating: 'abundant', yearsSinceRelease: 1.1, annualDepletion: 36364 },
+  { id: 'se-10', productId: 'sp-5', productName: '2024 Bowman Chrome Baseball Hobby Box', estimatedTotal: 100000, estimatedRemaining: 48000, percentOpened: 52.0, scarcityRating: 'common', yearsSinceRelease: 1.4, annualDepletion: 37143 },
+];
+
+// ---- Additional Service Functions ----
+
+export function getPriceHistories(): PriceHistory[] {
+  const cached = loadData<PriceHistory[]>('price_histories');
   if (cached) return cached;
-
-  const ratings: InvestmentRating[] = SEALED_PRODUCTS.map(product => {
-    const supply = SUPPLY_ESTIMATES.find(s => s.productId === product.id);
-    const roi = ((product.currentPrice - product.releasePrice) / product.releasePrice) * 100;
-
-    const supplyScore = supply ? Math.min(100, Math.round((1 - supply.sealedPercentage / 100) * 100)) : 50;
-    const demandScore = Math.min(100, Math.round(50 + roi * 0.5));
-    const rookieScore = product.year >= 2023 ? 80 : product.year >= 2020 ? 65 : product.year >= 2015 ? 50 : 40;
-    const brandScore = product.brand === 'Topps' || product.brand === 'Panini' ? 85 : product.brand === 'Bowman' ? 80 : 60;
-    const valueScore = roi > 100 ? 95 : roi > 50 ? 80 : roi > 20 ? 65 : roi > 0 ? 50 : 35;
-
-    const overall = Math.round(supplyScore * 0.25 + demandScore * 0.25 + rookieScore * 0.15 + brandScore * 0.15 + valueScore * 0.2);
-
-    let recommendation: InvestmentRating['recommendation'] = 'hold';
-    if (overall >= 80) recommendation = 'strong_buy';
-    else if (overall >= 65) recommendation = 'buy';
-    else if (overall >= 50) recommendation = 'hold';
-    else if (overall >= 35) recommendation = 'sell';
-    else recommendation = 'strong_sell';
-
-    return {
-      productId: product.id,
-      productName: product.name,
-      overallRating: overall,
-      supplyScore,
-      demandScore,
-      rookieScore,
-      brandScore,
-      valueScore,
-      recommendation,
-    };
-  });
-
-  saveData(cacheKey, ratings);
-  return ratings;
+  saveData('price_histories', MOCK_PRICE_HISTORIES);
+  return MOCK_PRICE_HISTORIES;
 }
 
-export function getProductComparisons(): ProductComparison[] {
-  const cacheKey = 'comparisons';
-  const cached = loadData<ProductComparison[]>(cacheKey);
+export function getPriceHistoryByProduct(productId: string): PriceHistory[] {
+  const histories = getPriceHistories();
+  return histories.filter(h => h.productId === productId);
+}
+
+export function getRipVsHoldAnalyses(): RipVsHold[] {
+  const cached = loadData<RipVsHold[]>('rip_vs_hold');
   if (cached) return cached;
-
-  const comparisons: ProductComparison[] = [
-    { productAId: 'sp_001', productBId: 'sp_005', productAName: '2024 Topps Chrome Hobby', productBName: '2024 Bowman Chrome Hobby', priceRatio: 0.89, roiComparison: -3.2, supplyComparison: 'Chrome has 42% more supply', winner: 'B', reasoning: 'Bowman Chrome has better prospect-driven long-term upside and lower relative supply.' },
-    { productAId: 'sp_002', productBId: 'sp_012', productAName: '2024 Prizm NBA Hobby', productBName: '2023 Prizm NBA Hobby', priceRatio: 0.81, roiComparison: -12.5, supplyComparison: '2023 has 17% less supply', winner: 'B', reasoning: '2023 Prizm has Wembanyama. Stronger long-term hold despite higher price.' },
-    { productAId: 'sp_016', productBId: 'sp_020', productAName: '2020 Prizm NFL Hobby', productBName: '2017 Prizm NFL Hobby', priceRatio: 0.78, roiComparison: -5.8, supplyComparison: 'Similar scarcity levels', winner: 'A', reasoning: '2020 Prizm has dual-star power (Burrow + Herbert) vs. single star (Mahomes). Better risk-adjusted value.' },
-    { productAId: 'sp_019', productBId: 'sp_017', productAName: '2018 Prizm NBA Hobby', productBName: '2020 Prizm NBA Hobby', priceRatio: 2.66, roiComparison: 8.3, supplyComparison: '2018 has 47% less supply', winner: 'A', reasoning: 'Luka Doncic class commands premium. Lower supply and stronger generational talent.' },
-    { productAId: 'sp_026', productBId: 'sp_004', productAName: '2025 Topps Series 1 Hobby', productBName: '2024 Topps Series 1 Hobby', priceRatio: 1.14, roiComparison: 9.5, supplyComparison: 'Similar production levels', winner: 'A', reasoning: 'Roki Sasaki SP driving current premium. First Fanatics-era Topps adds collectibility.' },
-  ];
-
-  saveData(cacheKey, comparisons);
-  return comparisons;
+  saveData('rip_vs_hold', MOCK_RIP_VS_HOLD);
+  return MOCK_RIP_VS_HOLD;
 }
 
-export function getSealedProductById(id: string): SealedProduct | null {
-  return SEALED_PRODUCTS.find(p => p.id === id) ?? null;
+export function getRipVsHoldByProduct(productId: string): RipVsHold | undefined {
+  const analyses = getRipVsHoldAnalyses();
+  return analyses.find(a => a.productId === productId);
 }
 
-export function getVintageSealedById(id: string): VintageSealed | null {
-  return VINTAGE_SEALED.find(v => v.id === id) ?? null;
-}
-
-export function getSealedMarketSummary(): { totalProducts: number; totalValue: number; avgROI: number; topPerformer: string; topPerformerROI: number; vintageProducts: number; vintageValue: number; upcomingReleases: number } {
-  const cacheKey = 'market_summary';
-  const cached = loadData<{ totalProducts: number; totalValue: number; avgROI: number; topPerformer: string; topPerformerROI: number; vintageProducts: number; vintageValue: number; upcomingReleases: number }>(cacheKey);
+export function getBreakEvenAnalyses(): BreakEvenAnalysis[] {
+  const cached = loadData<BreakEvenAnalysis[]>('break_even');
   if (cached) return cached;
+  saveData('break_even', MOCK_BREAK_EVEN);
+  return MOCK_BREAK_EVEN;
+}
 
-  const rois = SEALED_PRODUCTS.map(p => ((p.currentPrice - p.releasePrice) / p.releasePrice) * 100);
-  const avgROI = Math.round(rois.reduce((s, r) => s + r, 0) / rois.length * 100) / 100;
-  const maxROIIdx = rois.indexOf(Math.max(...rois));
+export function getBreakEvenByProduct(productId: string): BreakEvenAnalysis | undefined {
+  const analyses = getBreakEvenAnalyses();
+  return analyses.find(a => a.productId === productId);
+}
 
-  const summary = {
-    totalProducts: SEALED_PRODUCTS.length,
-    totalValue: SEALED_PRODUCTS.reduce((s, p) => s + p.currentPrice, 0),
-    avgROI,
-    topPerformer: SEALED_PRODUCTS[maxROIIdx].name,
-    topPerformerROI: Math.round(rois[maxROIIdx] * 100) / 100,
-    vintageProducts: VINTAGE_SEALED.length,
-    vintageValue: VINTAGE_SEALED.reduce((s, v) => s + v.currentPrice, 0),
-    upcomingReleases: PRODUCT_RELEASES.filter(r => new Date(r.releaseDate) > new Date('2026-03-15')).length,
+export function getSupplyEstimates(): SupplyEstimate[] {
+  const cached = loadData<SupplyEstimate[]>('supply_estimates');
+  if (cached) return cached;
+  saveData('supply_estimates', MOCK_SUPPLY_ESTIMATES);
+  return MOCK_SUPPLY_ESTIMATES;
+}
+
+export function getScarcestProducts(): SupplyEstimate[] {
+  const estimates = getSupplyEstimates();
+  return [...estimates].sort((a, b) => a.estimatedRemaining - b.estimatedRemaining);
+}
+
+export function getProductComparison(idA: string, idB: string): ProductComparison | null {
+  const a = getSealedProductById(idA);
+  const b = getSealedProductById(idB);
+  if (!a || !b) return null;
+  return {
+    id: `cmp-${idA}-${idB}`,
+    productAId: idA,
+    productBId: idB,
+    productAName: a.name,
+    productBName: b.name,
+    priceAdvantage: a.currentPrice < b.currentPrice ? a.name : b.name,
+    roiAdvantage: a.priceChange1y > b.priceChange1y ? a.name : b.name,
+    rookieAdvantage: a.keyRookies.length >= b.keyRookies.length ? a.name : b.name,
+    scarcityAdvantage: (a.estimatedPrintRun || Infinity) < (b.estimatedPrintRun || Infinity) ? a.name : b.name,
+    overallWinner: a.rating > b.rating ? a.name : b.name,
+    reasoning: `Based on rating, ROI trajectory, and key rookie content comparison.`,
   };
-
-  saveData(cacheKey, summary);
-  return summary;
-}
-
-export function getSportBreakdown(): { sport: string; productCount: number; totalCurrentValue: number; avgROI: number; bestProduct: string; bestROI: number }[] {
-  const cacheKey = 'sport_breakdown';
-  const cached = loadData<{ sport: string; productCount: number; totalCurrentValue: number; avgROI: number; bestProduct: string; bestROI: number }[]>(cacheKey);
-  if (cached) return cached;
-
-  const sports = [...new Set(SEALED_PRODUCTS.map(p => p.sport))];
-  const breakdown = sports.map(sport => {
-    const sportProducts = SEALED_PRODUCTS.filter(p => p.sport === sport);
-    const rois = sportProducts.map(p => ((p.currentPrice - p.releasePrice) / p.releasePrice) * 100);
-    const maxROIIdx = rois.indexOf(Math.max(...rois));
-
-    return {
-      sport,
-      productCount: sportProducts.length,
-      totalCurrentValue: sportProducts.reduce((s, p) => s + p.currentPrice, 0),
-      avgROI: Math.round(rois.reduce((s, r) => s + r, 0) / rois.length * 100) / 100,
-      bestProduct: sportProducts[maxROIIdx].name,
-      bestROI: Math.round(rois[maxROIIdx] * 100) / 100,
-    };
-  }).sort((a, b) => b.avgROI - a.avgROI);
-
-  saveData(cacheKey, breakdown);
-  return breakdown;
-}
-
-export function getYearlyPerformance(): { year: number; productCount: number; avgCurrentPrice: number; avgReleasePrice: number; avgROI: number; totalAppreciation: number }[] {
-  const cacheKey = 'yearly_performance';
-  const cached = loadData<{ year: number; productCount: number; avgCurrentPrice: number; avgReleasePrice: number; avgROI: number; totalAppreciation: number }[]>(cacheKey);
-  if (cached) return cached;
-
-  const years = [...new Set(SEALED_PRODUCTS.map(p => p.year))].sort();
-  const performance = years.map(year => {
-    const yearProducts = SEALED_PRODUCTS.filter(p => p.year === year);
-    const avgRelease = Math.round(yearProducts.reduce((s, p) => s + p.releasePrice, 0) / yearProducts.length);
-    const avgCurrent = Math.round(yearProducts.reduce((s, p) => s + p.currentPrice, 0) / yearProducts.length);
-    const rois = yearProducts.map(p => ((p.currentPrice - p.releasePrice) / p.releasePrice) * 100);
-    const avgROI = Math.round(rois.reduce((s, r) => s + r, 0) / rois.length * 100) / 100;
-    const totalAppreciation = yearProducts.reduce((s, p) => s + (p.currentPrice - p.releasePrice), 0);
-
-    return {
-      year,
-      productCount: yearProducts.length,
-      avgCurrentPrice: avgCurrent,
-      avgReleasePrice: avgRelease,
-      avgROI,
-      totalAppreciation,
-    };
-  });
-
-  saveData(cacheKey, performance);
-  return performance;
-}
-
-export function getProductTypeBreakdown(): { productType: ProductType; count: number; avgPrice: number; avgROI: number; totalValue: number; recommendation: string }[] {
-  const cacheKey = 'type_breakdown';
-  const cached = loadData<{ productType: ProductType; count: number; avgPrice: number; avgROI: number; totalValue: number; recommendation: string }[]>(cacheKey);
-  if (cached) return cached;
-
-  const types: ProductType[] = ['hobby_box', 'retail_box', 'blaster', 'mega_box', 'case', 'pack', 'cello', 'fat_pack'];
-  const breakdown = types.map(type => {
-    const typeProducts = SEALED_PRODUCTS.filter(p => p.productType === type);
-    if (typeProducts.length === 0) {
-      return { productType: type, count: 0, avgPrice: 0, avgROI: 0, totalValue: 0, recommendation: 'Insufficient data' };
-    }
-    const rois = typeProducts.map(p => ((p.currentPrice - p.releasePrice) / p.releasePrice) * 100);
-    const avgROI = Math.round(rois.reduce((s, r) => s + r, 0) / rois.length * 100) / 100;
-    const avgPrice = Math.round(typeProducts.reduce((s, p) => s + p.currentPrice, 0) / typeProducts.length);
-    const totalValue = typeProducts.reduce((s, p) => s + p.currentPrice, 0);
-
-    let recommendation = 'Hold';
-    if (avgROI > 50) recommendation = 'Strong investment category — prioritize sealed acquisition';
-    else if (avgROI > 20) recommendation = 'Solid appreciation — selective buying recommended';
-    else if (avgROI > 5) recommendation = 'Modest returns — buy at release price only';
-    else recommendation = 'Below average returns — avoid overpaying';
-
-    return { productType: type, count: typeProducts.length, avgPrice, avgROI, totalValue, recommendation };
-  }).filter(b => b.count > 0);
-
-  saveData(cacheKey, breakdown);
-  return breakdown;
-}
-
-export function getScarcityReport(): { tier: string; products: { name: string; estimatedSealed: number; currentPrice: number; pricePerUnit: number }[]; avgPrice: number; totalProducts: number }[] {
-  const cacheKey = 'scarcity_report';
-  const cached = loadData<{ tier: string; products: { name: string; estimatedSealed: number; currentPrice: number; pricePerUnit: number }[]; avgPrice: number; totalProducts: number }[]>(cacheKey);
-  if (cached) return cached;
-
-  const tiers: { tier: string; min: number; max: number }[] = [
-    { tier: 'Ultra Rare (< 500 sealed)', min: 0, max: 499 },
-    { tier: 'Rare (500 – 2,000 sealed)', min: 500, max: 2000 },
-    { tier: 'Scarce (2,001 – 10,000 sealed)', min: 2001, max: 10000 },
-    { tier: 'Uncommon (10,001 – 50,000 sealed)', min: 10001, max: 50000 },
-    { tier: 'Common (50,000+ sealed)', min: 50001, max: Infinity },
-  ];
-
-  const report = tiers.map(tier => {
-    const tierSupply = SUPPLY_ESTIMATES.filter(s => s.estimatedSealed >= tier.min && s.estimatedSealed <= tier.max);
-    const products = tierSupply.map(s => {
-      const product = SEALED_PRODUCTS.find(p => p.id === s.productId);
-      return {
-        name: s.productName,
-        estimatedSealed: s.estimatedSealed,
-        currentPrice: product?.currentPrice ?? 0,
-        pricePerUnit: product ? Math.round(product.currentPrice / Math.max(1, s.estimatedSealed) * 100) / 100 : 0,
-      };
-    });
-
-    return {
-      tier: tier.tier,
-      products,
-      avgPrice: products.length > 0 ? Math.round(products.reduce((s, p) => s + p.currentPrice, 0) / products.length) : 0,
-      totalProducts: products.length,
-    };
-  });
-
-  saveData(cacheKey, report);
-  return report;
-}
-
-export function getTopAppreciatingProducts(limit: number = 10): { rank: number; name: string; sport: string; year: number; releasePrice: number; currentPrice: number; roi: number; annualizedROI: number }[] {
-  const cacheKey = `top_appreciating_${limit}`;
-  const cached = loadData<{ rank: number; name: string; sport: string; year: number; releasePrice: number; currentPrice: number; roi: number; annualizedROI: number }[]>(cacheKey);
-  if (cached) return cached;
-
-  const withROI = SEALED_PRODUCTS.map(p => {
-    const roi = ((p.currentPrice - p.releasePrice) / p.releasePrice) * 100;
-    const years = Math.max(0.25, (2026 - p.year) + 0.21);
-    const annualizedROI = Math.round((Math.pow(1 + roi / 100, 1 / years) - 1) * 10000) / 100;
-    return { ...p, roi: Math.round(roi * 100) / 100, annualizedROI };
-  }).sort((a, b) => b.roi - a.roi).slice(0, limit);
-
-  const result = withROI.map((p, i) => ({
-    rank: i + 1,
-    name: p.name,
-    sport: p.sport,
-    year: p.year,
-    releasePrice: p.releasePrice,
-    currentPrice: p.currentPrice,
-    roi: p.roi,
-    annualizedROI: p.annualizedROI,
-  }));
-
-  saveData(cacheKey, result);
-  return result;
-}
-
-export function getVintageAppreciationRates(): { name: string; oneYearReturn: number; fiveYearReturn: number; annualized: number; estimatedRemaining: number; investmentGrade: string }[] {
-  const cacheKey = 'vintage_appreciation';
-  const cached = loadData<{ name: string; oneYearReturn: number; fiveYearReturn: number; annualized: number; estimatedRemaining: number; investmentGrade: string }[]>(cacheKey);
-  if (cached) return cached;
-
-  const rates = VINTAGE_SEALED.map(v => {
-    const oneYearReturn = Math.round(((v.currentPrice - v.priceOneYearAgo) / v.priceOneYearAgo) * 10000) / 100;
-    const fiveYearReturn = Math.round(((v.currentPrice - v.priceFiveYearsAgo) / v.priceFiveYearsAgo) * 10000) / 100;
-    const annualized = Math.round((Math.pow(1 + fiveYearReturn / 100, 0.2) - 1) * 10000) / 100;
-
-    return {
-      name: v.name,
-      oneYearReturn,
-      fiveYearReturn,
-      annualized,
-      estimatedRemaining: v.estimatedRemaining,
-      investmentGrade: v.investmentGrade,
-    };
-  }).sort((a, b) => b.fiveYearReturn - a.fiveYearReturn);
-
-  saveData(cacheKey, rates);
-  return rates;
-}
-
-export function getReleaseCalendar(): { month: string; releases: { name: string; sport: string; estimatedPrice: number; hype: string }[] }[] {
-  const cacheKey = 'release_calendar';
-  const cached = loadData<{ month: string; releases: { name: string; sport: string; estimatedPrice: number; hype: string }[] }[]>(cacheKey);
-  if (cached) return cached;
-
-  const monthMap = new Map<string, { name: string; sport: string; estimatedPrice: number; hype: string }[]>();
-
-  PRODUCT_RELEASES.forEach(release => {
-    const monthKey = release.releaseDate.substring(0, 7);
-    if (!monthMap.has(monthKey)) monthMap.set(monthKey, []);
-    monthMap.get(monthKey)!.push({
-      name: release.name,
-      sport: release.sport,
-      estimatedPrice: release.estimatedHobbyPrice,
-      hype: release.hype,
-    });
-  });
-
-  const calendar = Array.from(monthMap.entries())
-    .map(([month, releases]) => ({ month, releases }))
-    .sort((a, b) => a.month.localeCompare(b.month));
-
-  saveData(cacheKey, calendar);
-  return calendar;
-}
-
-export function getBrandPerformance(): { brand: string; productCount: number; avgROI: number; avgPrice: number; totalMarketValue: number; vintageProducts: number }[] {
-  const cacheKey = 'brand_performance';
-  const cached = loadData<{ brand: string; productCount: number; avgROI: number; avgPrice: number; totalMarketValue: number; vintageProducts: number }[]>(cacheKey);
-  if (cached) return cached;
-
-  const brands = [...new Set(SEALED_PRODUCTS.map(p => p.brand))];
-  const performance = brands.map(brand => {
-    const brandProducts = SEALED_PRODUCTS.filter(p => p.brand === brand);
-    const rois = brandProducts.map(p => ((p.currentPrice - p.releasePrice) / p.releasePrice) * 100);
-    const avgROI = Math.round(rois.reduce((s, r) => s + r, 0) / rois.length * 100) / 100;
-    const avgPrice = Math.round(brandProducts.reduce((s, p) => s + p.currentPrice, 0) / brandProducts.length);
-    const totalMarketValue = brandProducts.reduce((s, p) => s + p.currentPrice, 0);
-    const vintageCount = VINTAGE_SEALED.filter(v => v.name.toLowerCase().includes(brand.toLowerCase())).length;
-
-    return {
-      brand,
-      productCount: brandProducts.length,
-      avgROI,
-      avgPrice,
-      totalMarketValue,
-      vintageProducts: vintageCount,
-    };
-  }).sort((a, b) => b.avgROI - a.avgROI);
-
-  saveData(cacheKey, performance);
-  return performance;
-}
-
-export function getInvestmentTimeline(): { date: string; event: string; productName: string; priceAtEvent: number; currentPrice: number; returnSinceEvent: number }[] {
-  const cacheKey = 'investment_timeline';
-  const cached = loadData<{ date: string; event: string; productName: string; priceAtEvent: number; currentPrice: number; returnSinceEvent: number }[]>(cacheKey);
-  if (cached) return cached;
-
-  const timeline = [
-    { date: '2024-01-15', event: 'Purchased sealed', productName: '2024 Topps Chrome Baseball Hobby Box', priceAtEvent: 250, currentPrice: 310, returnSinceEvent: 24 },
-    { date: '2024-03-01', event: 'Purchased sealed', productName: '2024 Panini Prizm NBA Hobby Box', priceAtEvent: 1200, currentPrice: 1450, returnSinceEvent: 20.8 },
-    { date: '2024-05-15', event: 'Purchased sealed', productName: '2024 Bowman Chrome Baseball Hobby Box', priceAtEvent: 275, currentPrice: 350, returnSinceEvent: 27.3 },
-    { date: '2024-07-01', event: 'Market correction', productName: '2024 Panini Prizm NFL Hobby Box', priceAtEvent: 950, currentPrice: 750, returnSinceEvent: -21.1 },
-    { date: '2024-08-20', event: 'Purchased sealed', productName: '2023 Panini Prizm NBA Hobby Box', priceAtEvent: 1400, currentPrice: 1800, returnSinceEvent: 28.6 },
-    { date: '2024-10-01', event: 'Price spike', productName: '2020 Panini Prizm NFL Hobby Box', priceAtEvent: 3800, currentPrice: 4500, returnSinceEvent: 18.4 },
-    { date: '2024-11-15', event: 'Purchased sealed', productName: '2018 Panini Prizm NBA Hobby Box', priceAtEvent: 7200, currentPrice: 8500, returnSinceEvent: 18.1 },
-    { date: '2025-01-10', event: 'New release', productName: '2025 Topps Series 1 Baseball Hobby Box', priceAtEvent: 95, currentPrice: 120, returnSinceEvent: 26.3 },
-    { date: '2025-03-15', event: 'Market surge', productName: '2017 Panini Prizm NFL Hobby Box', priceAtEvent: 4800, currentPrice: 5800, returnSinceEvent: 20.8 },
-    { date: '2025-06-01', event: 'Supply crunch', productName: '2023 Bowman Chrome Baseball Hobby Case', priceAtEvent: 3600, currentPrice: 4200, returnSinceEvent: 16.7 },
-    { date: '2025-09-01', event: 'New release hype', productName: '2025 Panini Prizm NBA Hobby Box', priceAtEvent: 1300, currentPrice: 1550, returnSinceEvent: 19.2 },
-    { date: '2026-01-15', event: 'NFL hype cycle', productName: '2025 Panini Prizm NFL Hobby Box', priceAtEvent: 850, currentPrice: 920, returnSinceEvent: 8.2 },
-  ];
-
-  saveData(cacheKey, timeline);
-  return timeline;
 }

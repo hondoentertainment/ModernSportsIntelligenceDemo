@@ -1,498 +1,563 @@
-// Phase 95: Auction Sniper Pro & Bidding Analytics
-// Advanced multi-platform auction intelligence with bid pattern forensics,
-// shill detection AI, optimal bid timing algorithms, and cross-platform price arbitrage.
+// Phase 158 – Real-Time Auction Sniper & Alert System Service
 
-// ── Interfaces ──────────────────────────────────────────────────────────────────
+// ---- Types ----
 
-export type AuctionPlatform = 'eBay' | 'Goldin' | 'Heritage' | 'PWCC' | 'MySlabs';
-export type BidPattern = 'organic' | 'shill_suspect' | 'proxy_war' | 'sniper_active';
-export type BidStrategyType = 'early_bid' | 'mid_game' | 'snipe' | 'proxy';
+export type AuctionPlatform = 'ebay' | 'heritage' | 'goldin' | 'pwcc' | 'comc' | 'whatnot' | 'lelands' | 'scp';
 
-export interface AuctionListing {
+export interface LiveAuction {
   id: string;
   platform: AuctionPlatform;
-  player: string;
-  cardDescription: string;
-  grade: string;
+  title: string;
+  cardName: string;
+  sport: string;
   currentBid: number;
+  startingBid: number;
   bidCount: number;
   timeRemaining: number; // seconds
-  endTime: string;       // ISO date
-  sellerRating: number;
-  estimatedFMV: number;
-  dealScore: number;     // 0-100
-  bidPattern: BidPattern;
-  shillRisk: number;     // 0-100
+  endTime: string;
+  estimatedFinalPrice: number;
   watchers: number;
-  image: string;
+  seller: string;
+  sellerRating: number;
+  hasImage: boolean;
+  featured: boolean;
+}
+
+export interface BidRecommendation {
+  id: string;
+  auctionId: string;
+  cardName: string;
+  platform: AuctionPlatform;
+  currentBid: number;
+  maxBidSuggestion: number;
+  compAvgPrice: number;
+  compCount: number;
+  confidence: 'high' | 'medium' | 'low';
+  reasoning: string;
+  valueRating: number;
+}
+
+export interface SniperAlert {
+  id: string;
+  auctionId: string;
+  cardName: string;
+  platform: AuctionPlatform;
+  currentBid: number;
+  marketValue: number;
+  discount: number;
+  timeRemaining: number;
+  alertType: 'under_market' | 'ending_soon' | 'low_competition' | 'price_drop' | 'rare_find';
+  urgency: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+}
+
+export interface AuctionHistory {
+  id: string;
+  cardName: string;
+  platform: AuctionPlatform;
+  finalPrice: number;
+  bidCount: number;
+  date: string;
+  grade: string;
+  seller: string;
 }
 
 export interface BidStrategy {
-  auctionId: string;
-  maxBid: number;
-  snipeTime: number;     // seconds before end
-  strategy: BidStrategyType;
-  confidence: number;    // 0-100
-  reasoning: string;
-}
-
-export interface BidHistoryEntry {
-  amount: number;
-  timestamp: string;
-  bidder: string;
-  isNewBidder: boolean;
-}
-
-export interface BidHistoryAnalysis {
-  auctionId: string;
-  bids: BidHistoryEntry[];
-  pattern: BidPattern;
-  avgBidIncrement: number;
-  velocityChange: number;
-  shillIndicators: string[];
-}
-
-export interface SniperStats {
-  totalTracked: number;
-  totalWon: number;
-  winRate: number;
-  avgSavingsVsFMV: number;
-  bestDeal: { player: string; savings: number; platform: AuctionPlatform };
-  totalSaved: number;
-}
-
-export interface AuctionHistoryRecord {
   id: string;
+  name: string;
+  description: string;
+  optimalSnipeTime: number; // seconds before end
+  successRate: number;
+  avgSavings: number;
+  bestFor: string[];
+  riskLevel: 'low' | 'medium' | 'high';
+}
+
+export interface WatchedAuction {
+  id: string;
+  auctionId: string;
+  cardName: string;
   platform: AuctionPlatform;
-  player: string;
-  cardDescription: string;
-  grade: string;
-  finalPrice: number;
-  estimatedFMV: number;
-  won: boolean;
-  maxBidPlaced: number;
-  endedAt: string;
-  savings: number;
+  currentBid: number;
+  priceAlert: number;
+  addedDate: string;
+  status: 'active' | 'won' | 'lost' | 'ended';
+  notes: string;
 }
 
-// ── Storage ─────────────────────────────────────────────────────────────────────
-
-const STORAGE_KEY = 'msi_auction_sniper_v2';
-
-interface StoredData {
-  auctions: AuctionListing[];
-  history: AuctionHistoryRecord[];
-  stats: SniperStats;
-  generatedAt: number;
+export interface PriceAlert {
+  id: string;
+  cardName: string;
+  maxPrice: number;
+  platform: AuctionPlatform | 'all';
+  active: boolean;
+  triggeredCount: number;
+  lastTriggered: string | null;
 }
 
-function loadData(): StoredData | null {
+export interface EndingSoon {
+  id: string;
+  auctionId: string;
+  cardName: string;
+  platform: AuctionPlatform;
+  currentBid: number;
+  timeRemaining: number;
+  bidCount: number;
+  estimatedFinal: number;
+  isUndervalue: boolean;
+}
+
+export interface BidAnalysis {
+  auctionId: string;
+  bidHistory: { time: number; amount: number; bidder: string }[];
+  avgBidIncrement: number;
+  sniperActivity: boolean;
+  projectedFinal: number;
+  competitorCount: number;
+}
+
+export interface AuctionStats {
+  platform: AuctionPlatform;
+  totalActive: number;
+  avgFinalPrice: number;
+  avgBidCount: number;
+  sniperSuccessRate: number;
+  peakBiddingHour: number;
+  avgListingDuration: number;
+}
+
+export interface CompetitorBidder {
+  username: string;
+  platform: AuctionPlatform;
+  bidCount: number;
+  winRate: number;
+  avgSpend: number;
+  preferredCategories: string[];
+  sniperBehavior: boolean;
+  lastActive: string;
+}
+
+// ---- Constants ----
+
+const STORAGE_KEY = 'msi_auction_sniper';
+
+// ---- localStorage helpers ----
+
+function loadData<T>(key: string): T | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
     if (!raw) return null;
-    const data = JSON.parse(raw) as StoredData;
-    // Regenerate every 4 hours
-    if (Date.now() - data.generatedAt > 4 * 3600 * 1000) return null;
-    return data;
-  } catch { return null; }
-}
-
-function saveData(data: StoredData): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-// ── Deterministic seeding ───────────────────────────────────────────────────────
-
-function hashStr(str: string): number {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
   }
-  return Math.abs(h);
 }
 
-function seededRandom(seed: number): () => number {
-  let s = seed;
-  return () => {
-    s = (s * 16807 + 0) % 2147483647;
-    return (s - 1) / 2147483646;
-  };
+function saveData<T>(key: string, data: T): void {
+  try {
+    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
+  } catch {
+    // quota exceeded
+  }
 }
 
-// ── Mock data pools ─────────────────────────────────────────────────────────────
+// ---- Mock Data ----
 
-const PLAYERS = [
-  'Patrick Mahomes', 'Shohei Ohtani', 'Luka Doncic', 'Victor Wembanyama',
-  'Connor McDavid', 'Mike Trout', 'LeBron James', 'Josh Allen',
-  'Jayson Tatum', 'Juan Soto', 'Anthony Edwards', 'Caleb Williams',
+const LIVE_AUCTIONS: LiveAuction[] = [
+  { id: 'la_001', platform: 'ebay', title: '2024 Topps Chrome Paul Skenes RC Auto /99 PSA 10', cardName: '2024 Topps Chrome Paul Skenes RC Auto /99', sport: 'Baseball', currentBid: 1250, startingBid: 500, bidCount: 18, timeRemaining: 3600, endTime: '2026-03-15T18:00:00Z', estimatedFinalPrice: 1800, watchers: 45, seller: 'cardvault_premium', sellerRating: 99.8, hasImage: true, featured: true },
+  { id: 'la_002', platform: 'heritage', title: '1952 Topps Mickey Mantle #311 PSA 4', cardName: '1952 Topps Mickey Mantle #311', sport: 'Baseball', currentBid: 85000, startingBid: 50000, bidCount: 32, timeRemaining: 7200, endTime: '2026-03-15T19:00:00Z', estimatedFinalPrice: 120000, watchers: 210, seller: 'Heritage Auctions', sellerRating: 100, hasImage: true, featured: true },
+  { id: 'la_003', platform: 'goldin', title: '2023 National Treasures Victor Wembanyama RPA /49 BGS 9.5', cardName: '2023 National Treasures Wembanyama RPA /49', sport: 'Basketball', currentBid: 15000, startingBid: 8000, bidCount: 24, timeRemaining: 5400, endTime: '2026-03-15T18:30:00Z', estimatedFinalPrice: 22000, watchers: 120, seller: 'Goldin Auctions', sellerRating: 100, hasImage: true, featured: true },
+  { id: 'la_004', platform: 'ebay', title: '2024 Bowman Chrome 1st Jackson Holliday Auto PSA 10', cardName: '2024 Bowman Chrome 1st Jackson Holliday Auto', sport: 'Baseball', currentBid: 420, startingBid: 200, bidCount: 14, timeRemaining: 1800, endTime: '2026-03-15T17:30:00Z', estimatedFinalPrice: 600, watchers: 28, seller: 'diamond_cuts_cards', sellerRating: 99.5, hasImage: true, featured: false },
+  { id: 'la_005', platform: 'pwcc', title: '1986 Fleer Michael Jordan RC #57 PSA 8', cardName: '1986 Fleer Michael Jordan RC #57', sport: 'Basketball', currentBid: 18500, startingBid: 15000, bidCount: 12, timeRemaining: 14400, endTime: '2026-03-15T21:00:00Z', estimatedFinalPrice: 25000, watchers: 85, seller: 'PWCC Marketplace', sellerRating: 100, hasImage: true, featured: true },
+  { id: 'la_006', platform: 'ebay', title: '2024 Panini Prizm Caleb Williams RC Silver /299 PSA 10', cardName: '2024 Panini Prizm Caleb Williams RC Silver', sport: 'Football', currentBid: 380, startingBid: 150, bidCount: 22, timeRemaining: 900, endTime: '2026-03-15T17:15:00Z', estimatedFinalPrice: 500, watchers: 35, seller: 'gridiron_gems', sellerRating: 99.2, hasImage: true, featured: false },
+  { id: 'la_007', platform: 'whatnot', title: '2023 Topps Chrome Elly De La Cruz RC Auto Refractor', cardName: '2023 Topps Chrome Elly De La Cruz RC Auto Refractor', sport: 'Baseball', currentBid: 850, startingBid: 400, bidCount: 16, timeRemaining: 600, endTime: '2026-03-15T17:10:00Z', estimatedFinalPrice: 1100, watchers: 55, seller: 'live_breaks_daily', sellerRating: 98.5, hasImage: true, featured: false },
+  { id: 'la_008', platform: 'heritage', title: '1933 Goudey Babe Ruth #53 SGC 3', cardName: '1933 Goudey Babe Ruth #53', sport: 'Baseball', currentBid: 45000, startingBid: 25000, bidCount: 28, timeRemaining: 86400, endTime: '2026-03-16T17:00:00Z', estimatedFinalPrice: 65000, watchers: 175, seller: 'Heritage Auctions', sellerRating: 100, hasImage: true, featured: true },
+  { id: 'la_009', platform: 'goldin', title: '2022 Panini Flawless Luka Doncic Patch Auto /25 BGS 9', cardName: '2022 Panini Flawless Luka Doncic Patch Auto /25', sport: 'Basketball', currentBid: 8500, startingBid: 5000, bidCount: 19, timeRemaining: 10800, endTime: '2026-03-15T20:00:00Z', estimatedFinalPrice: 12000, watchers: 72, seller: 'Goldin Auctions', sellerRating: 100, hasImage: true, featured: false },
+  { id: 'la_010', platform: 'ebay', title: '2024 Upper Deck Connor Bedard Young Guns RC PSA 10', cardName: '2024 Upper Deck Connor Bedard Young Guns RC', sport: 'Hockey', currentBid: 280, startingBid: 100, bidCount: 25, timeRemaining: 2400, endTime: '2026-03-15T17:40:00Z', estimatedFinalPrice: 400, watchers: 42, seller: 'puck_collector_99', sellerRating: 99.0, hasImage: true, featured: false },
+  { id: 'la_011', platform: 'comc', title: '2023 Prizm Silver Victor Wembanyama RC PSA 10', cardName: '2023 Prizm Silver Victor Wembanyama RC', sport: 'Basketball', currentBid: 650, startingBid: 400, bidCount: 11, timeRemaining: 4200, endTime: '2026-03-15T18:10:00Z', estimatedFinalPrice: 850, watchers: 38, seller: 'COMC_Featured', sellerRating: 99.9, hasImage: true, featured: false },
+  { id: 'la_012', platform: 'lelands', title: '1955 Topps Roberto Clemente RC #164 PSA 5', cardName: '1955 Topps Roberto Clemente RC #164', sport: 'Baseball', currentBid: 22000, startingBid: 15000, bidCount: 15, timeRemaining: 172800, endTime: '2026-03-17T17:00:00Z', estimatedFinalPrice: 35000, watchers: 95, seller: 'Lelands Auctions', sellerRating: 100, hasImage: true, featured: true },
+  { id: 'la_013', platform: 'ebay', title: '2025 Bowman Chrome 1st Ethan Salas Auto /150 PSA 10', cardName: '2025 Bowman Chrome 1st Ethan Salas Auto /150', sport: 'Baseball', currentBid: 520, startingBid: 250, bidCount: 20, timeRemaining: 1200, endTime: '2026-03-15T17:20:00Z', estimatedFinalPrice: 750, watchers: 33, seller: 'prospect_kings', sellerRating: 99.1, hasImage: true, featured: false },
+  { id: 'la_014', platform: 'scp', title: '1969 Topps Reggie Jackson RC #260 PSA 7', cardName: '1969 Topps Reggie Jackson RC #260', sport: 'Baseball', currentBid: 3200, startingBid: 2000, bidCount: 10, timeRemaining: 259200, endTime: '2026-03-18T17:00:00Z', estimatedFinalPrice: 4500, watchers: 48, seller: 'SCP Auctions', sellerRating: 100, hasImage: true, featured: false },
+  { id: 'la_015', platform: 'pwcc', title: '2022 Topps Chrome Julio Rodriguez RC Auto Gold /50 PSA 10', cardName: '2022 Topps Chrome Julio Rodriguez RC Auto Gold /50', sport: 'Baseball', currentBid: 5800, startingBid: 3000, bidCount: 17, timeRemaining: 21600, endTime: '2026-03-15T23:00:00Z', estimatedFinalPrice: 8000, watchers: 62, seller: 'PWCC Marketplace', sellerRating: 100, hasImage: true, featured: true },
+  { id: 'la_016', platform: 'ebay', title: '2024 Panini Prizm Jayden Daniels RC Silver PSA 10', cardName: '2024 Panini Prizm Jayden Daniels RC Silver', sport: 'Football', currentBid: 185, startingBid: 80, bidCount: 15, timeRemaining: 3000, endTime: '2026-03-15T17:50:00Z', estimatedFinalPrice: 275, watchers: 22, seller: 'football_first_cards', sellerRating: 98.8, hasImage: true, featured: false },
+  { id: 'la_017', platform: 'goldin', title: '2021 National Treasures Trevor Lawrence RPA /99 BGS 9', cardName: '2021 National Treasures Trevor Lawrence RPA /99', sport: 'Football', currentBid: 3200, startingBid: 2000, bidCount: 13, timeRemaining: 43200, endTime: '2026-03-16T05:00:00Z', estimatedFinalPrice: 4800, watchers: 55, seller: 'Goldin Auctions', sellerRating: 100, hasImage: true, featured: false },
+  { id: 'la_018', platform: 'whatnot', title: '2023 Bowman Chrome 1st Jackson Chourio Auto Refractor', cardName: '2023 Bowman Chrome 1st Jackson Chourio Auto Refractor', sport: 'Baseball', currentBid: 320, startingBid: 150, bidCount: 12, timeRemaining: 450, endTime: '2026-03-15T17:07:30Z', estimatedFinalPrice: 500, watchers: 28, seller: 'rip_city_breaks', sellerRating: 97.5, hasImage: true, featured: false },
+  { id: 'la_019', platform: 'ebay', title: '2023 Upper Deck Connor McDavid Canvas Young Guns PSA 10', cardName: '2023 Upper Deck Connor McDavid Canvas Young Guns', sport: 'Hockey', currentBid: 150, startingBid: 50, bidCount: 18, timeRemaining: 5400, endTime: '2026-03-15T18:30:00Z', estimatedFinalPrice: 220, watchers: 19, seller: 'hockey_haven_cards', sellerRating: 99.3, hasImage: true, featured: false },
+  { id: 'la_020', platform: 'heritage', title: '2009 Bowman Chrome Mike Trout Auto RC BGS 9.5', cardName: '2009 Bowman Chrome Mike Trout Auto RC', sport: 'Baseball', currentBid: 95000, startingBid: 60000, bidCount: 35, timeRemaining: 36000, endTime: '2026-03-16T03:00:00Z', estimatedFinalPrice: 140000, watchers: 280, seller: 'Heritage Auctions', sellerRating: 100, hasImage: true, featured: true },
+  { id: 'la_021', platform: 'ebay', title: '2024 Topps Chrome Shohei Ohtani Dodgers RC PSA 10', cardName: '2024 Topps Chrome Shohei Ohtani Dodgers RC', sport: 'Baseball', currentBid: 95, startingBid: 30, bidCount: 28, timeRemaining: 1500, endTime: '2026-03-15T17:25:00Z', estimatedFinalPrice: 145, watchers: 52, seller: 'west_coast_cards', sellerRating: 99.6, hasImage: true, featured: false },
+  { id: 'la_022', platform: 'comc', title: '2023 Select Concourse Patrick Mahomes Silver /199 PSA 10', cardName: '2023 Select Concourse Patrick Mahomes Silver /199', sport: 'Football', currentBid: 125, startingBid: 60, bidCount: 9, timeRemaining: 7800, endTime: '2026-03-15T19:10:00Z', estimatedFinalPrice: 180, watchers: 15, seller: 'COMC_Vault', sellerRating: 99.9, hasImage: true, featured: false },
+  { id: 'la_023', platform: 'ebay', title: '2025 Topps Chrome Gunnar Henderson Refractor Auto /499 PSA 10', cardName: '2025 Topps Chrome Gunnar Henderson Refractor Auto /499', sport: 'Baseball', currentBid: 340, startingBid: 150, bidCount: 16, timeRemaining: 4800, endTime: '2026-03-15T18:20:00Z', estimatedFinalPrice: 500, watchers: 30, seller: 'chrome_chasers', sellerRating: 99.4, hasImage: true, featured: false },
+  { id: 'la_024', platform: 'pwcc', title: '1993 SP Foil Derek Jeter RC #279 PSA 9', cardName: '1993 SP Foil Derek Jeter RC #279', sport: 'Baseball', currentBid: 12500, startingBid: 8000, bidCount: 14, timeRemaining: 28800, endTime: '2026-03-16T01:00:00Z', estimatedFinalPrice: 18000, watchers: 78, seller: 'PWCC Marketplace', sellerRating: 100, hasImage: true, featured: true },
+  { id: 'la_025', platform: 'ebay', title: '2024 Prizm Draft Picks Drake Maye RC Silver PSA 10', cardName: '2024 Prizm Draft Picks Drake Maye RC Silver', sport: 'Football', currentBid: 65, startingBid: 25, bidCount: 12, timeRemaining: 2100, endTime: '2026-03-15T17:35:00Z', estimatedFinalPrice: 95, watchers: 14, seller: 'rookie_rush_cards', sellerRating: 98.2, hasImage: true, featured: false },
+  { id: 'la_026', platform: 'goldin', title: '2018 Topps Chrome Shohei Ohtani RC Auto PSA 10', cardName: '2018 Topps Chrome Shohei Ohtani RC Auto', sport: 'Baseball', currentBid: 28000, startingBid: 18000, bidCount: 22, timeRemaining: 57600, endTime: '2026-03-16T09:00:00Z', estimatedFinalPrice: 38000, watchers: 145, seller: 'Goldin Auctions', sellerRating: 100, hasImage: true, featured: true },
+  { id: 'la_027', platform: 'ebay', title: '2023 Panini Prizm Chet Holmgren RC Silver PSA 10', cardName: '2023 Panini Prizm Chet Holmgren RC Silver', sport: 'Basketball', currentBid: 75, startingBid: 30, bidCount: 10, timeRemaining: 6600, endTime: '2026-03-15T18:50:00Z', estimatedFinalPrice: 110, watchers: 18, seller: 'thunder_collectors', sellerRating: 98.9, hasImage: true, featured: false },
+  { id: 'la_028', platform: 'lelands', title: '1975 Topps George Brett RC #228 PSA 8', cardName: '1975 Topps George Brett RC #228', sport: 'Baseball', currentBid: 4500, startingBid: 3000, bidCount: 11, timeRemaining: 345600, endTime: '2026-03-19T17:00:00Z', estimatedFinalPrice: 6500, watchers: 40, seller: 'Lelands Auctions', sellerRating: 100, hasImage: true, featured: false },
+  { id: 'la_029', platform: 'whatnot', title: '2024 Topps Chrome Rookie Auto Mystery Break', cardName: '2024 Topps Chrome Rookie Auto Break', sport: 'Baseball', currentBid: 45, startingBid: 10, bidCount: 35, timeRemaining: 300, endTime: '2026-03-15T17:05:00Z', estimatedFinalPrice: 55, watchers: 85, seller: 'break_nation_live', sellerRating: 97.0, hasImage: true, featured: false },
+  { id: 'la_030', platform: 'scp', title: '2011 Topps Update Mike Trout RC #US175 PSA 10', cardName: '2011 Topps Update Mike Trout RC #US175', sport: 'Baseball', currentBid: 42000, startingBid: 30000, bidCount: 20, timeRemaining: 432000, endTime: '2026-03-20T17:00:00Z', estimatedFinalPrice: 55000, watchers: 160, seller: 'SCP Auctions', sellerRating: 100, hasImage: true, featured: true },
 ];
 
-const CARD_DESCS = [
-  '2023 Topps Chrome RC Auto', '2018 Panini Prizm Silver RC',
-  '2020 Bowman Chrome 1st Auto', '2022 National Treasures RPA /99',
-  '2019 Optic Rated Rookie Holo', '2021 Select Concourse Neon Green /75',
-  '2017 Donruss Rated Rookie', '2023 Topps Heritage RC',
-  '2020 Panini Mosaic RC Silver', '2022 Upper Deck Young Guns RC',
-  '2019 Prizm Draft Picks Auto', '2021 Bowman 1st Chrome Refractor',
+const BID_RECOMMENDATIONS: BidRecommendation[] = [
+  { id: 'br_001', auctionId: 'la_001', cardName: '2024 Topps Chrome Paul Skenes RC Auto /99', platform: 'ebay', currentBid: 1250, maxBidSuggestion: 1650, compAvgPrice: 1800, compCount: 12, confidence: 'high', reasoning: 'Recent comps average $1,800. Current bid is 30% below market. Strong demand for Skenes autos.', valueRating: 85 },
+  { id: 'br_002', auctionId: 'la_004', cardName: '2024 Bowman Chrome 1st Jackson Holliday Auto', platform: 'ebay', currentBid: 420, maxBidSuggestion: 550, compAvgPrice: 620, compCount: 8, confidence: 'medium', reasoning: 'Holliday comps trending down slightly. Bid up to $550 for good value.', valueRating: 72 },
+  { id: 'br_003', auctionId: 'la_006', cardName: '2024 Panini Prizm Caleb Williams RC Silver', platform: 'ebay', currentBid: 380, maxBidSuggestion: 450, compAvgPrice: 520, compCount: 15, confidence: 'high', reasoning: 'Williams Silver Prizm PSA 10 consistently sells $480-560. Current bid is well under market.', valueRating: 88 },
+  { id: 'br_004', auctionId: 'la_007', cardName: '2023 Topps Chrome Elly De La Cruz RC Auto Refractor', platform: 'whatnot', currentBid: 850, maxBidSuggestion: 1000, compAvgPrice: 1150, compCount: 6, confidence: 'medium', reasoning: 'EDDLC auto refractors are volatile. Recent comps range $900-1,400. Conservative max bid advised.', valueRating: 75 },
+  { id: 'br_005', auctionId: 'la_010', cardName: '2024 Upper Deck Connor Bedard Young Guns RC', platform: 'ebay', currentBid: 280, maxBidSuggestion: 360, compAvgPrice: 420, compCount: 20, confidence: 'high', reasoning: 'Bedard YG PSA 10 has strong, stable comps around $400-440. Good buying opportunity.', valueRating: 82 },
+  { id: 'br_006', auctionId: 'la_011', cardName: '2023 Prizm Silver Victor Wembanyama RC', platform: 'comc', currentBid: 650, maxBidSuggestion: 780, compAvgPrice: 875, compCount: 18, confidence: 'high', reasoning: 'Wemby Silver PSA 10 comps very consistent at $850-900. COMC often has lower final prices.', valueRating: 80 },
+  { id: 'br_007', auctionId: 'la_013', cardName: '2025 Bowman Chrome 1st Ethan Salas Auto /150', platform: 'ebay', currentBid: 520, maxBidSuggestion: 680, compAvgPrice: 780, compCount: 5, confidence: 'medium', reasoning: 'Limited comp data for numbered Salas autos. Prospect risk but high upside.', valueRating: 70 },
+  { id: 'br_008', auctionId: 'la_016', cardName: '2024 Panini Prizm Jayden Daniels RC Silver', platform: 'ebay', currentBid: 185, maxBidSuggestion: 240, compAvgPrice: 290, compCount: 14, confidence: 'high', reasoning: 'Daniels hype building with strong rookie season. Silver PSA 10 trending up.', valueRating: 84 },
+  { id: 'br_009', auctionId: 'la_019', cardName: '2023 Upper Deck Connor McDavid Canvas Young Guns', platform: 'ebay', currentBid: 150, maxBidSuggestion: 195, compAvgPrice: 230, compCount: 10, confidence: 'medium', reasoning: 'McDavid Canvas variant less liquid than base YG but has collector following.', valueRating: 68 },
+  { id: 'br_010', auctionId: 'la_021', cardName: '2024 Topps Chrome Shohei Ohtani Dodgers RC', platform: 'ebay', currentBid: 95, maxBidSuggestion: 125, compAvgPrice: 150, compCount: 30, confidence: 'high', reasoning: 'High volume card with very consistent comps. Strong buy under $130.', valueRating: 90 },
+  { id: 'br_011', auctionId: 'la_023', cardName: '2025 Topps Chrome Gunnar Henderson Refractor Auto /499', platform: 'ebay', currentBid: 340, maxBidSuggestion: 450, compAvgPrice: 520, compCount: 7, confidence: 'medium', reasoning: 'Henderson trending up with strong 2025 season. Refractor auto has premium appeal.', valueRating: 76 },
+  { id: 'br_012', auctionId: 'la_025', cardName: '2024 Prizm Draft Picks Drake Maye RC Silver', platform: 'ebay', currentBid: 65, maxBidSuggestion: 82, compAvgPrice: 100, compCount: 12, confidence: 'medium', reasoning: 'Maye value tied to on-field performance. Conservative approach recommended.', valueRating: 65 },
+  { id: 'br_013', auctionId: 'la_027', cardName: '2023 Panini Prizm Chet Holmgren RC Silver', platform: 'ebay', currentBid: 75, maxBidSuggestion: 95, compAvgPrice: 115, compCount: 16, confidence: 'high', reasoning: 'Holmgren comps stable. Silver PSA 10 is a good long-term hold under $100.', valueRating: 78 },
+  { id: 'br_014', auctionId: 'la_003', cardName: '2023 National Treasures Wembanyama RPA /49', platform: 'goldin', currentBid: 15000, maxBidSuggestion: 19500, compAvgPrice: 23000, compCount: 4, confidence: 'medium', reasoning: 'Very limited comp data for /49 RPA. High-end card with significant upside potential.', valueRating: 74 },
+  { id: 'br_015', auctionId: 'la_009', cardName: '2022 Panini Flawless Luka Doncic Patch Auto /25', platform: 'goldin', currentBid: 8500, maxBidSuggestion: 10500, compAvgPrice: 12500, compCount: 3, confidence: 'low', reasoning: 'Ultra-premium card with very few comps. Luka market has been volatile.', valueRating: 68 },
+  { id: 'br_016', auctionId: 'la_018', cardName: '2023 Bowman Chrome 1st Jackson Chourio Auto Refractor', platform: 'whatnot', currentBid: 320, maxBidSuggestion: 440, compAvgPrice: 520, compCount: 6, confidence: 'medium', reasoning: 'Chourio strong rookie year. Refractor auto comps trending upward.', valueRating: 77 },
+  { id: 'br_017', auctionId: 'la_022', cardName: '2023 Select Concourse Patrick Mahomes Silver /199', platform: 'comc', currentBid: 125, maxBidSuggestion: 160, compAvgPrice: 185, compCount: 9, confidence: 'high', reasoning: 'Mahomes Select Silver is a consistent seller. Good value under $165.', valueRating: 82 },
+  { id: 'br_018', auctionId: 'la_005', cardName: '1986 Fleer Michael Jordan RC #57', platform: 'pwcc', currentBid: 18500, maxBidSuggestion: 22000, compAvgPrice: 26000, compCount: 15, confidence: 'high', reasoning: 'PSA 8 Jordan RC has deep market with consistent demand. Current bid is attractive.', valueRating: 86 },
+  { id: 'br_019', auctionId: 'la_015', cardName: '2022 Topps Chrome Julio Rodriguez RC Auto Gold /50', platform: 'pwcc', currentBid: 5800, maxBidSuggestion: 7200, compAvgPrice: 8500, compCount: 4, confidence: 'medium', reasoning: 'J-Rod Gold /50 is scarce. Limited comps but strong demand for numbered chrome autos.', valueRating: 74 },
+  { id: 'br_020', auctionId: 'la_029', cardName: '2024 Topps Chrome Rookie Auto Break', platform: 'whatnot', currentBid: 45, maxBidSuggestion: 50, compAvgPrice: 55, compCount: 50, confidence: 'low', reasoning: 'Mystery break with variable value. Only bid what you can afford to lose.', valueRating: 40 },
 ];
 
-const GRADES = ['PSA 10', 'PSA 9', 'BGS 9.5', 'BGS 10 Black', 'SGC 10', 'PSA 8', 'CGC 9.5', 'Raw NM-MT'];
-
-const PLATFORMS: AuctionPlatform[] = ['eBay', 'Goldin', 'Heritage', 'PWCC', 'MySlabs'];
-
-const BIDDER_NAMES = [
-  'cardking99', 'slabHunter', 'grailSeeker22', 'investCardsLLC',
-  'topps_fan_88', 'gradedGems', 'eliteCollector', 'hobbyVault',
-  'proxyBidBot7', 'shill_acct_x1', 'newBidder2024', 'premiumPulls',
-  'platinumSlabs', 'vintageCardsHQ', 'modernRC_sniper',
+const SNIPER_ALERTS: SniperAlert[] = [
+  { id: 'sa_001', auctionId: 'la_006', cardName: '2024 Panini Prizm Caleb Williams RC Silver', platform: 'ebay', currentBid: 380, marketValue: 520, discount: 27, timeRemaining: 900, alertType: 'under_market', urgency: 'critical', message: 'Caleb Williams Silver PSA 10 at 27% below market with only 15 min left!' },
+  { id: 'sa_002', auctionId: 'la_007', cardName: '2023 Topps Chrome Elly De La Cruz RC Auto Refractor', platform: 'whatnot', currentBid: 850, marketValue: 1150, discount: 26, timeRemaining: 600, alertType: 'ending_soon', urgency: 'critical', message: 'EDDLC Auto Refractor ending in 10 min! Currently 26% under comp average.' },
+  { id: 'sa_003', auctionId: 'la_018', cardName: '2023 Bowman Chrome 1st Jackson Chourio Auto Refractor', platform: 'whatnot', currentBid: 320, marketValue: 520, discount: 38, timeRemaining: 450, alertType: 'under_market', urgency: 'critical', message: 'Chourio 1st Auto Refractor at 38% discount! Ending in under 8 minutes.' },
+  { id: 'sa_004', auctionId: 'la_021', cardName: '2024 Topps Chrome Shohei Ohtani Dodgers RC', platform: 'ebay', currentBid: 95, marketValue: 150, discount: 37, timeRemaining: 1500, alertType: 'under_market', urgency: 'high', message: 'Ohtani Dodgers Chrome PSA 10 at $95 vs $150 market. 25 min remaining.' },
+  { id: 'sa_005', auctionId: 'la_029', cardName: '2024 Topps Chrome Rookie Auto Break', platform: 'whatnot', currentBid: 45, marketValue: 55, discount: 18, timeRemaining: 300, alertType: 'ending_soon', urgency: 'high', message: 'Whatnot break ending in 5 min. Low competition with only 35 bids.' },
+  { id: 'sa_006', auctionId: 'la_010', cardName: '2024 Upper Deck Connor Bedard Young Guns RC', platform: 'ebay', currentBid: 280, marketValue: 420, discount: 33, timeRemaining: 2400, alertType: 'under_market', urgency: 'high', message: 'Bedard YG PSA 10 at 33% below market. Good snipe opportunity in 40 min.' },
+  { id: 'sa_007', auctionId: 'la_004', cardName: '2024 Bowman Chrome 1st Jackson Holliday Auto', platform: 'ebay', currentBid: 420, marketValue: 620, discount: 32, timeRemaining: 1800, alertType: 'low_competition', urgency: 'medium', message: 'Holliday Auto with only 14 bids and 30 min left. Below average competition.' },
+  { id: 'sa_008', auctionId: 'la_011', cardName: '2023 Prizm Silver Victor Wembanyama RC', platform: 'comc', currentBid: 650, marketValue: 875, discount: 26, timeRemaining: 4200, alertType: 'under_market', urgency: 'medium', message: 'Wemby Silver PSA 10 on COMC at 26% below eBay comps.' },
+  { id: 'sa_009', auctionId: 'la_025', cardName: '2024 Prizm Draft Picks Drake Maye RC Silver', platform: 'ebay', currentBid: 65, marketValue: 100, discount: 35, timeRemaining: 2100, alertType: 'low_competition', urgency: 'medium', message: 'Maye Silver at $65 with only 12 bids. Low watcher count suggests snipe potential.' },
+  { id: 'sa_010', auctionId: 'la_013', cardName: '2025 Bowman Chrome 1st Ethan Salas Auto /150', platform: 'ebay', currentBid: 520, marketValue: 780, discount: 33, timeRemaining: 1200, alertType: 'rare_find', urgency: 'high', message: 'Numbered Salas auto 33% under market. Rare card with limited availability.' },
+  { id: 'sa_011', auctionId: 'la_016', cardName: '2024 Panini Prizm Jayden Daniels RC Silver', platform: 'ebay', currentBid: 185, marketValue: 290, discount: 36, timeRemaining: 3000, alertType: 'under_market', urgency: 'medium', message: 'Daniels Silver PSA 10 at 36% below market. Trending up with strong season.' },
+  { id: 'sa_012', auctionId: 'la_027', cardName: '2023 Panini Prizm Chet Holmgren RC Silver', platform: 'ebay', currentBid: 75, marketValue: 115, discount: 35, timeRemaining: 6600, alertType: 'low_competition', urgency: 'low', message: 'Holmgren Silver well under market but over an hour left. Set a snipe timer.' },
+  { id: 'sa_013', auctionId: 'la_001', cardName: '2024 Topps Chrome Paul Skenes RC Auto /99', platform: 'ebay', currentBid: 1250, marketValue: 1800, discount: 31, timeRemaining: 3600, alertType: 'under_market', urgency: 'medium', message: 'Skenes numbered auto 31% under comps. Strong prospect with 1 hour left.' },
+  { id: 'sa_014', auctionId: 'la_023', cardName: '2025 Topps Chrome Gunnar Henderson Refractor Auto /499', platform: 'ebay', currentBid: 340, marketValue: 520, discount: 35, timeRemaining: 4800, alertType: 'price_drop', urgency: 'medium', message: 'Henderson Refractor Auto dropped from recent high. Buy-the-dip opportunity.' },
+  { id: 'sa_015', auctionId: 'la_019', cardName: '2023 Upper Deck Connor McDavid Canvas Young Guns', platform: 'ebay', currentBid: 150, marketValue: 230, discount: 35, timeRemaining: 5400, alertType: 'under_market', urgency: 'low', message: 'McDavid Canvas variant at good discount. Over 1.5 hours remaining.' },
 ];
 
-// ── Data generation ─────────────────────────────────────────────────────────────
+const WATCHED_AUCTIONS: WatchedAuction[] = [
+  { id: 'wa_001', auctionId: 'la_001', cardName: '2024 Topps Chrome Paul Skenes RC Auto /99', platform: 'ebay', currentBid: 1250, priceAlert: 1600, addedDate: '2026-03-14', status: 'active', notes: 'Target for collection. Max bid $1,600.' },
+  { id: 'wa_002', auctionId: 'la_003', cardName: '2023 National Treasures Wembanyama RPA /49', platform: 'goldin', currentBid: 15000, priceAlert: 20000, addedDate: '2026-03-12', status: 'active', notes: 'High-end target. Only bid if stays under $20k.' },
+  { id: 'wa_003', auctionId: 'la_005', cardName: '1986 Fleer Michael Jordan RC #57', platform: 'pwcc', currentBid: 18500, priceAlert: 23000, addedDate: '2026-03-13', status: 'active', notes: 'PSA 8 Jordan RC for long-term hold.' },
+  { id: 'wa_004', auctionId: 'la_006', cardName: '2024 Panini Prizm Caleb Williams RC Silver', platform: 'ebay', currentBid: 380, priceAlert: 450, addedDate: '2026-03-14', status: 'active', notes: 'Snipe target. Set max at $450.' },
+  { id: 'wa_005', auctionId: 'la_010', cardName: '2024 Upper Deck Connor Bedard Young Guns RC', platform: 'ebay', currentBid: 280, priceAlert: 370, addedDate: '2026-03-14', status: 'active', notes: 'Hockey PC addition. Good price under $370.' },
+  { id: 'wa_006', auctionId: 'la_012', cardName: '1955 Topps Roberto Clemente RC #164', platform: 'lelands', currentBid: 22000, priceAlert: 30000, addedDate: '2026-03-10', status: 'active', notes: 'Vintage target. PSA 5 is entry-level for this card.' },
+  { id: 'wa_007', auctionId: 'la_015', cardName: '2022 Topps Chrome Julio Rodriguez RC Auto Gold /50', platform: 'pwcc', currentBid: 5800, priceAlert: 7500, addedDate: '2026-03-13', status: 'active', notes: 'J-Rod gold auto. Beautiful card for the PC.' },
+  { id: 'wa_008', auctionId: 'la_020', cardName: '2009 Bowman Chrome Mike Trout Auto RC', platform: 'heritage', currentBid: 95000, priceAlert: 125000, addedDate: '2026-03-11', status: 'active', notes: 'Dream card. Only if price stays reasonable.' },
+  { id: 'wa_009', auctionId: 'la_021', cardName: '2024 Topps Chrome Shohei Ohtani Dodgers RC', platform: 'ebay', currentBid: 95, priceAlert: 130, addedDate: '2026-03-15', status: 'active', notes: 'Quick flip opportunity under $130.' },
+  { id: 'wa_010', auctionId: 'la_024', cardName: '1993 SP Foil Derek Jeter RC #279', platform: 'pwcc', currentBid: 12500, priceAlert: 16000, addedDate: '2026-03-12', status: 'active', notes: 'Classic RC for vintage collection.' },
+  { id: 'wa_011', auctionId: 'la_026', cardName: '2018 Topps Chrome Shohei Ohtani RC Auto', platform: 'goldin', currentBid: 28000, priceAlert: 35000, addedDate: '2026-03-11', status: 'active', notes: 'Ohtani Chrome Auto PSA 10. Flagship card.' },
+  { id: 'wa_012', auctionId: 'la_002', cardName: '1952 Topps Mickey Mantle #311', platform: 'heritage', currentBid: 85000, priceAlert: 110000, addedDate: '2026-03-10', status: 'active', notes: 'Watching only. PSA 4 may be out of budget.' },
+  { id: 'wa_013', auctionId: 'la_008', cardName: '1933 Goudey Babe Ruth #53', platform: 'heritage', currentBid: 45000, priceAlert: 60000, addedDate: '2026-03-09', status: 'active', notes: 'Pre-war icon. SGC 3 is affordable entry.' },
+  { id: 'wa_014', auctionId: 'la_013', cardName: '2025 Bowman Chrome 1st Ethan Salas Auto /150', platform: 'ebay', currentBid: 520, priceAlert: 680, addedDate: '2026-03-15', status: 'active', notes: 'Top prospect. Numbered auto is scarce.' },
+  { id: 'wa_015', auctionId: 'la_017', cardName: '2021 National Treasures Trevor Lawrence RPA /99', platform: 'goldin', currentBid: 3200, priceAlert: 4200, addedDate: '2026-03-14', status: 'active', notes: 'TLaw RPA at reasonable price. Monitor closely.' },
+  { id: 'wa_016', auctionId: 'la_007', cardName: '2023 Topps Chrome Elly De La Cruz RC Auto Refractor', platform: 'whatnot', currentBid: 850, priceAlert: 1000, addedDate: '2026-03-15', status: 'active', notes: 'EDDLC auto refractor. Snipe if under $1k.' },
+  { id: 'wa_017', auctionId: 'la_018', cardName: '2023 Bowman Chrome 1st Jackson Chourio Auto Refractor', platform: 'whatnot', currentBid: 320, priceAlert: 440, addedDate: '2026-03-15', status: 'active', notes: 'Chourio 1st auto. Strong rookie year supports price.' },
+  { id: 'wa_018', auctionId: 'la_030', cardName: '2011 Topps Update Mike Trout RC #US175', platform: 'scp', currentBid: 42000, priceAlert: 50000, addedDate: '2026-03-08', status: 'active', notes: 'Trout RC PSA 10. Iconic modern card.' },
+  { id: 'wa_019', auctionId: 'la_016', cardName: '2024 Panini Prizm Jayden Daniels RC Silver', platform: 'ebay', currentBid: 185, priceAlert: 250, addedDate: '2026-03-15', status: 'active', notes: 'Daniels breakout candidate. Silver PSA 10 target.' },
+  { id: 'wa_020', auctionId: 'la_011', cardName: '2023 Prizm Silver Victor Wembanyama RC', platform: 'comc', currentBid: 650, priceAlert: 800, addedDate: '2026-03-14', status: 'active', notes: 'Wemby Silver on COMC. Usually cheaper than eBay.' },
+  { id: 'wa_021', auctionId: 'la_009', cardName: '2022 Panini Flawless Luka Doncic Patch Auto /25', platform: 'goldin', currentBid: 8500, priceAlert: 11000, addedDate: '2026-03-13', status: 'active', notes: 'Luka Flawless. Premium card for the PC.' },
+  { id: 'wa_022', auctionId: 'la_004', cardName: '2024 Bowman Chrome 1st Jackson Holliday Auto', platform: 'ebay', currentBid: 420, priceAlert: 550, addedDate: '2026-03-14', status: 'active', notes: 'Holliday 1st auto. Prospect with high ceiling.' },
+  { id: 'wa_023', auctionId: 'la_014', cardName: '1969 Topps Reggie Jackson RC #260', platform: 'scp', currentBid: 3200, priceAlert: 4000, addedDate: '2026-03-12', status: 'active', notes: 'Mr. October RC. PSA 7 is solid grade for vintage.' },
+  { id: 'wa_024', auctionId: 'la_028', cardName: '1975 Topps George Brett RC #228', platform: 'lelands', currentBid: 4500, priceAlert: 5800, addedDate: '2026-03-11', status: 'active', notes: 'Brett RC PSA 8. Clean example for HOF collection.' },
+  { id: 'wa_025', auctionId: 'la_022', cardName: '2023 Select Concourse Patrick Mahomes Silver /199', platform: 'comc', currentBid: 125, priceAlert: 165, addedDate: '2026-03-15', status: 'active', notes: 'Mahomes Select Silver. Consistent seller.' },
+];
 
-function generateAuctions(seed: number): AuctionListing[] {
-  const rand = seededRandom(seed);
-  const now = Date.now();
-  const count = 10 + Math.floor(rand() * 3); // 10-12
-  const auctions: AuctionListing[] = [];
+const BID_STRATEGIES: BidStrategy[] = [
+  { id: 'bs_001', name: 'Last-Second Snipe', description: 'Place bid in final 3-5 seconds to prevent counter-bids. Most effective on eBay with proxy bidding.', optimalSnipeTime: 4, successRate: 72, avgSavings: 15, bestFor: ['eBay fixed auctions', 'Low watcher count', 'Cards under $500'], riskLevel: 'medium' },
+  { id: 'bs_002', name: 'Early Authority Bid', description: 'Place a strong bid early to discourage competition. Works best on heritage auction houses.', optimalSnipeTime: 86400, successRate: 58, avgSavings: 5, bestFor: ['Heritage/Goldin auctions', 'High-value vintage', 'Cards with few comps'], riskLevel: 'low' },
+  { id: 'bs_003', name: 'Proxy Max Strategy', description: 'Set your true maximum bid and let the platform proxy bid for you. Simple and stress-free.', optimalSnipeTime: 3600, successRate: 65, avgSavings: 8, bestFor: ['All platforms', 'Beginners', 'Multiple simultaneous auctions'], riskLevel: 'low' },
+  { id: 'bs_004', name: 'Odd Number Bid', description: 'Bid odd amounts like $127 or $513 to outbid round-number bidders by a small margin.', optimalSnipeTime: 30, successRate: 68, avgSavings: 12, bestFor: ['eBay', 'Cards under $1,000', 'High competition auctions'], riskLevel: 'low' },
+  { id: 'bs_005', name: 'Wait and Pounce', description: 'Monitor without bidding until final 2 minutes. Avoid driving up price with early engagement.', optimalSnipeTime: 120, successRate: 70, avgSavings: 18, bestFor: ['eBay', 'Whatnot', 'High watcher auctions'], riskLevel: 'medium' },
+  { id: 'bs_006', name: 'Multi-Auction Spread', description: 'Bid on multiple listings of the same card to increase odds of winning at least one below market.', optimalSnipeTime: 10, successRate: 85, avgSavings: 10, bestFor: ['Common cards', 'PSA 10 base', 'Volume buying'], riskLevel: 'medium' },
+  { id: 'bs_007', name: 'Off-Peak Timing', description: 'Target auctions ending during off-peak hours (weekday mornings, late night) for less competition.', optimalSnipeTime: 5, successRate: 75, avgSavings: 22, bestFor: ['eBay', 'All card types', 'Budget buyers'], riskLevel: 'low' },
+  { id: 'bs_008', name: 'Auction House Extended Bidding Counter', description: 'Heritage/Goldin extend auctions with new bids. Place bids strategically to exhaust competitors.', optimalSnipeTime: 15, successRate: 55, avgSavings: 3, bestFor: ['Heritage', 'Goldin', 'High-end cards over $5,000'], riskLevel: 'high' },
+];
 
-  for (let i = 0; i < count; i++) {
-    const player = PLAYERS[Math.floor(rand() * PLAYERS.length)];
-    const desc = CARD_DESCS[Math.floor(rand() * CARD_DESCS.length)];
-    const grade = GRADES[Math.floor(rand() * GRADES.length)];
-    const platform = PLATFORMS[Math.floor(rand() * PLATFORMS.length)];
+const AUCTION_STATS: AuctionStats[] = [
+  { platform: 'ebay', totalActive: 245000, avgFinalPrice: 185, avgBidCount: 12, sniperSuccessRate: 72, peakBiddingHour: 21, avgListingDuration: 7 },
+  { platform: 'heritage', totalActive: 850, avgFinalPrice: 8500, avgBidCount: 22, sniperSuccessRate: 45, peakBiddingHour: 22, avgListingDuration: 14 },
+  { platform: 'goldin', totalActive: 1200, avgFinalPrice: 5200, avgBidCount: 18, sniperSuccessRate: 48, peakBiddingHour: 22, avgListingDuration: 10 },
+  { platform: 'pwcc', totalActive: 3500, avgFinalPrice: 2800, avgBidCount: 15, sniperSuccessRate: 55, peakBiddingHour: 21, avgListingDuration: 7 },
+  { platform: 'comc', totalActive: 180000, avgFinalPrice: 45, avgBidCount: 5, sniperSuccessRate: 80, peakBiddingHour: 20, avgListingDuration: 30 },
+  { platform: 'whatnot', totalActive: 500, avgFinalPrice: 120, avgBidCount: 25, sniperSuccessRate: 35, peakBiddingHour: 21, avgListingDuration: 1 },
+  { platform: 'lelands', totalActive: 450, avgFinalPrice: 12000, avgBidCount: 20, sniperSuccessRate: 42, peakBiddingHour: 22, avgListingDuration: 21 },
+  { platform: 'scp', totalActive: 350, avgFinalPrice: 15000, avgBidCount: 18, sniperSuccessRate: 40, peakBiddingHour: 22, avgListingDuration: 21 },
+];
 
-    const fmv = 50 + Math.floor(rand() * 4950); // $50 - $5000
-    const bidRatio = 0.35 + rand() * 0.6; // 35-95% of FMV
-    const currentBid = Math.round(fmv * bidRatio * 100) / 100;
-    const bidCount = 1 + Math.floor(rand() * 35);
+const COMPETITOR_BIDDERS: CompetitorBidder[] = [
+  { username: 'card_shark_99', platform: 'ebay', bidCount: 342, winRate: 28, avgSpend: 450, preferredCategories: ['Baseball RC', 'Chrome Autos'], sniperBehavior: true, lastActive: '2026-03-15' },
+  { username: 'vintage_vault_collector', platform: 'ebay', bidCount: 185, winRate: 35, avgSpend: 2200, preferredCategories: ['Pre-1970 Baseball', 'HOF RC'], sniperBehavior: false, lastActive: '2026-03-15' },
+  { username: 'hoops_heaven', platform: 'ebay', bidCount: 267, winRate: 22, avgSpend: 320, preferredCategories: ['Basketball RC', 'Prizm Silver'], sniperBehavior: true, lastActive: '2026-03-14' },
+  { username: 'gridiron_gold', platform: 'ebay', bidCount: 198, winRate: 30, avgSpend: 280, preferredCategories: ['Football RC', 'QB Autos'], sniperBehavior: true, lastActive: '2026-03-15' },
+  { username: 'premier_picks', platform: 'goldin', bidCount: 45, winRate: 40, avgSpend: 8500, preferredCategories: ['High-end Autos', 'RPA', 'Numbered /25'], sniperBehavior: false, lastActive: '2026-03-14' },
+  { username: 'heritage_hawk', platform: 'heritage', bidCount: 78, winRate: 18, avgSpend: 12000, preferredCategories: ['Vintage Baseball', 'Pre-war', 'HOF'], sniperBehavior: false, lastActive: '2026-03-13' },
+  { username: 'chrome_chaser_2024', platform: 'ebay', bidCount: 412, winRate: 25, avgSpend: 150, preferredCategories: ['Topps Chrome', 'Bowman 1st', 'Refractors'], sniperBehavior: true, lastActive: '2026-03-15' },
+  { username: 'puck_power', platform: 'ebay', bidCount: 156, winRate: 32, avgSpend: 180, preferredCategories: ['Hockey YG', 'Upper Deck', 'Canvas'], sniperBehavior: false, lastActive: '2026-03-14' },
+  { username: 'big_money_bidder', platform: 'goldin', bidCount: 32, winRate: 55, avgSpend: 25000, preferredCategories: ['Ultra-premium', 'Flawless', 'National Treasures'], sniperBehavior: false, lastActive: '2026-03-15' },
+  { username: 'flip_king_cards', platform: 'whatnot', bidCount: 520, winRate: 38, avgSpend: 85, preferredCategories: ['Breaks', 'Modern RC', 'Quick flips'], sniperBehavior: true, lastActive: '2026-03-15' },
+];
 
-    // Time remaining: spread across ending soon to days out
-    let timeRemaining: number;
-    const timeBucket = rand();
-    if (timeBucket < 0.3) {
-      timeRemaining = 60 + Math.floor(rand() * 3540); // 1-60min
-    } else if (timeBucket < 0.6) {
-      timeRemaining = 3600 + Math.floor(rand() * 18000); // 1-6hr
-    } else {
-      timeRemaining = 21600 + Math.floor(rand() * 259200); // 6hr-3d
+const AUCTION_HISTORY: AuctionHistory[] = [
+  { id: 'ah_001', cardName: '2024 Topps Chrome Paul Skenes RC Auto /99', platform: 'ebay', finalPrice: 1850, bidCount: 22, date: '2026-03-10', grade: 'PSA 10', seller: 'chrome_kings' },
+  { id: 'ah_002', cardName: '2024 Topps Chrome Paul Skenes RC Auto /99', platform: 'ebay', finalPrice: 1720, bidCount: 18, date: '2026-03-07', grade: 'PSA 10', seller: 'rc_vault' },
+  { id: 'ah_003', cardName: '2024 Topps Chrome Paul Skenes RC Auto /99', platform: 'goldin', finalPrice: 1950, bidCount: 15, date: '2026-03-05', grade: 'PSA 10', seller: 'Goldin Auctions' },
+  { id: 'ah_004', cardName: '2024 Panini Prizm Caleb Williams RC Silver', platform: 'ebay', finalPrice: 520, bidCount: 25, date: '2026-03-12', grade: 'PSA 10', seller: 'gridiron_gems' },
+  { id: 'ah_005', cardName: '2024 Panini Prizm Caleb Williams RC Silver', platform: 'ebay', finalPrice: 495, bidCount: 20, date: '2026-03-08', grade: 'PSA 10', seller: 'football_first' },
+  { id: 'ah_006', cardName: '2023 Prizm Silver Victor Wembanyama RC', platform: 'ebay', finalPrice: 880, bidCount: 28, date: '2026-03-11', grade: 'PSA 10', seller: 'hoops_elite' },
+  { id: 'ah_007', cardName: '2023 Prizm Silver Victor Wembanyama RC', platform: 'comc', finalPrice: 825, bidCount: 8, date: '2026-03-09', grade: 'PSA 10', seller: 'COMC_vault' },
+  { id: 'ah_008', cardName: '2024 Upper Deck Connor Bedard Young Guns RC', platform: 'ebay', finalPrice: 415, bidCount: 30, date: '2026-03-13', grade: 'PSA 10', seller: 'hockey_hits' },
+  { id: 'ah_009', cardName: '2024 Upper Deck Connor Bedard Young Guns RC', platform: 'ebay', finalPrice: 430, bidCount: 22, date: '2026-03-10', grade: 'PSA 10', seller: 'puck_paradise' },
+  { id: 'ah_010', cardName: '1986 Fleer Michael Jordan RC #57', platform: 'pwcc', finalPrice: 26500, bidCount: 18, date: '2026-03-08', grade: 'PSA 8', seller: 'PWCC Marketplace' },
+  { id: 'ah_011', cardName: '1986 Fleer Michael Jordan RC #57', platform: 'heritage', finalPrice: 25800, bidCount: 25, date: '2026-03-01', grade: 'PSA 8', seller: 'Heritage Auctions' },
+  { id: 'ah_012', cardName: '2024 Topps Chrome Shohei Ohtani Dodgers RC', platform: 'ebay', finalPrice: 148, bidCount: 32, date: '2026-03-14', grade: 'PSA 10', seller: 'ohtani_cards' },
+  { id: 'ah_013', cardName: '2024 Topps Chrome Shohei Ohtani Dodgers RC', platform: 'ebay', finalPrice: 155, bidCount: 28, date: '2026-03-12', grade: 'PSA 10', seller: 'dodger_blue' },
+  { id: 'ah_014', cardName: '2025 Bowman Chrome 1st Ethan Salas Auto /150', platform: 'ebay', finalPrice: 780, bidCount: 16, date: '2026-03-09', grade: 'PSA 10', seller: 'prospect_hq' },
+  { id: 'ah_015', cardName: '2024 Panini Prizm Jayden Daniels RC Silver', platform: 'ebay', finalPrice: 285, bidCount: 18, date: '2026-03-13', grade: 'PSA 10', seller: 'dmv_cards' },
+];
+
+// ---- Helper Functions ----
+
+const PLATFORM_CONFIG: Record<AuctionPlatform, { label: string; text: string; bg: string; border: string }> = {
+  ebay: { label: 'eBay', text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
+  heritage: { label: 'Heritage', text: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+  goldin: { label: 'Goldin', text: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
+  pwcc: { label: 'PWCC', text: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30' },
+  comc: { label: 'COMC', text: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
+  whatnot: { label: 'Whatnot', text: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30' },
+  lelands: { label: 'Lelands', text: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
+  scp: { label: 'SCP', text: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' },
+};
+
+const URGENCY_CONFIG: Record<string, { label: string; text: string; bg: string; border: string }> = {
+  low: { label: 'Low', text: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/30' },
+  medium: { label: 'Medium', text: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+  high: { label: 'High', text: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30' },
+  critical: { label: 'Critical', text: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' },
+};
+
+const ALERT_TYPE_CONFIG: Record<string, { label: string; text: string; bg: string; border: string }> = {
+  under_market: { label: 'Under Market', text: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
+  ending_soon: { label: 'Ending Soon', text: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' },
+  low_competition: { label: 'Low Competition', text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' },
+  price_drop: { label: 'Price Drop', text: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+  rare_find: { label: 'Rare Find', text: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30' },
+};
+
+// ---- Public API ----
+
+export function getPlatformConfig(platform: AuctionPlatform): { label: string; text: string; bg: string; border: string } {
+  return PLATFORM_CONFIG[platform];
+}
+
+export function getUrgencyConfig(urgency: string): { label: string; text: string; bg: string; border: string } {
+  return URGENCY_CONFIG[urgency] ?? URGENCY_CONFIG['low'];
+}
+
+export function getAlertTypeConfig(alertType: string): { label: string; text: string; bg: string; border: string } {
+  return ALERT_TYPE_CONFIG[alertType] ?? ALERT_TYPE_CONFIG['under_market'];
+}
+
+export function formatCurrency(value: number): string {
+  if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `$${(value / 1000).toFixed(1)}k`;
+  return `$${value.toFixed(0)}`;
+}
+
+export function formatTimeRemaining(seconds: number): string {
+  if (seconds <= 0) return 'Ended';
+  if (seconds < 60) return `${seconds}s`;
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+  return `${Math.floor(seconds / 86400)}d ${Math.floor((seconds % 86400) / 3600)}h`;
+}
+
+export function getLiveAuctions(platform?: AuctionPlatform, sport?: string): LiveAuction[] {
+  const cacheKey = `live_${platform ?? 'all'}_${sport ?? 'all'}`;
+  const cached = loadData<LiveAuction[]>(cacheKey);
+  if (cached) return cached;
+
+  let result = LIVE_AUCTIONS;
+  if (platform) result = result.filter(a => a.platform === platform);
+  if (sport) result = result.filter(a => a.sport === sport);
+
+  saveData(cacheKey, result);
+  return result;
+}
+
+export function getLiveAuctionById(id: string): LiveAuction | undefined {
+  const cached = loadData<LiveAuction>(`auction_${id}`);
+  if (cached) return cached;
+
+  const auction = LIVE_AUCTIONS.find(a => a.id === id);
+  if (auction) saveData(`auction_${id}`, auction);
+  return auction;
+}
+
+export function getBidRecommendations(platform?: AuctionPlatform): BidRecommendation[] {
+  const cacheKey = platform ? `recs_${platform}` : 'recs_all';
+  const cached = loadData<BidRecommendation[]>(cacheKey);
+  if (cached) return cached;
+
+  const result = platform ? BID_RECOMMENDATIONS.filter(r => r.platform === platform) : BID_RECOMMENDATIONS;
+  saveData(cacheKey, result);
+  return result;
+}
+
+export function getSniperAlerts(urgency?: string): SniperAlert[] {
+  const cacheKey = urgency ? `alerts_${urgency}` : 'alerts_all';
+  const cached = loadData<SniperAlert[]>(cacheKey);
+  if (cached) return cached;
+
+  const result = urgency ? SNIPER_ALERTS.filter(a => a.urgency === urgency) : SNIPER_ALERTS;
+  saveData(cacheKey, result);
+  return result;
+}
+
+export function getWatchedAuctions(status?: string): WatchedAuction[] {
+  const cacheKey = status ? `watched_${status}` : 'watched_all';
+  const cached = loadData<WatchedAuction[]>(cacheKey);
+  if (cached) return cached;
+
+  const result = status ? WATCHED_AUCTIONS.filter(w => w.status === status) : WATCHED_AUCTIONS;
+  saveData(cacheKey, result);
+  return result;
+}
+
+export function getEndingSoon(withinSeconds?: number): EndingSoon[] {
+  const threshold = withinSeconds ?? 7200; // default 2 hours
+  const cacheKey = `ending_${threshold}`;
+  const cached = loadData<EndingSoon[]>(cacheKey);
+  if (cached) return cached;
+
+  const result: EndingSoon[] = LIVE_AUCTIONS
+    .filter(a => a.timeRemaining <= threshold)
+    .sort((a, b) => a.timeRemaining - b.timeRemaining)
+    .map(a => ({
+      id: `es_${a.id}`,
+      auctionId: a.id,
+      cardName: a.cardName,
+      platform: a.platform,
+      currentBid: a.currentBid,
+      timeRemaining: a.timeRemaining,
+      bidCount: a.bidCount,
+      estimatedFinal: a.estimatedFinalPrice,
+      isUndervalue: a.currentBid < a.estimatedFinalPrice * 0.75,
+    }));
+
+  saveData(cacheKey, result);
+  return result;
+}
+
+export function getBidStrategies(): BidStrategy[] {
+  const cached = loadData<BidStrategy[]>('strategies');
+  if (cached) return cached;
+  saveData('strategies', BID_STRATEGIES);
+  return BID_STRATEGIES;
+}
+
+export function getAuctionHistory(cardName?: string, platform?: AuctionPlatform): AuctionHistory[] {
+  const cacheKey = `history_${cardName ?? 'all'}_${platform ?? 'all'}`;
+  const cached = loadData<AuctionHistory[]>(cacheKey);
+  if (cached) return cached;
+
+  let result = AUCTION_HISTORY;
+  if (cardName) result = result.filter(h => h.cardName.toLowerCase().includes(cardName.toLowerCase()));
+  if (platform) result = result.filter(h => h.platform === platform);
+
+  saveData(cacheKey, result);
+  return result;
+}
+
+export function getAuctionStats(platform?: AuctionPlatform): AuctionStats[] {
+  const cacheKey = platform ? `stats_${platform}` : 'stats_all';
+  const cached = loadData<AuctionStats[]>(cacheKey);
+  if (cached) return cached;
+
+  const result = platform ? AUCTION_STATS.filter(s => s.platform === platform) : AUCTION_STATS;
+  saveData(cacheKey, result);
+  return result;
+}
+
+export function getCompetitorBidders(platform?: AuctionPlatform): CompetitorBidder[] {
+  const cacheKey = platform ? `competitors_${platform}` : 'competitors_all';
+  const cached = loadData<CompetitorBidder[]>(cacheKey);
+  if (cached) return cached;
+
+  const result = platform ? COMPETITOR_BIDDERS.filter(c => c.platform === platform) : COMPETITOR_BIDDERS;
+  saveData(cacheKey, result);
+  return result;
+}
+
+export function getBidAnalysis(auctionId: string): BidAnalysis {
+  const cached = loadData<BidAnalysis>(`analysis_${auctionId}`);
+  if (cached) return cached;
+
+  const auction = LIVE_AUCTIONS.find(a => a.id === auctionId);
+  const bidHistory: { time: number; amount: number; bidder: string }[] = [];
+
+  if (auction) {
+    const increment = (auction.currentBid - auction.startingBid) / Math.max(auction.bidCount, 1);
+    for (let i = 0; i < auction.bidCount; i++) {
+      bidHistory.push({
+        time: Math.round(auction.timeRemaining + (auction.bidCount - i) * 600),
+        amount: Math.round(auction.startingBid + increment * (i + 1)),
+        bidder: `bidder_${String.fromCharCode(65 + (i % 8))}`,
+      });
     }
-
-    const endTime = new Date(now + timeRemaining * 1000).toISOString();
-
-    // Shill detection
-    const shillRand = rand();
-    let bidPattern: BidPattern;
-    let shillRisk: number;
-    if (shillRand < 0.15) {
-      bidPattern = 'shill_suspect';
-      shillRisk = 55 + Math.floor(rand() * 45);
-    } else if (shillRand < 0.25) {
-      bidPattern = 'proxy_war';
-      shillRisk = 10 + Math.floor(rand() * 30);
-    } else if (shillRand < 0.35) {
-      bidPattern = 'sniper_active';
-      shillRisk = 5 + Math.floor(rand() * 15);
-    } else {
-      bidPattern = 'organic';
-      shillRisk = Math.floor(rand() * 20);
-    }
-
-    const dealScore = Math.round(Math.max(0, Math.min(100, (1 - currentBid / fmv) * 120 - shillRisk * 0.3)));
-
-    auctions.push({
-      id: `auc-${seed}-${i}`,
-      platform,
-      player,
-      cardDescription: desc,
-      grade,
-      currentBid,
-      bidCount,
-      timeRemaining,
-      endTime,
-      sellerRating: Math.round((85 + rand() * 15) * 10) / 10,
-      estimatedFMV: fmv,
-      dealScore,
-      bidPattern,
-      shillRisk,
-      watchers: Math.floor(rand() * 50),
-      image: '',
-    });
   }
 
-  return auctions.sort((a, b) => a.timeRemaining - b.timeRemaining);
-}
-
-function generateHistory(seed: number): AuctionHistoryRecord[] {
-  const rand = seededRandom(seed + 9999);
-  const now = Date.now();
-  const records: AuctionHistoryRecord[] = [];
-
-  for (let i = 0; i < 20; i++) {
-    const player = PLAYERS[Math.floor(rand() * PLAYERS.length)];
-    const desc = CARD_DESCS[Math.floor(rand() * CARD_DESCS.length)];
-    const grade = GRADES[Math.floor(rand() * GRADES.length)];
-    const platform = PLATFORMS[Math.floor(rand() * PLATFORMS.length)];
-    const fmv = 50 + Math.floor(rand() * 4950);
-    const won = rand() < 0.55;
-    const finalRatio = won ? (0.6 + rand() * 0.3) : (0.85 + rand() * 0.25);
-    const finalPrice = Math.round(fmv * finalRatio * 100) / 100;
-    const maxBid = won ? finalPrice : Math.round(fmv * (0.7 + rand() * 0.15) * 100) / 100;
-    const savings = won ? Math.round((fmv - finalPrice) * 100) / 100 : 0;
-    const daysAgo = 1 + Math.floor(rand() * 60);
-
-    records.push({
-      id: `hist-${seed}-${i}`,
-      platform,
-      player,
-      cardDescription: desc,
-      grade,
-      finalPrice,
-      estimatedFMV: fmv,
-      won,
-      maxBidPlaced: maxBid,
-      endedAt: new Date(now - daysAgo * 86400000).toISOString(),
-      savings,
-    });
-  }
-
-  return records.sort((a, b) => new Date(b.endedAt).getTime() - new Date(a.endedAt).getTime());
-}
-
-function computeStats(history: AuctionHistoryRecord[]): SniperStats {
-  const wins = history.filter(h => h.won);
-  const totalSaved = wins.reduce((s, h) => s + h.savings, 0);
-  const best = wins.reduce((best, h) => h.savings > best.savings ? h : best, wins[0] || { player: 'N/A', savings: 0, platform: 'eBay' as AuctionPlatform });
-
-  return {
-    totalTracked: history.length,
-    totalWon: wins.length,
-    winRate: history.length > 0 ? Math.round((wins.length / history.length) * 1000) / 10 : 0,
-    avgSavingsVsFMV: wins.length > 0 ? Math.round((wins.reduce((s, h) => s + (h.estimatedFMV - h.finalPrice) / h.estimatedFMV, 0) / wins.length) * 1000) / 10 : 0,
-    bestDeal: { player: best.player, savings: Math.round(best.savings * 100) / 100, platform: best.platform },
-    totalSaved: Math.round(totalSaved * 100) / 100,
+  const analysis: BidAnalysis = {
+    auctionId,
+    bidHistory,
+    avgBidIncrement: auction ? Math.round((auction.currentBid - auction.startingBid) / Math.max(auction.bidCount, 1)) : 0,
+    sniperActivity: (auction?.bidCount ?? 0) > 15,
+    projectedFinal: auction?.estimatedFinalPrice ?? 0,
+    competitorCount: new Set(bidHistory.map(b => b.bidder)).size,
   };
+
+  saveData(`analysis_${auctionId}`, analysis);
+  return analysis;
 }
 
-function ensureData(): StoredData {
-  const existing = loadData();
-  if (existing) return existing;
+export function searchAuctions(query: string): LiveAuction[] {
+  const cacheKey = `search_${query.toLowerCase().replace(/\s+/g, '_')}`;
+  const cached = loadData<LiveAuction[]>(cacheKey);
+  if (cached) return cached;
 
-  const now = new Date();
-  const seed = hashStr(`${now.getFullYear()}-${now.getMonth()}-${now.getDate()}-asniper`);
-  const auctions = generateAuctions(seed);
-  const history = generateHistory(seed);
-  const stats = computeStats(history);
-  const data: StoredData = { auctions, history, stats, generatedAt: Date.now() };
-  saveData(data);
-  return data;
+  const lower = query.toLowerCase();
+  const result = LIVE_AUCTIONS.filter(a =>
+    a.cardName.toLowerCase().includes(lower) ||
+    a.title.toLowerCase().includes(lower) ||
+    a.sport.toLowerCase().includes(lower)
+  );
+
+  saveData(cacheKey, result);
+  return result;
 }
 
-// ── Bid history generation (forensics) ──────────────────────────────────────────
+export function getAuctionSummary(): { totalLive: number; totalWatched: number; criticalAlerts: number; endingWithinHour: number; totalBidValue: number; avgDiscount: number } {
+  const cached = loadData<{ totalLive: number; totalWatched: number; criticalAlerts: number; endingWithinHour: number; totalBidValue: number; avgDiscount: number }>('summary');
+  if (cached) return cached;
 
-function generateBidHistoryForAuction(auction: AuctionListing): BidHistoryAnalysis {
-  const rand = seededRandom(hashStr(auction.id + '-bids'));
-  const bids: BidHistoryEntry[] = [];
-  const numBids = auction.bidCount;
-  const endMs = new Date(auction.endTime).getTime();
-  const startMs = endMs - (auction.timeRemaining + 86400) * 1000; // started ~1 day before remaining
+  const criticalAlerts = SNIPER_ALERTS.filter(a => a.urgency === 'critical').length;
+  const endingWithinHour = LIVE_AUCTIONS.filter(a => a.timeRemaining <= 3600).length;
+  const totalBidValue = LIVE_AUCTIONS.reduce((sum, a) => sum + a.currentBid, 0);
+  const avgDiscount = SNIPER_ALERTS.length > 0
+    ? Math.round(SNIPER_ALERTS.reduce((sum, a) => sum + a.discount, 0) / SNIPER_ALERTS.length)
+    : 0;
 
-  let currentAmount = Math.round(auction.currentBid * 0.15 * 100) / 100;
-  const increment = numBids > 1 ? (auction.currentBid - currentAmount) / (numBids - 1) : 0;
-
-  const usedBidders = new Set<string>();
-  const shillIndicators: string[] = [];
-
-  for (let i = 0; i < numBids; i++) {
-    const progress = numBids > 1 ? i / (numBids - 1) : 1;
-    const timestamp = new Date(startMs + (endMs - startMs) * progress * 0.95).toISOString();
-
-    // Pick bidder
-    let bidder: string;
-    if (auction.bidPattern === 'shill_suspect' && rand() < 0.4) {
-      bidder = 'shill_acct_x1'; // same suspicious bidder repeatedly
-    } else if (auction.bidPattern === 'proxy_war' && rand() < 0.5) {
-      bidder = rand() < 0.5 ? 'proxyBidBot7' : 'investCardsLLC';
-    } else {
-      bidder = BIDDER_NAMES[Math.floor(rand() * BIDDER_NAMES.length)];
-    }
-
-    const isNewBidder = !usedBidders.has(bidder);
-    usedBidders.add(bidder);
-
-    // Vary the increment
-    const jitter = 0.5 + rand() * 1.5;
-    currentAmount = Math.round((currentAmount + increment * jitter) * 100) / 100;
-    if (i === numBids - 1) currentAmount = auction.currentBid;
-
-    bids.push({ amount: currentAmount, timestamp, bidder, isNewBidder });
-  }
-
-  // Shill indicators
-  if (auction.bidPattern === 'shill_suspect') {
-    const shillBids = bids.filter(b => b.bidder === 'shill_acct_x1');
-    if (shillBids.length >= 3) shillIndicators.push(`Single bidder "shill_acct_x1" placed ${shillBids.length} bids (${Math.round(shillBids.length / numBids * 100)}% of total)`);
-    shillIndicators.push('Bid increments from suspect account are unusually uniform');
-    shillIndicators.push('Suspect bidder has <30 day account age');
-    if (rand() < 0.6) shillIndicators.push('Bidding pattern correlates with seller activity windows');
-  } else if (auction.bidPattern === 'proxy_war') {
-    shillIndicators.push('Two proxy bidders engaged in rapid escalation');
-    shillIndicators.push('Bid velocity 3.2x normal for this price range');
-  }
-
-  const increments = bids.slice(1).map((b, i) => b.amount - bids[i].amount);
-  const avgBidIncrement = increments.length > 0 ? Math.round(increments.reduce((s, v) => s + v, 0) / increments.length * 100) / 100 : 0;
-
-  // Velocity change: compare first half vs second half
-  const midpoint = Math.floor(bids.length / 2);
-  const firstHalfRate = midpoint > 0 ? (bids[midpoint]?.amount || 0) - (bids[0]?.amount || 0) : 0;
-  const secondHalfRate = bids.length > midpoint ? (bids[bids.length - 1]?.amount || 0) - (bids[midpoint]?.amount || 0) : 0;
-  const velocityChange = firstHalfRate > 0 ? Math.round((secondHalfRate / firstHalfRate - 1) * 100) : 0;
-
-  return {
-    auctionId: auction.id,
-    bids,
-    pattern: auction.bidPattern,
-    avgBidIncrement,
-    velocityChange,
-    shillIndicators,
+  const summary = {
+    totalLive: LIVE_AUCTIONS.length,
+    totalWatched: WATCHED_AUCTIONS.length,
+    criticalAlerts,
+    endingWithinHour,
+    totalBidValue,
+    avgDiscount,
   };
-}
 
-// ── Strategy generation ─────────────────────────────────────────────────────────
-
-function generateStrategy(auction: AuctionListing, maxBudget: number): BidStrategy {
-  const margin = (auction.estimatedFMV - auction.currentBid) / auction.estimatedFMV;
-  const effectiveMax = Math.min(maxBudget, auction.estimatedFMV * 0.93);
-
-  let strategy: BidStrategyType;
-  let snipeTime: number;
-  let confidence: number;
-  let reasoning: string;
-
-  if (auction.shillRisk > 60) {
-    strategy = 'snipe';
-    snipeTime = 3;
-    confidence = 35 + Math.floor(margin * 30);
-    reasoning = `High shill risk detected (${auction.shillRisk}%). Deploy last-second snipe to avoid price manipulation. Set max at $${effectiveMax.toFixed(2)} which is ${Math.round(effectiveMax / auction.estimatedFMV * 100)}% of FMV. Do not engage early — shill bidders will escalate if they detect competition.`;
-  } else if (auction.timeRemaining < 1800 && auction.bidCount < 8) {
-    strategy = 'snipe';
-    snipeTime = 5;
-    confidence = 70 + Math.floor(margin * 25);
-    reasoning = `Low competition auction ending in ${Math.floor(auction.timeRemaining / 60)}min with only ${auction.bidCount} bids. Classic snipe opportunity. Place bid at ${snipeTime}s before end at $${effectiveMax.toFixed(2)}. Current bid is ${Math.round((1 - margin) * 100)}% of FMV — strong value window.`;
-  } else if (auction.timeRemaining > 43200 && margin > 0.35) {
-    strategy = 'early_bid';
-    snipeTime = 0;
-    confidence = 50 + Math.floor(margin * 20);
-    reasoning = `Auction has ${Math.floor(auction.timeRemaining / 3600)}+ hours remaining with ${Math.round(margin * 100)}% margin to FMV. Early bid at $${(auction.currentBid * 1.05).toFixed(2)} may deter casual bidders. Set proxy max at $${effectiveMax.toFixed(2)}. Risk: may attract attention if platform shows bid count.`;
-  } else if (auction.bidPattern === 'proxy_war') {
-    strategy = 'proxy';
-    snipeTime = 30;
-    confidence = 40 + Math.floor(margin * 15);
-    reasoning = `Proxy war detected between 2+ bidders driving price up rapidly. Set hidden proxy at $${effectiveMax.toFixed(2)} and let them exhaust each other. Your proxy should trigger only if price stabilizes below your max. Velocity is ${auction.bidCount > 20 ? 'high' : 'moderate'} — may overshoot FMV.`;
-  } else {
-    strategy = 'mid_game';
-    snipeTime = 120;
-    confidence = 55 + Math.floor(margin * 20);
-    reasoning = `Standard auction dynamics on ${auction.platform}. Place competitive bid 2 minutes before end at $${effectiveMax.toFixed(2)}. Current deal score: ${auction.dealScore}/100. Monitor bid velocity in final hour — if acceleration exceeds 2x normal rate, switch to snipe at 5s.`;
-  }
-
-  confidence = Math.min(95, Math.max(15, confidence));
-
-  return {
-    auctionId: auction.id,
-    maxBid: Math.round(effectiveMax * 100) / 100,
-    snipeTime,
-    strategy,
-    confidence,
-    reasoning,
-  };
-}
-
-// ── Public API ──────────────────────────────────────────────────────────────────
-
-export function getActiveAuctions(): AuctionListing[] {
-  const data = ensureData();
-  return data.auctions;
-}
-
-export function analyzeBidHistory(auctionId: string): BidHistoryAnalysis {
-  const data = ensureData();
-  const auction = data.auctions.find(a => a.id === auctionId);
-  if (!auction) {
-    return {
-      auctionId,
-      bids: [],
-      pattern: 'organic',
-      avgBidIncrement: 0,
-      velocityChange: 0,
-      shillIndicators: [],
-    };
-  }
-  return generateBidHistoryForAuction(auction);
-}
-
-export function generateBidStrategy(auctionId: string, maxBudget: number): BidStrategy {
-  const data = ensureData();
-  const auction = data.auctions.find(a => a.id === auctionId);
-  if (!auction) {
-    return {
-      auctionId,
-      maxBid: 0,
-      snipeTime: 5,
-      strategy: 'snipe',
-      confidence: 0,
-      reasoning: 'Auction not found.',
-    };
-  }
-  return generateStrategy(auction, maxBudget);
-}
-
-export function getSniperStats(): SniperStats {
-  const data = ensureData();
-  return data.stats;
-}
-
-export function getEndingSoon(): AuctionListing[] {
-  const data = ensureData();
-  return data.auctions.filter(a => a.timeRemaining <= 3600);
-}
-
-export function getAuctionHistory(): AuctionHistoryRecord[] {
-  const data = ensureData();
-  return data.history;
-}
-
-// ── Widget compatibility API ──────────────────────────────────────────────────
-
-export type SniperStrategy = 'snipe' | 'early_bid' | 'watch' | 'skip';
-
-export function generateMockAuctions(_inventory: any[]): AuctionListing[] {
-  return getActiveAuctions();
-}
-
-export function analyzeListing(listing: AuctionListing): AuctionListing & { strategy: SniperStrategy } {
-  const strategy: SniperStrategy =
-    listing.dealScore >= 75 ? 'snipe' :
-    listing.dealScore >= 50 ? 'early_bid' :
-    listing.dealScore >= 25 ? 'watch' : 'skip';
-  return { ...listing, strategy };
-}
-
-export function getAuctionAlerts(listings: AuctionListing[]): { type: string; message: string }[] {
-  const alerts: { type: string; message: string }[] = [];
-  for (const l of listings) {
-    if (l.timeRemaining <= 600) alerts.push({ type: 'ending', message: `${l.player} ending in ${Math.round(l.timeRemaining / 60)}m` });
-    if (l.shillRisk > 70) alerts.push({ type: 'shill', message: `Shill risk on ${l.player}: ${l.shillRisk}%` });
-    if (l.dealScore >= 80) alerts.push({ type: 'deal', message: `Great deal: ${l.player} (score ${l.dealScore})` });
-  }
-  return alerts;
-}
-
-export function getAuctionStats(listings: AuctionListing[]) {
-  return {
-    total: listings.length,
-    endingSoon: listings.filter(l => l.timeRemaining <= 3600).length,
-    avgDealScore: listings.length ? Math.round(listings.reduce((s, l) => s + l.dealScore, 0) / listings.length) : 0,
-    totalValue: listings.reduce((s, l) => s + l.currentBid, 0),
-  };
+  saveData('summary', summary);
+  return summary;
 }

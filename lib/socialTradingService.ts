@@ -410,3 +410,108 @@ export function getPicksBySentiment(sentiment: Sentiment): TradePick[] {
   const picks = getTradePicks();
   return picks.filter(p => p.sentiment === sentiment);
 }
+
+// ---- Mock Data: Pick Results (20) ----
+
+const MOCK_PICK_RESULTS: PickResult[] = [
+  { id: 'pr-1', pickId: 'pk-closed-1', traderId: 'tp-1', cardName: '2022 Prizm Jalen Williams RC PSA 10', entryPrice: 45, exitPrice: 120, returnPercent: 166.7, holdDays: 180, outcome: 'profit', closedDate: '2025-12-15' },
+  { id: 'pr-2', pickId: 'pk-closed-2', traderId: 'tp-2', cardName: '1971 Topps Hank Aaron #400 PSA 7', entryPrice: 1500, exitPrice: 1800, returnPercent: 20.0, holdDays: 365, outcome: 'profit', closedDate: '2026-01-10' },
+  { id: 'pr-3', pickId: 'pk-closed-3', traderId: 'tp-3', cardName: '2023 Prizm Scoot Henderson RC PSA 10', entryPrice: 85, exitPrice: 35, returnPercent: -58.8, holdDays: 120, outcome: 'loss', closedDate: '2025-11-20' },
+  { id: 'pr-4', pickId: 'pk-closed-4', traderId: 'tp-4', cardName: '2024 Bowman Chrome Ethan Salas 1st', entryPrice: 80, exitPrice: 145, returnPercent: 81.3, holdDays: 14, outcome: 'profit', closedDate: '2026-02-28' },
+  { id: 'pr-5', pickId: 'pk-closed-5', traderId: 'tp-5', cardName: '2020 Prizm LaMelo Ball RC PSA 10', entryPrice: 250, exitPrice: 320, returnPercent: 28.0, holdDays: 90, outcome: 'profit', closedDate: '2025-10-15' },
+  { id: 'pr-6', pickId: 'pk-closed-6', traderId: 'tp-9', cardName: '2023 Bowman Chrome Jackson Holliday 1st', entryPrice: 120, exitPrice: 85, returnPercent: -29.2, holdDays: 200, outcome: 'loss', closedDate: '2026-01-05' },
+  { id: 'pr-7', pickId: 'pk-closed-7', traderId: 'tp-10', cardName: '2022 Prizm Bennedict Mathurin RC PSA 10', entryPrice: 65, exitPrice: 38, returnPercent: -41.5, holdDays: 150, outcome: 'loss', closedDate: '2025-12-20' },
+  { id: 'pr-8', pickId: 'pk-closed-8', traderId: 'tp-11', cardName: '1993 SP Derek Jeter RC PSA 9', entryPrice: 7500, exitPrice: 8500, returnPercent: 13.3, holdDays: 365, outcome: 'profit', closedDate: '2026-02-01' },
+  { id: 'pr-9', pickId: 'pk-closed-9', traderId: 'tp-14', cardName: '1952 Topps Mantle #311 PSA 1', entryPrice: 42000, exitPrice: 55000, returnPercent: 31.0, holdDays: 540, outcome: 'profit', closedDate: '2026-01-15' },
+  { id: 'pr-10', pickId: 'pk-closed-10', traderId: 'tp-18', cardName: '2018 Prizm Trae Young RC PSA 10', entryPrice: 180, exitPrice: 250, returnPercent: 38.9, holdDays: 60, outcome: 'profit', closedDate: '2025-11-10' },
+  { id: 'pr-11', pickId: 'pk-closed-11', traderId: 'tp-1', cardName: '2023 Prizm Brandon Miller RC PSA 10', entryPrice: 40, exitPrice: 25, returnPercent: -37.5, holdDays: 100, outcome: 'loss', closedDate: '2025-09-15' },
+  { id: 'pr-12', pickId: 'pk-closed-12', traderId: 'tp-3', cardName: '2024 Prizm Jayden Daniels RC', entryPrice: 55, exitPrice: 120, returnPercent: 118.2, holdDays: 45, outcome: 'profit', closedDate: '2025-10-30' },
+  { id: 'pr-13', pickId: 'pk-closed-13', traderId: 'tp-4', cardName: '2023 Topps Chrome Corbin Carroll RC', entryPrice: 65, exitPrice: 22, returnPercent: -66.2, holdDays: 30, outcome: 'loss', closedDate: '2025-08-20' },
+  { id: 'pr-14', pickId: 'pk-closed-14', traderId: 'tp-5', cardName: '2013 Prizm Giannis RC PSA 10', entryPrice: 4200, exitPrice: 5200, returnPercent: 23.8, holdDays: 270, outcome: 'profit', closedDate: '2026-02-14' },
+  { id: 'pr-15', pickId: 'pk-closed-15', traderId: 'tp-8', cardName: '2023 Upper Deck Connor Bedard YG', entryPrice: 250, exitPrice: 180, returnPercent: -28.0, holdDays: 90, outcome: 'loss', closedDate: '2025-12-01' },
+  { id: 'pr-16', pickId: 'pk-closed-16', traderId: 'tp-9', cardName: '2024 Bowman Chrome Jac Caglianone 1st', entryPrice: 18, exitPrice: 35, returnPercent: 94.4, holdDays: 60, outcome: 'profit', closedDate: '2026-02-20' },
+  { id: 'pr-17', pickId: 'pk-closed-17', traderId: 'tp-16', cardName: '2024 Prizm Caleb Williams RC', entryPrice: 50, exitPrice: 85, returnPercent: 70.0, holdDays: 75, outcome: 'profit', closedDate: '2025-11-28' },
+  { id: 'pr-18', pickId: 'pk-closed-18', traderId: 'tp-20', cardName: '2023 Topps Chrome UCL Jude Bellingham', entryPrice: 120, exitPrice: 200, returnPercent: 66.7, holdDays: 120, outcome: 'profit', closedDate: '2025-10-05' },
+  { id: 'pr-19', pickId: 'pk-closed-19', traderId: 'tp-7', cardName: '2023 Prizm Basketball Hobby Box', entryPrice: 420, exitPrice: 520, returnPercent: 23.8, holdDays: 365, outcome: 'profit', closedDate: '2026-02-10' },
+  { id: 'pr-20', pickId: 'pk-closed-20', traderId: 'tp-13', cardName: '2024 Topps Heritage Complete Set', entryPrice: 180, exitPrice: 165, returnPercent: -8.3, holdDays: 200, outcome: 'loss', closedDate: '2026-01-25' },
+];
+
+// ---- Mock Data: Streak Records (12) ----
+
+const MOCK_STREAKS: StreakRecord[] = [
+  { id: 'sr-1', traderId: 'tp-14', traderName: 'GrailChaser', streakType: 'winning', streakLength: 9, startDate: '2025-12-01', endDate: null, active: true, totalReturn: 245.5 },
+  { id: 'sr-2', traderId: 'tp-1', traderName: 'CardKingMike', streakType: 'winning', streakLength: 8, startDate: '2026-01-10', endDate: null, active: true, totalReturn: 188.2 },
+  { id: 'sr-3', traderId: 'tp-9', traderName: 'ProspectProphet', streakType: 'winning', streakLength: 7, startDate: '2026-01-15', endDate: null, active: true, totalReturn: 162.8 },
+  { id: 'sr-4', traderId: 'tp-5', traderName: 'GradedGemGal', streakType: 'winning', streakLength: 6, startDate: '2026-01-20', endDate: null, active: true, totalReturn: 135.5 },
+  { id: 'sr-5', traderId: 'tp-18', traderName: 'StatArb_Cards', streakType: 'winning', streakLength: 6, startDate: '2026-01-25', endDate: null, active: true, totalReturn: 128.0 },
+  { id: 'sr-6', traderId: 'tp-2', traderName: 'VintageVault', streakType: 'winning', streakLength: 5, startDate: '2026-02-01', endDate: null, active: true, totalReturn: 105.2 },
+  { id: 'sr-7', traderId: 'tp-20', traderName: 'GlobalCollector', streakType: 'winning', streakLength: 5, startDate: '2026-02-05', endDate: null, active: true, totalReturn: 98.5 },
+  { id: 'sr-8', traderId: 'tp-10', traderName: 'ModernMint', streakType: 'winning', streakLength: 5, startDate: '2026-02-08', endDate: null, active: true, totalReturn: 92.0 },
+  { id: 'sr-9', traderId: 'tp-15', traderName: 'BreakEvenBrian', streakType: 'losing', streakLength: 5, startDate: '2026-01-15', endDate: '2026-02-20', active: false, totalReturn: -42.5 },
+  { id: 'sr-10', traderId: 'tp-12', traderName: 'CardboardCasual', streakType: 'losing', streakLength: 4, startDate: '2026-02-01', endDate: '2026-03-01', active: false, totalReturn: -28.8 },
+  { id: 'sr-11', traderId: 'tp-4', traderName: 'FlipMaster99', streakType: 'losing', streakLength: 3, startDate: '2026-03-01', endDate: null, active: true, totalReturn: -18.5 },
+  { id: 'sr-12', traderId: 'tp-14', traderName: 'GrailChaser', streakType: 'winning', streakLength: 12, startDate: '2025-06-01', endDate: '2025-11-30', active: false, totalReturn: 385.0 },
+];
+
+// ---- Mock Data: Trading Signals (10) ----
+
+const MOCK_SIGNALS: TradingSignal[] = [
+  { id: 'sig-1', cardName: '2018 Prizm Shai Gilgeous-Alexander RC PSA 10', player: 'Shai Gilgeous-Alexander', signal: 'strong_buy', confidence: 92, reasoning: '85% of community picks are bullish. MVP trajectory confirmed by performance data.', generatedDate: '2026-03-14', basedOnPicks: 12, priceAtSignal: 950 },
+  { id: 'sig-2', cardName: '2023 Prizm Victor Wembanyama RC', player: 'Victor Wembanyama', signal: 'buy', confidence: 88, reasoning: 'Overwhelmingly bullish sentiment with strong long-term hold consensus.', generatedDate: '2026-03-14', basedOnPicks: 15, priceAtSignal: 1800 },
+  { id: 'sig-3', cardName: '2024 Prizm Caitlin Clark RC PSA 10', player: 'Caitlin Clark', signal: 'strong_buy', confidence: 85, reasoning: 'Community consensus strongly bullish. WNBA market expanding rapidly.', generatedDate: '2026-03-14', basedOnPicks: 8, priceAtSignal: 145 },
+  { id: 'sig-4', cardName: '2019 Prizm Zion Williamson RC PSA 10', player: 'Zion Williamson', signal: 'strong_sell', confidence: 82, reasoning: 'Overwhelmingly bearish sentiment. Injury history creating sustained selling pressure.', generatedDate: '2026-03-14', basedOnPicks: 6, priceAtSignal: 400 },
+  { id: 'sig-5', cardName: '2020 Prizm Justin Herbert RC PSA 10', player: 'Justin Herbert', signal: 'sell', confidence: 75, reasoning: 'Bearish community consensus. High PSA 10 pop and team struggles weighing on value.', generatedDate: '2026-03-14', basedOnPicks: 5, priceAtSignal: 820 },
+  { id: 'sig-6', cardName: '2020 Prizm Anthony Edwards RC PSA 10', player: 'Anthony Edwards', signal: 'buy', confidence: 80, reasoning: 'Strong bullish sentiment. Multiple top traders picking as undervalued.', generatedDate: '2026-03-14', basedOnPicks: 7, priceAtSignal: 680 },
+  { id: 'sig-7', cardName: '2017 Prizm Patrick Mahomes RC PSA 10', player: 'Patrick Mahomes', signal: 'hold', confidence: 72, reasoning: 'Mixed signals from community. Fairly valued at current levels per consensus.', generatedDate: '2026-03-14', basedOnPicks: 8, priceAtSignal: 4200 },
+  { id: 'sig-8', cardName: '1986 Fleer Michael Jordan RC PSA 10', player: 'Michael Jordan', signal: 'hold', confidence: 95, reasoning: 'Universal hold consensus. The safest asset in the hobby.', generatedDate: '2026-03-14', basedOnPicks: 10, priceAtSignal: 45000 },
+  { id: 'sig-9', cardName: '2023 Bowman Chrome Ethan Salas 1st', player: 'Ethan Salas', signal: 'buy', confidence: 82, reasoning: 'Strong bullish sentiment around MLB callup. Short-term flip and long-term hold consensus.', generatedDate: '2026-03-14', basedOnPicks: 6, priceAtSignal: 195 },
+  { id: 'sig-10', cardName: '2024 Topps Chrome UCL Lamine Yamal', player: 'Lamine Yamal', signal: 'strong_buy', confidence: 85, reasoning: 'International market bullishness. Soccer card growth trajectory is steep.', generatedDate: '2026-03-14', basedOnPicks: 4, priceAtSignal: 95 },
+];
+
+// ---- Additional Service Functions ----
+
+export function getPickResults(): PickResult[] {
+  const cached = loadData<PickResult[]>('pick_results');
+  if (cached) return cached;
+  saveData('pick_results', MOCK_PICK_RESULTS);
+  return MOCK_PICK_RESULTS;
+}
+
+export function getPickResultsByTrader(traderId: string): PickResult[] {
+  const results = getPickResults();
+  return results.filter(r => r.traderId === traderId);
+}
+
+export function getStreakRecords(): StreakRecord[] {
+  const cached = loadData<StreakRecord[]>('streak_records');
+  if (cached) return cached;
+  saveData('streak_records', MOCK_STREAKS);
+  return MOCK_STREAKS;
+}
+
+export function getActiveStreaks(): StreakRecord[] {
+  const streaks = getStreakRecords();
+  return streaks.filter(s => s.active);
+}
+
+export function getTradingSignals(): TradingSignal[] {
+  const cached = loadData<TradingSignal[]>('trading_signals');
+  if (cached) return cached;
+  saveData('trading_signals', MOCK_SIGNALS);
+  return MOCK_SIGNALS;
+}
+
+export function getSignalsByType(signal: TradingSignal['signal']): TradingSignal[] {
+  const signals = getTradingSignals();
+  return signals.filter(s => s.signal === signal);
+}
+
+export function getWinningTraders(): TraderProfile[] {
+  const traders = getTraderProfiles();
+  return traders.filter(t => t.winRate >= 70).sort((a, b) => b.winRate - a.winRate);
+}
+
+export function getTradersByTier(tier: TraderProfile['tier']): TraderProfile[] {
+  const traders = getTraderProfiles();
+  return traders.filter(t => t.tier === tier);
+}

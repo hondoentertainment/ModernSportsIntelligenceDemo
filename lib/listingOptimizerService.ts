@@ -427,3 +427,118 @@ export function getTitleSuggestionsByPlatform(platform: Platform): TitleSuggesti
   const suggestions = getTitleSuggestions();
   return suggestions.filter(s => s.platform === platform);
 }
+
+// ---- Mock Data: Photo Scores (15) ----
+
+const MOCK_PHOTO_SCORES: PhotoScore[] = [
+  { id: 'ps-1', listingId: 'la-1', overallScore: 72, lighting: 68, focus: 75, background: 55, angle: 80, centering: 78, colorAccuracy: 72, resolution: 82, recommendations: ['Use white or black background', 'Increase lighting to reduce shadows', 'Add close-up of centering'], photoCount: 3, idealPhotoCount: 10 },
+  { id: 'ps-2', listingId: 'la-2', overallScore: 92, lighting: 95, focus: 92, background: 90, angle: 88, centering: 95, colorAccuracy: 90, resolution: 94, recommendations: ['Near perfect — consider adding a lifestyle shot'], photoCount: 12, idealPhotoCount: 12 },
+  { id: 'ps-3', listingId: 'la-3', overallScore: 55, lighting: 50, focus: 45, background: 40, angle: 65, centering: 60, colorAccuracy: 55, resolution: 70, recommendations: ['Reshoot entirely with proper lighting', 'Use a lightbox or ring light', 'Focus camera before shooting', 'Use neutral background', 'Take multiple angles'], photoCount: 1, idealPhotoCount: 8 },
+  { id: 'ps-4', listingId: 'la-6', overallScore: 68, lighting: 55, focus: 72, background: 65, angle: 75, centering: 70, colorAccuracy: 58, resolution: 80, recommendations: ['Fix yellow lighting tint', 'Add neutral white light source', 'Include edge and corner close-ups', 'Add more photos'], photoCount: 4, idealPhotoCount: 10 },
+  { id: 'ps-5', listingId: 'la-10', overallScore: 40, lighting: 35, focus: 30, background: 25, angle: 50, centering: 45, colorAccuracy: 42, resolution: 55, recommendations: ['Complete reshoot required', 'Use natural daylight or studio lighting', 'Ensure camera is focused on card', 'Clean and neutral background essential', 'Take 8-12 photos minimum'], photoCount: 2, idealPhotoCount: 10 },
+  { id: 'ps-6', listingId: 'la-5', overallScore: 95, lighting: 96, focus: 95, background: 94, angle: 92, centering: 98, colorAccuracy: 95, resolution: 96, recommendations: ['Excellent photography — no changes needed'], photoCount: 10, idealPhotoCount: 10 },
+  { id: 'ps-7', listingId: 'la-8', overallScore: 88, lighting: 90, focus: 88, background: 85, angle: 86, centering: 92, colorAccuracy: 88, resolution: 90, recommendations: ['Very good — consider adding a scan for online buyers'], photoCount: 8, idealPhotoCount: 10 },
+  { id: 'ps-8', listingId: 'la-12', overallScore: 65, lighting: 60, focus: 68, background: 58, angle: 72, centering: 65, colorAccuracy: 62, resolution: 75, recommendations: ['Add more photos — only 2 provided', 'Improve lighting consistency', 'Show back of card and edges'], photoCount: 2, idealPhotoCount: 8 },
+  { id: 'ps-9', listingId: 'la-18', overallScore: 50, lighting: 42, focus: 55, background: 38, angle: 58, centering: 52, colorAccuracy: 48, resolution: 60, recommendations: ['Dark photos — increase lighting significantly', 'Use white or light gray background', 'Ensure card fills frame properly', 'Add front, back, and detail shots'], photoCount: 3, idealPhotoCount: 8 },
+  { id: 'ps-10', listingId: 'la-22', overallScore: 45, lighting: 40, focus: 48, background: 30, angle: 55, centering: 50, colorAccuracy: 45, resolution: 52, recommendations: ['Phone photo quality too low', 'Use proper camera or phone with good camera', 'Never photograph on fabric or carpet', 'Studio setup needed for card photography'], photoCount: 1, idealPhotoCount: 8 },
+  { id: 'ps-11', listingId: 'la-9', overallScore: 90, lighting: 92, focus: 90, background: 88, angle: 88, centering: 94, colorAccuracy: 90, resolution: 92, recommendations: ['Strong photos — consider adding cert verification shot'], photoCount: 10, idealPhotoCount: 12 },
+  { id: 'ps-12', listingId: 'la-15', overallScore: 88, lighting: 90, focus: 86, background: 85, angle: 88, centering: 92, colorAccuracy: 88, resolution: 90, recommendations: ['Good quality — add close-up of hologram sticker'], photoCount: 8, idealPhotoCount: 10 },
+  { id: 'ps-13', listingId: 'la-7', overallScore: 62, lighting: 58, focus: 65, background: 48, angle: 70, centering: 65, colorAccuracy: 60, resolution: 72, recommendations: ['Improve background — remove clutter', 'Better lighting needed', 'Take additional angle shots'], photoCount: 4, idealPhotoCount: 8 },
+  { id: 'ps-14', listingId: 'la-14', overallScore: 70, lighting: 72, focus: 68, background: 65, angle: 72, centering: 75, colorAccuracy: 70, resolution: 78, recommendations: ['Add close-up detail shots', 'Slightly improve lighting brightness', 'Consider using photo editing for white balance'], photoCount: 5, idealPhotoCount: 8 },
+  { id: 'ps-15', listingId: 'la-23', overallScore: 92, lighting: 94, focus: 92, background: 90, angle: 90, centering: 95, colorAccuracy: 92, resolution: 94, recommendations: ['Professional-grade photography — excellent work'], photoCount: 12, idealPhotoCount: 12 },
+];
+
+// ---- Mock Data: Timing Recommendations (8) ----
+
+const MOCK_TIMING: TimingRecommendation[] = [
+  { id: 'tr-1', platform: 'ebay', bestDayOfWeek: 'Sunday', bestTimeOfDay: '7:00 PM - 9:00 PM EST', worstDayOfWeek: 'Tuesday', worstTimeOfDay: '2:00 AM - 6:00 AM EST', peakSeason: 'January-March (off-season buying)', offSeason: 'July-August (summer slowdown)', currentDemand: 'high', reasoning: 'Sunday evening listings capture maximum buyer attention as people browse before the work week.' },
+  { id: 'tr-2', platform: 'mercari', bestDayOfWeek: 'Saturday', bestTimeOfDay: '10:00 AM - 2:00 PM EST', worstDayOfWeek: 'Monday', worstTimeOfDay: '6:00 AM - 8:00 AM EST', peakSeason: 'November-December (holiday gifts)', offSeason: 'June-July', currentDemand: 'moderate', reasoning: 'Weekend morning browsing drives Mercari engagement. Fresh listings get priority in search.' },
+  { id: 'tr-3', platform: 'pwcc', bestDayOfWeek: 'Wednesday', bestTimeOfDay: '12:00 PM - 3:00 PM EST', worstDayOfWeek: 'Friday', worstTimeOfDay: '5:00 PM - 8:00 PM EST', peakSeason: 'January-April (auction season)', offSeason: 'August-September', currentDemand: 'high', reasoning: 'Mid-week auction endings historically generate higher final bids on PWCC.' },
+  { id: 'tr-4', platform: 'facebook', bestDayOfWeek: 'Thursday', bestTimeOfDay: '6:00 PM - 9:00 PM EST', worstDayOfWeek: 'Monday', worstTimeOfDay: '9:00 AM - 12:00 PM EST', peakSeason: 'Year-round with sports season peaks', offSeason: 'Summer months', currentDemand: 'moderate', reasoning: 'Facebook group engagement peaks on weekday evenings when members are active.' },
+  { id: 'tr-5', platform: 'whatnot', bestDayOfWeek: 'Friday', bestTimeOfDay: '8:00 PM - 11:00 PM EST', worstDayOfWeek: 'Tuesday', worstTimeOfDay: '10:00 AM - 1:00 PM EST', peakSeason: 'During major sports events', offSeason: 'Mid-summer', currentDemand: 'high', reasoning: 'Friday night live breaks draw the biggest audiences and bidding wars.' },
+  { id: 'tr-6', platform: 'comc', bestDayOfWeek: 'Monday', bestTimeOfDay: '9:00 AM - 12:00 PM EST', worstDayOfWeek: 'Saturday', worstTimeOfDay: '12:00 AM - 6:00 AM EST', peakSeason: 'September-November (new releases)', offSeason: 'May-June', currentDemand: 'moderate', reasoning: 'COMC buyers tend to be more methodical, shopping during business hours.' },
+  { id: 'tr-7', platform: 'instagram', bestDayOfWeek: 'Saturday', bestTimeOfDay: '11:00 AM - 2:00 PM EST', worstDayOfWeek: 'Wednesday', worstTimeOfDay: '3:00 AM - 7:00 AM EST', peakSeason: 'During major card shows', offSeason: 'No significant off-season', currentDemand: 'moderate', reasoning: 'Weekend content gets more engagement. Pair listings with hobby content.' },
+  { id: 'tr-8', platform: 'myslabs', bestDayOfWeek: 'Sunday', bestTimeOfDay: '4:00 PM - 8:00 PM EST', worstDayOfWeek: 'Tuesday', worstTimeOfDay: '6:00 AM - 10:00 AM EST', peakSeason: 'October-February (basketball/football)', offSeason: 'Summer', currentDemand: 'moderate', reasoning: 'MySlabs caters to graded card buyers who browse on weekend afternoons.' },
+];
+
+// ---- Mock Data: Listing History (12) ----
+
+const MOCK_LISTING_HISTORY: ListingHistory[] = [
+  { id: 'lh-1', cardName: '2023 Prizm Wembanyama RC PSA 10', platform: 'ebay', listDate: '2026-02-01', saleDate: '2026-02-08', listPrice: 1650, salePrice: 1600, views: 2450, watchers: 42, offers: 8, daysToSell: 7, optimized: true },
+  { id: 'lh-2', cardName: '2018 Prizm Luka Doncic RC PSA 10', platform: 'ebay', listDate: '2026-01-15', saleDate: '2026-02-02', listPrice: 3500, salePrice: 3200, views: 1800, watchers: 28, offers: 5, daysToSell: 18, optimized: false },
+  { id: 'lh-3', cardName: '2020 Prizm Justin Herbert RC PSA 10', platform: 'mercari', listDate: '2026-02-10', saleDate: '2026-03-05', listPrice: 900, salePrice: 825, views: 650, watchers: 12, offers: 3, daysToSell: 23, optimized: false },
+  { id: 'lh-4', cardName: '2024 Prizm Caitlin Clark RC PSA 10', platform: 'ebay', listDate: '2026-03-01', saleDate: '2026-03-03', listPrice: 145, salePrice: 145, views: 3200, watchers: 65, offers: 0, daysToSell: 2, optimized: true },
+  { id: 'lh-5', cardName: '1986 Fleer Jordan RC PSA 7', platform: 'pwcc', listDate: '2026-01-20', saleDate: '2026-02-15', listPrice: 12000, salePrice: 11800, views: 890, watchers: 18, offers: 4, daysToSell: 26, optimized: true },
+  { id: 'lh-6', cardName: '2022 Prizm Paolo Banchero RC PSA 10', platform: 'ebay', listDate: '2026-02-20', saleDate: null, listPrice: 195, salePrice: null, views: 420, watchers: 8, offers: 2, daysToSell: null, optimized: false },
+  { id: 'lh-7', cardName: '2024 Topps Chrome Paul Skenes RC Auto', platform: 'ebay', listDate: '2026-03-05', saleDate: '2026-03-10', listPrice: 118, salePrice: 112, views: 780, watchers: 15, offers: 3, daysToSell: 5, optimized: true },
+  { id: 'lh-8', cardName: '2023 Bowman Chrome Ethan Salas 1st', platform: 'ebay', listDate: '2026-02-25', saleDate: '2026-02-26', listPrice: 195, salePrice: 195, views: 1500, watchers: 32, offers: 0, daysToSell: 1, optimized: true },
+  { id: 'lh-9', cardName: '2017 Prizm Mahomes RC PSA 10', platform: 'ebay', listDate: '2026-02-15', saleDate: null, listPrice: 4500, salePrice: null, views: 950, watchers: 22, offers: 4, daysToSell: null, optimized: false },
+  { id: 'lh-10', cardName: '2013 Prizm Giannis RC PSA 9', platform: 'ebay', listDate: '2026-03-01', saleDate: '2026-03-12', listPrice: 3200, salePrice: 3100, views: 1200, watchers: 18, offers: 6, daysToSell: 11, optimized: true },
+  { id: 'lh-11', cardName: '2024 Prizm Jayden Daniels RC Silver', platform: 'mercari', listDate: '2026-03-08', saleDate: null, listPrice: 48, salePrice: null, views: 180, watchers: 5, offers: 1, daysToSell: null, optimized: false },
+  { id: 'lh-12', cardName: '1989 Upper Deck Griffey Jr RC PSA 9', platform: 'ebay', listDate: '2026-02-28', saleDate: '2026-03-08', listPrice: 190, salePrice: 185, views: 520, watchers: 10, offers: 2, daysToSell: 8, optimized: true },
+];
+
+// ---- Additional Service Functions ----
+
+export function getPhotoScores(): PhotoScore[] {
+  const cached = loadData<PhotoScore[]>('photo_scores');
+  if (cached) return cached;
+  saveData('photo_scores', MOCK_PHOTO_SCORES);
+  return MOCK_PHOTO_SCORES;
+}
+
+export function getPhotoScoreByListing(listingId: string): PhotoScore | undefined {
+  const scores = getPhotoScores();
+  return scores.find(s => s.listingId === listingId);
+}
+
+export function getTimingRecommendations(): TimingRecommendation[] {
+  const cached = loadData<TimingRecommendation[]>('timing_recommendations');
+  if (cached) return cached;
+  saveData('timing_recommendations', MOCK_TIMING);
+  return MOCK_TIMING;
+}
+
+export function getTimingByPlatform(platform: Platform): TimingRecommendation | undefined {
+  const timing = getTimingRecommendations();
+  return timing.find(t => t.platform === platform);
+}
+
+export function getListingHistory(): ListingHistory[] {
+  const cached = loadData<ListingHistory[]>('listing_history');
+  if (cached) return cached;
+  saveData('listing_history', MOCK_LISTING_HISTORY);
+  return MOCK_LISTING_HISTORY;
+}
+
+export function getActiveListings(): ListingHistory[] {
+  const history = getListingHistory();
+  return history.filter(h => h.saleDate === null);
+}
+
+export function getSoldListings(): ListingHistory[] {
+  const history = getListingHistory();
+  return history.filter(h => h.saleDate !== null);
+}
+
+export function getAverageDaysToSell(): number {
+  const sold = getSoldListings();
+  const days = sold.filter(s => s.daysToSell !== null).map(s => s.daysToSell as number);
+  return days.length > 0 ? Math.round(days.reduce((sum, d) => sum + d, 0) / days.length) : 0;
+}
+
+export function getOptimizedVsUnoptimizedStats(): { optimized: { avgDays: number; avgViews: number }; unoptimized: { avgDays: number; avgViews: number } } {
+  const sold = getSoldListings();
+  const opt = sold.filter(s => s.optimized && s.daysToSell !== null);
+  const unopt = sold.filter(s => !s.optimized && s.daysToSell !== null);
+  return {
+    optimized: {
+      avgDays: opt.length > 0 ? Math.round(opt.reduce((sum, s) => sum + (s.daysToSell || 0), 0) / opt.length) : 0,
+      avgViews: opt.length > 0 ? Math.round(opt.reduce((sum, s) => sum + s.views, 0) / opt.length) : 0,
+    },
+    unoptimized: {
+      avgDays: unopt.length > 0 ? Math.round(unopt.reduce((sum, s) => sum + (s.daysToSell || 0), 0) / unopt.length) : 0,
+      avgViews: unopt.length > 0 ? Math.round(unopt.reduce((sum, s) => sum + s.views, 0) / unopt.length) : 0,
+    },
+  };
+}
