@@ -156,6 +156,7 @@ const GradingPrep = lazy(() => import('./pages/GradingPrep.tsx'));
 const ParallelUniverse = lazy(() => import('./pages/ParallelUniverse.tsx'));
 const AchievementSystem = lazy(() => import('./pages/AchievementSystem.tsx'));
 const SentimentVelocity = lazy(() => import('./pages/SentimentVelocity.tsx'));
+const PhantomBacktester = lazy(() => import('./pages/PhantomBacktester.tsx'));
 
 // v4.0: Multi-Sport & Infrastructure
 const GradingVisionEngine = lazy(() => import('./pages/GradingVisionEngine.tsx'));
@@ -336,6 +337,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/parallel-universe" element={<ParallelUniverse />} />
                 <Route path="/achievement-system" element={<AchievementSystem />} />
                 <Route path="/sentiment-velocity" element={<SentimentVelocity />} />
+                <Route path="/phantom-backtester" element={<PhantomBacktester />} />
                 {/* v4.0: Multi-Sport & Infrastructure */}
                 <Route path="/grading-vision-engine" element={<GradingVisionEngine />} />
                 <Route path="/notification-center" element={<NotificationCenter />} />
