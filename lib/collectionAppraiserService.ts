@@ -587,6 +587,71 @@ const MOCK_COLLECTION_SUMMARY: CollectionSummary = {
   lastAppraised: '2026-03-14',
 };
 
+// ---- Mock Data: Valuation Methodology Details ----
+
+const MOCK_VALUATION_METHODOLOGIES = {
+  comparableSales: {
+    name: 'Comparable Sales Analysis',
+    description: 'Values cards based on recent sales of identical or similar cards across multiple platforms.',
+    platformsUsed: ['eBay', 'PWCC', 'Goldin', 'Heritage Auctions', 'MySlabs', 'COMC'],
+    lookbackPeriod: '90 days',
+    minimumComparables: 3,
+    adjustmentFactors: ['Grade difference', 'Sale recency', 'Platform premium', 'Auction vs BIN', 'Season demand'],
+    confidenceThreshold: 85,
+    bestFor: ['Modern cards', 'High-population cards', 'Active market cards'],
+  },
+  auctionAnalysis: {
+    name: 'Auction Result Analysis',
+    description: 'Analyzes hammer prices from major auction houses with buyer premium adjustments.',
+    platformsUsed: ['Heritage Auctions', 'Goldin', 'Robert Edward Auctions', 'Lelands', 'SCP Auctions'],
+    lookbackPeriod: '12 months',
+    minimumComparables: 2,
+    adjustmentFactors: ['Buyer premium', 'Auction house reputation', 'Lot positioning', 'Reserve met', 'Bidder count'],
+    confidenceThreshold: 80,
+    bestFor: ['Vintage cards', 'High-value cards', 'Rare items'],
+  },
+  algorithmicModel: {
+    name: 'AI Algorithmic Valuation',
+    description: 'Machine learning model trained on 50M+ historical sales to predict fair market value.',
+    platformsUsed: ['All major platforms', 'Private sales database', 'Dealer networks'],
+    lookbackPeriod: '365 days',
+    minimumComparables: 1,
+    adjustmentFactors: ['Player performance', 'Market momentum', 'Seasonal trends', 'Population reports', 'News sentiment'],
+    confidenceThreshold: 70,
+    bestFor: ['Ultra-modern cards', 'Low-population cards', 'Predictive valuations'],
+  },
+  irsQualified: {
+    name: 'IRS Qualified Appraisal',
+    description: 'USPAP-compliant appraisal meeting IRS requirements for donations and estate valuations.',
+    platformsUsed: ['Verified auction results', 'Dealer surveys', 'Insurance databases'],
+    lookbackPeriod: '6 months',
+    minimumComparables: 5,
+    adjustmentFactors: ['Fair market value standard', 'Willing buyer/seller', 'Market conditions', 'Condition report'],
+    confidenceThreshold: 90,
+    bestFor: ['Tax deductions', 'Estate planning', 'Charitable donations', 'Legal proceedings'],
+  },
+};
+
+// ---- Mock Data: Insurance Claims History ----
+
+const MOCK_CLAIMS_HISTORY = [
+  { id: 'cl-1', date: '2025-06-15', type: 'Water Damage', claimedAmount: 12500.00, settledAmount: 11800.00, status: 'settled', daysToSettle: 45, description: 'Basement flooding damaged 8 raw vintage cards stored improperly.' },
+  { id: 'cl-2', date: '2025-02-20', type: 'Shipping Damage', claimedAmount: 2200.00, settledAmount: 2200.00, status: 'settled', daysToSettle: 22, description: 'PSA slab cracked during USPS Priority transit. Full replacement covered.' },
+  { id: 'cl-3', date: '2024-11-08', type: 'Theft', claimedAmount: 35000.00, settledAmount: 32500.00, status: 'settled', daysToSettle: 90, description: 'Break-in at home office resulted in theft of 15 graded cards from display case.' },
+  { id: 'cl-4', date: '2024-08-12', type: 'Accidental Damage', claimedAmount: 450.00, settledAmount: 450.00, status: 'settled', daysToSettle: 15, description: 'Child knocked over card display, damaging one BGS slab.' },
+  { id: 'cl-5', date: '2026-01-10', type: 'Fire', claimedAmount: 8500.00, settledAmount: 0.00, status: 'pending', daysToSettle: 0, description: 'Electrical fire in garage affected adjacent storage area with raw cards.' },
+];
+
+// ---- Mock Data: Storage Solutions ----
+
+const MOCK_STORAGE_SOLUTIONS = [
+  { name: 'Home Safe (Fireproof)', monthlyCost: 0.00, setupCost: 350.00, maxCapacity: 200, securityLevel: 'medium', climateControlled: false, insuranceDiscount: 5, recommendation: 'Good for small collections under $50K' },
+  { name: 'Home Climate Cabinet', monthlyCost: 15.00, setupCost: 800.00, maxCapacity: 500, securityLevel: 'medium', climateControlled: true, insuranceDiscount: 10, recommendation: 'Ideal for mid-range collections needing humidity control' },
+  { name: 'Bank Safety Deposit Box', monthlyCost: 25.00, setupCost: 0.00, maxCapacity: 50, securityLevel: 'high', climateControlled: false, insuranceDiscount: 15, recommendation: 'Best for high-value vintage cards needing maximum security' },
+  { name: 'Professional Vault Storage', monthlyCost: 75.00, setupCost: 0.00, maxCapacity: 1000, securityLevel: 'maximum', climateControlled: true, insuranceDiscount: 25, recommendation: 'Required for six-figure collections and insurance compliance' },
+  { name: 'PWCC Vault', monthlyCost: 0.50, setupCost: 0.00, maxCapacity: 10000, securityLevel: 'maximum', climateControlled: true, insuranceDiscount: 20, recommendation: 'Per-card pricing ideal for large collections with active trading' },
+];
+
 // ---- Service Functions ----
 
 export function getCardAppraisals(): CardAppraisal[] {
