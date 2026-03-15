@@ -489,9 +489,6 @@ export async function parseCardImage(imageBase64: string, mimeType: string = "im
  * Deep Search: Finds cards or players similar to the input using AI reasoning.
  */
 export async function findSimilarCards(query: string, _inventory: CardInventory[] = [], _signal?: AbortSignal): Promise<SimilarCardResult[]> {
-  const prompt = `Act as an expert sports card scout and market analyst. 
-  Perform a deep similarity search for: "${query}"
-export async function findSimilarCards(query: string, inventory: CardInventory[] = [], signal?: AbortSignal): Promise<SimilarCardResult[]> {
   const trimmed = query?.trim() ?? '';
   if (trimmed.length === 0) {
     showToast('warning', 'Please enter a search query.', { dedupeKey: 'deepsearch_empty' });

@@ -598,27 +598,6 @@ const Collection: React.FC = () => {
     addToast('success', `Exported ${cards.length} cards to JSON.`);
   };
 
-  // Toggle bulk selection
-  const _toggleSelection = (id: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  // Select all visible cards
-  const selectAll = () => {
-    if (selectedIds.size === filteredInventory.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(filteredInventory.map(c => c.id)));
-    if (confirm('Are you sure you want to remove this asset from your collection?')) {
-      removeCard(id);
-    }
-  };
-
   const filteredInventory = useMemo(() => {
     return inventory.filter(c => {
       const matchesSearch = c.player.toLowerCase().includes(searchQuery.toLowerCase()) ||
