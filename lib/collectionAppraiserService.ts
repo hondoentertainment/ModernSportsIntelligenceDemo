@@ -407,6 +407,150 @@ const MOCK_APPRAISAL_CERTIFICATES: AppraisalCertificate[] = [
   { id: 'cert-3', reportId: 'ar-4', issuedDate: '2026-01-20', validUntil: '2026-07-20', appraiserName: 'Dr. Sarah Chen', appraiserCredentials: 'ASA Certified, USPAP Compliant, IRS Panel', totalValue: 145000.00, methodology: 'IRS Qualified Appraisal for Charitable Contributions', digitalSignature: 'SHA256-5d1e88...', verificationUrl: 'https://verify.msi-appraisals.com/CERT-2026-0120-004' },
 ];
 
+// ---- Mock Data: Market Trend Data ----
+
+const MOCK_MARKET_TRENDS = {
+  vintageAppreciation: {
+    '1year': 6.5,
+    '3year': 22.8,
+    '5year': 45.2,
+    '10year': 120.5,
+    topPerformers: ['1952 Topps Mantle', '1986 Fleer Jordan', '1993 SP Jeter'],
+    outlook: 'Vintage cards continue to appreciate with increasing institutional interest and finite supply.',
+  },
+  modernVolatility: {
+    '1year': -8.2,
+    '3year': 15.5,
+    '5year': -2.8,
+    '10year': 35.0,
+    topPerformers: ['2018 Topps Chrome Ohtani', '2003 Topps Chrome LeBron', '2011 Topps Update Trout'],
+    outlook: 'Modern cards remain volatile but star players with sustained performance show long-term growth.',
+  },
+  ultraModernRisk: {
+    '1year': -22.5,
+    '3year': -5.0,
+    '5year': 0.0,
+    '10year': 0.0,
+    topPerformers: ['2024 Prizm Wembanyama', '2024 Chrome Ohtani Auto', '2024 Bowman Salas'],
+    outlook: 'Ultra-modern cards face highest risk but prospect cards can deliver extraordinary returns.',
+  },
+  gradedPremiums: {
+    psa10Premium: 3.2,
+    bgs95Premium: 2.5,
+    sgc10Premium: 2.0,
+    psa9Discount: 0.45,
+    rawDiscount: 0.25,
+    trendDirection: 'PSA 10 premiums expanding as pop reports grow, creating scarcity for high-pop-score gems.',
+  },
+  marketIndicators: {
+    overallHealth: 'stable',
+    buyerSentiment: 72,
+    sellerConfidence: 68,
+    auctionClearanceRate: 0.84,
+    averageDaysToSell: 12,
+    listingVolume: 'increasing',
+    priceDiscovery: 'efficient',
+  },
+};
+
+// ---- Mock Data: Portfolio Allocation Recommendations ----
+
+const MOCK_PORTFOLIO_RECOMMENDATIONS = {
+  conservative: {
+    vintage: 50,
+    modern: 25,
+    ultraModern: 5,
+    graded: 15,
+    raw: 5,
+    description: 'Conservative allocation emphasizes vintage holdings with minimal ultra-modern exposure.',
+    expectedReturn: 5.5,
+    riskLevel: 'low',
+  },
+  balanced: {
+    vintage: 35,
+    modern: 30,
+    ultraModern: 15,
+    graded: 15,
+    raw: 5,
+    description: 'Balanced allocation splits between stable vintage and growth-oriented modern cards.',
+    expectedReturn: 8.2,
+    riskLevel: 'medium',
+  },
+  aggressive: {
+    vintage: 15,
+    modern: 25,
+    ultraModern: 40,
+    graded: 15,
+    raw: 5,
+    description: 'Aggressive allocation targets high-growth ultra-modern prospects with higher volatility.',
+    expectedReturn: 15.0,
+    riskLevel: 'high',
+  },
+  speculative: {
+    vintage: 5,
+    modern: 15,
+    ultraModern: 60,
+    graded: 10,
+    raw: 10,
+    description: 'Speculative allocation concentrates heavily in current-year rookies and prospects.',
+    expectedReturn: 25.0,
+    riskLevel: 'extreme',
+  },
+};
+
+// ---- Mock Data: Grading Service Comparison ----
+
+const MOCK_GRADING_SERVICES = [
+  {
+    company: 'PSA',
+    fullName: 'Professional Sports Authenticator',
+    marketSharePercent: 55,
+    averageTurnaround: '45 days',
+    baseCost: 30.00,
+    premiumCost: 150.00,
+    expressCost: 300.00,
+    gemRatePercent: 42,
+    marketPremium: 1.0,
+    reputation: 'Industry standard with highest resale premiums',
+  },
+  {
+    company: 'BGS',
+    fullName: 'Beckett Grading Services',
+    marketSharePercent: 20,
+    averageTurnaround: '60 days',
+    baseCost: 25.00,
+    premiumCost: 100.00,
+    expressCost: 250.00,
+    gemRatePercent: 15,
+    marketPremium: 0.85,
+    reputation: 'Strictest grading standards, BGS 10 (Pristine) commands top dollar',
+  },
+  {
+    company: 'SGC',
+    fullName: 'Sportscard Guaranty Corporation',
+    marketSharePercent: 15,
+    averageTurnaround: '30 days',
+    baseCost: 20.00,
+    premiumCost: 75.00,
+    expressCost: 200.00,
+    gemRatePercent: 38,
+    marketPremium: 0.75,
+    reputation: 'Growing market share with fastest turnaround and vintage expertise',
+  },
+  {
+    company: 'CGC',
+    fullName: 'Certified Guaranty Company',
+    marketSharePercent: 10,
+    averageTurnaround: '50 days',
+    baseCost: 22.00,
+    premiumCost: 85.00,
+    expressCost: 225.00,
+    gemRatePercent: 35,
+    marketPremium: 0.65,
+    reputation: 'Newer entrant leveraging trading card success from comics division',
+  },
+];
+
 // ---- Mock Data: Collection Summary ----
 
 const MOCK_COLLECTION_SUMMARY: CollectionSummary = {
