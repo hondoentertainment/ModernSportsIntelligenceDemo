@@ -1,9 +1,10 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { CardInventory, CollaborativeThesis } from "../types.ts";
 import { Type } from "@google/genai";
-import { CardInventory, CollaborativeThesis, AgentInsight, SwarmInsight, JointAcquisitionProposal } from "../types.ts";
+import { AgentRecommendationOrigin, CardInventory, CollaborativeThesis, AgentInsight, SwarmInsight, JointAcquisitionProposal } from "../types.ts";
 import { showToast } from "./toast.ts";
 import { createGeminiClient } from "./geminiClient.ts";
+import { upsertAgentRecommendation } from "./differentiatorData.ts";
 
 const ai = createGeminiClient();
 
@@ -36,7 +37,11 @@ const AGENT_PERSONAS = {
 };
 
 export class MultiAgentService {
-    static async getCollaborativeThesis(inventory: CardInventory[], includeStrategist: boolean = false): Promise<CollaborativeThesis | null> {
+    static async getCollaborativeThesis(
+        inventory: CardInventory[],
+        includeStrategist: boolean = false,
+        source: AgentRecommendationOrigin = 'war-room'
+    ): Promise<CollaborativeThesis | null> {
         if (inventory.length === 0) {
             showToast('warning', 'Inventory empty. Ingest assets to unlock War Room intelligence.');
             return null;
@@ -127,11 +132,34 @@ export class MultiAgentService {
             });
 
             const data = JSON.parse(response.text || "{}");
-            return {
+            const recommendationId = crypto.randomUUID();
+            const thesis: CollaborativeThesis = {
                 ...data,
                 id: crypto.randomUUID(),
+                recommendationId,
                 createdAt: new Date().toISOString()
             };
+
+            await upsertAgentRecommendation({
+                id: recommendationId,
+                source,
+                cycleId: thesis.executionPlan?.[0]?.cycleId,
+                thesisId: thesis.id,
+                summary: thesis.summary,
+                recommendedAction: thesis.recommendedAction,
+                riskAssessment: thesis.riskAssessment,
+                status: includeStrategist ? 'pending_approval' : 'queued',
+                keyTakeaways: thesis.keyTakeaways,
+                agents: thesis.agents,
+                executionPlan: thesis.executionPlan,
+                metadata: {
+                    includeStrategist,
+                    inventorySize: inventory.length,
+                },
+                createdAt: thesis.createdAt,
+            });
+
+            return thesis;
         } catch (error) {
             console.error("Multi-Agent Intelligence Error:", error);
             showToast('error', 'Intelligence committee failed to convene. Try again later.');

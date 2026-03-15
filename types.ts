@@ -78,6 +78,9 @@ export interface CardInventory {
   vaultProvider?: 'PWCC' | 'PSA' | 'Goldin' | 'Other';
   vaultAssetId?: string;
   vaultInstantLiquidityPrice?: number;
+  valuationSource?: ValuationSource;
+  valuationTimestamp?: string;
+  salesData?: MarketComp[];
 }
 
 export type VaultProvider = 'PWCC' | 'PSA' | 'Goldin' | 'Other';
@@ -106,6 +109,9 @@ export interface TargetWatchlist {
   opportunityScore?: number; // 0-100
   arbitrageDelta?: number; // Percentage deviation from mean
   pricingRationale?: string;
+  valuationSource?: ValuationSource;
+  valuationTimestamp?: string;
+  salesData?: MarketComp[];
 }
 
 export interface MiLBProspect {
@@ -137,6 +143,23 @@ export interface MLBPlayer {
   image?: string;
 }
 
+export type ValuationSource = 'ebay-api' | 'gemini' | 'fallback';
+
+export interface MarketComp {
+  itemId?: string;
+  title: string;
+  price: number;
+  currency?: string;
+  condition: string;
+  soldAt: string;
+  listedAt?: string;
+  listingUrl?: string;
+  shippingPrice?: number;
+  totalPrice?: number;
+  imageUrl?: string;
+  metadata?: Record<string, unknown>;
+}
+
 export interface PricingAnalysis {
   estimatedValue: number;
   low: number;
@@ -147,8 +170,8 @@ export interface PricingAnalysis {
   lastUpdated: string;
   searchUrl?: string; // Deep link to eBay for manual verification
   rationale?: string; // AI-generated rationale for this valuation
-  salesData?: any[]; // Granular sales data used for analysis
-  valuationSource?: 'ebay-api' | 'gemini' | 'fallback';
+  salesData?: MarketComp[]; // Granular sales data used for analysis
+  valuationSource?: ValuationSource;
   valuationTimestamp?: string;
   quality?: ValuationQuality;
 }
@@ -214,6 +237,7 @@ export interface CollaborativeThesis {
   recommendedAction: string;
   agents: AgentInsight[];
   executionPlan?: AutonomousAction[];
+  recommendationId?: string;
   createdAt: string;
 }
 
@@ -242,7 +266,7 @@ export interface AutonomousAction {
   amount: number;
   rationale: string;
   timestamp: string;
-  status: 'pending' | 'executed' | 'failed';
+  status: 'pending' | 'approved' | 'submitted' | 'executed' | 'failed' | 'rejected' | 'cancelled';
   confidence?: number;
   cycleId?: string;
   idempotencyKey?: string;
@@ -253,6 +277,49 @@ export interface AutonomousAction {
   approvalUpdatedAt?: string;
   scenarioTag?: string;
   estimatedEdgePct?: number;
+  recommendationId?: string;
+  linkedIntentId?: string;
+  linkedOutcomeId?: string;
+}
+
+export type AgentRecommendationOrigin = 'war-room' | 'autopilot-preview' | 'autopilot-cycle' | 'manual' | 'system';
+export type AgentRecommendationStatus = 'draft' | 'queued' | 'pending_approval' | 'approved' | 'rejected' | 'submitted' | 'filled' | 'failed' | 'cancelled';
+export type AgentOutcomeStatus = 'approved' | 'rejected' | 'submitted' | 'filled' | 'partial' | 'failed' | 'cancelled';
+
+export interface AgentRecommendationRecord {
+  id: string;
+  ownerUserId?: string | null;
+  source: AgentRecommendationOrigin;
+  cycleId?: string;
+  thesisId?: string;
+  summary: string;
+  recommendedAction: string;
+  riskAssessment?: string;
+  status: AgentRecommendationStatus;
+  keyTakeaways: string[];
+  agents: AgentInsight[];
+  executionPlan?: AutonomousAction[];
+  linkedIntentId?: string | null;
+  linkedOutcomeId?: string | null;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface AgentOutcomeRecord {
+  id: string;
+  ownerUserId?: string | null;
+  recommendationId: string;
+  intentId?: string | null;
+  fillId?: string | null;
+  outcomeType: AgentOutcomeStatus;
+  amount?: number;
+  quantity?: number;
+  price?: number;
+  venue?: MarketplaceVenue;
+  rationale?: string;
+  metadata?: Record<string, unknown>;
+  recordedAt: string;
 }
 
 export interface SwarmInsight {
@@ -482,6 +549,7 @@ export interface ValuationQuality {
 export type MarketplaceVenue = 'ebay' | 'pwcc' | 'goldin' | 'private' | 'internal';
 export type TrustEdgeType = 'transaction' | 'referral' | 'guild' | 'brokered' | 'social' | 'provenance';
 export type CounterpartyRiskLevel = 'low' | 'medium' | 'high';
+export type CatalystType = 'call_up' | 'playoff' | 'award_race' | 'injury_recovery' | 'scarcity_spike';
 export type CatalystSeverity = 'watch' | 'actionable' | 'urgent';
 export type ScenarioTemplateKind = 'liquidity' | 'market' | 'player' | 'macro' | 'custom';
 
@@ -527,6 +595,7 @@ export interface TrustEvent {
   referenceType?: 'listing' | 'offer' | 'deal_room' | 'execution' | 'manual';
   referenceId?: string;
   notes?: string;
+  metadata?: Record<string, unknown>;
   createdAt: string;
 }
 
@@ -688,6 +757,10 @@ export interface ScenarioRunRecord {
 export interface ExecutionIntentRecord {
   id: string;
   ownerUserId?: string | null;
+  recommendationId?: string | null;
+  counterpartyId?: string | null;
+  listingId?: string | null;
+  dealRoomId?: string | null;
   actionType: 'buy' | 'list' | 'cancel' | 'counter';
   venue: MarketplaceVenue;
   assetId?: string | null;
@@ -699,6 +772,7 @@ export interface ExecutionIntentRecord {
   rationale?: string;
   metadata?: Record<string, unknown>;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface ExecutionApprovalRecord {

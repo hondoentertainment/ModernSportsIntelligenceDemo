@@ -21,6 +21,10 @@ import {
 export interface PriceSnapshot {
     timestamp: string;
     value: number;
+    source?: string;
+    valuationMethod?: string;
+    confidence?: number;
+    metadata?: Record<string, unknown>;
 }
 
 export type CardPriceHistory = Record<string, PriceSnapshot[]>;
@@ -60,9 +64,9 @@ function saveAllHistory(history: CardPriceHistory): void {
  * Persist a snapshot to Supabase in the background (fire-and-forget).
  * Errors are logged but don't block the caller.
  */
-function persistToCloud(cardId: string, value: number, timestamp: string): void {
+function persistToCloud(cardId: string, snapshot: PriceSnapshot): void {
     if (!_currentUserId || isDemoMode) return;
-    insertPriceSnapshot(_currentUserId, cardId, value, timestamp).catch(err => {
+    insertPriceSnapshot(_currentUserId, { cardId, ...snapshot }).catch(err => {
         console.warn('[PriceHistory] Cloud persist failed for', cardId, err);
     });
 }
@@ -70,7 +74,7 @@ function persistToCloud(cardId: string, value: number, timestamp: string): void 
 /**
  * Persist a batch of snapshots to Supabase in the background.
  */
-function persistBatchToCloud(snapshots: { cardId: string; value: number; timestamp: string }[]): void {
+function persistBatchToCloud(snapshots: Array<{ cardId: string } & PriceSnapshot>): void {
     if (!_currentUserId || isDemoMode || snapshots.length === 0) return;
     insertBatchPriceSnapshots(_currentUserId, snapshots).catch(err => {
         console.warn('[PriceHistory] Cloud batch persist failed:', err);
@@ -163,7 +167,7 @@ export function isPriceHistoryInitialized(): boolean {
  * Record a price snapshot for a card.
  * Writes to localStorage immediately and Supabase asynchronously.
  */
-export function recordPriceSnapshot(cardId: string, value: number): void {
+export function recordPriceSnapshot(cardId: string, value: number, provenance: Omit<PriceSnapshot, 'timestamp' | 'value'> = {}): void {
     if (!cardId || value === undefined || value === null) return;
 
     const history = getAllHistory();
@@ -172,7 +176,8 @@ export function recordPriceSnapshot(cardId: string, value: number): void {
 
     const snapshot: PriceSnapshot = {
         timestamp,
-        value: Math.round(value * 100) / 100
+        value: Math.round(value * 100) / 100,
+        ...provenance,
     };
 
     // Update local cache
@@ -181,30 +186,42 @@ export function recordPriceSnapshot(cardId: string, value: number): void {
     saveAllHistory(history);
 
     // Persist to cloud
-    persistToCloud(cardId, snapshot.value, timestamp);
+    persistToCloud(cardId, snapshot);
 }
 
 /**
  * Record multiple price snapshots at once (batch operation).
  * Writes to localStorage immediately and Supabase asynchronously.
  */
-export function recordBatchSnapshots(cards: { id: string; value: number }[]): void {
+export function recordBatchSnapshots(cards: Array<{
+    id: string;
+    value: number;
+    timestamp?: string;
+    source?: string;
+    valuationMethod?: string;
+    confidence?: number;
+    metadata?: Record<string, unknown>;
+}>): void {
     const history = getAllHistory();
-    const timestamp = new Date().toISOString();
-    const cloudBatch: { cardId: string; value: number; timestamp: string }[] = [];
+    const defaultTimestamp = new Date().toISOString();
+    const cloudBatch: Array<{ cardId: string } & PriceSnapshot> = [];
 
-    cards.forEach(({ id, value }) => {
+    cards.forEach(({ id, value, timestamp, source, valuationMethod, confidence, metadata }) => {
         if (!id || value === undefined || value === null) return;
 
         const cardHistory = history[id] || [];
         const roundedValue = Math.round(value * 100) / 100;
         const snapshot: PriceSnapshot = {
-            timestamp,
+            timestamp: timestamp || defaultTimestamp,
             value: roundedValue,
+            source,
+            valuationMethod,
+            confidence,
+            metadata,
         };
 
         history[id] = [snapshot, ...cardHistory].slice(0, MAX_SNAPSHOTS);
-        cloudBatch.push({ cardId: id, value: roundedValue, timestamp });
+        cloudBatch.push({ cardId: id, ...snapshot });
     });
 
     // Update local cache

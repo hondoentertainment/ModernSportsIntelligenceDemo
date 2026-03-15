@@ -41,14 +41,14 @@ export const CatalystEngine = {
                         id: `${card.id}-call-up`,
                         assetId: card.id,
                         assetName: assetName(card),
-                        catalyst: 'call_up',
+                        catalyst: 'call_up' as const,
                         headline: `${card.player} promotion watch`,
                         triggerWindow: 'Next 14-30 days',
                         confidence,
                         expectedMovePct: baselineMove + 4,
                         downsidePct: 6,
-                        suggestedAction: 'Accumulate',
-                        bias: 'bullish'
+                        suggestedAction: 'Accumulate' as const,
+                        bias: 'bullish' as const
                     };
                 }
 
@@ -57,14 +57,14 @@ export const CatalystEngine = {
                         id: `${card.id}-scarcity`,
                         assetId: card.id,
                         assetName: assetName(card),
-                        catalyst: 'scarcity_spike',
+                        catalyst: 'scarcity_spike' as const,
                         headline: `${card.player} low-pop supply squeeze`,
                         triggerWindow: 'Next major show cycle',
                         confidence,
                         expectedMovePct: baselineMove + 2,
                         downsidePct: 4,
-                        suggestedAction: 'Hold',
-                        bias: 'bullish'
+                        suggestedAction: 'Hold' as const,
+                        bias: 'bullish' as const
                     };
                 }
 
@@ -73,14 +73,14 @@ export const CatalystEngine = {
                         id: `${card.id}-award-race`,
                         assetId: card.id,
                         assetName: assetName(card),
-                        catalyst: 'award_race',
+                        catalyst: 'award_race' as const,
                         headline: `${card.player} sentiment premium at risk`,
                         triggerWindow: 'Next 7-21 days',
                         confidence,
                         expectedMovePct: baselineMove,
                         downsidePct: 8,
-                        suggestedAction: 'Trim',
-                        bias: 'defensive'
+                        suggestedAction: 'Trim' as const,
+                        bias: 'defensive' as const
                     };
                 }
 
@@ -88,14 +88,14 @@ export const CatalystEngine = {
                     id: `${card.id}-playoff`,
                     assetId: card.id,
                     assetName: assetName(card),
-                    catalyst: 'playoff',
+                    catalyst: 'playoff' as const,
                     headline: `${card.player} event-driven demand window`,
                     triggerWindow: 'Next marquee schedule window',
                     confidence,
                     expectedMovePct: baselineMove,
                     downsidePct: 5,
-                    suggestedAction: 'Monitor',
-                    bias: 'neutral'
+                    suggestedAction: 'Monitor' as const,
+                    bias: 'neutral' as const
                 };
             })
             .sort((a, b) => (b.expectedMovePct * b.confidence) - (a.expectedMovePct * a.confidence));

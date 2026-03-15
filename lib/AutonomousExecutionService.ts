@@ -1,8 +1,10 @@
-import { AutoPilotConfig, AutonomousAction, CardInventory, RiskCollar } from "../types";
+import { AgentRecommendationOrigin, AutoPilotConfig, AutonomousAction, CardInventory, CollaborativeThesis, RiskCollar } from "../types";
 import { MultiAgentService } from "./MultiAgentService";
 import { showToast } from "./toast";
 import { logAuditEvent } from "./auditLog";
-import { insertExecutionApproval } from "./differentiatorData";
+import { insertAgentOutcome, insertExecutionApproval, upsertAgentRecommendation, upsertExecutionIntent } from "./differentiatorData";
+import { ExecutionService, OrderIntent } from "./executionService";
+import { ensureMockExecutionAdapter } from "./phaseEndpoints";
 
 const STORAGE_KEY = 'msi_autopilot_config';
 const ACTIONS_KEY = 'msi_autonomous_actions';
@@ -24,6 +26,27 @@ const DEFAULT_CONFIG: AutoPilotConfig = {
 
 function startOfDay(d: Date): Date {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function mapActionToIntentType(action: AutonomousAction): 'buy' | 'list' | 'counter' {
+    switch (action.type) {
+        case 'BUY':
+            return 'buy';
+        case 'SELL':
+            return 'list';
+        default:
+            return 'counter';
+    }
+}
+
+function mapActionToRecommendationStatus(action: AutonomousAction): 'approved' | 'pending_approval' | 'rejected' | 'submitted' | 'filled' | 'failed' | 'cancelled' {
+    if (action.status === 'submitted') return 'submitted';
+    if (action.status === 'executed') return 'filled';
+    if (action.status === 'rejected') return 'rejected';
+    if (action.status === 'cancelled') return 'cancelled';
+    if (action.status === 'failed' || action.policyDecision === 'blocked') return 'failed';
+    if (action.policyDecision === 'needs_approval') return 'pending_approval';
+    return 'approved';
 }
 
 export class AutonomousExecutionService {
@@ -155,6 +178,44 @@ export class AutonomousExecutionService {
         };
     }
 
+    static async persistActionRecommendations(
+        actions: AutonomousAction[],
+        source: AgentRecommendationOrigin,
+        thesis?: CollaborativeThesis
+    ): Promise<AutonomousAction[]> {
+        return Promise.all(actions.map(async action => {
+            const recommendationId = action.recommendationId || crypto.randomUUID();
+            const nextAction = { ...action, recommendationId };
+            await upsertAgentRecommendation({
+                id: recommendationId,
+                source,
+                cycleId: nextAction.cycleId,
+                thesisId: thesis?.id,
+                summary: thesis?.summary || nextAction.rationale,
+                recommendedAction: `${nextAction.type} ${nextAction.assetName}`,
+                riskAssessment: thesis?.riskAssessment,
+                status: mapActionToRecommendationStatus(nextAction),
+                keyTakeaways: thesis?.keyTakeaways || [nextAction.rationale],
+                agents: thesis?.agents || [],
+                executionPlan: [nextAction],
+                linkedIntentId: nextAction.linkedIntentId,
+                linkedOutcomeId: nextAction.linkedOutcomeId,
+                metadata: {
+                    amount: nextAction.amount,
+                    confidence: nextAction.confidence,
+                    estimatedEdgePct: nextAction.estimatedEdgePct,
+                    policyDecision: nextAction.policyDecision,
+                    policyReason: nextAction.policyReason,
+                    scenarioTag: nextAction.scenarioTag,
+                    thesisRecommendationId: thesis?.recommendationId,
+                },
+                createdAt: nextAction.timestamp,
+                updatedAt: new Date().toISOString(),
+            });
+            return nextAction;
+        }));
+    }
+
     static async addAction(action: AutonomousAction): Promise<boolean> {
         const actions = this.getActions();
         const duplicate = actions.some(existing =>
@@ -192,47 +253,162 @@ export class AutonomousExecutionService {
     }
 
     static async decideAction(actionId: string, decision: 'approve' | 'reject', actor: string = 'operator', note?: string): Promise<AutonomousAction[]> {
-        const actions = this.getActions().map(action => {
+        const config = this.getConfig();
+        const approvalTimestamp = new Date().toISOString();
+        const intentId = crypto.randomUUID();
+        let updatedAction: AutonomousAction | undefined;
+
+        let actions = this.getActions().map(action => {
             if (action.id !== actionId) return action;
-            return {
+            updatedAction = {
                 ...action,
-                policyDecision: decision === 'approve' ? 'approved' : 'blocked',
+                linkedIntentId: decision === 'approve' ? (action.linkedIntentId || intentId) : action.linkedIntentId,
+                policyDecision: decision === 'approve' ? 'approved' as const : 'blocked' as const,
                 policyReason: decision === 'approve'
                     ? 'Approved by operator checkpoint.'
                     : 'Rejected by operator checkpoint.',
-                status: decision === 'approve' ? 'executed' : 'failed',
+                status: decision === 'approve' ? 'approved' as const : 'rejected' as const,
                 approvalActor: actor,
                 approvalNote: note,
-                approvalUpdatedAt: new Date().toISOString()
+                approvalUpdatedAt: approvalTimestamp
             };
+            return updatedAction;
         });
 
-        localStorage.setItem(ACTIONS_KEY, JSON.stringify(actions));
+        if (!updatedAction) {
+            return actions;
+        }
 
-        const updated = actions.find(action => action.id === actionId);
-        if (updated) {
+        if (decision === 'approve') {
+            const executionIntent = {
+                id: updatedAction.linkedIntentId || intentId,
+                recommendationId: updatedAction.recommendationId,
+                actionType: mapActionToIntentType(updatedAction),
+                venue: 'mock' as const,
+                assetId: updatedAction.id,
+                assetName: updatedAction.assetName,
+                quantity: 1,
+                limitPrice: updatedAction.amount,
+                maxSlippagePct: config.collar.riskTolerance === 'Conservative' ? 3 : config.collar.riskTolerance === 'Aggressive' ? 8 : 5,
+                status: 'pending_approval' as const,
+                rationale: updatedAction.rationale,
+                metadata: {
+                    actionId: updatedAction.id,
+                    cycleId: updatedAction.cycleId,
+                    scenarioTag: updatedAction.scenarioTag,
+                },
+                createdAt: updatedAction.timestamp,
+                updatedAt: approvalTimestamp,
+            };
+
+            await upsertExecutionIntent(executionIntent);
             await insertExecutionApproval({
                 id: crypto.randomUUID(),
-                intentId: updated.id,
+                intentId: executionIntent.id,
                 actorUserId: undefined,
                 actorLabel: actor,
                 decision,
                 note,
-                createdAt: new Date().toISOString(),
+                createdAt: approvalTimestamp,
             });
-            await logAuditEvent({
-                category: 'autonomy',
-                action: `autopilot.action.${decision}`,
-                entityType: 'autonomous_action',
-                entityId: updated.id,
+
+            if (updatedAction.recommendationId) {
+                await insertAgentOutcome({
+                    id: crypto.randomUUID(),
+                    recommendationId: updatedAction.recommendationId,
+                    intentId: executionIntent.id,
+                    outcomeType: 'approved',
+                    amount: updatedAction.amount,
+                    quantity: 1,
+                    price: updatedAction.amount,
+                    venue: executionIntent.venue,
+                    rationale: updatedAction.policyReason,
+                    metadata: {
+                        actor,
+                        note,
+                    },
+                    recordedAt: approvalTimestamp,
+                });
+            }
+
+            ensureMockExecutionAdapter();
+            const orderIntent: OrderIntent = {
+                id: executionIntent.id,
+                recommendationId: updatedAction.recommendationId,
+                assetId: executionIntent.assetId || updatedAction.id,
+                assetName: executionIntent.assetName,
+                type: executionIntent.actionType,
+                quantity: executionIntent.quantity,
+                price: executionIntent.limitPrice,
+                maxSlippagePct: executionIntent.maxSlippagePct,
+                rationale: executionIntent.rationale,
+                createdAt: approvalTimestamp,
+            };
+            const order = await ExecutionService.submitIntent(orderIntent, executionIntent.venue, config.collar.maxBudget);
+            updatedAction = {
+                ...updatedAction,
+                linkedIntentId: executionIntent.id,
+                status: order.state === 'failed' ? 'failed' : 'submitted'
+            };
+        } else if (updatedAction.recommendationId) {
+            await insertAgentOutcome({
+                id: crypto.randomUUID(),
+                recommendationId: updatedAction.recommendationId,
+                outcomeType: 'rejected',
+                amount: updatedAction.amount,
+                quantity: 1,
+                price: updatedAction.amount,
+                rationale: updatedAction.policyReason,
                 metadata: {
                     actor,
                     note,
-                    assetName: updated.assetName,
-                    amount: updated.amount
-                }
+                },
+                recordedAt: approvalTimestamp,
             });
         }
+
+        actions = actions.map(action => action.id === updatedAction?.id ? updatedAction! : action);
+        localStorage.setItem(ACTIONS_KEY, JSON.stringify(actions));
+
+        if (updatedAction?.recommendationId) {
+            await upsertAgentRecommendation({
+                id: updatedAction.recommendationId,
+                source: 'autopilot-cycle',
+                cycleId: updatedAction.cycleId,
+                summary: updatedAction.rationale,
+                recommendedAction: `${updatedAction.type} ${updatedAction.assetName}`,
+                status: mapActionToRecommendationStatus(updatedAction),
+                keyTakeaways: [updatedAction.rationale],
+                agents: [],
+                executionPlan: [updatedAction],
+                linkedIntentId: updatedAction.linkedIntentId,
+                linkedOutcomeId: updatedAction.linkedOutcomeId,
+                metadata: {
+                    actor,
+                    note,
+                    policyDecision: updatedAction.policyDecision,
+                    policyReason: updatedAction.policyReason,
+                },
+                createdAt: updatedAction.timestamp,
+                updatedAt: approvalTimestamp,
+            });
+        }
+
+        await logAuditEvent({
+            category: 'autonomy',
+            action: `autopilot.action.${decision}`,
+            entityType: 'autonomous_action',
+            entityId: updatedAction.id,
+            metadata: {
+                actor,
+                note,
+                assetName: updatedAction.assetName,
+                amount: updatedAction.amount,
+                recommendationId: updatedAction.recommendationId,
+                intentId: updatedAction.linkedIntentId,
+                status: updatedAction.status,
+            }
+        });
 
         return actions;
     }
@@ -241,6 +417,7 @@ export class AutonomousExecutionService {
         const top = inventory[0];
         return {
             id: crypto.randomUUID(),
+            recommendationId: crypto.randomUUID(),
             summary: 'Fallback autonomous cycle generated from portfolio heuristics while agent synthesis is unavailable.',
             keyTakeaways: top ? [`Monitoring top exposure in ${top.player}.`] : ['Portfolio currently light on active signals.'],
             riskAssessment: inventory.length > 5 ? 'Diversified enough for a small advisory cycle.' : 'Sparse inventory; favor conservative sizing.',
@@ -320,13 +497,17 @@ export class AutonomousExecutionService {
 
     static async previewAutonomousCycle(inventory: CardInventory[]) {
         const config = this.getConfig();
-        let thesis = await MultiAgentService.getCollaborativeThesis(inventory, config.isActive);
+        let thesis = await MultiAgentService.getCollaborativeThesis(inventory, config.isActive, 'autopilot-preview');
         if (!thesis) {
             thesis = this.createFallbackThesis(inventory);
         }
 
         const candidates = this.buildActionCandidates(inventory, config, thesis);
-        const actions = this.enforceRiskCollars(candidates, config, this.getActions());
+        const actions = await this.persistActionRecommendations(
+            this.enforceRiskCollars(candidates, config, this.getActions()),
+            'autopilot-preview',
+            thesis
+        );
         const impact = this.simulateCycleImpact(inventory, actions);
 
         return {
@@ -340,14 +521,21 @@ export class AutonomousExecutionService {
         const config = this.getConfig();
         if (!config.isActive) return [];
 
-        let thesis = await MultiAgentService.getCollaborativeThesis(inventory, true);
+        let thesis = await MultiAgentService.getCollaborativeThesis(inventory, true, 'autopilot-cycle');
         if (!thesis) {
             thesis = this.createFallbackThesis(inventory);
         }
 
         const candidates = this.buildActionCandidates(inventory, config, thesis);
-        const actions = this.enforceRiskCollars(candidates, config, this.getActions());
+        const actions = await this.persistActionRecommendations(
+            this.enforceRiskCollars(candidates, config, this.getActions()),
+            'autopilot-cycle',
+            thesis
+        );
         await Promise.all(actions.map(action => this.addAction(action)));
+        for (const action of actions.filter(candidate => candidate.policyDecision === 'approved')) {
+            await this.decideAction(action.id, 'approve', 'policy-engine');
+        }
 
         const approved = actions.filter(a => a.policyDecision === 'approved').length;
         const needsApproval = actions.filter(a => a.policyDecision === 'needs_approval').length;

@@ -60,7 +60,7 @@ type DbTargetRow = {
     sport: TargetWatchlist['sport'];
     league: TargetWatchlist['league'];
     status: TargetWatchlist['status'];
-    created_at: string;
+    created_at?: string;
     image_url?: string;
     search_url?: string;
     notes?: string;
@@ -353,7 +353,7 @@ export async function fetchAllPriceHistory(userId: string): Promise<Record<strin
 
     const { data, error } = await supabase
         .from('price_history')
-        .select('card_id, value, recorded_at')
+        .select('card_id, value, recorded_at, source, valuation_method, confidence, metadata')
         .eq('user_id', userId)
         .order('recorded_at', { ascending: false });
 
@@ -370,6 +370,10 @@ export async function fetchAllPriceHistory(userId: string): Promise<Record<strin
         grouped[cardId].push({
             timestamp: row.recorded_at,
             value: Number(row.value),
+            source: row.source || undefined,
+            valuationMethod: row.valuation_method || undefined,
+            confidence: row.confidence ? Number(row.confidence) : undefined,
+            metadata: row.metadata || undefined,
         });
     }
 
@@ -381,9 +385,15 @@ export async function fetchAllPriceHistory(userId: string): Promise<Record<strin
  */
 export async function insertPriceSnapshot(
     userId: string,
-    cardId: string,
-    value: number,
-    timestamp: string
+    snapshot: {
+        cardId: string;
+        value: number;
+        timestamp: string;
+        source?: string;
+        valuationMethod?: string;
+        confidence?: number;
+        metadata?: Record<string, unknown>;
+    }
 ): Promise<boolean> {
     if (isDemoMode) return true;
 
@@ -391,9 +401,15 @@ export async function insertPriceSnapshot(
         .from('price_history')
         .insert({
             user_id: userId,
-            card_id: cardId,
-            value,
-            recorded_at: timestamp,
+            card_id: snapshot.cardId,
+            entity_id: snapshot.cardId,
+            entity_type: 'card',
+            value: snapshot.value,
+            recorded_at: snapshot.timestamp,
+            source: snapshot.source,
+            valuation_method: snapshot.valuationMethod,
+            confidence: snapshot.confidence,
+            metadata: snapshot.metadata || {},
         });
 
     if (error) {
@@ -408,7 +424,15 @@ export async function insertPriceSnapshot(
  */
 export async function insertBatchPriceSnapshots(
     userId: string,
-    snapshots: { cardId: string; value: number; timestamp: string }[]
+    snapshots: Array<{
+        cardId: string;
+        value: number;
+        timestamp: string;
+        source?: string;
+        valuationMethod?: string;
+        confidence?: number;
+        metadata?: Record<string, unknown>;
+    }>
 ): Promise<boolean> {
     if (isDemoMode) return true;
     if (snapshots.length === 0) return true;
@@ -416,8 +440,14 @@ export async function insertBatchPriceSnapshots(
     const rows = snapshots.map(s => ({
         user_id: userId,
         card_id: s.cardId,
+        entity_id: s.cardId,
+        entity_type: 'card',
         value: s.value,
         recorded_at: s.timestamp,
+        source: s.source,
+        valuation_method: s.valuationMethod,
+        confidence: s.confidence,
+        metadata: s.metadata || {},
     }));
 
     const { error } = await supabase

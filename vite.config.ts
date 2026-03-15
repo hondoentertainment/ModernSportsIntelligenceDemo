@@ -38,6 +38,10 @@ export default defineConfig({
         branches: 20,
         functions: 20,
         lines: 20,
+        statements: 60,
+        branches: 42,
+        functions: 60,
+        lines: 60,
       },
       exclude: [
         '**/node_modules/**',

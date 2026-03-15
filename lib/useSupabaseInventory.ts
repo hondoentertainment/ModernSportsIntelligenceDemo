@@ -149,8 +149,22 @@ export function useSupabaseInventory() {
                     setTargets(watchlist);
                     setSyncMeta(calculateSyncMeta(cards, new Date().toISOString()));
                     setSyncStatus('synced');
+                } catch  {
+                    setLastSyncError('Failed to fetch data from cloud');
+                }
+            } else {
+                // Load from localStorage (demo mode)
+                try {
+                    const cachedInventory = readLocalRows<CardInventory>(STORAGE_KEY);
+                    const cachedTargets = readLocalRows<TargetWatchlist>(TARGETS_KEY);
+                    const cachedMeta = readLocalMeta();
+
+                    setInventory(cachedInventory);
+                    setTargets(cachedTargets);
+                    setSyncMeta(cachedMeta || calculateSyncMeta(cachedInventory, null));
+                    setSyncStatus('local');
                 } catch (error) {
-                    console.error('Failed to fetch data from cloud:', error);
+                    console.error('Failed to load local inventory cache:', error);
                     const cachedInventory = readLocalRows<CardInventory>(STORAGE_KEY);
                     const cachedTargets = readLocalRows<TargetWatchlist>(TARGETS_KEY);
                     const cachedMeta = readLocalMeta();
@@ -161,13 +175,8 @@ export function useSupabaseInventory() {
                     } else {
                         setSyncMeta(calculateSyncMeta(cachedInventory, null));
                     }
-                    markCloudFailure('Failed to fetch data from cloud. Showing cached local data.', true);
+                    markCloudFailure('Failed to load local cached data.', true);
                 }
-            } else {
-                setInventory(readLocalRows<CardInventory>(STORAGE_KEY));
-                setTargets(readLocalRows<TargetWatchlist>(TARGETS_KEY));
-                setSyncMeta(readLocalMeta() || calculateSyncMeta([], null));
-                setSyncStatus('local');
             }
 
             setLoading(false);

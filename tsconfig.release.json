@@ -1,12 +1,34 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": [
+      "node",
+      "vitest/globals",
+      "@testing-library/jest-dom"
+    ]
+  },
   "include": [
-    "App.tsx",
-    "index.tsx",
     "vite.config.ts",
     "playwright.config.ts",
     "vite-env.d.ts",
     "api/**/*.ts",
+    "components/Sidebar.tsx",
+    "components/MobileNav.tsx",
+    "components/CommandPalette.tsx",
+    "components/FeatureSearch.tsx",
+    "lib/featureCatalog.ts",
+    "lib/productSurface.ts",
+    "lib/serverApi.ts",
+    "lib/geminiClient.ts",
+    "lib/ebayApi.ts",
+    "lib/useSupabaseInventory.ts",
+    "lib/differentiatorData.ts",
+    "lib/supabaseData.ts",
+    "lib/runtimeConfig.ts",
+    "pages/FeatureDirectory.tsx",
+    "pages/DeepSearch.tsx",
+    "pages/CounterpartyTrustGraph.tsx",
+    "pages/PrivateDealRoomAgent.tsx",
     "tests/components/FeatureSearch.test.tsx",
     "tests/lib/featureCatalog.test.ts",
     "tests/lib/differentiatorData.test.ts",

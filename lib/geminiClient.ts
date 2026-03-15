@@ -19,7 +19,7 @@ interface GeminiGenerateResponse {
 
 interface GeminiClientLike {
     models: {
-        generateContent(request: GeminiGenerateRequest): Promise<GeminiGenerateResponse>;
+        generateContent(_request: GeminiGenerateRequest): Promise<GeminiGenerateResponse>;
     };
 }
 

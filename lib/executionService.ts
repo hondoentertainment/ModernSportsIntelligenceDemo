@@ -1,6 +1,6 @@
 // Phase 37: Execution Integrations
 
-import { insertExecutionFill, upsertExecutionIntent } from './differentiatorData';
+import { insertAgentOutcome, insertExecutionFill, upsertExecutionIntent } from './differentiatorData';
 
 export type OrderIntentType = 'buy' | 'list' | 'cancel' | 'counter';
 export type ExecutionState = 'submitted' | 'filled' | 'partial' | 'failed' | 'cancelled';
@@ -10,10 +10,16 @@ export interface OrderIntent {
     type: OrderIntentType;
     assetId: string;
     assetName: string;
+    ownerUserId?: string | null;
+    recommendationId?: string | null;
+    counterpartyId?: string | null;
+    listingId?: string | null;
+    dealRoomId?: string | null;
     quantity: number;
     price: number;
     maxSlippagePct?: number;
     feePct?: number;
+    rationale?: string;
     createdAt: string;
 }
 
@@ -27,10 +33,17 @@ export interface PreTradeCheckResult {
 export interface ExecutionOrder {
     id: string;
     intentId: string;
+    recommendationId?: string | null;
+    ownerUserId?: string | null;
     venue: string;
+    actionType?: OrderIntentType;
+    assetId?: string;
+    assetName?: string;
     state: ExecutionState;
     submittedAt: string;
     filledQuantity: number;
+    requestedQuantity?: number;
+    requestedPrice?: number;
     avgFillPrice?: number;
     lastError?: string;
 }
@@ -110,14 +123,26 @@ export class ExecutionService {
             const failedOrder = {
                 id: crypto.randomUUID(),
                 intentId: intent.id,
+                recommendationId: intent.recommendationId,
+                ownerUserId: intent.ownerUserId,
                 venue,
+                actionType: intent.type,
+                assetId: intent.assetId,
+                assetName: intent.assetName,
                 state: 'failed',
                 submittedAt: new Date().toISOString(),
                 filledQuantity: 0,
+                requestedQuantity: intent.quantity,
+                requestedPrice: intent.price,
                 lastError: checks.reasons.join(' ')
             };
             await upsertExecutionIntent({
                 id: intent.id,
+                ownerUserId: intent.ownerUserId,
+                recommendationId: intent.recommendationId,
+                counterpartyId: intent.counterpartyId,
+                listingId: intent.listingId,
+                dealRoomId: intent.dealRoomId,
                 actionType: intent.type,
                 venue: venue as any,
                 assetId: intent.assetId,
@@ -126,15 +151,36 @@ export class ExecutionService {
                 limitPrice: intent.price,
                 maxSlippagePct: intent.maxSlippagePct,
                 status: 'failed',
-                rationale: failedOrder.lastError,
+                rationale: intent.rationale || failedOrder.lastError,
                 createdAt: intent.createdAt,
+                updatedAt: new Date().toISOString(),
             });
+            if (intent.recommendationId) {
+                await insertAgentOutcome({
+                    id: crypto.randomUUID(),
+                    ownerUserId: intent.ownerUserId,
+                    recommendationId: intent.recommendationId,
+                    intentId: intent.id,
+                    outcomeType: 'failed',
+                    amount: checks.estimatedTotal,
+                    quantity: intent.quantity,
+                    price: intent.price,
+                    venue: venue as any,
+                    rationale: failedOrder.lastError,
+                    recordedAt: new Date().toISOString(),
+                });
+            }
             return failedOrder;
         }
 
         const order = await adapter.submit(intent);
         await upsertExecutionIntent({
             id: intent.id,
+            ownerUserId: intent.ownerUserId,
+            recommendationId: intent.recommendationId,
+            counterpartyId: intent.counterpartyId,
+            listingId: intent.listingId,
+            dealRoomId: intent.dealRoomId,
             actionType: intent.type,
             venue: venue as any,
             assetId: intent.assetId,
@@ -143,10 +189,35 @@ export class ExecutionService {
             limitPrice: intent.price,
             maxSlippagePct: intent.maxSlippagePct,
             status: order.state === 'submitted' ? 'submitted' : 'filled',
-            rationale: `Execution submitted via ${venue}.`,
+            rationale: intent.rationale || `Execution submitted via ${venue}.`,
             createdAt: intent.createdAt,
+            updatedAt: new Date().toISOString(),
         });
-        const orders = [order, ...readOrders()].slice(0, 500);
+        if (intent.recommendationId) {
+            await insertAgentOutcome({
+                id: crypto.randomUUID(),
+                ownerUserId: intent.ownerUserId,
+                recommendationId: intent.recommendationId,
+                intentId: intent.id,
+                outcomeType: order.state === 'submitted' ? 'submitted' : 'filled',
+                amount: intent.quantity * intent.price,
+                quantity: intent.quantity,
+                price: intent.price,
+                venue: venue as any,
+                rationale: intent.rationale || `Execution ${order.state} via ${venue}.`,
+                recordedAt: new Date().toISOString(),
+            });
+        }
+        const orders = [{
+            ...order,
+            recommendationId: intent.recommendationId,
+            ownerUserId: intent.ownerUserId,
+            actionType: intent.type,
+            assetId: intent.assetId,
+            assetName: intent.assetName,
+            requestedQuantity: intent.quantity,
+            requestedPrice: intent.price,
+        }, ...readOrders()].slice(0, 500);
         writeOrders(orders);
         return order;
     }
@@ -172,6 +243,37 @@ export class ExecutionService {
                     externalOrderId: o.id,
                     createdAt: new Date().toISOString(),
                 });
+                await upsertExecutionIntent({
+                    id: o.intentId,
+                    ownerUserId: o.ownerUserId,
+                    recommendationId: o.recommendationId,
+                    actionType: o.actionType || 'buy',
+                    venue: venue as any,
+                    assetId: o.assetId,
+                    assetName: o.assetName || o.intentId,
+                    quantity: o.requestedQuantity || o.filledQuantity || 1,
+                    limitPrice: o.requestedPrice || o.avgFillPrice || 0,
+                    status: 'filled',
+                    rationale: `Execution filled via ${venue}.`,
+                    createdAt: o.submittedAt,
+                    updatedAt: new Date().toISOString(),
+                });
+                if (o.recommendationId) {
+                    await insertAgentOutcome({
+                        id: crypto.randomUUID(),
+                        recommendationId: o.recommendationId,
+                        ownerUserId: o.ownerUserId,
+                        intentId: o.intentId,
+                        outcomeType: 'filled',
+                        amount: (o.filledQuantity || 1) * (o.avgFillPrice || 0),
+                        quantity: o.filledQuantity || 1,
+                        price: o.avgFillPrice || 0,
+                        venue: venue as any,
+                        rationale: `Execution fill confirmed via ${venue}.`,
+                        fillId: undefined,
+                        recordedAt: new Date().toISOString(),
+                    });
+                }
             }
             return { ...o, state: nextState };
         }));

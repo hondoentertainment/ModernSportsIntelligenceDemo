@@ -1,4 +1,6 @@
 import {
+    AgentOutcomeRecord,
+    AgentRecommendationRecord,
     CatalystMarketEvent,
     CounterpartyEdge,
     CounterpartyProfile,
@@ -40,6 +42,8 @@ const LOCAL_KEYS = {
     catalystEvents: 'msi_diff_catalyst_events',
     scenarioSnapshots: 'msi_diff_scenario_snapshots',
     scenarioRuns: 'msi_diff_scenario_runs',
+    agentRecommendations: 'msi_diff_agent_recommendations',
+    agentOutcomes: 'msi_diff_agent_outcomes',
     executionIntents: 'msi_diff_execution_intents',
     executionApprovals: 'msi_diff_execution_approvals',
     executionFills: 'msi_diff_execution_fills',
@@ -268,6 +272,7 @@ function trustEventFromRow(row: PersistedRow): TrustEvent {
         referenceType: row.reference_type,
         referenceId: row.reference_id,
         notes: row.notes,
+        metadata: row.metadata || {},
         createdAt: row.created_at,
     };
 }
@@ -282,6 +287,7 @@ function trustEventToRow(event: TrustEvent, ownerUserId?: string | null): Persis
         reference_type: event.referenceType,
         reference_id: event.referenceId,
         notes: event.notes,
+        metadata: event.metadata || {},
         created_at: event.createdAt,
     };
 }
@@ -509,10 +515,94 @@ function scenarioRunToRow(run: ScenarioRunRecord): PersistedRow {
     };
 }
 
+function agentRecommendationFromRow(row: PersistedRow): AgentRecommendationRecord {
+    return {
+        id: row.id,
+        ownerUserId: row.owner_user_id,
+        source: row.source,
+        cycleId: row.cycle_id,
+        thesisId: row.thesis_id,
+        summary: row.summary,
+        recommendedAction: row.recommended_action,
+        riskAssessment: row.risk_assessment,
+        status: row.status,
+        keyTakeaways: Array.isArray(row.key_takeaways) ? row.key_takeaways : [],
+        agents: Array.isArray(row.agents) ? row.agents : [],
+        executionPlan: Array.isArray(row.execution_plan) ? row.execution_plan : [],
+        linkedIntentId: row.linked_intent_id,
+        linkedOutcomeId: row.linked_outcome_id,
+        metadata: row.metadata || {},
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+    };
+}
+
+function agentRecommendationToRow(record: AgentRecommendationRecord): PersistedRow {
+    return {
+        id: record.id,
+        owner_user_id: record.ownerUserId || null,
+        source: record.source,
+        cycle_id: record.cycleId || null,
+        thesis_id: record.thesisId || null,
+        summary: record.summary,
+        recommended_action: record.recommendedAction,
+        risk_assessment: record.riskAssessment,
+        status: record.status,
+        key_takeaways: record.keyTakeaways || [],
+        agents: record.agents || [],
+        execution_plan: record.executionPlan || [],
+        linked_intent_id: record.linkedIntentId || null,
+        linked_outcome_id: record.linkedOutcomeId || null,
+        metadata: record.metadata || {},
+        created_at: record.createdAt,
+        updated_at: record.updatedAt || new Date().toISOString(),
+    };
+}
+
+function agentOutcomeFromRow(row: PersistedRow): AgentOutcomeRecord {
+    return {
+        id: row.id,
+        ownerUserId: row.owner_user_id,
+        recommendationId: row.recommendation_id,
+        intentId: row.intent_id,
+        fillId: row.fill_id,
+        outcomeType: row.outcome_type,
+        amount: row.amount ? Number(row.amount) : undefined,
+        quantity: row.quantity ? Number(row.quantity) : undefined,
+        price: row.price ? Number(row.price) : undefined,
+        venue: row.venue,
+        rationale: row.rationale,
+        metadata: row.metadata || {},
+        recordedAt: row.recorded_at,
+    };
+}
+
+function agentOutcomeToRow(record: AgentOutcomeRecord): PersistedRow {
+    return {
+        id: record.id,
+        owner_user_id: record.ownerUserId || null,
+        recommendation_id: record.recommendationId,
+        intent_id: record.intentId || null,
+        fill_id: record.fillId || null,
+        outcome_type: record.outcomeType,
+        amount: record.amount,
+        quantity: record.quantity,
+        price: record.price,
+        venue: record.venue || null,
+        rationale: record.rationale,
+        metadata: record.metadata || {},
+        recorded_at: record.recordedAt,
+    };
+}
+
 function executionIntentFromRow(row: PersistedRow): ExecutionIntentRecord {
     return {
         id: row.id,
         ownerUserId: row.owner_user_id,
+        recommendationId: row.recommendation_id,
+        counterpartyId: row.counterparty_id,
+        listingId: row.listing_id,
+        dealRoomId: row.deal_room_id,
         actionType: row.action_type,
         venue: row.venue,
         assetId: row.asset_id,
@@ -524,6 +614,7 @@ function executionIntentFromRow(row: PersistedRow): ExecutionIntentRecord {
         rationale: row.rationale,
         metadata: row.metadata || {},
         createdAt: row.created_at,
+        updatedAt: row.updated_at,
     };
 }
 
@@ -531,6 +622,10 @@ function executionIntentToRow(intent: ExecutionIntentRecord): PersistedRow {
     return {
         id: intent.id,
         owner_user_id: intent.ownerUserId || null,
+        recommendation_id: intent.recommendationId || null,
+        counterparty_id: intent.counterpartyId || null,
+        listing_id: intent.listingId || null,
+        deal_room_id: intent.dealRoomId || null,
         action_type: intent.actionType,
         venue: intent.venue,
         asset_id: intent.assetId || null,
@@ -542,7 +637,7 @@ function executionIntentToRow(intent: ExecutionIntentRecord): PersistedRow {
         rationale: intent.rationale,
         metadata: intent.metadata || {},
         created_at: intent.createdAt,
-        updated_at: new Date().toISOString(),
+        updated_at: intent.updatedAt || new Date().toISOString(),
     };
 }
 
@@ -598,7 +693,7 @@ function executionFillToRow(record: ExecutionFillRecord): PersistedRow {
     };
 }
 
-async function fetchRows(table: string, mapper: (row: PersistedRow) => any, localKey: string, query?: (builder: any) => any) {
+async function fetchRows(table: string, mapper: (_row: PersistedRow) => any, localKey: string, query?: (_builder: any) => any) {
     if (isDemoMode) {
         setPersistenceState(localKey, { status: 'local', lastError: null });
         return sortNewest(readLocal(localKey) as any[]);
@@ -845,6 +940,36 @@ export async function fetchScenarioRuns(ownerUserId?: string): Promise<ScenarioR
 
 export async function upsertScenarioRun(run: ScenarioRunRecord): Promise<boolean> {
     return upsertRow('scenario_runs', scenarioRunToRow(run), LOCAL_KEYS.scenarioRuns, run);
+}
+
+export async function fetchAgentRecommendations(ownerUserId?: string): Promise<AgentRecommendationRecord[]> {
+    return fetchRows(
+        'agent_recommendations',
+        agentRecommendationFromRow,
+        LOCAL_KEYS.agentRecommendations,
+        builder => ownerUserId
+            ? builder.eq('owner_user_id', ownerUserId).order('created_at', { ascending: false })
+            : builder.order('created_at', { ascending: false })
+    );
+}
+
+export async function upsertAgentRecommendation(record: AgentRecommendationRecord): Promise<boolean> {
+    return upsertRow('agent_recommendations', agentRecommendationToRow(record), LOCAL_KEYS.agentRecommendations, record);
+}
+
+export async function fetchAgentOutcomes(recommendationId?: string): Promise<AgentOutcomeRecord[]> {
+    return fetchRows(
+        'agent_outcomes',
+        agentOutcomeFromRow,
+        LOCAL_KEYS.agentOutcomes,
+        builder => recommendationId
+            ? builder.eq('recommendation_id', recommendationId).order('recorded_at', { ascending: false })
+            : builder.order('recorded_at', { ascending: false })
+    );
+}
+
+export async function insertAgentOutcome(record: AgentOutcomeRecord): Promise<boolean> {
+    return insertRow('agent_outcomes', agentOutcomeToRow(record), LOCAL_KEYS.agentOutcomes, record);
 }
 
 export async function fetchExecutionIntents(ownerUserId?: string): Promise<ExecutionIntentRecord[]> {

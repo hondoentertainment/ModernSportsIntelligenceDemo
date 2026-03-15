@@ -262,7 +262,7 @@ export class PaperTradeLedger {
                 ...position,
                 currentPrice: exitPrice,
                 pnlPct: Math.round(pnlPct * 100) / 100,
-                status: 'closed',
+                status: 'closed' as const,
                 closedAt: new Date().toISOString()
             };
         });

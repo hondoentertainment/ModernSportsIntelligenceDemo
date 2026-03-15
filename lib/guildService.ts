@@ -195,7 +195,7 @@ export class GuildService {
     static settleProposal(proposal: JointAcquisitionProposal, outcome: 'release' | 'return'): JointAcquisitionProposal {
         const nextLedger = (proposal.ledgerEntries || []).map(entry => ({
             ...entry,
-            status: outcome === 'release' ? 'released' : 'returned'
+            status: outcome === 'release' ? 'released' as const : 'returned' as const
         }));
 
         return {
