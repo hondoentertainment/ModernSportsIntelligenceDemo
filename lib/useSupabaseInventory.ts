@@ -10,14 +10,7 @@ import {
   upsertTarget,
   deleteTarget as deleteTargetFromDb,
   bulkUpsertCards,
-    fetchCards,
-    fetchTargets,
-    upsertCard,
-    deleteCard as deleteCardFromDb,
-    upsertTarget,
-    deleteTarget as deleteTargetFromDb,
-    bulkUpsertCards,
-    bulkUpsertTargets,
+  bulkUpsertTargets,
 } from './supabaseData';
 import { MOCK_CARDS } from '../constants';
 import { migrateToSupabase, needsMigration } from './migration';
@@ -154,6 +147,8 @@ export function useSupabaseInventory() {
                     ]);
                     setInventory(cards);
                     setTargets(watchlist);
+                    setSyncMeta(calculateSyncMeta(cards, new Date().toISOString()));
+                    setSyncStatus('synced');
                 } catch  {
                     setLastSyncError('Failed to fetch data from cloud');
                 }

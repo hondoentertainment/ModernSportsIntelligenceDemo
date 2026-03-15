@@ -1,563 +1,585 @@
-import { Sport } from '../types';
-
 // ---- Types ----
+
+export type AlertType = 'price_drop' | 'price_target' | 'grade_change' | 'new_listing';
+
+export interface PricePoint {
+  date: string;
+  price: number;
+}
 
 export interface WatchlistItem {
   id: string;
-  watchlistId: string;
+  cardName: string;
   player: string;
-  sport: Sport;
+  sport: string;
   year: number;
   set: string;
-  estimatedValue: number;
-  grade?: string;
-  addedAt: string;
-  priceHistory: number[]; // simulated mini price history (last 7 data points)
+  imageUrl: string;
   currentPrice: number;
-  priceChangePercent: number;
+  targetPrice: number;
+  alertType: AlertType;
+  alertEnabled: boolean;
+  priceHistory: PricePoint[];
+  addedDate: string;
+  notes: string;
+  condition: string;
+  estimatedGrade: string;
 }
 
-export interface Watchlist {
-  id: string;
-  name: string;
-  category: string;
-  createdAt: string;
-  items: WatchlistItem[];
-}
-
-export interface PriceAlertRule {
+export interface PriceAlert {
   id: string;
   watchlistItemId: string;
-  type: 'below' | 'above' | 'change_pct' | 'all_time_low';
-  threshold: number; // dollar amount for below/above, percentage for change_pct, ignored for all_time_low
-  createdAt: string;
-}
-
-export interface TriggeredAlert {
-  id: string;
-  ruleId: string;
-  watchlistItemId: string;
-  player: string;
-  sport: Sport;
-  ruleType: PriceAlertRule['type'];
+  type: AlertType;
   threshold: number;
-  currentPrice: number;
-  triggeredAt: string;
-  severity: 'critical' | 'high' | 'medium' | 'low';
+  triggered: boolean;
+  triggeredAt: string | null;
   message: string;
-  isAcknowledged: boolean;
-  snoozedUntil?: string;
 }
 
-export interface MarketScanResult {
-  id: string;
-  player: string;
-  sport: Sport;
-  year: number;
-  set: string;
-  grade?: string;
-  price: number;
-  previousPrice: number;
-  changePct: number;
-  source: string;
-  listedAt: string;
-  confidence: number;
+export interface WatchlistStats {
+  totalItems: number;
+  activeAlerts: number;
+  triggeredToday: number;
+  avgPriceChange: number;
+  topMover: string;
 }
 
 // ---- Constants ----
 
-const WATCHLISTS_KEY = 'msi_watchlists';
-const ALERT_RULES_KEY = 'msi_alert_rules';
-const TRIGGERED_ALERTS_KEY = 'msi_triggered_alerts';
-
-const MARKET_SOURCES = ['eBay', 'COMC', 'MySlabs', 'PWCC', 'Alt Marketplace', 'StockX'] as const;
-
-const PLAYER_POOLS: Record<Sport, string[]> = {
-  Baseball: ['Mike Trout', 'Shohei Ohtani', 'Aaron Judge', 'Juan Soto', 'Mookie Betts', 'Ronald Acuna Jr', 'Freddie Freeman', 'Corey Seager', 'Julio Rodriguez', 'Bobby Witt Jr'],
-  Basketball: ['LeBron James', 'Luka Doncic', 'Victor Wembanyama', 'Jayson Tatum', 'Anthony Edwards', 'Giannis Antetokounmpo', 'Nikola Jokic', 'Ja Morant', 'Shai Gilgeous-Alexander', 'Tyrese Haliburton'],
-  Football: ['Patrick Mahomes', 'Josh Allen', 'Joe Burrow', 'Justin Jefferson', 'Ja\'Marr Chase', 'Lamar Jackson', 'CJ Stroud', 'Caleb Williams', 'Travis Kelce', 'Brock Purdy'],
-  Hockey: ['Connor McDavid', 'Auston Matthews', 'Nathan MacKinnon', 'Cale Makar', 'Connor Bedard', 'Leon Draisaitl', 'Jack Hughes', 'Kirill Kaprizov', 'Andrei Svechnikov', 'Jason Robertson'],
-  Soccer: ['Erling Haaland', 'Kylian Mbappe', 'Jude Bellingham', 'Vinicius Jr', 'Bukayo Saka', 'Phil Foden', 'Pedri', 'Florian Wirtz', 'Lamine Yamal', 'Cole Palmer'],
-};
-
-const SET_POOLS: Record<Sport, string[]> = {
-  Baseball: ['Topps Chrome', 'Bowman 1st', 'Topps Heritage', 'Panini Prizm', 'Topps Series 1'],
-  Basketball: ['Panini Prizm', 'Donruss Optic', 'Select', 'Fleer Ultra', 'Topps Chrome'],
-  Football: ['Panini Prizm', 'Donruss Optic', 'Select', 'Mosaic', 'Panini Contenders'],
-  Hockey: ['Upper Deck Young Guns', 'O-Pee-Chee', 'SP Authentic', 'Upper Deck Series 1', 'Parkhurst'],
-  Soccer: ['Topps Chrome UCL', 'Panini Prizm', 'Topps Merlin', 'Donruss', 'Select'],
-};
-
-const GRADE_OPTIONS = ['PSA 10', 'PSA 9', 'BGS 9.5', 'BGS 10', 'SGC 10', 'CGC 9.5', 'Raw'] as const;
-
-// ---- Deterministic seed helpers ----
-
-function dateSeed(): number {
-  const now = new Date();
-  return now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
-}
-
-function hashString(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
-function seededRandom(seed: number, offset: number): number {
-  const x = Math.sin(seed + offset) * 10000;
-  return x - Math.floor(x);
-}
-
-function seededRange(seed: number, offset: number, min: number, max: number): number {
-  return min + seededRandom(seed, offset) * (max - min);
-}
-
-function generateId(prefix: string): string {
-  const seed = dateSeed();
-  const rand = Math.floor(seededRandom(seed, Date.now() % 10000) * 1000000);
-  return `${prefix}-${Date.now()}-${rand}`;
-}
+const WATCHLIST_KEY = 'msi_watchlist_items';
+const ALERTS_KEY = 'msi_watchlist_alerts';
 
 // ---- localStorage helpers ----
 
-function loadWatchlists(): Watchlist[] {
+function loadItems(): WatchlistItem[] {
   try {
-    const raw = localStorage.getItem(WATCHLISTS_KEY);
+    const raw = localStorage.getItem(WATCHLIST_KEY);
     if (!raw) return [];
-    return JSON.parse(raw) as Watchlist[];
+    return JSON.parse(raw) as WatchlistItem[];
   } catch {
     return [];
   }
 }
 
-function saveWatchlists(watchlists: Watchlist[]): void {
+function saveItems(items: WatchlistItem[]): void {
   try {
-    localStorage.setItem(WATCHLISTS_KEY, JSON.stringify(watchlists));
+    localStorage.setItem(WATCHLIST_KEY, JSON.stringify(items));
   } catch {
-    // quota exceeded - silently ignore
+    // quota exceeded
   }
 }
 
-function loadAlertRules(): PriceAlertRule[] {
+function loadAlerts(): PriceAlert[] {
   try {
-    const raw = localStorage.getItem(ALERT_RULES_KEY);
+    const raw = localStorage.getItem(ALERTS_KEY);
     if (!raw) return [];
-    return JSON.parse(raw) as PriceAlertRule[];
+    return JSON.parse(raw) as PriceAlert[];
   } catch {
     return [];
   }
 }
 
-function saveAlertRules(rules: PriceAlertRule[]): void {
+function saveAlerts(alerts: PriceAlert[]): void {
   try {
-    localStorage.setItem(ALERT_RULES_KEY, JSON.stringify(rules));
+    localStorage.setItem(ALERTS_KEY, JSON.stringify(alerts));
   } catch {
-    // quota exceeded - silently ignore
+    // quota exceeded
   }
 }
 
-function loadTriggeredAlerts(): TriggeredAlert[] {
-  try {
-    const raw = localStorage.getItem(TRIGGERED_ALERTS_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as TriggeredAlert[];
-  } catch {
-    return [];
-  }
+// ---- Helpers ----
+
+function generateId(): string {
+  return `wl-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-function saveTriggeredAlerts(alerts: TriggeredAlert[]): void {
-  try {
-    localStorage.setItem(TRIGGERED_ALERTS_KEY, JSON.stringify(alerts));
-  } catch {
-    // quota exceeded - silently ignore
-  }
-}
-
-// ---- Simulated price generation ----
-
-function simulateCurrentPrice(basePrice: number, player: string, sport: Sport): number {
-  const seed = dateSeed();
-  const playerHash = hashString(player + sport);
-  const combined = seed + playerHash;
-  const changeFactor = seededRange(combined, 7, -0.15, 0.20);
-  return Math.max(1, basePrice * (1 + changeFactor));
-}
-
-function simulatePriceHistory(basePrice: number, player: string, sport: Sport): number[] {
-  const seed = dateSeed();
-  const playerHash = hashString(player + sport);
-  const history: number[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const daySeed = seed - i + playerHash;
-    const change = seededRange(daySeed, 11, -0.08, 0.10);
-    history.push(Math.max(1, Math.round(basePrice * (1 + change) * 100) / 100));
+function generatePriceHistory(basePrice: number, days: number = 30): PricePoint[] {
+  const history: PricePoint[] = [];
+  let price = basePrice * 0.9;
+  for (let i = days; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    const change = (Math.sin(i * 0.5) * 0.05 + (Math.random() - 0.48) * 0.04) * price;
+    price = Math.max(price * 0.5, price + change);
+    history.push({
+      date: date.toISOString().split('T')[0],
+      price: Math.round(price * 100) / 100,
+    });
   }
   return history;
 }
 
-function simulatePriceChangePct(player: string, sport: Sport): number {
-  const seed = dateSeed();
-  const playerHash = hashString(player + sport);
-  return Math.round(seededRange(seed + playerHash, 13, -18, 22) * 100) / 100;
-}
+// ---- Mock Data ----
 
-// ---- Watchlist CRUD ----
+const MOCK_ITEMS: WatchlistItem[] = [
+  {
+    id: 'mock-1',
+    cardName: '2023 Topps Chrome #1 RC',
+    player: 'Shohei Ohtani',
+    sport: 'Baseball',
+    year: 2023,
+    set: 'Topps Chrome',
+    imageUrl: '/cards/ohtani-chrome.jpg',
+    currentPrice: 485.00,
+    targetPrice: 400.00,
+    alertType: 'price_drop',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(485),
+    addedDate: '2025-12-01',
+    notes: 'Watching for dip below $400',
+    condition: 'Near Mint',
+    estimatedGrade: 'PSA 10',
+  },
+  {
+    id: 'mock-2',
+    cardName: '2018 Prizm Silver #280 RC',
+    player: 'Luka Doncic',
+    sport: 'Basketball',
+    year: 2018,
+    set: 'Panini Prizm',
+    imageUrl: '/cards/doncic-prizm.jpg',
+    currentPrice: 3250.00,
+    targetPrice: 3500.00,
+    alertType: 'price_target',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(3250),
+    addedDate: '2025-11-15',
+    notes: 'Sell target $3500+',
+    condition: 'Mint',
+    estimatedGrade: 'PSA 10',
+  },
+  {
+    id: 'mock-3',
+    cardName: '2020 Prizm #339 RC',
+    player: 'Justin Herbert',
+    sport: 'Football',
+    year: 2020,
+    set: 'Panini Prizm',
+    imageUrl: '/cards/herbert-prizm.jpg',
+    currentPrice: 189.99,
+    targetPrice: 150.00,
+    alertType: 'price_drop',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(190),
+    addedDate: '2025-10-20',
+    notes: 'Buy more if drops below $150',
+    condition: 'Near Mint',
+    estimatedGrade: 'PSA 9',
+  },
+  {
+    id: 'mock-4',
+    cardName: '2023 Upper Deck Young Guns #201',
+    player: 'Connor Bedard',
+    sport: 'Hockey',
+    year: 2023,
+    set: 'Upper Deck Young Guns',
+    imageUrl: '/cards/bedard-yg.jpg',
+    currentPrice: 425.00,
+    targetPrice: 500.00,
+    alertType: 'price_target',
+    alertEnabled: false,
+    priceHistory: generatePriceHistory(425),
+    addedDate: '2025-11-01',
+    notes: 'Long-term hold',
+    condition: 'Mint',
+    estimatedGrade: 'BGS 9.5',
+  },
+  {
+    id: 'mock-5',
+    cardName: '2023 Topps Chrome UCL #1',
+    player: 'Jude Bellingham',
+    sport: 'Soccer',
+    year: 2023,
+    set: 'Topps Chrome UCL',
+    imageUrl: '/cards/bellingham-chrome.jpg',
+    currentPrice: 315.00,
+    targetPrice: 250.00,
+    alertType: 'price_drop',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(315),
+    addedDate: '2025-09-10',
+    notes: 'Watching for buying opportunity',
+    condition: 'Near Mint',
+    estimatedGrade: 'PSA 10',
+  },
+  {
+    id: 'mock-6',
+    cardName: '2023 Bowman Chrome 1st #BCP-1',
+    player: 'Jackson Holliday',
+    sport: 'Baseball',
+    year: 2023,
+    set: 'Bowman Chrome',
+    imageUrl: '/cards/holliday-bowman.jpg',
+    currentPrice: 78.50,
+    targetPrice: 100.00,
+    alertType: 'price_target',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(78.5),
+    addedDate: '2025-12-10',
+    notes: 'Prospect watch',
+    condition: 'Mint',
+    estimatedGrade: 'PSA 10',
+  },
+  {
+    id: 'mock-7',
+    cardName: '2023 Donruss Optic Rated Rookie',
+    player: 'Victor Wembanyama',
+    sport: 'Basketball',
+    year: 2023,
+    set: 'Donruss Optic',
+    imageUrl: '/cards/wemby-optic.jpg',
+    currentPrice: 1100.00,
+    targetPrice: 900.00,
+    alertType: 'price_drop',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(1100),
+    addedDate: '2025-11-20',
+    notes: 'Generational talent - buy on any dip',
+    condition: 'Near Mint',
+    estimatedGrade: 'PSA 10',
+  },
+  {
+    id: 'mock-8',
+    cardName: '2020 Select Club Level #244 RC',
+    player: 'Patrick Mahomes',
+    sport: 'Football',
+    year: 2020,
+    set: 'Panini Select',
+    imageUrl: '/cards/mahomes-select.jpg',
+    currentPrice: 725.00,
+    targetPrice: 800.00,
+    alertType: 'price_target',
+    alertEnabled: false,
+    priceHistory: generatePriceHistory(725),
+    addedDate: '2025-08-15',
+    notes: 'Dynasty QB premium',
+    condition: 'Mint',
+    estimatedGrade: 'PSA 10',
+  },
+  {
+    id: 'mock-9',
+    cardName: '2015 Topps Chrome #1 RC',
+    player: 'Mike Trout',
+    sport: 'Baseball',
+    year: 2015,
+    set: 'Topps Chrome',
+    imageUrl: '/cards/trout-chrome.jpg',
+    currentPrice: 2100.00,
+    targetPrice: 1800.00,
+    alertType: 'price_drop',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(2100),
+    addedDate: '2025-07-20',
+    notes: 'Iconic card - accumulate on weakness',
+    condition: 'Near Mint',
+    estimatedGrade: 'PSA 9',
+  },
+  {
+    id: 'mock-10',
+    cardName: '2024 Topps Chrome UCL #50',
+    player: 'Lamine Yamal',
+    sport: 'Soccer',
+    year: 2024,
+    set: 'Topps Chrome UCL',
+    imageUrl: '/cards/yamal-chrome.jpg',
+    currentPrice: 265.00,
+    targetPrice: 300.00,
+    alertType: 'new_listing',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(265),
+    addedDate: '2025-12-15',
+    notes: 'Young superstar - watch for new listings',
+    condition: 'Mint',
+    estimatedGrade: 'PSA 10',
+  },
+  {
+    id: 'mock-11',
+    cardName: '2022 Prizm Silver #1 RC',
+    player: 'Anthony Edwards',
+    sport: 'Basketball',
+    year: 2022,
+    set: 'Panini Prizm',
+    imageUrl: '/cards/edwards-prizm.jpg',
+    currentPrice: 550.00,
+    targetPrice: 600.00,
+    alertType: 'grade_change',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(550),
+    addedDate: '2025-10-01',
+    notes: 'Sent for re-grade',
+    condition: 'Near Mint',
+    estimatedGrade: 'PSA 9',
+  },
+  {
+    id: 'mock-12',
+    cardName: '2023 SP Authentic Future Watch',
+    player: 'Connor McDavid',
+    sport: 'Hockey',
+    year: 2023,
+    set: 'SP Authentic',
+    imageUrl: '/cards/mcdavid-spa.jpg',
+    currentPrice: 890.00,
+    targetPrice: 750.00,
+    alertType: 'price_drop',
+    alertEnabled: false,
+    priceHistory: generatePriceHistory(890),
+    addedDate: '2025-09-25',
+    notes: 'GOAT potential - long term hold',
+    condition: 'Mint',
+    estimatedGrade: 'BGS 9.5',
+  },
+  {
+    id: 'mock-13',
+    cardName: '2023 Mosaic #301 RC',
+    player: 'CJ Stroud',
+    sport: 'Football',
+    year: 2023,
+    set: 'Panini Mosaic',
+    imageUrl: '/cards/stroud-mosaic.jpg',
+    currentPrice: 95.00,
+    targetPrice: 120.00,
+    alertType: 'price_target',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(95),
+    addedDate: '2025-11-05',
+    notes: 'Breakout candidate',
+    condition: 'Near Mint',
+    estimatedGrade: 'PSA 10',
+  },
+  {
+    id: 'mock-14',
+    cardName: '2023 Topps Series 1 #1',
+    player: 'Aaron Judge',
+    sport: 'Baseball',
+    year: 2023,
+    set: 'Topps Series 1',
+    imageUrl: '/cards/judge-topps.jpg',
+    currentPrice: 45.00,
+    targetPrice: 60.00,
+    alertType: 'new_listing',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(45),
+    addedDate: '2025-12-05',
+    notes: 'Looking for graded copies',
+    condition: 'Excellent',
+    estimatedGrade: 'PSA 8',
+  },
+  {
+    id: 'mock-15',
+    cardName: '2023 Donruss #201 Rated Rookie',
+    player: 'Erling Haaland',
+    sport: 'Soccer',
+    year: 2023,
+    set: 'Panini Donruss',
+    imageUrl: '/cards/haaland-donruss.jpg',
+    currentPrice: 175.00,
+    targetPrice: 200.00,
+    alertType: 'price_target',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(175),
+    addedDate: '2025-10-15',
+    notes: 'Premier League machine',
+    condition: 'Near Mint',
+    estimatedGrade: 'PSA 10',
+  },
+  {
+    id: 'mock-16',
+    cardName: '2024 Prizm Draft Picks #1',
+    player: 'Caleb Williams',
+    sport: 'Football',
+    year: 2024,
+    set: 'Panini Prizm',
+    imageUrl: '/cards/williams-prizm.jpg',
+    currentPrice: 62.00,
+    targetPrice: 50.00,
+    alertType: 'price_drop',
+    alertEnabled: true,
+    priceHistory: generatePriceHistory(62),
+    addedDate: '2025-12-20',
+    notes: '#1 pick - high upside',
+    condition: 'Mint',
+    estimatedGrade: 'PSA 10',
+  },
+];
 
-export function createWatchlist(name: string, category: string): Watchlist {
-  const watchlists = loadWatchlists();
-  const newWatchlist: Watchlist = {
-    id: generateId('wl'),
-    name,
-    category,
-    createdAt: new Date().toISOString(),
-    items: [],
-  };
-  watchlists.push(newWatchlist);
-  saveWatchlists(watchlists);
-  return newWatchlist;
-}
+const MOCK_ALERTS: PriceAlert[] = [
+  { id: 'alert-1', watchlistItemId: 'mock-1', type: 'price_drop', threshold: 400, triggered: true, triggeredAt: new Date().toISOString(), message: 'Shohei Ohtani dropped below $400 target' },
+  { id: 'alert-2', watchlistItemId: 'mock-2', type: 'price_target', threshold: 3500, triggered: false, triggeredAt: null, message: 'Luka Doncic target: $3,500' },
+  { id: 'alert-3', watchlistItemId: 'mock-3', type: 'price_drop', threshold: 150, triggered: false, triggeredAt: null, message: 'Justin Herbert target: below $150' },
+  { id: 'alert-4', watchlistItemId: 'mock-5', type: 'price_drop', threshold: 250, triggered: true, triggeredAt: new Date().toISOString(), message: 'Jude Bellingham dropped below $250 target' },
+  { id: 'alert-5', watchlistItemId: 'mock-7', type: 'price_drop', threshold: 900, triggered: false, triggeredAt: null, message: 'Victor Wembanyama target: below $900' },
+  { id: 'alert-6', watchlistItemId: 'mock-10', type: 'new_listing', threshold: 300, triggered: true, triggeredAt: new Date().toISOString(), message: 'New Lamine Yamal listing found under $300' },
+  { id: 'alert-7', watchlistItemId: 'mock-11', type: 'grade_change', threshold: 0, triggered: false, triggeredAt: null, message: 'Anthony Edwards grade update pending' },
+  { id: 'alert-8', watchlistItemId: 'mock-13', type: 'price_target', threshold: 120, triggered: false, triggeredAt: null, message: 'CJ Stroud target: $120' },
+];
 
-export function deleteWatchlist(id: string): void {
-  const watchlists = loadWatchlists();
-  const filtered = watchlists.filter(w => w.id !== id);
-  saveWatchlists(filtered);
+// ---- Seed mock data if empty ----
 
-  // Also remove associated alert rules
-  const rules = loadAlertRules();
-  const itemIds = new Set(
-    watchlists.find(w => w.id === id)?.items.map(i => i.id) ?? []
-  );
-  const filteredRules = rules.filter(r => !itemIds.has(r.watchlistItemId));
-  saveAlertRules(filteredRules);
-}
-
-export function getWatchlists(): Watchlist[] {
-  const watchlists = loadWatchlists();
-  // Refresh simulated prices on each load
-  for (const wl of watchlists) {
-    for (const item of wl.items) {
-      item.currentPrice = Math.round(simulateCurrentPrice(item.estimatedValue, item.player, item.sport) * 100) / 100;
-      item.priceHistory = simulatePriceHistory(item.estimatedValue, item.player, item.sport);
-      item.priceChangePercent = simulatePriceChangePct(item.player, item.sport);
-    }
+function ensureMockData(): void {
+  const items = loadItems();
+  if (items.length === 0) {
+    saveItems(MOCK_ITEMS);
   }
-  return watchlists;
+  const alerts = loadAlerts();
+  if (alerts.length === 0) {
+    saveAlerts(MOCK_ALERTS);
+  }
 }
 
-export function addToWatchlist(
-  watchlistId: string,
-  item: { player: string; sport: Sport; year: number; set: string; estimatedValue: number; grade?: string }
-): WatchlistItem {
-  const watchlists = loadWatchlists();
-  const wl = watchlists.find(w => w.id === watchlistId);
-  if (!wl) throw new Error(`Watchlist ${watchlistId} not found`);
+// ---- Exported Functions ----
 
-  const currentPrice = simulateCurrentPrice(item.estimatedValue, item.player, item.sport);
-  const priceHistory = simulatePriceHistory(item.estimatedValue, item.player, item.sport);
-  const priceChangePercent = simulatePriceChangePct(item.player, item.sport);
+export function getWatchlistItems(): WatchlistItem[] {
+  ensureMockData();
+  return loadItems();
+}
 
+export function addToWatchlist(item: Omit<WatchlistItem, 'id' | 'priceHistory' | 'addedDate'>): WatchlistItem {
+  const items = loadItems();
   const newItem: WatchlistItem = {
-    id: generateId('wi'),
-    watchlistId,
-    player: item.player,
-    sport: item.sport,
-    year: item.year,
-    set: item.set,
-    estimatedValue: item.estimatedValue,
-    grade: item.grade,
-    addedAt: new Date().toISOString(),
-    priceHistory,
-    currentPrice: Math.round(currentPrice * 100) / 100,
-    priceChangePercent,
+    ...item,
+    id: generateId(),
+    priceHistory: generatePriceHistory(item.currentPrice),
+    addedDate: new Date().toISOString().split('T')[0],
   };
-
-  wl.items.push(newItem);
-  saveWatchlists(watchlists);
+  items.push(newItem);
+  saveItems(items);
   return newItem;
 }
 
-export function removeFromWatchlist(watchlistId: string, itemId: string): void {
-  const watchlists = loadWatchlists();
-  const wl = watchlists.find(w => w.id === watchlistId);
-  if (!wl) return;
-  wl.items = wl.items.filter(i => i.id !== itemId);
-  saveWatchlists(watchlists);
-
-  // Remove alert rules for this item
-  const rules = loadAlertRules();
-  saveAlertRules(rules.filter(r => r.watchlistItemId !== itemId));
+export function removeFromWatchlist(id: string): void {
+  const items = loadItems();
+  saveItems(items.filter(i => i.id !== id));
+  // Also remove associated alerts
+  const alerts = loadAlerts();
+  saveAlerts(alerts.filter(a => a.watchlistItemId !== id));
 }
 
-// ---- Alert Rules ----
-
-export function createAlertRule(
-  watchlistItemId: string,
-  rule: Omit<PriceAlertRule, 'id' | 'createdAt'>
-): PriceAlertRule {
-  const rules = loadAlertRules();
-  const newRule: PriceAlertRule = {
-    ...rule,
-    id: generateId('ar'),
-    watchlistItemId,
-    createdAt: new Date().toISOString(),
-  };
-  rules.push(newRule);
-  saveAlertRules(rules);
-  return newRule;
+export function updateAlert(id: string, config: Partial<Pick<WatchlistItem, 'alertType' | 'alertEnabled' | 'targetPrice'>>): WatchlistItem | null {
+  const items = loadItems();
+  const index = items.findIndex(i => i.id === id);
+  if (index === -1) return null;
+  items[index] = { ...items[index], ...config };
+  saveItems(items);
+  return items[index];
 }
 
-export function deleteAlertRule(ruleId: string): void {
-  const rules = loadAlertRules();
-  saveAlertRules(rules.filter(r => r.id !== ruleId));
+export function getActiveAlerts(): PriceAlert[] {
+  ensureMockData();
+  const alerts = loadAlerts();
+  return alerts.filter(a => !a.triggered);
 }
 
-// ---- Alert Evaluation ----
+export function getTriggeredAlerts(): PriceAlert[] {
+  ensureMockData();
+  const alerts = loadAlerts();
+  return alerts.filter(a => a.triggered);
+}
 
-export function evaluateAlerts(watchlists: Watchlist[]): TriggeredAlert[] {
-  const rules = loadAlertRules();
-  const existingAlerts = loadTriggeredAlerts();
-  const existingRuleIds = new Set(existingAlerts.filter(a => !a.isAcknowledged).map(a => a.ruleId));
+export function getWatchlistStats(): WatchlistStats {
+  ensureMockData();
+  const items = loadItems();
+  const alerts = loadAlerts();
+  const triggeredToday = alerts.filter(a => {
+    if (!a.triggered || !a.triggeredAt) return false;
+    const today = new Date().toISOString().split('T')[0];
+    return a.triggeredAt.startsWith(today);
+  }).length;
 
-  // Build lookup: itemId -> WatchlistItem
-  const itemMap = new Map<string, WatchlistItem>();
-  for (const wl of watchlists) {
-    for (const item of wl.items) {
-      itemMap.set(item.id, item);
-    }
-  }
-
-  const newAlerts: TriggeredAlert[] = [];
-
-  for (const rule of rules) {
-    // Skip if already triggered and unacknowledged
-    if (existingRuleIds.has(rule.id)) continue;
-
-    const item = itemMap.get(rule.watchlistItemId);
-    if (!item) continue;
-
-    let triggered = false;
-    let message = '';
-    let severity: TriggeredAlert['severity'] = 'medium';
-
-    switch (rule.type) {
-      case 'below':
-        if (item.currentPrice <= rule.threshold) {
-          triggered = true;
-          const dropPct = ((item.estimatedValue - item.currentPrice) / item.estimatedValue * 100).toFixed(1);
-          message = `${item.player} dropped to $${item.currentPrice.toFixed(2)}, below your $${rule.threshold.toFixed(2)} threshold (down ${dropPct}% from estimated value)`;
-          severity = item.currentPrice < rule.threshold * 0.9 ? 'critical' : 'high';
-        }
-        break;
-
-      case 'above':
-        if (item.currentPrice >= rule.threshold) {
-          triggered = true;
-          const gainPct = ((item.currentPrice - item.estimatedValue) / item.estimatedValue * 100).toFixed(1);
-          message = `${item.player} rose to $${item.currentPrice.toFixed(2)}, above your $${rule.threshold.toFixed(2)} target (+${gainPct}%)`;
-          severity = item.currentPrice > rule.threshold * 1.1 ? 'high' : 'medium';
-        }
-        break;
-
-      case 'change_pct':
-        if (Math.abs(item.priceChangePercent) >= rule.threshold) {
-          triggered = true;
-          const direction = item.priceChangePercent > 0 ? 'up' : 'down';
-          message = `${item.player} moved ${direction} ${Math.abs(item.priceChangePercent).toFixed(1)}%, exceeding your ${rule.threshold}% change threshold`;
-          severity = Math.abs(item.priceChangePercent) > rule.threshold * 1.5 ? 'critical' : 'high';
-        }
-        break;
-
-      case 'all_time_low': {
-        const minHistory = Math.min(...item.priceHistory);
-        if (item.currentPrice <= minHistory * 1.02) { // within 2% of all-time low
-          triggered = true;
-          message = `${item.player} at $${item.currentPrice.toFixed(2)} is near its all-time low of $${minHistory.toFixed(2)}. Potential buying opportunity.`;
-          severity = item.currentPrice <= minHistory ? 'critical' : 'high';
-        }
-        break;
+  // Compute average price change from priceHistory
+  let totalChange = 0;
+  let counted = 0;
+  for (const item of items) {
+    const h = item.priceHistory;
+    if (h.length >= 2) {
+      const prev = h[h.length - 2].price;
+      const curr = h[h.length - 1].price;
+      if (prev > 0) {
+        totalChange += ((curr - prev) / prev) * 100;
+        counted++;
       }
     }
+  }
+  const avgPriceChange = counted > 0 ? Math.round((totalChange / counted) * 100) / 100 : 0;
 
-    if (triggered) {
-      newAlerts.push({
-        id: generateId('ta'),
-        ruleId: rule.id,
-        watchlistItemId: rule.watchlistItemId,
-        player: item.player,
-        sport: item.sport,
-        ruleType: rule.type,
-        threshold: rule.threshold,
-        currentPrice: item.currentPrice,
-        triggeredAt: new Date().toISOString(),
-        severity,
-        message,
-        isAcknowledged: false,
-      });
+  // Top mover: item with largest absolute price change
+  let topMover = 'N/A';
+  let maxChange = 0;
+  for (const item of items) {
+    const h = item.priceHistory;
+    if (h.length >= 2) {
+      const prev = h[h.length - 2].price;
+      const curr = h[h.length - 1].price;
+      const absChange = prev > 0 ? Math.abs((curr - prev) / prev) * 100 : 0;
+      if (absChange > maxChange) {
+        maxChange = absChange;
+        topMover = item.player;
+      }
     }
   }
 
-  // Merge with existing
-  const allAlerts = [...existingAlerts, ...newAlerts];
-  saveTriggeredAlerts(allAlerts);
-  return allAlerts.filter(a => {
-    // Filter out snoozed alerts
-    if (a.snoozedUntil && new Date(a.snoozedUntil) > new Date()) return false;
-    return !a.isAcknowledged;
-  });
+  return {
+    totalItems: items.length,
+    activeAlerts: alerts.filter(a => !a.triggered).length,
+    triggeredToday,
+    avgPriceChange,
+    topMover,
+  };
 }
 
-// ---- Market Scanner ----
+export function getPriceHistory(id: string): PricePoint[] {
+  const items = loadItems();
+  const item = items.find(i => i.id === id);
+  return item?.priceHistory ?? [];
+}
 
-export function scanMarket(criteria: {
-  sport?: Sport;
-  minPrice?: number;
-  maxPrice?: number;
-  grade?: string;
-  yearRange?: [number, number];
-}): MarketScanResult[] {
-  const seed = dateSeed();
-  const criteriaHash = hashString(JSON.stringify(criteria));
-  const baseSeed = seed + criteriaHash;
+export function getTopMovers(): WatchlistItem[] {
+  ensureMockData();
+  const items = loadItems();
+  // Sort by absolute price change (last two data points)
+  return [...items]
+    .map(item => {
+      const h = item.priceHistory;
+      const change = h.length >= 2 && h[h.length - 2].price > 0
+        ? Math.abs((h[h.length - 1].price - h[h.length - 2].price) / h[h.length - 2].price) * 100
+        : 0;
+      return { item, change };
+    })
+    .sort((a, b) => b.change - a.change)
+    .map(({ item }) => item)
+    .slice(0, 10);
+}
 
-  const sports: Sport[] = criteria.sport
-    ? [criteria.sport]
-    : ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
+export function formatCurrency(n: number): string {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+}
 
-  const minPrice = criteria.minPrice ?? 10;
-  const maxPrice = criteria.maxPrice ?? 5000;
-  const minYear = criteria.yearRange?.[0] ?? 2018;
-  const maxYear = criteria.yearRange?.[1] ?? 2025;
-
-  const resultCount = Math.floor(seededRange(baseSeed, 0, 10, 21));
-  const results: MarketScanResult[] = [];
-
-  for (let i = 0; i < resultCount; i++) {
-    const itemSeed = baseSeed + i * 17;
-    const sportIdx = Math.floor(seededRange(itemSeed, 1, 0, sports.length));
-    const sport = sports[sportIdx];
-    const players = PLAYER_POOLS[sport];
-    const sets = SET_POOLS[sport];
-    const playerIdx = Math.floor(seededRange(itemSeed, 2, 0, players.length));
-    const setIdx = Math.floor(seededRange(itemSeed, 3, 0, sets.length));
-    const sourceIdx = Math.floor(seededRange(itemSeed, 4, 0, MARKET_SOURCES.length));
-
-    const price = Math.round(seededRange(itemSeed, 5, minPrice, maxPrice) * 100) / 100;
-    const changePct = Math.round(seededRange(itemSeed, 6, -25, 30) * 100) / 100;
-    const previousPrice = Math.round(price / (1 + changePct / 100) * 100) / 100;
-    const year = Math.floor(seededRange(itemSeed, 7, minYear, maxYear + 1));
-
-    const gradeIdx = Math.floor(seededRange(itemSeed, 8, 0, GRADE_OPTIONS.length));
-    const grade = criteria.grade || GRADE_OPTIONS[gradeIdx];
-
-    // Generate a listing date within the last 7 days
-    const daysAgo = Math.floor(seededRange(itemSeed, 9, 0, 7));
-    const listedDate = new Date();
-    listedDate.setDate(listedDate.getDate() - daysAgo);
-    listedDate.setHours(Math.floor(seededRange(itemSeed, 10, 0, 24)));
-
-    results.push({
-      id: `ms-${baseSeed}-${i}`,
-      player: players[playerIdx],
-      sport,
-      year,
-      set: sets[setIdx],
-      grade,
-      price,
-      previousPrice,
-      changePct,
-      source: MARKET_SOURCES[sourceIdx],
-      listedAt: listedDate.toISOString(),
-      confidence: Math.round(seededRange(itemSeed, 11, 60, 98)),
-    });
+export function getAlertTypeLabel(type: AlertType): string {
+  switch (type) {
+    case 'price_drop': return 'Price Drop';
+    case 'price_target': return 'Price Target';
+    case 'grade_change': return 'Grade Change';
+    case 'new_listing': return 'New Listing';
+    default: return 'Unknown';
   }
-
-  // Sort by best deals (largest negative change first)
-  results.sort((a, b) => a.changePct - b.changePct);
-
-  return results;
 }
 
-// ---- Analytics ----
-
-export function getWatchlistAnalytics(watchlists: Watchlist[]): {
-  totalWatched: number;
-  triggeredAlerts: number;
-  topMover: { player: string; changePct: number } | null;
-  bestEntry: { player: string; priceDrop: number } | null;
-} {
-  const allItems: WatchlistItem[] = [];
-  for (const wl of watchlists) {
-    allItems.push(...wl.items);
+export function getAlertColor(type: AlertType): string {
+  switch (type) {
+    case 'price_drop': return 'text-red-400';
+    case 'price_target': return 'text-emerald-400';
+    case 'grade_change': return 'text-amber-400';
+    case 'new_listing': return 'text-blue-400';
+    default: return 'text-slate-400';
   }
+}
 
-  const totalWatched = allItems.length;
-  const alerts = loadTriggeredAlerts().filter(a => !a.isAcknowledged);
-  const triggeredAlerts = alerts.length;
-
-  // Top mover: item with largest absolute price change percentage
-  let topMover: { player: string; changePct: number } | null = null;
-  let maxAbsChange = 0;
-  for (const item of allItems) {
-    if (Math.abs(item.priceChangePercent) > maxAbsChange) {
-      maxAbsChange = Math.abs(item.priceChangePercent);
-      topMover = { player: item.player, changePct: item.priceChangePercent };
-    }
+export function getSportIcon(sport: string): string {
+  switch (sport) {
+    case 'Baseball': return '\u26BE';
+    case 'Basketball': return '\uD83C\uDFC0';
+    case 'Football': return '\uD83C\uDFC8';
+    case 'Hockey': return '\uD83C\uDFD2';
+    case 'Soccer': return '\u26BD';
+    default: return '\uD83C\uDFC6';
   }
-
-  // Best entry: item with the largest price drop from estimated value
-  let bestEntry: { player: string; priceDrop: number } | null = null;
-  let maxDrop = 0;
-  for (const item of allItems) {
-    const drop = item.estimatedValue - item.currentPrice;
-    if (drop > maxDrop) {
-      maxDrop = drop;
-      bestEntry = { player: item.player, priceDrop: Math.round(drop * 100) / 100 };
-    }
-  }
-
-  return { totalWatched, triggeredAlerts, topMover, bestEntry };
-}
-
-// ---- Alert management ----
-
-export function acknowledgeAlert(alertId: string): void {
-  const alerts = loadTriggeredAlerts();
-  const updated = alerts.map(a =>
-    a.id === alertId ? { ...a, isAcknowledged: true } : a
-  );
-  saveTriggeredAlerts(updated);
-}
-
-export function snoozeAlert(alertId: string, hours: number): void {
-  const alerts = loadTriggeredAlerts();
-  const snoozeUntil = new Date();
-  snoozeUntil.setHours(snoozeUntil.getHours() + hours);
-  const updated = alerts.map(a =>
-    a.id === alertId ? { ...a, snoozedUntil: snoozeUntil.toISOString() } : a
-  );
-  saveTriggeredAlerts(updated);
-}
-
-// ---- CSV Export ----
-
-export function exportWatchlistCSV(watchlist: Watchlist): string {
-  const headers = ['Player', 'Sport', 'Year', 'Set', 'Grade', 'Estimated Value', 'Current Price', 'Change %', 'Added Date'];
-  const rows = watchlist.items.map(item => [
-    `"${item.player}"`,
-    item.sport,
-    item.year.toString(),
-    `"${item.set}"`,
-    item.grade ?? 'Raw',
-    item.estimatedValue.toFixed(2),
-    item.currentPrice.toFixed(2),
-    item.priceChangePercent.toFixed(2),
-    new Date(item.addedAt).toLocaleDateString(),
-  ]);
-
-  return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
 }

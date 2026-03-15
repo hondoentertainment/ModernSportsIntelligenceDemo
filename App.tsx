@@ -120,6 +120,42 @@ const SealedProduct = lazy(() => import('./pages/SealedProduct.tsx'));
 const ErrorCard = lazy(() => import('./pages/ErrorCard.tsx'));
 const AuctionSniper = lazy(() => import('./pages/AuctionSniper.tsx'));
 
+// Phases 159-168: Competitive Feature Suite
+const RealTimePriceEngine = lazy(() => import('./pages/RealTimePriceEngine.tsx'));
+const AiCardScanner = lazy(() => import('./pages/AiCardScanner.tsx'));
+const CrossPlatformArbitrage = lazy(() => import('./pages/CrossPlatformArbitrage.tsx'));
+const PredictivePriceEngine = lazy(() => import('./pages/PredictivePriceEngine.tsx'));
+const TaxReport = lazy(() => import('./pages/TaxReport.tsx'));
+const GradePredictionPage = lazy(() => import('./pages/GradePrediction.tsx'));
+const SmartNotifications = lazy(() => import('./pages/SmartNotifications.tsx'));
+const ConsensusPricing = lazy(() => import('./pages/ConsensusPricing.tsx'));
+const LiveBreakRoi = lazy(() => import('./pages/LiveBreakRoi.tsx'));
+const PortfolioBenchmark = lazy(() => import('./pages/PortfolioBenchmark.tsx'));
+
+// Phases 169-178: Next-gen platform features
+const Watchlist = lazy(() => import('./pages/Watchlist.tsx'));
+const InsuranceVault = lazy(() => import('./pages/InsuranceVault.tsx'));
+const BreakEvenCalculator = lazy(() => import('./pages/BreakEvenCalculator.tsx'));
+const CommunityTrading = lazy(() => import('./pages/CommunityTrading.tsx'));
+const SetCompletionPage = lazy(() => import('./pages/SetCompletion.tsx'));
+const PortfolioNarrator = lazy(() => import('./pages/PortfolioNarrator.tsx'));
+const VintageAllocation = lazy(() => import('./pages/VintageAllocation.tsx'));
+const GradingTurnaround = lazy(() => import('./pages/GradingTurnaround.tsx'));
+const MarketReplay = lazy(() => import('./pages/MarketReplay.tsx'));
+const ScanToValue = lazy(() => import('./pages/ScanToValue.tsx'));
+
+// Phases 179-188: Engagement & monetization features
+const HobbyIncome = lazy(() => import('./pages/HobbyIncome.tsx'));
+const CardShowPlanner = lazy(() => import('./pages/CardShowPlanner.tsx'));
+const RipFlipSim = lazy(() => import('./pages/RipFlipSim.tsx'));
+const SocialFeed = lazy(() => import('./pages/SocialFeed.tsx'));
+const SlabVerification = lazy(() => import('./pages/SlabVerification.tsx'));
+const PortfolioStressTest = lazy(() => import('./pages/PortfolioStressTest.tsx'));
+const ConsignmentMarket = lazy(() => import('./pages/ConsignmentMarket.tsx'));
+const GradingPrep = lazy(() => import('./pages/GradingPrep.tsx'));
+const ParallelUniverse = lazy(() => import('./pages/ParallelUniverse.tsx'));
+const AchievementSystem = lazy(() => import('./pages/AchievementSystem.tsx'));
+
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
 const Signup = lazy(() => import('./pages/Signup.tsx'));
@@ -249,6 +285,36 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/error-card" element={<ErrorCard />} />
                 <Route path="/auction-sniper" element={<AuctionSniper />} />
                 <Route path="/audit-dossier" element={<CollectorAuditDossier />} />
+                <Route path="/real-time-price-engine" element={<RealTimePriceEngine />} />
+                <Route path="/ai-card-scanner" element={<AiCardScanner />} />
+                <Route path="/cross-platform-arbitrage" element={<CrossPlatformArbitrage />} />
+                <Route path="/predictive-price-engine" element={<PredictivePriceEngine />} />
+                <Route path="/tax-report" element={<TaxReport />} />
+                <Route path="/grade-prediction" element={<GradePredictionPage />} />
+                <Route path="/smart-notifications" element={<SmartNotifications />} />
+                <Route path="/consensus-pricing" element={<ConsensusPricing />} />
+                <Route path="/live-break-roi" element={<LiveBreakRoi />} />
+                <Route path="/portfolio-benchmark" element={<PortfolioBenchmark />} />
+                <Route path="/watchlist" element={<Watchlist />} />
+                <Route path="/insurance-vault" element={<InsuranceVault />} />
+                <Route path="/break-even-calculator" element={<BreakEvenCalculator />} />
+                <Route path="/community-trading" element={<CommunityTrading />} />
+                <Route path="/set-completion" element={<SetCompletionPage />} />
+                <Route path="/portfolio-narrator" element={<PortfolioNarrator />} />
+                <Route path="/vintage-allocation" element={<VintageAllocation />} />
+                <Route path="/grading-turnaround" element={<GradingTurnaround />} />
+                <Route path="/market-replay" element={<MarketReplay />} />
+                <Route path="/scan-to-value" element={<ScanToValue />} />
+                <Route path="/hobby-income" element={<HobbyIncome />} />
+                <Route path="/card-show-planner" element={<CardShowPlanner />} />
+                <Route path="/rip-flip-sim" element={<RipFlipSim />} />
+                <Route path="/social-feed" element={<SocialFeed />} />
+                <Route path="/slab-verification" element={<SlabVerification />} />
+                <Route path="/portfolio-stress-test" element={<PortfolioStressTest />} />
+                <Route path="/consignment-market" element={<ConsignmentMarket />} />
+                <Route path="/grading-prep" element={<GradingPrep />} />
+                <Route path="/parallel-universe" element={<ParallelUniverse />} />
+                <Route path="/achievement-system" element={<AchievementSystem />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

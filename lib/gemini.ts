@@ -488,6 +488,7 @@ export async function parseCardImage(imageBase64: string, mimeType: string = "im
 /**
  * Deep Search: Finds cards or players similar to the input using AI reasoning.
  */
+export async function findSimilarCards(query: string, inventory: CardInventory[] = [], signal?: AbortSignal): Promise<SimilarCardResult[]> {
 export async function findSimilarCards(query: string, _inventory: CardInventory[] = [], _signal?: AbortSignal): Promise<SimilarCardResult[]> {
   const trimmed = query?.trim() ?? '';
   if (trimmed.length === 0) {
@@ -499,7 +500,7 @@ export async function findSimilarCards(query: string, _inventory: CardInventory[
     return [];
   }
   // Escape the query before embedding in the prompt to prevent prompt injection
-  const safeQuery = trimmed.replace(/["\\]/g, c => `\\${c}`);
+  const safeQuery = trimmed.replace(/["\\]/g, function(c) { return '\\' + c; });
 
   const prompt = `Act as an expert sports card scout and market analyst.
   Perform a deep similarity search for: "${safeQuery}"
