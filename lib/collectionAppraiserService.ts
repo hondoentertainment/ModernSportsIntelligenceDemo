@@ -642,6 +642,40 @@ const MOCK_CLAIMS_HISTORY = [
   { id: 'cl-5', date: '2026-01-10', type: 'Fire', claimedAmount: 8500.00, settledAmount: 0.00, status: 'pending', daysToSettle: 0, description: 'Electrical fire in garage affected adjacent storage area with raw cards.' },
 ];
 
+// ---- Mock Data: Tax Implications Guide ----
+
+const MOCK_TAX_GUIDE = {
+  capitalGains: {
+    shortTermRate: '10-37%',
+    longTermRate: '0-28%',
+    collectiblesRate: '28% maximum',
+    holdingPeriod: '12 months for long-term treatment',
+    description: 'Collectibles including sports cards are taxed at a maximum 28% long-term capital gains rate, which is higher than the standard 20% maximum for other assets.',
+  },
+  deductions: {
+    charitableDonation: 'Fair market value deductible for donations to qualified organizations when held over 12 months.',
+    casualtyLoss: 'Deductible only for federally declared disasters per TCJA (2018-2025).',
+    businessExpense: 'Dealers can deduct cost of goods sold, storage, insurance, and travel to shows.',
+    appraisalRequirement: 'IRS requires qualified appraisal for charitable donations over $5,000.',
+  },
+  reporting: {
+    form1099K: 'Platforms must report gross sales over $600 (starting 2024).',
+    scheduleD: 'Report capital gains and losses on Schedule D of Form 1040.',
+    form8283: 'Required for non-cash charitable contributions over $500.',
+    recordKeeping: 'Maintain purchase receipts, sale records, and appraisals for 7 years.',
+  },
+};
+
+// ---- Mock Data: Auction House Comparison ----
+
+const MOCK_AUCTION_HOUSES = [
+  { name: 'Heritage Auctions', buyerPremium: 0.20, sellerCommission: 0.10, specialties: ['Vintage', 'Pre-war', 'High-value'], averageLotValue: 5000.00, annualVolume: 250000000, reputation: 4.8, onlineOnly: false },
+  { name: 'Goldin Auctions', buyerPremium: 0.20, sellerCommission: 0.09, specialties: ['Modern', 'Vintage', 'Memorabilia'], averageLotValue: 3500.00, annualVolume: 180000000, reputation: 4.7, onlineOnly: true },
+  { name: 'PWCC Marketplace', buyerPremium: 0.00, sellerCommission: 0.085, specialties: ['Weekly auctions', 'All eras'], averageLotValue: 800.00, annualVolume: 300000000, reputation: 4.5, onlineOnly: true },
+  { name: 'Robert Edward Auctions', buyerPremium: 0.20, sellerCommission: 0.00, specialties: ['Ultra high-end', 'Pre-war', 'Game-used'], averageLotValue: 15000.00, annualVolume: 50000000, reputation: 4.9, onlineOnly: false },
+  { name: 'Lelands', buyerPremium: 0.20, sellerCommission: 0.10, specialties: ['Vintage', 'Historical', 'Memorabilia'], averageLotValue: 4000.00, annualVolume: 60000000, reputation: 4.6, onlineOnly: false },
+];
+
 // ---- Mock Data: Storage Solutions ----
 
 const MOCK_STORAGE_SOLUTIONS = [
