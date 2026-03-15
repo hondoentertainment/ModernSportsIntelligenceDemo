@@ -182,6 +182,11 @@ export const NAV_ITEMS = [
   { id: 'portfolio-benchmark', label: 'Benchmark', icon: <Percent size={20} />, path: '/portfolio-benchmark' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
+  // v4.0: Multi-Sport League Hubs
+  { id: 'nfl-hub', label: 'NFL Hub', icon: <Trophy size={20} />, path: '/nfl-hub' },
+  { id: 'nba-hub', label: 'NBA Hub', icon: <Activity size={20} />, path: '/nba-hub' },
+  { id: 'nhl-hub', label: 'NHL Hub', icon: <Target size={20} />, path: '/nhl-hub' },
+  { id: 'soccer-hub', label: 'Soccer Hub', icon: <Globe size={20} />, path: '/soccer-hub' },
   // v4.0: Multi-Sport & Infrastructure
   { id: 'grading-vision-engine', label: 'Vision Grading', icon: <ScanEye size={20} />, path: '/grading-vision-engine' },
   { id: 'notification-center', label: 'Notifications', icon: <BellRing size={20} />, path: '/notification-center' },

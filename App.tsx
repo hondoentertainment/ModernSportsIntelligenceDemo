@@ -157,6 +157,12 @@ const ParallelUniverse = lazy(() => import('./pages/ParallelUniverse.tsx'));
 const AchievementSystem = lazy(() => import('./pages/AchievementSystem.tsx'));
 const SentimentVelocity = lazy(() => import('./pages/SentimentVelocity.tsx'));
 
+// v4.0: Multi-Sport League Hubs
+const NFLHub = lazy(() => import('./pages/NFLHub.tsx'));
+const NBAHub = lazy(() => import('./pages/NBAHub.tsx'));
+const NHLHub = lazy(() => import('./pages/NHLHub.tsx'));
+const SoccerHub = lazy(() => import('./pages/SoccerHub.tsx'));
+
 // v4.0: Multi-Sport & Infrastructure
 const GradingVisionEngine = lazy(() => import('./pages/GradingVisionEngine.tsx'));
 const NotificationCenter = lazy(() => import('./pages/NotificationCenter.tsx'));
@@ -336,6 +342,11 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/parallel-universe" element={<ParallelUniverse />} />
                 <Route path="/achievement-system" element={<AchievementSystem />} />
                 <Route path="/sentiment-velocity" element={<SentimentVelocity />} />
+                {/* v4.0: Multi-Sport League Hubs */}
+                <Route path="/nfl-hub" element={<NFLHub />} />
+                <Route path="/nba-hub" element={<NBAHub />} />
+                <Route path="/nhl-hub" element={<NHLHub />} />
+                <Route path="/soccer-hub" element={<SoccerHub />} />
                 {/* v4.0: Multi-Sport & Infrastructure */}
                 <Route path="/grading-vision-engine" element={<GradingVisionEngine />} />
                 <Route path="/notification-center" element={<NotificationCenter />} />
