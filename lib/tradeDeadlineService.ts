@@ -256,6 +256,16 @@ const MOCK_ROSTER_MOVES: RosterMove[] = [
   { id: 'rm-13', league: 'nba', player: 'Ben Simmons', team: 'Brooklyn Nets', moveType: 'waiver', date: '2026-01-20', cardValueImpact: -12, description: 'Nets waive Simmons using stretch provision' },
   { id: 'rm-14', league: 'nhl', player: 'Connor Bedard', team: 'Chicago Blackhawks', moveType: 'injured_reserve', date: '2026-02-15', cardValueImpact: -20, description: 'Bedard placed on IR with lower-body injury' },
   { id: 'rm-15', league: 'mlb', player: 'Andrew Painter', team: 'Philadelphia Phillies', moveType: 'callup', date: '2026-03-08', cardValueImpact: 25, description: 'Painter called up for first MLB start after Tommy John recovery' },
+  { id: 'rm-16', league: 'nba', player: 'Donovan Clingan', team: 'Portland Trail Blazers', moveType: 'injured_reserve', date: '2026-02-22', cardValueImpact: -15, description: 'Clingan placed on IR with knee sprain, out 4-6 weeks' },
+  { id: 'rm-17', league: 'mlb', player: 'Wyatt Langford', team: 'Texas Rangers', moveType: 'demotion', date: '2026-03-02', cardValueImpact: -18, description: 'Langford optioned to Triple-A to work on approach' },
+  { id: 'rm-18', league: 'nfl', player: 'Derek Carr', team: 'New Orleans Saints', moveType: 'release', date: '2026-03-06', cardValueImpact: -10, description: 'Saints release Carr in salary cap move' },
+  { id: 'rm-19', league: 'nhl', player: 'Alex Ovechkin', team: 'Washington Capitals', moveType: 'injured_reserve', date: '2026-02-10', cardValueImpact: -12, description: 'Ovechkin placed on IR, Wayne Gretzky record chase paused' },
+  { id: 'rm-20', league: 'mlb', player: 'Dylan Crews', team: 'Washington Nationals', moveType: 'callup', date: '2026-03-14', cardValueImpact: 22, description: 'No. 2 overall pick earns Opening Day roster spot' },
+  { id: 'rm-21', league: 'nba', player: 'James Harden', team: 'Los Angeles Clippers', moveType: 'waiver', date: '2026-02-08', cardValueImpact: -8, description: 'Clippers buy out Harden contract, becomes free agent' },
+  { id: 'rm-22', league: 'nfl', player: 'Nick Chubb', team: 'Cleveland Browns', moveType: 'release', date: '2026-03-04', cardValueImpact: -5, description: 'Browns release Chubb following restructured rehab timeline' },
+  { id: 'rm-23', league: 'nhl', player: 'Sidney Crosby', team: 'Pittsburgh Penguins', moveType: 'injured_reserve', date: '2026-03-01', cardValueImpact: 15, description: 'Crosby placed on IR — retirement speculation causes vintage card surge' },
+  { id: 'rm-24', league: 'mlb', player: 'James Wood', team: 'Washington Nationals', moveType: 'callup', date: '2026-03-12', cardValueImpact: 18, description: 'Top outfield prospect joins Opening Day roster' },
+  { id: 'rm-25', league: 'nba', player: 'Jalen Green', team: 'Houston Rockets', moveType: 'suspension', date: '2026-02-18', cardValueImpact: -10, description: 'Green suspended 5 games for conduct detrimental to team' },
 ];
 
 // ---- Mock Data: Impact Predictions ----
