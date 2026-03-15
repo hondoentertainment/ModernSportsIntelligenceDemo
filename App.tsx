@@ -97,6 +97,18 @@ const AuthTraining = lazy(() => import('./pages/AuthTraining.tsx'));
 const InventorySync = lazy(() => import('./pages/InventorySync.tsx'));
 const RookieClassIndex = lazy(() => import('./pages/RookieClassIndex.tsx'));
 
+// Phases 139-148: Production-grade expansion
+const VendingMachine = lazy(() => import('./pages/VendingMachine.tsx'));
+const WomensSportsIndex = lazy(() => import('./pages/WomensSportsIndex.tsx'));
+const GradingAuditor = lazy(() => import('./pages/GradingAuditor.tsx'));
+const SmartStorage = lazy(() => import('./pages/SmartStorage.tsx'));
+const PrintRunIntelligence = lazy(() => import('./pages/PrintRunIntelligence.tsx'));
+const YouthOnboarding = lazy(() => import('./pages/YouthOnboarding.tsx'));
+const LiveBreakHub = lazy(() => import('./pages/LiveBreakHub.tsx'));
+const PricePrediction = lazy(() => import('./pages/PricePrediction.tsx'));
+const InternationalArbitrage = lazy(() => import('./pages/InternationalArbitrage.tsx'));
+const BlockchainProvenance = lazy(() => import('./pages/BlockchainProvenance.tsx'));
+
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
 const Signup = lazy(() => import('./pages/Signup.tsx'));
@@ -183,6 +195,16 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (val: bool
                 <Route path="/auth-training" element={<AuthTraining />} />
                 <Route path="/inventory-sync" element={<InventorySync />} />
                 <Route path="/rookie-class-index" element={<RookieClassIndex />} />
+                <Route path="/vending-machine" element={<VendingMachine />} />
+                <Route path="/womens-sports-index" element={<WomensSportsIndex />} />
+                <Route path="/grading-auditor" element={<GradingAuditor />} />
+                <Route path="/smart-storage" element={<SmartStorage />} />
+                <Route path="/print-run-intelligence" element={<PrintRunIntelligence />} />
+                <Route path="/youth-onboarding" element={<YouthOnboarding />} />
+                <Route path="/live-break-hub" element={<LiveBreakHub />} />
+                <Route path="/price-prediction" element={<PricePrediction />} />
+                <Route path="/international-arbitrage" element={<InternationalArbitrage />} />
+                <Route path="/blockchain-provenance" element={<BlockchainProvenance />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

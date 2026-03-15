@@ -53,6 +53,16 @@ import {
   GraduationCap,
   RefreshCw,
   TrendingDown,
+  Dice,
+  Heart,
+  ShieldCheck,
+  Thermometer,
+  Factory,
+  BookOpen,
+  Video,
+  Crosshair,
+  Globe,
+  Shield,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -117,6 +127,17 @@ export const NAV_ITEMS = [
   { id: 'auth-training', label: 'Auth Academy', icon: <GraduationCap size={20} />, path: '/auth-training' },
   { id: 'inventory-sync', label: 'Inventory Sync', icon: <RefreshCw size={20} />, path: '/inventory-sync' },
   { id: 'rookie-class-index', label: 'Rookie Index', icon: <TrendingDown size={20} />, path: '/rookie-class-index' },
+  // Phases 139-148: Production-Grade Expansion
+  { id: 'vending-machine', label: 'Pack Simulator', icon: <Dice size={20} />, path: '/vending-machine' },
+  { id: 'womens-sports-index', label: "Women's Sports", icon: <Heart size={20} />, path: '/womens-sports-index' },
+  { id: 'grading-auditor', label: 'Grading Auditor', icon: <ShieldCheck size={20} />, path: '/grading-auditor' },
+  { id: 'smart-storage', label: 'Smart Storage', icon: <Thermometer size={20} />, path: '/smart-storage' },
+  { id: 'print-run-intelligence', label: 'Print Run Intel', icon: <Factory size={20} />, path: '/print-run-intelligence' },
+  { id: 'youth-onboarding', label: 'New Collector', icon: <BookOpen size={20} />, path: '/youth-onboarding' },
+  { id: 'live-break-hub', label: 'Live Break Hub', icon: <Video size={20} />, path: '/live-break-hub' },
+  { id: 'price-prediction', label: 'Price Prediction', icon: <Crosshair size={20} />, path: '/price-prediction' },
+  { id: 'international-arbitrage', label: 'Intl Arbitrage', icon: <Globe size={20} />, path: '/international-arbitrage' },
+  { id: 'blockchain-provenance', label: 'Card Passport', icon: <Shield size={20} />, path: '/blockchain-provenance' },
   { id: 'billing', label: 'Billing', icon: <CreditCard size={20} />, path: '/billing' },
   { id: 'settings', label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
 ];
