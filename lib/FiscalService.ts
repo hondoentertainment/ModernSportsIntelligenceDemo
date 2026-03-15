@@ -41,7 +41,7 @@ function getHoldingDays(item: CardInventory): number {
 
 function getTaxProfile(item: CardInventory, shortTermRate: number, longTermRate: number) {
     const holdingDays = getHoldingDays(item);
-    const taxTreatment = holdingDays >= 365 ? 'Long Term' : 'Short Term';
+    const taxTreatment: ExitSimulationResult['taxTreatment'] = holdingDays >= 365 ? 'Long Term' : 'Short Term';
     const daysToLongTerm = Math.max(0, 365 - holdingDays);
 
     return {
@@ -141,7 +141,7 @@ export const FiscalService = {
                     return {
                         cardId: item.id,
                         assetName: `${item.year} ${item.player} ${item.set}`.trim(),
-                        recommendedAction: 'Harvest Loss',
+                        recommendedAction: 'Harvest Loss' as const,
                         targetVenue: bestImmediateVenue.venue,
                         targetPrice: currentValue,
                         netAfterTax: bestImmediateVenue.netAfterTax,
@@ -154,7 +154,7 @@ export const FiscalService = {
                     return {
                         cardId: item.id,
                         assetName: `${item.year} ${item.player} ${item.set}`.trim(),
-                        recommendedAction: 'Wait For Long-Term',
+                        recommendedAction: 'Wait For Long-Term' as const,
                         targetVenue: bestDeferredVenue.venue,
                         targetPrice: currentValue * 1.05,
                         netAfterTax: bestDeferredVenue.netAfterTax,
@@ -167,7 +167,7 @@ export const FiscalService = {
                     return {
                         cardId: item.id,
                         assetName: `${item.year} ${item.player} ${item.set}`.trim(),
-                        recommendedAction: 'Sell Now',
+                        recommendedAction: 'Sell Now' as const,
                         targetVenue: bestImmediateVenue.venue,
                         targetPrice: currentValue,
                         netAfterTax: bestImmediateVenue.netAfterTax,
@@ -179,7 +179,7 @@ export const FiscalService = {
                 return {
                     cardId: item.id,
                     assetName: `${item.year} ${item.player} ${item.set}`.trim(),
-                    recommendedAction: 'Hold',
+                    recommendedAction: 'Hold' as const,
                     targetVenue: bestDeferredVenue.venue,
                     targetPrice: currentValue * 1.05,
                     netAfterTax: bestDeferredVenue.netAfterTax,

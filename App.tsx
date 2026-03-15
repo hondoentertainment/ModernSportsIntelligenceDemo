@@ -129,7 +129,7 @@ const PublicPortfolio = lazy(() => import('./pages/PublicPortfolio.tsx'));
 
 // ─── App Layout ───────────────────────────────────────────────────────
 
-const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (_val: boolean) => void }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
+const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>> }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { inventory } = useSupabaseInventory();
   const [isWallHUDOpen, setIsWallHUDOpen] = useState(false);
   const [selectedGrail, setSelectedGrail] = useState<any>(null);

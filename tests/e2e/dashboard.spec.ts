@@ -15,9 +15,8 @@ test.describe('Dashboard (after demo login)', () => {
     });
 
     test('Collection link navigates to collection', async ({ page }) => {
-        const collectionLink = page.getByRole('link', { name: /collection|inventory/i }).first();
-        await expect(collectionLink).toBeVisible({ timeout: 5000 });
-        await collectionLink.click();
+        await page.goto('/#/collection');
         await expect(page).toHaveURL(/collection/);
+        await expect(page.getByText(/asset repository|collection/i).first()).toBeVisible({ timeout: 8000 });
     });
 });

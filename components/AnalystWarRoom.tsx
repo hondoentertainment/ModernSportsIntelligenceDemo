@@ -18,7 +18,7 @@ const AnalystWarRoom: React.FC = () => {
     const generateThesis = async () => {
         setIsGenerating(true);
         const config = AutonomousExecutionService.getConfig();
-        const result = await MultiAgentService.getCollaborativeThesis(inventory, config.isActive);
+        const result = await MultiAgentService.getCollaborativeThesis(inventory, config.isActive, 'war-room');
 
         if (result) {
             setThesis(result);

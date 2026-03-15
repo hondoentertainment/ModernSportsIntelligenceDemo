@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -15,7 +15,7 @@ interface State {
  * Error boundary specifically designed for lazy-loaded components.
  * Handles chunk loading failures with a retry mechanism.
  */
-class LazyErrorBoundary extends Component<Props, State> {
+class LazyErrorBoundary extends React.Component<Props, State> {
   state: State = { hasError: false, error: null };
 
   static getDerivedStateFromError(error: Error): State {

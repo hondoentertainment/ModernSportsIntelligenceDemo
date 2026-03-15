@@ -1,6 +1,6 @@
 import { CardInventory, TargetWatchlist } from '../types';
 import { getCardHistory, PriceSnapshot } from './priceHistory';
-import { LiquidityService } from './LiquidityService';
+import { LiquidityService } from './liquidityService';
 
 export interface ArbitrageSignal {
     id: string;
@@ -21,7 +21,7 @@ export class ArbitrageService {
      */
     static evaluateOpportunity(asset: CardInventory | TargetWatchlist): { score: number; delta: number } {
         const history = getCardHistory(asset.id);
-        const currentValue = 'currentValue' in asset ? asset.currentValue : asset.currentMarketPrice;
+        const currentValue = 'cardDescription' in asset ? asset.currentMarketPrice : asset.currentValue;
 
         // Fallback if no history or current value is set
         if (!history || history.length < 2 || !currentValue) {

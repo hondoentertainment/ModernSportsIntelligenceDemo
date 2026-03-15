@@ -75,9 +75,9 @@ function matchPredictiveCard(card: CardInventory) {
 }
 
 function recommendedVenueForAsset(listings: MarketplaceListingRecord[], offers: ListingOfferRecord[]) {
-    if (offers.length >= 3) return 'private';
-    if (listings.some(listing => listing.sourceVenue === 'ebay')) return 'ebay';
-    return 'internal';
+    if (offers.length >= 3) return 'private' as const;
+    if (listings.some(listing => listing.sourceVenue === 'ebay')) return 'ebay' as const;
+    return 'internal' as const;
 }
 
 export async function buildLiquidityTwinAssets(inventory: CardInventory[], userId?: string): Promise<LiquidityTwinAssetView[]> {

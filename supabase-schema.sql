@@ -529,6 +529,11 @@ CREATE TABLE IF NOT EXISTS execution_intents (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+ALTER TABLE execution_intents ADD COLUMN IF NOT EXISTS recommendation_id UUID;
+ALTER TABLE execution_intents ADD COLUMN IF NOT EXISTS counterparty_id UUID REFERENCES counterparties(id) ON DELETE SET NULL;
+ALTER TABLE execution_intents ADD COLUMN IF NOT EXISTS listing_id UUID REFERENCES marketplace_listings(id) ON DELETE SET NULL;
+ALTER TABLE execution_intents ADD COLUMN IF NOT EXISTS deal_room_id UUID REFERENCES deal_rooms(id) ON DELETE SET NULL;
+
 CREATE TABLE IF NOT EXISTS execution_approvals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   intent_id UUID REFERENCES execution_intents(id) ON DELETE CASCADE,
@@ -551,6 +556,55 @@ CREATE TABLE IF NOT EXISTS execution_fills (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS agent_recommendations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  owner_user_id UUID REFERENCES auth.users,
+  source TEXT NOT NULL,
+  cycle_id TEXT,
+  thesis_id TEXT,
+  summary TEXT NOT NULL,
+  recommended_action TEXT NOT NULL,
+  risk_assessment TEXT,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('draft', 'queued', 'pending_approval', 'approved', 'rejected', 'submitted', 'filled', 'failed', 'cancelled')),
+  key_takeaways JSONB DEFAULT '[]'::jsonb,
+  agents JSONB DEFAULT '[]'::jsonb,
+  execution_plan JSONB DEFAULT '[]'::jsonb,
+  linked_intent_id UUID REFERENCES execution_intents(id) ON DELETE SET NULL,
+  linked_outcome_id UUID,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS agent_outcomes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  owner_user_id UUID REFERENCES auth.users,
+  recommendation_id UUID REFERENCES agent_recommendations(id) ON DELETE CASCADE,
+  intent_id UUID REFERENCES execution_intents(id) ON DELETE SET NULL,
+  fill_id UUID REFERENCES execution_fills(id) ON DELETE SET NULL,
+  outcome_type TEXT NOT NULL CHECK (outcome_type IN ('approved', 'rejected', 'submitted', 'filled', 'partial', 'failed', 'cancelled')),
+  amount NUMERIC,
+  quantity NUMERIC,
+  price NUMERIC,
+  venue TEXT,
+  rationale TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  recorded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'agent_recommendations_linked_outcome_fk'
+  ) THEN
+    ALTER TABLE agent_recommendations
+      ADD CONSTRAINT agent_recommendations_linked_outcome_fk
+      FOREIGN KEY (linked_outcome_id) REFERENCES agent_outcomes(id) ON DELETE SET NULL;
+  END IF;
+END $$;
+
 -- Indexes
 CREATE INDEX IF NOT EXISTS counterparties_owner_idx ON counterparties(owner_user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS counterparty_edges_owner_idx ON counterparty_edges(owner_user_id, created_at DESC);
@@ -564,6 +618,10 @@ CREATE INDEX IF NOT EXISTS catalyst_markets_event_idx ON catalyst_markets(cataly
 CREATE INDEX IF NOT EXISTS scenario_runs_owner_idx ON scenario_runs(owner_user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS execution_intents_owner_idx ON execution_intents(owner_user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS execution_fills_intent_idx ON execution_fills(intent_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS execution_intents_recommendation_idx ON execution_intents(recommendation_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS agent_recommendations_owner_idx ON agent_recommendations(owner_user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS agent_recommendations_cycle_idx ON agent_recommendations(cycle_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS agent_outcomes_recommendation_idx ON agent_outcomes(recommendation_id, recorded_at DESC);
 
 ALTER TABLE counterparties ENABLE ROW LEVEL SECURITY;
 ALTER TABLE counterparty_edges ENABLE ROW LEVEL SECURITY;
@@ -581,6 +639,8 @@ ALTER TABLE scenario_runs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE execution_intents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE execution_approvals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE execution_fills ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agent_recommendations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agent_outcomes ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users can manage their counterparties" ON counterparties;
 CREATE POLICY "Users can manage their counterparties" ON counterparties
@@ -735,5 +795,32 @@ CREATE POLICY "Users can insert fills for their intents" ON execution_fills
       FROM execution_intents ei
       WHERE ei.id = execution_fills.intent_id
         AND ei.owner_user_id = auth.uid()
+    )
+  );
+
+DROP POLICY IF EXISTS "Users can manage their agent recommendations" ON agent_recommendations;
+CREATE POLICY "Users can manage their agent recommendations" ON agent_recommendations
+  FOR ALL USING (auth.uid() = owner_user_id) WITH CHECK (auth.uid() = owner_user_id);
+
+DROP POLICY IF EXISTS "Users can view outcomes for their recommendations" ON agent_outcomes;
+CREATE POLICY "Users can view outcomes for their recommendations" ON agent_outcomes
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1
+      FROM agent_recommendations ar
+      WHERE ar.id = agent_outcomes.recommendation_id
+        AND ar.owner_user_id = auth.uid()
+    )
+  );
+
+DROP POLICY IF EXISTS "Users can insert outcomes for their recommendations" ON agent_outcomes;
+CREATE POLICY "Users can insert outcomes for their recommendations" ON agent_outcomes
+  FOR INSERT WITH CHECK (
+    auth.uid() = owner_user_id
+    AND EXISTS (
+      SELECT 1
+      FROM agent_recommendations ar
+      WHERE ar.id = agent_outcomes.recommendation_id
+        AND ar.owner_user_id = auth.uid()
     )
   );
