@@ -132,6 +132,18 @@ const ConsensusPricing = lazy(() => import('./pages/ConsensusPricing.tsx'));
 const LiveBreakRoi = lazy(() => import('./pages/LiveBreakRoi.tsx'));
 const PortfolioBenchmark = lazy(() => import('./pages/PortfolioBenchmark.tsx'));
 
+// Phases 169-178: Next-gen platform features
+const Watchlist = lazy(() => import('./pages/Watchlist.tsx'));
+const InsuranceVault = lazy(() => import('./pages/InsuranceVault.tsx'));
+const BreakEvenCalculator = lazy(() => import('./pages/BreakEvenCalculator.tsx'));
+const CommunityTrading = lazy(() => import('./pages/CommunityTrading.tsx'));
+const SetCompletionPage = lazy(() => import('./pages/SetCompletion.tsx'));
+const PortfolioNarrator = lazy(() => import('./pages/PortfolioNarrator.tsx'));
+const VintageAllocation = lazy(() => import('./pages/VintageAllocation.tsx'));
+const GradingTurnaround = lazy(() => import('./pages/GradingTurnaround.tsx'));
+const MarketReplay = lazy(() => import('./pages/MarketReplay.tsx'));
+const ScanToValue = lazy(() => import('./pages/ScanToValue.tsx'));
+
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
 const Signup = lazy(() => import('./pages/Signup.tsx'));
@@ -271,6 +283,16 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: (_val: boo
                 <Route path="/consensus-pricing" element={<ConsensusPricing />} />
                 <Route path="/live-break-roi" element={<LiveBreakRoi />} />
                 <Route path="/portfolio-benchmark" element={<PortfolioBenchmark />} />
+                <Route path="/watchlist" element={<Watchlist />} />
+                <Route path="/insurance-vault" element={<InsuranceVault />} />
+                <Route path="/break-even-calculator" element={<BreakEvenCalculator />} />
+                <Route path="/community-trading" element={<CommunityTrading />} />
+                <Route path="/set-completion" element={<SetCompletionPage />} />
+                <Route path="/portfolio-narrator" element={<PortfolioNarrator />} />
+                <Route path="/vintage-allocation" element={<VintageAllocation />} />
+                <Route path="/grading-turnaround" element={<GradingTurnaround />} />
+                <Route path="/market-replay" element={<MarketReplay />} />
+                <Route path="/scan-to-value" element={<ScanToValue />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
