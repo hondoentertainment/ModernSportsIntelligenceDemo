@@ -364,6 +364,41 @@ const MOCK_COVERAGE_RECOMMENDATIONS: CoverageRecommendation[] = [
   { id: 'cr-6', collectionValueRange: '$5,000,000+', recommendedCoverage: 'Custom Brokered Policy', estimatedPremium: 8500.00, providerId: 'ic-4', providerName: 'CollectInsure', reasoning: 'Museum-grade collections need custom policies with scheduled items and professional appraisal requirements.' },
 ];
 
+// ---- Mock Data: Additional Comparable Values ----
+
+const MOCK_ADDITIONAL_COMPARABLES: ComparableValue[] = [
+  { id: 'cv-21', referenceCardId: 'ca-13', comparableCardName: '2024 Select Jayden Daniels Auto /99 BGS 9.5', soldPrice: 1250.00, soldDate: '2026-03-02', platform: 'eBay', grade: 'BGS 9.5', relevanceScore: 95, priceDifference: 50.00 },
+  { id: 'cv-22', referenceCardId: 'ca-13', comparableCardName: '2024 Select Jayden Daniels Auto /99 PSA 10', soldPrice: 1380.00, soldDate: '2026-02-28', platform: 'PWCC', grade: 'PSA 10', relevanceScore: 88, priceDifference: 180.00 },
+  { id: 'cv-23', referenceCardId: 'ca-16', comparableCardName: '2024 Prizm LeBron Silver PSA 10', soldPrice: 435.00, soldDate: '2026-03-12', platform: 'eBay', grade: 'PSA 10', relevanceScore: 96, priceDifference: 15.00 },
+  { id: 'cv-24', referenceCardId: 'ca-18', comparableCardName: '2024 Chrome Henderson Auto PSA 10', soldPrice: 1580.00, soldDate: '2026-03-04', platform: 'eBay', grade: 'PSA 10', relevanceScore: 94, priceDifference: -70.00 },
+  { id: 'cv-25', referenceCardId: 'ca-19', comparableCardName: '2024 Prizm Mahomes Silver PSA 10', soldPrice: 295.00, soldDate: '2026-03-10', platform: 'eBay', grade: 'PSA 10', relevanceScore: 97, priceDifference: 10.00 },
+  { id: 'cv-26', referenceCardId: 'ca-20', comparableCardName: '2024 Prizm Jokic Silver PSA 10', soldPrice: 395.00, soldDate: '2026-03-08', platform: 'PWCC', grade: 'PSA 10', relevanceScore: 95, priceDifference: 15.00 },
+  { id: 'cv-27', referenceCardId: 'ca-21', comparableCardName: '2024 Bowman Holliday Auto /50 PSA 10', soldPrice: 1050.00, soldDate: '2026-02-25', platform: 'eBay', grade: 'PSA 10', relevanceScore: 88, priceDifference: 70.00 },
+  { id: 'cv-28', referenceCardId: 'ca-24', comparableCardName: '2024 Select MHJ Auto /99 BGS 9.5', soldPrice: 700.00, soldDate: '2026-03-06', platform: 'eBay', grade: 'BGS 9.5', relevanceScore: 94, priceDifference: 20.00 },
+  { id: 'cv-29', referenceCardId: 'ca-26', comparableCardName: '2024 Chrome Witt Jr Green /299 PSA 10', soldPrice: 540.00, soldDate: '2026-03-01', platform: 'eBay', grade: 'PSA 10', relevanceScore: 96, priceDifference: 20.00 },
+  { id: 'cv-30', referenceCardId: 'ca-27', comparableCardName: '2024 Prizm Holmgren Silver /149 PSA 10', soldPrice: 370.00, soldDate: '2026-03-07', platform: 'eBay', grade: 'PSA 10', relevanceScore: 93, priceDifference: -15.00 },
+  { id: 'cv-31', referenceCardId: 'ca-28', comparableCardName: '2024 Chrome Carroll Pink PSA 10', soldPrice: 265.00, soldDate: '2026-03-03', platform: 'eBay', grade: 'PSA 10', relevanceScore: 95, priceDifference: -15.00 },
+  { id: 'cv-32', referenceCardId: 'ca-29', comparableCardName: '2024 Prizm SGA RWB PSA 10', soldPrice: 205.00, soldDate: '2026-03-11', platform: 'eBay', grade: 'PSA 10', relevanceScore: 97, priceDifference: 10.00 },
+  { id: 'cv-33', referenceCardId: 'ca-30', comparableCardName: '2024 Bowman Bazzana 1st Auto PSA 10', soldPrice: 1520.00, soldDate: '2026-03-09', platform: 'eBay', grade: 'PSA 10', relevanceScore: 96, priceDifference: 70.00 },
+  { id: 'cv-34', referenceCardId: 'ca-9', comparableCardName: '2024 Prizm Caleb Williams Silver PSA 9', soldPrice: 180.00, soldDate: '2026-03-05', platform: 'eBay', grade: 'PSA 9', relevanceScore: 78, priceDifference: -140.00 },
+  { id: 'cv-35', referenceCardId: 'ca-15', comparableCardName: '1968 Topps Ryan PSA 5', soldPrice: 12500.00, soldDate: '2026-02-18', platform: 'Heritage Auctions', grade: 'PSA 5', relevanceScore: 82, priceDifference: -2500.00 },
+];
+
+// ---- Mock Data: Additional Replacement Costs ----
+
+const MOCK_ADDITIONAL_REPLACEMENT_COSTS: ReplacementCost[] = [
+  { id: 'rc-21', cardAppraisalId: 'ca-16', cardName: '2024 Panini Prizm LeBron James Silver', currentMarketPrice: 420.00, replacementCost: 465.00, replacementDifficulty: 'easy', estimatedSearchTime: '1-3 days', alternativesAvailable: 35, marketTrend: 'stable', lastSalePrice: 435.00, lastSaleDate: '2026-03-12' },
+  { id: 'rc-22', cardAppraisalId: 'ca-19', cardName: '2024 Panini Prizm Patrick Mahomes Silver', currentMarketPrice: 285.00, replacementCost: 320.00, replacementDifficulty: 'easy', estimatedSearchTime: '1-2 days', alternativesAvailable: 40, marketTrend: 'stable', lastSalePrice: 295.00, lastSaleDate: '2026-03-10' },
+  { id: 'rc-23', cardAppraisalId: 'ca-20', cardName: '2024 Panini Prizm Nikola Jokic Silver', currentMarketPrice: 380.00, replacementCost: 425.00, replacementDifficulty: 'easy', estimatedSearchTime: '1-3 days', alternativesAvailable: 25, marketTrend: 'stable', lastSalePrice: 395.00, lastSaleDate: '2026-03-08' },
+  { id: 'rc-24', cardAppraisalId: 'ca-21', cardName: '2024 Bowman Chrome Jackson Holliday Auto /50', currentMarketPrice: 980.00, replacementCost: 1150.00, replacementDifficulty: 'hard', estimatedSearchTime: '2-4 weeks', alternativesAvailable: 5, marketTrend: 'rising', lastSalePrice: 1050.00, lastSaleDate: '2026-02-25' },
+  { id: 'rc-25', cardAppraisalId: 'ca-24', cardName: '2024 Panini Select Marvin Harrison Jr Auto /99', currentMarketPrice: 680.00, replacementCost: 780.00, replacementDifficulty: 'moderate', estimatedSearchTime: '1-2 weeks', alternativesAvailable: 10, marketTrend: 'stable', lastSalePrice: 700.00, lastSaleDate: '2026-03-06' },
+  { id: 'rc-26', cardAppraisalId: 'ca-26', cardName: '2024 Topps Chrome Bobby Witt Jr Green /299', currentMarketPrice: 520.00, replacementCost: 590.00, replacementDifficulty: 'easy', estimatedSearchTime: '3-5 days', alternativesAvailable: 14, marketTrend: 'rising', lastSalePrice: 540.00, lastSaleDate: '2026-03-01' },
+  { id: 'rc-27', cardAppraisalId: 'ca-27', cardName: '2024 Panini Prizm Chet Holmgren Silver /149', currentMarketPrice: 385.00, replacementCost: 435.00, replacementDifficulty: 'moderate', estimatedSearchTime: '1-2 weeks', alternativesAvailable: 12, marketTrend: 'rising', lastSalePrice: 370.00, lastSaleDate: '2026-03-07' },
+  { id: 'rc-28', cardAppraisalId: 'ca-28', cardName: '2024 Topps Chrome Corbin Carroll Pink Refractor', currentMarketPrice: 280.00, replacementCost: 310.00, replacementDifficulty: 'easy', estimatedSearchTime: '1-3 days', alternativesAvailable: 22, marketTrend: 'declining', lastSalePrice: 265.00, lastSaleDate: '2026-03-03' },
+  { id: 'rc-29', cardAppraisalId: 'ca-29', cardName: '2024 Panini Prizm Shai Gilgeous-Alexander RWB', currentMarketPrice: 195.00, replacementCost: 225.00, replacementDifficulty: 'easy', estimatedSearchTime: '1-2 days', alternativesAvailable: 28, marketTrend: 'rising', lastSalePrice: 205.00, lastSaleDate: '2026-03-11' },
+  { id: 'rc-30', cardAppraisalId: 'ca-13', cardName: '2024 Panini Select Jayden Daniels Auto /99', currentMarketPrice: 1200.00, replacementCost: 1400.00, replacementDifficulty: 'moderate', estimatedSearchTime: '1-2 weeks', alternativesAvailable: 11, marketTrend: 'rising', lastSalePrice: 1250.00, lastSaleDate: '2026-03-02' },
+];
+
 // ---- Mock Data: Appraisal Certificates ----
 
 const MOCK_APPRAISAL_CERTIFICATES: AppraisalCertificate[] = [
