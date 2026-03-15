@@ -565,6 +565,67 @@ const MOCK_TRADE_RUMORS: TradeRumor[] = [
   { id: 'tr-20', league: 'nhl', playerName: 'Trevor Zegras', currentTeam: 'Anaheim Ducks', rumoredTeams: ['New Jersey Devils', 'Pittsburgh Penguins', 'Ottawa Senators'], confidence: 50, source: 'Pierre LeBrun', reportedDate: '2026-02-28', potentialCardImpact: 12, description: 'Ducks exploring options with Zegras amid slow rebuild progress', status: 'active' },
 ];
 
+// ---- Mock Data: Trade Impact Analysis ----
+
+const MOCK_TRADE_IMPACT_ANALYSIS = {
+  overallMarketHealth: {
+    currentIndex: 142.0,
+    weekOverWeek: 1.8,
+    monthOverMonth: 8.5,
+    yearOverYear: 42.0,
+    volatilityIndex: 28.5,
+    liquidityScore: 78,
+    sentiment: 'bullish' as const,
+  },
+  topTenCardMovers: [
+    { player: 'Vladimir Guerrero Jr', previousValue: 42.00, currentValue: 85.00, change: 102.4, reason: 'Dodgers trade' },
+    { player: 'Derrick Rose', previousValue: 25.00, currentValue: 45.00, change: 80.0, reason: 'Retirement nostalgia' },
+    { player: 'Garrett Crochet', previousValue: 18.00, currentValue: 32.00, change: 77.8, reason: 'Padres trade' },
+    { player: 'Patrick Kane', previousValue: 22.00, currentValue: 38.00, change: 72.7, reason: 'Retirement bump' },
+    { player: 'Saquon Barkley', previousValue: 28.00, currentValue: 48.00, change: 71.4, reason: 'Eagles signing' },
+    { player: 'Luis Robert Jr', previousValue: 25.00, currentValue: 42.00, change: 68.0, reason: 'Yankees trade' },
+    { player: 'Willy Adames', previousValue: 12.00, currentValue: 20.00, change: 66.7, reason: 'Giants signing' },
+    { player: 'Roki Sasaki', previousValue: 45.00, currentValue: 75.00, change: 66.7, reason: 'Dodgers signing' },
+    { player: 'Brandon Ingram', previousValue: 20.00, currentValue: 32.00, change: 60.0, reason: 'Sixers trade' },
+    { player: 'Darius Garland', previousValue: 35.00, currentValue: 55.00, change: 57.1, reason: 'Spurs trade' },
+  ],
+  bottomFiveDecliners: [
+    { player: 'Ben Simmons', previousValue: 8.00, currentValue: 3.00, change: -62.5, reason: 'Waived by Nets' },
+    { player: 'Deshaun Watson', previousValue: 12.00, currentValue: 5.00, change: -58.3, reason: 'Released by Browns' },
+    { player: 'Russell Wilson', previousValue: 18.00, currentValue: 10.00, change: -44.4, reason: 'Released by Steelers' },
+    { player: 'Tua Tagovailoa', previousValue: 22.00, currentValue: 15.00, change: -31.8, reason: 'Traded to Raiders' },
+    { player: 'Klay Thompson', previousValue: 55.00, currentValue: 38.00, change: -30.9, reason: 'Left Warriors' },
+  ],
+  leagueActivityRanking: [
+    { league: 'mlb' as League, activityScore: 92, totalMoves: 18, marketImpact: 'massive' },
+    { league: 'nba' as League, activityScore: 85, totalMoves: 42, marketImpact: 'significant' },
+    { league: 'nhl' as League, activityScore: 78, totalMoves: 28, marketImpact: 'moderate' },
+    { league: 'nfl' as League, activityScore: 72, totalMoves: 12, marketImpact: 'moderate' },
+  ],
+  upcomingCatalysts: [
+    { date: '2026-03-26', event: 'MLB Opening Day', expectedImpact: 'high', description: 'Prospect callups and new team debuts drive card demand spikes' },
+    { date: '2026-04-12', event: 'NBA Playoffs Begin', expectedImpact: 'high', description: 'Playoff performers see card value surges' },
+    { date: '2026-04-15', event: 'NHL Playoffs Begin', expectedImpact: 'medium', description: 'Stanley Cup contenders drive demand for star players' },
+    { date: '2026-04-23', event: 'NFL Draft', expectedImpact: 'high', description: 'Top picks see massive card value spikes on draft night' },
+    { date: '2026-07-31', event: 'MLB Trade Deadline', expectedImpact: 'massive', description: 'Annual card market catalyst — trades create instant value shifts' },
+    { date: '2026-06-26', event: 'NBA Draft', expectedImpact: 'high', description: 'New rookie cards hit market with fresh prospect hype' },
+  ],
+  seasonalPatterns: [
+    { month: 'January', trend: 'rising', reason: 'Post-holiday buying, MLB offseason moves' },
+    { month: 'February', trend: 'peak', reason: 'NBA trade deadline, Super Bowl momentum' },
+    { month: 'March', trend: 'stable', reason: 'NFL free agency, spring training hype' },
+    { month: 'April', trend: 'rising', reason: 'Playoff action across leagues, MLB Opening Day' },
+    { month: 'May', trend: 'stable', reason: 'Sustained playoff momentum' },
+    { month: 'June', trend: 'rising', reason: 'NBA Finals, Stanley Cup Finals, MLB All-Star buildup' },
+    { month: 'July', trend: 'declining', reason: 'Summer lull, NBA free agency disruption' },
+    { month: 'August', trend: 'rising', reason: 'MLB trade deadline, football preview' },
+    { month: 'September', trend: 'peak', reason: 'NFL kickoff, MLB pennant races, new product releases' },
+    { month: 'October', trend: 'stable', reason: 'World Series, NBA tip-off' },
+    { month: 'November', trend: 'declining', reason: 'Holiday slowdown begins' },
+    { month: 'December', trend: 'rising', reason: 'Holiday buying, MLB winter meetings' },
+  ],
+};
+
 // ---- Service Functions ----
 
 export function getTradeEvents(): TradeEvent[] {
