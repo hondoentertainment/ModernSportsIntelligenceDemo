@@ -207,6 +207,18 @@ const CollectionDNAMixer = lazy(() => import('./pages/CollectionDNAMixer.tsx'));
 const CardYieldFarming = lazy(() => import('./pages/CardYieldFarming.tsx'));
 const ChaosTheorySimulator = lazy(() => import('./pages/ChaosTheorySimulator.tsx'));
 
+// v5.1: Beyond-Competition Intelligence (Batch 3)
+const SentimentVolatilityIndex = lazy(() => import('./pages/SentimentVolatilityIndex.tsx'));
+const MicroSeasonCapitalizer = lazy(() => import('./pages/MicroSeasonCapitalizer.tsx'));
+const CollectionHedgeConstructor = lazy(() => import('./pages/CollectionHedgeConstructor.tsx'));
+const GenerationalWealthPlanner = lazy(() => import('./pages/GenerationalWealthPlanner.tsx'));
+const CardClimateRiskMapper = lazy(() => import('./pages/CardClimateRiskMapper.tsx'));
+const RuleChangeImpactModeler = lazy(() => import('./pages/RuleChangeImpactModeler.tsx'));
+const NostalgiaPredictor = lazy(() => import('./pages/NostalgiaPredictor.tsx'));
+const SyntheticCardIndex = lazy(() => import('./pages/SyntheticCardIndex.tsx'));
+const ProvenanceChainVerifier = lazy(() => import('./pages/ProvenanceChainVerifier.tsx'));
+const MarketRegimeDetector = lazy(() => import('./pages/MarketRegimeDetector.tsx'));
+
 // Interactive Demo Flow
 const DemoFlowPage = lazy(() => import('./pages/DemoFlow.tsx'));
 
@@ -414,6 +426,17 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/collection-dna-mixer" element={<CollectionDNAMixer />} />
                 <Route path="/card-yield-farming" element={<CardYieldFarming />} />
                 <Route path="/chaos-theory-simulator" element={<ChaosTheorySimulator />} />
+                {/* v5.1: Beyond-Competition Intelligence (Batch 3) */}
+                <Route path="/sentiment-volatility-index" element={<SentimentVolatilityIndex />} />
+                <Route path="/micro-season-capitalizer" element={<MicroSeasonCapitalizer />} />
+                <Route path="/collection-hedge-constructor" element={<CollectionHedgeConstructor />} />
+                <Route path="/generational-wealth-planner" element={<GenerationalWealthPlanner />} />
+                <Route path="/card-climate-risk-mapper" element={<CardClimateRiskMapper />} />
+                <Route path="/rule-change-impact-modeler" element={<RuleChangeImpactModeler />} />
+                <Route path="/nostalgia-predictor" element={<NostalgiaPredictor />} />
+                <Route path="/synthetic-card-index" element={<SyntheticCardIndex />} />
+                <Route path="/provenance-chain-verifier" element={<ProvenanceChainVerifier />} />
+                <Route path="/market-regime-detector" element={<MarketRegimeDetector />} />
                 {/* Interactive Demo Flow */}
                 <Route path="/demo-flow" element={<DemoFlowPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

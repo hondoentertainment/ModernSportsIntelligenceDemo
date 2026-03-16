@@ -76,6 +76,16 @@ import {
   Award,
   Percent,
   Play,
+  Waves,
+  CalendarRange,
+  ShieldHalf,
+  Building2,
+  CloudRain,
+  Scale,
+  History,
+  BarChart2,
+  Link2 as Link2Icon,
+  Compass,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -226,6 +236,17 @@ export const NAV_ITEMS = [
   { id: 'collection-dna-mixer', label: 'DNA Mixer', icon: <Dices size={20} />, path: '/collection-dna-mixer' },
   { id: 'card-yield-farming', label: 'Yield Farming', icon: <Leaf size={20} />, path: '/card-yield-farming' },
   { id: 'chaos-theory-simulator', label: 'Chaos Theory', icon: <Sparkles size={20} />, path: '/chaos-theory-simulator' },
+  // v5.1: Beyond-Competition Intelligence (Batch 3)
+  { id: 'sentiment-volatility-index', label: 'Sentiment Vol', icon: <Waves size={20} />, path: '/sentiment-volatility-index' },
+  { id: 'micro-season-capitalizer', label: 'Micro-Seasons', icon: <CalendarRange size={20} />, path: '/micro-season-capitalizer' },
+  { id: 'collection-hedge-constructor', label: 'Hedge Builder', icon: <ShieldHalf size={20} />, path: '/collection-hedge-constructor' },
+  { id: 'generational-wealth-planner', label: 'Wealth Planner', icon: <Building2 size={20} />, path: '/generational-wealth-planner' },
+  { id: 'card-climate-risk-mapper', label: 'Climate Risk', icon: <CloudRain size={20} />, path: '/card-climate-risk-mapper' },
+  { id: 'rule-change-impact-modeler', label: 'Rule Changes', icon: <Scale size={20} />, path: '/rule-change-impact-modeler' },
+  { id: 'nostalgia-predictor', label: 'Nostalgia', icon: <History size={20} />, path: '/nostalgia-predictor' },
+  { id: 'synthetic-card-index', label: 'Card Indices', icon: <BarChart2 size={20} />, path: '/synthetic-card-index' },
+  { id: 'provenance-chain-verifier', label: 'Provenance', icon: <Link2Icon size={20} />, path: '/provenance-chain-verifier' },
+  { id: 'market-regime-detector', label: 'Market Regime', icon: <Compass size={20} />, path: '/market-regime-detector' },
   // Interactive Demo Flow
   { id: 'demo-flow', label: 'Demo Flow', icon: <Play size={20} />, path: '/demo-flow' },
 ];
