@@ -243,6 +243,24 @@ const NarrativeAlpha = lazy(() => import('./pages/NarrativeAlpha.tsx'));
 const CounterfactualValue = lazy(() => import('./pages/CounterfactualValue.tsx'));
 const BiometricTradingGuard = lazy(() => import('./pages/BiometricTradingGuard.tsx'));
 
+// v6.1: Industry-Absent Innovation — Round 2
+const DopamineCycleTracker = lazy(() => import('./pages/DopamineCycleTracker.tsx'));
+const HobbyLiquidityCrisis = lazy(() => import('./pages/HobbyLiquidityCrisis.tsx'));
+const MemoryIndex = lazy(() => import('./pages/MemoryIndex.tsx'));
+const PopForecaster = lazy(() => import('./pages/PopForecaster.tsx'));
+const DraftCapitalFutures = lazy(() => import('./pages/DraftCapitalFutures.tsx'));
+const ShadowInventory = lazy(() => import('./pages/ShadowInventory.tsx'));
+const EmotionJournal = lazy(() => import('./pages/EmotionJournal.tsx'));
+const EstateSuccession = lazy(() => import('./pages/EstateSuccession.tsx'));
+const RefractorMapper = lazy(() => import('./pages/RefractorMapper.tsx'));
+const CenteringAnalyzer = lazy(() => import('./pages/CenteringAnalyzer.tsx'));
+
+// Formerly coming-soon features — now live
+const WhatIfSimulator = lazy(() => import('./pages/WhatIfSimulator.tsx'));
+const GradingBatchPlanner = lazy(() => import('./pages/GradingBatchPlanner.tsx'));
+const EbayListingGenerator = lazy(() => import('./pages/EbayListingGenerator.tsx'));
+const WaxBreakRoiTracker = lazy(() => import('./pages/WaxBreakRoiTracker.tsx'));
+
 // Previously unrouted pages — Advanced Trading & Analysis
 const LiveGameImpactEngine = lazy(() => import('./pages/LiveGameImpactEngine.tsx'));
 const PreGradeIntelligence = lazy(() => import('./pages/PreGradeIntelligence.tsx'));
@@ -583,6 +601,22 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/frontier-lab" element={<FrontierLab />} />
                 <Route path="/live-impact" element={<LiveImpact />} />
                 <Route path="/inventory" element={<Inventory />} />
+                {/* v6.1: Industry-Absent Innovation — Round 2 */}
+                <Route path="/dopamine-cycle-tracker" element={<DopamineCycleTracker />} />
+                <Route path="/hobby-liquidity-crisis" element={<HobbyLiquidityCrisis />} />
+                <Route path="/memory-index" element={<MemoryIndex />} />
+                <Route path="/pop-forecaster" element={<PopForecaster />} />
+                <Route path="/draft-capital-futures" element={<DraftCapitalFutures />} />
+                <Route path="/shadow-inventory" element={<ShadowInventory />} />
+                <Route path="/emotion-journal" element={<EmotionJournal />} />
+                <Route path="/estate-succession" element={<EstateSuccession />} />
+                <Route path="/refractor-mapper" element={<RefractorMapper />} />
+                <Route path="/centering-analyzer" element={<CenteringAnalyzer />} />
+                {/* Formerly coming-soon features */}
+                <Route path="/what-if-simulator" element={<WhatIfSimulator />} />
+                <Route path="/grading-batch-planner" element={<GradingBatchPlanner />} />
+                <Route path="/ebay-listing-generator" element={<EbayListingGenerator />} />
+                <Route path="/wax-break-roi-tracker" element={<WaxBreakRoiTracker />} />
                 {/* Interactive Demo Flow */}
                 <Route path="/demo-flow" element={<DemoFlowPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

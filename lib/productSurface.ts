@@ -120,6 +120,20 @@ export const SEARCHABLE_FEATURE_IDS = [
   'collection-dna-mixer',
   'card-yield-farming',
   'chaos-theory-simulator',
+  'dopamine-cycle-tracker',
+  'hobby-liquidity-crisis',
+  'memory-index',
+  'pop-forecaster',
+  'draft-capital-futures',
+  'shadow-inventory',
+  'emotion-journal',
+  'estate-succession',
+  'refractor-mapper',
+  'centering-analyzer',
+  'what-if-simulator',
+  'grading-batch-planner',
+  'ebay-listing-generator',
+  'wax-break-roi-tracker',
 ] as const;
 
 export const COMMAND_ROUTES = [

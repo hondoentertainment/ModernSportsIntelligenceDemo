@@ -105,6 +105,7 @@ import {
   Receipt,
   Wand2,
   Lightbulb,
+  AlertTriangle,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -313,6 +314,25 @@ export const NAV_ITEMS = [
   { id: 'inventory', label: 'Inventory', icon: <Layers3 size={20} />, path: '/inventory' },
   // Interactive Demo Flow
   { id: 'demo-flow', label: 'Demo Flow', icon: <Play size={20} />, path: '/demo-flow' },
+  // v6.1: Industry-Absent Innovation — Round 2 (Analytics & Intelligence)
+  { id: 'dopamine-cycle-tracker', label: 'Dopamine Tracker', icon: <Brain size={20} />, path: '/dopamine-cycle-tracker' },
+  { id: 'hobby-liquidity-crisis', label: 'Liquidity Crisis', icon: <AlertTriangle size={20} />, path: '/hobby-liquidity-crisis' },
+  { id: 'memory-index', label: 'Memory Index', icon: <Sparkles size={20} />, path: '/memory-index' },
+  { id: 'pop-forecaster', label: 'Pop Forecaster', icon: <TrendingUp size={20} />, path: '/pop-forecaster' },
+  // v6.1: Industry-Absent Innovation — Round 2 (Trading & Marketplace)
+  { id: 'draft-capital-futures', label: 'Draft Futures', icon: <Target size={20} />, path: '/draft-capital-futures' },
+  { id: 'shadow-inventory', label: 'Shadow Inventory', icon: <MapPin size={20} />, path: '/shadow-inventory' },
+  // v6.1: Industry-Absent Innovation — Round 2 (Portfolio & Financial)
+  { id: 'emotion-journal', label: 'Emotion Journal', icon: <Heart size={20} />, path: '/emotion-journal' },
+  { id: 'estate-succession', label: 'Estate Succession', icon: <Landmark size={20} />, path: '/estate-succession' },
+  // v6.1: Industry-Absent Innovation — Round 2 (Showcase & Labs)
+  { id: 'refractor-mapper', label: 'Refractor Mapper', icon: <Eye size={20} />, path: '/refractor-mapper' },
+  { id: 'centering-analyzer', label: 'Centering Analyzer', icon: <Crosshair size={20} />, path: '/centering-analyzer' },
+  // Formerly coming-soon features — now live
+  { id: 'what-if-simulator', label: 'What-If Simulator', icon: <FlaskConical size={20} />, path: '/what-if-simulator' },
+  { id: 'grading-batch-planner', label: 'Grading Planner', icon: <ClipboardCheck size={20} />, path: '/grading-batch-planner' },
+  { id: 'ebay-listing-generator', label: 'eBay Listings', icon: <ShoppingCart size={20} />, path: '/ebay-listing-generator' },
+  { id: 'wax-break-roi-tracker', label: 'Wax Break ROI', icon: <Box size={20} />, path: '/wax-break-roi-tracker' },
 ];
 
 export const LEAGUES: readonly string[] = ['MLB', 'MiLB', 'NBA', 'NFL', 'Other'];
