@@ -11,6 +11,7 @@ export default defineConfig({
         baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4173',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
+        video: 'on-first-retry',
     },
     projects: [
         { name: 'chromium', use: { ...devices['Desktop Chrome'] } },

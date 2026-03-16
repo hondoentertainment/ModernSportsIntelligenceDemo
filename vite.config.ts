@@ -16,9 +16,29 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'supabase-vendor': ['@supabase/supabase-js'],
+        manualChunks(id) {
+          // React core vendor chunk
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom/') || id.includes('node_modules/react-router/')) {
+            return 'react-vendor';
+          }
+          // Supabase vendor chunk
+          if (id.includes('node_modules/@supabase/')) {
+            return 'supabase-vendor';
+          }
+          // Recharts — largest shared charting dependency (~145 KB gzip)
+          if (id.includes('node_modules/recharts/') || id.includes('node_modules/d3-') || id.includes('node_modules/victory-vendor/')) {
+            return 'recharts-vendor';
+          }
+          // Service files batched by initial letter range to keep chunks balanced
+          // Batch 1: A-L services
+          if (id.includes('/lib/') && /\/lib\/[a-lA-L][^/]*Service\.ts/.test(id)) {
+            return 'batch1-services';
+          }
+          // Batch 2: M-Z services
+          if (id.includes('/lib/') && /\/lib\/[m-zM-Z][^/]*Service\.ts/.test(id)) {
+            return 'batch2-services';
+          }
+          // Page components stay as individual lazy chunks (default Vite behavior)
         }
       }
     },
