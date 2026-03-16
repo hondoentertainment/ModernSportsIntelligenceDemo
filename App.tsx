@@ -182,6 +182,30 @@ const CardAgingLab = lazy(() => import('./pages/CardAgingLab.tsx'));
 const PhantomBacktester = lazy(() => import('./pages/PhantomBacktester.tsx'));
 const CollectorMatchmaker = lazy(() => import('./pages/CollectorMatchmaker.tsx'));
 
+// v5.0: Next-Gen Investment Intelligence (Batch 1)
+const CardGenomeSequencer = lazy(() => import('./pages/CardGenomeSequencer.tsx'));
+const InjuryOracle = lazy(() => import('./pages/InjuryOracle.tsx'));
+const CrossAssetCorrelation = lazy(() => import('./pages/CrossAssetCorrelation.tsx'));
+const CollectorSocialGraph = lazy(() => import('./pages/CollectorSocialGraph.tsx'));
+const RestorationSimulator = lazy(() => import('./pages/RestorationSimulator.tsx'));
+const MarketMakerArena = lazy(() => import('./pages/MarketMakerArena.tsx'));
+const FractionalVault = lazy(() => import('./pages/FractionalVault.tsx'));
+const PortfolioStressTester = lazy(() => import('./pages/PortfolioStressTester.tsx'));
+const RookiePipelineScanner = lazy(() => import('./pages/RookiePipelineScanner.tsx'));
+const ForensicsLab = lazy(() => import('./pages/ForensicsLab.tsx'));
+
+// v5.0: Next-Gen Investment Intelligence (Batch 2)
+const CardDecayPredictor = lazy(() => import('./pages/CardDecayPredictor.tsx'));
+const NarrativeArcEngine = lazy(() => import('./pages/NarrativeArcEngine.tsx'));
+const LiquidityDepthScanner = lazy(() => import('./pages/LiquidityDepthScanner.tsx'));
+const ContagionMapper = lazy(() => import('./pages/ContagionMapper.tsx'));
+const GrailIndexConstructor = lazy(() => import('./pages/GrailIndexConstructor.tsx'));
+const PrintRunDecoder = lazy(() => import('./pages/PrintRunDecoder.tsx'));
+const TemporalArbitrageRadar = lazy(() => import('./pages/TemporalArbitrageRadar.tsx'));
+const CollectionDNAMixer = lazy(() => import('./pages/CollectionDNAMixer.tsx'));
+const CardYieldFarming = lazy(() => import('./pages/CardYieldFarming.tsx'));
+const ChaosTheorySimulator = lazy(() => import('./pages/ChaosTheorySimulator.tsx'));
+
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
 const Signup = lazy(() => import('./pages/Signup.tsx'));
@@ -364,6 +388,28 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/card-aging-lab" element={<CardAgingLab />} />
                 <Route path="/phantom-backtester" element={<PhantomBacktester />} />
                 <Route path="/collector-matchmaker" element={<CollectorMatchmaker />} />
+                {/* v5.0: Next-Gen Investment Intelligence (Batch 1) */}
+                <Route path="/card-genome-sequencer" element={<CardGenomeSequencer />} />
+                <Route path="/injury-oracle" element={<InjuryOracle />} />
+                <Route path="/cross-asset-correlation" element={<CrossAssetCorrelation />} />
+                <Route path="/collector-social-graph" element={<CollectorSocialGraph />} />
+                <Route path="/restoration-simulator" element={<RestorationSimulator />} />
+                <Route path="/market-maker-arena" element={<MarketMakerArena />} />
+                <Route path="/fractional-vault" element={<FractionalVault />} />
+                <Route path="/portfolio-stress-tester" element={<PortfolioStressTester />} />
+                <Route path="/rookie-pipeline-scanner" element={<RookiePipelineScanner />} />
+                <Route path="/forensics-lab" element={<ForensicsLab />} />
+                {/* v5.0: Next-Gen Investment Intelligence (Batch 2) */}
+                <Route path="/card-decay-predictor" element={<CardDecayPredictor />} />
+                <Route path="/narrative-arc-engine" element={<NarrativeArcEngine />} />
+                <Route path="/liquidity-depth-scanner" element={<LiquidityDepthScanner />} />
+                <Route path="/contagion-mapper" element={<ContagionMapper />} />
+                <Route path="/grail-index-constructor" element={<GrailIndexConstructor />} />
+                <Route path="/print-run-decoder" element={<PrintRunDecoder />} />
+                <Route path="/temporal-arbitrage-radar" element={<TemporalArbitrageRadar />} />
+                <Route path="/collection-dna-mixer" element={<CollectionDNAMixer />} />
+                <Route path="/card-yield-farming" element={<CardYieldFarming />} />
+                <Route path="/chaos-theory-simulator" element={<ChaosTheorySimulator />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>

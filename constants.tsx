@@ -204,6 +204,28 @@ export const NAV_ITEMS = [
   { id: 'card-aging-lab', label: 'Aging Lab', icon: <Timer size={20} />, path: '/card-aging-lab' },
   { id: 'phantom-backtester', label: 'Backtester', icon: <LineChart size={20} />, path: '/phantom-backtester' },
   { id: 'collector-matchmaker', label: 'Matchmaker', icon: <Users size={20} />, path: '/collector-matchmaker' },
+  // v5.0: Next-Gen Investment Intelligence (Batch 1)
+  { id: 'card-genome-sequencer', label: 'Card Genome', icon: <Dna size={20} />, path: '/card-genome-sequencer' },
+  { id: 'injury-oracle', label: 'Injury Oracle', icon: <HeartPulse size={20} />, path: '/injury-oracle' },
+  { id: 'cross-asset-correlation', label: 'Cross-Asset', icon: <ArrowLeftRight size={20} />, path: '/cross-asset-correlation' },
+  { id: 'collector-social-graph', label: 'Social Graph', icon: <Share2 size={20} />, path: '/collector-social-graph' },
+  { id: 'restoration-simulator', label: 'Restoration Sim', icon: <Hammer size={20} />, path: '/restoration-simulator' },
+  { id: 'market-maker-arena', label: 'Bot Arena', icon: <Bot size={20} />, path: '/market-maker-arena' },
+  { id: 'fractional-vault', label: 'Fractional Vault', icon: <Landmark size={20} />, path: '/fractional-vault' },
+  { id: 'portfolio-stress-tester', label: 'Stress Tester', icon: <Gauge size={20} />, path: '/portfolio-stress-tester' },
+  { id: 'rookie-pipeline-scanner', label: 'Prospect Pipeline', icon: <SearchCheck size={20} />, path: '/rookie-pipeline-scanner' },
+  { id: 'forensics-lab', label: 'Forensics Lab', icon: <Fingerprint size={20} />, path: '/forensics-lab' },
+  // v5.0: Next-Gen Investment Intelligence (Batch 2)
+  { id: 'card-decay-predictor', label: 'Decay Predictor', icon: <Thermometer size={20} />, path: '/card-decay-predictor' },
+  { id: 'narrative-arc-engine', label: 'Narrative Arcs', icon: <BookOpen size={20} />, path: '/narrative-arc-engine' },
+  { id: 'liquidity-depth-scanner', label: 'Liquidity Scanner', icon: <BarChart3 size={20} />, path: '/liquidity-depth-scanner' },
+  { id: 'contagion-mapper', label: 'Contagion Map', icon: <Crosshair size={20} />, path: '/contagion-mapper' },
+  { id: 'grail-index-constructor', label: 'Grail Index', icon: <LineChart size={20} />, path: '/grail-index-constructor' },
+  { id: 'print-run-decoder', label: 'Print Run Decoder', icon: <Calculator size={20} />, path: '/print-run-decoder' },
+  { id: 'temporal-arbitrage-radar', label: 'Time Arbitrage', icon: <Clock size={20} />, path: '/temporal-arbitrage-radar' },
+  { id: 'collection-dna-mixer', label: 'DNA Mixer', icon: <Dices size={20} />, path: '/collection-dna-mixer' },
+  { id: 'card-yield-farming', label: 'Yield Farming', icon: <Leaf size={20} />, path: '/card-yield-farming' },
+  { id: 'chaos-theory-simulator', label: 'Chaos Theory', icon: <Sparkles size={20} />, path: '/chaos-theory-simulator' },
 ];
 
 export const LEAGUES: readonly string[] = ['MLB', 'MiLB', 'NBA', 'NFL', 'Other'];
