@@ -231,6 +231,18 @@ const NegotiationCoach = lazy(() => import('./pages/NegotiationCoach.tsx'));
 const MultiGenCompare = lazy(() => import('./pages/MultiGenCompare.tsx'));
 const PortfolioDnaRebalancer = lazy(() => import('./pages/PortfolioDnaRebalancer.tsx'));
 
+// v6.0: Industry-Absent Innovation Suite (10 features)
+const InjuryShockwave = lazy(() => import('./pages/InjuryShockwave.tsx'));
+const ArVaultWalkthrough = lazy(() => import('./pages/ArVaultWalkthrough.tsx'));
+const HofProbability = lazy(() => import('./pages/HofProbability.tsx'));
+const MarketMicrostructure = lazy(() => import('./pages/MarketMicrostructure.tsx'));
+const IotConditionGuardian = lazy(() => import('./pages/IotConditionGuardian.tsx'));
+const FractionalSyndicate = lazy(() => import('./pages/FractionalSyndicate.tsx'));
+const VoiceCardShow = lazy(() => import('./pages/VoiceCardShow.tsx'));
+const NarrativeAlpha = lazy(() => import('./pages/NarrativeAlpha.tsx'));
+const CounterfactualValue = lazy(() => import('./pages/CounterfactualValue.tsx'));
+const BiometricTradingGuard = lazy(() => import('./pages/BiometricTradingGuard.tsx'));
+
 // Interactive Demo Flow
 const DemoFlowPage = lazy(() => import('./pages/DemoFlow.tsx'));
 
@@ -460,6 +472,17 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/negotiation-coach" element={<NegotiationCoach />} />
                 <Route path="/multi-gen-compare" element={<MultiGenCompare />} />
                 <Route path="/portfolio-dna-rebalancer" element={<PortfolioDnaRebalancer />} />
+                {/* v6.0: Industry-Absent Innovation Suite */}
+                <Route path="/injury-shockwave" element={<InjuryShockwave />} />
+                <Route path="/ar-vault-walkthrough" element={<ArVaultWalkthrough />} />
+                <Route path="/hof-probability" element={<HofProbability />} />
+                <Route path="/market-microstructure" element={<MarketMicrostructure />} />
+                <Route path="/iot-condition-guardian" element={<IotConditionGuardian />} />
+                <Route path="/fractional-syndicate" element={<FractionalSyndicate />} />
+                <Route path="/voice-card-show" element={<VoiceCardShow />} />
+                <Route path="/narrative-alpha" element={<NarrativeAlpha />} />
+                <Route path="/counterfactual-value" element={<CounterfactualValue />} />
+                <Route path="/biometric-trading-guard" element={<BiometricTradingGuard />} />
                 {/* Interactive Demo Flow */}
                 <Route path="/demo-flow" element={<DemoFlowPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

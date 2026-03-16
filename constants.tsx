@@ -86,6 +86,10 @@ import {
   BarChart2,
   Link2 as Link2Icon,
   Compass,
+  Zap,
+  Eye,
+  Mic,
+  GitBranch,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -247,6 +251,17 @@ export const NAV_ITEMS = [
   { id: 'synthetic-card-index', label: 'Card Indices', icon: <BarChart2 size={20} />, path: '/synthetic-card-index' },
   { id: 'provenance-chain-verifier', label: 'Provenance', icon: <Link2Icon size={20} />, path: '/provenance-chain-verifier' },
   { id: 'market-regime-detector', label: 'Market Regime', icon: <Compass size={20} />, path: '/market-regime-detector' },
+  // v6.0: Industry-Absent Innovation Suite
+  { id: 'injury-shockwave', label: 'Injury Shockwave', icon: <Zap size={20} />, path: '/injury-shockwave' },
+  { id: 'ar-vault-walkthrough', label: 'AR Vault', icon: <Eye size={20} />, path: '/ar-vault-walkthrough' },
+  { id: 'hof-probability', label: 'HOF Probability', icon: <Award size={20} />, path: '/hof-probability' },
+  { id: 'market-microstructure', label: 'Microstructure', icon: <BarChart3 size={20} />, path: '/market-microstructure' },
+  { id: 'iot-condition-guardian', label: 'IoT Guardian', icon: <Thermometer size={20} />, path: '/iot-condition-guardian' },
+  { id: 'fractional-syndicate', label: 'Syndicates', icon: <Users size={20} />, path: '/fractional-syndicate' },
+  { id: 'voice-card-show', label: 'Show Companion', icon: <Mic size={20} />, path: '/voice-card-show' },
+  { id: 'narrative-alpha', label: 'Narrative Alpha', icon: <BookOpen size={20} />, path: '/narrative-alpha' },
+  { id: 'counterfactual-value', label: 'Counterfactual', icon: <GitBranch size={20} />, path: '/counterfactual-value' },
+  { id: 'biometric-trading-guard', label: 'Biometric Guard', icon: <HeartPulse size={20} />, path: '/biometric-trading-guard' },
   // Interactive Demo Flow
   { id: 'demo-flow', label: 'Demo Flow', icon: <Play size={20} />, path: '/demo-flow' },
 ];
