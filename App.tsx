@@ -219,6 +219,18 @@ const SyntheticCardIndex = lazy(() => import('./pages/SyntheticCardIndex.tsx'));
 const ProvenanceChainVerifier = lazy(() => import('./pages/ProvenanceChainVerifier.tsx'));
 const MarketRegimeDetector = lazy(() => import('./pages/MarketRegimeDetector.tsx'));
 
+// v5.0: Industry-First Features — Round 3 (Phases 134-143)
+const OptionsDesk = lazy(() => import('./pages/OptionsDesk.tsx'));
+const ConditionCensus = lazy(() => import('./pages/ConditionCensus.tsx'));
+const BreakEvenVelocity = lazy(() => import('./pages/BreakEvenVelocity.tsx'));
+const TaxAutopilot = lazy(() => import('./pages/TaxAutopilot.tsx'));
+const CardShowGps = lazy(() => import('./pages/CardShowGps.tsx'));
+const ContractCorrelation = lazy(() => import('./pages/ContractCorrelation.tsx'));
+const BankruptcyShield = lazy(() => import('./pages/BankruptcyShield.tsx'));
+const NegotiationCoach = lazy(() => import('./pages/NegotiationCoach.tsx'));
+const MultiGenCompare = lazy(() => import('./pages/MultiGenCompare.tsx'));
+const PortfolioDnaRebalancer = lazy(() => import('./pages/PortfolioDnaRebalancer.tsx'));
+
 // Interactive Demo Flow
 const DemoFlowPage = lazy(() => import('./pages/DemoFlow.tsx'));
 
@@ -437,6 +449,17 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/synthetic-card-index" element={<SyntheticCardIndex />} />
                 <Route path="/provenance-chain-verifier" element={<ProvenanceChainVerifier />} />
                 <Route path="/market-regime-detector" element={<MarketRegimeDetector />} />
+                {/* v5.0: Industry-First Features — Round 3 */}
+                <Route path="/options-desk" element={<OptionsDesk />} />
+                <Route path="/condition-census" element={<ConditionCensus />} />
+                <Route path="/break-even-velocity" element={<BreakEvenVelocity />} />
+                <Route path="/tax-autopilot" element={<TaxAutopilot />} />
+                <Route path="/card-show-gps" element={<CardShowGps />} />
+                <Route path="/contract-correlation" element={<ContractCorrelation />} />
+                <Route path="/bankruptcy-shield" element={<BankruptcyShield />} />
+                <Route path="/negotiation-coach" element={<NegotiationCoach />} />
+                <Route path="/multi-gen-compare" element={<MultiGenCompare />} />
+                <Route path="/portfolio-dna-rebalancer" element={<PortfolioDnaRebalancer />} />
                 {/* Interactive Demo Flow */}
                 <Route path="/demo-flow" element={<DemoFlowPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
