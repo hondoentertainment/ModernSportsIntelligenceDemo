@@ -561,3 +561,13 @@ export function getCorrelationStress(_portfolio: PortfolioPosition[]): Correlati
     { pairLabel: 'US Sports vs Soccer',     normalCorrelation: 0.18, stressCorrelation: 0.52, contagionRisk: 'low' },
   ];
 }
+
+// Backward-compatible aliases for consumers that depend on the old API names
+export const getAllScenarios = getStressScenarios;
+export function runStressTest(
+  _inventory: unknown[],
+  scenario: StressScenario,
+  _days: number,
+): { scenarioName: string; impact: number } {
+  return { scenarioName: scenario.name, impact: scenario.portfolioImpact };
+}
