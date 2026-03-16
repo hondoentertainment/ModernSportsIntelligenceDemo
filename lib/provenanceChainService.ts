@@ -664,3 +664,204 @@ export function calculateProvenancePremium(cardId: string): {
     adjustedValue: Math.round(card.currentValue * (1 + premiumPercent / 100)), factors,
   };
 }
+
+// ── Backward-Compatible Exports (consumed by ProvenanceChainModal, ProvenanceChainWidget, ProvenanceChainIntelligence) ──
+
+export interface CardFingerprint {
+  id: string; surfaceMicroPatterns: number[]; printingArtifacts: string[];
+  centeringMeasurements: { leftRight: number; topBottom: number; overallGrade: 'A'|'B'|'C'|'D' };
+  edgeProfile: number[]; colorCalibration: { r: number; g: number; b: number; delta: number };
+  hashDigest: string; confidence: number; createdAt: string;
+}
+
+export interface ProvenanceRecord {
+  id: string; cardId: string;
+  eventType: 'registered' | 'sold' | 'listed' | 'graded' | 'authenticated' | 'transferred' | 'vaulted' | 'exhibited' | 'flagged';
+  platform: string; price?: number; fromOwner: string; toOwner: string;
+  timestamp: string; transactionRef?: string; verified: boolean; notes?: string;
+}
+
+export interface OwnershipEntry {
+  owner: string; acquiredDate: string; soldDate?: string;
+  acquiredPrice?: number; soldPrice?: number; platform: string;
+  holdingPeriodDays: number; verified: boolean;
+}
+
+export type FraudType = 'duplicate_listing' | 'cert_mismatch' | 'grade_appearance_mismatch' | 'counterfeit_slab' | 'trimmed_card' | 'resubmission_fraud' | 'stolen_card';
+
+export interface FraudAlert {
+  id: string; cardId: string; cardName: string; fraudType: FraudType;
+  severity: 'critical' | 'high' | 'medium' | 'low'; description: string;
+  detectedAt: string; platforms: string[]; evidence: string[];
+  status: 'active' | 'investigating' | 'resolved' | 'false_positive';
+  estimatedValueAtRisk: number;
+}
+
+export interface DigitalTwin {
+  id: string; cardId: string; playerName: string; cardDescription: string;
+  year: number; manufacturer: string; setName: string; cardNumber: string;
+  grade?: string; gradingCompany?: string; certNumber?: string;
+  fingerprint: CardFingerprint; provenanceTimeline: ProvenanceRecord[];
+  ownershipHistory: OwnershipEntry[]; authenticityScore: number;
+  currentValue: number; registeredAt: string; lastVerified: string;
+  status: 'verified' | 'pending' | 'flagged' | 'investigating';
+  imageUrl: string; owner: string;
+}
+
+export interface CrossPlatformSighting {
+  id: string; certNumber: string; cardName: string; platform: string;
+  listingUrl: string; price: number; listingDate: string; sellerName: string;
+  sellerRating: number; status: 'active' | 'sold' | 'ended' | 'removed';
+  matchConfidence: number; flagged: boolean; flagReason?: string;
+}
+
+export interface AuthenticityScore {
+  overall: number; fingerprintMatch: number; provenanceIntegrity: number;
+  fraudIndicators: number; gradeConsistency: number; slabVerification: number;
+  breakdown: { category: string; score: number; weight: number; notes: string }[];
+}
+
+export interface RegistryStats {
+  totalCardsRegistered: number; fraudPrevented: number; valueProtected: number;
+  activeFraudAlerts: number; verificationsThisMonth: number;
+  crossPlatformSightings: number; averageAuthenticityScore: number;
+  topProtectedPlayers: { player: string; cardCount: number; totalValue: number }[];
+}
+
+export interface VerificationResult {
+  verified: boolean; authenticityScore: number; fraudFlags: FraudAlert[];
+  provenanceTimeline: ProvenanceRecord[]; crossPlatformSightings: CrossPlatformSighting[];
+  recommendation: 'safe_to_buy' | 'proceed_with_caution' | 'do_not_buy' | 'needs_investigation';
+  summary: string;
+}
+
+// -- Legacy mock data stubs --
+
+function _genFingerprint(): CardFingerprint {
+  const micro = Array.from({ length: 64 }, () => Math.round(Math.random() * 255));
+  const edge = Array.from({ length: 32 }, () => Math.round(Math.random() * 100));
+  const hex = Array.from({ length: 64 }, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
+  return {
+    id: `fp-${Math.random().toString(36).slice(2, 8)}`,
+    surfaceMicroPatterns: micro, printingArtifacts: ['Dot gain variance 2.3%', 'Rosette pattern consistent'],
+    centeringMeasurements: { leftRight: 49.2, topBottom: 49.8, overallGrade: 'A' },
+    edgeProfile: edge, colorCalibration: { r: 128, g: 64, b: 192, delta: 1.5 },
+    hashDigest: hex, confidence: 95 + Math.random() * 5, createdAt: new Date().toISOString(),
+  };
+}
+
+const _LEGACY_TWINS: DigitalTwin[] = [
+  {
+    id: 'dt-001', cardId: 'card-judge-chrome', playerName: 'Aaron Judge',
+    cardDescription: '2017 Topps Chrome Update #HMT40 RC PSA 10', year: 2017,
+    manufacturer: 'Topps', setName: 'Chrome Update', cardNumber: 'HMT40',
+    grade: 'PSA 10', gradingCompany: 'PSA', certNumber: '45892341',
+    fingerprint: _genFingerprint(),
+    provenanceTimeline: [
+      { id: 'pr-001', cardId: 'card-judge-chrome', eventType: 'registered', platform: 'MSI Registry', fromOwner: 'System', toOwner: 'OriginalOwner42', timestamp: '2017-06-15T00:00:00Z', verified: true },
+      { id: 'pr-002', cardId: 'card-judge-chrome', eventType: 'graded', platform: 'PSA', fromOwner: 'OriginalOwner42', toOwner: 'PSA', timestamp: '2018-02-20T00:00:00Z', transactionRef: 'PSA-45892341', verified: true },
+      { id: 'pr-003', cardId: 'card-judge-chrome', eventType: 'sold', platform: 'Goldin', price: 4200, fromOwner: 'OriginalOwner42', toOwner: 'CardKing88', timestamp: '2023-01-18T00:00:00Z', verified: true },
+      { id: 'pr-004', cardId: 'card-judge-chrome', eventType: 'sold', platform: 'eBay', price: 4600, fromOwner: 'CardKing88', toOwner: 'ProCollector', timestamp: '2023-03-22T00:00:00Z', verified: true },
+      { id: 'pr-005', cardId: 'card-judge-chrome', eventType: 'sold', platform: 'Alt', price: 3900, fromOwner: 'ProCollector', toOwner: 'You', timestamp: '2024-07-15T00:00:00Z', verified: true },
+      { id: 'pr-006', cardId: 'card-judge-chrome', eventType: 'vaulted', platform: 'PWCC Vault', fromOwner: 'You', toOwner: 'PWCC Vault', timestamp: '2024-08-01T00:00:00Z', verified: true },
+    ],
+    ownershipHistory: [
+      { owner: 'OriginalOwner42', acquiredDate: '2017-06-15', soldDate: '2023-01-18', acquiredPrice: 25, soldPrice: 4200, platform: 'Goldin', holdingPeriodDays: 2043, verified: true },
+      { owner: 'CardKing88', acquiredDate: '2023-01-18', soldDate: '2023-03-22', acquiredPrice: 4200, soldPrice: 4600, platform: 'eBay', holdingPeriodDays: 63, verified: true },
+      { owner: 'ProCollector', acquiredDate: '2023-03-22', soldDate: '2024-07-15', acquiredPrice: 4600, soldPrice: 3900, platform: 'Alt', holdingPeriodDays: 481, verified: true },
+      { owner: 'You', acquiredDate: '2024-07-15', platform: 'Alt', acquiredPrice: 3900, holdingPeriodDays: 243, verified: true },
+    ],
+    authenticityScore: 97, currentValue: 4100, registeredAt: '2024-08-01T00:00:00Z',
+    lastVerified: '2026-02-15T00:00:00Z', status: 'verified', imageUrl: '', owner: 'You',
+  },
+];
+
+const _LEGACY_FRAUD_ALERTS: FraudAlert[] = [
+  {
+    id: 'fraud-001', cardId: 'card-unknown-1',
+    cardName: '2023 Panini Prizm Silver Victor Wembanyama #1 PSA 10',
+    fraudType: 'duplicate_listing', severity: 'critical',
+    description: 'Same cert found listed simultaneously on eBay and Goldin. Card is vaulted — listing is fraudulent.',
+    detectedAt: '2026-03-10T14:22:00Z', platforms: ['eBay', 'Goldin'],
+    evidence: ['Cert matches your registered card', 'Card is currently in vault'],
+    status: 'active', estimatedValueAtRisk: 9200,
+  },
+  {
+    id: 'fraud-002', cardId: 'card-unknown-2',
+    cardName: '2011 Topps Update Mike Trout #US175 PSA 10',
+    fraudType: 'grade_appearance_mismatch', severity: 'high',
+    description: 'eBay listing claims PSA 10, but image analysis shows visible corner wear.',
+    detectedAt: '2026-03-08T09:15:00Z', platforms: ['eBay'],
+    evidence: ['Corner wear detected in upper-left', 'Price below comps'],
+    status: 'active', estimatedValueAtRisk: 3100,
+  },
+];
+
+const _LEGACY_SIGHTINGS: CrossPlatformSighting[] = [
+  { id: 'sight-001', certNumber: '45892341', cardName: '2017 Topps Chrome Update Aaron Judge #HMT40 PSA 10', platform: 'Goldin', listingUrl: 'https://goldin.co/item/45892341', price: 4200, listingDate: '2023-01-10', sellerName: 'OriginalOwner42', sellerRating: 99.8, status: 'sold', matchConfidence: 99, flagged: false },
+];
+
+export function getMyRegisteredCards(): DigitalTwin[] {
+  return _LEGACY_TWINS.filter(t => t.owner === 'You');
+}
+
+export function getRegistryStats(): RegistryStats {
+  const totalValue = _LEGACY_TWINS.reduce((s, t) => s + t.currentValue, 0);
+  return {
+    totalCardsRegistered: _LEGACY_TWINS.length + 1847,
+    fraudPrevented: 23, valueProtected: totalValue + 2_340_000,
+    activeFraudAlerts: _LEGACY_FRAUD_ALERTS.filter(a => a.status === 'active').length,
+    verificationsThisMonth: 342, crossPlatformSightings: _LEGACY_SIGHTINGS.length + 12_450,
+    averageAuthenticityScore: Math.round(_LEGACY_TWINS.reduce((s, t) => s + t.authenticityScore, 0) / Math.max(_LEGACY_TWINS.length, 1)),
+    topProtectedPlayers: [
+      { player: 'Victor Wembanyama', cardCount: 312, totalValue: 890_000 },
+      { player: 'Aaron Judge', cardCount: 287, totalValue: 720_000 },
+      { player: 'Shohei Ohtani', cardCount: 256, totalValue: 680_000 },
+      { player: 'Mike Trout', cardCount: 198, totalValue: 540_000 },
+      { player: 'Juan Soto', cardCount: 174, totalValue: 320_000 },
+    ],
+  };
+}
+
+export function getFraudAlerts(): FraudAlert[] {
+  return _LEGACY_FRAUD_ALERTS;
+}
+
+export function getAuthenticityScore(cardId: string): AuthenticityScore {
+  const twin = _LEGACY_TWINS.find(t => t.cardId === cardId);
+  const base = twin?.authenticityScore ?? 85;
+  return {
+    overall: base, fingerprintMatch: Math.min(100, base + 1),
+    provenanceIntegrity: Math.min(100, base - 1), fraudIndicators: 100,
+    gradeConsistency: Math.min(100, base + 2), slabVerification: Math.min(100, base),
+    breakdown: [
+      { category: 'Fingerprint Match', score: Math.min(100, base + 1), weight: 0.30, notes: 'Surface micro-pattern analysis' },
+      { category: 'Provenance Integrity', score: Math.min(100, base - 1), weight: 0.25, notes: 'Unbroken chain verified' },
+      { category: 'Fraud Indicators', score: 100, weight: 0.20, notes: 'No fraud flags' },
+      { category: 'Grade Consistency', score: Math.min(100, base + 2), weight: 0.15, notes: 'Appearance matches grade' },
+      { category: 'Slab Verification', score: Math.min(100, base), weight: 0.10, notes: 'Holder matches standards' },
+    ],
+  };
+}
+
+export function getCrossPlatformSightings(certNumber: string): CrossPlatformSighting[] {
+  return _LEGACY_SIGHTINGS.filter(s => s.certNumber === certNumber);
+}
+
+export function verifyBeforePurchase(_listingUrl: string): VerificationResult {
+  const twin = _LEGACY_TWINS[0];
+  return {
+    verified: true, authenticityScore: 94, fraudFlags: [],
+    provenanceTimeline: twin?.provenanceTimeline.slice(0, 3) ?? [],
+    crossPlatformSightings: _LEGACY_SIGHTINGS.slice(0, 2),
+    recommendation: 'safe_to_buy',
+    summary: 'This listing appears legitimate. No fraud indicators detected.',
+  };
+}
+
+export function registerCard(
+  _cardData: { playerName: string; cardDescription: string; year: number; manufacturer: string; setName: string; cardNumber: string; grade?: string; gradingCompany?: string; certNumber?: string; currentValue?: number },
+  _images: File[] | string[],
+): DigitalTwin {
+  return _LEGACY_TWINS[0];
+}
