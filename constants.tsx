@@ -226,6 +226,8 @@ export const NAV_ITEMS = [
   { id: 'collection-dna-mixer', label: 'DNA Mixer', icon: <Dices size={20} />, path: '/collection-dna-mixer' },
   { id: 'card-yield-farming', label: 'Yield Farming', icon: <Leaf size={20} />, path: '/card-yield-farming' },
   { id: 'chaos-theory-simulator', label: 'Chaos Theory', icon: <Sparkles size={20} />, path: '/chaos-theory-simulator' },
+  // Interactive Demo Flow
+  { id: 'demo-flow', label: 'Demo Flow', icon: <Play size={20} />, path: '/demo-flow' },
 ];
 
 export const LEAGUES: readonly string[] = ['MLB', 'MiLB', 'NBA', 'NFL', 'Other'];

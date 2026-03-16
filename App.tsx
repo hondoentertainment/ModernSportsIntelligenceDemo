@@ -23,6 +23,7 @@ import { PageLoadingFallback } from './components/LazyLoadFallback.tsx';
 import GuidedTour from './components/GuidedTour.tsx';
 import InstitutionalWallHUD from './components/InstitutionalWallHUD.tsx';
 import GrailShowcase from './components/GrailShowcase.tsx';
+import DemoFlowWidget from './components/DemoFlowWidget.tsx';
 
 // ─── Lazy-loaded Page Components ──────────────────────────────────────
 // Critical path: Dashboard loads first, everything else is code-split
@@ -205,6 +206,9 @@ const TemporalArbitrageRadar = lazy(() => import('./pages/TemporalArbitrageRadar
 const CollectionDNAMixer = lazy(() => import('./pages/CollectionDNAMixer.tsx'));
 const CardYieldFarming = lazy(() => import('./pages/CardYieldFarming.tsx'));
 const ChaosTheorySimulator = lazy(() => import('./pages/ChaosTheorySimulator.tsx'));
+
+// Interactive Demo Flow
+const DemoFlowPage = lazy(() => import('./pages/DemoFlow.tsx'));
 
 // Auth pages (public routes, also lazy since not needed after login)
 const Login = lazy(() => import('./pages/Login.tsx'));
@@ -410,6 +414,8 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/collection-dna-mixer" element={<CollectionDNAMixer />} />
                 <Route path="/card-yield-farming" element={<CardYieldFarming />} />
                 <Route path="/chaos-theory-simulator" element={<ChaosTheorySimulator />} />
+                {/* Interactive Demo Flow */}
+                <Route path="/demo-flow" element={<DemoFlowPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
@@ -420,6 +426,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
         <MobileNav />
       </div>
       <GuidedTour />
+      <DemoFlowWidget />
     </div>
   );
 };
