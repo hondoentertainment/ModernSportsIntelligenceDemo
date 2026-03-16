@@ -497,9 +497,21 @@ function DriftMonitorTab({ drift }: { drift: DriftAnalysis }) {
 // ─── Rebalance Plan Tab ───────────────────────────────────────────────────────
 
 function RebalancePlanTab({ trades }: { trades: RebalanceTrade[] }) {
+  const [sortBy, setSortBy] = useState<'impact' | 'value' | 'urgency'>('impact');
+
+  const sortedTrades = useMemo(() => {
+    const copy = [...trades];
+    if (sortBy === 'impact') return copy.sort((a, b) => b.impactScore - a.impactScore);
+    if (sortBy === 'value') return copy.sort((a, b) => b.estimatedValue - a.estimatedValue);
+    const urgencyOrder = { high: 3, medium: 2, low: 1 };
+    return copy.sort((a, b) => urgencyOrder[b.urgency] - urgencyOrder[a.urgency]);
+  }, [trades, sortBy]);
+
   const totalBuy = trades.filter((t) => t.action === 'buy').reduce((s, t) => s + t.estimatedValue, 0);
   const totalSell = trades.filter((t) => t.action === 'sell').reduce((s, t) => s + t.estimatedValue, 0);
   const netCost = totalBuy - totalSell;
+  const avgImpact = Math.round(trades.reduce((s, t) => s + t.impactScore, 0) / trades.length);
+  const highUrgencyCount = trades.filter((t) => t.urgency === 'high').length;
 
   const actionStyles: Record<string, string> = {
     buy: 'bg-green-500/20 text-green-400',
@@ -522,7 +534,7 @@ function RebalancePlanTab({ trades }: { trades: RebalanceTrade[] }) {
   return (
     <div className="space-y-6">
       {/* Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <div className="bg-slate-800 rounded-xl p-5">
           <p className="text-slate-400 text-sm">Total Trades</p>
           <p className="text-slate-100 text-2xl font-bold">{trades.length}</p>
@@ -541,11 +553,65 @@ function RebalancePlanTab({ trades }: { trades: RebalanceTrade[] }) {
             {netCost > 0 ? '+' : '-'}${Math.abs(netCost).toLocaleString()}
           </p>
         </div>
+        <div className="bg-slate-800 rounded-xl p-5">
+          <p className="text-slate-400 text-sm">Avg Impact Score</p>
+          <p className="text-lime-400 text-2xl font-bold">{avgImpact}</p>
+        </div>
+        <div className="bg-slate-800 rounded-xl p-5">
+          <p className="text-slate-400 text-sm">High Urgency</p>
+          <p className="text-red-400 text-2xl font-bold">{highUrgencyCount}</p>
+        </div>
+      </div>
+
+      {/* Sort controls */}
+      <div className="flex items-center gap-3">
+        <span className="text-slate-400 text-sm">Sort by:</span>
+        {(['impact', 'value', 'urgency'] as const).map((key) => (
+          <button
+            key={key}
+            onClick={() => setSortBy(key)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              sortBy === key
+                ? 'bg-lime-500/20 text-lime-400'
+                : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+            }`}
+          >
+            {key === 'impact' ? 'Impact Score' : key === 'value' ? 'Card Value' : 'Urgency'}
+          </button>
+        ))}
+      </div>
+
+      {/* Action breakdown */}
+      <div className="bg-slate-800 rounded-xl p-5">
+        <h3 className="text-slate-100 font-semibold mb-3">Action Breakdown</h3>
+        <div className="grid grid-cols-3 gap-4">
+          {(['buy', 'sell', 'trade'] as const).map((action) => {
+            const count = trades.filter((t) => t.action === action).length;
+            const totalVal = trades
+              .filter((t) => t.action === action)
+              .reduce((s, t) => s + t.estimatedValue, 0);
+            const color =
+              action === 'buy' ? 'text-green-400' : action === 'sell' ? 'text-red-400' : 'text-blue-400';
+            const bg =
+              action === 'buy'
+                ? 'bg-green-500/10'
+                : action === 'sell'
+                  ? 'bg-red-500/10'
+                  : 'bg-blue-500/10';
+            return (
+              <div key={action} className={`${bg} rounded-lg p-4`}>
+                <p className={`${color} text-sm font-medium uppercase`}>{action}</p>
+                <p className="text-slate-100 text-xl font-bold mt-1">{count} cards</p>
+                <p className="text-slate-400 text-sm">${totalVal.toLocaleString()} total</p>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Trade list */}
       <div className="space-y-3">
-        {trades.map((trade, idx) => (
+        {sortedTrades.map((trade, idx) => (
           <div
             key={trade.id}
             className="bg-slate-800 rounded-xl p-5 border border-slate-700 hover:border-slate-600 transition-colors"
