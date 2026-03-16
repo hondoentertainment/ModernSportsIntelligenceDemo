@@ -1020,3 +1020,152 @@ export function getCollectionProfiles(): CollectionProfile[] {
 export function getFamilyMembers(): FamilyMember[] {
   return mockFamilyMembers;
 }
+
+// ---- Backward-compatible exports for GenerationalWealth.tsx and GenerationalWealthModal.tsx ----
+
+export interface InheritanceTaxProjection {
+  federalExemption: number;
+  federalRate: number;
+  federalTaxOwed: number;
+  stateExemption: number;
+  stateRate: number;
+  stateTaxOwed: number;
+  totalTaxOwed: number;
+  effectiveRate: number;
+  state: string;
+  strategies: string[];
+  netToHeirs: number;
+}
+
+export interface StepUpBasis {
+  assetId: string;
+  assetName: string;
+  originalBasis: number;
+  currentFairMarketValue: number;
+  stepUpAmount: number;
+  taxSavings: number;
+  capitalGainsAvoided: number;
+}
+
+export interface TaxStrategy {
+  id: string;
+  name: string;
+  description: string;
+  potentialSavings: number;
+  complexity: 'low' | 'medium' | 'high';
+  timeframe: string;
+  requirements: string[];
+  recommended: boolean;
+}
+
+export interface CharitableGiving {
+  id: string;
+  name: string;
+  type: 'donor_advised_fund' | 'charitable_trust' | 'direct_donation' | 'private_foundation';
+  description: string;
+  taxDeduction: number;
+  annualLimit: string;
+  benefits: string[];
+  estimatedSavings: number;
+}
+
+export interface LegacyTimeline {
+  milestones: LegacyMilestone[];
+  currentYear: number;
+  projectedEndYear: number;
+}
+
+export interface LegacyMilestone {
+  id: string;
+  year: number;
+  title: string;
+  description: string;
+  type: 'review' | 'distribution' | 'beneficiary_age' | 'trust_event' | 'tax_event';
+  icon: string;
+}
+
+export function getWealthProjection(years: number): WealthProjection[] {
+  return getProjection(years as ProjectionHorizon);
+}
+
+export function calculateInheritanceTax(totalValue: number, state: string): InheritanceTaxProjection {
+  const stateInfo = stateTaxData[state] || { hasEstateTax: false, exemption: 0, topRate: 0 };
+  const federalTaxable = Math.max(0, totalValue - FEDERAL_EXEMPTION);
+  const federalTaxOwed = federalTaxable * (FEDERAL_TOP_RATE / 100);
+
+  let stateTaxOwed = 0;
+  if (stateInfo.hasEstateTax) {
+    const stateTaxable = Math.max(0, totalValue - stateInfo.exemption);
+    stateTaxOwed = stateTaxable * (stateInfo.topRate / 100) * 0.6;
+  }
+
+  const totalTaxOwed = federalTaxOwed + stateTaxOwed;
+  const effectiveRate = totalValue > 0 ? (totalTaxOwed / totalValue) * 100 : 0;
+
+  const strategies: string[] = [];
+  if (totalValue > 1000000) strategies.push('Consider irrevocable trust to remove assets from estate');
+  if (totalValue > 500000) strategies.push('Annual gifting strategy — $18,000 per recipient per year');
+  if (stateInfo.hasEstateTax) strategies.push(`Relocate to state without estate tax to save ${formatCurrency(stateTaxOwed)}`);
+  strategies.push('Charitable remainder trust for appreciated collectibles');
+  strategies.push('Leverage step-up in basis for heirs to eliminate capital gains');
+
+  return {
+    federalExemption: FEDERAL_EXEMPTION,
+    federalRate: FEDERAL_TOP_RATE,
+    federalTaxOwed,
+    stateExemption: stateInfo.exemption,
+    stateRate: stateInfo.topRate,
+    stateTaxOwed,
+    totalTaxOwed,
+    effectiveRate,
+    state,
+    strategies,
+    netToHeirs: totalValue - totalTaxOwed,
+  };
+}
+
+export function calculateStepUpBasis(_assets?: unknown[]): StepUpBasis[] {
+  return mockCollectionProfiles.slice(0, 6).map((cp) => ({
+    assetId: cp.id,
+    assetName: `${cp.name} ${cp.grade}`,
+    originalBasis: cp.purchasePrice,
+    currentFairMarketValue: cp.currentValue,
+    stepUpAmount: cp.currentValue - cp.purchasePrice,
+    taxSavings: Math.round((cp.currentValue - cp.purchasePrice) * 0.21),
+    capitalGainsAvoided: cp.currentValue - cp.purchasePrice,
+  }));
+}
+
+export function getTaxStrategies(): TaxStrategy[] {
+  return [
+    { id: 'strat-001', name: 'Annual Gift Exclusion', description: 'Gift up to $18,000 per recipient annually without gift tax.', potentialSavings: 28800, complexity: 'low', timeframe: 'Ongoing — annual', requirements: ['Qualified appraisal for gifts over $5,000', 'File Form 709 for gifts over exclusion'], recommended: true },
+    { id: 'strat-002', name: 'Irrevocable Trust Transfer', description: 'Move high-appreciation collectibles into an irrevocable trust.', potentialSavings: 185000, complexity: 'high', timeframe: '3-6 months to establish', requirements: ['Estate attorney', 'Trustee appointment', 'Qualified appraisal', 'Gift tax return filing'], recommended: true },
+    { id: 'strat-003', name: 'Charitable Remainder Trust', description: 'Donate appreciated collectibles, receive income stream, and get immediate tax deduction.', potentialSavings: 142000, complexity: 'high', timeframe: '2-4 months to establish', requirements: ['IRS-compliant trust document', '10% remainder test', 'Qualified appraisal'], recommended: true },
+    { id: 'strat-004', name: 'Step-Up in Basis Planning', description: 'Hold appreciated collectibles until death to give heirs a stepped-up basis.', potentialSavings: 224763, complexity: 'low', timeframe: 'At transfer (death)', requirements: ['Updated will or trust provisions', 'Regular appraisals'], recommended: true },
+    { id: 'strat-005', name: 'Family Limited Partnership (FLP)', description: 'Create an FLP to hold collectibles. Transfer limited partnership interests at a valuation discount.', potentialSavings: 92000, complexity: 'high', timeframe: '4-6 months to establish', requirements: ['Partnership agreement', 'Independent appraisal', 'Legitimate business purpose'], recommended: false },
+    { id: 'strat-006', name: 'Qualified Personal Residence Trust (QPRT)', description: 'If collectibles are displayed in a personal residence, QPRT can reduce gift tax value.', potentialSavings: 45000, complexity: 'medium', timeframe: 'Term of years (10-15)', requirements: ['Personal residence qualification', 'Actuarial calculations', 'Irrevocable transfer'], recommended: false },
+  ];
+}
+
+export function getCharitableOptions(): CharitableGiving[] {
+  return [
+    { id: 'char-001', name: 'Donor-Advised Fund', type: 'donor_advised_fund', description: 'Contribute appreciated collectibles to a DAF for an immediate tax deduction.', taxDeduction: 0.3, annualLimit: '30% of AGI for appreciated property', benefits: ['Immediate tax deduction at FMV', 'Avoid capital gains tax', 'Flexible grant-making'], estimatedSavings: 96000 },
+    { id: 'char-002', name: 'Charitable Remainder Unitrust', type: 'charitable_trust', description: 'Transfer collectibles to a CRUT. Receive variable income annually.', taxDeduction: 0.25, annualLimit: '30% of AGI; 5-year carryforward', benefits: ['Income stream for life', 'Partial charitable deduction', 'Capital gains deferred'], estimatedSavings: 142000 },
+    { id: 'char-003', name: 'Direct Museum Donation', type: 'direct_donation', description: 'Donate significant collectibles directly to a qualified museum.', taxDeduction: 0.5, annualLimit: '50% of AGI for public charities', benefits: ['Maximum tax deduction at FMV', 'Collection preserved for public', 'Estate size reduction'], estimatedSavings: 128000 },
+    { id: 'char-004', name: 'Private Foundation', type: 'private_foundation', description: 'Establish a private foundation focused on sports history.', taxDeduction: 0.2, annualLimit: '20% of AGI for private foundations', benefits: ['Family governance', 'Multi-generational legacy', 'Public recognition'], estimatedSavings: 64000 },
+  ];
+}
+
+export function generateDocument(type: string): DocumentTemplate {
+  const doc = mockDocuments.find((d) => d.type === type);
+  if (doc) return { ...doc, generatedDate: new Date().toISOString().split('T')[0] };
+  return {
+    id: `doc-${Date.now()}`,
+    type: type as DocumentTemplate['type'],
+    title: `Generated ${type.replace(/_/g, ' ')}`,
+    generatedDate: new Date().toISOString().split('T')[0],
+    content: `Document template for ${type}. Please consult your estate planning attorney for final review.`,
+    status: 'draft',
+    signatures: ['Owner'],
+  };
+}
