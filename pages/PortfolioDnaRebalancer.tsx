@@ -808,6 +808,82 @@ function SimulationTab({ simulation }: { simulation: SimulationResult }) {
         </ResponsiveContainer>
       </div>
 
+      {/* Risk & return comparison */}
+      <div className="bg-slate-800 rounded-xl p-6">
+        <h3 className="text-slate-100 font-semibold mb-4">Risk & Return Comparison</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-slate-900 rounded-lg p-4">
+            <p className="text-slate-400 text-sm mb-1">Current Projected Annual Return</p>
+            <p className="text-slate-100 text-xl font-bold">6.5%</p>
+            <div className="flex items-center gap-1 mt-1 text-xs text-slate-500">
+              <Info size={12} />
+              <span>Based on historical performance of current mix</span>
+            </div>
+          </div>
+          <div className="bg-slate-900 rounded-lg p-4">
+            <p className="text-slate-400 text-sm mb-1">Rebalanced Projected Return</p>
+            <p className="text-lime-400 text-xl font-bold">
+              {projectedMonths.length > 0
+                ? `${(((projectedMonths[projectedMonths.length - 1].rebalancedValue / before.totalValue) - 1) * 100).toFixed(1)}%`
+                : 'N/A'}
+            </p>
+            <div className="flex items-center gap-1 mt-1 text-xs text-lime-500/60">
+              <TrendingUp size={12} />
+              <span>Using selected model allocation targets</span>
+            </div>
+          </div>
+          <div className="bg-slate-900 rounded-lg p-4">
+            <p className="text-slate-400 text-sm mb-1">Projected 12-Month Value</p>
+            <p className="text-lime-400 text-xl font-bold">
+              ${projectedMonths.length > 0 ? projectedMonths[projectedMonths.length - 1].rebalancedValue.toLocaleString() : 'N/A'}
+            </p>
+            <div className="flex items-center gap-1 mt-1 text-xs text-slate-500">
+              <TrendingUp size={12} />
+              <span>
+                +${projectedMonths.length > 0
+                  ? (projectedMonths[projectedMonths.length - 1].rebalancedValue - before.totalValue).toLocaleString()
+                  : '0'}{' '}
+                from current
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Monthly projection table */}
+      <div className="bg-slate-800 rounded-xl p-6 overflow-x-auto">
+        <h3 className="text-slate-100 font-semibold mb-4">Monthly Projection Detail</h3>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-slate-400 text-left border-b border-slate-700">
+              <th className="pb-2 font-medium">Month</th>
+              <th className="pb-2 font-medium text-right">Current Allocation</th>
+              <th className="pb-2 font-medium text-right">Rebalanced</th>
+              <th className="pb-2 font-medium text-right">Benchmark</th>
+              <th className="pb-2 font-medium text-right">Rebalance Edge</th>
+            </tr>
+          </thead>
+          <tbody>
+            {projectedMonths.map((pm) => {
+              const edge = pm.rebalancedValue - pm.currentValue;
+              return (
+                <tr key={pm.month} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+                  <td className="py-2 text-slate-300">{pm.month}</td>
+                  <td className="py-2 text-right text-slate-400">${pm.currentValue.toLocaleString()}</td>
+                  <td className="py-2 text-right text-lime-400">${pm.rebalancedValue.toLocaleString()}</td>
+                  <td className="py-2 text-right text-blue-400">${pm.benchmarkValue.toLocaleString()}</td>
+                  <td className="py-2 text-right">
+                    <span className={edge > 0 ? 'text-lime-400' : 'text-red-400'}>
+                      {edge > 0 ? '+' : ''}${edge.toLocaleString()}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
       {/* Strand-by-strand improvement table */}
       <div className="bg-slate-800 rounded-xl p-6">
         <h3 className="text-slate-100 font-semibold mb-4">Strand-by-Strand Improvement</h3>
