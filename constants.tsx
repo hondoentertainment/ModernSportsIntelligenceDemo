@@ -90,6 +90,21 @@ import {
   Eye,
   Mic,
   GitBranch,
+  Server,
+  Terminal,
+  Layers3,
+  FlaskConical,
+  Workflow,
+  Binary,
+  Database,
+  Radar,
+  Newspaper,
+  PieChart,
+  Puzzle,
+  Waypoints,
+  Receipt,
+  Wand2,
+  Lightbulb,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -113,7 +128,7 @@ export const NAV_ITEMS = [
   { id: 'phaseops', label: 'Phase Ops', icon: <Shield size={20} />, path: '/phase-ops' },
   { id: 'alerts', label: 'Alerts', icon: <Bell size={20} />, path: '/alerts' },
   { id: 'liveimpact', label: 'Live Game Impact', icon: <Radio size={20} />, path: '/live-impact' },
-  { id: 'visiongrading', label: 'Vision Grading Lab', icon: <ScanEye size={20} />, path: '/vision-grading' },
+  { id: 'visiongrading', label: 'Vision Grading Lab', icon: <ScanEye size={20} />, path: '/grading-vision-engine' },
   { id: 'fractionalvault', label: 'Fractional Vault', icon: <Landmark size={20} />, path: '/fractional-vault' },
   { id: 'provenance', label: 'Provenance Chain', icon: <Link2 size={20} />, path: '/provenance' },
   { id: 'livebreaks', label: 'Live Breaks', icon: <Tv size={20} />, path: '/live-breaks' },
@@ -262,6 +277,40 @@ export const NAV_ITEMS = [
   { id: 'narrative-alpha', label: 'Narrative Alpha', icon: <BookOpen size={20} />, path: '/narrative-alpha' },
   { id: 'counterfactual-value', label: 'Counterfactual', icon: <GitBranch size={20} />, path: '/counterfactual-value' },
   { id: 'biometric-trading-guard', label: 'Biometric Guard', icon: <HeartPulse size={20} />, path: '/biometric-trading-guard' },
+  // Advanced Trading & Analysis — Wired
+  { id: 'draft-war-room', label: 'Draft War Room', icon: <Swords size={20} />, path: '/draft-war-room' },
+  // Institutional & Operations
+  { id: 'api-platform', label: 'API Platform', icon: <Server size={20} />, path: '/api-platform' },
+  { id: 'compliance-center', label: 'Compliance', icon: <ShieldCheck size={20} />, path: '/compliance-center' },
+  { id: 'data-consolidation', label: 'Data Hub', icon: <Database size={20} />, path: '/data-consolidation' },
+  { id: 'msi-terminal', label: 'MSI Terminal', icon: <Terminal size={20} />, path: '/msi-terminal' },
+  { id: 'vault-security', label: 'Vault Security', icon: <Shield size={20} />, path: '/vault-security' },
+  // Trading & Marketplace
+  { id: 'deal-room', label: 'Deal Room', icon: <Briefcase size={20} />, path: '/deal-room' },
+  { id: 'derivatives-desk', label: 'Derivatives Desk', icon: <Binary size={20} />, path: '/derivatives-desk' },
+  { id: 'consignment-router', label: 'Consignment Router', icon: <Workflow size={20} />, path: '/consignment-router' },
+  { id: 'p2p-marketplace', label: 'P2P Marketplace', icon: <Users size={20} />, path: '/p2p-marketplace' },
+  { id: 'transaction-wire', label: 'Transaction Wire', icon: <Receipt size={20} />, path: '/transaction-wire' },
+  // Analytics & Intelligence
+  { id: 'card-dna', label: 'Card DNA', icon: <Dna size={20} />, path: '/card-dna' },
+  { id: 'collection-genome', label: 'Collection Genome', icon: <Puzzle size={20} />, path: '/collection-genome' },
+  { id: 'error-card-intel', label: 'Error Card Intel', icon: <AlertOctagon size={20} />, path: '/error-card-intel' },
+  { id: 'hof-tracker', label: 'HOF Tracker', icon: <Award size={20} />, path: '/hof-tracker' },
+  { id: 'market-indices', label: 'Market Indices', icon: <PieChart size={20} />, path: '/market-indices' },
+  { id: 'player-trajectory', label: 'Player Trajectory', icon: <Waypoints size={20} />, path: '/player-trajectory' },
+  { id: 'portfolio-attribution', label: 'Attribution', icon: <BarChart3 size={20} />, path: '/portfolio-attribution' },
+  { id: 'quant-workbench', label: 'Quant Workbench', icon: <FlaskConical size={20} />, path: '/quant-workbench' },
+  { id: 'research-reports', label: 'Research Reports', icon: <Newspaper size={20} />, path: '/research-reports' },
+  { id: 'sentiment-radar', label: 'Sentiment Radar', icon: <Radar size={20} />, path: '/sentiment-radar' },
+  { id: 'wax-intelligence', label: 'Wax Intel', icon: <Lightbulb size={20} />, path: '/wax-intelligence' },
+  { id: 'weather-impact', label: 'Weather Impact', icon: <CloudRain size={20} />, path: '/weather-impact' },
+  // Portfolio & Financial
+  { id: 'estate-planning', label: 'Estate Planning', icon: <Landmark size={20} />, path: '/estate-planning' },
+  { id: 'rebalancer', label: 'Rebalancer', icon: <RefreshCw size={20} />, path: '/rebalancer' },
+  { id: 'grading-arbitrage', label: 'Grading Arbitrage', icon: <ArrowLeftRight size={20} />, path: '/grading-arbitrage' },
+  // Showcase & Labs
+  { id: 'ar-showcase', label: 'AR Showcase', icon: <Eye size={20} />, path: '/ar-showcase' },
+  { id: 'inventory', label: 'Inventory', icon: <Layers3 size={20} />, path: '/inventory' },
   // Interactive Demo Flow
   { id: 'demo-flow', label: 'Demo Flow', icon: <Play size={20} />, path: '/demo-flow' },
 ];

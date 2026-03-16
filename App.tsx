@@ -243,6 +243,59 @@ const NarrativeAlpha = lazy(() => import('./pages/NarrativeAlpha.tsx'));
 const CounterfactualValue = lazy(() => import('./pages/CounterfactualValue.tsx'));
 const BiometricTradingGuard = lazy(() => import('./pages/BiometricTradingGuard.tsx'));
 
+// Previously unrouted pages — Advanced Trading & Analysis
+const LiveGameImpactEngine = lazy(() => import('./pages/LiveGameImpactEngine.tsx'));
+const PreGradeIntelligence = lazy(() => import('./pages/PreGradeIntelligence.tsx'));
+const CopyTrading = lazy(() => import('./pages/CopyTrading.tsx'));
+const PredictiveMarketMaker = lazy(() => import('./pages/PredictiveMarketMaker.tsx'));
+const InfluenceGraph = lazy(() => import('./pages/InfluenceGraph.tsx'));
+const CrossHobbyPortfolio = lazy(() => import('./pages/CrossHobbyPortfolio.tsx'));
+const AutonomousAcquisition = lazy(() => import('./pages/AutonomousAcquisition.tsx'));
+const DraftWarRoom = lazy(() => import('./pages/DraftWarRoom.tsx'));
+
+// Previously unrouted pages — Institutional & Operations
+const APIPlatform = lazy(() => import('./pages/APIPlatform.tsx'));
+const ComplianceCenter = lazy(() => import('./pages/ComplianceCenter.tsx'));
+const PhaseOperations = lazy(() => import('./pages/PhaseOperations.tsx'));
+const DataConsolidation = lazy(() => import('./pages/DataConsolidation.tsx'));
+const MSITerminal = lazy(() => import('./pages/MSITerminal.tsx'));
+const VaultSecurity = lazy(() => import('./pages/VaultSecurity.tsx'));
+
+// Previously unrouted pages — Trading & Marketplace
+const DealRoom = lazy(() => import('./pages/DealRoom.tsx'));
+const DerivativesDesk = lazy(() => import('./pages/DerivativesDesk.tsx'));
+const ConsignmentRouter = lazy(() => import('./pages/ConsignmentRouter.tsx'));
+const P2PMarketplace = lazy(() => import('./pages/P2PMarketplace.tsx'));
+const TransactionWire = lazy(() => import('./pages/TransactionWire.tsx'));
+const LiveBreaks = lazy(() => import('./pages/LiveBreaks.tsx'));
+
+// Previously unrouted pages — Analytics & Intelligence
+const CardDNA = lazy(() => import('./pages/CardDNA.tsx'));
+const CollectionGenome = lazy(() => import('./pages/CollectionGenome.tsx'));
+const ErrorCardIntel = lazy(() => import('./pages/ErrorCardIntel.tsx'));
+const HOFTracker = lazy(() => import('./pages/HOFTracker.tsx'));
+const MarketIndices = lazy(() => import('./pages/MarketIndices.tsx'));
+const PlayerTrajectory = lazy(() => import('./pages/PlayerTrajectory.tsx'));
+const PortfolioAttribution = lazy(() => import('./pages/PortfolioAttribution.tsx'));
+const ProvenanceChain = lazy(() => import('./pages/ProvenanceChain.tsx'));
+const ProvenanceChainIntelligence = lazy(() => import('./pages/ProvenanceChainIntelligence.tsx'));
+const QuantWorkbench = lazy(() => import('./pages/QuantWorkbench.tsx'));
+const ResearchReports = lazy(() => import('./pages/ResearchReports.tsx'));
+const SentimentRadar = lazy(() => import('./pages/SentimentRadar.tsx'));
+const WaxIntelligence = lazy(() => import('./pages/WaxIntelligence.tsx'));
+const WeatherImpact = lazy(() => import('./pages/WeatherImpact.tsx'));
+
+// Previously unrouted pages — Portfolio & Financial
+const EstatePlanning = lazy(() => import('./pages/EstatePlanning.tsx'));
+const Rebalancer = lazy(() => import('./pages/Rebalancer.tsx'));
+const GradingArbitrage = lazy(() => import('./pages/GradingArbitrage.tsx'));
+
+// Previously unrouted pages — Showcase & Labs
+const ARShowcase = lazy(() => import('./pages/ARShowcase.tsx'));
+const FrontierLab = lazy(() => import('./pages/FrontierLab.tsx'));
+const LiveImpact = lazy(() => import('./pages/LiveImpact.tsx'));
+const Inventory = lazy(() => import('./pages/Inventory.tsx'));
+
 // Interactive Demo Flow
 const DemoFlowPage = lazy(() => import('./pages/DemoFlow.tsx'));
 
@@ -483,6 +536,53 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/narrative-alpha" element={<NarrativeAlpha />} />
                 <Route path="/counterfactual-value" element={<CounterfactualValue />} />
                 <Route path="/biometric-trading-guard" element={<BiometricTradingGuard />} />
+                {/* Advanced Trading & Analysis — Previously Unrouted */}
+                <Route path="/live-game-impact-engine" element={<LiveGameImpactEngine />} />
+                <Route path="/pre-grade-intelligence" element={<PreGradeIntelligence />} />
+                <Route path="/copy-trading" element={<CopyTrading />} />
+                <Route path="/predictive-market-maker" element={<PredictiveMarketMaker />} />
+                <Route path="/influence-graph" element={<InfluenceGraph />} />
+                <Route path="/cross-hobby-portfolio" element={<CrossHobbyPortfolio />} />
+                <Route path="/autonomous-acquisition" element={<AutonomousAcquisition />} />
+                <Route path="/draft-war-room" element={<DraftWarRoom />} />
+                {/* Institutional & Operations — Previously Unrouted */}
+                <Route path="/api-platform" element={<APIPlatform />} />
+                <Route path="/compliance-center" element={<ComplianceCenter />} />
+                <Route path="/phase-ops" element={<PhaseOperations />} />
+                <Route path="/data-consolidation" element={<DataConsolidation />} />
+                <Route path="/msi-terminal" element={<MSITerminal />} />
+                <Route path="/vault-security" element={<VaultSecurity />} />
+                {/* Trading & Marketplace — Previously Unrouted */}
+                <Route path="/deal-room" element={<DealRoom />} />
+                <Route path="/derivatives-desk" element={<DerivativesDesk />} />
+                <Route path="/consignment-router" element={<ConsignmentRouter />} />
+                <Route path="/p2p-marketplace" element={<P2PMarketplace />} />
+                <Route path="/transaction-wire" element={<TransactionWire />} />
+                <Route path="/live-breaks" element={<LiveBreaks />} />
+                {/* Analytics & Intelligence — Previously Unrouted */}
+                <Route path="/card-dna" element={<CardDNA />} />
+                <Route path="/collection-genome" element={<CollectionGenome />} />
+                <Route path="/error-card-intel" element={<ErrorCardIntel />} />
+                <Route path="/hof-tracker" element={<HOFTracker />} />
+                <Route path="/market-indices" element={<MarketIndices />} />
+                <Route path="/player-trajectory" element={<PlayerTrajectory />} />
+                <Route path="/portfolio-attribution" element={<PortfolioAttribution />} />
+                <Route path="/provenance" element={<ProvenanceChain />} />
+                <Route path="/provenance-intelligence" element={<ProvenanceChainIntelligence />} />
+                <Route path="/quant-workbench" element={<QuantWorkbench />} />
+                <Route path="/research-reports" element={<ResearchReports />} />
+                <Route path="/sentiment-radar" element={<SentimentRadar />} />
+                <Route path="/wax-intelligence" element={<WaxIntelligence />} />
+                <Route path="/weather-impact" element={<WeatherImpact />} />
+                {/* Portfolio & Financial — Previously Unrouted */}
+                <Route path="/estate-planning" element={<EstatePlanning />} />
+                <Route path="/rebalancer" element={<Rebalancer />} />
+                <Route path="/grading-arbitrage" element={<GradingArbitrage />} />
+                {/* Showcase & Labs — Previously Unrouted */}
+                <Route path="/ar-showcase" element={<ARShowcase />} />
+                <Route path="/frontier-lab" element={<FrontierLab />} />
+                <Route path="/live-impact" element={<LiveImpact />} />
+                <Route path="/inventory" element={<Inventory />} />
                 {/* Interactive Demo Flow */}
                 <Route path="/demo-flow" element={<DemoFlowPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
