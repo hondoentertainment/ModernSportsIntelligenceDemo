@@ -267,6 +267,28 @@ const NegotiationReplay = lazy(() => import('./pages/NegotiationReplay.tsx'));
 const CardMaterialSpectrometry = lazy(() => import('./pages/CardMaterialSpectrometry.tsx'));
 const GenerationalDemandForecaster = lazy(() => import('./pages/GenerationalDemandForecaster.tsx'));
 
+// v7.1: Industry-Absent Innovation — Round 4 (Phases 234-253)
+const SlabCaseForensics = lazy(() => import('./pages/SlabCaseForensics.tsx'));
+const PriceWhisperer = lazy(() => import('./pages/PriceWhisperer.tsx'));
+const CardLoanCollateral = lazy(() => import('./pages/CardLoanCollateral.tsx'));
+const GradingArbitrage = lazy(() => import('./pages/GradingArbitrage.tsx'));
+const ConsignmentOptimizer = lazy(() => import('./pages/ConsignmentOptimizer.tsx'));
+const CardAgingClock = lazy(() => import('./pages/CardAgingClock.tsx'));
+const SentimentSeismograph = lazy(() => import('./pages/SentimentSeismograph.tsx'));
+const ContractValuation = lazy(() => import('./pages/ContractValuation.tsx'));
+const CollectionEntropy = lazy(() => import('./pages/CollectionEntropy.tsx'));
+const CardShowNavigator = lazy(() => import('./pages/CardShowNavigator.tsx'));
+const InfluencerQuantifier = lazy(() => import('./pages/InfluencerQuantifier.tsx'));
+const WaxCTScanner = lazy(() => import('./pages/WaxCTScanner.tsx'));
+const ManipulationDetector = lazy(() => import('./pages/ManipulationDetector.tsx'));
+const InsuranceClaimsAI = lazy(() => import('./pages/InsuranceClaimsAI.tsx'));
+const RecessionPlaybook = lazy(() => import('./pages/RecessionPlaybook.tsx'));
+const PersonalityMatrix = lazy(() => import('./pages/PersonalityMatrix.tsx'));
+const PhotoStudio = lazy(() => import('./pages/PhotoStudio.tsx'));
+const PeerLending = lazy(() => import('./pages/PeerLending.tsx'));
+const DraftNightTracker = lazy(() => import('./pages/DraftNightTracker.tsx'));
+const VintageProvenance = lazy(() => import('./pages/VintageProvenance.tsx'));
+
 // Formerly coming-soon features — now live
 const WhatIfSimulator = lazy(() => import('./pages/WhatIfSimulator.tsx'));
 const GradingBatchPlanner = lazy(() => import('./pages/GradingBatchPlanner.tsx'));
@@ -318,7 +340,6 @@ const WeatherImpact = lazy(() => import('./pages/WeatherImpact.tsx'));
 // Previously unrouted pages — Portfolio & Financial
 const EstatePlanning = lazy(() => import('./pages/EstatePlanning.tsx'));
 const Rebalancer = lazy(() => import('./pages/Rebalancer.tsx'));
-const GradingArbitrage = lazy(() => import('./pages/GradingArbitrage.tsx'));
 
 // Previously unrouted pages — Showcase & Labs
 const ARShowcase = lazy(() => import('./pages/ARShowcase.tsx'));
@@ -607,7 +628,6 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 {/* Portfolio & Financial — Previously Unrouted */}
                 <Route path="/estate-planning" element={<EstatePlanning />} />
                 <Route path="/rebalancer" element={<Rebalancer />} />
-                <Route path="/grading-arbitrage" element={<GradingArbitrage />} />
                 {/* Showcase & Labs — Previously Unrouted */}
                 <Route path="/ar-showcase" element={<ARShowcase />} />
                 <Route path="/frontier-lab" element={<FrontierLab />} />
@@ -635,6 +655,27 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/negotiation-replay" element={<NegotiationReplay />} />
                 <Route path="/card-material-spectrometry" element={<CardMaterialSpectrometry />} />
                 <Route path="/generational-demand-forecaster" element={<GenerationalDemandForecaster />} />
+                {/* v7.1: Industry-Absent Innovation — Round 4 */}
+                <Route path="/slab-case-forensics" element={<SlabCaseForensics />} />
+                <Route path="/price-whisperer" element={<PriceWhisperer />} />
+                <Route path="/card-loan-collateral" element={<CardLoanCollateral />} />
+                <Route path="/grading-arbitrage" element={<GradingArbitrage />} />
+                <Route path="/consignment-optimizer" element={<ConsignmentOptimizer />} />
+                <Route path="/card-aging-clock" element={<CardAgingClock />} />
+                <Route path="/sentiment-seismograph" element={<SentimentSeismograph />} />
+                <Route path="/contract-valuation" element={<ContractValuation />} />
+                <Route path="/collection-entropy" element={<CollectionEntropy />} />
+                <Route path="/card-show-navigator" element={<CardShowNavigator />} />
+                <Route path="/influencer-quantifier" element={<InfluencerQuantifier />} />
+                <Route path="/wax-ct-scanner" element={<WaxCTScanner />} />
+                <Route path="/manipulation-detector" element={<ManipulationDetector />} />
+                <Route path="/insurance-claims-ai" element={<InsuranceClaimsAI />} />
+                <Route path="/recession-playbook" element={<RecessionPlaybook />} />
+                <Route path="/personality-matrix" element={<PersonalityMatrix />} />
+                <Route path="/photo-studio" element={<PhotoStudio />} />
+                <Route path="/peer-lending" element={<PeerLending />} />
+                <Route path="/draft-night-tracker" element={<DraftNightTracker />} />
+                <Route path="/vintage-provenance" element={<VintageProvenance />} />
                 {/* Formerly coming-soon features */}
                 <Route path="/what-if-simulator" element={<WhatIfSimulator />} />
                 <Route path="/grading-batch-planner" element={<GradingBatchPlanner />} />

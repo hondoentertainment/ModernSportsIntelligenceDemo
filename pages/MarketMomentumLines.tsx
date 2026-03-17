@@ -1,0 +1,24 @@
+import React, { useState } from 'react';
+import { BarChart3 } from 'lucide-react';
+import MarketMomentumLinesModal from '../components/MarketMomentumLinesModal.tsx';
+
+const MarketMomentumLines: React.FC = () => {
+  const [showModal, setShowModal] = useState(true);
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <div className="p-2 rounded-xl bg-blue-500/20"><BarChart3 size={24} className="text-blue-400" /></div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-100">Market Momentum Lines</h1>
+          <p className="text-sm text-slate-400">Technical support and resistance lines for card markets</p>
+        </div>
+      </div>
+      <MarketMomentumLinesModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      {!showModal && (
+        <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-colors">Open Market Momentum Lines</button>
+      )}
+    </div>
+  );
+};
+
+export default MarketMomentumLines;

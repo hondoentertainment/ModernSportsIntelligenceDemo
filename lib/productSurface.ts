@@ -144,6 +144,27 @@ export const SEARCHABLE_FEATURE_IDS = [
   'negotiation-replay',
   'card-material-spectrometry',
   'generational-demand-forecaster',
+  // v7.1: Industry-Absent Innovation — Round 4 (Phases 234-253)
+  'slab-case-forensics',
+  'grading-arbitrage',
+  'influencer-quantifier',
+  'card-dna-fingerprint',
+  'sentiment-half-life',
+  'break-even-countdown',
+  'collector-burnout-index',
+  'flip-streak-analytics',
+  'market-momentum-lines',
+  'hobby-entry-ramp',
+  'async-auction-negotiation',
+  'portfolio-stress-test',
+  'phenome-pipeline',
+  'card-aging-simulator',
+  'mystery-sniper-detector',
+  'narrative-premium-index',
+  'edition-print-run',
+  'error-variety-hunter',
+  'cross-platform-arbitrage',
+  'auto-buy-rule-engine',
 ] as const;
 
 export const COMMAND_ROUTES = [

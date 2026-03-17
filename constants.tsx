@@ -109,6 +109,9 @@ import {
   Volume2,
   Network,
   PlayCircle,
+  MessageSquare,
+  Dices,
+  Shuffle,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -345,6 +348,30 @@ export const NAV_ITEMS = [
   { id: 'venue-health-oracle', label: 'Venue Oracle', icon: <Building2 size={20} />, path: '/venue-health-oracle' },
   { id: 'negotiation-replay', label: 'Negotiation Replay', icon: <PlayCircle size={20} />, path: '/negotiation-replay' },
   { id: 'generational-demand-forecaster', label: 'Gen Forecaster', icon: <Clock size={20} />, path: '/generational-demand-forecaster' },
+  // v7.1: Industry-Absent Innovation — Round 4 (Authentication & Grading)
+  { id: 'slab-case-forensics', label: 'Slab Forensics', icon: <ScanLine size={20} />, path: '/slab-case-forensics' },
+  { id: 'grading-arbitrage', label: 'Grade Arbitrage', icon: <ArrowLeftRight size={20} />, path: '/grading-arbitrage' },
+  { id: 'card-aging-clock', label: 'Aging Clock', icon: <Clock size={20} />, path: '/card-aging-clock' },
+  // v7.1: Industry-Absent Innovation — Round 4 (Market Intelligence)
+  { id: 'price-whisperer', label: 'Price Whisperer', icon: <MessageSquare size={20} />, path: '/price-whisperer' },
+  { id: 'sentiment-seismograph', label: 'Sentiment Seismo', icon: <Activity size={20} />, path: '/sentiment-seismograph' },
+  { id: 'influencer-quantifier', label: 'Influencer Impact', icon: <Megaphone size={20} />, path: '/influencer-quantifier' },
+  { id: 'manipulation-detector', label: 'Manipulation Radar', icon: <AlertTriangle size={20} />, path: '/manipulation-detector' },
+  { id: 'contract-valuation', label: 'Contract Value', icon: <FileCheck size={20} />, path: '/contract-valuation' },
+  { id: 'draft-night-tracker', label: 'Draft Night Live', icon: <Zap size={20} />, path: '/draft-night-tracker' },
+  // v7.1: Industry-Absent Innovation — Round 4 (Trading & Financial)
+  { id: 'card-loan-collateral', label: 'Card Collateral', icon: <Landmark size={20} />, path: '/card-loan-collateral' },
+  { id: 'consignment-optimizer', label: 'Consignment Opt', icon: <Scale size={20} />, path: '/consignment-optimizer' },
+  { id: 'recession-playbook', label: 'Recession Playbook', icon: <BookOpen size={20} />, path: '/recession-playbook' },
+  { id: 'peer-lending', label: 'Peer Lending', icon: <ArrowLeftRight size={20} />, path: '/peer-lending' },
+  // v7.1: Industry-Absent Innovation — Round 4 (Tools & Experience)
+  { id: 'card-show-navigator', label: 'Show Navigator', icon: <MapPin size={20} />, path: '/card-show-navigator' },
+  { id: 'wax-ct-scanner', label: 'Wax CT Scanner', icon: <Box size={20} />, path: '/wax-ct-scanner' },
+  { id: 'insurance-claims-ai', label: 'Claims AI', icon: <Shield size={20} />, path: '/insurance-claims-ai' },
+  { id: 'collection-entropy', label: 'Entropy Score', icon: <Dices size={20} />, path: '/collection-entropy' },
+  { id: 'personality-matrix', label: 'Personality Matrix', icon: <Users size={20} />, path: '/personality-matrix' },
+  { id: 'photo-studio', label: 'Photo Studio', icon: <Camera size={20} />, path: '/photo-studio' },
+  { id: 'vintage-provenance', label: 'Vintage Provenance', icon: <History size={20} />, path: '/vintage-provenance' },
   // Formerly coming-soon features — now live
   { id: 'what-if-simulator', label: 'What-If Simulator', icon: <FlaskConical size={20} />, path: '/what-if-simulator' },
   { id: 'grading-batch-planner', label: 'Grading Planner', icon: <ClipboardCheck size={20} />, path: '/grading-batch-planner' },
