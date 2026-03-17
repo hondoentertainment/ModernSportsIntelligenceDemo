@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, ChevronRight, X, Zap, ArrowRight, Layers } from 'lucide-react';
+import { Search, Filter, ChevronRight, X, Zap, ArrowRight, Layers, LayoutGrid, List } from 'lucide-react';
 import {
   DISCOVERABLE_FEATURE_CATALOG,
   TIER_CONFIG,
@@ -11,10 +11,47 @@ import {
   FeatureTier,
 } from '../lib/featureCatalog';
 
+/** Functional area groupings for organized browsing */
+const FUNCTIONAL_AREAS: { id: string; label: string; icon: string; color: string; bgColor: string; borderColor: string; description: string; categoryMatch: string[]; keywordMatch: string[] }[] = [
+  { id: 'portfolio', label: 'Portfolio Management', icon: 'briefcase', color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/30', description: 'Dashboard, collection, building, audit, and portfolio tracking tools', categoryMatch: ['Portfolio'], keywordMatch: ['portfolio', 'collection', 'nav', 'builder', 'audit', 'goal', 'sold', 'vault', 'inventory', 'rebalance'] },
+  { id: 'market-intel', label: 'Market Intelligence', icon: 'chart', color: 'text-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/30', description: 'Market data, trends, pricing, demand analysis, and geographic insights', categoryMatch: ['Market Structure'], keywordMatch: ['market', 'trend', 'price', 'ticker', 'geographic', 'demand', 'heatmap', 'regional', 'psychographic', 'dealer', 'flow', 'shadow', 'microstructure', 'regime'] },
+  { id: 'trading', label: 'Trading & Deals', icon: 'swap', color: 'text-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/30', description: 'Buying, selling, auctions, negotiation, and marketplace tools', categoryMatch: ['Trading'], keywordMatch: ['trade', 'deal', 'auction', 'negotiat', 'listing', 'ebay', 'buy', 'sell', 'snipe', 'arbitrage', 'venue', 'copy trading', 'market maker', 'replay'] },
+  { id: 'ai-analytics', label: 'AI & Advanced Analytics', icon: 'brain', color: 'text-purple-400', bgColor: 'bg-purple-500/10', borderColor: 'border-purple-500/30', description: 'AI-powered insights, predictions, genome sequencing, and narrative analysis', categoryMatch: ['AI'], keywordMatch: ['ai', 'gemini', 'predict', 'genome', 'narrative', 'copilot', 'advisor', 'agent', 'chaos', 'contagion', 'cross hobby', 'catalyst'] },
+  { id: 'risk-compliance', label: 'Risk & Compliance', icon: 'shield', color: 'text-red-400', bgColor: 'bg-red-500/10', borderColor: 'border-red-500/30', description: 'Risk management, stress testing, compliance monitoring, and safety', categoryMatch: ['Risk'], keywordMatch: ['risk', 'stress', 'compliance', 'regulatory', 'aml', 'contagion', 'crisis', 'failure', 'drill', 'biometric', 'guard', 'crowding'] },
+  { id: 'finance', label: 'Financial Intelligence', icon: 'dollar', color: 'text-green-400', bgColor: 'bg-green-500/10', borderColor: 'border-green-500/30', description: 'Tax planning, insurance, estate planning, yield, and capital optimization', categoryMatch: ['Finance'], keywordMatch: ['tax', 'insurance', 'estate', 'fiscal', 'capital', 'yield', 'billing', 'break even', 'cost basis', 'k-1', 'syndicate', 'generational', 'wealth'] },
+  { id: 'grading-auth', label: 'Grading & Authentication', icon: 'scan', color: 'text-cyan-400', bgColor: 'bg-cyan-500/10', borderColor: 'border-cyan-500/30', description: 'Grading prediction, vision analysis, forensics, provenance, and material science', categoryMatch: ['Security'], keywordMatch: ['grade', 'grading', 'vision', 'forensic', 'provenance', 'counterfeit', 'auth', 'centering', 'acoustic', 'spectrometry', 'material', 'restoration'] },
+  { id: 'player-intel', label: 'Player & Prospect Intel', icon: 'users', color: 'text-orange-400', bgColor: 'bg-orange-500/10', borderColor: 'border-orange-500/30', description: 'Player tracking, prospect scouting, injury analysis, and HOF probability', categoryMatch: ['Data'], keywordMatch: ['player', 'prospect', 'mlb', 'rookie', 'injury', 'hof', 'pipeline', 'draft', 'pressbox', 'team', 'game', 'shockwave'] },
+  { id: 'social', label: 'Social & Community', icon: 'globe', color: 'text-pink-400', bgColor: 'bg-pink-500/10', borderColor: 'border-pink-500/30', description: 'Leaderboards, social graphs, sharing, community benchmarking, and AR', categoryMatch: ['Social'], keywordMatch: ['social', 'leaderboard', 'share', 'community', 'benchmark', 'collector', 'ar ', 'walkthrough', 'matchmaker'] },
+  { id: 'behavioral', label: 'Behavioral Science', icon: 'heart', color: 'text-rose-400', bgColor: 'bg-rose-500/10', borderColor: 'border-rose-500/30', description: 'Emotional analysis, dopamine tracking, decision journals, and psychology', categoryMatch: [], keywordMatch: ['emotional', 'dopamine', 'emotion', 'mood', 'memory', 'nostalgia', 'psychology', 'behavior', 'impulse', 'journal', 'thermometer'] },
+  { id: 'tools', label: 'Tools & Utilities', icon: 'wrench', color: 'text-slate-300', bgColor: 'bg-slate-500/10', borderColor: 'border-slate-500/30', description: 'Calculators, planners, scanners, card show tools, and import/export', categoryMatch: ['Tools', 'UX'], keywordMatch: ['calculator', 'planner', 'scanner', 'import', 'export', 'show', 'event', 'wax', 'break', 'ocr', 'command', 'mobile', 'accessibility', 'voice'] },
+  { id: 'system', label: 'Platform & System', icon: 'server', color: 'text-slate-400', bgColor: 'bg-slate-600/10', borderColor: 'border-slate-600/30', description: 'Authentication, billing, notifications, data migration, and infrastructure', categoryMatch: ['System', 'Strategy', 'Operations', 'Trust'], keywordMatch: ['auth', 'login', 'billing', 'stripe', 'notification', 'migration', 'sync', 'frontier', 'museum', 'claims'] },
+];
+
+function assignToArea(feature: Feature): string {
+  // Check keywords first (more specific)
+  for (const area of FUNCTIONAL_AREAS) {
+    for (const kw of area.keywordMatch) {
+      if (feature.keywords.some(fkw => fkw.includes(kw)) || feature.name.toLowerCase().includes(kw) || feature.description.toLowerCase().includes(kw)) {
+        return area.id;
+      }
+    }
+  }
+  // Fallback to category match
+  for (const area of FUNCTIONAL_AREAS) {
+    if (area.categoryMatch.includes(feature.category)) {
+      return area.id;
+    }
+  }
+  return 'tools'; // default
+}
+
+type ViewMode = 'grouped' | 'tier';
+
 const FeatureDirectory: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTier, setSelectedTier] = useState<FeatureTier | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<ViewMode>('grouped');
   const navigate = useNavigate();
 
   const categories = useMemo(() => getCategories(DISCOVERABLE_FEATURE_CATALOG), []);
@@ -42,6 +79,20 @@ const FeatureDirectory: React.FC = () => {
 
   const grouped = useMemo(() => groupByTier(filtered), [filtered]);
 
+  const groupedByArea = useMemo(() => {
+    const areaMap = new Map<string, Feature[]>();
+    filtered.forEach(f => {
+      const areaId = assignToArea(f);
+      const list = areaMap.get(areaId) || [];
+      list.push(f);
+      areaMap.set(areaId, list);
+    });
+    return FUNCTIONAL_AREAS.filter(area => areaMap.has(area.id)).map(area => ({
+      ...area,
+      features: areaMap.get(area.id)!,
+    }));
+  }, [filtered]);
+
   const tierCounts = useMemo(() => {
     const counts: Record<string, number> = { all: DISCOVERABLE_FEATURE_CATALOG.length };
     DISCOVERABLE_FEATURE_CATALOG.forEach(f => {
@@ -64,6 +115,53 @@ const FeatureDirectory: React.FC = () => {
 
   const hasActiveFilters = searchQuery.trim() || selectedTier !== 'all' || selectedCategory !== 'all';
 
+  const renderFeatureCard = (feature: Feature) => {
+    const tierConfig = TIER_CONFIG[feature.tier];
+    return (
+      <button
+        key={feature.id}
+        onClick={() => handleFeatureClick(feature)}
+        className={`group text-left p-4 rounded-xl border transition-all ${
+          feature.path
+            ? 'bg-brand-slate border-slate-800 hover:border-slate-600 hover:bg-brand-charcoal cursor-pointer'
+            : 'bg-brand-slate/50 border-slate-800/50 cursor-default'
+        }`}
+      >
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h3 className="text-sm font-bold text-white group-hover:text-brand-lime transition-colors leading-tight">
+            {feature.name}
+          </h3>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <span className={`w-2 h-2 rounded-full ${
+              feature.status === 'live' ? 'bg-brand-lime' :
+              feature.status === 'beta' ? 'bg-amber-400' :
+              'bg-slate-600'
+            }`} />
+            <span className="text-[8px] font-black uppercase tracking-wider text-brand-muted">
+              {feature.status}
+            </span>
+          </div>
+        </div>
+        <p className="text-[10px] text-slate-400 leading-relaxed mb-3 line-clamp-2">
+          {feature.description}
+        </p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <span className={`text-[8px] px-1.5 py-0.5 rounded-full ${tierConfig.bgColor} ${tierConfig.color} font-bold uppercase`}>
+              {feature.category}
+            </span>
+            <span className="text-[8px] text-brand-muted font-mono">
+              Phase {feature.phase}
+            </span>
+          </div>
+          {feature.path && (
+            <ArrowRight size={12} className="text-slate-600 group-hover:text-brand-lime transition-colors" />
+          )}
+        </div>
+      </button>
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -77,7 +175,7 @@ const FeatureDirectory: React.FC = () => {
           </div>
           <p className="text-sm text-brand-muted">
             All <span className="text-brand-lime font-bold">{DISCOVERABLE_FEATURE_CATALOG.length}</span> verified platform features across{' '}
-            <span className="text-brand-lime font-bold">{Object.keys(TIER_CONFIG).length}</span> tiers.
+            <span className="text-brand-lime font-bold">{FUNCTIONAL_AREAS.length}</span> functional areas.
             {hasActiveFilters && (
               <span className="ml-2 text-slate-400">
                 Showing {filtered.length} result{filtered.length !== 1 ? 's' : ''}.
@@ -86,30 +184,47 @@ const FeatureDirectory: React.FC = () => {
           </p>
         </div>
 
-        {/* Stats badges */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {(Object.entries(TIER_CONFIG) as [FeatureTier, typeof TIER_CONFIG[FeatureTier]][]).sort((a, b) => a[1].order - b[1].order).map(([tier, config]) => (
+        {/* View mode toggle + tier badges */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center bg-brand-slate rounded-lg border border-slate-800 p-0.5">
             <button
-              key={tier}
-              onClick={() => setSelectedTier(selectedTier === tier ? 'all' : tier)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all ${
-                selectedTier === tier
-                  ? `${config.bgColor} ${config.color} ${config.borderColor}`
-                  : 'border-slate-800 text-brand-muted hover:border-slate-600'
-              }`}
+              onClick={() => setViewMode('grouped')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${viewMode === 'grouped' ? 'bg-brand-lime text-brand-charcoal' : 'text-slate-500 hover:text-white'}`}
             >
-              <span>{config.label}</span>
-              <span className={`px-1.5 py-0.5 rounded-full text-[8px] ${config.bgColor} ${config.color}`}>
-                {tierCounts[tier] || 0}
-              </span>
+              <LayoutGrid size={12} /> By Area
             </button>
-          ))}
+            <button
+              onClick={() => setViewMode('tier')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${viewMode === 'tier' ? 'bg-brand-lime text-brand-charcoal' : 'text-slate-500 hover:text-white'}`}
+            >
+              <List size={12} /> By Tier
+            </button>
+          </div>
         </div>
+      </div>
+
+      {/* Tier filter pills */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {(Object.entries(TIER_CONFIG) as [FeatureTier, typeof TIER_CONFIG[FeatureTier]][]).sort((a, b) => a[1].order - b[1].order).map(([tier, config]) => (
+          <button
+            key={tier}
+            onClick={() => setSelectedTier(selectedTier === tier ? 'all' : tier)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all ${
+              selectedTier === tier
+                ? `${config.bgColor} ${config.color} ${config.borderColor}`
+                : 'border-slate-800 text-brand-muted hover:border-slate-600'
+            }`}
+          >
+            <span>{config.label}</span>
+            <span className={`px-1.5 py-0.5 rounded-full text-[8px] ${config.bgColor} ${config.color}`}>
+              {tierCounts[tier] || 0}
+            </span>
+          </button>
+        ))}
       </div>
 
       {/* Search and filters bar */}
       <div className="flex flex-col sm:flex-row gap-3">
-        {/* Search */}
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted" />
           <input
@@ -121,16 +236,12 @@ const FeatureDirectory: React.FC = () => {
             aria-label="Search features"
           />
           {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
-            >
+            <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors">
               <X size={16} />
             </button>
           )}
         </div>
 
-        {/* Category filter */}
         <div className="relative">
           <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted pointer-events-none" />
           <select
@@ -147,38 +258,58 @@ const FeatureDirectory: React.FC = () => {
           <ChevronRight size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-muted rotate-90 pointer-events-none" />
         </div>
 
-        {/* Clear filters */}
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
             className="flex items-center gap-1.5 px-4 py-2.5 bg-brand-slate border border-slate-800 rounded-xl text-sm text-slate-400 hover:text-white hover:border-slate-600 transition-all"
           >
-            <X size={14} />
-            Clear
+            <X size={14} /> Clear
           </button>
         )}
       </div>
 
-      {/* Feature list grouped by tier */}
+      {/* Feature list */}
       {filtered.length === 0 ? (
         <div className="text-center py-16">
           <Search size={40} className="mx-auto text-slate-700 mb-4" />
           <p className="text-lg text-slate-400 font-medium">No features match your search</p>
           <p className="text-sm text-brand-muted mt-2">Try a different search term or clear your filters.</p>
-          <button
-            onClick={clearFilters}
-            className="mt-4 px-4 py-2 bg-brand-lime text-brand-charcoal rounded-xl text-sm font-bold hover:bg-brand-lime/90 transition-colors"
-          >
+          <button onClick={clearFilters} className="mt-4 px-4 py-2 bg-brand-lime text-brand-charcoal rounded-xl text-sm font-bold hover:bg-brand-lime/90 transition-colors">
             Clear All Filters
           </button>
         </div>
+      ) : viewMode === 'grouped' ? (
+        /* ─── Grouped by Functional Area ─── */
+        <div className="space-y-8">
+          {groupedByArea.map(area => (
+            <div key={area.id}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`h-px flex-1 ${area.borderColor} border-t`} />
+                <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full ${area.bgColor} border ${area.borderColor}`}>
+                  <Zap size={12} className={area.color} />
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${area.color}`}>
+                    {area.label}
+                  </span>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${area.bgColor} ${area.color} font-bold`}>
+                    {area.features.length}
+                  </span>
+                </div>
+                <div className={`h-px flex-1 ${area.borderColor} border-t`} />
+              </div>
+              <p className="text-[10px] text-slate-500 mb-3 text-center">{area.description}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {area.features.map(renderFeatureCard)}
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
+        /* ─── Grouped by Tier (original) ─── */
         <div className="space-y-8">
           {grouped.map(([tier, features]) => {
             const config = TIER_CONFIG[tier];
             return (
               <div key={tier}>
-                {/* Tier header */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className={`h-px flex-1 ${config.borderColor} border-t`} />
                   <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full ${config.bgColor} border ${config.borderColor}`}>
@@ -192,52 +323,8 @@ const FeatureDirectory: React.FC = () => {
                   </div>
                   <div className={`h-px flex-1 ${config.borderColor} border-t`} />
                 </div>
-
-                {/* Feature cards grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {features.map(feature => (
-                    <button
-                      key={feature.id}
-                      onClick={() => handleFeatureClick(feature)}
-                      className={`group text-left p-4 rounded-xl border transition-all ${
-                        feature.path
-                          ? 'bg-brand-slate border-slate-800 hover:border-slate-600 hover:bg-brand-charcoal cursor-pointer'
-                          : 'bg-brand-slate/50 border-slate-800/50 cursor-default'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <h3 className="text-sm font-bold text-white group-hover:text-brand-lime transition-colors leading-tight">
-                          {feature.name}
-                        </h3>
-                        <div className="flex items-center gap-1.5 flex-shrink-0">
-                          <span className={`w-2 h-2 rounded-full ${
-                            feature.status === 'live' ? 'bg-brand-lime' :
-                            feature.status === 'beta' ? 'bg-amber-400' :
-                            'bg-slate-600'
-                          }`} />
-                          <span className="text-[8px] font-black uppercase tracking-wider text-brand-muted">
-                            {feature.status}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-[10px] text-slate-400 leading-relaxed mb-3 line-clamp-2">
-                        {feature.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-[8px] px-1.5 py-0.5 rounded-full ${config.bgColor} ${config.color} font-bold uppercase`}>
-                            {feature.category}
-                          </span>
-                          <span className="text-[8px] text-brand-muted font-mono">
-                            Phase {feature.phase}
-                          </span>
-                        </div>
-                        {feature.path && (
-                          <ArrowRight size={12} className="text-slate-600 group-hover:text-brand-lime transition-colors" />
-                        )}
-                      </div>
-                    </button>
-                  ))}
+                  {features.map(renderFeatureCard)}
                 </div>
               </div>
             );
@@ -247,10 +334,14 @@ const FeatureDirectory: React.FC = () => {
 
       {/* Summary footer */}
       <div className="border-t border-slate-800 pt-6 pb-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="bg-brand-slate rounded-xl p-4 border border-slate-800">
             <p className="text-[9px] font-black uppercase tracking-widest text-brand-muted mb-1">Total Features</p>
             <p className="text-2xl font-bebas tracking-wider text-brand-lime">{DISCOVERABLE_FEATURE_CATALOG.length}</p>
+          </div>
+          <div className="bg-brand-slate rounded-xl p-4 border border-slate-800">
+            <p className="text-[9px] font-black uppercase tracking-widest text-brand-muted mb-1">Functional Areas</p>
+            <p className="text-2xl font-bebas tracking-wider text-white">{FUNCTIONAL_AREAS.length}</p>
           </div>
           <div className="bg-brand-slate rounded-xl p-4 border border-slate-800">
             <p className="text-[9px] font-black uppercase tracking-widest text-brand-muted mb-1">Categories</p>

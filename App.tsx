@@ -255,6 +255,18 @@ const EstateSuccession = lazy(() => import('./pages/EstateSuccession.tsx'));
 const RefractorMapper = lazy(() => import('./pages/RefractorMapper.tsx'));
 const CenteringAnalyzer = lazy(() => import('./pages/CenteringAnalyzer.tsx'));
 
+// v7.0: Industry-Absent Innovation — Round 3 (Phases 224-233)
+const RegulatoryComplianceRadar = lazy(() => import('./pages/RegulatoryComplianceRadar.tsx'));
+const AcousticAuthentication = lazy(() => import('./pages/AcousticAuthentication.tsx'));
+const DealerFlowIntelligence = lazy(() => import('./pages/DealerFlowIntelligence.tsx'));
+const PsychographicDemand = lazy(() => import('./pages/PsychographicDemand.tsx'));
+const MicroGeographicDemand = lazy(() => import('./pages/MicroGeographicDemand.tsx'));
+const CrossHobbyContagion = lazy(() => import('./pages/CrossHobbyContagion.tsx'));
+const VenueHealthOracle = lazy(() => import('./pages/VenueHealthOracle.tsx'));
+const NegotiationReplay = lazy(() => import('./pages/NegotiationReplay.tsx'));
+const CardMaterialSpectrometry = lazy(() => import('./pages/CardMaterialSpectrometry.tsx'));
+const GenerationalDemandForecaster = lazy(() => import('./pages/GenerationalDemandForecaster.tsx'));
+
 // Formerly coming-soon features — now live
 const WhatIfSimulator = lazy(() => import('./pages/WhatIfSimulator.tsx'));
 const GradingBatchPlanner = lazy(() => import('./pages/GradingBatchPlanner.tsx'));
@@ -612,6 +624,17 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/estate-succession" element={<EstateSuccession />} />
                 <Route path="/refractor-mapper" element={<RefractorMapper />} />
                 <Route path="/centering-analyzer" element={<CenteringAnalyzer />} />
+                {/* v7.0: Industry-Absent Innovation — Round 3 */}
+                <Route path="/regulatory-compliance-radar" element={<RegulatoryComplianceRadar />} />
+                <Route path="/acoustic-authentication" element={<AcousticAuthentication />} />
+                <Route path="/dealer-flow-intelligence" element={<DealerFlowIntelligence />} />
+                <Route path="/psychographic-demand" element={<PsychographicDemand />} />
+                <Route path="/micro-geographic-demand" element={<MicroGeographicDemand />} />
+                <Route path="/cross-hobby-contagion" element={<CrossHobbyContagion />} />
+                <Route path="/venue-health-oracle" element={<VenueHealthOracle />} />
+                <Route path="/negotiation-replay" element={<NegotiationReplay />} />
+                <Route path="/card-material-spectrometry" element={<CardMaterialSpectrometry />} />
+                <Route path="/generational-demand-forecaster" element={<GenerationalDemandForecaster />} />
                 {/* Formerly coming-soon features */}
                 <Route path="/what-if-simulator" element={<WhatIfSimulator />} />
                 <Route path="/grading-batch-planner" element={<GradingBatchPlanner />} />

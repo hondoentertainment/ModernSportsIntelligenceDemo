@@ -134,6 +134,16 @@ export const SEARCHABLE_FEATURE_IDS = [
   'grading-batch-planner',
   'ebay-listing-generator',
   'wax-break-roi-tracker',
+  'regulatory-compliance-radar',
+  'acoustic-authentication',
+  'dealer-flow-intelligence',
+  'psychographic-demand',
+  'micro-geographic-demand',
+  'cross-hobby-contagion',
+  'venue-health-oracle',
+  'negotiation-replay',
+  'card-material-spectrometry',
+  'generational-demand-forecaster',
 ] as const;
 
 export const COMMAND_ROUTES = [

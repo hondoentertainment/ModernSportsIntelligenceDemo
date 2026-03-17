@@ -106,6 +106,9 @@ import {
   Wand2,
   Lightbulb,
   AlertTriangle,
+  Volume2,
+  Network,
+  PlayCircle,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';
 import { PREPOPULATED_CARDS, PREPOPULATED_SUMMARY, INVENTORY_PLAYERS } from './prepopulatedCards.ts';
@@ -328,6 +331,20 @@ export const NAV_ITEMS = [
   // v6.1: Industry-Absent Innovation — Round 2 (Showcase & Labs)
   { id: 'refractor-mapper', label: 'Refractor Mapper', icon: <Eye size={20} />, path: '/refractor-mapper' },
   { id: 'centering-analyzer', label: 'Centering Analyzer', icon: <Crosshair size={20} />, path: '/centering-analyzer' },
+  // v7.0: Industry-Absent Innovation — Round 3 (Compliance & Regulation)
+  { id: 'regulatory-compliance-radar', label: 'Compliance Radar', icon: <Shield size={20} />, path: '/regulatory-compliance-radar' },
+  // v7.0: Industry-Absent Innovation — Round 3 (Authentication & Material Science)
+  { id: 'acoustic-authentication', label: 'Acoustic Auth', icon: <Volume2 size={20} />, path: '/acoustic-authentication' },
+  { id: 'card-material-spectrometry', label: 'Spectrometry Lab', icon: <Microscope size={20} />, path: '/card-material-spectrometry' },
+  // v7.0: Industry-Absent Innovation — Round 3 (Market Intelligence)
+  { id: 'dealer-flow-intelligence', label: 'Dealer Flow Intel', icon: <Briefcase size={20} />, path: '/dealer-flow-intelligence' },
+  { id: 'psychographic-demand', label: 'Psychographic Demand', icon: <Users size={20} />, path: '/psychographic-demand' },
+  { id: 'micro-geographic-demand', label: 'Geo Demand Map', icon: <MapPin size={20} />, path: '/micro-geographic-demand' },
+  { id: 'cross-hobby-contagion', label: 'Cross-Hobby Contagion', icon: <Network size={20} />, path: '/cross-hobby-contagion' },
+  // v7.0: Industry-Absent Innovation — Round 3 (Trading & Strategy)
+  { id: 'venue-health-oracle', label: 'Venue Oracle', icon: <Building2 size={20} />, path: '/venue-health-oracle' },
+  { id: 'negotiation-replay', label: 'Negotiation Replay', icon: <PlayCircle size={20} />, path: '/negotiation-replay' },
+  { id: 'generational-demand-forecaster', label: 'Gen Forecaster', icon: <Clock size={20} />, path: '/generational-demand-forecaster' },
   // Formerly coming-soon features — now live
   { id: 'what-if-simulator', label: 'What-If Simulator', icon: <FlaskConical size={20} />, path: '/what-if-simulator' },
   { id: 'grading-batch-planner', label: 'Grading Planner', icon: <ClipboardCheck size={20} />, path: '/grading-batch-planner' },
