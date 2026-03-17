@@ -301,6 +301,18 @@ const ForgeryEvolution = lazy(() => import('./pages/ForgeryEvolution.tsx'));
 const DecisionFatigue = lazy(() => import('./pages/DecisionFatigue.tsx'));
 const OpportunityCostPhantom = lazy(() => import('./pages/OpportunityCostPhantom.tsx'));
 
+// v9.0: Industry Phases — Group & Enterprise Scale (Phases 264-273)
+const SharedWatchlists = lazy(() => import('./pages/SharedWatchlists.tsx'));
+const GroupBreaks = lazy(() => import('./pages/GroupBreaks.tsx'));
+const ClubManagement = lazy(() => import('./pages/ClubManagement.tsx'));
+const CollectiveGrading = lazy(() => import('./pages/CollectiveGrading.tsx'));
+const SharedDashboards = lazy(() => import('./pages/SharedDashboards.tsx'));
+const RBACTeams = lazy(() => import('./pages/RBACTeams.tsx'));
+const WhiteLabelApi = lazy(() => import('./pages/WhiteLabelApi.tsx'));
+const DealerInventory = lazy(() => import('./pages/DealerInventory.tsx'));
+const FundReporting = lazy(() => import('./pages/FundReporting.tsx'));
+const AuditTrail = lazy(() => import('./pages/AuditTrail.tsx'));
+
 // Formerly coming-soon features — now live
 const WhatIfSimulator = lazy(() => import('./pages/WhatIfSimulator.tsx'));
 const GradingBatchPlanner = lazy(() => import('./pages/GradingBatchPlanner.tsx'));
@@ -699,6 +711,16 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/forgery-evolution" element={<ForgeryEvolution />} />
                 <Route path="/decision-fatigue" element={<DecisionFatigue />} />
                 <Route path="/opportunity-cost-phantom" element={<OpportunityCostPhantom />} />
+                <Route path="/shared-watchlists" element={<SharedWatchlists />} />
+                <Route path="/group-breaks" element={<GroupBreaks />} />
+                <Route path="/club-management" element={<ClubManagement />} />
+                <Route path="/collective-grading" element={<CollectiveGrading />} />
+                <Route path="/shared-dashboards" element={<SharedDashboards />} />
+                <Route path="/rbac-teams" element={<RBACTeams />} />
+                <Route path="/white-label-api" element={<WhiteLabelApi />} />
+                <Route path="/dealer-inventory" element={<DealerInventory />} />
+                <Route path="/fund-reporting" element={<FundReporting />} />
+                <Route path="/audit-trail" element={<AuditTrail />} />
                 {/* Formerly coming-soon features */}
                 <Route path="/what-if-simulator" element={<WhatIfSimulator />} />
                 <Route path="/grading-batch-planner" element={<GradingBatchPlanner />} />

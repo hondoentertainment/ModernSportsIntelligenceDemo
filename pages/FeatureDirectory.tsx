@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, ChevronRight, X, Zap, ArrowRight, Layers, LayoutGrid, List } from 'lucide-react';
+import { Search, Filter, ChevronRight, X, Zap, ArrowRight, Layers, LayoutGrid, List, Users } from 'lucide-react';
 import {
   DISCOVERABLE_FEATURE_CATALOG,
   TIER_CONFIG,
@@ -27,6 +27,51 @@ const FUNCTIONAL_AREAS: { id: string; label: string; icon: string; color: string
   { id: 'system', label: 'Platform & System', icon: 'server', color: 'text-slate-400', bgColor: 'bg-slate-600/10', borderColor: 'border-slate-600/30', description: 'Authentication, billing, notifications, data migration, and infrastructure', categoryMatch: ['System', 'Strategy', 'Operations', 'Trust'], keywordMatch: ['auth', 'login', 'billing', 'stripe', 'notification', 'migration', 'sync', 'frontier', 'museum', 'claims'] },
 ];
 
+/** User-scale groupings: Individual → Group → Enterprise */
+type UserScale = 'individual' | 'group' | 'enterprise';
+
+const SCALE_CONFIG: Record<UserScale, { label: string; color: string; bgColor: string; borderColor: string; description: string }> = {
+  individual: { label: 'Individual Collector', color: 'text-emerald-400', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/30', description: 'Solo collector tools — personal portfolio, analytics, trading, grading, and decision-making' },
+  group: { label: 'Group & Social', color: 'text-blue-400', bgColor: 'bg-blue-500/10', borderColor: 'border-blue-500/30', description: 'Multi-user collaboration — shared watchlists, clubs, group breaks, community, and peer-to-peer features' },
+  enterprise: { label: 'Enterprise & Institutional', color: 'text-amber-400', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/30', description: 'Dealer operations, fund management, RBAC, API access, compliance, and institutional reporting' },
+};
+
+// Feature IDs that belong to Group scale
+const GROUP_FEATURE_IDS = new Set([
+  'social-alpha', 'collection-share', 'achievements', 'benchmarking', 'social-network',
+  'showcase', 'public-portfolio', 'leaderboard', 'monthly-challenges', 'ar-vault-walkthrough',
+  'trade-block', 'peer-lending', 'live-breaks', 'negotiation-replay',
+  'collector-social-graph', 'counterparty-trust-graph', 'counterfeit-cluster-radar',
+  'venue-health-oracle', 'influencer-quantifier', 'cross-hobby-contagion',
+  'psychographic-demand', 'micro-geographic-demand', 'generational-demand-forecaster',
+  'sentiment-seismograph', 'memetic-propagation', 'cultural-velocity', 'narrative-alpha',
+  'prestige-spillover-engine',
+  'shared-watchlists', 'group-breaks', 'club-management', 'collective-grading', 'shared-dashboards',
+]);
+
+// Feature IDs that belong to Enterprise scale
+const ENTERPRISE_FEATURE_IDS = new Set([
+  'agentic-negotiation', 'liquidity-pool', 'fractional-vault', 'fractional-vault-v2',
+  'fractional-syndicate', 'market-maker-arena', 'market-microstructure', 'playbook-templates',
+  'mlb-stats', 'players', 'prospect-pipeline', 'prospect-trends', 'rookie-pipeline-scanner',
+  'draft-night-tracker', 'contract-valuation', 'teams', 'games',
+  'war-room', 'hedge-simulation', 'contagion-mapper', 'injury-shockwave',
+  'live-impact', 'vision-grading', 'macro-sentinel', 'portfolio-scenario-theater',
+  'claims-recovery-studio', 'venue-failure-drill', 'museum-loan-desk',
+  'dealer-flow-intelligence', 'circadian-optimizer', 'multi-currency', 'estate-succession',
+  'frontier-lab', 'opportunity-crowding-index', 'provenance-gap-heatmap',
+  'reacquisition-radar', 'catalyst-market', 'recession-playbook',
+  'card-yield-farming', 'card-loan-collateral',
+  'slab-case-forensics', 'card-material-spectrometry', 'acoustic-authentication',
+  'rbac-teams', 'white-label-api', 'dealer-inventory', 'fund-reporting', 'audit-trail',
+]);
+
+function assignToScale(feature: Feature): UserScale {
+  if (GROUP_FEATURE_IDS.has(feature.id)) return 'group';
+  if (ENTERPRISE_FEATURE_IDS.has(feature.id)) return 'enterprise';
+  return 'individual';
+}
+
 function assignToArea(feature: Feature): string {
   // Check keywords first (more specific)
   for (const area of FUNCTIONAL_AREAS) {
@@ -45,7 +90,7 @@ function assignToArea(feature: Feature): string {
   return 'tools'; // default
 }
 
-type ViewMode = 'grouped' | 'tier';
+type ViewMode = 'grouped' | 'tier' | 'scale';
 
 const FeatureDirectory: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -78,6 +123,18 @@ const FeatureDirectory: React.FC = () => {
   }, [searchQuery, selectedTier, selectedCategory]);
 
   const grouped = useMemo(() => groupByTier(filtered), [filtered]);
+
+  const groupedByScale = useMemo(() => {
+    const scaleMap: Record<UserScale, Feature[]> = { individual: [], group: [], enterprise: [] };
+    filtered.forEach(f => {
+      scaleMap[assignToScale(f)].push(f);
+    });
+    return (['individual', 'group', 'enterprise'] as UserScale[]).filter(s => scaleMap[s].length > 0).map(s => ({
+      scale: s,
+      ...SCALE_CONFIG[s],
+      features: scaleMap[s],
+    }));
+  }, [filtered]);
 
   const groupedByArea = useMemo(() => {
     const areaMap = new Map<string, Feature[]>();
@@ -199,6 +256,12 @@ const FeatureDirectory: React.FC = () => {
             >
               <List size={12} /> By Tier
             </button>
+            <button
+              onClick={() => setViewMode('scale')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${viewMode === 'scale' ? 'bg-brand-lime text-brand-charcoal' : 'text-slate-500 hover:text-white'}`}
+            >
+              <Users size={12} /> By Scale
+            </button>
           </div>
         </div>
       </div>
@@ -277,6 +340,31 @@ const FeatureDirectory: React.FC = () => {
           <button onClick={clearFilters} className="mt-4 px-4 py-2 bg-brand-lime text-brand-charcoal rounded-xl text-sm font-bold hover:bg-brand-lime/90 transition-colors">
             Clear All Filters
           </button>
+        </div>
+      ) : viewMode === 'scale' ? (
+        /* ─── Grouped by User Scale ─── */
+        <div className="space-y-8">
+          {groupedByScale.map(group => (
+            <div key={group.scale}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`h-px flex-1 ${group.borderColor} border-t`} />
+                <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full ${group.bgColor} border ${group.borderColor}`}>
+                  <Users size={12} className={group.color} />
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${group.color}`}>
+                    {group.label}
+                  </span>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${group.bgColor} ${group.color} font-bold`}>
+                    {group.features.length}
+                  </span>
+                </div>
+                <div className={`h-px flex-1 ${group.borderColor} border-t`} />
+              </div>
+              <p className="text-[10px] text-slate-500 mb-3 text-center">{group.description}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {group.features.map(renderFeatureCard)}
+              </div>
+            </div>
+          ))}
         </div>
       ) : viewMode === 'grouped' ? (
         /* ─── Grouped by Functional Area ─── */

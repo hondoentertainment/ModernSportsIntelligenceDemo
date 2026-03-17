@@ -175,6 +175,16 @@ export const SEARCHABLE_FEATURE_IDS = [
   'forgery-evolution',
   'decision-fatigue',
   'opportunity-cost-phantom',
+  'shared-watchlists',
+  'group-breaks',
+  'club-management',
+  'collective-grading',
+  'shared-dashboards',
+  'rbac-teams',
+  'white-label-api',
+  'dealer-inventory',
+  'fund-reporting',
+  'audit-trail',
 ] as const;
 
 export const COMMAND_ROUTES = [
