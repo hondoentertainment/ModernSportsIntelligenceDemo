@@ -301,6 +301,23 @@ const ForgeryEvolution = lazy(() => import('./pages/ForgeryEvolution.tsx'));
 const DecisionFatigue = lazy(() => import('./pages/DecisionFatigue.tsx'));
 const OpportunityCostPhantom = lazy(() => import('./pages/OpportunityCostPhantom.tsx'));
 
+// v5.1+: PRD 4.11 — Next set of features not in the industry (Frontier)
+const AgentOutcomeMemory = lazy(() => import('./pages/AgentOutcomeMemory.tsx'));
+const MarketTruthLedger = lazy(() => import('./pages/MarketTruthLedger.tsx'));
+const CounterpartyPassport = lazy(() => import('./pages/CounterpartyPassport.tsx'));
+const ThesisBacktester = lazy(() => import('./pages/ThesisBacktester.tsx'));
+const LiquidityHorizon = lazy(() => import('./pages/LiquidityHorizon.tsx'));
+const FvConfidence = lazy(() => import('./pages/FvConfidence.tsx'));
+const RegulatoryAlerts = lazy(() => import('./pages/RegulatoryAlerts.tsx'));
+const AgentDelegationAudit = lazy(() => import('./pages/AgentDelegationAudit.tsx'));
+const CapitalFlowRadar = lazy(() => import('./pages/CapitalFlowRadar.tsx'));
+const SyntheticIndexBuilder = lazy(() => import('./pages/SyntheticIndexBuilder.tsx'));
+const CatastropheLiquidation = lazy(() => import('./pages/CatastropheLiquidation.tsx'));
+const PortfolioImmunization = lazy(() => import('./pages/PortfolioImmunization.tsx'));
+const IdentityGraph = lazy(() => import('./pages/IdentityGraph.tsx'));
+const NarrativeLifecycle = lazy(() => import('./pages/NarrativeLifecycle.tsx'));
+const AgentPersonality = lazy(() => import('./pages/AgentPersonality.tsx'));
+
 // Formerly coming-soon features — now live
 const WhatIfSimulator = lazy(() => import('./pages/WhatIfSimulator.tsx'));
 const GradingBatchPlanner = lazy(() => import('./pages/GradingBatchPlanner.tsx'));
@@ -699,6 +716,22 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/forgery-evolution" element={<ForgeryEvolution />} />
                 <Route path="/decision-fatigue" element={<DecisionFatigue />} />
                 <Route path="/opportunity-cost-phantom" element={<OpportunityCostPhantom />} />
+                {/* v5.1+: PRD 4.11 — Next set of features not in the industry (Frontier) */}
+                <Route path="/agent-outcome-memory" element={<AgentOutcomeMemory />} />
+                <Route path="/market-truth-ledger" element={<MarketTruthLedger />} />
+                <Route path="/counterparty-passport" element={<CounterpartyPassport />} />
+                <Route path="/thesis-backtester" element={<ThesisBacktester />} />
+                <Route path="/liquidity-horizon" element={<LiquidityHorizon />} />
+                <Route path="/fv-confidence" element={<FvConfidence />} />
+                <Route path="/regulatory-alerts" element={<RegulatoryAlerts />} />
+                <Route path="/agent-delegation-audit" element={<AgentDelegationAudit />} />
+                <Route path="/capital-flow-radar" element={<CapitalFlowRadar />} />
+                <Route path="/synthetic-index-builder" element={<SyntheticIndexBuilder />} />
+                <Route path="/catastrophe-liquidation" element={<CatastropheLiquidation />} />
+                <Route path="/portfolio-immunization" element={<PortfolioImmunization />} />
+                <Route path="/identity-graph" element={<IdentityGraph />} />
+                <Route path="/narrative-lifecycle" element={<NarrativeLifecycle />} />
+                <Route path="/agent-personality" element={<AgentPersonality />} />
                 {/* Formerly coming-soon features */}
                 <Route path="/what-if-simulator" element={<WhatIfSimulator />} />
                 <Route path="/grading-batch-planner" element={<GradingBatchPlanner />} />
