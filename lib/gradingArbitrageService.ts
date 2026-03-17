@@ -470,3 +470,29 @@ export function getAIEnrichedOpportunities(): ArbitrageWithPrediction[] {
     };
   });
 }
+
+// ── Convenience aliases ────────────────────────────────────────────────
+
+export function getOpportunities(): CrossGradeOpportunity[] {
+  return getCrossGradeOpportunities();
+}
+
+export function getBestROI(): CrossGradeOpportunity {
+  return getCrossGradeOpportunities()[0]; // already sorted by netROI desc
+}
+
+// ── Default Export ─────────────────────────────────────────────────────
+
+const gradingArbitrageService = {
+  getOpportunities,
+  getBestROI,
+  getCrossGradeOpportunities,
+  getGradeTranslationTable,
+  getGradePremiums,
+  getActiveSubmissions,
+  addSubmission,
+  updateSubmissionStatus,
+  getGradingArbitrageStats,
+  getAIEnrichedOpportunities,
+};
+export default gradingArbitrageService;

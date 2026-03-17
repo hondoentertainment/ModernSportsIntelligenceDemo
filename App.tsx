@@ -255,6 +255,52 @@ const EstateSuccession = lazy(() => import('./pages/EstateSuccession.tsx'));
 const RefractorMapper = lazy(() => import('./pages/RefractorMapper.tsx'));
 const CenteringAnalyzer = lazy(() => import('./pages/CenteringAnalyzer.tsx'));
 
+// v7.0: Industry-Absent Innovation — Round 3 (Phases 224-233)
+const RegulatoryComplianceRadar = lazy(() => import('./pages/RegulatoryComplianceRadar.tsx'));
+const AcousticAuthentication = lazy(() => import('./pages/AcousticAuthentication.tsx'));
+const DealerFlowIntelligence = lazy(() => import('./pages/DealerFlowIntelligence.tsx'));
+const PsychographicDemand = lazy(() => import('./pages/PsychographicDemand.tsx'));
+const MicroGeographicDemand = lazy(() => import('./pages/MicroGeographicDemand.tsx'));
+const CrossHobbyContagion = lazy(() => import('./pages/CrossHobbyContagion.tsx'));
+const VenueHealthOracle = lazy(() => import('./pages/VenueHealthOracle.tsx'));
+const NegotiationReplay = lazy(() => import('./pages/NegotiationReplay.tsx'));
+const CardMaterialSpectrometry = lazy(() => import('./pages/CardMaterialSpectrometry.tsx'));
+const GenerationalDemandForecaster = lazy(() => import('./pages/GenerationalDemandForecaster.tsx'));
+
+// v7.1: Industry-Absent Innovation — Round 4 (Phases 234-253)
+const SlabCaseForensics = lazy(() => import('./pages/SlabCaseForensics.tsx'));
+const PriceWhisperer = lazy(() => import('./pages/PriceWhisperer.tsx'));
+const CardLoanCollateral = lazy(() => import('./pages/CardLoanCollateral.tsx'));
+const GradingArbitrage = lazy(() => import('./pages/GradingArbitrage.tsx'));
+const ConsignmentOptimizer = lazy(() => import('./pages/ConsignmentOptimizer.tsx'));
+const CardAgingClock = lazy(() => import('./pages/CardAgingClock.tsx'));
+const SentimentSeismograph = lazy(() => import('./pages/SentimentSeismograph.tsx'));
+const ContractValuation = lazy(() => import('./pages/ContractValuation.tsx'));
+const CollectionEntropy = lazy(() => import('./pages/CollectionEntropy.tsx'));
+const CardShowNavigator = lazy(() => import('./pages/CardShowNavigator.tsx'));
+const InfluencerQuantifier = lazy(() => import('./pages/InfluencerQuantifier.tsx'));
+const WaxCTScanner = lazy(() => import('./pages/WaxCTScanner.tsx'));
+const ManipulationDetector = lazy(() => import('./pages/ManipulationDetector.tsx'));
+const InsuranceClaimsAI = lazy(() => import('./pages/InsuranceClaimsAI.tsx'));
+const RecessionPlaybook = lazy(() => import('./pages/RecessionPlaybook.tsx'));
+const PersonalityMatrix = lazy(() => import('./pages/PersonalityMatrix.tsx'));
+const PhotoStudio = lazy(() => import('./pages/PhotoStudio.tsx'));
+const PeerLending = lazy(() => import('./pages/PeerLending.tsx'));
+const DraftNightTracker = lazy(() => import('./pages/DraftNightTracker.tsx'));
+const VintageProvenance = lazy(() => import('./pages/VintageProvenance.tsx'));
+
+// v8.0: Industry-Absent Innovation — Frontier Phase (Phases 254-263)
+const AuctionEquilibrium = lazy(() => import('./pages/AuctionEquilibrium.tsx'));
+const MemeticPropagation = lazy(() => import('./pages/MemeticPropagation.tsx'));
+const CircadianOptimizer = lazy(() => import('./pages/CircadianOptimizer.tsx'));
+const CulturalVelocity = lazy(() => import('./pages/CulturalVelocity.tsx'));
+const CounterpartyFingerprint = lazy(() => import('./pages/CounterpartyFingerprint.tsx'));
+const CollectionTopology = lazy(() => import('./pages/CollectionTopology.tsx'));
+const SurvivorshipBias = lazy(() => import('./pages/SurvivorshipBias.tsx'));
+const ForgeryEvolution = lazy(() => import('./pages/ForgeryEvolution.tsx'));
+const DecisionFatigue = lazy(() => import('./pages/DecisionFatigue.tsx'));
+const OpportunityCostPhantom = lazy(() => import('./pages/OpportunityCostPhantom.tsx'));
+
 // Formerly coming-soon features — now live
 const WhatIfSimulator = lazy(() => import('./pages/WhatIfSimulator.tsx'));
 const GradingBatchPlanner = lazy(() => import('./pages/GradingBatchPlanner.tsx'));
@@ -306,7 +352,6 @@ const WeatherImpact = lazy(() => import('./pages/WeatherImpact.tsx'));
 // Previously unrouted pages — Portfolio & Financial
 const EstatePlanning = lazy(() => import('./pages/EstatePlanning.tsx'));
 const Rebalancer = lazy(() => import('./pages/Rebalancer.tsx'));
-const GradingArbitrage = lazy(() => import('./pages/GradingArbitrage.tsx'));
 
 // Previously unrouted pages — Showcase & Labs
 const ARShowcase = lazy(() => import('./pages/ARShowcase.tsx'));
@@ -595,7 +640,6 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 {/* Portfolio & Financial — Previously Unrouted */}
                 <Route path="/estate-planning" element={<EstatePlanning />} />
                 <Route path="/rebalancer" element={<Rebalancer />} />
-                <Route path="/grading-arbitrage" element={<GradingArbitrage />} />
                 {/* Showcase & Labs — Previously Unrouted */}
                 <Route path="/ar-showcase" element={<ARShowcase />} />
                 <Route path="/frontier-lab" element={<FrontierLab />} />
@@ -612,6 +656,49 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/estate-succession" element={<EstateSuccession />} />
                 <Route path="/refractor-mapper" element={<RefractorMapper />} />
                 <Route path="/centering-analyzer" element={<CenteringAnalyzer />} />
+                {/* v7.0: Industry-Absent Innovation — Round 3 */}
+                <Route path="/regulatory-compliance-radar" element={<RegulatoryComplianceRadar />} />
+                <Route path="/acoustic-authentication" element={<AcousticAuthentication />} />
+                <Route path="/dealer-flow-intelligence" element={<DealerFlowIntelligence />} />
+                <Route path="/psychographic-demand" element={<PsychographicDemand />} />
+                <Route path="/micro-geographic-demand" element={<MicroGeographicDemand />} />
+                <Route path="/cross-hobby-contagion" element={<CrossHobbyContagion />} />
+                <Route path="/venue-health-oracle" element={<VenueHealthOracle />} />
+                <Route path="/negotiation-replay" element={<NegotiationReplay />} />
+                <Route path="/card-material-spectrometry" element={<CardMaterialSpectrometry />} />
+                <Route path="/generational-demand-forecaster" element={<GenerationalDemandForecaster />} />
+                {/* v7.1: Industry-Absent Innovation — Round 4 */}
+                <Route path="/slab-case-forensics" element={<SlabCaseForensics />} />
+                <Route path="/price-whisperer" element={<PriceWhisperer />} />
+                <Route path="/card-loan-collateral" element={<CardLoanCollateral />} />
+                <Route path="/grading-arbitrage" element={<GradingArbitrage />} />
+                <Route path="/consignment-optimizer" element={<ConsignmentOptimizer />} />
+                <Route path="/card-aging-clock" element={<CardAgingClock />} />
+                <Route path="/sentiment-seismograph" element={<SentimentSeismograph />} />
+                <Route path="/contract-valuation" element={<ContractValuation />} />
+                <Route path="/collection-entropy" element={<CollectionEntropy />} />
+                <Route path="/card-show-navigator" element={<CardShowNavigator />} />
+                <Route path="/influencer-quantifier" element={<InfluencerQuantifier />} />
+                <Route path="/wax-ct-scanner" element={<WaxCTScanner />} />
+                <Route path="/manipulation-detector" element={<ManipulationDetector />} />
+                <Route path="/insurance-claims-ai" element={<InsuranceClaimsAI />} />
+                <Route path="/recession-playbook" element={<RecessionPlaybook />} />
+                <Route path="/personality-matrix" element={<PersonalityMatrix />} />
+                <Route path="/photo-studio" element={<PhotoStudio />} />
+                <Route path="/peer-lending" element={<PeerLending />} />
+                <Route path="/draft-night-tracker" element={<DraftNightTracker />} />
+                <Route path="/vintage-provenance" element={<VintageProvenance />} />
+                {/* v8.0: Industry-Absent Innovation — Frontier Phase */}
+                <Route path="/auction-equilibrium" element={<AuctionEquilibrium />} />
+                <Route path="/memetic-propagation" element={<MemeticPropagation />} />
+                <Route path="/circadian-optimizer" element={<CircadianOptimizer />} />
+                <Route path="/cultural-velocity" element={<CulturalVelocity />} />
+                <Route path="/counterparty-fingerprint" element={<CounterpartyFingerprint />} />
+                <Route path="/collection-topology" element={<CollectionTopology />} />
+                <Route path="/survivorship-bias" element={<SurvivorshipBias />} />
+                <Route path="/forgery-evolution" element={<ForgeryEvolution />} />
+                <Route path="/decision-fatigue" element={<DecisionFatigue />} />
+                <Route path="/opportunity-cost-phantom" element={<OpportunityCostPhantom />} />
                 {/* Formerly coming-soon features */}
                 <Route path="/what-if-simulator" element={<WhatIfSimulator />} />
                 <Route path="/grading-batch-planner" element={<GradingBatchPlanner />} />
