@@ -301,6 +301,29 @@ const ForgeryEvolution = lazy(() => import('./pages/ForgeryEvolution.tsx'));
 const DecisionFatigue = lazy(() => import('./pages/DecisionFatigue.tsx'));
 const OpportunityCostPhantom = lazy(() => import('./pages/OpportunityCostPhantom.tsx'));
 
+// v9.0: Industry Phases — Group & Enterprise Scale (Phases 264-273)
+const SharedWatchlists = lazy(() => import('./pages/SharedWatchlists.tsx'));
+const GroupBreaks = lazy(() => import('./pages/GroupBreaks.tsx'));
+const ClubManagement = lazy(() => import('./pages/ClubManagement.tsx'));
+const CollectiveGrading = lazy(() => import('./pages/CollectiveGrading.tsx'));
+const SharedDashboards = lazy(() => import('./pages/SharedDashboards.tsx'));
+const RBACTeams = lazy(() => import('./pages/RBACTeams.tsx'));
+const WhiteLabelApi = lazy(() => import('./pages/WhiteLabelApi.tsx'));
+const DealerInventory = lazy(() => import('./pages/DealerInventory.tsx'));
+const FundReporting = lazy(() => import('./pages/FundReporting.tsx'));
+const AuditTrail = lazy(() => import('./pages/AuditTrail.tsx'));
+
+// v10.0: Group Scale Phase 2 — Community Infrastructure (Phases 274-283)
+const CollaborativeSetRegistry = lazy(() => import('./pages/CollaborativeSetRegistry.tsx'));
+const CardShowSquad = lazy(() => import('./pages/CardShowSquad.tsx'));
+const GroupBuyCoop = lazy(() => import('./pages/GroupBuyCoop.tsx'));
+const DraftNightWarRoom = lazy(() => import('./pages/DraftNightWarRoom.tsx'));
+const MentorshipExchange = lazy(() => import('./pages/MentorshipExchange.tsx'));
+const DisputeArbitration = lazy(() => import('./pages/DisputeArbitration.tsx'));
+const GroupInsurance = lazy(() => import('./pages/GroupInsurance.tsx'));
+const CrowdPricing = lazy(() => import('./pages/CrowdPricing.tsx'));
+const GroupVault = lazy(() => import('./pages/GroupVault.tsx'));
+const SwapMeet = lazy(() => import('./pages/SwapMeet.tsx'));
 // v5.1+: PRD 4.11 — Next set of features not in the industry (Frontier)
 const AgentOutcomeMemory = lazy(() => import('./pages/AgentOutcomeMemory.tsx'));
 const MarketTruthLedger = lazy(() => import('./pages/MarketTruthLedger.tsx'));
@@ -716,6 +739,26 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/forgery-evolution" element={<ForgeryEvolution />} />
                 <Route path="/decision-fatigue" element={<DecisionFatigue />} />
                 <Route path="/opportunity-cost-phantom" element={<OpportunityCostPhantom />} />
+                <Route path="/shared-watchlists" element={<SharedWatchlists />} />
+                <Route path="/group-breaks" element={<GroupBreaks />} />
+                <Route path="/club-management" element={<ClubManagement />} />
+                <Route path="/collective-grading" element={<CollectiveGrading />} />
+                <Route path="/shared-dashboards" element={<SharedDashboards />} />
+                <Route path="/rbac-teams" element={<RBACTeams />} />
+                <Route path="/white-label-api" element={<WhiteLabelApi />} />
+                <Route path="/dealer-inventory" element={<DealerInventory />} />
+                <Route path="/fund-reporting" element={<FundReporting />} />
+                <Route path="/audit-trail" element={<AuditTrail />} />
+                <Route path="/collaborative-set-registry" element={<CollaborativeSetRegistry />} />
+                <Route path="/card-show-squad" element={<CardShowSquad />} />
+                <Route path="/group-buy-coop" element={<GroupBuyCoop />} />
+                <Route path="/draft-night-war-room" element={<DraftNightWarRoom />} />
+                <Route path="/mentorship-exchange" element={<MentorshipExchange />} />
+                <Route path="/dispute-arbitration" element={<DisputeArbitration />} />
+                <Route path="/group-insurance" element={<GroupInsurance />} />
+                <Route path="/crowd-pricing" element={<CrowdPricing />} />
+                <Route path="/group-vault" element={<GroupVault />} />
+                <Route path="/swap-meet" element={<SwapMeet />} />
                 {/* v5.1+: PRD 4.11 — Next set of features not in the industry (Frontier) */}
                 <Route path="/agent-outcome-memory" element={<AgentOutcomeMemory />} />
                 <Route path="/market-truth-ledger" element={<MarketTruthLedger />} />
