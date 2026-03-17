@@ -165,6 +165,16 @@ export const SEARCHABLE_FEATURE_IDS = [
   'error-variety-hunter',
   'cross-platform-arbitrage',
   'auto-buy-rule-engine',
+  'auction-equilibrium',
+  'memetic-propagation',
+  'circadian-optimizer',
+  'cultural-velocity',
+  'counterparty-fingerprint',
+  'collection-topology',
+  'survivorship-bias',
+  'forgery-evolution',
+  'decision-fatigue',
+  'opportunity-cost-phantom',
 ] as const;
 
 export const COMMAND_ROUTES = [

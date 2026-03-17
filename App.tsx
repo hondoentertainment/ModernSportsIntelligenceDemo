@@ -289,6 +289,18 @@ const PeerLending = lazy(() => import('./pages/PeerLending.tsx'));
 const DraftNightTracker = lazy(() => import('./pages/DraftNightTracker.tsx'));
 const VintageProvenance = lazy(() => import('./pages/VintageProvenance.tsx'));
 
+// v8.0: Industry-Absent Innovation — Frontier Phase (Phases 254-263)
+const AuctionEquilibrium = lazy(() => import('./pages/AuctionEquilibrium.tsx'));
+const MemeticPropagation = lazy(() => import('./pages/MemeticPropagation.tsx'));
+const CircadianOptimizer = lazy(() => import('./pages/CircadianOptimizer.tsx'));
+const CulturalVelocity = lazy(() => import('./pages/CulturalVelocity.tsx'));
+const CounterpartyFingerprint = lazy(() => import('./pages/CounterpartyFingerprint.tsx'));
+const CollectionTopology = lazy(() => import('./pages/CollectionTopology.tsx'));
+const SurvivorshipBias = lazy(() => import('./pages/SurvivorshipBias.tsx'));
+const ForgeryEvolution = lazy(() => import('./pages/ForgeryEvolution.tsx'));
+const DecisionFatigue = lazy(() => import('./pages/DecisionFatigue.tsx'));
+const OpportunityCostPhantom = lazy(() => import('./pages/OpportunityCostPhantom.tsx'));
+
 // Formerly coming-soon features — now live
 const WhatIfSimulator = lazy(() => import('./pages/WhatIfSimulator.tsx'));
 const GradingBatchPlanner = lazy(() => import('./pages/GradingBatchPlanner.tsx'));
@@ -676,6 +688,17 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/peer-lending" element={<PeerLending />} />
                 <Route path="/draft-night-tracker" element={<DraftNightTracker />} />
                 <Route path="/vintage-provenance" element={<VintageProvenance />} />
+                {/* v8.0: Industry-Absent Innovation — Frontier Phase */}
+                <Route path="/auction-equilibrium" element={<AuctionEquilibrium />} />
+                <Route path="/memetic-propagation" element={<MemeticPropagation />} />
+                <Route path="/circadian-optimizer" element={<CircadianOptimizer />} />
+                <Route path="/cultural-velocity" element={<CulturalVelocity />} />
+                <Route path="/counterparty-fingerprint" element={<CounterpartyFingerprint />} />
+                <Route path="/collection-topology" element={<CollectionTopology />} />
+                <Route path="/survivorship-bias" element={<SurvivorshipBias />} />
+                <Route path="/forgery-evolution" element={<ForgeryEvolution />} />
+                <Route path="/decision-fatigue" element={<DecisionFatigue />} />
+                <Route path="/opportunity-cost-phantom" element={<OpportunityCostPhantom />} />
                 {/* Formerly coming-soon features */}
                 <Route path="/what-if-simulator" element={<WhatIfSimulator />} />
                 <Route path="/grading-batch-planner" element={<GradingBatchPlanner />} />
