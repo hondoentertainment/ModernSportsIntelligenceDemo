@@ -1,8 +1,8 @@
 # Modern Sports Intelligence Platform — Product Requirements Document (PRD)
 
-**Version:** 4.1
-**Last Updated:** March 15, 2026
-**Status:** Active Development — v4.0 features delivered
+**Version:** 4.2
+**Last Updated:** March 13, 2026
+**Status:** Active Development — v4.0 delivered; v5.0/v5.1 roadmap defined
 **Platform:** Web (React SPA), PWA-enabled
 
 ---
@@ -15,7 +15,7 @@ Modern Sports Intelligence is the world's most comprehensive sports card portfol
 - 180+ feature modules (industry largest)
 - AI/ML grading, pricing, and portfolio management
 - Multi-agent autonomous trading system
-- 20 industry-first features not found on any competing platform
+- 35+ industry-first features not found on any competing platform (v4–v5.1 roadmap)
 - Full offline-first PWA support
 - Enterprise-grade estate planning and insurance tools
 
@@ -285,6 +285,28 @@ These features do not exist on ANY competing platform in the sports collectibles
 | 140 | **Collection Bankruptcy Shield** | `/bankruptcy-shield` | Worst-case liquidation planner. Fire-sale values at 24hr/7d/30d timelines. Optimal liquidation order (sell liquid first). Recovery maximization. Emergency cash-out plan generation. |
 | 141 | **AI Negotiation Coach** | `/negotiation-coach` | Real-time negotiation advisor. Detects seller urgency from listing age, message patterns. Suggests counter-offers with optimal timing. "Seller listed 47 days ago — high urgency. Open at 62% of asking." |
 | 142 | **Multi-Gen Player Comparison** | `/multi-gen-compare` | Cross-era comparison with time-normalized metrics. "1986 Jordan vs 2003 LeBron vs 2018 Luka: career overlay, card value curves, holding period analysis." Inflation-adjusted returns. |
+
+### 4.11 Next Set of Features Not Present in the Industry (v5.1+ — Frontier)
+
+The following features do not exist on any competing platform in sports collectibles or adjacent markets. They extend the agentic moat (outcome memory, market truth, counterparty identity) and introduce institutional-grade and regulatory-first capabilities.
+
+| # | Feature | Route | Description |
+|---|---------|-------|-------------|
+| 143 | **Agent Outcome Memory Dashboard** | `/agent-outcome-memory` | Closed-loop view: what the AI recommended vs what you did vs what actually happened (fill price, hold return). Surfaces recommendation → intent → outcome linkage; no competitor has persistent agent feedback. |
+| 144 | **Market Truth Ledger** | `/market-truth-ledger` | Single source of truth for "what actually sold" (eBay sold, auction results) with provenance. Normalized, queryable "last N real sales" per card; validates AI and powers comp-backed confidence. |
+| 145 | **Counterparty Passport** | `/counterparty-passport` | Portable reputation: trust score, dispute history, deal velocity that follows the counterparty across venues. Skeleton in place; full passport with cross-platform identity resolution. |
+| 146 | **Thesis Backtester** | `/thesis-backtester` | "If you had bought every card the agents recommended in the last 12 months, here is your hypothetical P&L." Proves or disproves agent value with real outcome data. |
+| 147 | **Liquidity Horizon Curve** | `/liquidity-horizon` | Per card or portfolio: probability of exit at X% of FMV within 1d / 7d / 30d / 90d from real depth and velocity. Institutional-style liquidity risk, not just a score. |
+| 148 | **Fair Value Confidence Interval** | `/fv-confidence` | FMV as interval, not point: e.g. "$500 (70% confidence: $380–$620)" from model + market truth. Transparent uncertainty on every valuation. |
+| 149 | **Regulatory Change Alerts** | `/regulatory-alerts` | Proactive alerts when state/federal rules change: sales tax nexus, collectibles-as-securities, 1099-K thresholds. No hobby tool offers regulatory monitoring. |
+| 150 | **Agent Delegation Audit** | `/agent-delegation-audit` | Full log of "agent requested X → human approved/rejected → outcome Z" with export for compliance. Critical for institutional and regulated use. |
+| 151 | **Capital Flow Radar** | `/capital-flow-radar` | Where is money moving? (Players, grades, venues.) Institutional-style flow analytics for the hobby. |
+| 152 | **Synthetic Index Builder** | `/synthetic-index-builder` | User-defined custom index (e.g. "PSA 10 Rookie QBs 2018–2022") with daily index value and attribution. No platform offers user-defined collectible indices with live valuation. |
+| 153 | **Catastrophe Liquidation Simulator** | `/catastrophe-liquidation` | "If you had to raise $X in 48 hours, optimal sequence and expected haircut." Stress-test for emergency cash needs; extends bankruptcy-shield concept. |
+| 154 | **Portfolio Immunization** | `/portfolio-immunization` | Bond-style duration: "Your portfolio's duration to a hobby recession is X months; rebalancing to Y shortens it." Duration/convexity for collectibles. |
+| 155 | **Cross-Venue Identity Graph** | `/identity-graph` | Link same seller/buyer across eBay, COMC, PWCC, etc. for true counterparty history and concentration risk. No one unifies identity across venues. |
+| 156 | **Narrative Lifecycle Tracker** | `/narrative-lifecycle` | Track a narrative (e.g. "rookie breakout") from first mention → social spike → price move → exhaustion. Helps time entries and exits. |
+| 157 | **Agent Personality Cloning** | `/agent-personality` | User trains a "mini-me" agent (risk tolerance, league preference, max position) that screens and ranks opportunities; human still approves. Personalization at scale. |
 
 ---
 
@@ -569,7 +591,7 @@ tests/
 | Custom React Hooks | 18+ |
 | Context Providers | 3 |
 | API Integrations | 10 |
-| Industry-First Features | 20 |
+| Industry-First Features | 35+ |
 
 ---
 
@@ -636,6 +658,13 @@ tests/
 - AI Negotiation Coach
 - Multi-Gen Player Comparison Engine
 
+### 📋 Next (v5.1+ — Frontier, Not in Industry)
+- **Agent moat:** Agent Outcome Memory Dashboard, Thesis Backtester, Agent Delegation Audit, Agent Personality Cloning
+- **Market truth:** Market Truth Ledger, Fair Value Confidence Interval, Liquidity Horizon Curve, Capital Flow Radar
+- **Identity & trust:** Counterparty Passport (full), Cross-Venue Identity Graph
+- **Risk & institutional:** Catastrophe Liquidation Simulator, Portfolio Immunization, Synthetic Index Builder
+- **Regulatory & narrative:** Regulatory Change Alerts, Narrative Lifecycle Tracker
+
 ---
 
 ## 15. File Structure
@@ -674,4 +703,4 @@ ModernSportsIntelligenceDemo/
 
 ---
 
-*This PRD is a living document updated with each feature release. Version 4.0 reflects the addition of 17 new feature modules including 10 industry-first innovations.*
+*This PRD is a living document updated with each feature release. Version 4.2 adds the next set of industry-absent features (v5.1+ Frontier): agent outcome memory, market truth ledger, counterparty passport, thesis backtester, liquidity horizon, regulatory alerts, and 10 additional differentiators not present in the industry.*
