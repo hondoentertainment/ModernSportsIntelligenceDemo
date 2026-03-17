@@ -47,6 +47,8 @@ const GROUP_FEATURE_IDS = new Set([
   'sentiment-seismograph', 'memetic-propagation', 'cultural-velocity', 'narrative-alpha',
   'prestige-spillover-engine',
   'shared-watchlists', 'group-breaks', 'club-management', 'collective-grading', 'shared-dashboards',
+  'collaborative-set-registry', 'card-show-squad', 'group-buy-coop', 'draft-night-war-room', 'mentorship-exchange',
+  'dispute-arbitration', 'group-insurance', 'crowd-pricing', 'group-vault', 'swap-meet',
 ]);
 
 // Feature IDs that belong to Enterprise scale

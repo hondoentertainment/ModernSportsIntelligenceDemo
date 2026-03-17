@@ -185,6 +185,16 @@ export const SEARCHABLE_FEATURE_IDS = [
   'dealer-inventory',
   'fund-reporting',
   'audit-trail',
+  'collaborative-set-registry',
+  'card-show-squad',
+  'group-buy-coop',
+  'draft-night-war-room',
+  'mentorship-exchange',
+  'dispute-arbitration',
+  'group-insurance',
+  'crowd-pricing',
+  'group-vault',
+  'swap-meet',
 ] as const;
 
 export const COMMAND_ROUTES = [

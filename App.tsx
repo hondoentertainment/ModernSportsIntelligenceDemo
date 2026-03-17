@@ -313,6 +313,18 @@ const DealerInventory = lazy(() => import('./pages/DealerInventory.tsx'));
 const FundReporting = lazy(() => import('./pages/FundReporting.tsx'));
 const AuditTrail = lazy(() => import('./pages/AuditTrail.tsx'));
 
+// v10.0: Group Scale Phase 2 — Community Infrastructure (Phases 274-283)
+const CollaborativeSetRegistry = lazy(() => import('./pages/CollaborativeSetRegistry.tsx'));
+const CardShowSquad = lazy(() => import('./pages/CardShowSquad.tsx'));
+const GroupBuyCoop = lazy(() => import('./pages/GroupBuyCoop.tsx'));
+const DraftNightWarRoom = lazy(() => import('./pages/DraftNightWarRoom.tsx'));
+const MentorshipExchange = lazy(() => import('./pages/MentorshipExchange.tsx'));
+const DisputeArbitration = lazy(() => import('./pages/DisputeArbitration.tsx'));
+const GroupInsurance = lazy(() => import('./pages/GroupInsurance.tsx'));
+const CrowdPricing = lazy(() => import('./pages/CrowdPricing.tsx'));
+const GroupVault = lazy(() => import('./pages/GroupVault.tsx'));
+const SwapMeet = lazy(() => import('./pages/SwapMeet.tsx'));
+
 // Formerly coming-soon features — now live
 const WhatIfSimulator = lazy(() => import('./pages/WhatIfSimulator.tsx'));
 const GradingBatchPlanner = lazy(() => import('./pages/GradingBatchPlanner.tsx'));
@@ -721,6 +733,16 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/dealer-inventory" element={<DealerInventory />} />
                 <Route path="/fund-reporting" element={<FundReporting />} />
                 <Route path="/audit-trail" element={<AuditTrail />} />
+                <Route path="/collaborative-set-registry" element={<CollaborativeSetRegistry />} />
+                <Route path="/card-show-squad" element={<CardShowSquad />} />
+                <Route path="/group-buy-coop" element={<GroupBuyCoop />} />
+                <Route path="/draft-night-war-room" element={<DraftNightWarRoom />} />
+                <Route path="/mentorship-exchange" element={<MentorshipExchange />} />
+                <Route path="/dispute-arbitration" element={<DisputeArbitration />} />
+                <Route path="/group-insurance" element={<GroupInsurance />} />
+                <Route path="/crowd-pricing" element={<CrowdPricing />} />
+                <Route path="/group-vault" element={<GroupVault />} />
+                <Route path="/swap-meet" element={<SwapMeet />} />
                 {/* Formerly coming-soon features */}
                 <Route path="/what-if-simulator" element={<WhatIfSimulator />} />
                 <Route path="/grading-batch-planner" element={<GradingBatchPlanner />} />
