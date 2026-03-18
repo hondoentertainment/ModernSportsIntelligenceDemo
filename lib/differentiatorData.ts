@@ -1,3 +1,4 @@
+import { store } from './dal/syncStore';
 import {
     AgentOutcomeRecord,
     AgentRecommendationRecord,
@@ -53,17 +54,12 @@ const LOCAL_KEYS = {
 const persistenceState = new Map<string, DifferentiatorPersistenceState>();
 
 function readLocal<T>(key: string): T[] {
-    try {
-        const raw = localStorage.getItem(key);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
-    } catch {
-        return [];
-    }
+    const parsed = store.get<T[]>(key, []);
+    return Array.isArray(parsed) ? parsed : [];
 }
 
 function writeLocal<T>(key: string, rows: T[]): void {
-    localStorage.setItem(key, JSON.stringify(rows));
+    store.set(key, rows);
 }
 
 function upsertLocal<T extends { id: string }>(key: string, row: T): T {

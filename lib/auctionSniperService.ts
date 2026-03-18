@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Phase 158 – Real-Time Auction Sniper & Alert System Service
 
 // ---- Types ----
@@ -160,21 +162,11 @@ const STORAGE_KEY = 'msi_auction_sniper';
 // ---- localStorage helpers ----
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  return store.get<T | null>(`${STORAGE_KEY}_${key}`, null);
 }
 
 function saveData<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // quota exceeded
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ---- Mock Data ----

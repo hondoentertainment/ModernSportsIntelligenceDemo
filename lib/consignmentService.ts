@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -180,16 +181,11 @@ const HOUSES: ConsignmentHouse[] = [
 // ── Helpers ────────────────────────────────────────────────────────────
 
 function loadConsignments(): ConsignmentEntry[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return store.get<ConsignmentEntry[]>(STORAGE_KEY, []);
 }
 
 function saveConsignments(entries: ConsignmentEntry[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  store.set(STORAGE_KEY, entries);
 }
 
 function calculateBreakEvenSalePrice(card: CardInventory, feeRate: number, fixedFee: number, shippingCost = 0, insuranceCost = 0): number {

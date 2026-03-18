@@ -4,6 +4,8 @@
  * NO competitor combines live break participation with AI-powered auction sniping in one tool.
  */
 
+import { store } from './dal/syncStore';
+
 export interface LiveBreakRoom {
   id: string;
   title: string;
@@ -385,29 +387,21 @@ export function saveBreakHistory(breakId: string, hits: BreakHit[]): void {
   const history = getBreakHistory();
   history.unshift({ breakId, hits, timestamp: new Date().toISOString() });
   if (history.length > 100) history.pop();
-  localStorage.setItem(STORAGE_KEY_BREAKS, JSON.stringify(history));
+  store.set(STORAGE_KEY_BREAKS, history);
 }
 
 export function getBreakHistory(): { breakId: string; hits: BreakHit[]; timestamp: string }[] {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY_BREAKS) || '[]');
-  } catch {
-    return [];
-  }
+  return store.get<{ breakId: string; hits: BreakHit[]; timestamp: string }[]>(STORAGE_KEY_BREAKS, []);
 }
 
 export function saveAuctionWatch(auctionId: string): void {
   const watches = getAuctionWatches();
   if (!watches.includes(auctionId)) {
     watches.push(auctionId);
-    localStorage.setItem(STORAGE_KEY_AUCTIONS, JSON.stringify(watches));
+    store.set(STORAGE_KEY_AUCTIONS, watches);
   }
 }
 
 export function getAuctionWatches(): string[] {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY_AUCTIONS) || '[]');
-  } catch {
-    return [];
-  }
+  return store.get<string[]>(STORAGE_KEY_AUCTIONS, []);
 }

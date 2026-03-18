@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Consignment Marketplace Service — manage consignment houses, listings, fee comparison
 
 // ── Types ──────────────────────────────────────────────────────────────
@@ -525,13 +527,8 @@ export function getHouseById(id: string): ConsignmentHouse | undefined {
 }
 
 export function getMyListings(): ConsignmentListing[] {
-  const stored = localStorage.getItem(LISTINGS_KEY);
-  if (stored) {
-    try {
-      return JSON.parse(stored) as ConsignmentListing[];
-    } catch {
-      return [...MOCK_LISTINGS];
-    }
+  if (store.has(LISTINGS_KEY)) {
+    return store.get<ConsignmentListing[]>(LISTINGS_KEY, [...MOCK_LISTINGS]);
   }
   return [...MOCK_LISTINGS];
 }
@@ -539,7 +536,7 @@ export function getMyListings(): ConsignmentListing[] {
 export function addListing(listing: ConsignmentListing): ConsignmentListing[] {
   const listings = getMyListings();
   listings.push(listing);
-  localStorage.setItem(LISTINGS_KEY, JSON.stringify(listings));
+  store.set(LISTINGS_KEY, listings);
   return listings;
 }
 
@@ -549,7 +546,7 @@ export function updateListing(id: string, updates: Partial<ConsignmentListing>):
   if (idx !== -1) {
     listings[idx] = { ...listings[idx], ...updates };
   }
-  localStorage.setItem(LISTINGS_KEY, JSON.stringify(listings));
+  store.set(LISTINGS_KEY, listings);
   return listings;
 }
 

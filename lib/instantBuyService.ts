@@ -1,5 +1,6 @@
 import { CardInventory } from '../types';
 import { LiquidityService } from './liquidityService';
+import { store } from './dal/syncStore';
 
 /** MSI House discount tiers based on liquidity score */
 const HOUSE_DISCOUNT_TIERS = [
@@ -107,18 +108,14 @@ export function recordInstantBuy(quote: InstantBuyQuote, acceptedWithinSpeedWind
       ? Math.round((quote.netPayout + quote.speedBonus) * 100) / 100
       : quote.netPayout,
   });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  store.set(STORAGE_KEY, history);
 }
 
 /**
  * Get instant buy transaction history.
  */
 export function getInstantBuyHistory(): Array<InstantBuyQuote & { acceptedAt: string; speedBonusApplied: boolean; finalPayout: number }> {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  } catch {
-    return [];
-  }
+  return store.get<Array<InstantBuyQuote & { acceptedAt: string; speedBonusApplied: boolean; finalPayout: number }>>(STORAGE_KEY, []);
 }
 
 /**

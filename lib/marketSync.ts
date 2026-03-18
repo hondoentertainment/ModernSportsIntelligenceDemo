@@ -1,5 +1,6 @@
 
 import { logger } from './logger';
+import { store } from './dal/syncStore';
 import { CardInventory, TargetWatchlist } from '../types.ts';
 import { getEbayCardPrice, getWatchlistItemPrice } from './gemini.ts';
 import { recordBatchSnapshots } from './priceHistory.ts';
@@ -137,16 +138,16 @@ export async function syncPortfolio(
     recordBatchSnapshots(snapshotData);
 
     // Persist to localStorage
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedInventory));
-    localStorage.setItem(SYNC_META_KEY, JSON.stringify({
+    store.set(STORAGE_KEY, updatedInventory);
+    store.set(SYNC_META_KEY, {
         lastSyncTime: syncTime,
         totalValue,
         assetCount: updatedInventory.length
-    }));
+    });
 
     // Update history snapshots
     try {
-        const history: PortfolioSnapshot[] = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        const history = store.get<PortfolioSnapshot[]>(HISTORY_KEY, []);
         const newSnapshot: PortfolioSnapshot = {
             timestamp: syncTime,
             totalValue,
@@ -155,7 +156,7 @@ export async function syncPortfolio(
 
         // Add new snapshot and prune
         const updatedHistory = [newSnapshot, ...history].slice(0, MAX_HISTORY);
-        localStorage.setItem(HISTORY_KEY, JSON.stringify(updatedHistory));
+        store.set(HISTORY_KEY, updatedHistory);
     } catch (e) {
         logger.warn('Failed to update sync history', e);
     }
@@ -192,15 +193,7 @@ export async function syncPortfolio(
  * Get the last sync metadata
  */
 export function getSyncMeta(): { lastSyncTime: string | null; totalValue: number; assetCount: number } {
-    try {
-        const meta = localStorage.getItem(SYNC_META_KEY);
-        if (meta) {
-            return JSON.parse(meta);
-        }
-    } catch (e) {
-        logger.warn('Failed to parse sync meta', e);
-    }
-    return { lastSyncTime: null, totalValue: 0, assetCount: 0 };
+    return store.get<{ lastSyncTime: string | null; totalValue: number; assetCount: number }>(SYNC_META_KEY, { lastSyncTime: null, totalValue: 0, assetCount: 0 });
 }
 
 /**

@@ -1,3 +1,4 @@
+import { store } from './dal/syncStore';
 import { CardInventory, Sport } from '../types';
 
 // ---- Types ----
@@ -104,13 +105,7 @@ function getCardValue(card: CardInventory): number {
 }
 
 function loadConfig(): RebalanceConfig {
-  try {
-    const raw = localStorage.getItem(CONFIG_STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as RebalanceConfig;
-  } catch {
-    // ignore
-  }
-  return getDefaultConfig();
+  return store.get<RebalanceConfig>(CONFIG_STORAGE_KEY, getDefaultConfig());
 }
 
 function generateAlertId(sport: Sport, type: RebalanceAlertType): string {
@@ -351,21 +346,11 @@ export function getPortfolioHealth(inventory: CardInventory[]): PortfolioHealthR
 // ---- Alert Persistence ----
 
 export function getAlertHistory(): RebalanceAlert[] {
-  try {
-    const raw = localStorage.getItem(ALERT_STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as RebalanceAlert[];
-  } catch {
-    // ignore
-  }
-  return [];
+  return store.get<RebalanceAlert[]>(ALERT_STORAGE_KEY, []);
 }
 
 export function saveAlertHistory(alerts: RebalanceAlert[]): void {
-  try {
-    localStorage.setItem(ALERT_STORAGE_KEY, JSON.stringify(alerts));
-  } catch {
-    // ignore
-  }
+  store.set(ALERT_STORAGE_KEY, alerts);
 }
 
 export function acknowledgeAlert(alertId: string): RebalanceAlert[] {
@@ -404,9 +389,5 @@ export function persistAlerts(alerts: RebalanceAlert[]): void {
 }
 
 export function saveConfig(config: RebalanceConfig): void {
-  try {
-    localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(config));
-  } catch {
-    // ignore
-  }
+  store.set(CONFIG_STORAGE_KEY, config);
 }

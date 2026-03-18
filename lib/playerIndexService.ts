@@ -1,3 +1,4 @@
+import { store } from './dal/syncStore';
 import { CardInventory, Sport } from '../types';
 
 // ---- Types ----
@@ -265,21 +266,11 @@ function generateSparkline(playerName: string, direction: number): number[] {
 // ---- localStorage helpers ----
 
 export function loadPrefs(): Record<string, unknown> {
-  try {
-    const raw = localStorage.getItem(PREFS_KEY);
-    if (!raw) return {};
-    return JSON.parse(raw) as Record<string, unknown>;
-  } catch {
-    return {};
-  }
+  return store.get<Record<string, unknown>>(PREFS_KEY, {});
 }
 
 export function savePrefs(prefs: Record<string, unknown>): void {
-  try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
-  } catch {
-    // quota exceeded
-  }
+  store.set(PREFS_KEY, prefs);
 }
 
 // ---- Public API ----

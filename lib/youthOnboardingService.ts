@@ -333,7 +333,7 @@ const MOCK_CHALLENGES: CommunityChallenge[] = [
 
 function loadData<T>(key: string): T | null {
   try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
+    const raw = store.get(`${STORAGE_KEY}_${key}`, null);
     return raw ? (JSON.parse(raw) as T) : null;
   } catch {
     return null;
@@ -342,7 +342,7 @@ function loadData<T>(key: string): T | null {
 
 function saveData<T>(key: string, data: T): void {
   try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
+    store.set(`${STORAGE_KEY}_${key}`, data);
   } catch {
     // storage full or unavailable
   }
@@ -509,6 +509,7 @@ export function updateProgress(moduleId: string, completed: boolean): ProgressTr
   return tracker;
 }
 
+import { store } from './dal/syncStore';
 export function getNextAchievement(): Achievement | null {
   const achievements = getAchievements();
   return achievements.find(a => !a.unlocked) ?? null;

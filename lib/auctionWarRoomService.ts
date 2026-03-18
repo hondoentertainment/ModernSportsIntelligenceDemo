@@ -1,6 +1,8 @@
 // Phase 118: Live Auction War Room
 // Multi-platform auction dashboard with bid tracking, strategy optimization, and post-auction analytics
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type AuctionPlatform = 'heritage' | 'goldin' | 'pwcc' | 'ebay' | 'lelands' | 'huggins_scott';
@@ -105,21 +107,11 @@ const STORAGE_KEY = 'msi_auction_war_room';
 // ---- localStorage helpers ----
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  return store.get<T | null>(`${STORAGE_KEY}_${key}`, null);
 }
 
 function saveData<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // quota exceeded
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ---- Data ----

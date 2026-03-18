@@ -6,6 +6,7 @@ import {
     ContributionLedgerEntry,
     ProposalVote
 } from '../types';
+import { store } from './dal/syncStore';
 
 const GUILD_MEMBERS_KEY = 'msi_guild_members';
 const GUILD_PROPOSALS_KEY = 'msi_guild_proposals';
@@ -40,17 +41,12 @@ export class GuildService {
     }
 
     static getMembers(): GuildMember[] {
-        try {
-            const raw = localStorage.getItem(GUILD_MEMBERS_KEY);
-            const parsed = raw ? JSON.parse(raw) : [];
-            return Array.isArray(parsed) ? parsed : [];
-        } catch {
-            return [];
-        }
+        const parsed = store.get<GuildMember[]>(GUILD_MEMBERS_KEY, []);
+        return Array.isArray(parsed) ? parsed : [];
     }
 
     static saveMembers(members: GuildMember[]): void {
-        localStorage.setItem(GUILD_MEMBERS_KEY, JSON.stringify(members));
+        store.set(GUILD_MEMBERS_KEY, members);
     }
 
     static getOrCreateDemoMembers(): GuildMember[] {
@@ -79,17 +75,12 @@ export class GuildService {
     }
 
     static getProposals(): JointAcquisitionProposal[] {
-        try {
-            const raw = localStorage.getItem(GUILD_PROPOSALS_KEY);
-            const parsed = raw ? JSON.parse(raw) : [];
-            return Array.isArray(parsed) ? parsed : [];
-        } catch {
-            return [];
-        }
+        const parsed = store.get<JointAcquisitionProposal[]>(GUILD_PROPOSALS_KEY, []);
+        return Array.isArray(parsed) ? parsed : [];
     }
 
     static saveProposals(proposals: JointAcquisitionProposal[]): void {
-        localStorage.setItem(GUILD_PROPOSALS_KEY, JSON.stringify(proposals));
+        store.set(GUILD_PROPOSALS_KEY, proposals);
     }
 
     static createProposal(input: CreateProposalInput): JointAcquisitionProposal {

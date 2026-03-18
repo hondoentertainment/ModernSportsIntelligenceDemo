@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ─── Break Even Calculator Service ─────────────────────────────────────────
 // Calculates break-even grades, profit projections, and ROI analysis for
 // sports card grading investments.
@@ -572,13 +574,7 @@ export function getPlatformFees(): FeeStructure[] {
 }
 
 export function getSavedCalculations(): BreakEvenScenario[] {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_calculations`);
-    if (!raw) return [];
-    return JSON.parse(raw) as BreakEvenScenario[];
-  } catch {
-    return [];
-  }
+  return store.get<BreakEvenScenario[]>(`${STORAGE_PREFIX}_calculations`, []);
 }
 
 export function saveCalculation(calc: BreakEvenScenario): void {
@@ -589,13 +585,13 @@ export function saveCalculation(calc: BreakEvenScenario): void {
   } else {
     existing.push(calc);
   }
-  localStorage.setItem(`${STORAGE_PREFIX}_calculations`, JSON.stringify(existing));
+  store.set(`${STORAGE_PREFIX}_calculations`, existing);
 }
 
 export function deleteCalculation(id: string): void {
   const existing = getSavedCalculations();
   const filtered = existing.filter((s) => s.id !== id);
-  localStorage.setItem(`${STORAGE_PREFIX}_calculations`, JSON.stringify(filtered));
+  store.set(`${STORAGE_PREFIX}_calculations`, filtered);
 }
 
 export function getBestCaseROI(scenario: BreakEvenScenario): number {

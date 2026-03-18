@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -116,50 +117,30 @@ interface RankingSnapshot {
 }
 
 function loadSnapshots(): RankingSnapshot[] {
-  try {
-    const raw = localStorage.getItem(SNAPSHOT_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as RankingSnapshot[];
-  } catch {
-    return [];
-  }
+  return store.get<RankingSnapshot[]>(SNAPSHOT_KEY, []);
 }
 
 function saveSnapshot(rankings: Record<LeaderboardCategory, number>): void {
-  try {
-    const snapshots = loadSnapshots();
-    const today = new Date().toISOString().slice(0, 10);
-    // Only save one snapshot per day
-    const existing = snapshots.findIndex(s => s.date === today);
-    if (existing >= 0) {
-      snapshots[existing] = { date: today, rankings };
-    } else {
-      snapshots.push({ date: today, rankings });
-    }
-    // Keep last 30 snapshots
-    const trimmed = snapshots.slice(-30);
-    localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(trimmed));
-  } catch {
-    // quota exceeded
+  const snapshots = loadSnapshots();
+  const today = new Date().toISOString().slice(0, 10);
+  // Only save one snapshot per day
+  const existing = snapshots.findIndex(s => s.date === today);
+  if (existing >= 0) {
+    snapshots[existing] = { date: today, rankings };
+  } else {
+    snapshots.push({ date: today, rankings });
   }
+  // Keep last 30 snapshots
+  const trimmed = snapshots.slice(-30);
+  store.set(SNAPSHOT_KEY, trimmed);
 }
 
 function loadChallengeProgress(): Record<string, number> {
-  try {
-    const raw = localStorage.getItem(CHALLENGE_KEY);
-    if (!raw) return {};
-    return JSON.parse(raw) as Record<string, number>;
-  } catch {
-    return {};
-  }
+  return store.get<Record<string, number>>(CHALLENGE_KEY, {});
 }
 
 function saveChallengeProgress(progress: Record<string, number>): void {
-  try {
-    localStorage.setItem(CHALLENGE_KEY, JSON.stringify(progress));
-  } catch {
-    // quota exceeded
-  }
+  store.set(CHALLENGE_KEY, progress);
 }
 
 // ---- Community Profile Generation ----

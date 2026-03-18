@@ -1,4 +1,5 @@
 import { CardInventory } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -455,15 +456,8 @@ function generateSimulatedHistory(cards: CardInventory[]): SubmissionRecord[] {
 }
 
 export function getSubmissionHistory(cards: CardInventory[]): SubmissionRecord[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_HISTORY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as SubmissionRecord[];
-      if (parsed.length > 0) return parsed;
-    }
-  } catch {
-    // fall through
-  }
+  const parsed = store.get<SubmissionRecord[]>(STORAGE_KEY_HISTORY, []);
+  if (parsed.length > 0) return parsed;
 
   // Generate and persist simulated history
   const history = generateSimulatedHistory(cards);
@@ -472,11 +466,7 @@ export function getSubmissionHistory(cards: CardInventory[]): SubmissionRecord[]
 }
 
 export function saveSubmissionHistory(history: SubmissionRecord[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
-  } catch {
-    // quota exceeded
-  }
+  store.set(STORAGE_KEY_HISTORY, history);
 }
 
 // ---- Submission Cost Tracker ----
@@ -560,44 +550,26 @@ export function getCalibrationData(cards: CardInventory[]): CalibrationPoint[] {
 // ---- Submission Queue ----
 
 export function getSubmissionQueue(): string[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_QUEUE);
-    if (raw) return JSON.parse(raw) as string[];
-  } catch {
-    // fall through
-  }
-  return [];
+  return store.get<string[]>(STORAGE_KEY_QUEUE, []);
 }
 
 export function addToSubmissionQueue(cardId: string): string[] {
   const queue = getSubmissionQueue();
   if (!queue.includes(cardId)) {
     queue.push(cardId);
-    try {
-      localStorage.setItem(STORAGE_KEY_QUEUE, JSON.stringify(queue));
-    } catch {
-      // quota exceeded
-    }
+    store.set(STORAGE_KEY_QUEUE, queue);
   }
   return queue;
 }
 
 export function removeFromSubmissionQueue(cardId: string): string[] {
   const queue = getSubmissionQueue().filter((id) => id !== cardId);
-  try {
-    localStorage.setItem(STORAGE_KEY_QUEUE, JSON.stringify(queue));
-  } catch {
-    // quota exceeded
-  }
+  store.set(STORAGE_KEY_QUEUE, queue);
   return queue;
 }
 
 export function clearSubmissionQueue(): void {
-  try {
-    localStorage.removeItem(STORAGE_KEY_QUEUE);
-  } catch {
-    // ignore
-  }
+  store.remove(STORAGE_KEY_QUEUE);
 }
 
 // ---- Widget Summary ----
@@ -636,20 +608,10 @@ export function getWidgetSummary(cards: CardInventory[]): GradePredictWidgetSumm
 // ---- Preferences ----
 
 export function loadGradePredictPrefs(): GradePredictPrefs {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_PREFS);
-    if (!raw) return {};
-    return JSON.parse(raw) as GradePredictPrefs;
-  } catch {
-    return {};
-  }
+  return store.get<GradePredictPrefs>(STORAGE_KEY_PREFS, {});
 }
 
 export function saveGradePredictPrefs(prefs: Partial<GradePredictPrefs>): void {
-  try {
-    const existing = loadGradePredictPrefs();
-    localStorage.setItem(STORAGE_KEY_PREFS, JSON.stringify({ ...existing, ...prefs }));
-  } catch {
-    // quota exceeded
-  }
+  const existing = loadGradePredictPrefs();
+  store.set(STORAGE_KEY_PREFS, { ...existing, ...prefs });
 }

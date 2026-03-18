@@ -47,8 +47,7 @@ const STORAGE_KEY = 'msi_transaction_wire_v1';
 
 function loadFromStorage(): Transaction[] | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    const val = store.get(STORAGE_KEY, null); if (val) return val;
   } catch {
     // ignore
   }
@@ -57,7 +56,7 @@ function loadFromStorage(): Transaction[] | null {
 
 function saveToStorage(data: Transaction[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    store.set(STORAGE_KEY, data);
   } catch {
     // ignore
   }
@@ -412,6 +411,7 @@ export function getTopMovers(): TopMover[] {
   return movers.sort((a, b) => Math.abs(b.priceChange) - Math.abs(a.priceChange));
 }
 
+import { store } from './dal/syncStore';
 export default {
   getRecentTransactions,
   getTransactionStats,

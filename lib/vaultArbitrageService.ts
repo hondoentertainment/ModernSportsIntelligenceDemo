@@ -124,7 +124,7 @@ interface StoredData {
 
 function loadData(): StoredData | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = store.get(STORAGE_KEY, null);
     if (!raw) return null;
     const data = JSON.parse(raw) as StoredData;
     if (Date.now() - data.generatedAt > 4 * 3600 * 1000) return null;
@@ -133,7 +133,7 @@ function loadData(): StoredData | null {
 }
 
 function saveData(data: StoredData): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  store.set(STORAGE_KEY, data);
 }
 
 // ── Deterministic seeding ───────────────────────────────────────────────────────
@@ -600,6 +600,7 @@ export function getPlatformLabel(platform: VaultPlatform): string {
   return PLATFORM_FEES[platform].label;
 }
 
+import { store } from './dal/syncStore';
 export function getAllPlatformNetProceeds(card: VaultCard): NetProceedsEstimate[] {
   return PLATFORMS.map(p => calculateNetProceedsForPlatform(card.estimatedValue, p))
     .sort((a, b) => b.netProceeds - a.netProceeds);

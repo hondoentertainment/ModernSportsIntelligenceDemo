@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ── Phase 89: Portfolio Attribution & Performance Decomposition ──
 
 const STORAGE_KEY = 'msi_portfolio_attribution';
@@ -188,20 +190,11 @@ function periodMonths(period: '1m' | '3m' | '6m' | '1y' | 'ytd'): number {
 // ── localStorage persistence ──
 
 function loadCache<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
+  return store.get<T | null>(`${STORAGE_KEY}_${key}`, null);
 }
 
 function saveCache(key: string, data: unknown): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // silent fail
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ── Public API ──

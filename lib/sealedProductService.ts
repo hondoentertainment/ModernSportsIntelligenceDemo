@@ -1,5 +1,6 @@
 // Phase 156: Wax & Sealed Product Investment Tracker
 // Track sealed product investments, ROI calculations, rip vs hold analysis, vintage sealed, and market trends
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -171,21 +172,11 @@ export interface ProductComparison {
 const STORAGE_KEY = 'msi_sealed_product';
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  return store.has(`${STORAGE_KEY}_${key}`) ? store.get<T>(`${STORAGE_KEY}_${key}`, null as unknown as T) : null;
 }
 
 function saveData<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // Storage full or unavailable
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ---- Helpers ----

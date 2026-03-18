@@ -1,4 +1,5 @@
 import { Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -260,9 +261,7 @@ const UPCOMING_RELEASES: ProductRelease[] = [
 
 function loadPortfolio(): WaxPortfolioEntry[] {
   try {
-    const raw = localStorage.getItem(PORTFOLIO_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as WaxPortfolioEntry[];
+    return store.get(PORTFOLIO_KEY, []);
   } catch {
     return [];
   }
@@ -270,7 +269,7 @@ function loadPortfolio(): WaxPortfolioEntry[] {
 
 function savePortfolio(entries: WaxPortfolioEntry[]): void {
   try {
-    localStorage.setItem(PORTFOLIO_KEY, JSON.stringify(entries));
+    store.set(PORTFOLIO_KEY, entries);
   } catch {
     // quota exceeded
   }

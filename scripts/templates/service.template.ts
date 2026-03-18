@@ -1,6 +1,8 @@
 // Phase {{PHASE}}: {{DISPLAY_NAME}} Service
 // {{DESCRIPTION}}
 
+import { store } from './dal/syncStore';
+
 // ── Interfaces ──────────────────────────────────────────────────────────────────
 
 export interface {{PASCAL_NAME}}Item {
@@ -40,17 +42,11 @@ export interface {{PASCAL_NAME}}Detail {
 const STORAGE_KEY = '{{STORAGE_KEY}}_data';
 
 function load(): {{PASCAL_NAME}}Item[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return [];
+  return store.get<{{PASCAL_NAME}}Item[]>(STORAGE_KEY, []);
 }
 
 function save(items: {{PASCAL_NAME}}Item[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  } catch { /* ignore */ }
+  store.set(STORAGE_KEY, items);
 }
 
 // ── Seeded PRNG for deterministic mock data ─────────────────────────────────────

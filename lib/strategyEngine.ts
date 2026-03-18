@@ -1,4 +1,5 @@
 // Phase 38: Strategy Engine and Backtesting
+import { store } from './dal/syncStore';
 
 export type RuleOperator = 'gt' | 'gte' | 'lt' | 'lte' | 'eq';
 
@@ -188,16 +189,11 @@ export function getDefaultStrategies(): StrategyDefinition[] {
 
 export class StrategyRegistry {
     static getAll(): StrategyDefinition[] {
-        try {
-            const raw = localStorage.getItem(STRATEGY_REGISTRY_KEY);
-            const parsed = raw ? JSON.parse(raw) : [];
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                return parsed;
-            }
-            return getDefaultStrategies();
-        } catch {
-            return getDefaultStrategies();
+        const parsed = store.get<StrategyDefinition[]>(STRATEGY_REGISTRY_KEY, []);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
         }
+        return getDefaultStrategies();
     }
 
     static save(strategy: StrategyDefinition): StrategyDefinition[] {
@@ -205,24 +201,19 @@ export class StrategyRegistry {
         const idx = existing.findIndex(s => s.id === strategy.id);
         if (idx >= 0) existing[idx] = strategy;
         else existing.unshift(strategy);
-        localStorage.setItem(STRATEGY_REGISTRY_KEY, JSON.stringify(existing));
+        store.set(STRATEGY_REGISTRY_KEY, existing);
         return existing;
     }
 }
 
 export class PaperTradeLedger {
     static getAll(): PaperTradePosition[] {
-        try {
-            const raw = localStorage.getItem(PAPER_TRADES_KEY);
-            const parsed = raw ? JSON.parse(raw) : [];
-            return Array.isArray(parsed) ? parsed : [];
-        } catch {
-            return [];
-        }
+        const parsed = store.get<PaperTradePosition[]>(PAPER_TRADES_KEY, []);
+        return Array.isArray(parsed) ? parsed : [];
     }
 
     static saveAll(positions: PaperTradePosition[]): PaperTradePosition[] {
-        localStorage.setItem(PAPER_TRADES_KEY, JSON.stringify(positions));
+        store.set(PAPER_TRADES_KEY, positions);
         return positions;
     }
 

@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Phase 115: Marketplace Aggregator & One-Click Buy
 // Cross-platform marketplace intelligence with unified search, fee-adjusted
 // price comparison, one-click purchase orchestration, and platform health monitoring.
@@ -131,16 +133,15 @@ interface StoredData {
 
 function loadData(): StoredData | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const data = JSON.parse(raw) as StoredData;
+    const data = store.get<StoredData | null>(STORAGE_KEY, null);
+    if (!data) return null;
     if (Date.now() - data.generatedAt > 4 * 3600 * 1000) return null;
     return data;
   } catch { return null; }
 }
 
 function saveData(data: StoredData): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  store.set(STORAGE_KEY, data);
 }
 
 // ── Deterministic seeding ───────────────────────────────────────────────────────

@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -98,41 +99,23 @@ function seededPick<T>(arr: T[], seed: number, offset: number): T {
 // ---- localStorage helpers ----
 
 export function getStrategy(): StrategyProfile {
-  try {
-    const raw = localStorage.getItem(STRATEGY_KEY);
-    if (raw && ['conservative', 'aggressive', 'long_term', 'completion'].includes(raw)) {
-      return raw as StrategyProfile;
-    }
-  } catch {
-    // ignore
+  const raw = store.get<string>(STRATEGY_KEY, 'conservative');
+  if (['conservative', 'aggressive', 'long_term', 'completion'].includes(raw)) {
+    return raw as StrategyProfile;
   }
   return 'conservative';
 }
 
 export function setStrategy(strategy: StrategyProfile): void {
-  try {
-    localStorage.setItem(STRATEGY_KEY, strategy);
-  } catch {
-    // quota exceeded
-  }
+  store.set(STRATEGY_KEY, strategy);
 }
 
 function loadFeedback(): AdvisorFeedback[] {
-  try {
-    const raw = localStorage.getItem(FEEDBACK_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as AdvisorFeedback[];
-  } catch {
-    return [];
-  }
+  return store.get<AdvisorFeedback[]>(FEEDBACK_KEY, []);
 }
 
 function saveFeedback(feedbacks: AdvisorFeedback[]): void {
-  try {
-    localStorage.setItem(FEEDBACK_KEY, JSON.stringify(feedbacks));
-  } catch {
-    // quota exceeded
-  }
+  store.set(FEEDBACK_KEY, feedbacks);
 }
 
 export function submitFeedback(recommendationId: string, feedback: 'thumbs_up' | 'thumbs_down'): void {

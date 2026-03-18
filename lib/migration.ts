@@ -4,6 +4,7 @@
  */
 
 import { logger } from './logger';
+import { store } from './dal/syncStore';
 import { CardInventory, TargetWatchlist } from '../types.ts';
 import { supabase } from './supabase';
 
@@ -31,34 +32,24 @@ export interface MigrationResult {
  * Check if migration is needed
  */
 export function needsMigration(): boolean {
-    const hasLocalData = localStorage.getItem(STORAGE_KEYS.INVENTORY) ||
-        localStorage.getItem(STORAGE_KEYS.TARGETS) ||
-        localStorage.getItem(STORAGE_KEYS.FAVORITES);
-    return !!hasLocalData;
+    const hasLocalData = store.has(STORAGE_KEYS.INVENTORY) ||
+        store.has(STORAGE_KEYS.TARGETS) ||
+        store.has(STORAGE_KEYS.FAVORITES);
+    return hasLocalData;
 }
 
 /**
  * Get data from localStorage
  */
 function getLocalStorageData<T>(key: string): T | null {
-    try {
-        const data = localStorage.getItem(key);
-        return data ? JSON.parse(data) : null;
-    } catch (e) {
-        logger.warn(`Failed to parse ${key} from localStorage:`, e);
-        return null;
-    }
+    return store.get<T | null>(key, null);
 }
 
 /**
  * Save data to localStorage
  */
 function _setLocalStorageData<T>(key: string, data: T): void {
-    try {
-        localStorage.setItem(key, JSON.stringify(data));
-    } catch (e) {
-        logger.warn(`Failed to save ${key} to localStorage:`, e);
-    }
+    store.set(key, data);
 }
 
 /**
@@ -191,8 +182,8 @@ export async function migrateToSupabase(userId: string): Promise<MigrationResult
 
         // If successful, clear migrated data from localStorage
         if (result.success) {
-            localStorage.removeItem(STORAGE_KEYS.INVENTORY);
-            localStorage.removeItem(STORAGE_KEYS.TARGETS);
+            store.remove(STORAGE_KEYS.INVENTORY);
+            store.remove(STORAGE_KEYS.TARGETS);
             if (import.meta.env.DEV) logger.log('Migration complete, cleared localStorage data');
         }
 
@@ -207,12 +198,11 @@ export async function migrateToSupabase(userId: string): Promise<MigrationResult
  * Backup localStorage data before migration
  */
 export function backupLocalStorage(): string {
-    const backup: Record<string, string> = {};
+    const backup: Record<string, unknown> = {};
 
     Object.values(STORAGE_KEYS).forEach(key => {
-        const data = localStorage.getItem(key);
-        if (data) {
-            backup[key] = data;
+        if (store.has(key)) {
+            backup[key] = store.get<unknown>(key, null);
         }
     });
 
@@ -224,10 +214,10 @@ export function backupLocalStorage(): string {
  */
 export function restoreLocalStorage(backupJson: string): boolean {
     try {
-        const backup: Record<string, string> = JSON.parse(backupJson);
+        const backup: Record<string, unknown> = JSON.parse(backupJson);
 
         Object.entries(backup).forEach(([key, value]) => {
-            localStorage.setItem(key, value);
+            store.set(key, value);
         });
 
         return true;
@@ -242,7 +232,7 @@ export function restoreLocalStorage(backupJson: string): boolean {
  */
 export function clearLocalStorage(): void {
     Object.values(STORAGE_KEYS).forEach(key => {
-        localStorage.removeItem(key);
+        store.remove(key);
     });
 }
 
@@ -256,7 +246,7 @@ export function getMigrationStatus(): {
 } {
     return {
         needsMigration: needsMigration(),
-        localDataExists: !!localStorage.getItem(STORAGE_KEYS.INVENTORY),
+        localDataExists: store.has(STORAGE_KEYS.INVENTORY),
         supabaseConfigured: !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY),
     };
 }

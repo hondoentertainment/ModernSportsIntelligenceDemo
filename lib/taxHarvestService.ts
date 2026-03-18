@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -447,20 +448,14 @@ export function getHarvestRecommendations(
 // ---- Wash Sale Tracker ----
 
 export function getWashSaleWindows(): WashSaleWindow[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_WASH_SALES_KEY);
-    if (!raw) return [];
-    const windows: WashSaleWindow[] = JSON.parse(raw);
-    const now = new Date();
-    return windows.map(w => ({
-      ...w,
-      daysRemaining: Math.max(0, Math.floor((new Date(w.windowEndDate).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))),
-      status: getWashStatus(w.windowEndDate),
-      restrictedFromRepurchase: new Date(w.windowEndDate) > now,
-    })).filter(w => w.daysRemaining >= 0 || new Date(w.windowEndDate) > new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000));
-  } catch {
-    return [];
-  }
+  const windows = store.get<WashSaleWindow[]>(STORAGE_WASH_SALES_KEY, []);
+  const now = new Date();
+  return windows.map(w => ({
+    ...w,
+    daysRemaining: Math.max(0, Math.floor((new Date(w.windowEndDate).getTime() - now.getTime()) / (1000 * 60 * 60 * 24))),
+    status: getWashStatus(w.windowEndDate),
+    restrictedFromRepurchase: new Date(w.windowEndDate) > now,
+  })).filter(w => w.daysRemaining >= 0 || new Date(w.windowEndDate) > new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000));
 }
 
 function getWashStatus(endDate: string): WashSaleStatus {
@@ -643,51 +638,35 @@ export function getTaxHarvestSummary(cards: CardInventory[]): TaxHarvestSummary 
 // ---- localStorage CRUD ----
 
 function loadHarvestedRecords(): HarvestedRecord[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_HARVESTED_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
+  return store.get<HarvestedRecord[]>(STORAGE_HARVESTED_KEY, []);
 }
 
 function saveHarvestedRecords(records: HarvestedRecord[]): void {
-  try {
-    localStorage.setItem(STORAGE_HARVESTED_KEY, JSON.stringify(records));
-  } catch { /* quota exceeded */ }
+  store.set(STORAGE_HARVESTED_KEY, records);
 }
 
 function saveWashSaleWindows(windows: WashSaleWindow[]): void {
-  try {
-    localStorage.setItem(STORAGE_WASH_SALES_KEY, JSON.stringify(windows));
-  } catch { /* quota exceeded */ }
+  store.set(STORAGE_WASH_SALES_KEY, windows);
 }
 
 export function loadPreferences(): TaxHarvestPreferences {
-  try {
-    const raw = localStorage.getItem(STORAGE_PREFS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return {
+  return store.get<TaxHarvestPreferences>(STORAGE_PREFS_KEY, {
     filingStatus: 'single',
     estimatedIncome: 85000,
     stateCode: 'CA',
     includeStateRate: true,
     autoDetectWashSales: true,
-  };
+  });
 }
 
 export function savePreferences(prefs: TaxHarvestPreferences): void {
-  try {
-    localStorage.setItem(STORAGE_PREFS_KEY, JSON.stringify(prefs));
-  } catch { /* ignore */ }
+  store.set(STORAGE_PREFS_KEY, prefs);
 }
 
 export function clearTaxHarvestData(): void {
-  localStorage.removeItem(STORAGE_PREFS_KEY);
-  localStorage.removeItem(STORAGE_HARVESTED_KEY);
-  localStorage.removeItem(STORAGE_WASH_SALES_KEY);
+  store.remove(STORAGE_PREFS_KEY);
+  store.remove(STORAGE_HARVESTED_KEY);
+  store.remove(STORAGE_WASH_SALES_KEY);
 }
 
 export { MONTH_NAMES, CAPITAL_LOSS_DEDUCTION_LIMIT, LONG_TERM_DAYS, APPROACHING_LONG_TERM_DAYS };

@@ -1,6 +1,8 @@
 // Phase 154: Card Photography & Listing Optimizer
 // AI-powered listing analysis, photo scoring, title optimization, pricing recommendations, and competitor analysis
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type Platform = 'ebay' | 'mercari' | 'comc' | 'myslabs' | 'facebook' | 'instagram' | 'whatnot' | 'pwcc';
@@ -197,21 +199,11 @@ export interface ABTestResult {
 const STORAGE_KEY = 'msi_listing_optimizer';
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  return store.has(`${STORAGE_KEY}_${key}`) ? store.get<T>(`${STORAGE_KEY}_${key}`, null as unknown as T) : null;
 }
 
 function saveData<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // Storage full or unavailable
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ---- Helpers ----

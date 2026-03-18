@@ -73,11 +73,11 @@ const STORAGE_KEYS = {
 
 function loadOrInit<T>(key: string, init: () => T): T {
   try {
-    const stored = localStorage.getItem(key);
+    const stored = store.get(key, null);
     if (stored) return JSON.parse(stored);
   } catch { /* ignore localStorage errors */ }
   const data = init();
-  localStorage.setItem(key, JSON.stringify(data));
+  store.set(key, data);
   return data;
 }
 
@@ -707,6 +707,7 @@ export function getGrowthMetrics(): { overallGrowth: number; bestEra: string; be
   return { overallGrowth: 12.5, bestEra: best.era, bestEraGrowth: best.avgAppreciation, totalMarketCap: totalValue, avgAnnualReturn: Math.round(avgReturn * 10) / 10 };
 }
 
+import { store } from './dal/syncStore';
 export function getMarketCapData(): { era: string; marketCap: number; volume: number; growth: number }[] {
   return getEraBreakdown().map(e => ({ era: e.era, marketCap: e.totalValue, volume: e.cardCount * 150, growth: e.avgAppreciation }));
 }

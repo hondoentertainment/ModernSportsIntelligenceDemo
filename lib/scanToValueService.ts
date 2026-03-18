@@ -3,6 +3,8 @@
 // Provides card scanning, identification, valuation, and batch management
 // =============================================================================
 
+import { store } from './dal/syncStore';
+
 const STORAGE_PREFIX = 'msi_scan_to_value';
 
 // -----------------------------------------------------------------------------
@@ -327,16 +329,11 @@ const MOCK_BATCH_SCANS: BatchScan[] = [
 // -----------------------------------------------------------------------------
 
 function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_${key}`);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
+  return store.get<T>(`${STORAGE_PREFIX}_${key}`, fallback);
 }
 
 function saveToStorage<T>(key: string, data: T): void {
-  localStorage.setItem(`${STORAGE_PREFIX}_${key}`, JSON.stringify(data));
+  store.set(`${STORAGE_PREFIX}_${key}`, data);
 }
 
 // -----------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -119,21 +120,11 @@ function expiresFromNow(hours: number): string {
 // ---- localStorage helpers ----
 
 function loadStoredAnomalies(): MarketAnomaly[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as MarketAnomaly[];
-  } catch {
-    return [];
-  }
+  return store.get<MarketAnomaly[]>(STORAGE_KEY, []);
 }
 
 function saveAnomalies(anomalies: MarketAnomaly[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(anomalies));
-  } catch {
-    // quota exceeded – silently ignore
-  }
+  store.set(STORAGE_KEY, anomalies);
 }
 
 // ---- Core detection ----

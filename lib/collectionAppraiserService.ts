@@ -1,6 +1,8 @@
 // Phase 150: AI Collection Appraiser & Insurance Valuation
 // Provides AI-powered appraisals, insurance valuations, and depreciation tracking for card collections
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type AppraisalType =
@@ -1330,21 +1332,11 @@ interface AppraiserData {
 }
 
 function loadData(): AppraiserData | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw) as AppraiserData;
-  } catch {
-    return null;
-  }
+  return store.get<AppraiserData | null>(STORAGE_KEY, null);
 }
 
 function saveData(data: AppraiserData): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch {
-    // quota exceeded
-  }
+  store.set(STORAGE_KEY, data);
 }
 
 function ensureData(): AppraiserData {

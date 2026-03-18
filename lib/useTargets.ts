@@ -1,6 +1,7 @@
 import { logger } from './logger';
 import { useState, useEffect, useCallback } from 'react';
 import { TargetWatchlist } from '../types.ts';
+import { store } from './dal/syncStore';
 
 const STORAGE_KEY = 'cardx_targets';
 
@@ -9,23 +10,16 @@ const STORAGE_KEY = 'cardx_targets';
  */
 export function useTargets() {
     const [targets, setTargets] = useState<TargetWatchlist[]>(() => {
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed)) {
-                    return parsed;
-                }
-            }
-        } catch (e) {
-            logger.warn('Failed to parse targets from localStorage', e);
+        const parsed = store.get<TargetWatchlist[]>(STORAGE_KEY, []);
+        if (Array.isArray(parsed)) {
+            return parsed;
         }
         return [];
     });
 
     // Persist changes to localStorage
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(targets));
+        store.set(STORAGE_KEY, targets);
     }, [targets]);
 
     const addTarget = useCallback((target: Omit<TargetWatchlist, 'id' | 'createdAt' | 'status'>) => {

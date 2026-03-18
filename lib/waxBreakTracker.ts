@@ -96,13 +96,14 @@ export function deleteBreak(breakId: string): void {
 
 export function getBreaks(): WaxBreak[] {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = store.get(STORAGE_KEY, null);
     return stored ? JSON.parse(stored) : [];
   } catch {
     return [];
   }
 }
 
+import { store } from './dal/syncStore';
 export function getBreakStats(): WaxBreakStats {
   const breaks = getBreaks();
 
@@ -160,5 +161,5 @@ function saveBreak(brk: WaxBreak): void {
 }
 
 function saveAllBreaks(breaks: WaxBreak[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(breaks));
+  store.set(STORAGE_KEY, breaks);
 }

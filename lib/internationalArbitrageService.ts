@@ -1,6 +1,8 @@
 // Phase 147: Cross-Border & International Arbitrage Engine
 // Identifies price discrepancies across international card markets with full cost accounting.
 
+import { store } from './dal/syncStore';
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export type Market = 'us' | 'japan' | 'uk' | 'germany' | 'australia' | 'korea' | 'canada' | 'france';
@@ -141,21 +143,11 @@ export interface RiskAssessment {
 const STORAGE_KEY = 'msi_international_arbitrage';
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  return store.has(`${STORAGE_KEY}_${key}`) ? store.get<T>(`${STORAGE_KEY}_${key}`, null as unknown as T) : null;
 }
 
 function saveData<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // quota exceeded
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ── Helper functions ────────────────────────────────────────────────────────

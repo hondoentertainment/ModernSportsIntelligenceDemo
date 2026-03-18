@@ -1,4 +1,5 @@
 import { CardInventory } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -82,9 +83,7 @@ function seededRange(seed: number, offset: number, min: number, max: number): nu
 
 export function getSnapshots(): PortfolioSnapshot[] {
   try {
-    const raw = localStorage.getItem(SNAPSHOT_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as PortfolioSnapshot[];
+    return store.get(SNAPSHOT_KEY, []);
   } catch {
     return [];
   }
@@ -103,7 +102,7 @@ export function saveSnapshot(snapshot: PortfolioSnapshot): void {
     // Sort chronologically and keep last 60
     snapshots.sort((a, b) => a.date.localeCompare(b.date));
     const trimmed = snapshots.slice(-60);
-    localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(trimmed));
+    store.set(SNAPSHOT_KEY, trimmed);
   } catch {
     // quota exceeded — silently fail
   }
@@ -112,7 +111,7 @@ export function saveSnapshot(snapshot: PortfolioSnapshot): void {
 function saveSnapshots(snapshots: PortfolioSnapshot[]): void {
   try {
     const sorted = [...snapshots].sort((a, b) => a.date.localeCompare(b.date));
-    localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(sorted.slice(-60)));
+    store.set(SNAPSHOT_KEY, sorted.slice(-60));
   } catch {
     // quota exceeded
   }
@@ -122,9 +121,7 @@ function saveSnapshots(snapshots: PortfolioSnapshot[]): void {
 
 export function getJournalEntries(): DecisionJournalEntry[] {
   try {
-    const raw = localStorage.getItem(JOURNAL_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as DecisionJournalEntry[];
+    return store.get(JOURNAL_KEY, []);
   } catch {
     return [];
   }
@@ -142,7 +139,7 @@ export function addJournalEntry(date: string, note: string, cardIds?: string[]):
   entries.push(entry);
   entries.sort((a, b) => a.date.localeCompare(b.date));
   try {
-    localStorage.setItem(JOURNAL_KEY, JSON.stringify(entries.slice(-200)));
+    store.set(JOURNAL_KEY, entries.slice(-200));
   } catch {
     // quota exceeded
   }

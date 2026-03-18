@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Phase 92 — Options & Derivatives Desk (Simulated)
 // Bloomberg-style options analytics for sports card investing
 
@@ -140,14 +142,11 @@ const LS_INSURANCE = 'msi_derivatives_insurance';
 const LS_STATS = 'msi_derivatives_stats';
 
 function loadJSON<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch { return fallback; }
+  return store.get<T>(key, fallback);
 }
 
 function saveJSON(key: string, val: unknown) {
-  try { localStorage.setItem(key, JSON.stringify(val)); } catch { /* noop */ }
+  store.set(key, val);
 }
 
 // ---- Expiry dates ----

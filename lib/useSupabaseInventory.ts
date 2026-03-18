@@ -18,6 +18,7 @@ import { logAuditEvent } from './auditLog';
 import { logger } from './logger';
 import { enqueueJob, processAllJobs } from './jobQueue';
 import { incrementCounter, recordMetric } from './telemetryService';
+import { store } from './dal/syncStore';
 
 const STORAGE_KEY = 'cardx_inventory';
 const TARGETS_KEY = 'cardx_targets';
@@ -39,37 +40,25 @@ export type InventorySyncStatus =
     | 'error';
 
 function readLocalRows<T>(key: string): T[] {
-    try {
-        const saved = localStorage.getItem(key);
-        const parsed = saved ? JSON.parse(saved) : [];
-        return Array.isArray(parsed) ? parsed : [];
-    } catch (error) {
-        logger.warn(`Failed to read ${key} from localStorage`, error);
-        return [];
-    }
+    const parsed = store.get<T[]>(key, []);
+    return Array.isArray(parsed) ? parsed : [];
 }
 
 function readLocalMeta(): SyncMeta | null {
-    try {
-        const savedMeta = localStorage.getItem(SYNC_META_KEY);
-        if (!savedMeta) return null;
-        const parsedMeta: unknown = JSON.parse(savedMeta);
-        if (
-            parsedMeta !== null &&
-            typeof parsedMeta === 'object' &&
-            'totalValue' in parsedMeta &&
-            'assetCount' in parsedMeta &&
-            typeof (parsedMeta as Record<string, unknown>).totalValue === 'number' &&
-            typeof (parsedMeta as Record<string, unknown>).assetCount === 'number'
-        ) {
-            return parsedMeta as SyncMeta;
-        }
-        logger.warn('Discarding malformed syncMeta from localStorage');
-        return null;
-    } catch (error) {
-        logger.warn('Failed to load sync metadata from localStorage', error);
-        return null;
+    if (!store.has(SYNC_META_KEY)) return null;
+    const parsedMeta: unknown = store.get<unknown>(SYNC_META_KEY, null);
+    if (
+        parsedMeta !== null &&
+        typeof parsedMeta === 'object' &&
+        'totalValue' in parsedMeta &&
+        'assetCount' in parsedMeta &&
+        typeof (parsedMeta as Record<string, unknown>).totalValue === 'number' &&
+        typeof (parsedMeta as Record<string, unknown>).assetCount === 'number'
+    ) {
+        return parsedMeta as SyncMeta;
     }
+    logger.warn('Discarding malformed syncMeta from localStorage');
+    return null;
 }
 
 function calculateSyncMeta(inventory: CardInventory[], lastSyncTime: string | null): SyncMeta {
@@ -188,9 +177,9 @@ export function useSupabaseInventory() {
 
     useEffect(() => {
         const nextMeta = calculateSyncMeta(inventory, syncMeta.lastSyncTime);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(inventory));
-        localStorage.setItem(TARGETS_KEY, JSON.stringify(targets));
-        localStorage.setItem(SYNC_META_KEY, JSON.stringify(nextMeta));
+        store.set(STORAGE_KEY, inventory);
+        store.set(TARGETS_KEY, targets);
+        store.set(SYNC_META_KEY, nextMeta);
         setSyncMeta(nextMeta);
     }, [inventory, targets, syncMeta.lastSyncTime]);
 

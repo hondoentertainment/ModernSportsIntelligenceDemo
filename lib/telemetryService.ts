@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 const METRICS_KEY = 'msi_metrics_samples';
 const COUNTERS_KEY = 'msi_metrics_counters';
 const MODEL_USAGE_KEY = 'msi_model_usage';
@@ -20,16 +22,11 @@ export interface ModelUsageSample {
 }
 
 function readJson<T>(key: string, fallback: T): T {
-    try {
-        const raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : fallback;
-    } catch {
-        return fallback;
-    }
+    return store.get<T>(key, fallback);
 }
 
 function writeJson<T>(key: string, value: T): void {
-    localStorage.setItem(key, JSON.stringify(value));
+    store.set(key, value);
 }
 
 export function recordMetric(name: string, value: number, tags?: Record<string, string>): void {

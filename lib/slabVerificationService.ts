@@ -1,4 +1,5 @@
 // Slab Verification Scanner Service
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -422,16 +423,11 @@ const MOCK_REGISTRY: RegistryEntry[] = [
 // ---- Helper functions ----
 
 function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_${key}`);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
+  return store.get<T>(`${STORAGE_PREFIX}_${key}`, fallback);
 }
 
 function saveToStorage<T>(key: string, data: T): void {
-  localStorage.setItem(`${STORAGE_PREFIX}_${key}`, JSON.stringify(data));
+  store.set(`${STORAGE_PREFIX}_${key}`, data);
 }
 
 // ---- Exported functions ----

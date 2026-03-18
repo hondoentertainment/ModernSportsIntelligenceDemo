@@ -1,5 +1,7 @@
 // Phase 97 — Grading Arbitrage & Cross-Grade Intelligence Service
 
+import { store } from './dal/syncStore';
+
 export type GradingCompany = 'PSA' | 'BGS' | 'SGC' | 'CSG';
 export type RiskLevel = 'low' | 'medium' | 'high';
 export type SubmissionStatus = 'submitted' | 'in_progress' | 'success' | 'fail' | 'returned';
@@ -64,16 +66,12 @@ export interface GradingArbitrageStats {
 const STORAGE_KEY = 'gradingArbitrage_submissions';
 
 function loadSubmissions(): CrossGradeTracker[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : getDefaultSubmissions();
-  } catch {
-    return getDefaultSubmissions();
-  }
+  if (!store.has(STORAGE_KEY)) return getDefaultSubmissions();
+  return store.get<CrossGradeTracker[]>(STORAGE_KEY, getDefaultSubmissions());
 }
 
 function saveSubmissions(submissions: CrossGradeTracker[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(submissions));
+  store.set(STORAGE_KEY, submissions);
 }
 
 function getDefaultSubmissions(): CrossGradeTracker[] {

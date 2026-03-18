@@ -1,3 +1,4 @@
+import { store } from './dal/syncStore';
 import { incrementCounter, recordMetric } from './telemetryService';
 
 const QUEUE_KEY = 'msi_job_queue';
@@ -15,17 +16,12 @@ export interface JobRecord<T = any> {
 export type JobProcessor = (job: JobRecord) => Promise<void>;
 
 function getQueue(): JobRecord[] {
-    try {
-        const raw = localStorage.getItem(QUEUE_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
-    } catch {
-        return [];
-    }
+    const parsed = store.get<JobRecord[]>(QUEUE_KEY, []);
+    return Array.isArray(parsed) ? parsed : [];
 }
 
 function setQueue(queue: JobRecord[]): void {
-    localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+    store.set(QUEUE_KEY, queue);
 }
 
 export function enqueueJob<T>(type: string, payload: T, maxAttempts: number = 3): JobRecord<T> {

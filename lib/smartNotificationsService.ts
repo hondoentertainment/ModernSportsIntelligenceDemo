@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type NotificationCategory = 'price_alert' | 'deal_found' | 'market_move' | 'portfolio' | 'auction' | 'news' | 'grading' | 'social' | 'system';
@@ -1490,27 +1492,19 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
 // ---- localStorage Helpers ----
 
 function loadReadIds(): Set<string> {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.readIds);
-    if (raw) return new Set(JSON.parse(raw));
-  } catch { /* ignore */ }
-  return new Set();
+  return new Set(store.get<string[]>(STORAGE_KEYS.readIds, []));
 }
 
 function saveReadIds(ids: Set<string>): void {
-  localStorage.setItem(STORAGE_KEYS.readIds, JSON.stringify([...ids]));
+  store.set(STORAGE_KEYS.readIds, [...ids]);
 }
 
 function loadDismissedIds(): Set<string> {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.dismissedIds);
-    if (raw) return new Set(JSON.parse(raw));
-  } catch { /* ignore */ }
-  return new Set();
+  return new Set(store.get<string[]>(STORAGE_KEYS.dismissedIds, []));
 }
 
 function saveDismissedIds(ids: Set<string>): void {
-  localStorage.setItem(STORAGE_KEYS.dismissedIds, JSON.stringify([...ids]));
+  store.set(STORAGE_KEYS.dismissedIds, [...ids]);
 }
 
 // ---- Exported Functions ----
@@ -1620,11 +1614,7 @@ export function getNotificationStats(): NotificationStats {
 
 /** Get notification preferences (from localStorage or defaults). */
 export function getNotificationPreferences(): NotificationPreferences {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.preferences);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return { ...DEFAULT_PREFERENCES };
+  return store.get<NotificationPreferences>(STORAGE_KEYS.preferences, { ...DEFAULT_PREFERENCES });
 }
 
 /** Group notifications by category/groupId. */

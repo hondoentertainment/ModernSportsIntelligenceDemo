@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type TransactionType = 'buy' | 'sell' | 'trade' | 'grading_fee' | 'shipping' | 'supplies';
@@ -80,21 +82,16 @@ function generateMockTransactions(): Transaction[] {
 // ---- Storage Helpers ----
 
 function loadTransactions(): Transaction[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      return JSON.parse(raw) as Transaction[];
-    }
-  } catch {
-    // ignore parse errors
+  if (store.has(STORAGE_KEY)) {
+    return store.get<Transaction[]>(STORAGE_KEY, []);
   }
   const mock = generateMockTransactions();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(mock));
+  store.set(STORAGE_KEY, mock);
   return mock;
 }
 
 function saveTransactions(txns: Transaction[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(txns));
+  store.set(STORAGE_KEY, txns);
 }
 
 // ---- Public API ----

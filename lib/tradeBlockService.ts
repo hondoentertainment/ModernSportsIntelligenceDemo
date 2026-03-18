@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -119,9 +120,7 @@ function seededInt(seed: number, offset: number, min: number, max: number): numb
 
 function loadListings(): TradeBlockListing[] {
   try {
-    const raw = localStorage.getItem(STORAGE_LISTINGS);
-    if (!raw) return [];
-    return JSON.parse(raw) as TradeBlockListing[];
+    return store.get(STORAGE_LISTINGS, []);
   } catch {
     return [];
   }
@@ -129,7 +128,7 @@ function loadListings(): TradeBlockListing[] {
 
 function saveListings(listings: TradeBlockListing[]): void {
   try {
-    localStorage.setItem(STORAGE_LISTINGS, JSON.stringify(listings));
+    store.set(STORAGE_LISTINGS, listings);
   } catch {
     // quota exceeded
   }
@@ -137,9 +136,7 @@ function saveListings(listings: TradeBlockListing[]): void {
 
 function loadOffers(): TradeOffer[] {
   try {
-    const raw = localStorage.getItem(STORAGE_OFFERS);
-    if (!raw) return [];
-    return JSON.parse(raw) as TradeOffer[];
+    return store.get(STORAGE_OFFERS, []);
   } catch {
     return [];
   }
@@ -147,7 +144,7 @@ function loadOffers(): TradeOffer[] {
 
 function saveOffers(offers: TradeOffer[]): void {
   try {
-    localStorage.setItem(STORAGE_OFFERS, JSON.stringify(offers));
+    store.set(STORAGE_OFFERS, offers);
   } catch {
     // quota exceeded
   }
@@ -155,9 +152,7 @@ function saveOffers(offers: TradeOffer[]): void {
 
 function loadHistory(): TradeHistory[] {
   try {
-    const raw = localStorage.getItem(STORAGE_HISTORY);
-    if (!raw) return [];
-    return JSON.parse(raw) as TradeHistory[];
+    return store.get(STORAGE_HISTORY, []);
   } catch {
     return [];
   }
@@ -165,7 +160,7 @@ function loadHistory(): TradeHistory[] {
 
 function saveHistory(history: TradeHistory[]): void {
   try {
-    localStorage.setItem(STORAGE_HISTORY, JSON.stringify(history));
+    store.set(STORAGE_HISTORY, history);
   } catch {
     // quota exceeded
   }

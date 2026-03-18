@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type ReportType =
@@ -725,31 +727,19 @@ const CONTRARIAN_PICKS: ContrarianPick[] = [
 // ---- Helpers ----
 
 function loadBookmarks(): Set<string> {
-  try {
-    const stored = localStorage.getItem(BOOKMARKS_KEY);
-    if (stored) return new Set(JSON.parse(stored));
-  } catch { /* ignore localStorage errors */ }
-  return new Set();
+  return new Set(store.get<string[]>(BOOKMARKS_KEY, []));
 }
 
 function saveBookmarks(bookmarks: Set<string>): void {
-  try {
-    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify([...bookmarks]));
-  } catch { /* ignore localStorage errors */ }
+  store.set(BOOKMARKS_KEY, [...bookmarks]);
 }
 
 function loadReadReports(): Set<string> {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY + '_read');
-    if (stored) return new Set(JSON.parse(stored));
-  } catch { /* ignore localStorage errors */ }
-  return new Set();
+  return new Set(store.get<string[]>(STORAGE_KEY + '_read', []));
 }
 
 function saveReadReports(read: Set<string>): void {
-  try {
-    localStorage.setItem(STORAGE_KEY + '_read', JSON.stringify([...read]));
-  } catch { /* ignore localStorage errors */ }
+  store.set(STORAGE_KEY + '_read', [...read]);
 }
 
 // ---- Public API ----

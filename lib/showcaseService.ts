@@ -1,4 +1,5 @@
 import { CardInventory } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -126,21 +127,11 @@ function generateId(): string {
 // ---- localStorage helpers ----
 
 function loadShowcases(): Showcase[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as Showcase[];
-  } catch {
-    return [];
-  }
+  return store.get<Showcase[]>(STORAGE_KEY, []);
 }
 
 function saveShowcases(showcases: Showcase[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(showcases));
-  } catch {
-    // quota exceeded
-  }
+  store.set(STORAGE_KEY, showcases);
 }
 
 // ---- CRUD ----

@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -93,21 +94,11 @@ const CLAIMS_KEY = 'msi_insurance_claims';
 // ---- localStorage helpers ----
 
 function loadFromStorage<T>(key: string): T[] {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return [];
-    return JSON.parse(raw) as T[];
-  } catch {
-    return [];
-  }
+  return store.get<T[]>(key, []);
 }
 
 function saveToStorage<T>(key: string, data: T[]): void {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch {
-    // quota exceeded
-  }
+  store.set(key, data);
 }
 
 // ---- Policy CRUD ----

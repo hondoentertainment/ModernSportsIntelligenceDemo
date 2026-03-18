@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type ScenarioType =
@@ -391,29 +393,19 @@ export function getRiskColor(score: number): string {
 // ---- Storage Helpers ----
 
 function loadResults(): StressTestResult[] {
-  try {
-    const raw = localStorage.getItem(RESULTS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return store.get<StressTestResult[]>(RESULTS_KEY, []);
 }
 
 function saveResults(results: StressTestResult[]): void {
-  localStorage.setItem(RESULTS_KEY, JSON.stringify(results));
+  store.set(RESULTS_KEY, results);
 }
 
 function loadStats(): StressTestStats {
-  try {
-    const raw = localStorage.getItem(STATS_KEY);
-    return raw ? JSON.parse(raw) : getDefaultStats();
-  } catch {
-    return getDefaultStats();
-  }
+  return store.get<StressTestStats>(STATS_KEY, getDefaultStats());
 }
 
 function saveStats(stats: StressTestStats): void {
-  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+  store.set(STATS_KEY, stats);
 }
 
 function getDefaultStats(): StressTestStats {

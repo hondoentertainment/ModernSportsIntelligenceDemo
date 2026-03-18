@@ -1,5 +1,6 @@
 import { CardInventory, Sport } from '../types';
 import { getCardHistory } from './priceHistory';
+import { store } from './dal/syncStore';
 
 export interface CorrelationPoint {
     sportA: Sport;
@@ -413,16 +414,11 @@ export class CorrelationService {
             deployedAt: now.toISOString(),
             expiresAt: expires.toISOString(),
         });
-        localStorage.setItem('msi_deployed_hedges', JSON.stringify(history));
+        store.set('msi_deployed_hedges', history);
     }
 
     static getDeployedHedges(): { nodeId: string; deployedAt: string; expiresAt: string }[] {
-        try {
-            const data = localStorage.getItem('msi_deployed_hedges');
-            return data ? JSON.parse(data) : [];
-        } catch {
-            return [];
-        }
+        return store.get<{ nodeId: string; deployedAt: string; expiresAt: string }[]>('msi_deployed_hedges', []);
     }
 
     static isNodeDeployed(nodeId: string): boolean {

@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Real-Time Price Engine (eBay Comp Aggregator)
 // Cross-marketplace comp aggregation with real-time pricing intelligence,
 // market depth analysis, price alerts, and volume tracking across all
@@ -110,21 +112,11 @@ export interface PriceTrend {
 const STORAGE_PREFIX = 'msi_price_engine';
 
 function loadFromStorage<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  return store.get<T | null>(`${STORAGE_PREFIX}_${key}`, null);
 }
 
 function saveToStorage<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_PREFIX}_${key}`, JSON.stringify(data));
-  } catch {
-    // Storage full or unavailable
-  }
+  store.set(`${STORAGE_PREFIX}_${key}`, data);
 }
 
 // ── Mock Data: Recent Sales ───────────────────────────────────────────────

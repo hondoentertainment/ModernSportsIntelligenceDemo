@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Phase 42: Ecosystem Expansion and Institutional Distribution
 
 const EXTENSION_KEY = 'msi_extensions';
@@ -30,18 +32,16 @@ export interface WebhookEvent {
 
 export class PlatformService {
     static registerExtension(manifest: ExtensionManifest): ExtensionManifest[] {
-        const raw = localStorage.getItem(EXTENSION_KEY);
-        const list: ExtensionManifest[] = raw ? JSON.parse(raw) : [];
+        const list = store.get<ExtensionManifest[]>(EXTENSION_KEY, []);
         const idx = list.findIndex(x => x.id === manifest.id);
         if (idx >= 0) list[idx] = manifest;
         else list.push(manifest);
-        localStorage.setItem(EXTENSION_KEY, JSON.stringify(list));
+        store.set(EXTENSION_KEY, list);
         return list;
     }
 
     static listExtensions(): ExtensionManifest[] {
-        const raw = localStorage.getItem(EXTENSION_KEY);
-        return raw ? JSON.parse(raw) : [];
+        return store.get<ExtensionManifest[]>(EXTENSION_KEY, []);
     }
 
     static issueApiToken(tenantId: string, scopes: string[]): ApiTokenRecord {
@@ -54,16 +54,14 @@ export class PlatformService {
             createdAt: new Date().toISOString()
         };
 
-        const raw = localStorage.getItem(API_TOKEN_KEY);
-        const list: ApiTokenRecord[] = raw ? JSON.parse(raw) : [];
+        const list = store.get<ApiTokenRecord[]>(API_TOKEN_KEY, []);
         list.unshift(record);
-        localStorage.setItem(API_TOKEN_KEY, JSON.stringify(list));
+        store.set(API_TOKEN_KEY, list);
         return record;
     }
 
     static hasScope(token: string, scope: string): boolean {
-        const raw = localStorage.getItem(API_TOKEN_KEY);
-        const list: ApiTokenRecord[] = raw ? JSON.parse(raw) : [];
+        const list = store.get<ApiTokenRecord[]>(API_TOKEN_KEY, []);
         const rec = list.find(x => x.token === token && !x.revokedAt);
         return !!rec && rec.scopes.includes(scope);
     }
@@ -74,15 +72,13 @@ export class PlatformService {
             createdAt: new Date().toISOString(),
             ...event
         };
-        const raw = localStorage.getItem(WEBHOOK_KEY);
-        const list: WebhookEvent[] = raw ? JSON.parse(raw) : [];
+        const list = store.get<WebhookEvent[]>(WEBHOOK_KEY, []);
         list.unshift(record);
-        localStorage.setItem(WEBHOOK_KEY, JSON.stringify(list.slice(0, 500)));
+        store.set(WEBHOOK_KEY, list.slice(0, 500));
         return record;
     }
 
     static listWebhooks(): WebhookEvent[] {
-        const raw = localStorage.getItem(WEBHOOK_KEY);
-        return raw ? JSON.parse(raw) : [];
+        return store.get<WebhookEvent[]>(WEBHOOK_KEY, []);
     }
 }

@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type CollectorType =
@@ -100,9 +102,9 @@ function buildTraits(): GenomeTrait[] {
 // ---- Service Functions ----
 
 export function analyzeGenome(): CollectorGenome {
-  const cached = localStorage.getItem(GENOME_KEY);
+  const cached = store.get<CollectorGenome | null>(GENOME_KEY, null);
   if (cached) {
-    try { return JSON.parse(cached) as CollectorGenome; } catch { /* regenerate */ }
+    return cached;
   }
 
   const traits = buildTraits();
@@ -133,14 +135,14 @@ export function analyzeGenome(): CollectorGenome {
     ],
   };
 
-  localStorage.setItem(GENOME_KEY, JSON.stringify(genome));
+  store.set(GENOME_KEY, genome);
   return genome;
 }
 
 export function getBehavioralBiases(): BehavioralBias[] {
-  const cached = localStorage.getItem(BIASES_KEY);
+  const cached = store.get<BehavioralBias[] | null>(BIASES_KEY, null);
   if (cached) {
-    try { return JSON.parse(cached) as BehavioralBias[]; } catch { /* regenerate */ }
+    return cached;
   }
 
   const biases: BehavioralBias[] = [
@@ -188,14 +190,14 @@ export function getBehavioralBiases(): BehavioralBias[] {
     },
   ];
 
-  localStorage.setItem(BIASES_KEY, JSON.stringify(biases));
+  store.set(BIASES_KEY, biases);
   return biases;
 }
 
 export function getCollectorComparison(): CollectorComparison {
-  const cached = localStorage.getItem(COMPARISON_KEY);
+  const cached = store.get<CollectorComparison | null>(COMPARISON_KEY, null);
   if (cached) {
-    try { return JSON.parse(cached) as CollectorComparison; } catch { /* regenerate */ }
+    return cached;
   }
 
   const comparison: CollectorComparison = {
@@ -243,7 +245,7 @@ export function getCollectorComparison(): CollectorComparison {
     },
   };
 
-  localStorage.setItem(COMPARISON_KEY, JSON.stringify(comparison));
+  store.set(COMPARISON_KEY, comparison);
   return comparison;
 }
 

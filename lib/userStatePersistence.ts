@@ -14,6 +14,7 @@
  */
 
 import { logger } from './logger';
+import { store } from './dal/syncStore';
 import type { Sport } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -305,14 +306,14 @@ function lsKey(suffix: string): string {
 
 function lsWrite(key: string, value: unknown): boolean {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    store.set(key, value);
     return true;
   } catch (err: unknown) {
     if (err instanceof DOMException && (err.name === 'QuotaExceededError' || err.code === 22)) {
       logger.warn('[UserStatePersistence] localStorage quota exceeded. Attempting cleanup...');
       pruneLocalStorage();
       try {
-        localStorage.setItem(key, JSON.stringify(value));
+        store.set(key, value);
         return true;
       } catch {
         logger.error('[UserStatePersistence] localStorage write failed after cleanup.');
@@ -325,21 +326,12 @@ function lsWrite(key: string, value: unknown): boolean {
 }
 
 function lsRead<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(key);
-    if (raw === null) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  const value = store.get<T | null>(key, null);
+  return value;
 }
 
 function lsRemove(key: string): void {
-  try {
-    localStorage.removeItem(key);
-  } catch {
-    // silent
-  }
+  store.remove(key);
 }
 
 /**
@@ -358,7 +350,7 @@ function pruneLocalStorage(): void {
   // Remove oldest half to free space
   const half = Math.ceil(keysToRemove.length / 2);
   for (let i = 0; i < half; i++) {
-    localStorage.removeItem(keysToRemove[i]);
+    store.remove(keysToRemove[i]);
   }
 }
 
@@ -538,7 +530,7 @@ export async function clearUserState(): Promise<void> {
       keysToRemove.push(key);
     }
   }
-  keysToRemove.forEach((k) => localStorage.removeItem(k));
+  keysToRemove.forEach((k) => store.remove(k));
 
   // IndexedDB
   await idbClear();

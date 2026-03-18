@@ -100,26 +100,18 @@ export interface PredictionStats {
   bestPrediction: { cardName: string; predicted: number; actual: number };
 }
 
-// ---- localStorage helpers ----
+// ---- storage helpers ----
+
+import { store } from './dal/syncStore';
 
 const STORAGE_PREFIX = 'msi_grade_prediction';
 
 function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_${key}`);
-    if (raw) return JSON.parse(raw) as T;
-  } catch {
-    // ignore parse errors
-  }
-  return fallback;
+  return store.get<T>(`${STORAGE_PREFIX}_${key}`, fallback);
 }
 
 function saveToStorage<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_PREFIX}_${key}`, JSON.stringify(data));
-  } catch {
-    // ignore storage errors
-  }
+  store.set(`${STORAGE_PREFIX}_${key}`, data);
 }
 
 // ---- Internal helpers for mock data generation ----

@@ -1,5 +1,6 @@
 // Phase 37: Execution Integrations
 
+import { store } from './dal/syncStore';
 import { insertAgentOutcome, insertExecutionFill, upsertExecutionIntent } from './differentiatorData';
 
 export type OrderIntentType = 'buy' | 'list' | 'cancel' | 'counter';
@@ -59,17 +60,12 @@ const ORDERS_KEY = 'msi_execution_orders';
 const KILL_SWITCH_KEY = 'msi_execution_kill_switch';
 
 function readOrders(): ExecutionOrder[] {
-    try {
-        const raw = localStorage.getItem(ORDERS_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
-    } catch {
-        return [];
-    }
+    const parsed = store.get<ExecutionOrder[]>(ORDERS_KEY, []);
+    return Array.isArray(parsed) ? parsed : [];
 }
 
 function writeOrders(orders: ExecutionOrder[]): void {
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+    store.set(ORDERS_KEY, orders);
 }
 
 export class ExecutionService {
@@ -80,11 +76,11 @@ export class ExecutionService {
     }
 
     static getKillSwitch(): boolean {
-        return localStorage.getItem(KILL_SWITCH_KEY) === 'true';
+        return store.get<boolean>(KILL_SWITCH_KEY, false);
     }
 
     static setKillSwitch(enabled: boolean): void {
-        localStorage.setItem(KILL_SWITCH_KEY, String(enabled));
+        store.set(KILL_SWITCH_KEY, enabled);
     }
 
     static preTradeCheck(intent: OrderIntent, maxPositionBudget: number): PreTradeCheckResult {

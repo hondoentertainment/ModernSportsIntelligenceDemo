@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ── Quantitative Analysis Workbench Service ─────────────────────────────────
 // Bloomberg BQuant equivalent for sports card analytics
 
@@ -621,13 +623,7 @@ export function getTemplates(): QuantStrategy[] {
 }
 
 export function getSavedStrategies(): QuantStrategy[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw);
-  } catch {
-    return [];
-  }
+  return store.get<QuantStrategy[]>(STORAGE_KEY, []);
 }
 
 export function saveStrategy(strategy: Omit<QuantStrategy, 'id' | 'createdAt' | 'isTemplate'>): QuantStrategy {
@@ -639,7 +635,7 @@ export function saveStrategy(strategy: Omit<QuantStrategy, 'id' | 'createdAt' | 
     isTemplate: false,
   };
   saved.push(newStrategy);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  store.set(STORAGE_KEY, saved);
   return newStrategy;
 }
 
@@ -648,11 +644,11 @@ export function updateStrategy(id: string, updates: Partial<QuantStrategy>): voi
   const idx = saved.findIndex(s => s.id === id);
   if (idx >= 0) {
     saved[idx] = { ...saved[idx], ...updates };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    store.set(STORAGE_KEY, saved);
   }
 }
 
 export function deleteStrategy(id: string): void {
   const saved = getSavedStrategies().filter(s => s.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  store.set(STORAGE_KEY, saved);
 }

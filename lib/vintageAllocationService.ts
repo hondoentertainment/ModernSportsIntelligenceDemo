@@ -301,8 +301,7 @@ const DEFAULT_ITEMS: AllocationItem[] = [
 
 function loadItems(): AllocationItem[] {
   try {
-    const raw = localStorage.getItem(ITEMS_KEY);
-    if (raw) return JSON.parse(raw);
+    const val = store.get(ITEMS_KEY, null); if (val) return val;
   } catch {
     // ignore
   }
@@ -310,13 +309,12 @@ function loadItems(): AllocationItem[] {
 }
 
 function saveItems(items: AllocationItem[]): void {
-  localStorage.setItem(ITEMS_KEY, JSON.stringify(items));
+  store.set(ITEMS_KEY, items);
 }
 
 function loadTargets(): Record<AllocationCategory, number> {
   try {
-    const raw = localStorage.getItem(TARGETS_KEY);
-    if (raw) return JSON.parse(raw);
+    const val = store.get(TARGETS_KEY, null); if (val) return val;
   } catch {
     // ignore
   }
@@ -324,7 +322,7 @@ function loadTargets(): Record<AllocationCategory, number> {
 }
 
 function saveTargets(targets: Record<AllocationCategory, number>): void {
-  localStorage.setItem(TARGETS_KEY, JSON.stringify(targets));
+  store.set(TARGETS_KEY, targets);
 }
 
 // ---- Exported Functions ----
@@ -562,6 +560,7 @@ export function getRiskColor(score: number): string {
   return '#ef4444';
 }
 
+import { store } from './dal/syncStore';
 export function getLiquidityColor(liq: 'high' | 'medium' | 'low'): string {
   switch (liq) {
     case 'high': return '#10b981';

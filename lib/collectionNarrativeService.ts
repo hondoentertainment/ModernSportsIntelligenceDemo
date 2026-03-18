@@ -1,6 +1,7 @@
 // ---- Types ----
 
 import type { CardInventory } from '../types';
+import { store } from './dal/syncStore';
 
 export interface MomentLink {
   cardId: string;
@@ -320,13 +321,9 @@ const MOCK_HERITAGE_STORY: HeritageStory = {
 // ---- Service Functions ----
 
 export function generateNarrative(inventory: CardInventory[]): CollectionNarrative {
-  const cached = localStorage.getItem(NARRATIVE_KEY);
+  const cached = store.get<CollectionNarrative | null>(NARRATIVE_KEY, null);
   if (cached) {
-    try {
-      return JSON.parse(cached);
-    } catch {
-      // fall through
-    }
+    return cached;
   }
 
   const narrative: CollectionNarrative = {
@@ -342,7 +339,7 @@ export function generateNarrative(inventory: CardInventory[]): CollectionNarrati
     exhibitionSections: generateExhibitionSections(inventory),
   };
 
-  localStorage.setItem(NARRATIVE_KEY, JSON.stringify(narrative));
+  store.set(NARRATIVE_KEY, narrative);
   return narrative;
 }
 
@@ -406,17 +403,17 @@ export function saveLegacyMemo(cardId: string, memo: Omit<LegacyMemo, 'id' | 'cr
     createdAt: new Date().toISOString(),
   };
   memos.push(newMemo);
-  localStorage.setItem(MEMOS_KEY, JSON.stringify(memos));
+  store.set(MEMOS_KEY, memos);
 
   // Invalidate cached narrative so memo count updates
-  localStorage.removeItem(NARRATIVE_KEY);
+  store.remove(NARRATIVE_KEY);
 
   return newMemo;
 }
 
 export function getLegacyMemos(): LegacyMemo[] {
-  const raw = localStorage.getItem(MEMOS_KEY);
-  if (!raw) {
+  const existing = store.get<LegacyMemo[] | null>(MEMOS_KEY, null);
+  if (!existing) {
     // Seed with example memos
     const seed: LegacyMemo[] = [
       {
@@ -444,27 +441,18 @@ export function getLegacyMemos(): LegacyMemo[] {
         createdAt: '2024-09-01T09:45:00Z',
       },
     ];
-    localStorage.setItem(MEMOS_KEY, JSON.stringify(seed));
+    store.set(MEMOS_KEY, seed);
     return seed;
   }
-  try {
-    return JSON.parse(raw) as LegacyMemo[];
-  } catch {
-    return [];
-  }
+  return existing;
 }
 
 export function getCollectionSignificanceScore(): number {
-  const raw = localStorage.getItem(SIGNIFICANCE_KEY);
-  if (raw) {
-    try {
-      return JSON.parse(raw) as number;
-    } catch {
-      // fall through
-    }
+  if (store.has(SIGNIFICANCE_KEY)) {
+    return store.get<number>(SIGNIFICANCE_KEY, 87);
   }
   const score = 87;
-  localStorage.setItem(SIGNIFICANCE_KEY, JSON.stringify(score));
+  store.set(SIGNIFICANCE_KEY, score);
   return score;
 }
 

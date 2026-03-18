@@ -1,3 +1,4 @@
+import { store } from './dal/syncStore';
 import { CardInventory } from '../types';
 
 // ---- Types ----
@@ -492,39 +493,19 @@ export function createRuleFromTemplate(templateId: string): TradingRule | null {
 // ---- Persistence ----
 
 export function saveRules(rules: TradingRule[]): void {
-  try {
-    localStorage.setItem(RULES_KEY, JSON.stringify(rules));
-  } catch {
-    // quota exceeded
-  }
+  store.set(RULES_KEY, rules);
 }
 
 export function loadRules(): TradingRule[] {
-  try {
-    const raw = localStorage.getItem(RULES_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as TradingRule[];
-  } catch {
-    return [];
-  }
+  return store.get<TradingRule[]>(RULES_KEY, []);
 }
 
 export function saveTriggerHistory(triggers: RuleTrigger[]): void {
-  try {
-    // Keep last 500 triggers
-    const trimmed = triggers.slice(-500);
-    localStorage.setItem(TRIGGERS_KEY, JSON.stringify(trimmed));
-  } catch {
-    // quota exceeded
-  }
+  // Keep last 500 triggers
+  const trimmed = triggers.slice(-500);
+  store.set(TRIGGERS_KEY, trimmed);
 }
 
 export function loadTriggerHistory(): RuleTrigger[] {
-  try {
-    const raw = localStorage.getItem(TRIGGERS_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as RuleTrigger[];
-  } catch {
-    return [];
-  }
+  return store.get<RuleTrigger[]>(TRIGGERS_KEY, []);
 }

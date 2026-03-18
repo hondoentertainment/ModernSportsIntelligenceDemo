@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 export interface NegotiationPlaybook {
   id: string;
   name: string;
@@ -62,12 +64,7 @@ export const STORAGE_KEY = 'msi-custom-playbooks';
 
 /** Load user's custom playbooks from localStorage */
 export function getCustomPlaybooks(): NegotiationPlaybook[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+  return store.get<NegotiationPlaybook[]>(STORAGE_KEY, []);
 }
 
 /** Save a custom playbook */
@@ -79,13 +76,13 @@ export function saveCustomPlaybook(playbook: NegotiationPlaybook): void {
   } else {
     existing.push(playbook);
   }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+  store.set(STORAGE_KEY, existing);
 }
 
 /** Delete a custom playbook */
 export function deleteCustomPlaybook(id: string): void {
   const existing = getCustomPlaybooks().filter(p => p.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+  store.set(STORAGE_KEY, existing);
 }
 
 /** Get all playbooks (built-in + custom) */

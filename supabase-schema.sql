@@ -824,3 +824,31 @@ CREATE POLICY "Users can insert outcomes for their recommendations" ON agent_out
         AND ar.owner_user_id = auth.uid()
     )
   );
+
+-- =============================================================================
+-- Generic key-value store for the Data Access Layer (DAL)
+-- Used by SupabaseStorageAdapter to persist user data cloud-side.
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS user_data (
+  user_id UUID REFERENCES auth.users NOT NULL,
+  key TEXT NOT NULL,
+  value JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  PRIMARY KEY (user_id, key)
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_data_user_id ON user_data(user_id);
+
+ALTER TABLE user_data ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can read their own data"
+  ON user_data FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert their own data"
+  ON user_data FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own data"
+  ON user_data FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete their own data"
+  ON user_data FOR DELETE USING (auth.uid() = user_id);

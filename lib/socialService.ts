@@ -1,5 +1,6 @@
 import { CardInventory, Sport } from '../types';
 import { supabase } from './supabase';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -264,21 +265,11 @@ function generateCollectorProfiles(): CollectorProfile[] {
 // ---- localStorage Helpers ----
 
 function loadJSON<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return fallback;
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
+  return store.get<T>(key, fallback);
 }
 
 function saveJSON(key: string, data: unknown): void {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch {
-    // quota exceeded
-  }
+  store.set(key, data);
 }
 
 // ---- My Profile ----

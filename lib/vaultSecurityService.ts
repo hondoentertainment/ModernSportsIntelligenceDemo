@@ -415,7 +415,7 @@ interface StoredData {
 
 function loadOrGenerate(): StoredData {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = store.get(STORAGE_KEY, null);
     if (raw) {
       const parsed: StoredData = JSON.parse(raw);
       // Refresh daily
@@ -432,7 +432,7 @@ function loadOrGenerate(): StoredData {
     generatedAt: new Date().toISOString(),
   };
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  store.set(STORAGE_KEY, data);
   return data;
 }
 
@@ -486,6 +486,7 @@ export function getVaultStats(): VaultStats {
   };
 }
 
+import { store } from './dal/syncStore';
 export function getStorageRecommendation(collectionValue: number): { tier: string; recommendation: string; provider: string; monthlyBudget: string; features: string[] } {
   if (collectionValue >= 100000) {
     return {

@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ── MSI Terminal Service — Bloomberg-Style Command Interface ────────────────────
 // Phase 84: Professional command-line interface for sports card analytics
 
@@ -691,7 +693,7 @@ export function executeCommand(input: string): CommandResult {
     const ws: Workspace = { id: Date.now().toString(), name, panels: [], createdAt: new Date().toISOString() };
     const workspaces = getSavedWorkspaces();
     workspaces.push(ws);
-    try { localStorage.setItem(WORKSPACES_KEY, JSON.stringify(workspaces)); } catch { /* noop */ }
+    try { store.set(WORKSPACES_KEY, workspaces); } catch { /* noop */ }
     return { command: input, timestamp, resultType: 'table', data: { message: `Workspace "${name}" saved successfully.`, workspace: ws }, executionTime: performance.now() - start };
   }
   if (trimmed.startsWith('WS LOAD') || trimmed.startsWith('LOAD ')) {
@@ -843,32 +845,22 @@ function saveToHistory(input: string, result: CommandResult): void {
     const history = getCommandHistory();
     history.unshift({ input, timestamp: new Date().toISOString(), resultType: result.resultType });
     if (history.length > MAX_HISTORY) history.length = MAX_HISTORY;
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    store.set(HISTORY_KEY, history);
   } catch { /* noop */ }
 }
 
 export function getCommandHistory(): { input: string; timestamp: string; resultType: string }[] {
-  try {
-    const raw = localStorage.getItem(HISTORY_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return store.get<{ input: string; timestamp: string; resultType: string }[]>(HISTORY_KEY, []);
 }
 
 export function clearCommandHistory(): void {
-  try { localStorage.removeItem(HISTORY_KEY); } catch { /* noop */ }
+  store.remove(HISTORY_KEY);
 }
 
 // ── Workspaces ──────────────────────────────────────────────────────────────────
 
 export function getSavedWorkspaces(): Workspace[] {
-  try {
-    const raw = localStorage.getItem(WORKSPACES_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return store.get<Workspace[]>(WORKSPACES_KEY, []);
 }
 
 // ── Public API ──────────────────────────────────────────────────────────────────

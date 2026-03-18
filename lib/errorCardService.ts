@@ -1,5 +1,7 @@
 // Phase 157 – Error Card & Misprint Database Service
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type ErrorType = 'misprint' | 'miscut' | 'wrong_back' | 'double_print' | 'no_name' | 'inverted' | 'color_variation' | 'blank_back' | 'test_print' | 'reversed_negative' | 'wrong_photo' | 'missing_foil' | 'sp' | 'ssp' | 'photo_variation';
@@ -129,21 +131,11 @@ const STORAGE_KEY = 'msi_error_card';
 // ---- localStorage helpers ----
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  return store.has(`${STORAGE_KEY}_${key}`) ? store.get<T>(`${STORAGE_KEY}_${key}`, null as unknown as T) : null;
 }
 
 function saveData<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // quota exceeded
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ---- Mock Data ----

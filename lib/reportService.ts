@@ -1,3 +1,4 @@
+import { store } from './dal/syncStore';
 import { CardInventory, Sport } from '../types';
 import { buildCollectorAuditDossierReport } from './collectorAuditDossierService';
 
@@ -895,58 +896,37 @@ ${sectionsHTML}
 // ---- History management ----
 
 export function getReportHistory(): { id: string; type: ReportType; generatedAt: string; cardCount: number }[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as { id: string; type: ReportType; generatedAt: string; cardCount: number }[];
-  } catch {
-    return [];
-  }
+  return store.get<{ id: string; type: ReportType; generatedAt: string; cardCount: number }[]>(STORAGE_KEY, []);
 }
 
 export function saveReportToHistory(report: GeneratedReport): void {
-  try {
-    const history = getReportHistory();
-    history.unshift({
-      id: report.id,
-      type: report.type,
-      generatedAt: report.generatedAt,
-      cardCount: report.cardCount,
-    });
-    // Keep last 50 entries
-    const trimmed = history.slice(0, 50);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
-  } catch {
-    // quota exceeded – silently ignore
-  }
+  const history = getReportHistory();
+  history.unshift({
+    id: report.id,
+    type: report.type,
+    generatedAt: report.generatedAt,
+    cardCount: report.cardCount,
+  });
+  // Keep last 50 entries
+  const trimmed = history.slice(0, 50);
+  store.set(STORAGE_KEY, trimmed);
 }
 
 // Full report cache for viewing from history
 const REPORT_CACHE_KEY = 'msi_report_cache';
 
 export function getCachedReport(reportId: string): GeneratedReport | null {
-  try {
-    const raw = localStorage.getItem(REPORT_CACHE_KEY);
-    if (!raw) return null;
-    const cache = JSON.parse(raw) as Record<string, GeneratedReport>;
-    return cache[reportId] ?? null;
-  } catch {
-    return null;
-  }
+  const cache = store.get<Record<string, GeneratedReport>>(REPORT_CACHE_KEY, {});
+  return cache[reportId] ?? null;
 }
 
 export function cacheReport(report: GeneratedReport): void {
-  try {
-    const raw = localStorage.getItem(REPORT_CACHE_KEY);
-    const cache = raw ? JSON.parse(raw) as Record<string, GeneratedReport> : {};
-    cache[report.id] = report;
-    // Keep only the 20 most recent
-    const entries = Object.entries(cache).sort(
-      (a, b) => new Date(b[1].generatedAt).getTime() - new Date(a[1].generatedAt).getTime()
-    );
-    const trimmed = Object.fromEntries(entries.slice(0, 20));
-    localStorage.setItem(REPORT_CACHE_KEY, JSON.stringify(trimmed));
-  } catch {
-    // quota exceeded – silently ignore
-  }
+  const cache = store.get<Record<string, GeneratedReport>>(REPORT_CACHE_KEY, {});
+  cache[report.id] = report;
+  // Keep only the 20 most recent
+  const entries = Object.entries(cache).sort(
+    (a, b) => new Date(b[1].generatedAt).getTime() - new Date(a[1].generatedAt).getTime()
+  );
+  const trimmed = Object.fromEntries(entries.slice(0, 20));
+  store.set(REPORT_CACHE_KEY, trimmed);
 }

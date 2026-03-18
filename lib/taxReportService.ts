@@ -1,4 +1,5 @@
 // Phase 200 – One-Click Tax Report (Form 8949) Service
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -1257,21 +1258,11 @@ export function getHoldingPeriodLabel(hp: HoldingPeriod): string {
 // ---- localStorage Helpers ----
 
 function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_${key}`);
-    if (raw) return JSON.parse(raw) as T;
-  } catch {
-    // ignore parse errors
-  }
-  return fallback;
+  return store.get<T>(`${STORAGE_PREFIX}_${key}`, fallback);
 }
 
 function saveToStorage<T>(key: string, value: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_PREFIX}_${key}`, JSON.stringify(value));
-  } catch {
-    // ignore quota errors
-  }
+  store.set(`${STORAGE_PREFIX}_${key}`, value);
 }
 
 // ---- Exported Functions ----

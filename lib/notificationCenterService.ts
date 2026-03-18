@@ -1,3 +1,4 @@
+import { store } from './dal/syncStore';
 import { CardInventory } from '../types';
 
 // ---- Types ----
@@ -534,43 +535,27 @@ export function groupNotifications(notifications: Notification[]): NotificationG
 // ---- localStorage Persistence ----
 
 function loadReadIds(): Set<string> {
-  try {
-    const raw = localStorage.getItem(READ_KEY);
-    return raw ? new Set(JSON.parse(raw)) : new Set();
-  } catch {
-    return new Set();
-  }
+  return new Set(store.get<string[]>(READ_KEY, []));
 }
 
 function saveReadIds(ids: Set<string>): void {
-  localStorage.setItem(READ_KEY, JSON.stringify([...ids]));
+  store.set(READ_KEY, [...ids]);
 }
 
 function loadDismissedIds(): Set<string> {
-  try {
-    const raw = localStorage.getItem(DISMISSED_KEY);
-    return raw ? new Set(JSON.parse(raw)) : new Set();
-  } catch {
-    return new Set();
-  }
+  return new Set(store.get<string[]>(DISMISSED_KEY, []));
 }
 
 function saveDismissedIds(ids: Set<string>): void {
-  localStorage.setItem(DISMISSED_KEY, JSON.stringify([...ids]));
+  store.set(DISMISSED_KEY, [...ids]);
 }
 
 export function loadPreferences(): NotificationPreferences {
-  try {
-    const raw = localStorage.getItem(PREFS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // fall through to default
-  }
-  return getDefaultPreferences();
+  return store.get<NotificationPreferences>(PREFS_KEY, getDefaultPreferences());
 }
 
 export function savePreferences(prefs: NotificationPreferences): void {
-  localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+  store.set(PREFS_KEY, prefs);
 }
 
 function getDefaultPreferences(): NotificationPreferences {
@@ -589,16 +574,11 @@ function getDefaultPreferences(): NotificationPreferences {
 }
 
 function loadDigests(): DailyDigest[] {
-  try {
-    const raw = localStorage.getItem(DIGEST_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return store.get<DailyDigest[]>(DIGEST_KEY, []);
 }
 
 function saveDigests(digests: DailyDigest[]): void {
-  localStorage.setItem(DIGEST_KEY, JSON.stringify(digests));
+  store.set(DIGEST_KEY, digests);
 }
 
 // ---- Public API ----

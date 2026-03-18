@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Phase 90 – Regulatory & Compliance Center Service
 
 // ---- Types ----
@@ -242,13 +244,8 @@ interface StoredData {
 }
 
 function loadOrGenerate(year: number): StoredData {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed: StoredData = JSON.parse(raw);
-      if (parsed.generatedYear === year) return parsed;
-    }
-  } catch { /* regenerate */ }
+  const cached = store.get<StoredData | null>(STORAGE_KEY, null);
+  if (cached && cached.generatedYear === year) return cached;
 
   const data: StoredData = {
     taxEvents: generateTaxEvents(year),
@@ -257,7 +254,7 @@ function loadOrGenerate(year: number): StoredData {
     generatedYear: year,
   };
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  store.set(STORAGE_KEY, data);
   return data;
 }
 

@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -548,22 +549,14 @@ export function getSeasonalSummary(cards: CardInventory[]): SeasonalSummary {
 // ---- localStorage CRUD ----
 
 function loadAlerts(): SeasonalAlert[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_ALERTS_KEY);
-    if (!raw) return [];
-    const alerts: SeasonalAlert[] = JSON.parse(raw);
-    // Filter expired
-    const now = new Date().toISOString();
-    return alerts.filter(a => a.expiresAt > now);
-  } catch {
-    return [];
-  }
+  const alerts = store.get<SeasonalAlert[]>(STORAGE_ALERTS_KEY, []);
+  // Filter expired
+  const now = new Date().toISOString();
+  return alerts.filter(a => a.expiresAt > now);
 }
 
 function saveAlerts(alerts: SeasonalAlert[]): void {
-  try {
-    localStorage.setItem(STORAGE_ALERTS_KEY, JSON.stringify(alerts));
-  } catch { /* quota exceeded */ }
+  store.set(STORAGE_ALERTS_KEY, alerts);
 }
 
 export function markAlertRead(alertId: string): void {
@@ -577,37 +570,29 @@ export function dismissAlert(alertId: string): void {
   const updated = alerts.filter(a => a.id !== alertId);
   saveAlerts(updated);
   // Track dismissed
-  try {
-    const dismissed: string[] = JSON.parse(localStorage.getItem(STORAGE_DISMISSED_KEY) || '[]');
-    dismissed.push(alertId);
-    localStorage.setItem(STORAGE_DISMISSED_KEY, JSON.stringify(dismissed));
-  } catch { /* ignore */ }
+  const dismissed = store.get<string[]>(STORAGE_DISMISSED_KEY, []);
+  dismissed.push(alertId);
+  store.set(STORAGE_DISMISSED_KEY, dismissed);
 }
 
 export function getPreferences(): SeasonalPreferences {
-  try {
-    const raw = localStorage.getItem(STORAGE_PREFS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return {
+  return store.get<SeasonalPreferences>(STORAGE_PREFS_KEY, {
     enabledSports: ['Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'],
     alertsEnabled: true,
     buyWindowAlerts: true,
     sellWindowAlerts: true,
     aggressiveness: 'moderate',
-  };
+  });
 }
 
 export function savePreferences(prefs: SeasonalPreferences): void {
-  try {
-    localStorage.setItem(STORAGE_PREFS_KEY, JSON.stringify(prefs));
-  } catch { /* ignore */ }
+  store.set(STORAGE_PREFS_KEY, prefs);
 }
 
 export function clearSeasonalData(): void {
-  localStorage.removeItem(STORAGE_ALERTS_KEY);
-  localStorage.removeItem(STORAGE_PREFS_KEY);
-  localStorage.removeItem(STORAGE_DISMISSED_KEY);
+  store.remove(STORAGE_ALERTS_KEY);
+  store.remove(STORAGE_PREFS_KEY);
+  store.remove(STORAGE_DISMISSED_KEY);
 }
 
 export { MONTH_NAMES, MONTH_FULL_NAMES };
