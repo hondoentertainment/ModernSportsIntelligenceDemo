@@ -1,3 +1,4 @@
+import { logger } from './logger';
 import { MacroSignal } from '../types.ts';
 import { getLiveMacroSignals } from './gemini.ts';
 
@@ -21,7 +22,7 @@ export const fetchMacroSignals = async (): Promise<MacroSignal[]> => {
             }
         ];
     } catch (error) {
-        console.error('Error fetching live macro signals:', error);
+        logger.error('Error fetching live macro signals:', error);
         return [];
     }
 };
@@ -45,7 +46,7 @@ export const analyzeMacroImpactOnPortfolio = async (portfolioValue: number, sign
 
         return "Institutional buyers are leveraging crypto gains to sweep high-end vintage, while high interest rates keep modern wax sealed. Reallocate capital toward scarce, graded vintage assets to ride the incoming liquidity wave before rate cuts are priced in.";
     } catch (error) {
-        console.error('Error analyzing macro impact:', error);
+        logger.error('Error analyzing macro impact:', error);
         return "Unable to generate macro analysis at this time.";
     }
 };

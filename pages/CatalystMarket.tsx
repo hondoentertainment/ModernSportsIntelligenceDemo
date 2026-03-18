@@ -1,9 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Flame, Radar, TrendingUp } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory';
 import { ensureCatalystMarket } from '../lib/fiveDifferentiatorService';
 import { CatalystMarketEvent } from '../types';
+import { ChartSkeleton } from '../components/SkeletonLoader';
 
 const severityTone: Record<string, string> = {
   watch: 'text-slate-300 border-slate-600',
@@ -13,15 +15,35 @@ const severityTone: Record<string, string> = {
 
 const CatalystMarket: React.FC = () => {
   const { user } = useAuth();
+  const { addToast } = useToast();
   const { inventory } = useSupabaseInventory();
   const [events, setEvents] = useState<CatalystMarketEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const load = async () => {
-      setEvents(await ensureCatalystMarket(user?.id, inventory.filter(card => card.status !== 'sold')));
+      if (!user?.id) {
+        setEvents([]);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await ensureCatalystMarket(user.id, inventory.filter(card => card.status !== 'sold'));
+        setEvents(data ?? []);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : 'Failed to load catalyst events';
+        setError(message);
+        setEvents([]);
+        addToast('error', 'Could not load catalyst market. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     };
     void load();
-  }, [inventory, user?.id]);
+  }, [inventory, user?.id, addToast]);
 
   const summary = useMemo(() => ({
     urgent: events.filter(event => event.severity === 'urgent').length,
@@ -29,8 +51,38 @@ const CatalystMarket: React.FC = () => {
     avgConfidence: events.length > 0 ? Math.round((events.reduce((sum, event) => sum + event.confidence, 0) / events.length) * 100) : 0,
   }), [events]);
 
+  const refetch = useCallback(async () => {
+    if (!user?.id) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await ensureCatalystMarket(user.id, inventory.filter(card => card.status !== 'sold'));
+      setEvents(data ?? []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load');
+      addToast('error', 'Could not load catalyst market. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [user?.id, inventory, addToast]);
+
+  if (loading && events.length === 0) {
+    return (
+      <div className="space-y-8 pb-16" role="region" aria-label="Catalyst Market">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-300">
+            <Flame size={12} />
+            Catalyst Market
+          </div>
+          <h1 className="mt-3 text-4xl font-bebas tracking-wide text-white">Event-Driven Demand & Opportunity Layer</h1>
+        </div>
+        <ChartSkeleton />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-8 pb-16" role="region" aria-label="Catalyst Market">
       <div>
         <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-300">
           <Flame size={12} />
@@ -41,6 +93,20 @@ const CatalystMarket: React.FC = () => {
           Monitor promotion cycles, scarcity squeezes, award-race sentiment, and event windows that can reprice a card faster than standard comp tracking.
         </p>
       </div>
+
+      {error && (
+        <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 flex items-center justify-between">
+          <span>Unable to load catalyst events.</span>
+          <button
+            type="button"
+            aria-label="Retry loading catalyst market"
+            onClick={() => void refetch()}
+            className="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-xs font-medium transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-5">
@@ -57,40 +123,43 @@ const CatalystMarket: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {events.map(event => (
-          <div key={event.id} className="rounded-3xl border border-slate-700/50 bg-slate-900/50 p-6">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-black uppercase tracking-widest ${severityTone[event.severity] || severityTone.watch}`}>
-                  {event.severity}
+      <section aria-labelledby="catalyst-events-heading">
+        <h2 id="catalyst-events-heading" className="sr-only">Catalyst events</h2>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {events.map(event => (
+            <div key={event.id} className="rounded-3xl border border-slate-700/50 bg-slate-900/50 p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-black uppercase tracking-widest ${severityTone[event.severity] || severityTone.watch}`}>
+                    {event.severity}
+                  </div>
+                  <h3 className="mt-3 text-xl font-semibold text-white">{event.headline}</h3>
+                  <p className="mt-1 text-xs text-slate-500">{event.assetName} · {event.triggerWindow}</p>
                 </div>
-                <h2 className="mt-3 text-xl font-semibold text-white">{event.headline}</h2>
-                <p className="mt-1 text-xs text-slate-500">{event.assetName} · {event.triggerWindow}</p>
+                <div className="text-right text-xs">
+                  <div className="text-[10px] uppercase tracking-widest text-slate-500">Expected Move</div>
+                  <div className="text-xl font-bold text-emerald-300">+{event.expectedMovePct.toFixed(1)}%</div>
+                </div>
               </div>
-              <div className="text-right text-xs">
-                <div className="text-[10px] uppercase tracking-widest text-slate-500">Expected Move</div>
-                <div className="text-xl font-bold text-emerald-300">+{event.expectedMovePct.toFixed(1)}%</div>
-              </div>
-            </div>
-            <p className="mt-4 text-sm leading-relaxed text-slate-300">{event.narrative}</p>
-            <div className="mt-5 grid grid-cols-3 gap-3 text-center text-xs">
-              <div className="rounded-2xl bg-slate-950/50 p-3">
-                <div className="text-[10px] uppercase tracking-widest text-slate-500">Confidence</div>
-                <div className="font-bold text-white">{Math.round(event.confidence * 100)}%</div>
-              </div>
-              <div className="rounded-2xl bg-slate-950/50 p-3">
-                <div className="text-[10px] uppercase tracking-widest text-slate-500">Downside</div>
-                <div className="font-bold text-red-300">-{event.downsidePct.toFixed(1)}%</div>
-              </div>
-              <div className="rounded-2xl bg-slate-950/50 p-3">
-                <div className="text-[10px] uppercase tracking-widest text-slate-500">Source</div>
-                <div className="font-bold capitalize text-sky-300">{event.source}</div>
+              <p className="mt-4 text-sm leading-relaxed text-slate-300">{event.narrative}</p>
+              <div className="mt-5 grid grid-cols-3 gap-3 text-center text-xs">
+                <div className="rounded-2xl bg-slate-950/50 p-3">
+                  <div className="text-[10px] uppercase tracking-widest text-slate-500">Confidence</div>
+                  <div className="font-bold text-white">{Math.round(event.confidence * 100)}%</div>
+                </div>
+                <div className="rounded-2xl bg-slate-950/50 p-3">
+                  <div className="text-[10px] uppercase tracking-widest text-slate-500">Downside</div>
+                  <div className="font-bold text-red-300">-{event.downsidePct.toFixed(1)}%</div>
+                </div>
+                <div className="rounded-2xl bg-slate-950/50 p-3">
+                  <div className="text-[10px] uppercase tracking-widest text-slate-500">Source</div>
+                  <div className="font-bold capitalize text-sky-300">{event.source}</div>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 };

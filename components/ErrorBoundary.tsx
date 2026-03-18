@@ -1,4 +1,5 @@
 import React, { ErrorInfo, ReactNode } from 'react';
+import { logger } from '../lib/logger';
 
 interface Props {
   children: ReactNode;
@@ -18,7 +19,7 @@ class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('[ErrorBoundary] Uncaught render error:', error, info.componentStack);
+    logger.error('[ErrorBoundary]', error?.message, info?.componentStack);
   }
 
   handleReset = () => {
@@ -51,7 +52,9 @@ class ErrorBoundary extends React.Component<Props, State> {
             {this.state.error?.message || 'An unexpected error occurred.'}
           </p>
           <button
+            type="button"
             onClick={this.handleReset}
+            aria-label="Try again after error"
             style={{
               padding: '0.5rem 1.5rem',
               background: '#a3e635',

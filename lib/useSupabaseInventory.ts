@@ -15,6 +15,7 @@ import {
 import { MOCK_CARDS } from '../constants';
 import { migrateToSupabase, needsMigration } from './migration';
 import { logAuditEvent } from './auditLog';
+import { logger } from './logger';
 import { enqueueJob, processAllJobs } from './jobQueue';
 import { incrementCounter, recordMetric } from './telemetryService';
 
@@ -43,7 +44,7 @@ function readLocalRows<T>(key: string): T[] {
         const parsed = saved ? JSON.parse(saved) : [];
         return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
-        console.warn(`Failed to read ${key} from localStorage`, error);
+        logger.warn(`Failed to read ${key} from localStorage`, error);
         return [];
     }
 }
@@ -63,10 +64,10 @@ function readLocalMeta(): SyncMeta | null {
         ) {
             return parsedMeta as SyncMeta;
         }
-        console.warn('Discarding malformed syncMeta from localStorage');
+        logger.warn('Discarding malformed syncMeta from localStorage');
         return null;
     } catch (error) {
-        console.warn('Failed to load sync metadata from localStorage', error);
+        logger.warn('Failed to load sync metadata from localStorage', error);
         return null;
     }
 }
@@ -133,7 +134,7 @@ export function useSupabaseInventory() {
                             markCloudFailure(migrationResult.errors.join(', '));
                         }
                     } catch (error) {
-                        console.error('Migration error:', error);
+                        logger.error('Migration error:', error);
                         markCloudFailure('System error during migration');
                     } finally {
                         setIsMigrating(false);
@@ -164,7 +165,7 @@ export function useSupabaseInventory() {
                     setSyncMeta(cachedMeta || calculateSyncMeta(cachedInventory, null));
                     setSyncStatus('local');
                 } catch (error) {
-                    console.error('Failed to load local inventory cache:', error);
+                    logger.error('Failed to load local inventory cache:', error);
                     const cachedInventory = readLocalRows<CardInventory>(STORAGE_KEY);
                     const cachedTargets = readLocalRows<TargetWatchlist>(TARGETS_KEY);
                     const cachedMeta = readLocalMeta();
@@ -425,7 +426,7 @@ export function useSupabaseInventory() {
                 },
             });
         } catch (error) {
-            console.error('Cloud sync failed:', error);
+            logger.error('Cloud sync failed:', error);
             markCloudFailure('Cloud sync failed. Local cache remains available.', true);
         }
     }, [isAuthenticated, markCloudFailure, markCloudHealthy, userId]);

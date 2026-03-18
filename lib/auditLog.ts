@@ -1,4 +1,5 @@
 import { supabase, isDemoMode } from './supabase';
+import { logger } from './logger';
 
 const LOCAL_AUDIT_KEY = 'msi_audit_events';
 const LOCAL_AUDIT_LIMIT = 200;
@@ -52,7 +53,7 @@ export async function logAuditEvent(input: AuditEventInput): Promise<void> {
         .insert(event);
 
     if (error) {
-        console.error('Failed to persist audit event:', error);
+        logger.error('Failed to persist audit event:', error);
     }
 }
 

@@ -4,6 +4,7 @@ import { Search, Sparkles, Target, Zap, ArrowRight, ShieldCheck, Info, Loader2 }
 import { findSimilarCards } from '../lib/gemini.ts';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
 import { useToast } from '../contexts/ToastContext.tsx';
+import { logger } from '../lib/logger';
 import CardImage from '../components/CardImage.tsx';
 import ImageLightbox from '../components/ImageLightbox.tsx';
 
@@ -29,7 +30,7 @@ const DeepSearch: React.FC = () => {
                 addToast('info', 'No similar cards found. Try a different query.');
             }
         } catch (error) {
-            console.error('Deep search failed:', error);
+            logger.error('Deep search failed:', error);
             const message = error instanceof Error ? error.message : 'Deep search failed. Check your connection.';
             setSearchError(message);
             addToast('error', message, { dedupeKey: 'deepsearch_page' });

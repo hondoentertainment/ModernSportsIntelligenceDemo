@@ -1,4 +1,5 @@
 import React, { ErrorInfo, ReactNode } from 'react';
+import { logger } from '../lib/logger';
 
 interface Props {
   children: ReactNode;
@@ -23,7 +24,7 @@ class LazyErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('[LazyErrorBoundary] Chunk load error:', error, info.componentStack);
+    logger.error('[LazyErrorBoundary]', error?.message, info?.componentStack);
   }
 
   handleRetry = () => {
@@ -48,6 +49,7 @@ class LazyErrorBoundary extends React.Component<Props, State> {
               {isChunkError ? 'Network error loading this section.' : 'Something went wrong.'}
             </p>
             <button
+              type="button"
               onClick={isChunkError ? this.handleReload : this.handleRetry}
               className="px-4 py-2 bg-brand-lime text-brand-charcoal text-xs font-black uppercase tracking-widest rounded-lg hover:bg-white transition-colors"
             >
@@ -72,6 +74,7 @@ class LazyErrorBoundary extends React.Component<Props, State> {
           </p>
           <div className="flex gap-3">
             <button
+              type="button"
               onClick={this.handleRetry}
               className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-black uppercase tracking-widest rounded-lg transition-colors border border-slate-700"
             >
@@ -79,6 +82,7 @@ class LazyErrorBoundary extends React.Component<Props, State> {
             </button>
             {isChunkError && (
               <button
+                type="button"
                 onClick={this.handleReload}
                 className="px-5 py-2.5 bg-brand-lime text-brand-charcoal text-xs font-black uppercase tracking-widest rounded-lg hover:bg-white transition-colors"
               >

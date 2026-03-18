@@ -1,7 +1,9 @@
+import { logger } from './logger';
+
 export class NotificationService {
     static async requestPermission(): Promise<boolean> {
         if (!('Notification' in window)) {
-            console.warn('This browser does not support desktop notification');
+            logger.warn('This browser does not support desktop notification');
             return false;
         }
 

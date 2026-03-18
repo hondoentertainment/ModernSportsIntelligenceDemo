@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { MOCK_INVENTORY_SUMMARY, MOCK_INVENTORY_ITEMS, MOCK_ACQUISITION_TARGETS } from '../constants.tsx';
 import GradingAuditModal from '../components/GradingAuditModal';
+import { logger } from '../lib/logger';
 
 const Inventory: React.FC = () => {
   const [isGradingAuditOpen, setIsGradingAuditOpen] = useState(false);
@@ -133,7 +134,7 @@ const Inventory: React.FC = () => {
         isOpen={isGradingAuditOpen}
         onClose={() => setIsGradingAuditOpen(false)}
         onComplete={(res) => {
-          console.log('Visual Audit Complete:', res);
+          logger.log('Visual Audit Complete:', res);
           setIsGradingAuditOpen(false);
         }}
       />

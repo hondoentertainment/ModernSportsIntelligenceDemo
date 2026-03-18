@@ -222,7 +222,21 @@ export async function ensureCatalystMarket(userId: string | undefined, inventory
 export async function runScenarioTheater(inventory: CardInventory[], userId?: string, scenarioId?: string): Promise<ScenarioTheaterView> {
     const scenarios = getAllScenarios();
     const scenario = scenarios.find(item => item.id === scenarioId) || scenarios[0];
-    const result = runStressTest(inventory, scenario, 365);
+    const result = runStressTest(inventory, scenario, 365) as ReturnType<typeof runStressTest> & {
+        portfolioValue?: number;
+        percentileBands?: { mean: number }[];
+        riskScore?: number;
+        var95?: number;
+        drawdown?: number;
+        hedgingRecommendations?: { rationale: string }[];
+        horizon?: number;
+    };
+    const portfolioValue =
+        result.portfolioValue ??
+        inventory.reduce((s, c) => s + (c.currentValue ?? c.purchasePrice ?? 0), 0);
+    const bands = Array.isArray(result.percentileBands) ? result.percentileBands : [];
+    const lastBand = bands[bands.length - 1];
+    const projected = lastBand?.mean ?? portfolioValue * (1 + (result.impact ?? 0) / 100);
     const snapshot: ScenarioSnapshot = {
         id: crypto.randomUUID(),
         ownerUserId: userId || null,
@@ -241,16 +255,16 @@ export async function runScenarioTheater(inventory: CardInventory[], userId?: st
         snapshotId: snapshot.id,
         scenarioName: scenario.name,
         scenarioKind: snapshot.templateKind,
-        portfolioValue: result.portfolioValue,
-        projectedValue: result.percentileBands[result.percentileBands.length - 1]?.mean || result.portfolioValue,
-        navDelta: (result.percentileBands[result.percentileBands.length - 1]?.mean || result.portfolioValue) - result.portfolioValue,
-        riskScore: result.riskScore,
-        summary: result.hedgingRecommendations[0]?.rationale || 'Scenario completed.',
-        inputs: { scenarioId: scenario.id, horizon: result.horizon },
+        portfolioValue,
+        projectedValue: projected,
+        navDelta: projected - portfolioValue,
+        riskScore: result.riskScore ?? Math.min(100, Math.abs(result.impact ?? 0) * 2),
+        summary: result.hedgingRecommendations?.[0]?.rationale || `Stress: ${scenario.name} (${result.impact ?? 0}% impact).`,
+        inputs: { scenarioId: scenario.id, horizon: result.horizon ?? 365 },
         outputs: {
-            var95: result.var95,
-            drawdown: result.drawdown,
-            hedgingRecommendations: result.hedgingRecommendations,
+            var95: result.var95 ?? 0,
+            drawdown: result.drawdown ?? Math.abs(result.impact ?? 0),
+            hedgingRecommendations: result.hedgingRecommendations ?? [],
         },
         createdAt: new Date().toISOString(),
     };

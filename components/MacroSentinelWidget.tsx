@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Activity, TrendingUp, TrendingDown, AlertTriangle, ShieldAlert, Cpu } from 'lucide-react';
 import { MacroSignal, MacroTrend } from '../types.ts';
 import { fetchMacroSignals, analyzeMacroImpactOnPortfolio } from '../lib/macroSentinel.ts';
+import { logger } from '../lib/logger';
 
 interface Props {
     portfolioValue: number;
@@ -21,7 +22,7 @@ const MacroSentinelWidget: React.FC<Props> = ({ portfolioValue }) => {
                 const aiInsight = await analyzeMacroImpactOnPortfolio(portfolioValue, data);
                 setAnalysis(aiInsight);
             } catch (error) {
-                console.error('Failed to load macro signals:', error);
+                logger.error('Failed to load macro signals:', error);
             } finally {
                 setLoading(false);
             }

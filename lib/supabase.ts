@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { logger } from './logger';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -7,7 +8,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 export const isDemoMode = !supabaseUrl || !supabaseAnonKey;
 
 if (isDemoMode) {
-    console.warn('⚠️ Supabase credentials not configured. Auth will run in demo mode.');
+    logger.warn('⚠️ Supabase credentials not configured. Auth will run in demo mode.');
 }
 
 // Create a mock client for demo mode to prevent crashes

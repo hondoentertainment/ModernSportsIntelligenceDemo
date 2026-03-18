@@ -11,6 +11,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { logger } from '../lib/logger';
 
 const LS_HOOK_PREFIX = 'msi_ps_';
 const DEFAULT_DEBOUNCE_MS = 300;
@@ -35,9 +36,9 @@ function writeToStorage(fullKey: string, value: unknown): boolean {
     return true;
   } catch (err: unknown) {
     if (err instanceof DOMException && (err.name === 'QuotaExceededError' || err.code === 22)) {
-      console.warn(`[usePersistedState] Quota exceeded writing key "${fullKey}". Value not persisted.`);
+      logger.warn(`[usePersistedState] Quota exceeded writing key "${fullKey}". Value not persisted.`);
     } else {
-      console.error(`[usePersistedState] Error writing key "${fullKey}":`, err);
+      logger.error(`[usePersistedState] Error writing key "${fullKey}":`, err);
     }
     return false;
   }

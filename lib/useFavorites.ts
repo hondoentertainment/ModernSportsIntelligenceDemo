@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { logger } from './logger';
 import { CardInventory } from '../types';
 
 const STORAGE_KEY = 'msi_card_favorites';
@@ -19,7 +20,7 @@ export function useFavorites() {
             const saved = localStorage.getItem(STORAGE_KEY);
             return saved ? JSON.parse(saved) : [];
         } catch (e) {
-            console.warn('Error loading card favorites:', e);
+            logger.warn('Error loading card favorites:', e);
             return [];
         }
     });

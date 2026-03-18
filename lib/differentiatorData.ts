@@ -18,6 +18,7 @@ import {
     TrustEvent,
 } from '../types';
 import { isDemoMode, supabase } from './supabase';
+import { logger } from './logger';
 
 type PersistedRow = Record<string, any>;
 
@@ -703,7 +704,7 @@ async function fetchRows(table: string, mapper: (_row: PersistedRow) => any, loc
     builder = query ? query(builder) : builder.order('created_at', { ascending: false });
     const { data, error } = await builder;
     if (error) {
-        console.error(`Failed to fetch ${table}:`, error);
+        logger.error(`Failed to fetch ${table}:`, error);
         setPersistenceState(localKey, {
             status: 'offline',
             lastError: `Failed to fetch ${table} from cloud. Showing cached local data.`,
@@ -728,7 +729,7 @@ async function upsertRow<T extends { id: string }>(table: string, row: Persisted
     setPersistenceState(localKey, { status: 'retrying', lastError: null });
     const { error } = await supabase.from(table).upsert(row, { onConflict: 'id' });
     if (error) {
-        console.error(`Failed to upsert ${table}:`, error);
+        logger.error(`Failed to upsert ${table}:`, error);
         setPersistenceState(localKey, {
             status: 'offline',
             lastError: `Failed to save ${table} to cloud. Local cache has been retained.`,
@@ -753,7 +754,7 @@ async function insertRow<T extends { id: string }>(table: string, row: Persisted
     setPersistenceState(localKey, { status: 'retrying', lastError: null });
     const { error } = await supabase.from(table).insert(row);
     if (error) {
-        console.error(`Failed to insert ${table}:`, error);
+        logger.error(`Failed to insert ${table}:`, error);
         setPersistenceState(localKey, {
             status: 'offline',
             lastError: `Failed to insert ${table} in cloud. Local cache has been retained.`,

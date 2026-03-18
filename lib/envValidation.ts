@@ -74,9 +74,13 @@ function getEnvValue(key: string): string {
 
 /**
  * Validate that expected environment variables are present.
- * Logs warnings for any that are missing — never throws.
+ * In development only: logs warnings for any that are missing. Never throws.
+ * In production: no-op to avoid console noise and avoid leaking config hints.
  */
 export function validateEnv(): void {
+  if (typeof import.meta !== 'undefined' && import.meta.env?.PROD) {
+    return;
+  }
   const missing = ENV_VAR_DEFINITIONS.filter((v) => !getEnvValue(v.key));
 
   if (missing.length === 0) {

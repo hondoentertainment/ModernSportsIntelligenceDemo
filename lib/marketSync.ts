@@ -1,4 +1,5 @@
 
+import { logger } from './logger';
 import { CardInventory, TargetWatchlist } from '../types.ts';
 import { getEbayCardPrice, getWatchlistItemPrice } from './gemini.ts';
 import { recordBatchSnapshots } from './priceHistory.ts';
@@ -80,7 +81,7 @@ async function syncCardValue(card: CardInventory): Promise<CardInventory> {
 
         return card;
     } catch (error) {
-        console.warn(`Failed to sync card ${card.id}:`, error);
+        logger.warn(`Failed to sync card ${card.id}:`, error);
         return card;
     }
 }
@@ -156,7 +157,7 @@ export async function syncPortfolio(
         const updatedHistory = [newSnapshot, ...history].slice(0, MAX_HISTORY);
         localStorage.setItem(HISTORY_KEY, JSON.stringify(updatedHistory));
     } catch (e) {
-        console.warn('Failed to update sync history', e);
+        logger.warn('Failed to update sync history', e);
     }
 
     progress.status = 'complete';
@@ -197,7 +198,7 @@ export function getSyncMeta(): { lastSyncTime: string | null; totalValue: number
             return JSON.parse(meta);
         }
     } catch (e) {
-        console.warn('Failed to parse sync meta', e);
+        logger.warn('Failed to parse sync meta', e);
     }
     return { lastSyncTime: null, totalValue: 0, assetCount: 0 };
 }
@@ -254,7 +255,7 @@ export async function syncWatchlistPrices(
                 failedCount++;
                 return target;
             } catch (e) {
-                console.warn(`Failed to sync watchlist target ${target.id}:`, e);
+                logger.warn(`Failed to sync watchlist target ${target.id}:`, e);
                 showToast('warning', `Watchlist update failed for "${target.player}".`, { dedupeKey: `wl_sync_${target.id}` });
                 failedCount++;
                 return target;

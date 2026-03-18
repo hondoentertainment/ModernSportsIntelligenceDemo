@@ -60,6 +60,7 @@ import ShareAlphaModal from '../components/ShareAlphaModal.tsx';
 import OCRIngestionModal from '../components/OCRIngestionModal.tsx';
 import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
 import { getHistoricalDelta } from '../lib/marketHistory.ts';
+import { logger } from '../lib/logger';
 import { StatsService } from '../lib/statsService.ts';
 import { AggregationService } from '../lib/aggregationService.ts';
 import { Cloud, CloudOff, Gavel } from 'lucide-react';
@@ -1186,7 +1187,7 @@ const Dashboard: React.FC = () => {
         targetItem={negotiationTarget}
         onSuccess={(finalPrice) => {
           // Add to inventory logic here if desired
-          console.log('Acquired for', finalPrice);
+          logger.log('Acquired for', finalPrice);
         }}
       />
     </div>

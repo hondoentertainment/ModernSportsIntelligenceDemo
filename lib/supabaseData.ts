@@ -1,4 +1,5 @@
 import { supabase, isDemoMode } from './supabase';
+import { logger } from './logger';
 import { CardInventory, TargetWatchlist } from '../types';
 import type { PriceSnapshot } from './priceHistory';
 
@@ -228,7 +229,7 @@ export async function fetchCards(userId: string): Promise<CardInventory[]> {
         .order('created_at', { ascending: false });
 
     if (error) {
-        console.error('Error fetching cards:', error);
+        logger.error('Error fetching cards:', error);
         return [];
     }
 
@@ -243,7 +244,7 @@ export async function upsertCard(card: CardInventory, userId: string): Promise<b
         .upsert(cardToDb(card, userId), { onConflict: 'id' });
 
     if (error) {
-        console.error('Error upserting card:', error);
+        logger.error('Error upserting card:', error);
         return false;
     }
     return true;
@@ -258,7 +259,7 @@ export async function deleteCard(cardId: string): Promise<boolean> {
         .eq('id', cardId);
 
     if (error) {
-        console.error('Error deleting card:', error);
+        logger.error('Error deleting card:', error);
         return false;
     }
     return true;
@@ -273,7 +274,7 @@ export async function bulkUpsertCards(cards: CardInventory[], userId: string): P
         .upsert(rows, { onConflict: 'id' });
 
     if (error) {
-        console.error('Error bulk upserting cards:', error);
+        logger.error('Error bulk upserting cards:', error);
         return false;
     }
     return true;
@@ -291,7 +292,7 @@ export async function fetchTargets(userId: string): Promise<TargetWatchlist[]> {
         .order('created_at', { ascending: false });
 
     if (error) {
-        console.error('Error fetching targets:', error);
+        logger.error('Error fetching targets:', error);
         return [];
     }
 
@@ -306,7 +307,7 @@ export async function upsertTarget(target: TargetWatchlist, userId: string): Pro
         .upsert(targetToDb(target, userId), { onConflict: 'id' });
 
     if (error) {
-        console.error('Error upserting target:', error);
+        logger.error('Error upserting target:', error);
         return false;
     }
     return true;
@@ -321,7 +322,7 @@ export async function bulkUpsertTargets(targets: TargetWatchlist[], userId: stri
         .upsert(rows, { onConflict: 'id' });
 
     if (error) {
-        console.error('Error bulk upserting targets:', error);
+        logger.error('Error bulk upserting targets:', error);
         return false;
     }
     return true;
@@ -336,7 +337,7 @@ export async function deleteTarget(targetId: string): Promise<boolean> {
         .eq('id', targetId);
 
     if (error) {
-        console.error('Error deleting target:', error);
+        logger.error('Error deleting target:', error);
         return false;
     }
     return true;
@@ -358,7 +359,7 @@ export async function fetchAllPriceHistory(userId: string): Promise<Record<strin
         .order('recorded_at', { ascending: false });
 
     if (error) {
-        console.error('Error fetching price history:', error);
+        logger.error('Error fetching price history:', error);
         return {};
     }
 
@@ -413,7 +414,7 @@ export async function insertPriceSnapshot(
         });
 
     if (error) {
-        console.error('Error inserting price snapshot:', error);
+        logger.error('Error inserting price snapshot:', error);
         return false;
     }
     return true;
@@ -455,7 +456,7 @@ export async function insertBatchPriceSnapshots(
         .insert(rows);
 
     if (error) {
-        console.error('Error batch inserting price snapshots:', error);
+        logger.error('Error batch inserting price snapshots:', error);
         return false;
     }
     return true;

@@ -3,6 +3,7 @@
  * Enables automatic portfolio valuation updates at configurable intervals
  */
 
+import { logger } from './logger';
 import { CardInventory, TargetWatchlist } from '../types.ts';
 import {
   syncPortfolio,
@@ -48,7 +49,7 @@ export function getSyncConfig(): SyncSchedulerConfig {
         const saved = localStorage.getItem(CONFIG_KEY);
         return saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG;
     } catch (e) {
-        console.warn('Failed to parse sync config:', e);
+        logger.warn('Failed to parse sync config:', e);
         return DEFAULT_CONFIG;
     }
 }
@@ -72,7 +73,7 @@ export function getSyncSchedule(): SyncSchedule {
             return JSON.parse(saved);
         }
     } catch (e) {
-        console.warn('Failed to parse sync schedule:', e);
+        logger.warn('Failed to parse sync schedule:', e);
     }
 
     // Calculate from last sync
@@ -206,7 +207,7 @@ export class SyncScheduler {
         this.targets = targets;
 
         if (this.config.interval === 'manual') {
-            if (import.meta.env.DEV) console.warn('Sync scheduler: Manual mode, not starting automatic sync');
+            if (import.meta.env.DEV) logger.log('Sync scheduler: Manual mode, not starting automatic sync');
             return;
         }
 
@@ -223,7 +224,7 @@ export class SyncScheduler {
             }
         }, 60 * 1000); // 1 minute heartbeat
 
-        if (import.meta.env.DEV) console.warn(`Sync scheduler: Started watchdog with 60s heartbeat (${this.config.interval} check)`);
+        if (import.meta.env.DEV) logger.log(`Sync scheduler: Started watchdog with 60s heartbeat (${this.config.interval} check)`);
     }
 
     /**
@@ -241,7 +242,7 @@ export class SyncScheduler {
         if (this.intervalId !== null) {
             clearInterval(this.intervalId);
             this.intervalId = null;
-            if (import.meta.env.DEV) console.warn('Sync scheduler: Stopped');
+            if (import.meta.env.DEV) logger.log('Sync scheduler: Stopped');
         }
     }
 
@@ -250,12 +251,12 @@ export class SyncScheduler {
      */
     private async performSync(): Promise<void> {
         if (this.isSyncing) {
-            if (import.meta.env.DEV) console.warn('Sync scheduler: Skipping — sync already in progress');
+            if (import.meta.env.DEV) logger.log('Sync scheduler: Skipping — sync already in progress');
             return;
         }
         this.isSyncing = true;
         try {
-            if (import.meta.env.DEV) console.warn('Sync scheduler: Performing sync...');
+            if (import.meta.env.DEV) logger.log('Sync scheduler: Performing sync...');
 
             // Sync portfolio
             const { inventory: updatedInventory, result: portfolioResult } = await syncPortfolio(
@@ -316,7 +317,7 @@ export class SyncScheduler {
             }
 
         } catch (error) {
-            console.error('Sync scheduler: Sync failed:', error);
+            logger.error('Sync scheduler: Sync failed:', error);
         } finally {
             this.isSyncing = false;
         }

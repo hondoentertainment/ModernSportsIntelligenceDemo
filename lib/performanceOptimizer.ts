@@ -8,6 +8,7 @@
 
 import React, { lazy, Suspense, createElement, useCallback, forwardRef } from 'react';
 import type { ComponentType, ReactNode } from 'react';
+import { logger } from './logger';
 
 // ---------------------------------------------------------------------------
 //  1. Route Prefetching System
@@ -459,7 +460,7 @@ const routeLoadMeasurements: RouteLoadMeasurement[] = [];
 export async function measureRouteLoad(route: string): Promise<number> {
   const importFn = routeImportMap.get(route);
   if (!importFn) {
-    console.warn(`[perf] No import registered for route "${route}"`);
+    logger.warn(`[perf] No import registered for route "${route}"`);
     return -1;
   }
 

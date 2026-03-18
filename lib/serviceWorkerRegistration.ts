@@ -1,6 +1,8 @@
 // ─── Service Worker Registration Helper ──────────────────────────────────────
 // Manages service worker lifecycle: registration, updates, and unregistration.
 
+import { logger } from './logger';
+
 type UpdateCallback = (hasUpdate: boolean) => void;
 
 let updateCallback: UpdateCallback | null = null;
@@ -12,7 +14,7 @@ export function onUpdate(callback: UpdateCallback): void {
 
 export function register(): void {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
-    console.log('[SW] Service workers not supported in this browser.');
+    logger.log('[SW] Service workers not supported in this browser.');
     return;
   }
 
@@ -33,20 +35,20 @@ export function register(): void {
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
               // New content available
-              console.log('[SW] New content available; please refresh.');
+              logger.log('[SW] New content available; please refresh.');
               updateCallback?.(true);
             } else {
               // Content cached for offline use
-              console.log('[SW] Content is cached for offline use.');
+              logger.log('[SW] Content is cached for offline use.');
               updateCallback?.(false);
             }
           }
         });
       });
 
-      console.log('[SW] Service worker registered successfully.');
+      logger.log('[SW] Service worker registered successfully.');
     } catch (error) {
-      console.log('[SW] Service worker registration failed (expected in dev):', error);
+      logger.log('[SW] Service worker registration failed (expected in dev):', error);
     }
   });
 }
@@ -58,10 +60,10 @@ export function unregister(): void {
     .then((registration) => {
       registration.unregister();
       swRegistration = null;
-      console.log('[SW] Service worker unregistered.');
+      logger.log('[SW] Service worker unregistered.');
     })
     .catch((error) => {
-      console.error('[SW] Error unregistering service worker:', error);
+      logger.error('[SW] Error unregistering service worker:', error);
     });
 }
 

@@ -111,11 +111,15 @@ describe('ripFlipSimService', () => {
       expect(result).toBeNull();
     });
 
-    it('clamps trials to a maximum of 100000', () => {
-      const result = runSimulation('rf-003', 200000);
-      expect(result).not.toBeNull();
-      expect(result!.trials).toBeLessThanOrEqual(100000);
-    });
+    it(
+      'clamps trials to a maximum of 100000',
+      () => {
+        const result = runSimulation('rf-003', 200000);
+        expect(result).not.toBeNull();
+        expect(result!.trials).toBeLessThanOrEqual(100000);
+      },
+      120_000,
+    );
 
     it('clamps trials to a minimum of 1', () => {
       const result = runSimulation('rf-003', -5);

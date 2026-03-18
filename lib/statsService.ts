@@ -1,4 +1,4 @@
-
+import { logger } from './logger';
 import { getPlayerStats, searchMLBPlayers, MLBHittingStat, MLBStatGroup } from './mlbApi.ts';
 
 export interface PlayerPerformance {
@@ -42,7 +42,7 @@ export const StatsService = {
                 ]
             };
         } catch (error) {
-            console.error(`StatsService Error for ${playerName}:`, error);
+            logger.error(`StatsService Error for ${playerName}:`, error);
             return null;
         }
     },
@@ -59,7 +59,7 @@ export const StatsService = {
             // Using the standard MLB headshot CDN
             return `https://img.mlbstatic.com/mlb-photos/person/${playerId}.jpg`;
         } catch (error) {
-            console.error(`Headshot Resolution Error for ${playerName}:`, error);
+            logger.error(`Headshot Resolution Error for ${playerName}:`, error);
             return null;
         }
     },

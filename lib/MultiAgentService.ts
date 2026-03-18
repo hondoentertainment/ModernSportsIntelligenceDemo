@@ -5,6 +5,7 @@ import { AgentRecommendationOrigin, CardInventory, CollaborativeThesis, AgentIns
 import { showToast } from "./toast.ts";
 import { createGeminiClient } from "./geminiClient.ts";
 import { upsertAgentRecommendation } from "./differentiatorData.ts";
+import { logger } from "./logger";
 
 const ai = createGeminiClient();
 
@@ -161,7 +162,7 @@ export class MultiAgentService {
 
             return thesis;
         } catch (error) {
-            console.error("Multi-Agent Intelligence Error:", error);
+            logger.error("Multi-Agent Intelligence Error:", error);
             showToast('error', 'Intelligence committee failed to convene. Try again later.');
             return null;
         }
@@ -212,7 +213,7 @@ export class MultiAgentService {
 
             return JSON.parse(response.text || "[]");
         } catch (error) {
-            console.error("Swarm Intelligence Error:", error);
+            logger.error("Swarm Intelligence Error:", error);
             return [];
         }
     }
@@ -251,7 +252,7 @@ export class MultiAgentService {
                 createdAt: new Date().toISOString()
             };
         } catch (error) {
-            console.error("Joint Thesis Error:", error);
+            logger.error("Joint Thesis Error:", error);
             return null;
         }
     }

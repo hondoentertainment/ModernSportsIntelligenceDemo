@@ -1,4 +1,5 @@
 import { createGeminiClient } from './geminiClient.ts';
+import { logger } from './logger';
 import { CardInventory } from '../types';
 
 const ai = createGeminiClient();
@@ -30,7 +31,7 @@ Be direct and analytical. Do not use bullet points.`;
         });
         return response.text || 'Unable to generate analysis. Please try again.';
     } catch (error) {
-        console.error('Compare Analysis Error:', error);
+        logger.error('Compare Analysis Error:', error);
         return 'Analysis unavailable. Ensure your API key is configured correctly.';
     }
 }

@@ -5,6 +5,7 @@ import { logAuditEvent } from "./auditLog";
 import { insertAgentOutcome, insertExecutionApproval, upsertAgentRecommendation, upsertExecutionIntent } from "./differentiatorData";
 import { ExecutionService, OrderIntent } from "./executionService";
 import { ensureMockExecutionAdapter } from "./phaseEndpoints";
+import { logger } from "./logger";
 
 const STORAGE_KEY = 'msi_autopilot_config';
 const ACTIONS_KEY = 'msi_autonomous_actions';
@@ -56,7 +57,7 @@ export class AutonomousExecutionService {
             try {
                 return JSON.parse(saved);
             } catch (e) {
-                console.error("Failed to parse autopilot config", e);
+                logger.error("Failed to parse autopilot config", e);
             }
         }
         return DEFAULT_CONFIG;
@@ -72,7 +73,7 @@ export class AutonomousExecutionService {
             try {
                 return JSON.parse(saved);
             } catch (e) {
-                console.error("Failed to parse autonomous actions", e);
+                logger.error("Failed to parse autonomous actions", e);
             }
         }
         return [];

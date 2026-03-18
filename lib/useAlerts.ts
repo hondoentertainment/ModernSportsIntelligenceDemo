@@ -1,4 +1,4 @@
-
+import { logger } from './logger';
 import { useState, useEffect, useCallback } from 'react';
 import { Alert, AlertType } from '../types.ts';
 
@@ -19,7 +19,7 @@ export function useAlerts() {
                 }
             }
         } catch (e) {
-            console.warn('Failed to parse alerts from localStorage', e);
+            logger.warn('Failed to parse alerts from localStorage', e);
         }
         return [];
     });

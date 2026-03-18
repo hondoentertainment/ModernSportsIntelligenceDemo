@@ -1,4 +1,4 @@
-
+import { logger } from './logger';
 import { showToast } from './toast.ts';
 
 const BASE_URL = 'https://statsapi.mlb.com/api/v1';
@@ -265,7 +265,7 @@ export function isPressBoxConfigured(): boolean {
  */
 export async function getPressBoxPlayerMetrics(playerId: number, signal?: AbortSignal): Promise<PressBoxMetrics | null> {
   if (!isPressBoxConfigured()) {
-    console.warn('PressBox API not configured');
+    logger.warn('PressBox API not configured');
     return null;
   }
 
@@ -279,14 +279,14 @@ export async function getPressBoxPlayerMetrics(playerId: number, signal?: AbortS
     });
 
     if (!response.ok) {
-      console.error('PressBox API error:', response.status, response.statusText);
+      logger.error('PressBox API error:', response.status, response.statusText);
       showToast('warning', 'PressBox player metrics unavailable.', { dedupeKey: 'pressbox_metrics' });
       return null;
     }
 
     return await response.json() as PressBoxMetrics;
   } catch (error) {
-    console.error('Failed to fetch PressBox player metrics:', error);
+    logger.error('Failed to fetch PressBox player metrics:', error);
     showToast('warning', 'PressBox player metrics unavailable.', { dedupeKey: 'pressbox_metrics' });
     return null;
   }
@@ -297,7 +297,7 @@ export async function getPressBoxPlayerMetrics(playerId: number, signal?: AbortS
  */
 export async function getPressBoxProspectRankings(league: 'MLB' | 'MiLB' = 'MiLB', signal?: AbortSignal): Promise<PressBoxProspectRanking[]> {
   if (!isPressBoxConfigured()) {
-    console.warn('PressBox API not configured');
+    logger.warn('PressBox API not configured');
     return [];
   }
 
@@ -311,7 +311,7 @@ export async function getPressBoxProspectRankings(league: 'MLB' | 'MiLB' = 'MiLB
     });
 
     if (!response.ok) {
-      console.error('PressBox API error:', response.status, response.statusText);
+      logger.error('PressBox API error:', response.status, response.statusText);
       showToast('warning', 'PressBox prospect rankings unavailable.', { dedupeKey: 'pressbox_rankings' });
       return [];
     }
@@ -319,7 +319,7 @@ export async function getPressBoxProspectRankings(league: 'MLB' | 'MiLB' = 'MiLB
     const data = await response.json();
     return (data.rankings as PressBoxProspectRanking[]) ?? [];
   } catch (error) {
-    console.error('Failed to fetch PressBox prospect rankings:', error);
+    logger.error('Failed to fetch PressBox prospect rankings:', error);
     showToast('warning', 'PressBox prospect rankings unavailable.', { dedupeKey: 'pressbox_rankings' });
     return [];
   }
@@ -330,7 +330,7 @@ export async function getPressBoxProspectRankings(league: 'MLB' | 'MiLB' = 'MiLB
  */
 export async function getPressBoxPlayerTrend(playerId: number, days: number = 30, signal?: AbortSignal): Promise<PressBoxTrend | null> {
   if (!isPressBoxConfigured()) {
-    console.warn('PressBox API not configured');
+    logger.warn('PressBox API not configured');
     return null;
   }
 
@@ -344,13 +344,13 @@ export async function getPressBoxPlayerTrend(playerId: number, days: number = 30
     });
 
     if (!response.ok) {
-      console.error('PressBox API error:', response.status, response.statusText);
+      logger.error('PressBox API error:', response.status, response.statusText);
       return null;
     }
 
     return await response.json() as PressBoxTrend;
   } catch (error) {
-    console.error('Failed to fetch PressBox player trend:', error);
+    logger.error('Failed to fetch PressBox player trend:', error);
     return null;
   }
 }
@@ -360,7 +360,7 @@ export async function getPressBoxPlayerTrend(playerId: number, days: number = 30
  */
 export async function getPressBoxMarketSentiment(playerId: number, signal?: AbortSignal): Promise<PressBoxSentiment | null> {
   if (!isPressBoxConfigured()) {
-    console.warn('PressBox API not configured');
+    logger.warn('PressBox API not configured');
     return null;
   }
 
@@ -374,13 +374,13 @@ export async function getPressBoxMarketSentiment(playerId: number, signal?: Abor
     });
 
     if (!response.ok) {
-      console.error('PressBox API error:', response.status, response.statusText);
+      logger.error('PressBox API error:', response.status, response.statusText);
       return null;
     }
 
     return await response.json() as PressBoxSentiment;
   } catch (error) {
-    console.error('Failed to fetch PressBox market sentiment:', error);
+    logger.error('Failed to fetch PressBox market sentiment:', error);
     return null;
   }
 }
@@ -390,7 +390,7 @@ export async function getPressBoxMarketSentiment(playerId: number, signal?: Abor
  */
 export async function getPressBoxBreakoutProbability(playerId: number, signal?: AbortSignal): Promise<PressBoxBreakoutProbability | null> {
   if (!isPressBoxConfigured()) {
-    console.warn('PressBox API not configured');
+    logger.warn('PressBox API not configured');
     return null;
   }
 
@@ -404,13 +404,13 @@ export async function getPressBoxBreakoutProbability(playerId: number, signal?: 
     });
 
     if (!response.ok) {
-      console.error('PressBox API error:', response.status, response.statusText);
+      logger.error('PressBox API error:', response.status, response.statusText);
       return null;
     }
 
     return await response.json() as PressBoxBreakoutProbability;
   } catch (error) {
-    console.error('Failed to fetch PressBox breakout probability:', error);
+    logger.error('Failed to fetch PressBox breakout probability:', error);
     return null;
   }
 }

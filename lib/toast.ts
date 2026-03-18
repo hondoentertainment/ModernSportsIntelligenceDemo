@@ -5,8 +5,9 @@
  * user-visible notifications without needing React hooks.
  *
  * The ToastContext registers itself as the handler on mount.
- * If no handler is registered, toasts fall back to console output.
+ * If no handler is registered, toasts fall back to logger.
  */
+import { logger } from './logger';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -76,8 +77,7 @@ export function showToast(type: ToastType, message: string, options?: ToastOptio
     if (_handler) {
         _handler(type, message, options);
     } else {
-        // Fallback to console if no React handler is mounted
-        const logFn = type === 'error' ? console.error : console.warn;
+        const logFn = type === 'error' ? logger.error : logger.warn;
         logFn(`[Toast:${type}]`, message);
     }
 }

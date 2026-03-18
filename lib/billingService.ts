@@ -1,5 +1,6 @@
 // Billing service for handling Stripe subscriptions
 import { loadStripe, Stripe } from '@stripe/stripe-js';
+import { logger } from './logger';
 import { supabase } from './supabase';
 
 // Initialize Stripe
@@ -9,7 +10,7 @@ export const getStripe = () => {
   if (!stripePromise) {
     const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
     if (!stripeKey) {
-      console.warn('Stripe publishable key not configured');
+      logger.warn('Stripe publishable key not configured');
       return null;
     }
     stripePromise = loadStripe(stripeKey);
@@ -79,7 +80,7 @@ export async function getUserSubscription(userId: string) {
     .single();
 
   if (error) {
-    console.error('Error fetching user subscription:', error);
+    logger.error('Error fetching user subscription:', error);
     return null;
   }
 

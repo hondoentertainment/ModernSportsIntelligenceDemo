@@ -11,6 +11,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { CardPosition, UserPortfolioState } from '../lib/userStatePersistence';
+import { logger } from '../lib/logger';
 import {
   loadUserState,
   saveUserState,
@@ -78,7 +79,7 @@ export function usePortfolio(): UsePortfolioReturn {
           setPositions(state.portfolio.positions);
         }
       } catch (err) {
-        console.error('[usePortfolio] Failed to load state:', err);
+        logger.error('[usePortfolio] Failed to load state:', err);
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -102,7 +103,7 @@ export function usePortfolio(): UsePortfolioReturn {
         lastUpdated: new Date().toISOString(),
       };
       saveUserState({ portfolio }).catch((err) => {
-        console.error('[usePortfolio] Failed to persist portfolio:', err);
+        logger.error('[usePortfolio] Failed to persist portfolio:', err);
       });
       persistTimer.current = null;
     }, PERSIST_DEBOUNCE_MS);

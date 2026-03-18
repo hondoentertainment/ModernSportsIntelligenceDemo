@@ -9,6 +9,7 @@ import { showToast } from "./toast.ts";
 import { attachValuationQuality } from "./valuationQuality.ts";
 import { estimateGeminiCostUsd, recordModelUsage } from "./telemetryService.ts";
 import { createGeminiClient } from "./geminiClient.ts";
+import { logger } from "./logger";
 
 const ai = createGeminiClient();
 
@@ -100,7 +101,7 @@ export async function getEbayCardPrice(card: CardInventory, _signal?: AbortSigna
       });
 
       if (ebayResult && ebayResult.totalListings > 0) {
-        if (import.meta.env.DEV) console.warn('Using eBay API pricing for:', card.player);
+        if (import.meta.env.DEV) logger.warn('Using eBay API pricing for:', card.player);
 
         const salesSummary = ebayResult.recentSales.map(s => `$${s.price} (${s.date})`).join(', ');
         const rationalePrompt = `Act as an institutional sports card analyst. Based on these 10 recent eBay sales for a ${card.year} ${card.player} ${card.set}: ${salesSummary}, provide a concise, 2-sentence rationale for an estimated value of $${ebayResult.averagePrice}. Use professional language like 'liquidity resistance', 'recent auction volatility', or 'standardized baseline'.`;
@@ -113,7 +114,7 @@ export async function getEbayCardPrice(card: CardInventory, _signal?: AbortSigna
           });
           rationale = rationaleResponse.text || rationale;
         } catch (e) {
-          console.warn("Failed to generate rationale, using default.");
+          logger.warn("Failed to generate rationale, using default.");
         }
 
         return attachValuationQuality({
@@ -132,7 +133,7 @@ export async function getEbayCardPrice(card: CardInventory, _signal?: AbortSigna
         });
       }
     } catch (error) {
-      console.warn('eBay API pricing failed, falling back to AI:', error);
+      logger.warn('eBay API pricing failed, falling back to AI:', error);
       showToast('warning', `eBay unavailable for ${card.player} — using AI estimate.`, { dedupeKey: 'ebay_fallback' });
     }
   }
@@ -204,7 +205,7 @@ export async function getEbayCardPrice(card: CardInventory, _signal?: AbortSigna
     });
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return null;
-    console.error("Gemini Pricing Error:", error);
+    logger.error("Gemini Pricing Error:", error);
     showToast('error', `AI valuation failed for ${card.player}. Try again later.`, { dedupeKey: `gemini_price_${card.id}` });
     return null;
   }
@@ -225,7 +226,7 @@ export async function getWatchlistItemPrice(target: TargetWatchlist, _signal?: A
       });
 
       if (ebayResult && ebayResult.totalListings > 0) {
-        if (import.meta.env.DEV) console.warn('Using eBay API pricing for watchlist:', target.player);
+        if (import.meta.env.DEV) logger.warn('Using eBay API pricing for watchlist:', target.player);
 
         const salesSummary = ebayResult.recentSales.map(s => `$${s.price} (${s.date})`).join(', ');
         const rationalePrompt = `Act as an institutional sports card analyst. Based on these 10 recent eBay sales for "${target.player} ${target.cardDescription}": ${salesSummary}, provide a concise, 2-sentence rationale for an estimated value of $${ebayResult.averagePrice}. Mention specific price points if relevant.`;
@@ -238,7 +239,7 @@ export async function getWatchlistItemPrice(target: TargetWatchlist, _signal?: A
           });
           rationale = rationaleResponse.text || rationale;
         } catch (e) {
-          console.warn("Failed to generate rationale for watchlist, using default.");
+          logger.warn("Failed to generate rationale for watchlist, using default.");
         }
 
         return attachValuationQuality({
@@ -257,7 +258,7 @@ export async function getWatchlistItemPrice(target: TargetWatchlist, _signal?: A
         });
       }
     } catch (error) {
-      console.warn('eBay API pricing failed for watchlist, falling back to AI:', error);
+      logger.warn('eBay API pricing failed for watchlist, falling back to AI:', error);
       showToast('warning', `eBay unavailable for ${target.player} — using AI estimate.`, { dedupeKey: 'ebay_fallback' });
     }
   }
@@ -324,7 +325,7 @@ export async function getWatchlistItemPrice(target: TargetWatchlist, _signal?: A
     });
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return null;
-    console.error("Gemini Watchlist Pricing Error:", error);
+    logger.error("Gemini Watchlist Pricing Error:", error);
     showToast('error', `AI valuation failed for watchlist item "${target.player}".`, { dedupeKey: `gemini_wl_${target.id}` });
     return null;
   }
@@ -398,7 +399,7 @@ export async function getRealTimeLeagueTrends(league: string, _signal?: AbortSig
     return data.length > 0 ? data : (MOCK_PROSPECTS[league] || MOCK_PROSPECTS.MiLB);
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return [];
-    console.error("Gemini Real-time Trend Error:", error);
+    logger.error("Gemini Real-time Trend Error:", error);
     showToast('warning', `Live ${league} trends unavailable — showing cached data.`, { dedupeKey: `trend_${league}` });
     return MOCK_PROSPECTS[league] || MOCK_PROSPECTS.MiLB;
   }
@@ -426,7 +427,7 @@ export async function generatePortfolioSentiment(inventory: CardInventory[], _si
     return response.text || "Stable market conditions observed across all sectors.";
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return "Market analysis cancelled.";
-    console.error("Gemini Sentiment Error:", error);
+    logger.error("Gemini Sentiment Error:", error);
     showToast('warning', 'AI sentiment analysis unavailable.', { dedupeKey: 'sentiment' });
     return "Market volatility detected. Institutional hold signals recommended.";
   }
@@ -479,7 +480,7 @@ export async function parseCardImage(imageBase64: string, mimeType: string = "im
     return JSON.parse(cleanJson);
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return null;
-    console.error("Gemini Vision Error:", error);
+    logger.error("Gemini Vision Error:", error);
     showToast('error', 'Card scan failed. Check your connection and try again.', { dedupeKey: 'vision' });
     return null;
   }
@@ -551,7 +552,7 @@ export async function findSimilarCards(query: string, _inventory: CardInventory[
     return JSON.parse(text) as SimilarCardResult[];
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return [];
-    console.error("Gemini Deep Search Error:", error);
+    logger.error("Gemini Deep Search Error:", error);
     showToast('error', 'Deep search failed. Check your connection.', { dedupeKey: 'deepsearch' });
     return [];
   }
@@ -626,7 +627,7 @@ Return JSON with: action (accept|counter|reject), sentiment (positive|neutral|ne
     };
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return null;
-    console.error("Gemini Negotiation Error:", error);
+    logger.error("Gemini Negotiation Error:", error);
     return null;
   }
 }
@@ -698,7 +699,7 @@ Return JSON with: offerAmount (number), message (string for the seller), reasoni
     };
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return null;
-    console.error("Gemini Agentic Offer Error:", error);
+    logger.error("Gemini Agentic Offer Error:", error);
     return null;
   }
 }
@@ -781,7 +782,7 @@ export async function auditCardVisuals(imageBase64: string, mimeType: string = "
     const cleanJson = text.replace(/\`\`\`json|\`\`\`/g, "").trim();
     return JSON.parse(cleanJson);
   } catch (error) {
-    console.error("Gemini Visual Audit Error:", error);
+    logger.error("Gemini Visual Audit Error:", error);
     showToast('error', 'Visual audit analysis failed. Please try a clearer image.', { dedupeKey: 'visual_audit' });
     return null;
   }
@@ -842,7 +843,7 @@ export async function getGradingPremiumAnalysis(card: CardInventory): Promise<Gr
       updatedAt: new Date().toISOString()
     };
   } catch (error) {
-    console.error("Gemini Grading Premium Error:", error);
+    logger.error("Gemini Grading Premium Error:", error);
     return null;
   }
 }
@@ -900,7 +901,7 @@ export async function getLiveMacroSignals(): Promise<MacroSignal[]> {
     const data = JSON.parse(response.text || "[]");
     return data;
   } catch (error) {
-    console.error("Gemini Macro Signal Error:", error);
+    logger.error("Gemini Macro Signal Error:", error);
     return [];
   }
 }

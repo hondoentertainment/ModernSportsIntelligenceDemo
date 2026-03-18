@@ -7,6 +7,7 @@
 //   - Channel-based pub/sub with optional filters
 //   - Built-in simulation mode for demos and development
 
+import { logger } from './logger';
 import {
   getNotificationManager,
   WebSocketConnectionState,
@@ -570,7 +571,7 @@ export class RealTimeFeatureHub {
       handle.callback(event);
     } catch (err) {
       // Defensive: never let a subscriber error break the dispatch loop.
-      console.error(`[FeatureHub] Subscriber ${subId} threw:`, err);
+      logger.error(`[FeatureHub] Subscriber ${subId} threw:`, err);
     }
   }
 

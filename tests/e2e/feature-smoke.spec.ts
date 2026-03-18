@@ -26,6 +26,20 @@ const FEATURE_ROUTES: { route: string; name: string }[] = [
     { route: '/chaos-theory-simulator', name: 'Chaos Theory Simulator' },
 ];
 
+/** v5.2 Frontier — 10 industry-absent feature routes. */
+const NEW_FRONTIER_ROUTES: { route: string; name: string }[] = [
+    { route: '/bid-ask-spread-predictor', name: 'Bid-Ask Spread Predictor' },
+    { route: '/wash-sale-horizon', name: 'Wash-Sale Horizon Calendar' },
+    { route: '/seller-urgency-score', name: 'Seller Urgency Score' },
+    { route: '/portfolio-beta-index', name: 'Portfolio Beta to Index' },
+    { route: '/grading-queue-estimator', name: 'Grading Queue Estimator' },
+    { route: '/reputation-decay-tracker', name: 'Reputation Decay Tracker' },
+    { route: '/event-impact-attribution', name: 'Event Impact Attribution' },
+    { route: '/liquidity-reserve-calculator', name: 'Liquidity Reserve Calculator' },
+    { route: '/cross-sport-momentum', name: 'Cross-Sport Momentum' },
+    { route: '/agent-confidence-history', name: 'Agent Confidence History' },
+];
+
 /** Maximum time for a page load — investor demo should feel snappy. */
 const MAX_PAGE_LOAD_MS = 5_000;
 
@@ -206,6 +220,40 @@ test.describe('Feature Smoke Tests', () => {
                 uncaughtErrors,
                 `${name} had errors during tab switching: ${uncaughtErrors.join('; ')}`,
             ).toHaveLength(0);
+        });
+    }
+});
+
+// ─── v5.2 Frontier feature smoke ─────────────────────────────────────────────
+
+const FRONTIER_MAX_PAGE_LOAD_MS = 8_000;
+
+test.describe('v5.2 Frontier feature smoke', () => {
+    test.beforeEach(async ({ page }) => {
+        await enterDemoMode(page);
+    });
+
+    for (const { route, name } of NEW_FRONTIER_ROUTES) {
+        test(`${name} loads and shows main content`, async ({ page }) => {
+            await page.goto(`/#${route}`);
+            await expect(
+                page.locator('main, h1, [role="main"]').first(),
+            ).toBeVisible({ timeout: FRONTIER_MAX_PAGE_LOAD_MS });
+        });
+    }
+
+    for (const { route, name } of NEW_FRONTIER_ROUTES) {
+        test(`${name} loads in under 8 seconds`, async ({ page }) => {
+            const start = Date.now();
+            await page.goto(`/#${route}`);
+            await expect(
+                page.locator('main, h1, [role="main"]').first(),
+            ).toBeVisible({ timeout: FRONTIER_MAX_PAGE_LOAD_MS });
+            const elapsed = Date.now() - start;
+            expect(
+                elapsed,
+                `${name} took ${elapsed}ms to load (limit: ${FRONTIER_MAX_PAGE_LOAD_MS}ms)`,
+            ).toBeLessThan(FRONTIER_MAX_PAGE_LOAD_MS);
         });
     }
 });

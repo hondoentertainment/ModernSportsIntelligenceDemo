@@ -13,6 +13,7 @@
  * - JSON export/import for data portability
  */
 
+import { logger } from './logger';
 import type { Sport } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -308,17 +309,17 @@ function lsWrite(key: string, value: unknown): boolean {
     return true;
   } catch (err: unknown) {
     if (err instanceof DOMException && (err.name === 'QuotaExceededError' || err.code === 22)) {
-      console.warn('[UserStatePersistence] localStorage quota exceeded. Attempting cleanup...');
+      logger.warn('[UserStatePersistence] localStorage quota exceeded. Attempting cleanup...');
       pruneLocalStorage();
       try {
         localStorage.setItem(key, JSON.stringify(value));
         return true;
       } catch {
-        console.error('[UserStatePersistence] localStorage write failed after cleanup.');
+        logger.error('[UserStatePersistence] localStorage write failed after cleanup.');
         return false;
       }
     }
-    console.error('[UserStatePersistence] localStorage write error:', err);
+    logger.error('[UserStatePersistence] localStorage write error:', err);
     return false;
   }
 }
@@ -472,7 +473,7 @@ export async function saveUserState(partial: Partial<UserState>): Promise<void> 
     try {
       await cloudAdapter.push(merged);
     } catch (err) {
-      console.warn('[UserStatePersistence] Cloud sync push failed:', err);
+      logger.warn('[UserStatePersistence] Cloud sync push failed:', err);
     }
   }
 }

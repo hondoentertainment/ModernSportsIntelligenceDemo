@@ -210,6 +210,16 @@ export const SEARCHABLE_FEATURE_IDS = [
   'crowd-pricing',
   'group-vault',
   'swap-meet',
+  'bid-ask-spread-predictor',
+  'wash-sale-horizon',
+  'seller-urgency-score',
+  'portfolio-beta-index',
+  'grading-queue-estimator',
+  'reputation-decay-tracker',
+  'event-impact-attribution',
+  'liquidity-reserve-calculator',
+  'cross-sport-momentum',
+  'agent-confidence-history',
 ] as const;
 
 export const COMMAND_ROUTES = [

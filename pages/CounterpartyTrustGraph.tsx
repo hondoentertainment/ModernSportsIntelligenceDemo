@@ -1,7 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GitBranch, Shield, ShieldAlert, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { buildCounterpartyTrustGraph, CounterpartyTrustGraphView } from '../lib/fiveDifferentiatorService';
+import { logger } from '../lib/logger';
 
 const riskTone: Record<string, string> = {
   low: 'text-emerald-300',
@@ -11,25 +13,28 @@ const riskTone: Record<string, string> = {
 
 const CounterpartyTrustGraph: React.FC = () => {
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [graph, setGraph] = useState<CounterpartyTrustGraphView | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const load = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      setGraph(await buildCounterpartyTrustGraph(user?.id));
+    } catch (loadError) {
+      logger.error('Failed to load counterparty trust graph:', loadError);
+      setError(loadError instanceof Error ? loadError.message : 'Unable to load trust graph.');
+      addToast('error', 'Could not load trust graph. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.id, addToast]);
+
   useEffect(() => {
-    const load = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        setGraph(await buildCounterpartyTrustGraph(user?.id));
-      } catch (loadError) {
-        console.error('Failed to load counterparty trust graph:', loadError);
-        setError(loadError instanceof Error ? loadError.message : 'Unable to load trust graph.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
     void load();
-  }, [user?.id]);
+  }, [load]);
 
   const topCounterparties = useMemo(
     () => [...(graph?.counterparties || [])].sort((a, b) => b.trustScore - a.trustScore),
@@ -50,9 +55,12 @@ const CounterpartyTrustGraph: React.FC = () => {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-sm text-red-100">
-          <div className="font-semibold">Trust graph unavailable</div>
-          <p className="mt-2 text-red-200/90">{error}</p>
+        <div role="alert" className="rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-sm text-red-100 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="font-semibold">Trust graph unavailable</div>
+            <p className="mt-2 text-red-200/90">{error}</p>
+          </div>
+          <button type="button" aria-label="Retry loading trust graph" onClick={() => void load()} className="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-xs font-medium transition-colors">Retry</button>
         </div>
       )}
 

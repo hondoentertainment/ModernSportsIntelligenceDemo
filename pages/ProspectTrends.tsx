@@ -22,6 +22,7 @@ import {
 import { getRealTimeLeagueTrends } from '../lib/gemini.ts';
 import { MiLBProspect } from '../types.ts';
 import CardImage from '../components/CardImage.tsx';
+import { logger } from '../lib/logger';
 import ImageLightbox from '../components/ImageLightbox.tsx';
 
 const ProspectTrends: React.FC = () => {
@@ -52,7 +53,7 @@ const ProspectTrends: React.FC = () => {
         fetchTrends();
       }
     } catch (e) {
-      console.warn('Failed to parse prospect trends', e);
+      logger.warn('Failed to parse prospect trends', e);
       fetchTrends();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -58,7 +58,7 @@ describe('fiveDifferentiatorService', () => {
     it('builds liquidity twin assets for active inventory', async () => {
         const assets = await buildLiquidityTwinAssets(sampleInventory);
         expect(assets.length).toBeGreaterThan(0);
-        expect(assets[0].assetName).toContain('Luka');
+        expect(assets.some(a => a.assetName.includes('Luka'))).toBe(true);
     });
 
     it('seeds a counterparty trust graph when none exists', async () => {

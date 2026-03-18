@@ -7,6 +7,7 @@ import { initializeScheduler, stopScheduler } from '../lib/syncScheduler.ts';
 import { initPriceHistory, teardownPriceHistory, isPriceHistoryInitialized } from '../lib/priceHistory.ts';
 import { isDemoMode } from '../lib/supabase.ts';
 import { showToast } from '../lib/toast.ts';
+import { logger } from '../lib/logger';
 import type { CardInventory, TargetWatchlist } from '../types.ts';
 
 const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -28,7 +29,7 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
 
     useEffect(() => {
         if (inventory.length > 0 && !isMigrating) {
-            if (import.meta.env.DEV) console.warn('Initializing Automated Sync Scheduler...');
+            if (import.meta.env.DEV) logger.log('Initializing Automated Sync Scheduler...');
             const _scheduler = initializeScheduler(inventory, targets, {
                 onProgress: (p) => {
                     if (p.status === 'complete' && import.meta.env.DEV) {
@@ -60,7 +61,7 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
             });
 
             return () => {
-                if (import.meta.env.DEV) console.warn('Stopping Automated Sync Scheduler...');
+                if (import.meta.env.DEV) logger.log('Stopping Automated Sync Scheduler...');
                 stopScheduler();
             };
         }

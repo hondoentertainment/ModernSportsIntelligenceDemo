@@ -272,7 +272,7 @@ describe('auctionSniperService', () => {
 
   describe('getEndingSoon', () => {
     it('returns only auctions ending within 1 hour', () => {
-      const ending = getEndingSoon();
+      const ending = getEndingSoon(3600);
       for (const a of ending) {
         expect(a.timeRemaining).toBeLessThanOrEqual(3600);
       }

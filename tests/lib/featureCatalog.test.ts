@@ -151,4 +151,25 @@ describe('featureCatalog', () => {
       expect(DISCOVERABLE_FEATURE_CATALOG.length).toBeLessThan(FEATURE_CATALOG.length);
     });
   });
+
+  describe('v5.2 Frontier feature ids', () => {
+    const FRONTIER_IDS = [
+      'bid-ask-spread-predictor',
+      'wash-sale-horizon',
+      'seller-urgency-score',
+      'portfolio-beta-index',
+      'grading-queue-estimator',
+      'reputation-decay-tracker',
+      'event-impact-attribution',
+      'liquidity-reserve-calculator',
+      'cross-sport-momentum',
+      'agent-confidence-history',
+    ];
+
+    it('FEATURE_CATALOG contains all v5.2 Frontier feature ids', () => {
+      for (const id of FRONTIER_IDS) {
+        expect(FEATURE_CATALOG.some(f => f.id === id)).toBe(true);
+      }
+    });
+  });
 });

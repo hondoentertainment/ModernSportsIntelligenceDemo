@@ -76,6 +76,8 @@ import type {
   SocialPlatform,
 } from './apiAdapterTypes';
 
+import { logger } from './logger';
+
 // Re-export all types so consumers can `import { ... } from './apiAdapterLayer'`
 export type {
   ApiConfig,
@@ -1026,7 +1028,7 @@ function createMockSocialDataAdapter(): SocialDataAdapter {
 
 /**
  * Live adapters have the fetch calls fully structured but currently
- * fall back to mock data with a `console.warn` when the API key is
+ * fall back to mock data with a `logger.warn` when the API key is
  * not configured.  This allows a developer to drop in a real key and
  * immediately get live data without changing any call sites.
  */
@@ -1054,7 +1056,7 @@ function createLiveMarketplaceAdapter(apiKey: string): MarketplaceAdapter {
           dataType: 'listings',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live marketplace searchListings failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live marketplace searchListings failed, falling back to mock data.', err);
         return createMockMarketplaceAdapter().searchListings(params, opts);
       }
     },
@@ -1077,7 +1079,7 @@ function createLiveMarketplaceAdapter(apiKey: string): MarketplaceAdapter {
           dataType: 'sales-history',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live marketplace getSalesHistory failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live marketplace getSalesHistory failed, falling back to mock data.', err);
         return createMockMarketplaceAdapter().getSalesHistory(params, opts);
       }
     },
@@ -1100,7 +1102,7 @@ function createLiveMarketplaceAdapter(apiKey: string): MarketplaceAdapter {
           dataType: 'listings',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live marketplace getActiveListings failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live marketplace getActiveListings failed, falling back to mock data.', err);
         return createMockMarketplaceAdapter().getActiveListings(params, opts);
       }
     },
@@ -1128,7 +1130,7 @@ function createLiveGradingAdapter(apiKey: string): GradingAdapter {
           dataType: 'pop-report',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live grading getPopulationReport failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live grading getPopulationReport failed, falling back to mock data.', err);
         return createMockGradingAdapter().getPopulationReport(params, opts);
       }
     },
@@ -1149,14 +1151,14 @@ function createLiveGradingAdapter(apiKey: string): GradingAdapter {
           dataType: 'pop-report',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live grading getSubmissionStatus failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live grading getSubmissionStatus failed, falling back to mock data.', err);
         return createMockGradingAdapter().getSubmissionStatus(submissionId, company, opts);
       }
     },
 
     async listSubmissions(company, opts) {
       // No public API endpoint for listing all user submissions.
-      console.warn('[apiAdapterLayer] listSubmissions has no live API endpoint; returning mock data.');
+      logger.warn('[apiAdapterLayer] listSubmissions has no live API endpoint; returning mock data.');
       return createMockGradingAdapter().listSubmissions(company, opts);
     },
   };
@@ -1189,7 +1191,7 @@ function createLiveFinancialAdapter(apiKey: string): FinancialDataAdapter {
           dataType: 'quote',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live financial getQuotes failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live financial getQuotes failed, falling back to mock data.', err);
         return createMockFinancialAdapter().getQuotes(assets, opts);
       }
     },
@@ -1212,7 +1214,7 @@ function createLiveFinancialAdapter(apiKey: string): FinancialDataAdapter {
           dataType: 'price-history',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live financial getPriceHistory failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live financial getPriceHistory failed, falling back to mock data.', err);
         return createMockFinancialAdapter().getPriceHistory(params, opts);
       }
     },
@@ -1234,7 +1236,7 @@ function createLiveFinancialAdapter(apiKey: string): FinancialDataAdapter {
         }
         return result as Record<FinancialAsset, number>;
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live financial getCorrelationMatrix failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live financial getCorrelationMatrix failed, falling back to mock data.', err);
         return createMockFinancialAdapter().getCorrelationMatrix(portfolioReturns, assets, days, opts);
       }
     },
@@ -1265,7 +1267,7 @@ function createLiveSportsDataAdapter(apiKey: string): SportsDataAdapter {
           dataType: 'player-profile',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live sports getPlayerProfile failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live sports getPlayerProfile failed, falling back to mock data.', err);
         return createMockSportsDataAdapter().getPlayerProfile(playerIdOrName, sport, opts);
       }
     },
@@ -1283,7 +1285,7 @@ function createLiveSportsDataAdapter(apiKey: string): SportsDataAdapter {
           dataType: 'player-profile',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live sports getPlayerStats failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live sports getPlayerStats failed, falling back to mock data.', err);
         return createMockSportsDataAdapter().getPlayerStats(playerId, sport, season, opts);
       }
     },
@@ -1301,7 +1303,7 @@ function createLiveSportsDataAdapter(apiKey: string): SportsDataAdapter {
           dataType: 'injury-report',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live sports getInjuryReports failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live sports getInjuryReports failed, falling back to mock data.', err);
         return createMockSportsDataAdapter().getInjuryReports(sport, team, opts);
       }
     },
@@ -1318,7 +1320,7 @@ function createLiveSportsDataAdapter(apiKey: string): SportsDataAdapter {
           dataType: 'schedule',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live sports getSchedule failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live sports getSchedule failed, falling back to mock data.', err);
         return createMockSportsDataAdapter().getSchedule(sport, daysAhead, team, opts);
       }
     },
@@ -1347,14 +1349,14 @@ function createLiveSocialDataAdapter(twitterToken?: string, _redditCreds?: strin
           dataType: 'sentiment',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live social getSentiment failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live social getSentiment failed, falling back to mock data.', err);
         return createMockSocialDataAdapter().getSentiment(params, opts);
       }
     },
 
     async getInfluencerActivity(opts) {
       // No single API for this; would require aggregating across platforms.
-      console.warn('[apiAdapterLayer] getInfluencerActivity uses mock data (cross-platform aggregation not yet implemented).');
+      logger.warn('[apiAdapterLayer] getInfluencerActivity uses mock data (cross-platform aggregation not yet implemented).');
       return createMockSocialDataAdapter().getInfluencerActivity(opts);
     },
 
@@ -1375,7 +1377,7 @@ function createLiveSocialDataAdapter(twitterToken?: string, _redditCreds?: strin
           dataType: 'trending',
         });
       } catch (err) {
-        console.warn('[apiAdapterLayer] Live social getTrendingTopics failed, falling back to mock data.', err);
+        logger.warn('[apiAdapterLayer] Live social getTrendingTopics failed, falling back to mock data.', err);
         return createMockSocialDataAdapter().getTrendingTopics(platforms, limit, opts);
       }
     },
@@ -1454,7 +1456,7 @@ function createAdapter<K extends AdapterName>(name: K, config: ApiConfig): Adapt
     _adapterStatuses.set(name, live ? 'live' : 'mock');
     return adapter;
   } catch (err) {
-    console.error(`[apiAdapterLayer] Failed to create ${live ? 'live' : 'mock'} adapter for '${name}':`, err);
+    logger.error(`[apiAdapterLayer] Failed to create ${live ? 'live' : 'mock'} adapter for '${name}':`, err);
     _adapterStatuses.set(name, 'error');
     // Always fall back to mock on error.
     return creators[name].mock();

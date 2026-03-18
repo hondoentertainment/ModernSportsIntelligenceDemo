@@ -341,6 +341,18 @@ const IdentityGraph = lazy(() => import('./pages/IdentityGraph.tsx'));
 const NarrativeLifecycle = lazy(() => import('./pages/NarrativeLifecycle.tsx'));
 const AgentPersonality = lazy(() => import('./pages/AgentPersonality.tsx'));
 
+// v5.2: Next 10 industry-absent features (PRD 4.12)
+const BidAskSpreadPredictor = lazy(() => import('./pages/BidAskSpreadPredictor.tsx'));
+const WashSaleHorizon = lazy(() => import('./pages/WashSaleHorizon.tsx'));
+const SellerUrgencyScore = lazy(() => import('./pages/SellerUrgencyScore.tsx'));
+const PortfolioBetaIndex = lazy(() => import('./pages/PortfolioBetaIndex.tsx'));
+const GradingQueueEstimator = lazy(() => import('./pages/GradingQueueEstimator.tsx'));
+const ReputationDecayTracker = lazy(() => import('./pages/ReputationDecayTracker.tsx'));
+const EventImpactAttribution = lazy(() => import('./pages/EventImpactAttribution.tsx'));
+const LiquidityReserveCalculator = lazy(() => import('./pages/LiquidityReserveCalculator.tsx'));
+const CrossSportMomentum = lazy(() => import('./pages/CrossSportMomentum.tsx'));
+const AgentConfidenceHistory = lazy(() => import('./pages/AgentConfidenceHistory.tsx'));
+
 // Formerly coming-soon features — now live
 const WhatIfSimulator = lazy(() => import('./pages/WhatIfSimulator.tsx'));
 const GradingBatchPlanner = lazy(() => import('./pages/GradingBatchPlanner.tsx'));
@@ -787,6 +799,17 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/identity-graph" element={<IdentityGraph />} />
                 <Route path="/narrative-lifecycle" element={<NarrativeLifecycle />} />
                 <Route path="/agent-personality" element={<AgentPersonality />} />
+                {/* v5.2: Next 10 industry-absent features (PRD 4.12) */}
+                <Route path="/bid-ask-spread-predictor" element={<BidAskSpreadPredictor />} />
+                <Route path="/wash-sale-horizon" element={<WashSaleHorizon />} />
+                <Route path="/seller-urgency-score" element={<SellerUrgencyScore />} />
+                <Route path="/portfolio-beta-index" element={<PortfolioBetaIndex />} />
+                <Route path="/grading-queue-estimator" element={<GradingQueueEstimator />} />
+                <Route path="/reputation-decay-tracker" element={<ReputationDecayTracker />} />
+                <Route path="/event-impact-attribution" element={<EventImpactAttribution />} />
+                <Route path="/liquidity-reserve-calculator" element={<LiquidityReserveCalculator />} />
+                <Route path="/cross-sport-momentum" element={<CrossSportMomentum />} />
+                <Route path="/agent-confidence-history" element={<AgentConfidenceHistory />} />
                 {/* Formerly coming-soon features */}
                 <Route path="/what-if-simulator" element={<WhatIfSimulator />} />
                 <Route path="/grading-batch-planner" element={<GradingBatchPlanner />} />

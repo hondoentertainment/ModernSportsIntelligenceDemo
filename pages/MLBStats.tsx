@@ -18,6 +18,7 @@ import {
   getAthleteHeadshotUrl,
 } from '../lib/mlbApi.ts';
 import { useToast } from '../contexts/ToastContext.tsx';
+import { logger } from '../lib/logger';
 
 const MLBStats: React.FC = () => {
   const [games, setGames] = useState<any[]>([]);
@@ -41,7 +42,7 @@ const MLBStats: React.FC = () => {
         setStandings(standingsData);
         setProbables(probablesData);
       } catch (error) {
-        console.error("MLB API Error:", error);
+        logger.error("MLB API Error:", error);
         addToast('error', 'MLB data unavailable. Check back later.', { dedupeKey: 'mlb_api' });
       } finally {
         setIsLoading(false);

@@ -43,6 +43,7 @@ import {
 import { Link } from 'react-router-dom';
 import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
 import { getEbayCardPrice } from '../lib/gemini';
+import { logger } from '../lib/logger';
 import { LEAGUES } from '../constants';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory';
 import { useFavorites } from '../lib/useFavorites';
@@ -435,7 +436,7 @@ const Collection: React.FC = () => {
 
       if (hydrated) {
         setInventory(updatedInventory);
-        console.log(`Hydrated cards with scarcity data.`);
+        logger.log(`Hydrated cards with scarcity data.`);
       }
     }
   }, [inventory, setInventory]);
@@ -1134,7 +1135,7 @@ const Collection: React.FC = () => {
           isOpen={isGradingAuditOpen}
           onClose={() => setIsGradingAuditOpen(false)}
           onComplete={(res) => {
-            console.log('Visual Audit Complete:', res);
+            logger.log('Visual Audit Complete:', res);
             setIsGradingAuditOpen(false);
           }}
         />

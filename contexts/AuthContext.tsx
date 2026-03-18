@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isDemoMode } from '../lib/supabase';
+import { logger } from '../lib/logger';
 
 interface AuthContextType {
     user: User | null;
@@ -79,13 +80,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             try {
                 const { data, error } = await refreshSessionWithTimeout(SESSION_REFRESH_TIMEOUT_MS);
                 if (error) {
-                    console.warn('Session refresh failed:', error.message);
+                    logger.warn('Session refresh failed:', error.message);
                 } else if (data.session) {
                     setSession(data.session);
                     setUser(data.session.user);
                 }
             } catch (e) {
-                console.warn('Session refresh error:', e);
+                logger.warn('Session refresh error:', e);
             }
         }, SESSION_REFRESH_INTERVAL);
     }, []);
@@ -119,7 +120,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     if (initialSession) startSessionRefreshTimer();
                 }
             } catch (error) {
-                console.error('Error initializing session:', error);
+                logger.error('Error initializing session:', error);
             } finally {
                 if (mounted) setLoading(false);
             }
@@ -143,7 +144,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                         window.location.hash = '/reset-password';
                         break;
                     case 'TOKEN_REFRESHED':
-                        if (import.meta.env.DEV) console.warn('[Auth] Session token refreshed');
+                        if (import.meta.env.DEV) logger.warn('[Auth] Session token refreshed');
                         break;
                     case 'SIGNED_IN':
                         setRecoveryMode(false);
@@ -231,13 +232,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
             const { data, error } = await refreshSessionWithTimeout(SESSION_REFRESH_TIMEOUT_MS);
             if (error) {
-                console.warn('Manual session refresh failed:', error.message);
+                logger.warn('Manual session refresh failed:', error.message);
             } else if (data.session) {
                 setSession(data.session);
                 setUser(data.session.user);
             }
         } catch (e) {
-            console.warn('Manual session refresh error:', e);
+            logger.warn('Manual session refresh error:', e);
         }
     };
 

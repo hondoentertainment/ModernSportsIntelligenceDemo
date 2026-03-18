@@ -1,6 +1,7 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Camera, RefreshCw, AlertCircle } from 'lucide-react';
+import { logger } from '../lib/logger';
 
 interface CameraFeedProps {
     onCapture: (_base64: string) => void;
@@ -43,7 +44,7 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive }) => {
                 videoRef.current.srcObject = mediaStream;
             }
         } catch (err) {
-            console.error("Camera access error:", err);
+            logger.error("Camera access error:", err);
             setError("Camera access denied or unavailable. Ensure your browser has permission.");
         }
     };

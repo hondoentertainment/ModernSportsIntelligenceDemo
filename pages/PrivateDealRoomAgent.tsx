@@ -1,15 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Lock, MessageSquare, ShieldCheck, Sparkles, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { createPrivateDealRoomAgentFromListing } from '../lib/fiveDifferentiatorService';
 import { getActiveListingsAsync, Listing } from '../lib/p2pMarketplaceService';
 import { getDealRoomsAsync } from '../lib/dealRoomService';
 import type { DealRoom } from '../lib/dealRoomService';
+import { logger } from '../lib/logger';
 
 const fmt = (value: number) => `$${Math.round(value).toLocaleString()}`;
 
 const PrivateDealRoomAgent: React.FC = () => {
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [listings, setListings] = useState<Listing[]>([]);
   const [rooms, setRooms] = useState<DealRoom[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<DealRoom | null>(null);
@@ -17,27 +20,29 @@ const PrivateDealRoomAgent: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const load = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const [nextListings, nextRooms] = await Promise.all([
+        getActiveListingsAsync(user?.id),
+        getDealRoomsAsync(user?.id),
+      ]);
+      setListings(nextListings.filter(listing => listing.askingPrice >= 1000));
+      setRooms(nextRooms);
+      setSelectedRoom(nextRooms[0] || null);
+    } catch (loadError) {
+      logger.error('Failed to load private deal room data:', loadError);
+      setError(loadError instanceof Error ? loadError.message : 'Unable to load private deal rooms.');
+      addToast('error', 'Could not load deal room data. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.id, addToast]);
+
   useEffect(() => {
-    const load = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const [nextListings, nextRooms] = await Promise.all([
-          getActiveListingsAsync(user?.id),
-          getDealRoomsAsync(user?.id),
-        ]);
-        setListings(nextListings.filter(listing => listing.askingPrice >= 1000));
-        setRooms(nextRooms);
-        setSelectedRoom(nextRooms[0] || null);
-      } catch (loadError) {
-        console.error('Failed to load private deal room data:', loadError);
-        setError(loadError instanceof Error ? loadError.message : 'Unable to load private deal rooms.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
     void load();
-  }, [user?.id]);
+  }, [load]);
 
   const actionableListings = useMemo(
     () => listings.filter(listing => listing.askingPrice >= 1000).slice(0, 8),
@@ -67,9 +72,12 @@ const PrivateDealRoomAgent: React.FC = () => {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-sm text-red-100">
-          <div className="font-semibold">Deal room data unavailable</div>
-          <p className="mt-2 text-red-200/90">{error}</p>
+        <div role="alert" className="rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-sm text-red-100 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="font-semibold">Deal room data unavailable</div>
+            <p className="mt-2 text-red-200/90">{error}</p>
+          </div>
+          <button type="button" aria-label="Retry loading deal rooms" onClick={() => void load()} className="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-xs font-medium transition-colors">Retry</button>
         </div>
       )}
 

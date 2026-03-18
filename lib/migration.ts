@@ -3,6 +3,7 @@
  * Handles migration from localStorage to Supabase for multi-tenant support
  */
 
+import { logger } from './logger';
 import { CardInventory, TargetWatchlist } from '../types.ts';
 import { supabase } from './supabase';
 
@@ -44,7 +45,7 @@ function getLocalStorageData<T>(key: string): T | null {
         const data = localStorage.getItem(key);
         return data ? JSON.parse(data) : null;
     } catch (e) {
-        console.warn(`Failed to parse ${key} from localStorage:`, e);
+        logger.warn(`Failed to parse ${key} from localStorage:`, e);
         return null;
     }
 }
@@ -56,7 +57,7 @@ function _setLocalStorageData<T>(key: string, data: T): void {
     try {
         localStorage.setItem(key, JSON.stringify(data));
     } catch (e) {
-        console.warn(`Failed to save ${key} to localStorage:`, e);
+        logger.warn(`Failed to save ${key} to localStorage:`, e);
     }
 }
 
@@ -96,13 +97,13 @@ async function _migrateCard(card: CardInventory, userId: string): Promise<boolea
             });
 
         if (error) {
-            console.error('Failed to migrate card:', card.id, error);
+            logger.error('Failed to migrate card:', card.id, error);
             return false;
         }
 
         return true;
     } catch (e) {
-        console.error('Error migrating card:', card.id, e);
+        logger.error('Error migrating card:', card.id, e);
         return false;
     }
 }
@@ -132,13 +133,13 @@ async function _migrateTarget(target: TargetWatchlist, userId: string): Promise<
             });
 
         if (error) {
-            console.error('Failed to migrate target:', target.id, error);
+            logger.error('Failed to migrate target:', target.id, error);
             return false;
         }
 
         return true;
     } catch (e) {
-        console.error('Error migrating target:', target.id, e);
+        logger.error('Error migrating target:', target.id, e);
         return false;
     }
 }
@@ -192,7 +193,7 @@ export async function migrateToSupabase(userId: string): Promise<MigrationResult
         if (result.success) {
             localStorage.removeItem(STORAGE_KEYS.INVENTORY);
             localStorage.removeItem(STORAGE_KEYS.TARGETS);
-            if (import.meta.env.DEV) console.warn('Migration complete, cleared localStorage data');
+            if (import.meta.env.DEV) logger.log('Migration complete, cleared localStorage data');
         }
 
     } catch (e) {
@@ -231,7 +232,7 @@ export function restoreLocalStorage(backupJson: string): boolean {
 
         return true;
     } catch (e) {
-        console.error('Failed to restore localStorage backup:', e);
+        logger.error('Failed to restore localStorage backup:', e);
         return false;
     }
 }

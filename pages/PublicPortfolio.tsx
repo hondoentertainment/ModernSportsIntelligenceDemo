@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Shield, LayoutGrid, List as ListIcon, Search, Share2, CheckCircle2 } from 'lucide-react';
 import { CardInventory, UserProfile, League } from '../types';
@@ -6,36 +6,46 @@ import { fetchPublicProfile, fetchPublicInventory, generateShareLink } from '../
 import CardImage from '../components/CardImage';
 import { getRarityTier, getTierStyles } from '../lib/rarity';
 import { LEAGUES } from '../constants';
+import { useToast } from '../contexts/ToastContext';
+import { logger } from '../lib/logger';
 
 const PublicPortfolio: React.FC = () => {
     const { username } = useParams<{ username: string }>();
+    const { addToast } = useToast();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [inventory, setInventory] = useState<CardInventory[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [filterLeague, setFilterLeague] = useState<League | 'All'>('All');
     const [copied, setCopied] = useState(false);
 
-    useEffect(() => {
-        async function loadData() {
-            if (!username) return;
-            setLoading(true);
-            try {
-                const user = await fetchPublicProfile(username);
-                if (user) {
-                    setProfile(user);
-                    const cards = await fetchPublicInventory(user.id);
-                    setInventory(cards);
-                }
-            } catch (error) {
-                console.error("Failed to load public profile", error);
-            } finally {
-                setLoading(false);
+    const loadData = useCallback(async () => {
+        if (!username) return;
+        setLoading(true);
+        setError(null);
+        try {
+            const user = await fetchPublicProfile(username);
+            if (user) {
+                setProfile(user);
+                const cards = await fetchPublicInventory(user.id);
+                setInventory(cards);
+            } else {
+                setProfile(null);
             }
+        } catch (err) {
+            logger.error('Failed to load public profile', err);
+            setError(err instanceof Error ? err.message : 'Failed to load portfolio.');
+            addToast('error', 'Could not load portfolio. Please try again.');
+        } finally {
+            setLoading(false);
         }
-        loadData();
-    }, [username]);
+    }, [username, addToast]);
+
+    useEffect(() => {
+        void loadData();
+    }, [loadData]);
 
     const copyLink = () => {
         if (username) {
@@ -52,8 +62,22 @@ const PublicPortfolio: React.FC = () => {
         return matchesSearch && matchesLeague;
     });
 
-    if (loading) {
+    if (loading && !profile) {
         return <div className="flex items-center justify-center h-full text-brand-lime animate-pulse">Loading Asset Data...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                <Shield size={64} className="text-red-500/80 mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Could not load portfolio</h2>
+                <p className="text-slate-400 mb-6">{error}</p>
+                <div className="flex gap-4">
+                    <button type="button" onClick={() => void loadData()} className="px-6 py-3 bg-brand-lime text-brand-charcoal font-bold rounded-xl uppercase tracking-widest hover:bg-white transition-colors">Retry</button>
+                    <Link to="/" className="px-6 py-3 bg-slate-700 text-white font-bold rounded-xl uppercase tracking-widest hover:bg-slate-600 transition-colors">Return to Base</Link>
+                </div>
+            </div>
+        );
     }
 
     if (!profile) {

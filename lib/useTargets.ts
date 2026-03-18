@@ -1,4 +1,4 @@
-
+import { logger } from './logger';
 import { useState, useEffect, useCallback } from 'react';
 import { TargetWatchlist } from '../types.ts';
 
@@ -18,7 +18,7 @@ export function useTargets() {
                 }
             }
         } catch (e) {
-            console.warn('Failed to parse targets from localStorage', e);
+            logger.warn('Failed to parse targets from localStorage', e);
         }
         return [];
     });

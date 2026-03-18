@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CardInventory, GradingPremiumAnalysis } from '../types';
 import { getGradingPremiumAnalysis } from '../lib/gemini';
+import { logger } from '../lib/logger';
 import { Calculator, TrendingUp, AlertCircle, ChevronRight, Loader2, Sparkles, ArrowRight, ShieldCheck, DollarSign } from 'lucide-react';
 
 interface Props {
@@ -17,7 +18,7 @@ const GradingPremiumTool: React.FC<Props> = ({ card }) => {
             const result = await getGradingPremiumAnalysis(card);
             setAnalysis(result);
         } catch (error) {
-            console.error('Grading analysis failed:', error);
+            logger.error('Grading analysis failed:', error);
         } finally {
             setLoading(false);
         }

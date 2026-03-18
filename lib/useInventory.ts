@@ -1,4 +1,4 @@
-
+import { logger } from './logger';
 import { useState, useEffect, useCallback } from 'react';
 import { CardInventory, TargetWatchlist } from '../types.ts';
 import { MOCK_CARDS } from '../constants.tsx';
@@ -30,7 +30,7 @@ export function useInventory() {
             // Otherwise initialize with empty array for first-time onboarding experience
             return [];
         } catch (e) {
-            console.warn('Failed to parse inventory from localStorage', e);
+            logger.warn('Failed to parse inventory from localStorage', e);
             return [];
         }
     });
@@ -40,7 +40,7 @@ export function useInventory() {
             const saved = localStorage.getItem(TARGETS_KEY);
             return saved ? JSON.parse(saved) : [];
         } catch (e) {
-            console.warn('Failed to parse targets', e);
+            logger.warn('Failed to parse targets', e);
             return [];
         }
     });
@@ -52,7 +52,7 @@ export function useInventory() {
                 return JSON.parse(meta);
             }
         } catch (e) {
-            console.warn('Failed to parse sync meta', e);
+            logger.warn('Failed to parse sync meta', e);
         }
         return { lastSyncTime: null, totalValue: 0, assetCount: 0 };
     });
@@ -84,7 +84,7 @@ export function useInventory() {
                         setInventory(newInventory);
                     }
                 } catch (err) {
-                    console.warn('Failed to parse storage event', err);
+                    logger.warn('Failed to parse storage event', err);
                 }
             }
         };
@@ -115,7 +115,7 @@ export function useInventory() {
                 }
             }
         } catch (e) {
-            console.warn('Failed to refresh inventory from storage', e);
+            logger.warn('Failed to refresh inventory from storage', e);
         }
     }, []);
 

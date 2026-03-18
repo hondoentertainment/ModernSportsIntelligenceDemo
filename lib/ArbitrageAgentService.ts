@@ -2,6 +2,7 @@ import { Type } from "@google/genai";
 import { CrossAssetInsight, AgentInsight } from "../types.ts";
 import { showToast } from "./toast.ts";
 import { createGeminiClient } from "./geminiClient.ts";
+import { logger } from "./logger";
 
 const ai = createGeminiClient();
 
@@ -128,7 +129,7 @@ export class ArbitrageAgentService {
                 createdAt: new Date().toISOString()
             };
         } catch (error) {
-            console.error("Arbitrage Intelligence Error:", error);
+            logger.error("Arbitrage Intelligence Error:", error);
             showToast('error', 'Arbitrage committee failed to convene. Retrying link...');
             return null;
         }

@@ -1,8 +1,8 @@
 # Modern Sports Intelligence Platform — Product Requirements Document (PRD)
 
-**Version:** 4.2
-**Last Updated:** March 13, 2026
-**Status:** Active Development — v4.0 delivered; v5.0/v5.1 roadmap defined
+**Version:** 4.3
+**Last Updated:** March 18, 2026
+**Status:** Active Development — v4.0 delivered; v5.0/v5.1 roadmap defined; production hardening complete
 **Platform:** Web (React SPA), PWA-enabled
 
 ---
@@ -307,6 +307,21 @@ The following features do not exist on any competing platform in sports collecti
 | 155 | **Cross-Venue Identity Graph** | `/identity-graph` | Link same seller/buyer across eBay, COMC, PWCC, etc. for true counterparty history and concentration risk. No one unifies identity across venues. |
 | 156 | **Narrative Lifecycle Tracker** | `/narrative-lifecycle` | Track a narrative (e.g. "rookie breakout") from first mention → social spike → price move → exhaustion. Helps time entries and exits. |
 | 157 | **Agent Personality Cloning** | `/agent-personality` | User trains a "mini-me" agent (risk tolerance, league preference, max position) that screens and ranks opportunities; human still approves. Personalization at scale. |
+
+### 4.12 Next 10 Industry-Absent Features (v5.2 — Frontier)
+
+| # | Feature | Route | Description |
+|---|---------|-------|-------------|
+| 158 | **Bid-Ask Spread Predictor** | `/bid-ask-spread-predictor` | Predict short-term bid-ask spread by venue and card. No hobby tool offers spread prediction. |
+| 159 | **Wash-Sale Horizon Calendar** | `/wash-sale-horizon` | Calendar of tax wash-sale windows per lot; avoid triggering wash-sale rules. Industry-absent. |
+| 160 | **Seller Urgency Score** | `/seller-urgency-score` | Listing age, price drops, views → urgency score for negotiation timing. Novel. |
+| 161 | **Portfolio Beta to Index** | `/portfolio-beta-index` | Beta/correlation of portfolio to a custom or standard card index. Institutional-grade. |
+| 162 | **Grading Queue Estimator** | `/grading-queue-estimator` | Est. position in PSA/BGS queue and ETA. Not offered elsewhere. |
+| 163 | **Reputation Decay Tracker** | `/reputation-decay-tracker` | How counterparty reputation decays after disputes or inactivity. Novel. |
+| 164 | **Event Impact Attribution** | `/event-impact-attribution` | Attribute price move to specific event (trade, injury, award). Not standard. |
+| 165 | **Liquidity Reserve Calculator** | `/liquidity-reserve-calculator` | Recommend % of portfolio to hold in liquid cards for emergencies. Novel. |
+| 166 | **Cross-Sport Momentum** | `/cross-sport-momentum` | When one sport's cards run hot, lagged effect on others. Novel. |
+| 167 | **Agent Confidence History** | `/agent-confidence-history` | Time-series of agent recommendation accuracy (rolling). Uses outcome memory. |
 
 ---
 
@@ -703,4 +718,4 @@ ModernSportsIntelligenceDemo/
 
 ---
 
-*This PRD is a living document updated with each feature release. Version 4.2 adds the next set of industry-absent features (v5.1+ Frontier): agent outcome memory, market truth ledger, counterparty passport, thesis backtester, liquidity horizon, regulatory alerts, and 10 additional differentiators not present in the industry.*
+*This PRD is a living document updated with each feature release. Version 4.3 (March 2026) documents production readiness: app-wide production-safe logger (no console in prod), loading/error/toast/retry on data-fetching pages, env validation gated to dev, error-boundary and test-suite fixes, and Vite build chunk fix (no circular dependency). Version 4.2 added the v5.1+ Frontier industry-absent features.*

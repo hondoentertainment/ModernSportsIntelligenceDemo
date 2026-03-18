@@ -4,11 +4,12 @@ import { validateEnv } from './lib/envValidation.ts';
 import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
 import { validateRuntimeConfig } from './lib/runtimeConfig';
+import { logger } from './lib/logger';
 
 const configValidation = validateRuntimeConfig();
 if (!configValidation.ok) {
   configValidation.issues.forEach(issue => {
-    console.warn(`[RuntimeConfig:${issue.key}] ${issue.message}`);
+    logger.warn(`[RuntimeConfig:${issue.key}]`, issue.message);
   });
 }
 

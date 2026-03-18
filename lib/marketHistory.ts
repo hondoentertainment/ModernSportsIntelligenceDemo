@@ -1,4 +1,4 @@
-
+import { logger } from './logger';
 import { PortfolioSnapshot } from './marketSync.ts';
 
 const HISTORY_KEY = 'cardx_sync_history';
@@ -53,7 +53,7 @@ export function getHistoricalDelta(periodHours: number = 24): MarketDelta | null
             currentValue: latest.totalValue
         };
     } catch (e) {
-        console.warn('Failed to calculate historical delta', e);
+        logger.warn('Failed to calculate historical delta', e);
         return null;
     }
 }

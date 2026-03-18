@@ -29,16 +29,11 @@ export default defineConfig({
           if (id.includes('node_modules/recharts/') || id.includes('node_modules/d3-') || id.includes('node_modules/victory-vendor/')) {
             return 'recharts-vendor';
           }
-          // Service files batched by initial letter range to keep chunks balanced
-          // Batch 1: A-L services
-          if (id.includes('/lib/') && /\/lib\/[a-lA-L][^/]*Service\.ts/.test(id)) {
-            return 'batch1-services';
+          // Lib services: single chunk to avoid circular dependency (batch1 <-> batch2).
+          // Pages remain lazy-loaded as separate chunks.
+          if (id.includes('/lib/') && /\/lib\/[^/]+Service\.tsx?$/.test(id)) {
+            return 'lib-services';
           }
-          // Batch 2: M-Z services
-          if (id.includes('/lib/') && /\/lib\/[m-zM-Z][^/]*Service\.ts/.test(id)) {
-            return 'batch2-services';
-          }
-          // Page components stay as individual lazy chunks (default Vite behavior)
         }
       }
     },
@@ -54,10 +49,6 @@ export default defineConfig({
       reporter: ['text', 'html', 'lcov', 'json-summary'],
       reportsDirectory: './coverage',
       thresholds: {
-        statements: 20,
-        branches: 20,
-        functions: 20,
-        lines: 20,
         statements: 60,
         branches: 42,
         functions: 60,

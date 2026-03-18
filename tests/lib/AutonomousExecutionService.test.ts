@@ -65,7 +65,7 @@ describe('AutonomousExecutionService', () => {
         const updated = await AutonomousExecutionService.decideAction('a3', 'approve', 'tester');
         const action = updated.find(item => item.id === 'a3');
 
-        expect(action?.status).toBe('executed');
+        expect(action?.status).toBe('submitted');
         expect(action?.approvalActor).toBe('tester');
     });
 });

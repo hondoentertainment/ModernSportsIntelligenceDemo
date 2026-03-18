@@ -10,6 +10,7 @@
  * - All read APIs remain synchronous (no breaking changes for consumers)
  */
 
+import { logger } from './logger';
 import { isDemoMode } from './supabase';
 import {
     fetchAllPriceHistory,
@@ -44,7 +45,7 @@ function getAllHistory(): CardPriceHistory {
         const data = localStorage.getItem(STORAGE_KEY);
         return data ? JSON.parse(data) : {};
     } catch (e) {
-        console.warn('Failed to parse price history', e);
+        logger.warn('Failed to parse price history', e);
         return {};
     }
 }
@@ -56,7 +57,7 @@ function saveAllHistory(history: CardPriceHistory): void {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
     } catch (e) {
-        console.warn('Failed to save price history', e);
+        logger.warn('Failed to save price history', e);
     }
 }
 
@@ -67,7 +68,7 @@ function saveAllHistory(history: CardPriceHistory): void {
 function persistToCloud(cardId: string, snapshot: PriceSnapshot): void {
     if (!_currentUserId || isDemoMode) return;
     insertPriceSnapshot(_currentUserId, { cardId, ...snapshot }).catch(err => {
-        console.warn('[PriceHistory] Cloud persist failed for', cardId, err);
+        logger.warn('[PriceHistory] Cloud persist failed for', cardId, err);
     });
 }
 
@@ -77,7 +78,7 @@ function persistToCloud(cardId: string, snapshot: PriceSnapshot): void {
 function persistBatchToCloud(snapshots: Array<{ cardId: string } & PriceSnapshot>): void {
     if (!_currentUserId || isDemoMode || snapshots.length === 0) return;
     insertBatchPriceSnapshots(_currentUserId, snapshots).catch(err => {
-        console.warn('[PriceHistory] Cloud batch persist failed:', err);
+        logger.warn('[PriceHistory] Cloud batch persist failed:', err);
     });
 }
 
@@ -134,9 +135,9 @@ export async function initPriceHistory(userId: string): Promise<void> {
         saveAllHistory(merged);
         _initialized = true;
 
-        if (import.meta.env.DEV) console.warn(`[PriceHistory] Initialized for user ${userId.slice(0, 8)}... — ${Object.keys(merged).length} cards hydrated`);
+        if (import.meta.env.DEV) logger.log(`[PriceHistory] Initialized for user ${userId.slice(0, 8)}... — ${Object.keys(merged).length} cards hydrated`);
     } catch (e) {
-        console.warn('[PriceHistory] Initialization failed, falling back to localStorage', e);
+        logger.warn('[PriceHistory] Initialization failed, falling back to localStorage', e);
         _initialized = true;
     }
 }
