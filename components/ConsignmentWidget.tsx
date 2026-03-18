@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Package, Clock, BarChart3 } from 'lucide-react';
 import { CardInventory } from '../types';
-import { ConsignmentService, ConsignmentStatus, ConsignmentSummary } from '../lib/consignmentService';
+import { ConsignmentService, ConsignmentStatus, ConsignmentSummary } from '../lib/trading/consignmentService';
 
 interface ConsignmentWidgetProps {
   inventory: CardInventory[];

@@ -5,7 +5,7 @@ import SwarmCard from '../components/SwarmCard';
 import AcquisitionProposal from '../components/AcquisitionProposal';
 import { Users, ShieldCheck, Zap, Globe, MessageSquare, Plus } from 'lucide-react';
 import { showToast } from '../lib/toast';
-import { GuildService } from '../lib/guildService';
+import { GuildService } from '../lib/social/guildService';
 
 const GuildDashboard: React.FC = () => {
     const [swarms, setSwarms] = useState<SwarmInsight[]>([]);

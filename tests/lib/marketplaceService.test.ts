@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { addReferralEdge, calculateReputation, getReferralCount, verifyListing } from '../../lib/marketplaceService';
+import { addReferralEdge, calculateReputation, getReferralCount, verifyListing } from '../../lib/trading/marketplaceService';
 
 describe('marketplaceService', () => {
     beforeEach(() => {

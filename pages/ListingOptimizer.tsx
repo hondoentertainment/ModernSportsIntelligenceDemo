@@ -36,7 +36,7 @@ import {
   type SEOKeyword,
   type ScoreImprovement,
   type ListingOptimizerSummary,
-} from '../lib/listingOptimizerService';
+} from '../lib/trading/listingOptimizerService';
 import {
   BarChart,
   Bar,

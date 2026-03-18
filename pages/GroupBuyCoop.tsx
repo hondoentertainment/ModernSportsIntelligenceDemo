@@ -16,7 +16,7 @@ import {
   type BuyHistory,
   type GroupBuyStats,
   type BuyStatus,
-} from '../lib/groupBuyService';
+} from '../lib/social/groupBuyService';
 
 const TABS = ['Active Buys', 'History'] as const;
 type Tab = (typeof TABS)[number];

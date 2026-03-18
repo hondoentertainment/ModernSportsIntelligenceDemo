@@ -451,7 +451,7 @@ export { ALL_PLATFORMS, CARD_SEEDS };
 // Liquidity Intelligence (Phase 68), and Consignment Router (Phase 79)
 
 import { getIndices } from './marketIndicesService';
-import { getPlatformComparison as getConsignmentComparison, type PlatformComparison as _ConsignmentComparison } from './consignmentRouterService';
+import { getPlatformComparison as getConsignmentComparison, type PlatformComparison as _ConsignmentComparison } from './trading/consignmentRouterService';
 
 export interface EnrichedConsolidatedView {
   consolidatedPrice: ConsolidatedPrice;

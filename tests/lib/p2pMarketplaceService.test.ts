@@ -10,7 +10,7 @@ import {
   getMarketplaceStats,
   getListingDealScore,
   getListingsByFilters,
-} from '../../lib/p2pMarketplaceService';
+} from '../../lib/trading/p2pMarketplaceService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

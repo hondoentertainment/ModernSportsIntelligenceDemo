@@ -8,7 +8,7 @@ import {
   getCollaborationStats,
   getResearchStatusLabel,
   getResearchStatusColor,
-} from '../lib/sharedWatchlistService';
+} from '../lib/social/sharedWatchlistService';
 
 const SharedWatchlists: React.FC = () => {
   const watchlists = useMemo(() => getSharedWatchlists(), []);

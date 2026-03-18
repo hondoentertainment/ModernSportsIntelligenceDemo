@@ -16,7 +16,7 @@ import {
   getCommunityBenchmark,
   LeaderboardEntry,
   TradeSignal,
-} from '../lib/copyTradingService';
+} from '../lib/trading/copyTradingService';
 
 interface CopyTradingWidgetProps {
   onClick?: () => void;

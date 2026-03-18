@@ -12,7 +12,7 @@ import {
   getRecentListings,
   getPlatformHealth,
   PlatformHealth,
-} from '../lib/marketplaceAggregatorService';
+} from '../lib/trading/marketplaceAggregatorService';
 
 interface MarketplaceAggregatorWidgetProps {
   onClick?: () => void;

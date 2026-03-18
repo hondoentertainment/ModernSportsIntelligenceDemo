@@ -15,7 +15,7 @@ import {
   type LiveAuctionBidStream,
   type BidderIntelReport,
   type AuctionPsychSummary,
-} from '../lib/bidderPsychologyService.ts';
+} from '../lib/trading/bidderPsychologyService.ts';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   RadarChart, PolarGrid, PolarAngleAxis, Radar,

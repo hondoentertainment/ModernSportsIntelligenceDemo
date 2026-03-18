@@ -18,7 +18,7 @@ import {
   type PriceAlert,
   type WatchlistStats,
   type AlertType,
-} from '../../lib/watchlistService';
+} from '../../lib/trading/watchlistService';
 
 const localStorageMock = setupLocalStorageMock();
 

@@ -35,7 +35,7 @@ import {
   Platform,
   PLATFORM_FEES,
   PLATFORM_COLORS,
-} from '../lib/dealFinderService';
+} from '../lib/trading/dealFinderService';
 
 interface DealFinderModalProps {
   isOpen: boolean;

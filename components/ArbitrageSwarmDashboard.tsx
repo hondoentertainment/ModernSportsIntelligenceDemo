@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CrossAssetInsight, ArbitrageNode } from '../types.ts';
-import { ArbitrageAgentService } from '../lib/ArbitrageAgentService.ts';
+import { ArbitrageAgentService } from '../lib/trading/ArbitrageAgentService.ts';
 import ArbitrageNodeCard from './ArbitrageNodeCard.tsx';
 import { Network, ShieldAlert, Cpu, RefreshCw, Layers, TrendingUp } from 'lucide-react';
 

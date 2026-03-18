@@ -23,7 +23,7 @@ import {
     calculateReputation,
     getReferralCount,
     verifyListing
-} from './marketplaceService';
+} from './trading/marketplaceService';
 import {
     ExplainabilityCard,
     WorkflowRun,

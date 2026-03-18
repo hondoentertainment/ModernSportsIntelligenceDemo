@@ -19,7 +19,7 @@ import {
 import {
   getNegotiations,
   getNegotiationStats,
-} from '../lib/asyncAuctionNegotiationService';
+} from '../lib/trading/asyncAuctionNegotiationService';
 
 interface AsyncAuctionNegotiationModalProps {
   isOpen: boolean;

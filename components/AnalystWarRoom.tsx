@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory';
 import { MultiAgentService } from '../lib/MultiAgentService';
-import { AutonomousExecutionService } from '../lib/AutonomousExecutionService';
+import { AutonomousExecutionService } from '../lib/trading/AutonomousExecutionService';
 import { CollaborativeThesis } from '../types';
 import AgentCard from './AgentCard';
 import AutoPilotControl from './AutoPilotControl';

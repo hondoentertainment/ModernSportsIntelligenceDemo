@@ -11,8 +11,8 @@ import {
   getDealHistory,
   logDealAction,
   PLATFORM_FEES,
-} from '../../lib/dealFinderService';
-import type { MarketplaceListing, Deal } from '../../lib/dealFinderService';
+} from '../../lib/trading/dealFinderService';
+import type { MarketplaceListing, Deal } from '../../lib/trading/dealFinderService';
 import { makeCard, setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

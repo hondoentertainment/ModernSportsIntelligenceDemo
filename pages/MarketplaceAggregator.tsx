@@ -18,7 +18,7 @@ import {
   type PriceComparison,
   type PlatformHealth,
   type PurchaseOrder,
-} from '../lib/marketplaceAggregatorService.ts';
+} from '../lib/trading/marketplaceAggregatorService.ts';
 import {
   BarChart,
   Bar,

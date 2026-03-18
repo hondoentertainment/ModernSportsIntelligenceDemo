@@ -22,7 +22,7 @@ import {
   type ConsignmentComparison,
   type ConsignmentStats,
   type HouseReview,
-} from '../lib/consignmentMarketService.ts';
+} from '../lib/trading/consignmentMarketService.ts';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid, Cell,

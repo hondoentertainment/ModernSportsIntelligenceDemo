@@ -6,7 +6,7 @@ import {
   getJackpotInfo,
   getCollectorProfile,
   formatCurrency,
-} from '../lib/vendingMachineService';
+} from '../lib/trading/vendingMachineService';
 
 interface VendingMachineWidgetProps {
   onOpenModal?: () => void;

@@ -23,7 +23,7 @@ import {
   type WatchedAuction,
   type HistoricalBidPattern,
   type AuctionSummary,
-} from '../lib/auctionSniperService.ts';
+} from '../lib/trading/auctionSniperService.ts';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 
 const CHART_COLORS = ['#10b981', '#60a5fa', '#f87171', '#a78bfa', '#fbbf24', '#34d399', '#22d3ee', '#fb923c'];

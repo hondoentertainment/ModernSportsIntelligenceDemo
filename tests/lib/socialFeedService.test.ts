@@ -19,8 +19,8 @@ import {
   getPostTypeColor,
   getPostTypeLabel,
   getPostTypeIcon,
-} from '../../lib/socialFeedService';
-import type { FeedPost, PostType } from '../../lib/socialFeedService';
+} from '../../lib/social/socialFeedService';
+import type { FeedPost, PostType } from '../../lib/social/socialFeedService';
 
 describe('socialFeedService', () => {
   beforeEach(() => {

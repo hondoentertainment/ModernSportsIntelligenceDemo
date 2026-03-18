@@ -9,7 +9,7 @@ import {
   disconnectMarketplace,
   type MarketplaceConnection,
   type MarketplacePlatform,
-} from '../lib/marketplaceIntegrationService';
+} from '../lib/trading/marketplaceIntegrationService';
 
 interface MarketplaceIntegrationModalProps {
   isOpen: boolean;

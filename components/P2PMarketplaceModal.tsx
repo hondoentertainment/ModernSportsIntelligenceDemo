@@ -24,7 +24,7 @@ import {
   Listing,
   Sport,
   CardGrade,
-} from '../lib/p2pMarketplaceService';
+} from '../lib/trading/p2pMarketplaceService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 

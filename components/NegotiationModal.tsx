@@ -13,7 +13,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { NegotiationSession, NegotiableItem } from '../types';
-import { NegotiationService } from '../lib/negotiationService';
+import { NegotiationService } from '../lib/trading/negotiationService';
 import { logger } from '../lib/logger';
 import CardImage from './CardImage.tsx';
 import ImageLightbox from './ImageLightbox.tsx';

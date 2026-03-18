@@ -26,7 +26,7 @@ import {
   type HistoricalComparison,
   type TradeDeadlineSummary,
   type ValueChange,
-} from '../lib/tradeDeadlineService';
+} from '../lib/trading/tradeDeadlineService';
 import {
   BarChart,
   Bar,

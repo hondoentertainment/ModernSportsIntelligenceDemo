@@ -31,7 +31,7 @@ export default defineConfig({
           }
           // Lib services: single chunk to avoid circular dependency (batch1 <-> batch2).
           // Pages remain lazy-loaded as separate chunks.
-          if (id.includes('/lib/') && /\/lib\/[^/]+Service\.tsx?$/.test(id)) {
+          if (id.includes('/lib/') && /\/lib\/(?:[^/]+\/)?[^/]+Service\.tsx?$/.test(id)) {
             return 'lib-services';
           }
         }

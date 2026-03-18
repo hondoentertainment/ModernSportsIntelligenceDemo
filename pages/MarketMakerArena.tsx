@@ -26,7 +26,7 @@ import type {
   BotStrategy,
   OrderBook,
   MarketMicrostructure,
-} from '../lib/marketMakerService';
+} from '../lib/trading/marketMakerService';
 import {
   getBots,
   getBotTrades,
@@ -36,7 +36,7 @@ import {
   getMarketMicrostructure,
   getCardUniverse,
   getBotComparison,
-} from '../lib/marketMakerService';
+} from '../lib/trading/marketMakerService';
 
 // ── Constants ───────────────────────────────────────────────────────────────
 

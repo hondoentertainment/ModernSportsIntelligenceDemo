@@ -24,8 +24,8 @@ import {
     upsertScenarioRun,
     upsertScenarioSnapshot,
 } from './differentiatorData';
-import { getActiveListingsAsync, getTopSellers, Listing } from './p2pMarketplaceService';
-import { createDealRoomAsync, DealRoom } from './dealRoomService';
+import { getActiveListingsAsync, getTopSellers, Listing } from './trading/p2pMarketplaceService';
+import { createDealRoomAsync, DealRoom } from './trading/dealRoomService';
 import { CatalystEngine } from './catalystEngine';
 import { getAllScenarios, runStressTest } from './stressTestService';
 import {

@@ -87,7 +87,7 @@ import { OpportunityBadge } from '../components/OpportunityBadge';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import GradingPremiumTool from '../components/GradingPremiumTool';
 import ShareAlphaModal from '../components/ShareAlphaModal';
-import { fetchPublicProfile } from '../lib/socialService';
+import { fetchPublicProfile } from '../lib/social/socialService';
 import { useAuth } from '../contexts/AuthContext';
 
 const VIRTUAL_THRESHOLD = 24;

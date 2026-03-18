@@ -15,7 +15,7 @@ import {
   getDealSummary,
   PLATFORM_COLORS,
   Platform,
-} from '../lib/dealFinderService';
+} from '../lib/trading/dealFinderService';
 
 interface DealFinderWidgetProps {
   cards: CardInventory[];

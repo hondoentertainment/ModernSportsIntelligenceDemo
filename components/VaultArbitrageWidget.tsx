@@ -6,7 +6,7 @@ import {
   getPlatformLabel,
   type VaultSummary,
   type ArbitrageOpportunity,
-} from '../lib/vaultArbitrageService';
+} from '../lib/trading/vaultArbitrageService';
 
 interface VaultArbitrageWidgetProps {
   onClick?: () => void;

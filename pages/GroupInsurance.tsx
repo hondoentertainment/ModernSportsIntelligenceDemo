@@ -14,7 +14,7 @@ import {
   getCoverageLabel, getCoverageIcon, formatCurrency, formatPercent,
   type InsurancePool, type PoolMember, type InsuranceClaim,
   type GroupInsuranceStats, type PoolTier, type CoverageType, type ClaimStatus,
-} from '../lib/groupInsuranceService';
+} from '../lib/social/groupInsuranceService';
 
 // ---------------------------------------------------------------------------
 // Constants

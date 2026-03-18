@@ -39,7 +39,7 @@ import {
   ActivityFeedItem,
   ChatThread,
   DirectMessage,
-} from '../lib/socialService';
+} from '../lib/social/socialService';
 
 interface SocialModalProps {
   isOpen: boolean;

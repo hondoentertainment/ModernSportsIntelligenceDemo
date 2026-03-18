@@ -1,5 +1,5 @@
 import { CardInventory } from '../types';
-import { ConsignmentService } from './consignmentService';
+import { ConsignmentService } from './trading/consignmentService';
 import { buildCoverageSnapshot } from './insurancePolicyService';
 import { TaxLotService } from './taxLotService';
 import type { GeneratedReport, ReportConfig, ReportSection } from './reportService';

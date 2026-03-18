@@ -26,7 +26,7 @@ import {
   type TradingStats,
   type TradeActivity,
   type PostType,
-} from '../lib/communityTradingService';
+} from '../lib/social/communityTradingService';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   LineChart, Line,

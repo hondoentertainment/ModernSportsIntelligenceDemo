@@ -17,7 +17,7 @@ import {
   ConsignmentEntry,
   ConsignmentStatus,
   HouseComparison,
-} from '../lib/consignmentService';
+} from '../lib/trading/consignmentService';
 
 interface ConsignmentModalProps {
   isOpen: boolean;

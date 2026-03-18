@@ -28,7 +28,7 @@ import {
   Sport,
   Platform,
   TopMover,
-} from '../lib/transactionWireService';
+} from '../lib/trading/transactionWireService';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
 

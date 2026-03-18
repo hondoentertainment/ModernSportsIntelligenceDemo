@@ -46,8 +46,8 @@ import {
   getPostTypeColor,
   getPostTypeLabel,
   getPostTypeIcon,
-} from '../lib/socialFeedService.ts';
-import type { FeedPost, PostType, Notification as FeedNotification, UserProfile, FeedStats } from '../lib/socialFeedService.ts';
+} from '../lib/social/socialFeedService.ts';
+import type { FeedPost, PostType, Notification as FeedNotification, UserProfile, FeedStats } from '../lib/social/socialFeedService.ts';
 
 // ─── Icon resolver ───────────────────────────────────────────────────────────
 
