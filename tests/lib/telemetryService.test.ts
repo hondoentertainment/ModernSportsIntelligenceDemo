@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { estimateGeminiCostUsd, getTelemetrySnapshot, incrementCounter, recordMetric, recordModelUsage } from '../../lib/telemetryService';
+import { estimateGeminiCostUsd, getTelemetrySnapshot, incrementCounter, recordMetric, recordModelUsage } from '../../lib/utils/telemetryService';
 
 describe('telemetryService', () => {
     beforeEach(() => {

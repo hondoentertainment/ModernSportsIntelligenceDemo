@@ -34,7 +34,7 @@ import {
   ContrarianPick,
   PlayerRating,
   ReportSection,
-} from '../lib/researchReportsService';
+} from '../lib/utils/researchReportsService';
 
 interface ResearchReportsModalProps {
   isOpen: boolean;

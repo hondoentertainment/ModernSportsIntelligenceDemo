@@ -31,7 +31,7 @@ import {
   type AuctionRecord,
   type SignificanceRating,
   type VintageMarketSummary,
-} from '../lib/vintageMarketService';
+} from '../lib/analytics/vintageMarketService';
 import {
   BarChart,
   Bar,

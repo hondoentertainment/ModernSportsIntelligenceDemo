@@ -13,11 +13,11 @@ import {
 } from 'lucide-react';
 import type {
   DemoFlow as DemoFlowType, DemoStep, DemoProgress, DemoCategory,
-} from '../lib/demoFlowService.ts';
+} from '../lib/utils/demoFlowService.ts';
 import {
   getDemoFlows, getDemoFlow, getNextStep, getDemoProgress,
   advanceStep, resetProgress, getInvestorMetrics,
-} from '../lib/demoFlowService.ts';
+} from '../lib/utils/demoFlowService.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants

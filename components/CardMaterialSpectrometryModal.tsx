@@ -13,7 +13,7 @@ import {
   ChevronRight,
   Sun,
 } from 'lucide-react';
-import { getScans, getDatabase } from '../lib/cardMaterialSpectrometryService';
+import { getScans, getDatabase } from '../lib/core/cardMaterialSpectrometryService';
 
 interface Props {
   isOpen: boolean;

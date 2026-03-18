@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Brain, TrendingUp, Calendar, Target } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { useAgentRecommendations } from '../lib/useAgentRecommendations';
+import { useAgentRecommendations } from '../lib/utils/useAgentRecommendations';
 import { ChartSkeleton } from '../components/SkeletonLoader';
 
 const AgentConfidenceHistory: React.FC = () => {

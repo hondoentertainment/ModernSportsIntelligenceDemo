@@ -21,8 +21,8 @@ import {
   ArrowUpRight,
   Activity,
 } from 'lucide-react';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
-import { AggregationService } from '../lib/aggregationService.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
+import { AggregationService } from '../lib/analytics/aggregationService.ts';
 
 const PortfolioAudit: React.FC = () => {
     const { inventory } = useSupabaseInventory();

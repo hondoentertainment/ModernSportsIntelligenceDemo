@@ -4,7 +4,7 @@ import { Shield, LayoutGrid, List as ListIcon, Search, Share2, CheckCircle2 } fr
 import { CardInventory, UserProfile, League } from '../types';
 import { fetchPublicProfile, fetchPublicInventory, generateShareLink } from '../lib/social/socialService';
 import CardImage from '../components/CardImage';
-import { getRarityTier, getTierStyles } from '../lib/rarity';
+import { getRarityTier, getTierStyles } from '../lib/utils/rarity';
 import { LEAGUES } from '../constants';
 import { useToast } from '../contexts/ToastContext';
 import { logger } from '../lib/logger';

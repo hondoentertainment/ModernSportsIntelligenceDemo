@@ -40,7 +40,7 @@ import {
   type BudgetPlan,
   type CommunityChallenge,
   type ProgressTracker,
-} from '../lib/youthOnboardingService.ts';
+} from '../lib/utils/youthOnboardingService.ts';
 import {
   BarChart,
   Bar,

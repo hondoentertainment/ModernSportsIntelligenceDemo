@@ -14,7 +14,7 @@ import {
   getCounterfactualStats,
   getTopUpsideScenarios,
   getAlternateTimeline,
-} from '../lib/counterfactualValueService';
+} from '../lib/analytics/counterfactualValueService';
 
 const CounterfactualValue: React.FC = () => {
   const scenarios = useMemo(() => getCounterfactualScenarios(), []);

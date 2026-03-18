@@ -25,7 +25,7 @@ import {
   Syndicate,
   SyndicateAsset,
   GovernanceVote,
-} from '../lib/fractionalSyndicateService';
+} from '../lib/utils/fractionalSyndicateService';
 
 interface FractionalSyndicateModalProps {
   isOpen: boolean;

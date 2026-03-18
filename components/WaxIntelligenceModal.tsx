@@ -34,7 +34,7 @@ import {
   getWaxProductTypeLabel,
   getSupplyLabel,
   getSupplyColor,
-} from '../lib/waxIntelligenceService';
+} from '../lib/analytics/waxIntelligenceService';
 
 interface WaxIntelligenceModalProps {
   isOpen: boolean;

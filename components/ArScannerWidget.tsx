@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ScanLine, ChevronRight, History, Box } from 'lucide-react';
-import { getScanHistory, getDisplayCases } from '../lib/arScannerService';
+import { getScanHistory, getDisplayCases } from '../lib/utils/arScannerService';
 
 interface ArScannerWidgetProps {
   onClick?: () => void;

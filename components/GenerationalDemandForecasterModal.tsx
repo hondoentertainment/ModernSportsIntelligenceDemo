@@ -21,7 +21,7 @@ import {
   getDemographicShifts,
   getWealthTransfers,
   getCulturalCycles,
-} from '../lib/generationalDemandForecasterService';
+} from '../lib/analytics/generationalDemandForecasterService';
 
 interface Props {
   isOpen: boolean;

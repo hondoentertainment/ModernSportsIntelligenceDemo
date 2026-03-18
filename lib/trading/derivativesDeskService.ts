@@ -446,7 +446,7 @@ import {
   type BacktestResult,
   type ScreenerResult,
   type ScreenerFilter,
-} from '../quantWorkbenchService';
+} from '../utils/quantWorkbenchService';
 
 export interface DerivativesQuantContext {
   backtestResult: BacktestResult | null;

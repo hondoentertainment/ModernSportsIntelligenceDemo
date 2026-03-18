@@ -43,7 +43,7 @@ import {
   getMockAlternativeAssets,
   getAllCategoryLabels,
   getAllCategoryColors,
-} from '../lib/crossHobbyPortfolioService';
+} from '../lib/utils/crossHobbyPortfolioService';
 
 interface CrossHobbyPortfolioModalProps {
   isOpen: boolean;

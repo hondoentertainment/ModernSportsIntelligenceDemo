@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Lock, MessageSquare, ShieldCheck, Sparkles, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { createPrivateDealRoomAgentFromListing } from '../lib/fiveDifferentiatorService';
+import { createPrivateDealRoomAgentFromListing } from '../lib/utils/fiveDifferentiatorService';
 import { getActiveListingsAsync, Listing } from '../lib/trading/p2pMarketplaceService';
 import { getDealRoomsAsync } from '../lib/trading/dealRoomService';
 import type { DealRoom } from '../lib/trading/dealRoomService';

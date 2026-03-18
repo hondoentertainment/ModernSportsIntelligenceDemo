@@ -11,7 +11,7 @@ import {
   compareProviders,
   getHitHistory,
   getBoxOpenings,
-} from '../lib/subscriptionBoxService';
+} from '../lib/utils/subscriptionBoxService';
 
 interface SubscriptionBoxWidgetProps {
   onClick?: () => void;

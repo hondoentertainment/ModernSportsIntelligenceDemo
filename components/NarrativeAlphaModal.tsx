@@ -31,7 +31,7 @@ import {
   NARRATIVE_TYPE_META,
   PHASE_COLORS,
   PHASE_ORDER,
-} from '../lib/narrativeAlphaService';
+} from '../lib/analytics/narrativeAlphaService';
 
 interface NarrativeAlphaModalProps {
   isOpen: boolean;

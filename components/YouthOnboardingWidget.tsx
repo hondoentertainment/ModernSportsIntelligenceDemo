@@ -4,7 +4,7 @@ import {
   getProgressTracker,
   getLearningModules,
   getAchievements,
-} from '../lib/youthOnboardingService';
+} from '../lib/utils/youthOnboardingService';
 
 interface YouthOnboardingWidgetProps {
   onOpenModal?: () => void;

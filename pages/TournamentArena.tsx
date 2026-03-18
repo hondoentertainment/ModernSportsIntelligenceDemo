@@ -30,7 +30,7 @@ import {
   type TournamentHistory,
   type WinningStrategy,
   type SeasonalChampionship,
-} from '../lib/tournamentArenaService.ts';
+} from '../lib/utils/tournamentArenaService.ts';
 import {
   AreaChart,
   Area,

@@ -30,7 +30,7 @@ import {
   type ShockwaveNode,
   type InjurySeverity,
   type PlayerRelation,
-} from '../lib/injuryShockwaveService';
+} from '../lib/analytics/injuryShockwaveService';
 
 interface InjuryShockwaveModalProps {
   isOpen: boolean;

@@ -10,7 +10,7 @@ import {
   Landmark,
   ChevronRight,
 } from 'lucide-react';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
 import {
   cacheReport,
   exportToCSV,
@@ -18,7 +18,7 @@ import {
   generateCollectorAuditDossier,
   renderReportHTML,
   saveReportToHistory,
-} from '../lib/reportService';
+} from '../lib/utils/reportService';
 
 function triggerDownload(content: string, filename: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });

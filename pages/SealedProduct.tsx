@@ -20,7 +20,7 @@ import {
   type SupplyEstimate,
   type BreakEvenEntry,
   type ProductTypeDistribution,
-} from '../lib/sealedProductService.ts';
+} from '../lib/utils/sealedProductService.ts';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 
 const CHART_COLORS = ['#8b5cf6', '#60a5fa', '#f87171', '#34d399', '#fbbf24', '#a78bfa', '#22d3ee', '#fb923c'];

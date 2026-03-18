@@ -18,7 +18,7 @@ import {
   getHofPricingModel,
   type HofCandidate,
   type HofSport,
-} from '../lib/hofProbabilityService';
+} from '../lib/utils/hofProbabilityService';
 
 const SPORT_FILTERS: { id: HofSport | 'ALL'; label: string }[] = [
   { id: 'ALL', label: 'All' },

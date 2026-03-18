@@ -8,7 +8,7 @@ import {
   AlertTriangle,
   CheckCircle2,
 } from 'lucide-react';
-import { getRegistryStats, getFraudAlerts } from '../lib/provenanceChainService.ts';
+import { getRegistryStats, getFraudAlerts } from '../lib/core/provenanceChainService.ts';
 
 interface Props {
   onOpenModal?: () => void;

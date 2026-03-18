@@ -59,8 +59,8 @@ import {
   getLastSyncTime,
   prefetchData,
   SyncProgress,
-} from '../lib/offlineService';
-import { useOfflineStatus } from '../lib/useOfflineStatus';
+} from '../lib/utils/offlineService';
+import { useOfflineStatus } from '../lib/utils/useOfflineStatus';
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 

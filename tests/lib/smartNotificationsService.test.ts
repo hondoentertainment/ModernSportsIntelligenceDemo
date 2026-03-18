@@ -18,7 +18,7 @@ import {
   getDealTypeLabel,
   formatTimeAgo,
   formatCurrency,
-} from '../../lib/smartNotificationsService';
+} from '../../lib/utils/smartNotificationsService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

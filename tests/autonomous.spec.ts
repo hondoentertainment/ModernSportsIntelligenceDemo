@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { AutonomousExecutionService } from '../lib/AutonomousExecutionService';
+import { AutonomousExecutionService } from '../lib/trading/AutonomousExecutionService';
 import { AutoPilotConfig, AutonomousAction, CardInventory } from '../types';
 
 describe('AutonomousExecutionService', () => {

@@ -21,7 +21,7 @@ import {
   type CollectionGap, type CollectorSurplus, type MatchHistory,
   type NashEquilibrium, type MatchPreference, type MatchNotification,
   type TradeEquity, type ProposalCard,
-} from '../lib/collectorMatchmakerService';
+} from '../lib/core/collectorMatchmakerService';
 
 type TabId = 'discover' | 'proposals' | 'gaps' | 'history' | 'leaderboard' | 'notifications' | 'preferences';
 

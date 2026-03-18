@@ -59,7 +59,7 @@ import {
   type EmotionalPattern,
   type EmotionalJournalEntry,
   type EmotionalState,
-} from '../lib/emotionalThermometerService';
+} from '../lib/utils/emotionalThermometerService';
 
 // ---- Sub-components ----
 

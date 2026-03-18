@@ -21,7 +21,7 @@ import {
   type EVAnalysis,
   type ProviderComparison,
   type BoxHit,
-} from '../lib/subscriptionBoxService.ts';
+} from '../lib/utils/subscriptionBoxService.ts';
 import {
   BarChart,
   Bar,

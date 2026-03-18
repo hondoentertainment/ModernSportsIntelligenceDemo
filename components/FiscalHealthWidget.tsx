@@ -1,8 +1,8 @@
 
 import React, { useMemo, useState } from 'react';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory';
-import { FiscalService } from '../lib/FiscalService';
-import { TaxStrategyAgent } from '../lib/TaxStrategyAgent';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import { FiscalService } from '../lib/utils/FiscalService';
+import { TaxStrategyAgent } from '../lib/utils/TaxStrategyAgent';
 import { Shield, TrendingDown, AlertTriangle, Info, PieChart } from 'lucide-react';
 import { TaxExitSimulator } from './TaxExitSimulator';
 

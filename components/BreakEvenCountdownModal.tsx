@@ -16,7 +16,7 @@ import {
 import {
   getBreakEvenCards,
   getBreakEvenStats,
-} from '../lib/breakEvenCountdownService';
+} from '../lib/analytics/breakEvenCountdownService';
 
 interface BreakEvenCountdownModalProps {
   isOpen: boolean;

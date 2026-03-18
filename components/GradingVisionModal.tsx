@@ -14,7 +14,7 @@ import {
   type GradingVisionResult,
   type GradingComparisonResult,
   type ROIProjection,
-} from '../lib/gradingVisionEngineService.ts';
+} from '../lib/core/gradingVisionEngineService.ts';
 
 interface Props {
   isOpen: boolean;

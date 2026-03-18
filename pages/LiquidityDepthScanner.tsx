@@ -53,7 +53,7 @@ import type {
   ExitMethod,
   DepthLevel,
   VolumePoint,
-} from '../lib/liquidityDepthService';
+} from '../lib/analytics/liquidityDepthService';
 import {
   getAllLiquidityProfiles,
   getMarketDepth,
@@ -64,7 +64,7 @@ import {
   getOptimalExitTiming,
   getLiquidityHeatMap,
   simulateLiquidation,
-} from '../lib/liquidityDepthService';
+} from '../lib/analytics/liquidityDepthService';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants

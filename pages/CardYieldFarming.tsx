@@ -24,7 +24,7 @@ import {
   getFarmMetrics,
   getLendingOffers,
   getStakingTiers,
-} from '../lib/yieldFarmingService';
+} from '../lib/utils/yieldFarmingService';
 import type {
   YieldPool,
   YieldPosition,
@@ -35,7 +35,7 @@ import type {
   StakingTier,
   PoolType,
   RiskLevel,
-} from '../lib/yieldFarmingService';
+} from '../lib/utils/yieldFarmingService';
 
 /* -------------------------------- Helpers -------------------------------- */
 

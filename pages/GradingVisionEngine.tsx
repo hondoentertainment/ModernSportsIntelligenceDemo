@@ -23,7 +23,7 @@ import {
   type ROIProjection,
   type SubmissionTier,
   type CameraCalibration,
-} from '../lib/gradingVisionEngineService.ts';
+} from '../lib/core/gradingVisionEngineService.ts';
 
 type WorkflowStep = 'upload' | 'analyzing' | 'results' | 'recommendations';
 type ResultTab = 'subgrades' | 'defects' | 'comparison' | 'roi' | 'costs';

@@ -11,7 +11,7 @@ import {
   getMyEntries,
   getTournamentHistory,
   getUpcomingTournaments,
-} from '../lib/tournamentArenaService';
+} from '../lib/utils/tournamentArenaService';
 
 interface TournamentArenaWidgetProps {
   onOpenModal?: () => void;

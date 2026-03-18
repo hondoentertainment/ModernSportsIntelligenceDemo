@@ -15,7 +15,7 @@ import {
   type AuctionAnalytics,
   type AuctionResult,
   type OptimalBidRecommendation,
-} from '../lib/auctionWarRoomService.ts';
+} from '../lib/analytics/auctionWarRoomService.ts';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, AreaChart, Area } from 'recharts';
 
 const AuctionWarRoom: React.FC = () => {

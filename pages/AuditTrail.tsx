@@ -12,7 +12,7 @@ import {
   getSeverityColor,
   getCategoryColor,
   getComplianceStatusColor,
-} from '../lib/auditTrailService';
+} from '../lib/utils/auditTrailService';
 
 const AuditTrail: React.FC = () => {
   const events = useMemo(() => getAuditEvents(), []);

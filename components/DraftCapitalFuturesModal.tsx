@@ -25,7 +25,7 @@ import {
   getDraftStats,
   type PositionGroup,
   type ProjectionConfidence,
-} from '../lib/draftCapitalFuturesService';
+} from '../lib/utils/draftCapitalFuturesService';
 
 interface DraftCapitalFuturesModalProps {
   isOpen: boolean;

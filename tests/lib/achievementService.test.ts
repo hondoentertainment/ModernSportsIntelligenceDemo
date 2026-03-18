@@ -6,7 +6,7 @@ import {
   getRecentlyUnlocked,
   markAsSeen,
   calculateLevel,
-} from '../../lib/achievementService';
+} from '../../lib/utils/achievementService';
 import { makeCard, setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FiscalService } from '../../lib/FiscalService';
+import { FiscalService } from '../../lib/utils/FiscalService';
 import { CardInventory } from '../../types';
 
 const makeCard = (overrides: Partial<CardInventory> = {}): CardInventory => ({

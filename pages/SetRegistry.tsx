@@ -29,7 +29,7 @@ import {
   type Milestone,
   type CategoryBreakdown,
   type SetRegistrySummary,
-} from '../lib/setRegistryService';
+} from '../lib/core/setRegistryService';
 import {
   BarChart,
   Bar,

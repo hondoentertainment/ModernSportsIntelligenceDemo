@@ -45,14 +45,14 @@ import {
   getCategoryBreakdown,
   getPortfolioAssets,
   LIQUIDITY_TIERS,
-} from '../lib/bankruptcyShieldService';
+} from '../lib/utils/bankruptcyShieldService';
 import type {
   LiquidationAsset,
   LiquidationPlan,
   RecoveryScenario,
   CashOutPlan,
   LiquidityTierLevel,
-} from '../lib/bankruptcyShieldService';
+} from '../lib/utils/bankruptcyShieldService';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

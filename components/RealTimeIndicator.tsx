@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getFeatureHub } from '../lib/realTimeFeatureHub';
-import { getNotificationManager, WebSocketConnectionState } from '../lib/realTimeNotificationService';
+import { getFeatureHub } from '../lib/utils/realTimeFeatureHub';
+import { getNotificationManager, WebSocketConnectionState } from '../lib/utils/realTimeNotificationService';
 
 // ---------------------------------------------------------------------------
 // Types

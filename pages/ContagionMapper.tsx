@@ -49,7 +49,7 @@ import {
   type ContagionHotspot,
   type SystemicRisk,
   type RelationshipType,
-} from '../lib/contagionMapperService.ts';
+} from '../lib/analytics/contagionMapperService.ts';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

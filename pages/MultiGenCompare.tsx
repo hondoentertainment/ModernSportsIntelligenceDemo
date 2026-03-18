@@ -42,7 +42,7 @@ import {
   type HoldingPeriodReturn,
   type InflationAdjustedValue,
   type PlayerRanking,
-} from '../lib/multiGenCompareService';
+} from '../lib/utils/multiGenCompareService';
 
 // ── Constants ────────────────────────────────────────────────────────────────────
 

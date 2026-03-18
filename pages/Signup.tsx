@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { getFriendlyAuthMessage } from '../lib/authErrors';
+import { getFriendlyAuthMessage } from '../lib/utils/authErrors';
 import {
   Eye,
   EyeOff,

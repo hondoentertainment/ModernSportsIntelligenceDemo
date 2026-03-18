@@ -4,7 +4,7 @@ import {
   getNextShow,
   getShowHaul,
   getOfflineStatus,
-} from '../lib/cardShowModeService';
+} from '../lib/utils/cardShowModeService';
 
 interface CardShowModeWidgetProps {
   onOpenModal?: () => void;

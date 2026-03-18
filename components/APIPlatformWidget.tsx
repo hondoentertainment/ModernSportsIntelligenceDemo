@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Plug, ChevronRight, Key, Activity, Download } from 'lucide-react';
-import { getAPIKeys, getExportHistory, getAPIPlatformStats } from '../lib/apiPlatformService';
+import { getAPIKeys, getExportHistory, getAPIPlatformStats } from '../lib/utils/apiPlatformService';
 
 interface APIPlatformWidgetProps {
   onClick?: () => void;

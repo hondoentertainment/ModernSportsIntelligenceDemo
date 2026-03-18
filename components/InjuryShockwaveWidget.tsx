@@ -5,7 +5,7 @@ import {
   getActiveShockwaves,
   severityConfig,
   timeAgo,
-} from '../lib/injuryShockwaveService';
+} from '../lib/analytics/injuryShockwaveService';
 
 interface InjuryShockwaveWidgetProps {
   onViewAll?: () => void;

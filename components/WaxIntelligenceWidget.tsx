@@ -5,7 +5,7 @@ import {
   TrendingUp,
   Percent,
 } from 'lucide-react';
-import { getWaxStats, getWaxProducts } from '../lib/waxIntelligenceService';
+import { getWaxStats, getWaxProducts } from '../lib/analytics/waxIntelligenceService';
 
 interface WaxIntelligenceWidgetProps {
   onClick?: () => void;

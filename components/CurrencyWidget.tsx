@@ -16,7 +16,7 @@ import {
   getCurrencyImpact,
   formatCurrency,
   getInternationalAlerts,
-} from '../lib/currencyService';
+} from '../lib/utils/currencyService';
 
 interface CurrencyWidgetProps {
   inventory: CardInventory[];

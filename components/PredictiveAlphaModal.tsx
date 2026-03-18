@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { X, TrendingUp, TrendingDown, Minus, Zap, Shield, Target, AlertTriangle, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { CardInventory } from '../types';
-import { forecastPriceTrajectory, analyzeBreakoutPotential, PriceTrajectory, BreakoutAnalysis } from '../lib/predictiveAlpha';
+import { forecastPriceTrajectory, analyzeBreakoutPotential, PriceTrajectory, BreakoutAnalysis } from '../lib/analytics/predictiveAlpha';
 import { store } from '../lib/dal/syncStore';
 
 interface PredictiveAlphaModalProps {

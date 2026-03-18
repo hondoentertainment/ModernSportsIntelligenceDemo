@@ -12,7 +12,7 @@ import {
   getTradeProposals,
   getMatchNotifications,
   formatCurrency,
-} from '../lib/collectorMatchmakerService';
+} from '../lib/core/collectorMatchmakerService';
 
 interface CollectorMatchmakerWidgetProps {
   onClick?: () => void;

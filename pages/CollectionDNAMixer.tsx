@@ -46,7 +46,7 @@ import type {
   CompatibilityScore,
   GenerationHistory,
   BreedingLeaderboardEntry,
-} from '../lib/collectionDNAService';
+} from '../lib/core/collectionDNAService';
 import {
   getAllCollectionDNAs,
   breedCollections,
@@ -55,7 +55,7 @@ import {
   getGenerationHistory,
   getOptimalMate,
   getBreedingLeaderboard,
-} from '../lib/collectionDNAService';
+} from '../lib/core/collectionDNAService';
 
 // ────────────────────────────── Tab Definitions ──────────────────────────────
 

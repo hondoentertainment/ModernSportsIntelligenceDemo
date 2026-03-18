@@ -12,7 +12,7 @@ import {
   upsertCounterpartyProfile,
   upsertListingOffer,
   upsertMarketplaceListing,
-} from '../differentiatorData';
+} from '../utils/differentiatorData';
 
 // ── Interfaces ──────────────────────────────────────────────────────────────────
 

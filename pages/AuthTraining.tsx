@@ -32,7 +32,7 @@ import {
   type EraGuide,
   type LeaderboardEntry,
   type Badge,
-} from '../lib/authTrainingService.ts';
+} from '../lib/utils/authTrainingService.ts';
 import {
   LineChart,
   Line,

@@ -5,7 +5,7 @@ import {
   checkUsageLimit,
   getUserSubscription,
   type SubscriptionTier,
-} from '../../lib/billingService';
+} from '../../lib/utils/billingService';
 
 // Mock supabase
 vi.mock('../../lib/supabase', () => ({

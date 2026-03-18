@@ -25,7 +25,7 @@ import {
   type ConsensusSummary,
   type VoteType,
   type SentimentLevel,
-} from '../lib/consensusPricingService';
+} from '../lib/analytics/consensusPricingService';
 
 const VOTE_COLORS = ['#10b981', '#f87171', '#3b82f6'];
 

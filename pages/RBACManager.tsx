@@ -10,7 +10,7 @@ import {
   getRoleLabel,
   getRoleColor,
   getPermissionColor,
-} from '../lib/rbacService';
+} from '../lib/utils/rbacService';
 
 const RBACManager: React.FC = () => {
   const teams = useMemo(() => getTeams(), []);

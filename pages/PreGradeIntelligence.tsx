@@ -41,7 +41,7 @@ import {
   type GradePrediction,
   type GradingROI,
   type GradingServiceCost,
-} from '../lib/preGradeIntelligenceService';
+} from '../lib/core/preGradeIntelligenceService';
 
 // ---- Color Helpers ----
 

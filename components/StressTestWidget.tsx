@@ -11,7 +11,7 @@ import { CardInventory } from '../types';
 import {
   getQuickRiskSummary,
   getRiskScoreLabel,
-} from '../lib/stressTestService';
+} from '../lib/analytics/stressTestService';
 
 interface StressTestWidgetProps {
   inventory: CardInventory[];

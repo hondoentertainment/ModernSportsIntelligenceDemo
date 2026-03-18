@@ -56,7 +56,7 @@ import {
   type CascadeCard,
   type ChaosPoint,
   type NonLinearityType,
-} from '../lib/chaosTheoryService.ts';
+} from '../lib/analytics/chaosTheoryService.ts';
 
 // ---- Constants ----
 

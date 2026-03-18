@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Glasses, ChevronRight, DollarSign, Layers } from 'lucide-react';
-import { getShowcaseCards, getShowcaseStats } from '../lib/arShowcaseService';
+import { getShowcaseCards, getShowcaseStats } from '../lib/utils/arShowcaseService';
 
 interface ARShowcaseWidgetProps {
   onClick?: () => void;

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Lock, ChevronRight, Thermometer, Shield } from 'lucide-react';
-import { getVaultStats, getEnvironmentalAlerts } from '../lib/vaultSecurityService';
+import { getVaultStats, getEnvironmentalAlerts } from '../lib/utils/vaultSecurityService';
 
 interface VaultSecurityWidgetProps {
   onOpenModal?: () => void;

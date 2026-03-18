@@ -15,7 +15,7 @@ import {
   getSourceBreakdown,
   type SentimentVelocity,
   type VelocityAlert,
-} from '../lib/sentimentVelocityService';
+} from '../lib/analytics/sentimentVelocityService';
 
 interface Props {
   isOpen: boolean;

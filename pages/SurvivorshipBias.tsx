@@ -20,7 +20,7 @@ import {
   getOutcomeLabel,
   getBiasGapSeverity,
   type SurvivorshipAnalysis,
-} from '../lib/survivorshipBiasService';
+} from '../lib/utils/survivorshipBiasService';
 
 const SurvivorshipBias: React.FC = () => {
   const analyses = useMemo(() => getSurvivorshipAnalyses(), []);

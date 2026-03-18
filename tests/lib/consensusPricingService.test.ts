@@ -15,7 +15,7 @@ import {
   getTierLabel,
   formatCurrency,
   formatNumber,
-} from '../../lib/consensusPricingService';
+} from '../../lib/analytics/consensusPricingService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

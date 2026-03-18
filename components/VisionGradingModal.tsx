@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, ScanEye, Camera, AlertTriangle, CheckCircle, Target, Shield } from 'lucide-react';
-import { analyzeCard, saveGradingResult, getGradingHistory, type VisionGradingResult } from '../lib/visionGradingService.ts';
+import { analyzeCard, saveGradingResult, getGradingHistory, type VisionGradingResult } from '../lib/analytics/visionGradingService.ts';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, RadarChart, PolarGrid, PolarAngleAxis, Radar } from 'recharts';
 
 interface Props {

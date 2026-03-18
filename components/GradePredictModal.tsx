@@ -49,7 +49,7 @@ import {
   GradeProbability,
   GradeCompanyRecommendation,
   SubmissionROI,
-} from '../lib/gradePredictService';
+} from '../lib/analytics/gradePredictService';
 
 interface GradePredictModalProps {
   isOpen: boolean;

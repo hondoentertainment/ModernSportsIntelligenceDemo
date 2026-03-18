@@ -54,7 +54,7 @@ import {
   type WidgetSize,
   type WidgetCatalogItem,
   type DashboardPreset,
-} from '../lib/dashboardBuilderService';
+} from '../lib/utils/dashboardBuilderService';
 import DashboardWidgetRenderer, { getWidgetIcon } from '../components/DashboardWidgetRenderer';
 import DashboardBuilderModal from '../components/DashboardBuilderModal';
 

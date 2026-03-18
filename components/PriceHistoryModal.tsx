@@ -27,7 +27,7 @@ import {
   calculateBollingerBands,
   ChartTimeRange,
   ChartAnnotation,
-} from '../lib/priceChartService';
+} from '../lib/analytics/priceChartService';
 
 interface PriceHistoryModalProps {
   isOpen: boolean;

@@ -65,7 +65,7 @@ import {
   type MaterialFactor,
   type EnvironmentalRisk,
   type StorageRecommendation,
-} from '../lib/cardAgingSimService';
+} from '../lib/utils/cardAgingSimService';
 
 // ---- Constants ----
 

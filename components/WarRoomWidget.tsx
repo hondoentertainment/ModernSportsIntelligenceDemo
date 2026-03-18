@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory';
-import { MultiAgentService } from '../lib/MultiAgentService';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import { MultiAgentService } from '../lib/utils/MultiAgentService';
 import { CollaborativeThesis } from '../types';
 import { Brain, RefreshCw, Target, TrendingUp, ShieldCheck, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { CatalystEngine } from '../lib/catalystEngine';
+import { CatalystEngine } from '../lib/utils/catalystEngine';
 
 const WarRoomWidget: React.FC = () => {
     const { inventory } = useSupabaseInventory();

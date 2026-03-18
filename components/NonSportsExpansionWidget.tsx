@@ -4,7 +4,7 @@ import {
   getCategories,
   getUnifiedPortfolio,
   getCategoryMarketData,
-} from '../lib/nonSportsExpansionService';
+} from '../lib/utils/nonSportsExpansionService';
 
 interface NonSportsExpansionWidgetProps {
   onOpenModal?: () => void;

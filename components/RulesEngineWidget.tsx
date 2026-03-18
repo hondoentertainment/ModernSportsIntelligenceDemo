@@ -14,7 +14,7 @@ import {
   loadTriggerHistory,
   TradingRule,
   RuleTrigger,
-} from '../lib/rulesEngineService';
+} from '../lib/utils/rulesEngineService';
 
 interface RulesEngineWidgetProps {
   cards: CardInventory[];

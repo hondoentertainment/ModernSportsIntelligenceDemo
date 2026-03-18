@@ -9,7 +9,7 @@
  * - Mock data fallback for development
  */
 
-import { ebayApi } from '../ebayApi';
+import { ebayApi } from '../utils/ebayApi';
 import { isFeatureEnabled } from '../featureFlags';
 import { apiCache, CACHE_TTL } from '../apiCache';
 import { logger } from '../logger';

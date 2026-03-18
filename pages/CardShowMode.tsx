@@ -29,7 +29,7 @@ import {
   getShowSummary,
   CardShowDeal,
   CardShowWantItem,
-} from '../lib/cardShowService';
+} from '../lib/utils/cardShowService';
 
 // ---- Helpers ----
 

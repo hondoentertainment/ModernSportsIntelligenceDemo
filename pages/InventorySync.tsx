@@ -20,7 +20,7 @@ import {
   type CrossPlatformValue,
   type SyncHistoryEntry,
   type PlatformCostBasis,
-} from '../lib/inventorySyncService.ts';
+} from '../lib/core/inventorySyncService.ts';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
 const PLATFORM_COLORS: Record<string, string> = {

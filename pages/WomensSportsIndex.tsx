@@ -23,7 +23,7 @@ import {
   type LeagueProfile,
   type MarketComparison,
   type CollectorDemographic,
-} from '../lib/womensSportsIndexService.ts';
+} from '../lib/analytics/womensSportsIndexService.ts';
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,

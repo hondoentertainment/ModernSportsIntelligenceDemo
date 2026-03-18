@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ROUTE_TIER_MAP, getRouteTier } from '../../lib/routeTierConfig';
+import { ROUTE_TIER_MAP, getRouteTier } from '../../lib/utils/routeTierConfig';
 
 const VALID_TIERS = ['basic', 'pro', 'alpha'] as const;
 

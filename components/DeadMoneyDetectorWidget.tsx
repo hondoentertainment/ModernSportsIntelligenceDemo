@@ -7,7 +7,7 @@ import {
   getSwapRecommendations,
   scanPortfolio,
   formatCurrency,
-} from '../lib/deadMoneyDetectorService';
+} from '../lib/analytics/deadMoneyDetectorService';
 
 interface DeadMoneyDetectorWidgetProps {
   onOpenModal?: () => void;

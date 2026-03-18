@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { AutonomousExecutionService } from '../lib/trading/AutonomousExecutionService';
 import { AutoPilotConfig, RiskCollar, AutonomousAction } from '../types';
 import { Shield, Zap, Settings, AlertCircle, CheckCircle2, History, TrendingUp, DollarSign, Play, Check, X } from 'lucide-react';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
 
 const AutoPilotControl: React.FC = () => {
     const { inventory } = useSupabaseInventory();

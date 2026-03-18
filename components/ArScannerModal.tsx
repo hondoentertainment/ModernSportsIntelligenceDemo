@@ -37,7 +37,7 @@ import {
   getQuickValuation,
   ScanResult,
   OverlayLayerData,
-} from '../lib/arScannerService';
+} from '../lib/utils/arScannerService';
 
 interface ArScannerModalProps {
   isOpen: boolean;

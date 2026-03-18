@@ -3,7 +3,7 @@ import { Database, ChevronRight, Repeat, AlertCircle, Zap } from 'lucide-react';
 import {
   getConsolidationStats,
   getArbitrageOpportunities,
-} from '../lib/dataConsolidationService';
+} from '../lib/utils/dataConsolidationService';
 
 interface DataConsolidationWidgetProps {
   onOpenModal: () => void;

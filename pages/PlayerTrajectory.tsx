@@ -21,7 +21,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import { getPlayerTrajectory, getAllPlayerTrajectories, getPlayerIds } from '../lib/playerTrajectoryService';
+import { getPlayerTrajectory, getAllPlayerTrajectories, getPlayerIds } from '../lib/analytics/playerTrajectoryService';
 
 function scoreBadge(score: number): { label: string; cls: string } {
   if (score >= 90) return { label: 'ELITE', cls: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' };

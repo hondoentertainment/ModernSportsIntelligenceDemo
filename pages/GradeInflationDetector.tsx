@@ -11,7 +11,7 @@ import {
   type GradeArbitrageOpportunity,
   type PopGrowthAlert,
   type InflationSummary,
-} from '../lib/gradeInflationDetectorService.ts';
+} from '../lib/analytics/gradeInflationDetectorService.ts';
 import {
   LineChart,
   Line,

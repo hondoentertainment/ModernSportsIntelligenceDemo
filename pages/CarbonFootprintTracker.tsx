@@ -31,7 +31,7 @@ import {
   type EcoScore,
   type CarbonOffset,
   type EcoBadge,
-} from '../lib/carbonFootprintService.ts';
+} from '../lib/analytics/carbonFootprintService.ts';
 
 const PIE_COLORS = ['#10b981', '#60a5fa', '#f87171', '#a78bfa', '#fbbf24', '#22d3ee'];
 

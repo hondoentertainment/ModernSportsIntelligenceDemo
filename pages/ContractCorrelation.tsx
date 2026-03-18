@@ -60,7 +60,7 @@ import {
   type ContractType,
   type Sport,
   type SignalDirection,
-} from '../lib/contractCorrelationService';
+} from '../lib/analytics/contractCorrelationService';
 
 type TabId = 'correlation' | 'historical' | 'upcoming' | 'predictions' | 'signals';
 

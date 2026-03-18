@@ -19,7 +19,7 @@ import {
   QuickValuation,
   ScanHistory,
   BatchScan,
-} from '../../lib/scanToValueService';
+} from '../../lib/utils/scanToValueService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

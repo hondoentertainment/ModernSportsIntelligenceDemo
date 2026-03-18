@@ -21,7 +21,7 @@ import {
   type SubmissionROI,
   type CompanyComparison,
   type GroupSubmission,
-} from '../lib/gradingTrackerService.ts';
+} from '../lib/core/gradingTrackerService.ts';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
 
 const GradingTracker: React.FC = () => {

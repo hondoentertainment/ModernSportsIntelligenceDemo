@@ -33,7 +33,7 @@ import {
   getHOFStats,
   HOFCandidate,
   HOFInvestSignal,
-} from '../lib/hofTrackerService';
+} from '../lib/utils/hofTrackerService';
 
 interface HOFTrackerModalProps {
   isOpen: boolean;

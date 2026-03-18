@@ -52,7 +52,7 @@ import {
   type ScarcityScore,
   type SetAnalysis,
   type SupplyDemandProjection,
-} from '../lib/printRunDecoderService.ts';
+} from '../lib/analytics/printRunDecoderService.ts';
 
 const TABS = [
   { key: 'dashboard', label: 'Decoder Dashboard', icon: Target },

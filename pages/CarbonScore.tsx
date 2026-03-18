@@ -23,7 +23,7 @@ import {
   type SustainabilityTrend,
   type CommunityMember,
   type EcoTip,
-} from '../lib/carbonScoreService.ts';
+} from '../lib/analytics/carbonScoreService.ts';
 import {
   AreaChart,
   Area,

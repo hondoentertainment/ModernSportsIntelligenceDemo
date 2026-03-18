@@ -17,7 +17,7 @@ import {
   getRebalanceSuggestions,
   calculateRebalanceCost,
   acknowledgeAlert,
-} from '../lib/rebalancingAlertService';
+} from '../lib/analytics/rebalancingAlertService';
 
 interface RebalanceAlertModalProps {
   isOpen: boolean;

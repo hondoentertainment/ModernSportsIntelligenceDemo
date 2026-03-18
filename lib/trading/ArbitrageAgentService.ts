@@ -1,7 +1,7 @@
 import { Type } from "@google/genai";
 import { CrossAssetInsight, AgentInsight } from "../../types.ts";
-import { showToast } from "../toast.ts";
-import { createGeminiClient } from "../geminiClient.ts";
+import { showToast } from "../utils/toast.ts";
+import { createGeminiClient } from "../utils/geminiClient.ts";
 import { logger } from "../logger";
 
 const ai = createGeminiClient();

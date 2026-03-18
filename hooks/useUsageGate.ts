@@ -8,7 +8,7 @@
 
 import { useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { SUBSCRIPTION_TIERS, checkUsageLimit } from '../lib/billingService';
+import { SUBSCRIPTION_TIERS, checkUsageLimit } from '../lib/utils/billingService';
 
 export interface UsageGateResult {
   /** Check if user can add another card. Returns { allowed: boolean; message?: string } */

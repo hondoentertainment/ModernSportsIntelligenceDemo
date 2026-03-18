@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Trophy, TrendingUp, Calendar, BarChart3, ChevronRight } from 'lucide-react';
-import { getRookieClassIndices, getTopROIRookies } from '../lib/rookieClassIndexService';
+import { getRookieClassIndices, getTopROIRookies } from '../lib/analytics/rookieClassIndexService';
 
 interface RookieClassIndexWidgetProps {
   onClick?: () => void;

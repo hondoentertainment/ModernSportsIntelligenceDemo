@@ -32,7 +32,7 @@ import {
   type BacktestConfig,
   type BacktestResult,
   type PhantomPortfolio,
-} from '../lib/phantomBacktesterService';
+} from '../lib/analytics/phantomBacktesterService';
 
 interface PhantomBacktesterModalProps {
   isOpen: boolean;

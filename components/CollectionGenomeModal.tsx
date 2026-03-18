@@ -36,7 +36,7 @@ import {
   BehavioralBias,
   CollectorComparison,
   GenomeDNAInsights,
-} from '../lib/collectionGenomeService';
+} from '../lib/core/collectionGenomeService';
 
 interface CollectionGenomeModalProps {
   isOpen: boolean;

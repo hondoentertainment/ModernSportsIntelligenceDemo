@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
 import { CardInventory } from '../types';
-import { FiscalService } from '../lib/FiscalService';
+import { FiscalService } from '../lib/utils/FiscalService';
 import { Calculator, DollarSign, Percent, ArrowRight, X, ShieldCheck } from 'lucide-react';
-import { showToast } from '../lib/toast';
+import { showToast } from '../lib/utils/toast';
 
 interface TaxExitSimulatorProps {
     card: CardInventory;

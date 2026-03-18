@@ -62,7 +62,7 @@ import {
   type BatchPlanItem,
   type RestorationHistoryEntry,
   type BeforeAfterVisualization,
-} from '../lib/restorationSimService';
+} from '../lib/utils/restorationSimService';
 
 // ── Tab Configuration ─────────────────────────────────────────────────────────
 

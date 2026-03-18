@@ -13,7 +13,7 @@ import {
   getVintageMarketTrends,
   getConditionCensus,
   getVintageStats,
-} from '../lib/vintageMarketService';
+} from '../lib/analytics/vintageMarketService';
 import {
   BarChart,
   Bar,

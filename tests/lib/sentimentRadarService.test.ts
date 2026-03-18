@@ -7,7 +7,7 @@ import {
   getSentimentTimeline,
   getMarketSentimentOverview,
   getScatterData,
-} from '../../lib/sentimentRadarService';
+} from '../../lib/analytics/sentimentRadarService';
 
 describe('sentimentRadarService', () => {
   describe('getPlayerSentiment', () => {

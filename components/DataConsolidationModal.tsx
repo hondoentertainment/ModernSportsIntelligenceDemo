@@ -34,7 +34,7 @@ import {
   getDataQualityReports,
   getConsolidationStats,
   getEnrichedConsolidatedView,
-} from '../lib/dataConsolidationService';
+} from '../lib/utils/dataConsolidationService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 

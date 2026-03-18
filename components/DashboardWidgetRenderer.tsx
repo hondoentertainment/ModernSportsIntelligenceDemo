@@ -35,7 +35,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import type { WidgetType, DashboardWidget } from '../lib/dashboardBuilderService';
+import type { WidgetType, DashboardWidget } from '../lib/utils/dashboardBuilderService';
 
 // ---- Mini sparkline data generators ----
 

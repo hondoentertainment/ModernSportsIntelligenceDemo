@@ -15,7 +15,7 @@ import {
 import {
   getAnalyses,
   getDatabaseEntries,
-} from '../lib/slabCaseForensicsService';
+} from '../lib/analytics/slabCaseForensicsService';
 
 interface SlabCaseForensicsModalProps {
   isOpen: boolean;

@@ -8,7 +8,7 @@ import {
   getConditionLabel,
   getRecommendationConfig,
   getStatusColor,
-} from '../lib/weatherImpactService';
+} from '../lib/analytics/weatherImpactService';
 
 interface WeatherImpactWidgetProps {
   onOpenModal?: () => void;

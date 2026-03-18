@@ -33,7 +33,7 @@ import {
   type SupplyDemandMetric,
   type InsertOdds,
   type Manufacturer,
-} from '../lib/printRunIntelligenceService.ts';
+} from '../lib/analytics/printRunIntelligenceService.ts';
 import {
   BarChart,
   Bar,

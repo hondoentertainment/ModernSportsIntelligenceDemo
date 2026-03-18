@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Store, DollarSign, TrendingUp, Package, ChevronRight } from 'lucide-react';
-import { getTodaysSales, getActiveConsignmentCount, getDealerProfile } from '../lib/dealerDashboardService';
+import { getTodaysSales, getActiveConsignmentCount, getDealerProfile } from '../lib/utils/dealerDashboardService';
 
 interface DealerDashboardWidgetProps {
   onClick?: () => void;

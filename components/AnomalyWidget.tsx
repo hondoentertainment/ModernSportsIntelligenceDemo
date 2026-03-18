@@ -14,7 +14,7 @@ import {
   detectAnomalies,
   findArbitrageOpportunities,
   getAnomalySummary,
-} from '../lib/anomalyDetectionService';
+} from '../lib/analytics/anomalyDetectionService';
 
 interface AnomalyWidgetProps {
   inventory: CardInventory[];

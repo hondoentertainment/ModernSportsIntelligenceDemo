@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import TierGate, { SubscriptionTier } from "./TierGate";
-import { getRouteTier } from "../lib/routeTierConfig";
+import { getRouteTier } from "../lib/utils/routeTierConfig";
 
 interface TieredRouteProps {
   children: ReactNode;

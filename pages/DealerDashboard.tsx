@@ -19,7 +19,7 @@ import {
   type MultiStoreConfig,
   type TopSeller,
   type Customer,
-} from '../lib/dealerDashboardService.ts';
+} from '../lib/utils/dealerDashboardService.ts';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 const DealerDashboard: React.FC = () => {

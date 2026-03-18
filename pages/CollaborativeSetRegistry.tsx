@@ -28,7 +28,7 @@ import {
   formatFullCurrency,
   type CollaborativeSet,
   type SetContributor,
-} from '../lib/collaborativeSetRegistryService';
+} from '../lib/utils/collaborativeSetRegistryService';
 
 type DetailTab = 'checklist' | 'contributors' | 'gaps' | 'milestones';
 

@@ -6,7 +6,7 @@ import {
   getMediaMentions,
   PHASE_COLORS,
   NARRATIVE_TYPE_META,
-} from '../lib/narrativeAlphaService';
+} from '../lib/analytics/narrativeAlphaService';
 
 interface NarrativeAlphaWidgetProps {
   onClick?: () => void;

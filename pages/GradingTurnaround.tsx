@@ -49,7 +49,7 @@ import {
   ETAPrediction,
   TurnaroundStats,
   SubmissionStatus,
-} from '../lib/gradingTurnaroundService';
+} from '../lib/core/gradingTurnaroundService';
 
 type TabId = 'overview' | 'comparison' | 'submissions' | 'report';
 

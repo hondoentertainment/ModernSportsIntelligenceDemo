@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { MultiAgentService } from '../lib/MultiAgentService';
+import { MultiAgentService } from '../lib/utils/MultiAgentService';
 import { SwarmInsight, JointAcquisitionProposal, GuildMember } from '../types';
 import SwarmCard from '../components/SwarmCard';
 import AcquisitionProposal from '../components/AcquisitionProposal';
 import { Users, ShieldCheck, Zap, Globe, MessageSquare, Plus } from 'lucide-react';
-import { showToast } from '../lib/toast';
+import { showToast } from '../lib/utils/toast';
 import { GuildService } from '../lib/social/guildService';
 
 const GuildDashboard: React.FC = () => {

@@ -16,7 +16,7 @@ import {
   getCardFingerprints,
   getFingerprintMatches,
   getFingerprintStats,
-} from '../lib/cardDNAFingerprintService';
+} from '../lib/core/cardDNAFingerprintService';
 
 interface CardDNAFingerprintModalProps {
   isOpen: boolean;

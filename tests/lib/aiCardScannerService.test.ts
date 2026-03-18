@@ -13,7 +13,7 @@ import {
   getConfidenceColor,
   formatCurrency,
   getTopIdentifiedCards,
-} from '../../lib/aiCardScannerService';
+} from '../../lib/utils/aiCardScannerService';
 
 const localStorageMock = setupLocalStorageMock();
 

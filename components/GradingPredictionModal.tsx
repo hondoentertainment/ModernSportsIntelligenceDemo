@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { X, Eye, TrendingUp, TrendingDown } from 'lucide-react';
 import { CardInventory } from '../types';
-import { predictGrade } from '../lib/gradingPredictionService';
+import { predictGrade } from '../lib/utils/gradingPredictionService';
 
 interface GradingPredictionModalProps {
   isOpen: boolean;

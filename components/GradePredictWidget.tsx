@@ -15,7 +15,7 @@ import {
   getSubmissionCostTracker,
   GradePredictWidgetSummary,
   SubmissionCostTracker,
-} from '../lib/gradePredictService';
+} from '../lib/analytics/gradePredictService';
 
 interface GradePredictWidgetProps {
   cards: CardInventory[];

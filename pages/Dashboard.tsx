@@ -49,21 +49,21 @@ import {
   PolarGrid,
   PolarAngleAxis,
 } from 'recharts';
-import { calculateAlphaScore, getCollectorTier, getPortfolioDNA } from '../lib/analytics.ts';
-import { generatePortfolioSentiment } from '../lib/gemini.ts';
-import { detectSignals } from '../lib/signals.ts';
-import { syncPortfolio, SyncProgress } from '../lib/marketSync.ts';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
-import { useAlerts } from '../lib/useAlerts.ts';
+import { calculateAlphaScore, getCollectorTier, getPortfolioDNA } from '../lib/analytics/analytics.ts';
+import { generatePortfolioSentiment } from '../lib/utils/gemini.ts';
+import { detectSignals } from '../lib/utils/signals.ts';
+import { syncPortfolio, SyncProgress } from '../lib/utils/marketSync.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
+import { useAlerts } from '../lib/utils/useAlerts.ts';
 import ReportModal from '../components/ReportModal.tsx';
 import MorningBriefingModal from '../components/MorningBriefingModal.tsx';
 import ShareAlphaModal from '../components/ShareAlphaModal.tsx';
 import OCRIngestionModal from '../components/OCRIngestionModal.tsx';
-import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
-import { getHistoricalDelta } from '../lib/marketHistory.ts';
+import { getRarityTier, getTierStyles } from '../lib/utils/rarity.ts';
+import { getHistoricalDelta } from '../lib/analytics/marketHistory.ts';
 import { logger } from '../lib/logger';
-import { StatsService } from '../lib/statsService.ts';
-import { AggregationService } from '../lib/aggregationService.ts';
+import { StatsService } from '../lib/utils/statsService.ts';
+import { AggregationService } from '../lib/analytics/aggregationService.ts';
 import { Cloud, CloudOff, Gavel } from 'lucide-react';
 import CardImage from '../components/CardImage.tsx';
 import NegotiationModal from '../components/NegotiationModal.tsx';

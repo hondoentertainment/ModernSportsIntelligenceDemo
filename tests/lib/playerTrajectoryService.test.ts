@@ -7,7 +7,7 @@ import {
   getTrajectoryFactors,
   getTopProjectedPlayer,
   getPlayerIds,
-} from '../../lib/playerTrajectoryService';
+} from '../../lib/analytics/playerTrajectoryService';
 
 describe('playerTrajectoryService', () => {
   describe('getPlayerTrajectory', () => {

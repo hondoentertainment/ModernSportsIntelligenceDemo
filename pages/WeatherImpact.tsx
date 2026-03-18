@@ -9,7 +9,7 @@ import {
   getConditionLabel,
   getStatusColor,
   getRecommendationConfig,
-} from '../lib/weatherImpactService';
+} from '../lib/analytics/weatherImpactService';
 import WeatherImpactWidget from '../components/WeatherImpactWidget';
 import WeatherImpactModal from '../components/WeatherImpactModal';
 

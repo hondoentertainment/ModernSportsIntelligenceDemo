@@ -39,7 +39,7 @@ import {
   CardSet,
   MissingCard,
   SourceRecommendation,
-} from '../lib/setCompletionService';
+} from '../lib/core/setCompletionService';
 
 type TabKey = 'my-sets' | 'missing-cards' | 'source-finder' | 'completion-stats';
 

@@ -3,7 +3,7 @@ import { GitBranch, ChevronRight, TrendingUp, ArrowRight } from 'lucide-react';
 import {
   getCounterfactualScenarios,
   getCounterfactualStats,
-} from '../lib/counterfactualValueService';
+} from '../lib/analytics/counterfactualValueService';
 
 interface CounterfactualValueWidgetProps {
   onClick?: () => void;

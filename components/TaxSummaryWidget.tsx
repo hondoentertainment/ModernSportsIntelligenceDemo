@@ -9,7 +9,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { CardInventory } from '../types';
-import { TaxLotService, CostBasisMethod } from '../lib/taxLotService';
+import { TaxLotService, CostBasisMethod } from '../lib/utils/taxLotService';
 
 interface TaxSummaryWidgetProps {
   inventory: CardInventory[];

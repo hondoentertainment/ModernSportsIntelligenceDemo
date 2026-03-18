@@ -6,7 +6,7 @@ import {
   getNudges,
   getSeverityConfig,
   formatCurrency,
-} from '../lib/behavioralFinanceService';
+} from '../lib/analytics/behavioralFinanceService';
 
 interface BehavioralFinanceWidgetProps {
   onOpenModal?: () => void;

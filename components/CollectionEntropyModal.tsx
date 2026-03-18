@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, Dices, PieChart, AlertTriangle, Lightbulb, TrendingUp, Target } from 'lucide-react';
-import { getScore, getPatterns } from '../lib/collectionEntropyService';
+import { getScore, getPatterns } from '../lib/core/collectionEntropyService';
 
 interface Props {
   isOpen: boolean;

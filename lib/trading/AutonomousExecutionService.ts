@@ -1,10 +1,10 @@
 import { AgentRecommendationOrigin, AutoPilotConfig, AutonomousAction, CardInventory, CollaborativeThesis, RiskCollar } from "../types";
-import { MultiAgentService } from "../MultiAgentService";
-import { showToast } from "../toast";
-import { logAuditEvent } from "../auditLog";
-import { insertAgentOutcome, insertExecutionApproval, upsertAgentRecommendation, upsertExecutionIntent } from "../differentiatorData";
-import { ExecutionService, OrderIntent } from "../executionService";
-import { ensureMockExecutionAdapter } from "../phaseEndpoints";
+import { MultiAgentService } from "../utils/MultiAgentService";
+import { showToast } from "../utils/toast";
+import { logAuditEvent } from "../utils/auditLog";
+import { insertAgentOutcome, insertExecutionApproval, upsertAgentRecommendation, upsertExecutionIntent } from "../utils/differentiatorData";
+import { ExecutionService, OrderIntent } from "../utils/executionService";
+import { ensureMockExecutionAdapter } from "../utils/phaseEndpoints";
 import { logger } from "../logger";
 import { store } from "../dal/syncStore";
 

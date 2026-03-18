@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Award, ChevronRight, Users, TrendingUp, ShieldAlert } from 'lucide-react';
-import { getHofCandidates, getHofStats } from '../lib/hofProbabilityService';
+import { getHofCandidates, getHofStats } from '../lib/utils/hofProbabilityService';
 
 interface HofProbabilityWidgetProps {
   onClick?: () => void;

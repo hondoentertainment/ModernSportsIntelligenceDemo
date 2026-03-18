@@ -31,7 +31,7 @@ import {
   type PlatformImpact,
   type TrendingMention,
   type MarketManipulationFlag,
-} from '../lib/influencerImpactService.ts';
+} from '../lib/analytics/influencerImpactService.ts';
 import {
   AreaChart,
   Area,

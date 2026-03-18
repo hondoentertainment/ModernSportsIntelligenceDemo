@@ -39,7 +39,7 @@ import {
   markAlertRead,
   dismissAlert,
   MONTH_NAMES,
-} from '../lib/seasonalStrategyService';
+} from '../lib/analytics/seasonalStrategyService';
 
 interface SeasonalModalProps {
   isOpen: boolean;

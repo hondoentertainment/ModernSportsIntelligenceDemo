@@ -8,7 +8,7 @@ import {
     insertExecutionFill,
     upsertMarketplaceListing,
     upsertScenarioRun,
-} from '../../lib/differentiatorData';
+} from '../../lib/utils/differentiatorData';
 
 describe('differentiatorData', () => {
     beforeEach(() => {

@@ -19,14 +19,14 @@ import LuminousTracker from './components/LuminousTracker.tsx';
 import { MigrationProvider } from './contexts/MigrationContext.tsx';
 import MigrationBanner from './components/MigrationBanner.tsx';
 import MarketTicker from './components/MarketTicker.tsx';
-import { useSupabaseInventory } from './lib/useSupabaseInventory.ts';
+import { useSupabaseInventory } from './lib/utils/useSupabaseInventory.ts';
 import LazyErrorBoundary from './components/LazyErrorBoundary.tsx';
 import { PageLoadingFallback } from './components/LazyLoadFallback.tsx';
 import GuidedTour from './components/GuidedTour.tsx';
 import InstitutionalWallHUD from './components/InstitutionalWallHUD.tsx';
 import GrailShowcase from './components/GrailShowcase.tsx';
 import DemoFlowWidget from './components/DemoFlowWidget.tsx';
-import { validateEnv } from './lib/env';
+import { validateEnv } from './lib/utils/env';
 import { initDAL } from './lib/dal';
 
 // Validate environment on startup

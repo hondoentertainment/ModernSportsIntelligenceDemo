@@ -1,5 +1,5 @@
 import { NegotiationSession, NegotiableItem } from '../../types';
-import { getNegotiationResponse, getAgenticOffer } from '../gemini';
+import { getNegotiationResponse, getAgenticOffer } from '../utils/gemini';
 
 // Mock responses for the simulated seller (fallback when Gemini unavailable)
 const SELLER_RESPONSES = {

@@ -7,7 +7,7 @@ import {
   insertDealRoomMessage,
   upsertDealRoom,
   upsertDealRoomParticipant,
-} from '../differentiatorData';
+} from '../utils/differentiatorData';
 
 // ── Interfaces ──────────────────────────────────────────────────────────────────
 

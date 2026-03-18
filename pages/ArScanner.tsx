@@ -21,7 +21,7 @@ import {
   type AROverlay,
   type CameraConfig,
   type ScanResult,
-} from '../lib/arScannerService.ts';
+} from '../lib/utils/arScannerService.ts';
 import {
   AreaChart,
   Area,

@@ -13,7 +13,7 @@ import {
   findMatches,
   getArchetypeLabel,
   getArchetypeColor,
-} from '../lib/collectorDnaService';
+} from '../lib/core/collectorDnaService';
 
 interface CollectorDnaWidgetProps {
   onOpenModal?: () => void;

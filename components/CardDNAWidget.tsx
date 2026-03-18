@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Fingerprint, ShieldCheck, AlertTriangle, ChevronRight } from 'lucide-react';
-import { getDNAStats, getCounterfeitAlerts } from '../lib/cardDNAService';
+import { getDNAStats, getCounterfeitAlerts } from '../lib/core/cardDNAService';
 
 interface CardDNAWidgetProps {
   onViewAll?: () => void;

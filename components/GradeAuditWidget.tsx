@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Eye, TrendingUp, Award } from 'lucide-react';
 import { CardInventory } from '../types';
-import { analysePortfolioGradingOpportunities } from '../lib/gradingPredictionService';
+import { analysePortfolioGradingOpportunities } from '../lib/utils/gradingPredictionService';
 
 interface GradeAuditWidgetProps {
   inventory: CardInventory[];

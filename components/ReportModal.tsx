@@ -35,7 +35,7 @@ import {
   saveReportToHistory,
   getCachedReport,
   cacheReport,
-} from '../lib/reportService';
+} from '../lib/utils/reportService';
 
 interface ReportModalProps {
   isOpen: boolean;

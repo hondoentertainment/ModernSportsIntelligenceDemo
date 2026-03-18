@@ -7,7 +7,7 @@ import {
   getPlatformConfig,
   getStrategyConfig,
   formatCurrency,
-} from '../lib/auctionWarRoomService';
+} from '../lib/analytics/auctionWarRoomService';
 
 interface AuctionWarRoomWidgetProps {
   onOpenModal?: () => void;

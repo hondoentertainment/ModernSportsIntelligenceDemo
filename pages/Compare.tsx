@@ -21,10 +21,10 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import { useInventory } from '../lib/useInventory.ts';
+import { useInventory } from '../lib/utils/useInventory.ts';
 import { CardInventory } from '../types.ts';
-import { generateCompareAnalysis } from '../lib/compareAnalysis.ts';
-import { getCardHistory } from '../lib/priceHistory';
+import { generateCompareAnalysis } from '../lib/analytics/compareAnalysis.ts';
+import { getCardHistory } from '../lib/analytics/priceHistory';
 import CardImage from '../components/CardImage.tsx';
 import ImageLightbox from '../components/ImageLightbox.tsx';
 

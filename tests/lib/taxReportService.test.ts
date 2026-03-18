@@ -14,7 +14,7 @@ import {
   formatCurrency,
   formatDate,
   getHoldingPeriodLabel,
-} from '../../lib/taxReportService';
+} from '../../lib/utils/taxReportService';
 
 describe('taxReportService', () => {
   beforeEach(() => {

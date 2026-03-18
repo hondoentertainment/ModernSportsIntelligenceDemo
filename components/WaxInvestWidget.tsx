@@ -11,7 +11,7 @@ import {
   getReleaseCalendar,
   getWaxROILeaderboard,
   WaxPortfolioEntryWithValue,
-} from '../lib/waxInvestService';
+} from '../lib/utils/waxInvestService';
 
 interface WaxInvestWidgetProps {
   onClick?: () => void;

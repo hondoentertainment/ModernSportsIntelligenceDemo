@@ -31,7 +31,7 @@ import {
   CardSegment,
   AssetClass,
   TimeWindow,
-} from '../lib/crossAssetCorrelationService';
+} from '../lib/analytics/crossAssetCorrelationService';
 
 interface CrossAssetCorrelationModalProps {
   isOpen: boolean;

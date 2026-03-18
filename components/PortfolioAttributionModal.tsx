@@ -47,7 +47,7 @@ import {
   getScatterData,
   getUnderwaterData,
   getSectorWeightTimeline,
-} from '../lib/portfolioAttributionService';
+} from '../lib/analytics/portfolioAttributionService';
 
 interface PortfolioAttributionModalProps {
   isOpen: boolean;

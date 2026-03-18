@@ -6,7 +6,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { CardInventory } from '../types';
-import { generatePortfolioLiquidityReport } from '../lib/marketDepthService';
+import { generatePortfolioLiquidityReport } from '../lib/analytics/marketDepthService';
 
 interface LiquidityHeatmapProps {
   inventory: CardInventory[];

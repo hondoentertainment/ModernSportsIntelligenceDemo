@@ -1,6 +1,6 @@
 import { CardInventory, TargetWatchlist } from '../../types';
-import { getCardHistory, PriceSnapshot } from '../priceHistory';
-import { LiquidityService } from '../liquidityService';
+import { getCardHistory, PriceSnapshot } from '../analytics/priceHistory';
+import { LiquidityService } from '../analytics/liquidityService';
 
 export interface ArbitrageSignal {
     id: string;

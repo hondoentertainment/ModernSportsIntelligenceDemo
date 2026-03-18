@@ -23,7 +23,7 @@ import {
   Legend,
 } from 'recharts';
 import { CardInventory } from '../types';
-import { generatePriceHistory, calculateMovingAverage, calculateBollingerBands } from '../lib/priceChartService';
+import { generatePriceHistory, calculateMovingAverage, calculateBollingerBands } from '../lib/analytics/priceChartService';
 import {
   calculateRSI,
   calculateMACD,
@@ -32,7 +32,7 @@ import {
   generateVolumeProfile,
   generateTASignals,
   getOverallTASentiment,
-} from '../lib/technicalAnalysisService';
+} from '../lib/analytics/technicalAnalysisService';
 
 interface TechnicalAnalysisModalProps {
   isOpen: boolean;

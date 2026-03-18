@@ -28,7 +28,7 @@ import {
   type SentimentWave,
   type MomentumShift,
   type SentimentSource,
-} from '../lib/sentimentVelocityService';
+} from '../lib/analytics/sentimentVelocityService';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

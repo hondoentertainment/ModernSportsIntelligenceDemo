@@ -7,7 +7,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { CardInventory } from '../types';
-import { generatePortfolioBriefing, AGENTS, AgentRole } from '../lib/agentFramework';
+import { generatePortfolioBriefing, AGENTS, AgentRole } from '../lib/utils/agentFramework';
 
 interface AgentInsightsPanelProps {
   inventory: CardInventory[];

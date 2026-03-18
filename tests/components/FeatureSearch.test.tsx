@@ -14,7 +14,7 @@ vi.mock('../../lib/useFocusTrap', () => ({
 }));
 
 import FeatureSearch from '../../components/FeatureSearch';
-import { DISCOVERABLE_FEATURE_CATALOG } from '../../lib/featureCatalog';
+import { DISCOVERABLE_FEATURE_CATALOG } from '../../lib/utils/featureCatalog';
 
 describe('FeatureSearch', () => {
   beforeEach(() => {

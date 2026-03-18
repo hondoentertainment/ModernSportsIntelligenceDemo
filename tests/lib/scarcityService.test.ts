@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import * as ScarcityService from '../../lib/scarcityService';
+import * as ScarcityService from '../../lib/analytics/scarcityService';
 describe('ScarcityService', () => {
     it('should generate consistent population data for the same input', () => {
         const input: any = {

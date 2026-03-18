@@ -14,7 +14,7 @@ import {
   getCollectionPopImpact,
   getGemRateData,
   SupplyRiskAlert,
-} from '../lib/popGrowthService';
+} from '../lib/analytics/popGrowthService';
 
 interface PopGrowthWidgetProps {
   cards: CardInventory[];

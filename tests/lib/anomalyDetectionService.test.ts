@@ -7,7 +7,7 @@ import {
   acknowledgeAnomaly,
   getAnomalyHistory,
   getAnomalyTrend,
-} from '../../lib/anomalyDetectionService';
+} from '../../lib/analytics/anomalyDetectionService';
 import { makeCard, setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

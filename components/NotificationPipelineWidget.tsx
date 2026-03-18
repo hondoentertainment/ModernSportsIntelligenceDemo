@@ -20,7 +20,7 @@ import {
   getNotificationManager,
   WebSocketConnectionState,
   NotificationPreference,
-} from '../lib/realTimeNotificationService';
+} from '../lib/utils/realTimeNotificationService';
 
 const CHANNEL_ICONS: Record<NotificationChannel, React.ReactNode> = {
   price_alert: <DollarSign size={12} />,

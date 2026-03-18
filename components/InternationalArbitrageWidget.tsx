@@ -5,7 +5,7 @@ import {
   getMarketProfiles,
   getTopArbitrageToday,
   formatCurrency,
-} from '../lib/internationalArbitrageService';
+} from '../lib/analytics/internationalArbitrageService';
 
 interface InternationalArbitrageWidgetProps {
   onOpenModal?: () => void;

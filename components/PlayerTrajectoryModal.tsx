@@ -17,7 +17,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import { getPlayerTrajectory, getPlayerIds } from '../lib/playerTrajectoryService';
+import { getPlayerTrajectory, getPlayerIds } from '../lib/analytics/playerTrajectoryService';
 
 interface PlayerTrajectoryModalProps {
   isOpen: boolean;

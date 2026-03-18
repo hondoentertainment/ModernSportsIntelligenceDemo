@@ -68,7 +68,7 @@ import {
   type AuthenticationHistoryEntry,
   type AnomalySeverity,
   type ForensicVerdict,
-} from '../lib/forensicsLabService';
+} from '../lib/utils/forensicsLabService';
 
 // ---- Tab Definition ----
 

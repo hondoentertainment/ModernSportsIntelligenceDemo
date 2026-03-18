@@ -31,7 +31,7 @@ import {
   intentLabel,
   intentBadgeColor,
   priorityBadgeColor,
-} from '../lib/portfolioCopilotService';
+} from '../lib/utils/portfolioCopilotService';
 
 interface Props {
   isOpen: boolean;

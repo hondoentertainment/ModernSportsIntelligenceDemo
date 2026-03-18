@@ -52,7 +52,7 @@ import {
   type RebalanceTrade,
   type SimulationResult,
   type DNAStrandKey,
-} from '../lib/portfolioDnaRebalancerService';
+} from '../lib/analytics/portfolioDnaRebalancerService';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

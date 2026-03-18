@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, MapPin, Flame, TrendingUp, ArrowRightLeft, Calendar, Globe, BarChart3 } from 'lucide-react';
-import { getHotspots, getRegionalTrends, getArbitrageLanes, getLocalEvents } from '../lib/microGeographicDemandService';
+import { getHotspots, getRegionalTrends, getArbitrageLanes, getLocalEvents } from '../lib/analytics/microGeographicDemandService';
 
 interface Props {
   isOpen: boolean;

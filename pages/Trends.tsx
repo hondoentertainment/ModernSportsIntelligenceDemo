@@ -11,8 +11,8 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from 'lucide-react';
-import { useInventory } from '../lib/useInventory.ts';
-import { AggregationService } from '../lib/aggregationService';
+import { useInventory } from '../lib/utils/useInventory.ts';
+import { AggregationService } from '../lib/analytics/aggregationService';
 import {
   AreaChart,
   Area,

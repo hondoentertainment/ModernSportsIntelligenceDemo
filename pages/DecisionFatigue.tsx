@@ -25,7 +25,7 @@ import {
   getFatigueLabel,
   getDecisionTypeLabel,
   type FatigueLevel,
-} from '../lib/decisionFatigueService';
+} from '../lib/utils/decisionFatigueService';
 
 const BatteryIcon: React.FC<{ level: FatigueLevel }> = ({ level }) => {
   if (level === 'fresh' || level === 'engaged') return <BatteryFull size={20} className="text-green-400" />;

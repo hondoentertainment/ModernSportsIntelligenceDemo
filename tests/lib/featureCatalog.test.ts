@@ -6,7 +6,7 @@ import {
   FEATURE_CATALOG,
   DISCOVERABLE_FEATURE_CATALOG,
   TIER_CONFIG,
-} from '../../lib/featureCatalog';
+} from '../../lib/utils/featureCatalog';
 
 describe('featureCatalog', () => {
   describe('FEATURE_CATALOG', () => {

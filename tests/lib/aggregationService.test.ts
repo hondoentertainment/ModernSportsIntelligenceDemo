@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AggregationService } from '../../lib/aggregationService';
-import * as priceHistory from '../../lib/priceHistory';
+import { AggregationService } from '../../lib/analytics/aggregationService';
+import * as priceHistory from '../../lib/analytics/priceHistory';
 
 vi.mock('../../lib/priceHistory', () => ({
     getCardHistory: vi.fn(() => []),

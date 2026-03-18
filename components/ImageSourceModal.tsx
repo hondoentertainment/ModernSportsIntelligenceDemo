@@ -1,6 +1,6 @@
 import React from 'react';
 import { Camera, MapPin, Calendar, Users, Shield, Copyright, ExternalLink, X } from 'lucide-react';
-import { getImageSource } from '../lib/imageSourceService.ts';
+import { getImageSource } from '../lib/utils/imageSourceService.ts';
 
 interface Props {
   imageUrl: string;

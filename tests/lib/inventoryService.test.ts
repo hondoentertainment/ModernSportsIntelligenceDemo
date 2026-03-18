@@ -29,7 +29,7 @@ vi.mock('../../lib/logger', () => ({
 }));
 
 // Import after mocks are set up
-import { calculateStats, useInventory } from '../../lib/useInventory';
+import { calculateStats, useInventory } from '../../lib/utils/useInventory';
 
 describe('inventoryService', () => {
   setupLocalStorageMock();

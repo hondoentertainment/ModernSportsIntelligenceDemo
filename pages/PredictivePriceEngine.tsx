@@ -26,7 +26,7 @@ import {
   type TrendSignal,
   type ModelType,
   type ForecastHorizon,
-} from '../lib/predictivePriceEngineService';
+} from '../lib/analytics/predictivePriceEngineService';
 
 const SIGNAL_OPTIONS: TrendSignal[] = ['strong_buy', 'buy', 'hold', 'sell', 'strong_sell'];
 const SPORT_OPTIONS = ['All', 'Basketball', 'Baseball', 'Football', 'Hockey'];

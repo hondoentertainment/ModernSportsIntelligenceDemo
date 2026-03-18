@@ -38,7 +38,7 @@ import {
   saveStrategy,
   SCREENER_FIELDS,
   SCREENER_OPERATORS,
-} from '../lib/quantWorkbenchService';
+} from '../lib/utils/quantWorkbenchService';
 
 // ── Props ───────────────────────────────────────────────────────────────────────
 

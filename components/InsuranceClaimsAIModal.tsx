@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, Shield, FileText, Brain, CheckCircle, XCircle, Clock, DollarSign } from 'lucide-react';
-import { getClaims } from '../lib/insuranceClaimsAIService';
+import { getClaims } from '../lib/core/insuranceClaimsAIService';
 
 interface Props {
   isOpen: boolean;

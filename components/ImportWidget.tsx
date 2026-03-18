@@ -8,7 +8,7 @@ import {
   Package,
 } from 'lucide-react';
 import { CardInventory } from '../types';
-import { getImportHistory, ImportSource } from '../lib/importService';
+import { getImportHistory, ImportSource } from '../lib/core/importService';
 
 interface ImportWidgetProps {
   cards: CardInventory[];

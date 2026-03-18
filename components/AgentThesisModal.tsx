@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 import { CardInventory } from '../types';
-import { generateInvestmentThesis, AGENTS, AgentAnalysis } from '../lib/agentFramework';
+import { generateInvestmentThesis, AGENTS, AgentAnalysis } from '../lib/utils/agentFramework';
 
 interface AgentThesisModalProps {
   isOpen: boolean;

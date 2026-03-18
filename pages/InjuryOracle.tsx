@@ -40,7 +40,7 @@ import {
   type PortfolioExposure,
   type CardValueImpact,
   type RiskCategory,
-} from '../lib/injuryOracleService';
+} from '../lib/analytics/injuryOracleService';
 import type { Sport } from '../types';
 
 // ---- Constants ----

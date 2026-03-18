@@ -22,7 +22,7 @@ import {
   getCategoryLabel,
   getRiskColor,
   getLiquidityColor,
-} from '../../lib/vintageAllocationService';
+} from '../../lib/analytics/vintageAllocationService';
 import type {
   AllocationCategory,
   AllocationItem,
@@ -30,7 +30,7 @@ import type {
   RiskReturnProfile,
   RebalanceAction,
   AllocationStats,
-} from '../../lib/vintageAllocationService';
+} from '../../lib/analytics/vintageAllocationService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

@@ -5,7 +5,7 @@ import {
   getBeneficiaries,
   getInsuranceRecords,
   getEstateValuation,
-} from '../lib/estatePlanningService';
+} from '../lib/core/estatePlanningService';
 
 interface EstatePlanningWidgetProps {
   onViewAll?: () => void;

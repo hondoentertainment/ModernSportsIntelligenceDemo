@@ -30,7 +30,7 @@ import {
   getCommunityStats,
   generateCommunityProfiles,
   CATEGORY_LABELS,
-} from '../lib/benchmarkService';
+} from '../lib/analytics/benchmarkService';
 
 interface BenchmarkModalProps {
   isOpen: boolean;

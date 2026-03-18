@@ -10,7 +10,7 @@ import {
   getMicrostructureStats,
   getAllMarketDepths,
   detectAnomalies,
-} from '../lib/marketMicrostructureService';
+} from '../lib/analytics/marketMicrostructureService';
 
 interface MarketMicrostructureWidgetProps {
   onClick?: () => void;

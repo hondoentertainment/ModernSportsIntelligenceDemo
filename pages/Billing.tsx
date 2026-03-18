@@ -10,7 +10,7 @@ import {
   createBillingPortalSession,
   SUBSCRIPTION_TIERS,
   type SubscriptionTier,
-} from '../lib/billingService';
+} from '../lib/utils/billingService';
 
 const Billing: React.FC = () => {
   const { user, isDemoMode } = useAuth();

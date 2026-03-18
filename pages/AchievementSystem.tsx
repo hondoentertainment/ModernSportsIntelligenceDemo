@@ -37,7 +37,7 @@ import {
   type AchievementCategory,
   type SeasonalChallenge,
   type LeaderboardEntry,
-} from '../lib/achievementSystemService.ts';
+} from '../lib/utils/achievementSystemService.ts';
 
 type TabId = 'achievements' | 'level' | 'seasonal' | 'leaderboard';
 

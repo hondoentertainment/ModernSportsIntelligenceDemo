@@ -5,7 +5,7 @@ import {
   getCollectionValuationSummary,
   type InsurancePolicy,
   type CollectionValuationSummary,
-} from '../lib/insuranceAppraisalService';
+} from '../lib/core/insuranceAppraisalService';
 
 interface InsuranceAppraisalWidgetProps {
   onNavigate?: () => void;

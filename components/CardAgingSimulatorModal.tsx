@@ -19,7 +19,7 @@ import {
   getAgingSimulations,
   getStorageConditions,
   getAgingStats,
-} from '../lib/cardAgingSimulatorService';
+} from '../lib/utils/cardAgingSimulatorService';
 
 interface CardAgingSimulatorModalProps {
   isOpen: boolean;

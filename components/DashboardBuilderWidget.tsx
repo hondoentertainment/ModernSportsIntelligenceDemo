@@ -10,7 +10,7 @@ import {
   getActiveLayoutId,
   setActiveLayoutId,
   type DashboardLayout,
-} from '../lib/dashboardBuilderService';
+} from '../lib/utils/dashboardBuilderService';
 
 interface DashboardBuilderWidgetProps {
   onOpenBuilder?: () => void;

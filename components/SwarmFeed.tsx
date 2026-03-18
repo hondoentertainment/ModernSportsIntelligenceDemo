@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Brain, MessageSquare, Shield, Zap, Target, Search, X, Activity } from 'lucide-react';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory';
-import { CatalystEngine } from '../lib/catalystEngine';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import { CatalystEngine } from '../lib/utils/catalystEngine';
 
 interface SwarmMessage {
     id: string;

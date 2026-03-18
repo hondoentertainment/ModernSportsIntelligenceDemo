@@ -18,7 +18,7 @@ import {
   type EventStatus,
   type MatchQuality,
   type DealStatus,
-} from '../lib/swapMeetService.ts';
+} from '../lib/utils/swapMeetService.ts';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
 

@@ -45,7 +45,7 @@ import {
   BreakEvenAnalysis,
   VelocityScenario,
   CostBreakdown,
-} from '../lib/breakEvenVelocityService';
+} from '../lib/analytics/breakEvenVelocityService';
 
 type TabId = 'overview' | 'analysis' | 'simulator' | 'compare' | 'optimization';
 

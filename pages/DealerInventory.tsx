@@ -11,7 +11,7 @@ import {
   getDealerInventoryStats,
   getVenueColor,
   getCategoryLabel,
-} from '../lib/dealerInventoryService';
+} from '../lib/core/dealerInventoryService';
 
 const DealerInventory: React.FC = () => {
   const inventory = useMemo(() => getDealerInventory(), []);

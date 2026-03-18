@@ -18,7 +18,7 @@ import {
   getFlipRecords,
   getStreakAnalysis,
   getFlipStats,
-} from '../lib/flipStreakAnalyticsService';
+} from '../lib/utils/flipStreakAnalyticsService';
 
 interface FlipStreakAnalyticsModalProps {
   isOpen: boolean;

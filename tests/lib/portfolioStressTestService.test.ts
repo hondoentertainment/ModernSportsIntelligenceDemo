@@ -23,7 +23,7 @@ import {
   type StressTestStats,
   type SeverityLevel,
   type ScenarioType,
-} from '../../lib/portfolioStressTestService';
+} from '../../lib/analytics/portfolioStressTestService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

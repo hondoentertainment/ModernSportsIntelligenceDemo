@@ -17,7 +17,7 @@ import {
   type DisputeStats,
   type DisputeStatus,
   type Evidence,
-} from '../lib/disputeArbitrationService';
+} from '../lib/utils/disputeArbitrationService';
 
 // ---- Constants ----
 

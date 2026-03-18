@@ -35,7 +35,7 @@ import {
   GradeDistribution,
   loadGradePremiumPrefs,
   saveGradePremiumPrefs,
-} from '../lib/gradePremiumService';
+} from '../lib/analytics/gradePremiumService';
 
 interface GradePremiumModalProps {
   isOpen: boolean;

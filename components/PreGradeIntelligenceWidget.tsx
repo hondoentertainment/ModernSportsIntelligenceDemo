@@ -11,7 +11,7 @@ import {
 import {
   getWidgetStats,
   type GradePrediction,
-} from '../lib/preGradeIntelligenceService';
+} from '../lib/core/preGradeIntelligenceService';
 
 interface PreGradeIntelligenceWidgetProps {
   onOpenModal?: () => void;

@@ -54,7 +54,7 @@ import {
   type RebalanceAction,
   type AllocationStats,
   type HistoricalReturn,
-} from '../lib/vintageAllocationService.ts';
+} from '../lib/analytics/vintageAllocationService.ts';
 
 type TabId = 'overview' | 'risk' | 'rebalance' | 'historical';
 
