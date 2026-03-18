@@ -158,6 +158,98 @@ export const CardInventoryInputSchema = z.object({
 
 export type CardInventoryInput = z.infer<typeof CardInventoryInputSchema>;
 
+// ─── PSA / Grading API Responses ─────────────────────────────────
+
+export const PSACertResponseSchema = z.object({
+  certNumber: z.string(),
+  verified: z.boolean(),
+  year: z.string().optional(),
+  brand: z.string().optional(),
+  set: z.string().optional(),
+  cardNumber: z.string().optional(),
+  player: z.string().optional(),
+  grade: z.string().optional(),
+  qualifier: z.string().optional(),
+  variety: z.string().optional(),
+  labelType: z.string().optional(),
+  imageUrl: z.string().url().optional(),
+  lookupDate: z.string(),
+});
+
+export type PSACertResponse = z.infer<typeof PSACertResponseSchema>;
+
+export const PopulationEntrySchema = z.object({
+  grade: z.string(),
+  count: z.number().int().min(0),
+  qualifier: z.string().optional(),
+});
+
+export const PopulationReportSchema = z.object({
+  year: z.string(),
+  brand: z.string(),
+  set: z.string(),
+  cardNumber: z.string(),
+  player: z.string(),
+  grades: z.array(PopulationEntrySchema),
+  totalGraded: z.number().int().min(0),
+  lastUpdated: z.string(),
+});
+
+export type PopulationReport = z.infer<typeof PopulationReportSchema>;
+
+// ─── Marketplace Aggregation ─────────────────────────────────────
+
+export const MarketListingSchema = z.object({
+  id: z.string(),
+  source: z.enum(['ebay', 'comc', 'goldin', 'heritage', 'pwcc', 'myslabs']),
+  title: z.string(),
+  price: z.number().min(0),
+  currency: z.string().default('USD'),
+  condition: z.string(),
+  grade: z.string().optional(),
+  gradingCompany: z.string().optional(),
+  imageUrl: z.string().url().optional(),
+  listingUrl: z.string().url().optional(),
+  endDate: z.string().optional(),
+  isSold: z.boolean(),
+  soldDate: z.string().optional(),
+});
+
+export type MarketListingValidated = z.infer<typeof MarketListingSchema>;
+
+export const PriceAggregateSchema = z.object({
+  averagePrice: z.number().min(0),
+  medianPrice: z.number().min(0),
+  lowPrice: z.number().min(0),
+  highPrice: z.number().min(0),
+  totalListings: z.number().int().min(0),
+  soldListings: z.number().int().min(0),
+  trendPercent: z.number(),
+  trendPeriod: z.string().optional(),
+  sources: z.array(z.string()).optional(),
+  lastUpdated: z.string(),
+});
+
+export type PriceAggregateValidated = z.infer<typeof PriceAggregateSchema>;
+
+// ─── Player / Sports Event ───────────────────────────────────────
+
+export const GameEventSchema = z.object({
+  id: z.string(),
+  type: z.enum(['milestone', 'injury', 'trade', 'award', 'record', 'debut', 'retirement']),
+  playerId: z.string(),
+  playerName: z.string(),
+  sport: z.enum(['baseball', 'basketball', 'football', 'hockey', 'soccer']),
+  headline: z.string(),
+  description: z.string(),
+  impactScore: z.number().min(0).max(100),
+  priceImpactPercent: z.number(),
+  timestamp: z.string(),
+  source: z.string(),
+});
+
+export type GameEventValidated = z.infer<typeof GameEventSchema>;
+
 // ─── Utility: Safe Parse with Logging ────────────────────────────────
 
 import { logger } from './logger';
