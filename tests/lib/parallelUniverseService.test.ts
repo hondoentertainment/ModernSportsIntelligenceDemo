@@ -18,7 +18,7 @@ import {
   getRarityLabel,
   getCompletionColor,
   type ParallelCard,
-} from '../../lib/parallelUniverseService';
+} from '../../lib/utils/parallelUniverseService';
 
 function makeParallelCard(overrides: Partial<ParallelCard> = {}): ParallelCard {
   return {

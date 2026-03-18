@@ -7,8 +7,8 @@ import React, {
   useRef,
   ReactNode,
 } from 'react';
-import { registerToastHandler, unregisterToastHandler } from '../lib/toast';
-import type { Toast, ToastType, ToastOptions } from '../lib/toast';
+import { registerToastHandler, unregisterToastHandler } from '../lib/utils/toast';
+import type { Toast, ToastType, ToastOptions } from '../lib/utils/toast';
 import {
   CheckCircle2,
   AlertTriangle,

@@ -39,7 +39,7 @@ import {
   type HobbyCorrelation,
   type CrossHobbyTrend,
   type CrossHobbyItem,
-} from '../lib/crossHobbyArbitrageService.ts';
+} from '../lib/trading/crossHobbyArbitrageService.ts';
 
 const HOBBY_COLORS: Record<string, string> = {
   'sports-card': '#10b981',

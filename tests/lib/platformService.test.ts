@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { PlatformService } from '../../lib/platformService';
+import { PlatformService } from '../../lib/utils/platformService';
 
 describe('platformService', () => {
     beforeEach(() => {

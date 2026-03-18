@@ -5,7 +5,7 @@ import {
   AlertTriangle,
   Activity,
 } from 'lucide-react';
-import { getStorageZones, getEnvironmentalAlerts, getSensorReadings } from '../lib/smartStorageService';
+import { getStorageZones, getEnvironmentalAlerts, getSensorReadings } from '../lib/utils/smartStorageService';
 
 interface SmartStorageWidgetProps {
   onOpenModal?: () => void;

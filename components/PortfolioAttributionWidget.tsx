@@ -3,7 +3,7 @@ import { PieChart, ChevronRight, TrendingUp, Award } from 'lucide-react';
 import {
   getReturnAttribution,
   getAlphaBeta,
-} from '../lib/portfolioAttributionService';
+} from '../lib/analytics/portfolioAttributionService';
 
 interface PortfolioAttributionWidgetProps {
   onOpenModal?: () => void;

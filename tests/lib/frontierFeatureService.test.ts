@@ -4,7 +4,7 @@ import {
   getFrontierFeatureBlueprints,
   getMergedFrontierFeatures,
   saveFrontierFeatureState,
-} from '../../lib/frontierFeatureService';
+} from '../../lib/utils/frontierFeatureService';
 
 describe('frontierFeatureService', () => {
   beforeEach(() => {

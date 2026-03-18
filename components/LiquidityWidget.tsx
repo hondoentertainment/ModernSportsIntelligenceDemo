@@ -14,7 +14,7 @@ import {
   computeAllLiquidityScores,
   detectIlliquidityOpportunities,
   PortfolioLiquidityReport,
-} from '../lib/liquidityService';
+} from '../lib/analytics/liquidityService';
 
 interface LiquidityWidgetProps {
   cards: CardInventory[];

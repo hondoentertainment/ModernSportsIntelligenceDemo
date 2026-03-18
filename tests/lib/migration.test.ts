@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { needsMigration, getMigrationStatus } from '../../lib/migration';
+import { needsMigration, getMigrationStatus } from '../../lib/utils/migration';
 
 const STORAGE_KEYS = {
     INVENTORY: 'cardx_inventory',

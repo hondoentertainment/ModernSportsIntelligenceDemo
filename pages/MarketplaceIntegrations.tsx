@@ -34,7 +34,7 @@ import {
   type MarketplaceAnalytics,
   type SellThroughRate,
   type MarketplaceFee,
-} from '../lib/marketplaceIntegrationService';
+} from '../lib/trading/marketplaceIntegrationService';
 
 type TabId = 'connections' | 'imports' | 'listings' | 'pricing' | 'fees' | 'analytics';
 

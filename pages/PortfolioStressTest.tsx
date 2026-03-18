@@ -28,7 +28,7 @@ import {
   type HistoricalCrash,
   type MostAffectedCard,
   type RecoveryProjectionPoint,
-} from '../lib/portfolioStressTestService.ts';
+} from '../lib/analytics/portfolioStressTestService.ts';
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid, BarChart, Bar, Cell,

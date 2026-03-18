@@ -18,7 +18,7 @@ import {
   type SwarmStats, type SwarmLeaderboard, type SwarmReputation,
   type ContributionReward, type RealWorldVsOnline, type PriceHeatMapData,
   type GeoPriceCluster,
-} from '../lib/microArbitrageSwarmService';
+} from '../lib/analytics/microArbitrageSwarmService';
 
 type TabId = 'feed' | 'arbitrage' | 'heatmap' | 'leaderboard' | 'reputation' | 'nearby';
 

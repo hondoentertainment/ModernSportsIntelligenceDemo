@@ -5,7 +5,7 @@ import {
   getInsuranceRecords,
   getEstateValuation,
   getDocumentChecklist,
-} from '../../lib/estatePlanningService';
+} from '../../lib/core/estatePlanningService';
 
 describe('estatePlanningService', () => {
   describe('getEstatePlan', () => {

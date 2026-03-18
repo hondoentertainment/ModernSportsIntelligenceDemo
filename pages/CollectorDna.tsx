@@ -14,7 +14,7 @@ import {
   type RecommendationFeed,
   type BuyerSellerMatch,
   type CollectorDnaStats,
-} from '../lib/collectorDnaService.ts';
+} from '../lib/core/collectorDnaService.ts';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 
 const CollectorDna: React.FC = () => {

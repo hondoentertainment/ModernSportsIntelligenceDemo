@@ -21,7 +21,7 @@ import {
   getPhaseLabel,
   type CulturalEvent,
   type CulturalDomain,
-} from '../lib/culturalVelocityService';
+} from '../lib/analytics/culturalVelocityService';
 
 const DOMAIN_ICONS: Record<CulturalDomain, React.ReactNode> = {
   film: <Film size={14} />,

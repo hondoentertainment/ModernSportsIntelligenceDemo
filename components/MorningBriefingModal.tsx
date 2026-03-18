@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sun, TrendingUp, TrendingDown, ArrowUpRight, Zap, History } from 'lucide-react';
 import { CardInventory } from '../types.ts';
-import { getHistoricalDelta, getMarketInsight } from '../lib/marketHistory.ts';
+import { getHistoricalDelta, getMarketInsight } from '../lib/analytics/marketHistory.ts';
 
 interface MorningBriefingModalProps {
     isOpen: boolean;

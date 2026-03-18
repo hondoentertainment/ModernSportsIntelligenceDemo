@@ -19,7 +19,7 @@ import {
   Transaction,
   TransactionType,
   Platform,
-} from '../../lib/hobbyIncomeService';
+} from '../../lib/utils/hobbyIncomeService';
 
 describe('hobbyIncomeService', () => {
   let storageMock: ReturnType<typeof setupLocalStorageMock>;

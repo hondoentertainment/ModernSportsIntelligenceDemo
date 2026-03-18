@@ -43,7 +43,7 @@ import {
   ALT_LABELS,
   saveCorrelationSettings,
   saveDashboardSnapshot,
-} from '../lib/crossAssetCorrelationService';
+} from '../lib/analytics/crossAssetCorrelationService';
 
 interface CorrelationModalProps {
   isOpen: boolean;

@@ -29,7 +29,7 @@ import {
   getMasterSetScore,
   loadEnrollments,
   removeEnrollment,
-} from '../lib/setRegistryService';
+} from '../lib/core/setRegistryService';
 
 interface SetRegistryModalProps {
   isOpen: boolean;

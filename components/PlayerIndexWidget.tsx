@@ -10,7 +10,7 @@ import { CardInventory } from '../types';
 import {
   getHotColdList,
   getSportIndexes,
-} from '../lib/playerIndexService';
+} from '../lib/analytics/playerIndexService';
 
 interface PlayerIndexWidgetProps {
   cards: CardInventory[];

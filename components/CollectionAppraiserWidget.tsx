@@ -6,7 +6,7 @@ import {
   getInsuranceCoverage,
   getCollectionSummary,
   formatCurrency,
-} from '../lib/collectionAppraiserService';
+} from '../lib/core/collectionAppraiserService';
 
 interface CollectionAppraiserWidgetProps {
   onOpenModal?: () => void;

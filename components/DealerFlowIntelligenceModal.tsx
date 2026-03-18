@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, Briefcase, TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, AlertCircle, Package } from 'lucide-react';
-import { getDealers, getFlowEvents, getAccumulationSignals } from '../lib/dealerFlowIntelligenceService';
+import { getDealers, getFlowEvents, getAccumulationSignals } from '../lib/analytics/dealerFlowIntelligenceService';
 
 interface Props {
   isOpen: boolean;

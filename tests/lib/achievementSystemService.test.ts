@@ -19,7 +19,7 @@ import {
   getCategoryColor,
   getCategoryLabel,
   getProgressColor,
-} from '../../lib/achievementSystemService';
+} from '../../lib/utils/achievementSystemService';
 
 describe('achievementSystemService', () => {
   beforeEach(() => {

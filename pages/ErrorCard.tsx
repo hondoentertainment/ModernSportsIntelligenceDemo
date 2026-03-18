@@ -28,7 +28,7 @@ import {
   type ErrorAlert,
   type ErrorCardStats,
   type ErrorType,
-} from '../lib/errorCardService';
+} from '../lib/core/errorCardService';
 import {
   BarChart,
   Bar,

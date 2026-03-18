@@ -15,7 +15,7 @@ import {
   getBreakRoomStats,
   getAuctionStats,
   getSnipeBots,
-} from '../lib/liveBreakRoomService.ts';
+} from '../lib/social/liveBreakRoomService.ts';
 
 interface Props {
   isOpen: boolean;

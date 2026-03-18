@@ -29,7 +29,7 @@ import {
   type PriceRequestStatus,
   type ConfidenceLevel,
   type VoterExpertise,
-} from '../lib/crowdPricingService';
+} from '../lib/analytics/crowdPricingService';
 
 // ---- Helper Components ----
 

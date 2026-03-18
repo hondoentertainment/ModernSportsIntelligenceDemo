@@ -6,7 +6,7 @@ import {
   Shield,
   Calendar,
 } from 'lucide-react';
-import { getComplianceStats, getComplianceAlerts } from '../lib/complianceCenterService';
+import { getComplianceStats, getComplianceAlerts } from '../lib/utils/complianceCenterService';
 
 interface ComplianceCenterWidgetProps {
   onOpenModal?: () => void;

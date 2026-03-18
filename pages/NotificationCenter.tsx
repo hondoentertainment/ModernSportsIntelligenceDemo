@@ -48,8 +48,8 @@ import {
   CHANNEL_LABELS,
   NotificationPreference,
   NotificationRule,
-} from '../lib/realTimeNotificationService';
-import { useRealtimeNotifications } from '../lib/useRealtimeNotifications';
+} from '../lib/utils/realTimeNotificationService';
+import { useRealtimeNotifications } from '../lib/utils/useRealtimeNotifications';
 
 // ---- Helpers ----
 

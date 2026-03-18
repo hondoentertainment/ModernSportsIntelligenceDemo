@@ -28,7 +28,7 @@ import {
   getAllCategoryLabels,
   getAllCategoryColors,
   AssetCategory,
-} from '../lib/crossHobbyPortfolioService';
+} from '../lib/utils/crossHobbyPortfolioService';
 import { CrossHobbyPortfolioModal } from '../components/CrossHobbyPortfolioModal';
 
 const formatCurrency = (val: number): string => {

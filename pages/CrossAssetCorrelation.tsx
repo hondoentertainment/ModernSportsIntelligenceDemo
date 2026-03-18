@@ -58,7 +58,7 @@ import {
   type EfficientFrontierPoint,
   type DrawdownEvent,
   type RollingCorrelationPoint,
-} from '../lib/crossAssetService';
+} from '../lib/utils/crossAssetService';
 
 // ─── Tab Definitions ─────────────────────────────────────────────────────────
 

@@ -30,7 +30,7 @@ import {
   DealerBooth,
   DealAlert,
   ShowReport,
-} from '../lib/shadowInventoryService';
+} from '../lib/core/shadowInventoryService';
 
 interface ShadowInventoryModalProps {
   isOpen: boolean;

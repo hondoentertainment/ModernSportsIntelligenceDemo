@@ -47,7 +47,7 @@ import {
   loadPreferences,
   savePreferences,
   CAPITAL_LOSS_DEDUCTION_LIMIT,
-} from '../lib/taxHarvestService';
+} from '../lib/utils/taxHarvestService';
 
 interface TaxHarvestModalProps {
   isOpen: boolean;

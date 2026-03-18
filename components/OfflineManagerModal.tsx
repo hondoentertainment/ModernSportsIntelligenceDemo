@@ -14,14 +14,14 @@ import {
   ArrowLeftRight,
   Shield,
 } from 'lucide-react';
-import { useOfflineStatus } from '../lib/useOfflineStatus';
+import { useOfflineStatus } from '../lib/utils/useOfflineStatus';
 import {
   getLastSyncTime,
   getStorageStats,
   getSyncQueue,
   getConflicts,
   getOfflineCapabilities,
-} from '../lib/offlineService';
+} from '../lib/utils/offlineService';
 
 interface OfflineManagerModalProps {
   isOpen: boolean;

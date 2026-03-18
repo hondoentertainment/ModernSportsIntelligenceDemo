@@ -34,7 +34,7 @@ import {
   BidStrategy,
   BidPattern,
   AuctionPlatform,
-} from '../lib/auctionSniperService';
+} from '../lib/trading/auctionSniperService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 

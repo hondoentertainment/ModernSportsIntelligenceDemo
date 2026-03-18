@@ -28,7 +28,7 @@ import {
   getSportWeather,
   conditionLabel,
   type WeatherCondition,
-} from '../lib/cardWeatherService';
+} from '../lib/utils/cardWeatherService';
 
 interface CardWeatherModalProps {
   isOpen: boolean;

@@ -18,7 +18,7 @@ import {
   getPrintRunEstimates,
   getPrintRunTrends,
   getPrintRunStats,
-} from '../lib/editionPrintRunService';
+} from '../lib/core/editionPrintRunService';
 
 interface EditionPrintRunModalProps {
   isOpen: boolean;

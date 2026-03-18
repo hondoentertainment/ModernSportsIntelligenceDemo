@@ -22,7 +22,7 @@ import {
   formatR0,
   type Narrative,
   type NarrativePhase,
-} from '../lib/memeticPropagationService';
+} from '../lib/analytics/memeticPropagationService';
 
 const PHASE_ORDER: NarrativePhase[] = ['emergence', 'exponential-growth', 'peak-saturation', 'decay', 'endemic'];
 

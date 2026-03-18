@@ -45,7 +45,7 @@ import {
   NarrativePeriod,
   NarrativePreferences,
   HighlightType,
-} from '../lib/portfolioNarratorService';
+} from '../lib/analytics/portfolioNarratorService';
 
 type TabId = 'latest' | 'history' | 'performance' | 'settings';
 

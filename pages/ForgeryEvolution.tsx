@@ -22,7 +22,7 @@ import {
   getTechniqueName,
   getDifficultyLabel,
   type ForgeryVector,
-} from '../lib/forgeryEvolutionService';
+} from '../lib/core/forgeryEvolutionService';
 
 const ForgeryEvolution: React.FC = () => {
   const vectors = useMemo(() => getForgeryVectors(), []);

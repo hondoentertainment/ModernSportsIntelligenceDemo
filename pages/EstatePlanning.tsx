@@ -30,7 +30,7 @@ import {
   getEstateValuation,
   getDocumentChecklist,
   DocumentStatus,
-} from '../lib/estatePlanningService';
+} from '../lib/core/estatePlanningService';
 
 const PIE_COLORS = ['#84cc16', '#22d3ee', '#f59e0b', '#a78bfa'];
 

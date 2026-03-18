@@ -20,8 +20,8 @@ import {
   NotificationChannel,
   CHANNEL_LABELS,
   NotificationPriority,
-} from '../lib/realTimeNotificationService';
-import { useRealtimeNotifications } from '../lib/useRealtimeNotifications';
+} from '../lib/utils/realTimeNotificationService';
+import { useRealtimeNotifications } from '../lib/utils/useRealtimeNotifications';
 
 const CHANNEL_ICONS: Record<NotificationChannel, React.ReactNode> = {
   price_alert: <DollarSign size={14} />,

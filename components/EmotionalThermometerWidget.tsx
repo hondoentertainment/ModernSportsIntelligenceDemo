@@ -8,7 +8,7 @@ import {
   type ThermometerReading,
   type EmotionalProfile,
   type EmotionalState,
-} from '../lib/emotionalThermometerService';
+} from '../lib/utils/emotionalThermometerService';
 
 interface EmotionalThermometerWidgetProps {
   onClick?: () => void;

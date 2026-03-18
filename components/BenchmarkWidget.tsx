@@ -15,7 +15,7 @@ import {
   evaluateChallengeProgress,
   CATEGORY_LABELS,
   PercentileRanking,
-} from '../lib/benchmarkService';
+} from '../lib/analytics/benchmarkService';
 
 interface BenchmarkWidgetProps {
   inventory: CardInventory[];

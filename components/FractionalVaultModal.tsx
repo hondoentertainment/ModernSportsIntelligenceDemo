@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Landmark, Copy, Shield } from 'lucide-react';
-import { getFractionalListings, getSharePositions, getTopCollectors, getCopyTradeSignals, getVaultStats, type FractionalListing } from '../lib/fractionalVaultService.ts';
+import { getFractionalListings, getSharePositions, getTopCollectors, getCopyTradeSignals, getVaultStats, type FractionalListing } from '../lib/utils/fractionalVaultService.ts';
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 
 interface Props {

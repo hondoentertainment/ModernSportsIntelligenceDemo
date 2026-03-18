@@ -6,7 +6,7 @@ import {
   syncInventory,
   type MarketplaceConnection,
   type SyncStatus,
-} from '../lib/marketplaceIntegrationService';
+} from '../lib/trading/marketplaceIntegrationService';
 
 interface MarketplaceIntegrationWidgetProps {
   onClick?: () => void;

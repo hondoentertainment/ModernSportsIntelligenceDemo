@@ -7,7 +7,7 @@ import {
   BADGE_TIER_COLORS,
   BADGE_TIER_LABELS,
   BadgeTier,
-} from '../lib/carbonScoreService';
+} from '../lib/analytics/carbonScoreService';
 
 interface CarbonScoreWidgetProps {
   onClick?: () => void;

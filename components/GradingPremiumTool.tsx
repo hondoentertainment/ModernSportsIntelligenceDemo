@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CardInventory, GradingPremiumAnalysis } from '../types';
-import { getGradingPremiumAnalysis } from '../lib/gemini';
+import { getGradingPremiumAnalysis } from '../lib/utils/gemini';
 import { logger } from '../lib/logger';
 import { Calculator, TrendingUp, AlertCircle, ChevronRight, Loader2, Sparkles, ArrowRight, ShieldCheck, DollarSign } from 'lucide-react';
 

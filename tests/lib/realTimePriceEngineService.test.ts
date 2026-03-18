@@ -13,7 +13,7 @@ import {
   getSaleTypeLabel,
   getDirectionColor,
   formatDate,
-} from '../../lib/realTimePriceEngineService';
+} from '../../lib/analytics/realTimePriceEngineService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

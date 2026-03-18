@@ -1,12 +1,12 @@
 
 import React, { useEffect } from 'react';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import { useAuth } from '../contexts/AuthContext.tsx';
 import { useMigration } from '../contexts/MigrationContext.tsx';
-import { initializeScheduler, stopScheduler } from '../lib/syncScheduler.ts';
-import { initPriceHistory, teardownPriceHistory, isPriceHistoryInitialized } from '../lib/priceHistory.ts';
+import { initializeScheduler, stopScheduler } from '../lib/utils/syncScheduler.ts';
+import { initPriceHistory, teardownPriceHistory, isPriceHistoryInitialized } from '../lib/analytics/priceHistory.ts';
 import { isDemoMode } from '../lib/supabase.ts';
-import { showToast } from '../lib/toast.ts';
+import { showToast } from '../lib/utils/toast.ts';
 import { logger } from '../lib/logger';
 import type { CardInventory, TargetWatchlist } from '../types.ts';
 

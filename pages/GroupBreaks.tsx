@@ -9,7 +9,7 @@ import {
   getGroupBreakStats,
   getFormatLabel,
   getStatusColor,
-} from '../lib/groupBreakService';
+} from '../lib/social/groupBreakService';
 
 const GroupBreaks: React.FC = () => {
   const breaks = useMemo(() => getGroupBreaks(), []);

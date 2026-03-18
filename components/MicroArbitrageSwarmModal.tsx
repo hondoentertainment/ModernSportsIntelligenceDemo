@@ -5,7 +5,7 @@ import {
   SIGHTING_SOURCE_LABELS,
   type PriceSighting,
   type SightingSource,
-} from '../lib/microArbitrageSwarmService';
+} from '../lib/analytics/microArbitrageSwarmService';
 
 interface MicroArbitrageSwarmModalProps {
   isOpen: boolean;

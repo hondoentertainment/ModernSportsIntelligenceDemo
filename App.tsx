@@ -9,6 +9,7 @@ import {
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import { AutoTierGate } from './components/TieredRoute';
 import GlobalErrorBoundary from './components/GlobalErrorBoundary.tsx';
 import Sidebar from './components/Sidebar.tsx';
 import Header from './components/Header.tsx';
@@ -18,14 +19,14 @@ import LuminousTracker from './components/LuminousTracker.tsx';
 import { MigrationProvider } from './contexts/MigrationContext.tsx';
 import MigrationBanner from './components/MigrationBanner.tsx';
 import MarketTicker from './components/MarketTicker.tsx';
-import { useSupabaseInventory } from './lib/useSupabaseInventory.ts';
+import { useSupabaseInventory } from './lib/utils/useSupabaseInventory.ts';
 import LazyErrorBoundary from './components/LazyErrorBoundary.tsx';
 import { PageLoadingFallback } from './components/LazyLoadFallback.tsx';
 import GuidedTour from './components/GuidedTour.tsx';
 import InstitutionalWallHUD from './components/InstitutionalWallHUD.tsx';
 import GrailShowcase from './components/GrailShowcase.tsx';
 import DemoFlowWidget from './components/DemoFlowWidget.tsx';
-import { validateEnv } from './lib/env';
+import { validateEnv } from './lib/utils/env';
 import { initDAL } from './lib/dal';
 
 // Validate environment on startup
@@ -495,6 +496,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
         )}
 
         <main className="flex-1 p-4 md:p-8 page-container overflow-y-auto pb-24 md:pb-8">
+          <AutoTierGate>
           <LazyErrorBoundary>
             <Suspense fallback={<PageLoadingFallback />}>
               <Routes>
@@ -848,6 +850,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
               </Routes>
             </Suspense>
           </LazyErrorBoundary>
+          </AutoTierGate>
         </main>
 
         {/* Mobile Navigation */}

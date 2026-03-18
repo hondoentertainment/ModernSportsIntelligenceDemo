@@ -50,7 +50,7 @@ import {
   CampaignStatus,
   MarketplacePlatform,
   UrgencyLevel,
-} from '../lib/autonomousAcquisitionService';
+} from '../lib/trading/autonomousAcquisitionService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 

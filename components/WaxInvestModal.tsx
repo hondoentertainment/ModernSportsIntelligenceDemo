@@ -35,7 +35,7 @@ import {
   getReleaseCalendar,
   getProductTypeLabel,
   getSportColor,
-} from '../lib/waxInvestService';
+} from '../lib/utils/waxInvestService';
 
 interface WaxInvestModalProps {
   isOpen: boolean;

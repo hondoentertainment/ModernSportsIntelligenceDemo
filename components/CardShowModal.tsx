@@ -18,7 +18,7 @@ import {
   getDealStats,
   CardShowDeal,
   CardShowWantItem,
-} from '../lib/cardShowService';
+} from '../lib/utils/cardShowService';
 
 interface CardShowModalProps {
   isOpen: boolean;

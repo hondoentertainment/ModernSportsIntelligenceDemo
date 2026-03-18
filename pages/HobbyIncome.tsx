@@ -47,7 +47,7 @@ import {
   Transaction,
   TransactionType,
   Platform,
-} from '../lib/hobbyIncomeService';
+} from '../lib/utils/hobbyIncomeService';
 
 type TabId = 'dashboard' | 'transactions' | 'tax' | 'reports';
 

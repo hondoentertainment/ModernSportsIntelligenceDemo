@@ -18,7 +18,7 @@ import {
   SpreadAlert,
   SyntheticOrderBook,
   PortfolioLiquidityAnalysis,
-} from '../lib/predictiveMarketMakerService';
+} from '../lib/analytics/predictiveMarketMakerService';
 
 interface PredictiveMarketMakerWidgetProps {
   inventory: CardInventory[];

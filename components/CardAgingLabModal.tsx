@@ -19,7 +19,7 @@ import {
   type StorageType,
   type UVExposure,
   type AirQuality,
-} from '../lib/cardAgingSimService';
+} from '../lib/utils/cardAgingSimService';
 
 interface CardAgingLabModalProps {
   isOpen: boolean;

@@ -18,7 +18,7 @@ import {
   type PreDraftProjection,
   type Sport,
   type InvestableIndex,
-} from '../lib/rookieClassIndexService.ts';
+} from '../lib/analytics/rookieClassIndexService.ts';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 const SPORT_LABELS: Record<Sport, string> = { nba: 'NBA', nfl: 'NFL', mlb: 'MLB', nhl: 'NHL' };

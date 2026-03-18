@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, Shield, AlertTriangle, MapPin, FileCheck, Scale, ChevronRight, TrendingUp, Globe } from 'lucide-react';
-import { getAlerts, getTaxNexus, getComplianceScore, getAMLFlags } from '../lib/regulatoryComplianceRadarService';
+import { getAlerts, getTaxNexus, getComplianceScore, getAMLFlags } from '../lib/utils/regulatoryComplianceRadarService';
 
 interface Props { isOpen: boolean; onClose: () => void; }
 

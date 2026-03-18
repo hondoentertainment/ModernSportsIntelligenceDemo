@@ -15,7 +15,7 @@ import {
   type VaultTier,
   type AccessLevel,
   type StorageCondition,
-} from '../lib/groupVaultService';
+} from '../lib/social/groupVaultService';
 
 // ---------------------------------------------------------------------------
 // Helpers

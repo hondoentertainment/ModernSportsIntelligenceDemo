@@ -13,8 +13,8 @@ import {
   getMonthlyChallenge,
   evaluateChallengeProgress,
   getCommunityStats,
-} from '../../lib/benchmarkService';
-import type { LeaderboardCategory } from '../../lib/benchmarkService';
+} from '../../lib/analytics/benchmarkService';
+import type { LeaderboardCategory } from '../../lib/analytics/benchmarkService';
 import { makeCard, setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

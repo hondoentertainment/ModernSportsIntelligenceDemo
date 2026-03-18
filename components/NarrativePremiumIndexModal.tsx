@@ -19,7 +19,7 @@ import {
   getNarrativePremiums,
   getNarrativeTrends,
   getNarrativeStats,
-} from '../lib/narrativePremiumIndexService';
+} from '../lib/analytics/narrativePremiumIndexService';
 
 interface NarrativePremiumIndexModalProps {
   isOpen: boolean;

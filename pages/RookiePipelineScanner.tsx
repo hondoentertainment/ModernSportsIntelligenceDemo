@@ -35,7 +35,7 @@ import {
   getDraftClassProjection,
   getProspectComparisons,
   getWatchlistAlerts,
-} from '../lib/rookiePipelineService';
+} from '../lib/analytics/rookiePipelineService';
 
 // ---- Constants ----
 

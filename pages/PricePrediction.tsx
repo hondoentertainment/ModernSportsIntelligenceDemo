@@ -26,7 +26,7 @@ import {
   type PriceHistory,
   type ComparableSale,
   type PredictionFactor,
-} from '../lib/pricePredictionService';
+} from '../lib/analytics/pricePredictionService';
 import {
   LineChart,
   Line,

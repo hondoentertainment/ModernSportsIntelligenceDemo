@@ -1,6 +1,6 @@
 import React from 'react';
 import { RefreshCw, ChevronRight, DollarSign, ArrowRightLeft } from 'lucide-react';
-import { getCrossGradeOpportunities, getGradingArbitrageStats } from '../lib/gradingArbitrageService.ts';
+import { getCrossGradeOpportunities, getGradingArbitrageStats } from '../lib/analytics/gradingArbitrageService.ts';
 
 interface Props {
   onOpenModal?: () => void;

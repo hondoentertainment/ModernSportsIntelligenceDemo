@@ -57,7 +57,7 @@ import {
   type CollectorTier,
   type MarketMomentum,
   type CollectorPath,
-} from '../lib/socialGraphService.ts';
+} from '../lib/social/socialGraphService.ts';
 
 // ---- Constants ----
 

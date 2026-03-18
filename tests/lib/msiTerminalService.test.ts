@@ -6,7 +6,7 @@ import {
   clearCommandHistory,
   getCommandRegistry,
   getPlayerQuickLook,
-} from '../../lib/msiTerminalService';
+} from '../../lib/utils/msiTerminalService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

@@ -29,7 +29,7 @@ import {
   getBatchSummary,
   getGradeDistribution,
   getSubmissionHistory,
-} from '../lib/gradingBatchPlannerService';
+} from '../lib/core/gradingBatchPlannerService';
 import type {
   BatchCard,
   ServiceOption,
@@ -37,7 +37,7 @@ import type {
   GradeDistribution,
   SubmissionHistory,
   GradingCompany,
-} from '../lib/gradingBatchPlannerService';
+} from '../lib/core/gradingBatchPlannerService';
 
 interface Props {
   isOpen: boolean;

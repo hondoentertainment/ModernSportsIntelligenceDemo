@@ -26,7 +26,7 @@ import {
   type CapitalCall,
   type Distribution,
   type WaterfallDistribution,
-} from '../lib/fundManagerService.ts';
+} from '../lib/utils/fundManagerService.ts';
 
 const FundManager: React.FC = () => {
   const [funds, setFunds] = useState<Fund[]>([]);

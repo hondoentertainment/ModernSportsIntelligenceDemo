@@ -47,7 +47,7 @@ import {
   getConfidenceColor,
   getConfidenceLabel,
   getGradeColor,
-} from '../lib/scanToValueService';
+} from '../lib/utils/scanToValueService';
 
 // ---------------------------------------------------------------------------
 // Tab definitions

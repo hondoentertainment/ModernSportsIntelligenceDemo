@@ -9,7 +9,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { CardInventory } from '../types';
-import { getTaxHarvestSummary, TaxHarvestSummary } from '../lib/taxHarvestService';
+import { getTaxHarvestSummary, TaxHarvestSummary } from '../lib/utils/taxHarvestService';
 
 interface TaxHarvestWidgetProps {
   cards: CardInventory[];

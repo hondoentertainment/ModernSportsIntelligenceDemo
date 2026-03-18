@@ -23,7 +23,7 @@ import {
   getBuyRules,
   getTriggerLogs,
   getRuleEngineStats,
-} from '../lib/autoBuyRuleEngineService';
+} from '../lib/trading/autoBuyRuleEngineService';
 
 interface AutoBuyRuleEngineModalProps {
   isOpen: boolean;

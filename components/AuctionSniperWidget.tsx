@@ -6,7 +6,7 @@ import {
   getAlerts,
   getSniperStats,
   formatCurrency,
-} from '../lib/auctionSniperService';
+} from '../lib/trading/auctionSniperService';
 
 interface AuctionSniperWidgetProps {
   onOpenModal?: () => void;

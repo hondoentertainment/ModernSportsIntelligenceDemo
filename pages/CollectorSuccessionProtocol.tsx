@@ -34,7 +34,7 @@ import {
   type SuccessionReadiness,
   type EducationModule,
   type AttorneyContact,
-} from '../lib/collectorSuccessionService.ts';
+} from '../lib/core/collectorSuccessionService.ts';
 
 const TIER_COLORS = ['#64748b', '#3b82f6', '#f59e0b', '#a855f7', '#ef4444'];
 

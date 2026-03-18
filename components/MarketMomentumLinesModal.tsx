@@ -16,7 +16,7 @@ import {
   getMomentumLines,
   getMarketMomentums,
   getMomentumStats,
-} from '../lib/marketMomentumLinesService';
+} from '../lib/analytics/marketMomentumLinesService';
 
 interface MarketMomentumLinesModalProps {
   isOpen: boolean;

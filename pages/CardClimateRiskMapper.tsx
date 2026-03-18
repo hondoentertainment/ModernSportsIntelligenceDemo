@@ -55,7 +55,7 @@ import {
   type StorageOptimization as StorageOpt,
   type LocationComparison,
   type RiskLevel,
-} from '../lib/climateRiskService.ts';
+} from '../lib/analytics/climateRiskService.ts';
 
 const TABS = [
   'Risk Dashboard',

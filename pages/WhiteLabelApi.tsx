@@ -11,7 +11,7 @@ import {
   getUsageHistory,
   getApiStats,
   getPlanColor,
-} from '../lib/whiteLabelApiService';
+} from '../lib/utils/whiteLabelApiService';
 
 const WhiteLabelApi: React.FC = () => {
   const keys = useMemo(() => getApiKeys(), []);

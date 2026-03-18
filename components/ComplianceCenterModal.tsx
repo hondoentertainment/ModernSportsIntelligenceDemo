@@ -34,7 +34,7 @@ import {
   AMLFlag,
   ScheduleD,
   ComplianceStats,
-} from '../lib/complianceCenterService';
+} from '../lib/utils/complianceCenterService';
 
 interface ComplianceCenterModalProps {
   isOpen: boolean;

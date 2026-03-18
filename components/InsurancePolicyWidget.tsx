@@ -11,7 +11,7 @@ import {
   analyzeCoverageGaps,
   getRenewalReminders,
   ensureSampleData,
-} from '../lib/insurancePolicyService';
+} from '../lib/core/insurancePolicyService';
 
 interface InsurancePolicyWidgetProps {
   cards: CardInventory[];

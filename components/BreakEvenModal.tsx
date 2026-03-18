@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { X, DollarSign, TrendingUp, TrendingDown, Minus, ArrowRightLeft } from 'lucide-react';
 import { CardInventory } from '../types';
-import { calculateBreakEven, MARKETPLACE_FEES } from '../lib/breakEvenService';
+import { calculateBreakEven, MARKETPLACE_FEES } from '../lib/analytics/breakEvenService';
 
 interface BreakEvenModalProps {
   isOpen: boolean;

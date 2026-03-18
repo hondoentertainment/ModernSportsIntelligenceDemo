@@ -75,7 +75,7 @@ import {
   type CollectionProfile,
   type ProjectionHorizon,
   type TrustComparison,
-} from '../lib/generationalWealthService.ts';
+} from '../lib/utils/generationalWealthService.ts';
 
 type TabId = 'overview' | 'projections' | 'trusts' | 'tax' | 'insurance' | 'timeline';
 

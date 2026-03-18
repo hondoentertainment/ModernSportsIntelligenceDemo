@@ -41,7 +41,7 @@ import {
   getRiskScoreLabel,
   getScenarioCategoryColor,
   PRESET_SCENARIOS,
-} from '../lib/stressTestService';
+} from '../lib/analytics/stressTestService';
 
 interface StressTestModalProps {
   isOpen: boolean;

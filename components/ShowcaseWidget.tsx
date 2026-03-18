@@ -10,7 +10,7 @@ import {
   getShowcases,
   getShowcaseAnalytics,
   SHOWCASE_THEMES,
-} from '../lib/showcaseService';
+} from '../lib/utils/showcaseService';
 
 interface ShowcaseWidgetProps {
   cards: CardInventory[];

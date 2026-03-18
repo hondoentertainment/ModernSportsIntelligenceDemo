@@ -22,7 +22,7 @@ import {
   getAuthAlerts,
   getCollectionAuthScore,
   getAuthChecklist,
-} from '../lib/authenticationService';
+} from '../lib/utils/authenticationService';
 
 interface AuthModalProps {
   isOpen: boolean;

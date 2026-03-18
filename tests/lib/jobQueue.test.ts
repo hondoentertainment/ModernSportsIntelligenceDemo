@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { enqueueJob, getQueueDepth, processAllJobs } from '../../lib/jobQueue';
+import { enqueueJob, getQueueDepth, processAllJobs } from '../../lib/utils/jobQueue';
 
 describe('jobQueue', () => {
     beforeEach(() => {

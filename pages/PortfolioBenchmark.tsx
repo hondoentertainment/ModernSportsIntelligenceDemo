@@ -52,7 +52,7 @@ import {
   type DrawdownPeriod,
   type MonthlyReturn,
   type TimeFrame,
-} from '../lib/portfolioBenchmarkService';
+} from '../lib/analytics/portfolioBenchmarkService';
 
 // ---- Helpers ----
 

@@ -6,7 +6,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { CardInventory } from '../types';
-import { generatePredictiveSummary } from '../lib/predictiveAlpha';
+import { generatePredictiveSummary } from '../lib/analytics/predictiveAlpha';
 
 interface BreakoutRadarProps {
   inventory: CardInventory[];

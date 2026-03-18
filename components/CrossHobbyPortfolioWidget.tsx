@@ -6,7 +6,7 @@ import {
   getDiversificationReport,
   getCategoryPerformance,
   getMockAlternativeAssets,
-} from '../lib/crossHobbyPortfolioService';
+} from '../lib/utils/crossHobbyPortfolioService';
 
 interface CrossHobbyPortfolioWidgetProps {
   onOpenModal?: () => void;

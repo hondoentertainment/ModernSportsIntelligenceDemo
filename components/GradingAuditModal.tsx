@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { X, Camera, Upload, AlertCircle, Sparkles, Activity, Search, Target, LayoutGrid, CheckCircle2 } from 'lucide-react';
-import { auditCardVisuals } from '../lib/gemini.ts';
+import { auditCardVisuals } from '../lib/utils/gemini.ts';
 import CameraFeed from './CameraFeed.tsx';
 import { VisualAuditResult } from '../types.ts';
 

@@ -36,7 +36,7 @@ import {
   HistoricWeatherEvent,
   VenueWeatherProfile,
   WeatherAlertCard,
-} from '../lib/weatherImpactService';
+} from '../lib/analytics/weatherImpactService';
 
 interface WeatherImpactModalProps {
   isOpen: boolean;

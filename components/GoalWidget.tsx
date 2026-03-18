@@ -13,7 +13,7 @@ import {
   getTrackingColor,
   getTrackingLabel,
   GoalSummary,
-} from '../lib/goalPlannerService';
+} from '../lib/utils/goalPlannerService';
 
 interface GoalWidgetProps {
   inventory: CardInventory[];

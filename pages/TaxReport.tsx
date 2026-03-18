@@ -26,7 +26,7 @@ import {
   type FilingStatus,
   type TaxBracket,
   type ReportFormat,
-} from '../lib/taxReportService';
+} from '../lib/utils/taxReportService';
 
 const TAX_YEARS: TaxYear[] = [2023, 2024, 2025, 2026];
 const CHART_COLORS = ['#f97316', '#60a5fa', '#f87171', '#34d399', '#a78bfa', '#fbbf24', '#22d3ee', '#fb923c'];

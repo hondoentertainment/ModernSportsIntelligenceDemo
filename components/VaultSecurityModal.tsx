@@ -39,7 +39,7 @@ import {
   EnvironmentalAlert,
   DisasterPlan,
   VaultStats,
-} from '../lib/vaultSecurityService';
+} from '../lib/utils/vaultSecurityService';
 
 interface VaultSecurityModalProps {
   isOpen: boolean;

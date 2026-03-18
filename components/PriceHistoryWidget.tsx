@@ -9,7 +9,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { CardInventory } from '../types';
-import { generatePriceHistory, calculateStatistics } from '../lib/priceChartService';
+import { generatePriceHistory, calculateStatistics } from '../lib/analytics/priceChartService';
 
 interface PriceHistoryWidgetProps {
   inventory: CardInventory[];

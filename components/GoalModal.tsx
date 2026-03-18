@@ -49,7 +49,7 @@ import {
   getTrackingLabel,
   GOAL_TYPE_LABELS,
   GOAL_TYPE_UNITS,
-} from '../lib/goalPlannerService';
+} from '../lib/utils/goalPlannerService';
 
 // ---- Props ----
 

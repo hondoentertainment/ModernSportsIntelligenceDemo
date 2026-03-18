@@ -19,7 +19,7 @@ import {
   getBurnoutSignals,
   getBurnoutProfile,
   getBurnoutStats,
-} from '../lib/collectorBurnoutIndexService';
+} from '../lib/core/collectorBurnoutIndexService';
 
 interface CollectorBurnoutIndexModalProps {
   isOpen: boolean;

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { getLocalAuditTrail, logAuditEvent } from '../../lib/auditLog';
+import { getLocalAuditTrail, logAuditEvent } from '../../lib/utils/auditLog';
 
 describe('auditLog', () => {
     beforeEach(() => {

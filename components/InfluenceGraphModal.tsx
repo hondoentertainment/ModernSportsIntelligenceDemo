@@ -35,7 +35,7 @@ import {
   actionColor,
   signalLabel,
   type CardCategory,
-} from '../lib/influenceGraphService';
+} from '../lib/analytics/influenceGraphService';
 
 interface Props {
   isOpen: boolean;

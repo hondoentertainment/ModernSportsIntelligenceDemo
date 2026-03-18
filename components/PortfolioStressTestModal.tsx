@@ -28,7 +28,7 @@ import {
   getSeverityLabel,
   getScenarioIcon,
   getRiskColor,
-} from '../lib/portfolioStressTestService';
+} from '../lib/analytics/portfolioStressTestService';
 import type {
   StressScenario,
   StressTestResult,
@@ -37,7 +37,7 @@ import type {
   HistoricalCrash,
   MostAffectedCard,
   SeverityLevel,
-} from '../lib/portfolioStressTestService';
+} from '../lib/analytics/portfolioStressTestService';
 
 interface PortfolioStressTestModalProps {
   isOpen: boolean;

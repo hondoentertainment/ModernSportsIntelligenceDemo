@@ -20,7 +20,7 @@ import {
   type CardShow,
   type ShowPlan,
   type PostShowReport,
-} from '../../lib/cardShowPlannerService';
+} from '../../lib/utils/cardShowPlannerService';
 
 const localStorageMock = setupLocalStorageMock();
 

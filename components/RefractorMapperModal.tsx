@@ -27,7 +27,7 @@ import {
   LightSignature,
   AuthenticationResult,
   SurfaceIntegrity,
-} from '../lib/refractorMapperService';
+} from '../lib/utils/refractorMapperService';
 
 interface RefractorMapperModalProps {
   isOpen: boolean;

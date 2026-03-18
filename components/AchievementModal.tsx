@@ -11,7 +11,7 @@ import {
   getRecentlyUnlocked,
   markAsSeen,
   TIER_COLORS,
-} from '../lib/achievementService';
+} from '../lib/utils/achievementService';
 
 interface AchievementModalProps {
   isOpen: boolean;

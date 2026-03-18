@@ -66,7 +66,7 @@ import {
   type IndexMethodology,
   type RebalanceFrequency,
   type IndexCreationParams,
-} from '../lib/syntheticIndexService';
+} from '../lib/analytics/syntheticIndexService';
 
 // ---- Constants ----
 

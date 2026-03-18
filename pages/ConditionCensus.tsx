@@ -39,7 +39,7 @@ import {
   searchCensus,
   CensusCard,
   KnownExample,
-} from '../lib/conditionCensusService';
+} from '../lib/core/conditionCensusService';
 
 type TabId = 'dashboard' | 'examples' | 'predictions' | 'trends' | 'owners';
 

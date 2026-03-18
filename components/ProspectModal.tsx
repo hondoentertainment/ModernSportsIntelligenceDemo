@@ -52,7 +52,7 @@ import {
   acknowledgeAlert,
   CallUpAlert,
   PipelineFunnelStage,
-} from '../lib/prospectPipelineService';
+} from '../lib/analytics/prospectPipelineService';
 
 interface ProspectModalProps {
   isOpen: boolean;

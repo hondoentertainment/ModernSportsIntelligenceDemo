@@ -22,7 +22,7 @@ import {
   getSeverityColor,
   getCompanyColor,
   getFlagIcon,
-} from '../../lib/slabVerificationService';
+} from '../../lib/core/slabVerificationService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

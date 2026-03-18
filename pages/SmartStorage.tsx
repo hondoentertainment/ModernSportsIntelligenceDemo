@@ -27,7 +27,7 @@ import {
   type MaintenanceTask,
   type StorageAnalytics,
   type StorageCost,
-} from '../lib/smartStorageService';
+} from '../lib/utils/smartStorageService';
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
 } from 'recharts';

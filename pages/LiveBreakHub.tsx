@@ -31,7 +31,7 @@ import {
   type ViewerStats,
   type BreakerProfile,
   type HitTracker,
-} from '../lib/liveBreakHubService.ts';
+} from '../lib/social/liveBreakHubService.ts';
 import {
   BarChart,
   Bar,

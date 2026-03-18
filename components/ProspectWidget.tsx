@@ -14,7 +14,7 @@ import {
   getStashSummary,
   getCallUpAlerts,
   Prospect,
-} from '../lib/prospectPipelineService';
+} from '../lib/analytics/prospectPipelineService';
 
 interface ProspectWidgetProps {
   inventory: CardInventory[];

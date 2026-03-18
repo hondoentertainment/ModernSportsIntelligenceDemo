@@ -22,7 +22,7 @@ import {
   type TransferRequest,
   type PlatformHealthStatus,
   type VaultSummary,
-} from '../lib/vaultArbitrageService.ts';
+} from '../lib/trading/vaultArbitrageService.ts';
 import {
   BarChart,
   Bar,

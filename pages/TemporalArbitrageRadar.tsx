@@ -54,7 +54,7 @@ import type {
   TimezoneArbitrage,
   EventType,
   ArbitrageType,
-} from "../lib/temporalArbitrageService";
+} from "../lib/analytics/temporalArbitrageService";
 import {
   getActiveOpportunities,
   getEventWindowAnalysis,
@@ -64,7 +64,7 @@ import {
   getCalendarAnomalies,
   getArbitragePerformance,
   getUpcomingWindows,
-} from "../lib/temporalArbitrageService";
+} from "../lib/analytics/temporalArbitrageService";
 
 // ─── Constants ──────────────────────────────────────────────────────────────────
 

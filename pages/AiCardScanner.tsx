@@ -43,7 +43,7 @@ import {
   type ScannerStats,
   type SetDatabase,
   type DetectionModel,
-} from '../lib/aiCardScannerService';
+} from '../lib/utils/aiCardScannerService';
 
 // ---- Condition Bar Component ----
 

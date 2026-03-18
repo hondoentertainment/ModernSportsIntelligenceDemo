@@ -13,7 +13,7 @@ import {
   type LeagueStanding, type LeagueDraftClass, type LeagueSeasonEvent,
   type LeagueStatLeader, type LeagueCardMarketTrend, type LeagueRookieWatch,
   type InjuryCardImpact,
-} from '../lib/leagueHubService.ts';
+} from '../lib/social/leagueHubService.ts';
 
 type NFLTab = 'standings' | 'draft' | 'calendar' | 'leaders' | 'market' | 'injuries';
 

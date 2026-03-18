@@ -31,7 +31,7 @@ import {
   registerCard,
   type DigitalTwin,
   type VerificationResult,
-} from '../lib/provenanceChainService.ts';
+} from '../lib/core/provenanceChainService.ts';
 
 type TabId = 'registry' | 'verify' | 'timeline' | 'fraud' | 'register';
 

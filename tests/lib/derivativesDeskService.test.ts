@@ -10,7 +10,7 @@ import {
   getDerivativesStats,
   getPlayerList,
   getPlayerPrice,
-} from '../../lib/derivativesDeskService';
+} from '../../lib/trading/derivativesDeskService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

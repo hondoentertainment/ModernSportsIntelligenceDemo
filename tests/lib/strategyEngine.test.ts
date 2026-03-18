@@ -6,7 +6,7 @@ import {
     StrategyDefinition,
     summarizeBacktest,
     PaperTradeLedger
-} from '../../lib/strategyEngine';
+} from '../../lib/utils/strategyEngine';
 
 describe('strategyEngine', () => {
     const strategy: StrategyDefinition = {

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, Users, Brain, Sparkles, BarChart3, Heart, Target } from 'lucide-react';
-import { getProfiles } from '../lib/personalityMatrixService';
+import { getProfiles } from '../lib/utils/personalityMatrixService';
 
 interface Props {
   isOpen: boolean;

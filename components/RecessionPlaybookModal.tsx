@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, BookOpen, TrendingDown, ShieldAlert, Target, Percent, BarChart } from 'lucide-react';
-import { getScenarios } from '../lib/recessionPlaybookService';
+import { getScenarios } from '../lib/analytics/recessionPlaybookService';
 
 interface Props {
   isOpen: boolean;

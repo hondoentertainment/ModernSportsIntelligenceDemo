@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { MapPin, ChevronRight, CheckCircle2, Tag, Zap } from 'lucide-react';
-import { getActiveDeals, getWantList, getDealStats } from '../lib/cardShowService';
+import { getActiveDeals, getWantList, getDealStats } from '../lib/utils/cardShowService';
 
 interface CardShowWidgetProps {
   onClick?: () => void;

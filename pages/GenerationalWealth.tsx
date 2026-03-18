@@ -64,7 +64,7 @@ import {
   type TrustStructure,
   type Beneficiary,
   type DocumentTemplate,
-} from '../lib/generationalWealthService.ts';
+} from '../lib/utils/generationalWealthService.ts';
 
 type TabId =
   | 'overview'

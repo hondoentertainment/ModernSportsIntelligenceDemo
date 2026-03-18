@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScanEye, Camera, ChevronRight, Star } from 'lucide-react';
-import { getGradingHistory } from '../lib/visionGradingService.ts';
+import { getGradingHistory } from '../lib/analytics/visionGradingService.ts';
 
 interface Props {
   onOpenModal?: () => void;

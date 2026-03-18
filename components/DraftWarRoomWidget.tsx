@@ -5,7 +5,7 @@ import {
   getDraftProspects,
   getDraftStats,
   daysUntilDraft,
-} from '../lib/draftWarRoomService';
+} from '../lib/utils/draftWarRoomService';
 
 interface DraftWarRoomWidgetProps {
   onOpenModal?: () => void;

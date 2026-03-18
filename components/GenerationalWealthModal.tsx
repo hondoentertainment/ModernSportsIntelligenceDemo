@@ -23,7 +23,7 @@ import {
   type EstateSummary,
   type TaxStrategy,
   type StepUpBasis,
-} from '../lib/generationalWealthService';
+} from '../lib/utils/generationalWealthService';
 
 interface GenerationalWealthModalProps {
   isOpen: boolean;

@@ -22,7 +22,7 @@ import {
   type OfflineSyncStatus,
   type ShowVendor,
   type ShowChecklist,
-} from '../lib/cardShowModeService.ts';
+} from '../lib/utils/cardShowModeService.ts';
 import {
   BarChart,
   Bar,

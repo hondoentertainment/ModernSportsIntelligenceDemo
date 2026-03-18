@@ -14,7 +14,7 @@ import {
   Clock,
   Info,
 } from 'lucide-react';
-import { useAlerts } from '../lib/useAlerts.ts';
+import { useAlerts } from '../lib/utils/useAlerts.ts';
 import { AlertType } from '../types.ts';
 
 const Alerts: React.FC = () => {

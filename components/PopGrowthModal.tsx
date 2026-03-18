@@ -36,7 +36,7 @@ import {
   CollectionPopImpact,
   SupplyDemandLabel,
   PopGrowthData,
-} from '../lib/popGrowthService';
+} from '../lib/analytics/popGrowthService';
 
 interface PopGrowthModalProps {
   isOpen: boolean;

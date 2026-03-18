@@ -44,7 +44,7 @@ import {
   getInternationalAlerts,
   CrossBorderComparison,
   DutyEstimate,
-} from '../lib/currencyService';
+} from '../lib/utils/currencyService';
 
 // ── Types ────────────────────────────────────────────────────────────────────────
 

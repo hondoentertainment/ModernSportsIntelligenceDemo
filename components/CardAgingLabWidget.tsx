@@ -11,7 +11,7 @@ import {
   simulateAging,
   getPreservationScore,
   type StorageCondition,
-} from '../lib/cardAgingSimService';
+} from '../lib/utils/cardAgingSimService';
 
 interface CardAgingLabWidgetProps {
   onClick?: () => void;

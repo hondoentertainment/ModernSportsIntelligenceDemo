@@ -6,7 +6,7 @@ import { User, Settings, Heart, History, Shield, LogOut, Save, Eye, Check, Zap, 
 import { useMigration } from '../contexts/MigrationContext';
 import { useAuth } from '../contexts/AuthContext';
 import { MOCK_TEAMS, SPORTS } from '../constants';
-import { requestNotificationPermission, sendLocalNotification } from '../lib/notifications';
+import { requestNotificationPermission, sendLocalNotification } from '../lib/utils/notifications';
 import { Link } from 'react-router-dom';
 
 interface UserSettings {

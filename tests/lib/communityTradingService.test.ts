@@ -16,7 +16,7 @@ import {
   getStatusColor,
   getTypeLabel,
   getTypeBadgeColor,
-} from '../../lib/communityTradingService';
+} from '../../lib/social/communityTradingService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

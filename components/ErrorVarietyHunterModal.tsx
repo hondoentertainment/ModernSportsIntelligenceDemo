@@ -20,7 +20,7 @@ import {
   getCardErrors,
   getErrorAlerts,
   getErrorStats,
-} from '../lib/errorVarietyHunterService';
+} from '../lib/core/errorVarietyHunterService';
 
 interface ErrorVarietyHunterModalProps {
   isOpen: boolean;

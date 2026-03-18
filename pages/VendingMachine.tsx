@@ -33,7 +33,7 @@ import {
   type LeaderboardEntry,
   type SeasonPass,
   type CollectorProfile,
-} from '../lib/vendingMachineService';
+} from '../lib/trading/vendingMachineService';
 import {
   BarChart,
   Bar,

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory';
-import { MultiAgentService } from '../lib/MultiAgentService';
-import { AutonomousExecutionService } from '../lib/AutonomousExecutionService';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import { MultiAgentService } from '../lib/utils/MultiAgentService';
+import { AutonomousExecutionService } from '../lib/trading/AutonomousExecutionService';
 import { CollaborativeThesis } from '../types';
 import AgentCard from './AgentCard';
 import AutoPilotControl from './AutoPilotControl';
 import { Brain, RefreshCw, Send, ShieldCheck, Target, TrendingUp, Info, Activity, Zap } from 'lucide-react';
-import { showToast } from '../lib/toast';
+import { showToast } from '../lib/utils/toast';
 
 const AnalystWarRoom: React.FC = () => {
     const { inventory } = useSupabaseInventory();

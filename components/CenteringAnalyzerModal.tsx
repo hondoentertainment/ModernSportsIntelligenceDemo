@@ -31,7 +31,7 @@ import {
   SubGradeImpact,
   GradeEstimate,
   CenteringHistory,
-} from '../lib/centeringAnalyzerService';
+} from '../lib/analytics/centeringAnalyzerService';
 
 interface CenteringAnalyzerModalProps {
   isOpen: boolean;

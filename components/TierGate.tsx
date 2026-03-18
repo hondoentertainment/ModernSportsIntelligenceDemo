@@ -29,31 +29,13 @@ interface TierGateProps {
   featureName?: string;
 }
 
-function getUserTier(): SubscriptionTier {
-  // Read tier from localStorage profile cache
-  try {
-    const profile = localStorage.getItem('msi_user_profile');
-    if (profile) {
-      const parsed = JSON.parse(profile);
-      if (parsed.subscription_tier && TIER_RANK[parsed.subscription_tier as SubscriptionTier] !== undefined) {
-        return parsed.subscription_tier as SubscriptionTier;
-      }
-    }
-  } catch {
-    // ignore
-  }
-  return 'free';
-}
-
 const TierGate: React.FC<TierGateProps> = ({ children, requiredTier, featureName }) => {
-  const { isDemoMode } = useAuth();
+  const { isDemoMode, userTier } = useAuth();
 
   // In demo mode, allow access to everything for evaluation
   if (isDemoMode) {
     return <>{children}</>;
   }
-
-  const userTier = getUserTier();
   const hasAccess = TIER_RANK[userTier] >= TIER_RANK[requiredTier];
 
   if (hasAccess) {

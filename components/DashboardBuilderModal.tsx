@@ -18,7 +18,7 @@ import {
   saveDashboardLayout,
   type DashboardLayout,
   type DashboardPreset,
-} from '../lib/dashboardBuilderService';
+} from '../lib/utils/dashboardBuilderService';
 
 interface DashboardBuilderModalProps {
   isOpen: boolean;

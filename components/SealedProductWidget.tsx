@@ -6,7 +6,7 @@ import {
   getBestHolds,
   getNewReleases,
   formatCurrency,
-} from '../lib/sealedProductService';
+} from '../lib/utils/sealedProductService';
 
 interface SealedProductWidgetProps {
   onOpenModal?: () => void;

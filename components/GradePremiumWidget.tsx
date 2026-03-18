@@ -9,7 +9,7 @@ import { CardInventory } from '../types';
 import {
   findCrossoverOpportunities,
   getPortfolioGradeAnalysis,
-} from '../lib/gradePremiumService';
+} from '../lib/analytics/gradePremiumService';
 
 interface GradePremiumWidgetProps {
   cards: CardInventory[];

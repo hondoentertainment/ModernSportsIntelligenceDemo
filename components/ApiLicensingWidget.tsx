@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { KeyRound, ChevronRight, Activity, Webhook, Gauge } from 'lucide-react';
-import { getAPIKeys, getWebhooks, getUsageMetrics } from '../lib/apiLicensingService';
+import { getAPIKeys, getWebhooks, getUsageMetrics } from '../lib/utils/apiLicensingService';
 
 interface ApiLicensingWidgetProps {
   onClick?: () => void;

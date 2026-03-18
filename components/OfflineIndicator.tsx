@@ -7,7 +7,7 @@ import {
   CloudOff,
   Loader2,
 } from 'lucide-react';
-import { useOfflineStatus } from '../lib/useOfflineStatus';
+import { useOfflineStatus } from '../lib/utils/useOfflineStatus';
 
 interface OfflineIndicatorProps {
   compact?: boolean;

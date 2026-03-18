@@ -24,7 +24,7 @@ import {
   getTransactionStats,
   Sport,
   Platform,
-} from '../lib/transactionWireService';
+} from '../lib/trading/transactionWireService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 

@@ -17,7 +17,7 @@ import {
   getRarityColor,
   getRarityLabel,
   CardSet,
-} from '../../lib/setCompletionService';
+} from '../../lib/core/setCompletionService';
 
 function makeSet(overrides: Partial<CardSet> = {}): CardSet {
   return {

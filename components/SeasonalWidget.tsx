@@ -17,7 +17,7 @@ import {
   getAllSportProfiles,
   getSeasonalWindows,
   getSeasonalAlerts,
-} from '../lib/seasonalStrategyService';
+} from '../lib/analytics/seasonalStrategyService';
 
 interface SeasonalWidgetProps {
   cards: CardInventory[];

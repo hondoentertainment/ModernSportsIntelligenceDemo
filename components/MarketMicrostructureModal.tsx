@@ -25,7 +25,7 @@ import {
   type OrderFlowSignal,
   type Platform,
   type SignalType,
-} from '../lib/marketMicrostructureService';
+} from '../lib/analytics/marketMicrostructureService';
 
 interface MarketMicrostructureModalProps {
   isOpen: boolean;

@@ -20,7 +20,7 @@ import {
   Area,
   Tooltip,
 } from 'recharts';
-import { getRealTimeLeagueTrends } from '../lib/gemini.ts';
+import { getRealTimeLeagueTrends } from '../lib/utils/gemini.ts';
 import { MiLBProspect } from '../types.ts';
 import CardImage from '../components/CardImage.tsx';
 import { logger } from '../lib/logger';

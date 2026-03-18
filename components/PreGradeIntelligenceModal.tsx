@@ -41,7 +41,7 @@ import {
   getGradingServices,
   type GradePrediction,
   type GradingROI,
-} from '../lib/preGradeIntelligenceService';
+} from '../lib/core/preGradeIntelligenceService';
 
 interface PreGradeIntelligenceModalProps {
   isOpen: boolean;

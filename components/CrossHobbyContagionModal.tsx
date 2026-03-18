@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, Network, TrendingUp, TrendingDown, ArrowRight, Zap, BarChart3, GitBranch, Activity } from 'lucide-react';
-import { getNodes, getEdges, getSpillovers, getIndex } from '../lib/crossHobbyContagionService';
+import { getNodes, getEdges, getSpillovers, getIndex } from '../lib/utils/crossHobbyContagionService';
 
 interface Props {
   isOpen: boolean;

@@ -27,7 +27,7 @@ import {
   getIOIBoard,
   getDealFlowStats,
   getMonthlyVolume,
-} from '../lib/dealRoomService';
+} from '../lib/trading/dealRoomService';
 import {
   BarChart,
   Bar,

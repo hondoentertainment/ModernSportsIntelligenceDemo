@@ -19,7 +19,7 @@ import {
   getResilienceScenarios,
   getSeverityColor,
   getDimensionLabel,
-} from '../lib/collectionTopologyService';
+} from '../lib/core/collectionTopologyService';
 
 const CollectionTopology: React.FC = () => {
   const holes = useMemo(() => getTopologyHoles(), []);

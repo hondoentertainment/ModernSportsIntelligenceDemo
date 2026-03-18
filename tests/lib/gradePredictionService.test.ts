@@ -13,7 +13,7 @@ import {
   formatCurrency,
   getSubgradeLabel,
   getRecommendationColor,
-} from '../../lib/gradePredictionService';
+} from '../../lib/analytics/gradePredictionService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

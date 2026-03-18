@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useCallback, useState, useEffect, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { isDemoMode } from '../lib/supabase';
-import { migrateToSupabase, needsMigration, MigrationResult } from '../lib/migration';
+import { migrateToSupabase, needsMigration, MigrationResult } from '../lib/utils/migration';
 
 interface MigrationContextType {
     /** Whether migration is in progress */

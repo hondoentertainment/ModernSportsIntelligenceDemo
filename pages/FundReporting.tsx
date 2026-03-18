@@ -12,7 +12,7 @@ import {
   getFundReportingStats,
   getReportTypeLabel,
   getReportStatusColor,
-} from '../lib/fundReportingService';
+} from '../lib/utils/fundReportingService';
 
 const FundReporting: React.FC = () => {
   const fund = useMemo(() => getFundOverview(), []);

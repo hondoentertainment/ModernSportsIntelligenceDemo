@@ -18,7 +18,7 @@ import {
   type CrossCategoryPortfolio,
   type NonSportsItem,
   type CategoryTrend,
-} from '../lib/nonSportsExpansionService.ts';
+} from '../lib/utils/nonSportsExpansionService.ts';
 import {
   AreaChart,
   Area,

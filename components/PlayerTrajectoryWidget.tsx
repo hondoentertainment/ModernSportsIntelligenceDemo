@@ -4,7 +4,7 @@ import { LineChart, Line, ResponsiveContainer, YAxis } from 'recharts';
 import {
   getTopProjectedPlayer,
   getAllPlayerTrajectories,
-} from '../lib/playerTrajectoryService';
+} from '../lib/analytics/playerTrajectoryService';
 
 interface PlayerTrajectoryWidgetProps {
   onClick?: () => void;

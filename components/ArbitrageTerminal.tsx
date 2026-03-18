@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { CardInventory, TargetWatchlist } from '../types';
-import { ArbitrageService } from '../lib/ArbitrageService';
+import { ArbitrageService } from '../lib/trading/ArbitrageService';
 import { Sparkles, TrendingDown, ArrowRight, Clock } from 'lucide-react';
 
 interface ArbitrageTerminalProps {

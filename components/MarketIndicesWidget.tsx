@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { BarChart3, ChevronRight, TrendingUp, TrendingDown, Activity } from 'lucide-react';
-import { getIndices, MarketIndex } from '../lib/marketIndicesService';
+import { getIndices, MarketIndex } from '../lib/analytics/marketIndicesService';
 
 interface MarketIndicesWidgetProps {
   onOpenModal?: () => void;

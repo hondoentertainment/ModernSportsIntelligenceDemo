@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { X, Shield, ArrowRight, TrendingUp, AlertTriangle, Check, RotateCcw, Scissors, Plus, Calendar } from 'lucide-react';
 import { CardInventory } from '../types';
-import { CorrelationService, HedgeNode } from '../lib/CorrelationService';
+import { CorrelationService, HedgeNode } from '../lib/analytics/CorrelationService';
 
 interface HedgeSimulationModalProps {
   isOpen: boolean;

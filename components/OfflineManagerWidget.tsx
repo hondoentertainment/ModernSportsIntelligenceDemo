@@ -8,8 +8,8 @@ import {
   Loader2,
   AlertCircle,
 } from 'lucide-react';
-import { useOfflineStatus } from '../lib/useOfflineStatus';
-import { getLastSyncTime, getStorageStats } from '../lib/offlineService';
+import { useOfflineStatus } from '../lib/utils/useOfflineStatus';
+import { getLastSyncTime, getStorageStats } from '../lib/utils/offlineService';
 
 interface OfflineManagerWidgetProps {
   onViewDetails?: () => void;

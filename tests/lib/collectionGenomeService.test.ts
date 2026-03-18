@@ -8,7 +8,7 @@ import {
   getTraitLabel,
   getCategoryColor,
   getSeverityColor,
-} from '../../lib/collectionGenomeService';
+} from '../../lib/core/collectionGenomeService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

@@ -23,7 +23,7 @@ import {
   type RegistryEntry,
   type GradingCompany,
   type VerificationStatus,
-} from '../lib/slabVerificationService';
+} from '../lib/core/slabVerificationService';
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from 'recharts';

@@ -13,7 +13,7 @@ import {
   getHedgeSignals,
   CardSegment,
   AssetClass,
-} from '../lib/crossAssetCorrelationService';
+} from '../lib/analytics/crossAssetCorrelationService';
 
 interface CrossAssetCorrelationWidgetProps {
   inventory: CardInventory[];

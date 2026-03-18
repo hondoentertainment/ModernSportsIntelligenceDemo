@@ -1,6 +1,6 @@
 import React from 'react';
 import { Shield, ChevronRight, Umbrella, TrendingDown, Calculator } from 'lucide-react';
-import { getDerivativesStats } from '../lib/derivativesDeskService';
+import { getDerivativesStats } from '../lib/trading/derivativesDeskService';
 
 interface DerivativesDeskWidgetProps {
   onOpenModal: () => void;

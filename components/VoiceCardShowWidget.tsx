@@ -5,7 +5,7 @@ import {
   getCardShows,
   getLiveScans,
   getCrowdHeatmap,
-} from '../lib/voiceCardShowService';
+} from '../lib/social/voiceCardShowService';
 
 interface VoiceCardShowWidgetProps {
   onClick?: () => void;

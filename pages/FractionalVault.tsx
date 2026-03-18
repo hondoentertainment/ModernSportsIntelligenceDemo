@@ -18,7 +18,7 @@ import {
   type VaultCard, type SharePosition, type VaultTransaction,
   type DividendDistribution, type GovernanceProposal, type SecondaryMarketOrder,
   type PortfolioSummary, type VaultPerformance,
-} from '../lib/fractionalVaultService';
+} from '../lib/utils/fractionalVaultService';
 
 const CHART_COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899', '#6366f1'];
 

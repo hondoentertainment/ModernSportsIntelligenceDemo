@@ -24,7 +24,7 @@ import {
   type Platform,
   type RiskLevel,
   type ArbitrageType,
-} from '../lib/crossPlatformArbitrageService';
+} from '../lib/trading/crossPlatformArbitrageService';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 

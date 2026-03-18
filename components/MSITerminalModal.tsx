@@ -35,7 +35,7 @@ import {
   getAutocompleteSuggestions,
   clearCommandHistory,
   CommandResult,
-} from '../lib/msiTerminalService';
+} from '../lib/utils/msiTerminalService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 

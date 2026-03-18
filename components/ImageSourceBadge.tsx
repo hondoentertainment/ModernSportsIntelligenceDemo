@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Camera } from 'lucide-react';
-import { getImageSource } from '../lib/imageSourceService.ts';
+import { getImageSource } from '../lib/utils/imageSourceService.ts';
 import ImageSourceModal from './ImageSourceModal.tsx';
 
 interface Props {

@@ -27,7 +27,7 @@ import {
   type NotificationGroup,
   type NotificationCategory,
   type NotificationPriority,
-} from '../lib/smartNotificationsService.ts';
+} from '../lib/utils/smartNotificationsService.ts';
 
 const CHART_COLORS = ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ef4444', '#06b6d4', '#f97316', '#ec4899', '#6b7280'];
 

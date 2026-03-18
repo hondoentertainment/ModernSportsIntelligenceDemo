@@ -26,6 +26,7 @@ interface AuthContextType {
     refreshSession: () => Promise<void>;
     clearRecoveryMode: () => void;
     demoLogin: () => void;
+    userTier: 'free' | 'basic' | 'pro' | 'alpha';
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -69,6 +70,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
     const [recoveryMode, setRecoveryMode] = useState(false);
+    const [userTier, setUserTier] = useState<'free' | 'basic' | 'pro' | 'alpha'>('free');
     const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     // Proactive session refresh to prevent token expiry
@@ -153,6 +155,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     case 'SIGNED_OUT':
                         setRecoveryMode(false);
                         stopSessionRefreshTimer();
+                        setUserTier('free');
+                        localStorage.removeItem('msi_user_profile');
                         break;
                     case 'USER_UPDATED':
                         setRecoveryMode(false);
@@ -244,9 +248,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const clearRecoveryMode = () => setRecoveryMode(false);
 
+    const fetchUserProfile = useCallback(async () => {
+        if (isDemoMode) {
+            setUserTier('alpha');
+            return;
+        }
+        if (!user) return;
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('subscription_tier, subscription_status, ai_valuations_used, card_tracking_limit, billing_cycle_start')
+                .eq('id', user.id)
+                .single();
+            if (error) {
+                logger.warn('Failed to fetch user profile:', error.message);
+                setUserTier('free');
+                return;
+            }
+            const validTiers: Array<'free' | 'basic' | 'pro' | 'alpha'> = ['free', 'basic', 'pro', 'alpha'];
+            const tier = validTiers.includes(data.subscription_tier) ? data.subscription_tier : 'free';
+            setUserTier(tier);
+            localStorage.setItem('msi_user_profile', JSON.stringify(data));
+        } catch (e) {
+            logger.warn('Error fetching user profile:', e);
+            setUserTier('free');
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (!user) return;
+        fetchUserProfile();
+        const interval = setInterval(fetchUserProfile, 5 * 60 * 1000);
+        return () => clearInterval(interval);
+    }, [user, fetchUserProfile]);
+
     const demoLogin = () => {
         localStorage.setItem('msi_demo_session', 'true');
         setUser({ id: 'demo-user', email: 'demo@sportsintel.io' } as User);
+        setUserTier('alpha');
     };
 
     return (
@@ -264,7 +303,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             updatePassword,
             refreshSession,
             clearRecoveryMode,
-            demoLogin
+            demoLogin,
+            userTier
         }}>
             {children}
         </AuthContext.Provider>

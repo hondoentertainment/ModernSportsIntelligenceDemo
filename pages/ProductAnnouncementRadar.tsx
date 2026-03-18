@@ -18,7 +18,7 @@ import {
   type AnnouncementSignal,
   type HistoricalAccuracy,
   type PrePositioningOpportunity,
-} from '../lib/productAnnouncementRadarService.ts';
+} from '../lib/analytics/productAnnouncementRadarService.ts';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 const ProductAnnouncementRadar: React.FC = () => {

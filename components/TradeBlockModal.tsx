@@ -35,7 +35,7 @@ import {
   createPackageDeal,
   getTradeHistory,
   getTradeStats,
-} from '../lib/tradeBlockService';
+} from '../lib/trading/tradeBlockService';
 
 interface TradeBlockModalProps {
   isOpen: boolean;

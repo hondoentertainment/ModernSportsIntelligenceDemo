@@ -43,7 +43,7 @@ import {
   type ShowPlan,
   type PostShowReport,
   type Priority,
-} from '../lib/cardShowPlannerService.ts';
+} from '../lib/utils/cardShowPlannerService.ts';
 
 type TabId = 'upcoming' | 'plans' | 'past' | 'stats';
 

@@ -13,7 +13,7 @@ import {
   getTradeStats,
   getTradeHistory,
   generateSimulatedOffers,
-} from '../lib/tradeBlockService';
+} from '../lib/trading/tradeBlockService';
 
 interface TradeBlockWidgetProps {
   inventory: CardInventory[];

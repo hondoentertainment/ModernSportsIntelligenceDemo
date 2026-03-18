@@ -8,7 +8,7 @@ import {
   Info,
 } from 'lucide-react';
 import { CardInventory, ExitPlan } from '../types';
-import { LiquidityService } from '../lib/liquidityService';
+import { LiquidityService } from '../lib/analytics/liquidityService';
 import { LiquidityBadge } from './LiquidityBadge';
 
 interface ExitStrategyModalProps {

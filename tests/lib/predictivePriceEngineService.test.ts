@@ -14,7 +14,7 @@ import {
   getCatalystIcon,
   formatCurrency,
   formatPercent,
-} from '../../lib/predictivePriceEngineService';
+} from '../../lib/analytics/predictivePriceEngineService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

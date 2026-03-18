@@ -12,7 +12,7 @@ import {
   getWatchlists,
   getWatchlistAnalytics,
   evaluateAlerts,
-} from '../lib/watchlistService';
+} from '../lib/trading/watchlistService';
 
 interface WatchlistWidgetProps {
   inventory: CardInventory[];

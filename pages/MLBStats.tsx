@@ -16,7 +16,7 @@ import {
   searchMLBPlayers,
   getProbablePitchers,
   getAthleteHeadshotUrl,
-} from '../lib/mlbApi.ts';
+} from '../lib/utils/mlbApi.ts';
 import { useToast } from '../contexts/ToastContext.tsx';
 import { logger } from '../lib/logger';
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Radio, TrendingUp, TrendingDown, Zap } from 'lucide-react';
-import { getLiveGames, getGameDaySnapshot, getLiveImpactAlerts, type LiveGame } from '../lib/liveGameImpactService.ts';
+import { getLiveGames, getGameDaySnapshot, getLiveImpactAlerts, type LiveGame } from '../lib/analytics/liveGameImpactService.ts';
 import LiveGameImpactModal from '../components/LiveGameImpactModal.tsx';
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 

@@ -38,7 +38,7 @@ import type {
   StressScenario,
   TailRiskMetric,
   ValueAtRisk,
-} from '../lib/stressTestService';
+} from '../lib/analytics/stressTestService';
 import {
   applyStressScenario,
   calculateVaR,
@@ -49,7 +49,7 @@ import {
   getStressScenarios,
   getTailRiskMetrics,
   runMonteCarloSimulation,
-} from '../lib/stressTestService';
+} from '../lib/analytics/stressTestService';
 
 /* ================================================================= UTILS */
 

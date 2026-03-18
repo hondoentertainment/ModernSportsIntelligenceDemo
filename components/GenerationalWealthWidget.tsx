@@ -10,7 +10,7 @@ import {
   getEstateSummary,
   formatCurrency,
   type EstateSummary,
-} from '../lib/generationalWealthService';
+} from '../lib/utils/generationalWealthService';
 
 interface GenerationalWealthWidgetProps {
   onClick?: () => void;

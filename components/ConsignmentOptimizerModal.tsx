@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, Scale, Star, Clock, Users, DollarSign, CheckCircle } from 'lucide-react';
-import { getRoutes, getComparisons } from '../lib/consignmentOptimizerService';
+import { getRoutes, getComparisons } from '../lib/trading/consignmentOptimizerService';
 
 interface Props {
   isOpen: boolean;

@@ -6,7 +6,7 @@ import {
   getDeadlineInfo,
   getMarketImpact,
   formatCurrency,
-} from '../lib/tradeDeadlineService';
+} from '../lib/trading/tradeDeadlineService';
 
 interface TradeDeadlineWidgetProps {
   onOpenModal?: () => void;

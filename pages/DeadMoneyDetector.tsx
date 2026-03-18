@@ -65,7 +65,7 @@ import {
   type CatalystOutlook,
   type StagnationMetrics,
   type Sport,
-} from '../lib/deadMoneyDetectorService';
+} from '../lib/analytics/deadMoneyDetectorService';
 
 const CHART_COLORS = ['#10b981', '#60a5fa', '#f87171', '#a78bfa', '#fbbf24', '#34d399', '#22d3ee', '#fb923c'];
 const QUADRANT_COLORS: Record<string, string> = { star: '#10b981', sleeper: '#60a5fa', fading: '#fbbf24', dead: '#f87171' };

@@ -23,7 +23,7 @@ import {
   getExploitabilityLabel,
   getCompetitionColor,
   type AuctionAnalysis,
-} from '../lib/auctionEquilibriumService';
+} from '../lib/trading/auctionEquilibriumService';
 
 const PLATFORM_COLORS: Record<string, string> = {
   goldin: 'text-amber-400 bg-amber-500/10 border-amber-500/30',

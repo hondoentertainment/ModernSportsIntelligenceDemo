@@ -53,7 +53,7 @@ import {
   type ProvenanceScore,
   type FingerprintComparison,
   type CounterfeitResult,
-} from '../lib/provenanceDnaService.ts';
+} from '../lib/core/provenanceDnaService.ts';
 
 type TabId = 'scan' | 'database' | 'compare' | 'stats';
 

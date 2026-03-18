@@ -8,8 +8,8 @@ import {
     runBacktest,
     summarizeBacktest,
     walkForwardValidate
-} from '../lib/strategyEngine';
-import { showToast } from '../lib/toast';
+} from '../lib/utils/strategyEngine';
+import { showToast } from '../lib/utils/toast';
 
 interface StrategyMapProps {
     inventory: CardInventory[];

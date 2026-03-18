@@ -21,7 +21,7 @@ import {
   getShowcaseStats,
   ShowcaseCard,
   ShowcaseTheme,
-} from '../lib/arShowcaseService';
+} from '../lib/utils/arShowcaseService';
 
 type ViewMode = 'grid' | 'spotlight' | 'stack';
 

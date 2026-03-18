@@ -11,7 +11,7 @@ import {
   type CollectionGapMatch,
   type BudgetAllocation,
   type BoxHistoricalPerformance,
-} from '../lib/subscriptionBoxOptimizerService.ts';
+} from '../lib/utils/subscriptionBoxOptimizerService.ts';
 import {
   BarChart,
   Bar,

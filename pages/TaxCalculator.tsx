@@ -20,7 +20,7 @@ import {
   type DeductibleExpense,
   type Form8949Entry,
   type ShortLongSplit,
-} from '../lib/taxCalculatorService.ts';
+} from '../lib/utils/taxCalculatorService.ts';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 
 const CHART_COLORS = ['#f97316', '#60a5fa', '#f87171', '#34d399', '#a78bfa', '#fbbf24', '#22d3ee', '#fb923c'];

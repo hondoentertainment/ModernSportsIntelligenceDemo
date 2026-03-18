@@ -5,7 +5,7 @@ import {
   getPlatformComparison,
   getPlatformById,
   getAllPlatforms,
-} from '../../lib/consignmentRouterService';
+} from '../../lib/trading/consignmentRouterService';
 
 describe('consignmentRouterService', () => {
   describe('getConsignmentOptions', () => {

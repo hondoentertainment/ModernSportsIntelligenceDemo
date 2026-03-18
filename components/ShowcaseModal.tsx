@@ -31,7 +31,7 @@ import {
   generateShareUrl,
   getShowcaseAnalytics,
   exportShowcaseHTML,
-} from '../lib/showcaseService';
+} from '../lib/utils/showcaseService';
 
 interface ShowcaseModalProps {
   isOpen: boolean;

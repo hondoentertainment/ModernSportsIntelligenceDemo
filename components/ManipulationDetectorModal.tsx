@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, AlertTriangle, Shield, Eye, TrendingDown, Clock, FileWarning } from 'lucide-react';
-import { getAlerts } from '../lib/manipulationDetectorService';
+import { getAlerts } from '../lib/analytics/manipulationDetectorService';
 
 interface Props {
   isOpen: boolean;

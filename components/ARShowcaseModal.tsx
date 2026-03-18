@@ -11,7 +11,7 @@ import {
   getThemes,
   ShowcaseCard,
   ShowcaseTheme,
-} from '../lib/arShowcaseService';
+} from '../lib/utils/arShowcaseService';
 
 interface ARShowcaseModalProps {
   isOpen: boolean;

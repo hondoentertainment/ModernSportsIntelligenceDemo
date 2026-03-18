@@ -30,7 +30,7 @@ import {
   type BiasDetection,
   type TradingBehavior,
   type EmotionalHistory,
-} from '../lib/emotionalThermometerService';
+} from '../lib/utils/emotionalThermometerService';
 import {
   AreaChart,
   Area,

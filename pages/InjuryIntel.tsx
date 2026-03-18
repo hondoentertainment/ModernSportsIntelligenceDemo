@@ -20,7 +20,7 @@ import {
   type CardImpactProjection,
   type PlayerHealthTimeline,
   type UpcomingRosterEvent,
-} from '../lib/injuryIntelService.ts';
+} from '../lib/analytics/injuryIntelService.ts';
 import {
   BarChart,
   Bar,

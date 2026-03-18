@@ -17,7 +17,7 @@ import {
   formatPercent,
   formatDate,
   type BenchmarkIndex,
-} from '../../lib/portfolioBenchmarkService';
+} from '../../lib/analytics/portfolioBenchmarkService';
 
 const localStorageMock = setupLocalStorageMock();
 

@@ -6,7 +6,7 @@ import {
   getEmotionalStateBg,
   getEmotionalStateColor,
   type EmotionalState,
-} from '../lib/biometricTradingGuardService';
+} from '../lib/utils/biometricTradingGuardService';
 
 interface BiometricTradingGuardWidgetProps {
   onClick?: () => void;

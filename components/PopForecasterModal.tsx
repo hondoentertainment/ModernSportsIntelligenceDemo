@@ -26,7 +26,7 @@ import {
   type ConfidenceLevel,
   type ForecastDirection,
   type ScarcityTier,
-} from '../lib/popForecasterService';
+} from '../lib/analytics/popForecasterService';
 
 interface PopForecasterModalProps {
   isOpen: boolean;

@@ -15,7 +15,7 @@ import {
   getNewFollowerCount,
   TradeMatch,
   ActivityFeedItem,
-} from '../lib/socialService';
+} from '../lib/social/socialService';
 
 interface SocialWidgetProps {
   cards: CardInventory[];

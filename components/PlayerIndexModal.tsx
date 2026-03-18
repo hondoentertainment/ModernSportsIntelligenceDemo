@@ -35,7 +35,7 @@ import {
   PlayerIndex,
   HotColdEntry,
   SportIndex,
-} from '../lib/playerIndexService';
+} from '../lib/analytics/playerIndexService';
 
 // ---- Types ----
 

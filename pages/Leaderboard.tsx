@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchLeaderboard } from '../lib/socialService';
+import { fetchLeaderboard } from '../lib/social/socialService';
 import { LeaderboardEntry } from '../types';
 import { Trophy, TrendingUp, Medal, ArrowUpRight, ArrowDownRight, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';

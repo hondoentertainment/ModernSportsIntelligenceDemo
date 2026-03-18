@@ -6,7 +6,7 @@ import {
   getVelocityDashboard,
   getInflectionPoints,
   type SentimentVelocity,
-} from '../lib/sentimentVelocityService';
+} from '../lib/analytics/sentimentVelocityService';
 
 interface SentimentVelocityWidgetProps {
   onOpenModal?: () => void;

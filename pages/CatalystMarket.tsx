@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Flame, Radar, TrendingUp } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory';
-import { ensureCatalystMarket } from '../lib/fiveDifferentiatorService';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import { ensureCatalystMarket } from '../lib/utils/fiveDifferentiatorService';
 import { CatalystMarketEvent } from '../types';
 import { ChartSkeleton } from '../components/SkeletonLoader';
 

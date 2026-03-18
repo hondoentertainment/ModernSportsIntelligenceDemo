@@ -11,7 +11,7 @@ import {
   saveAlertHistory,
   acknowledgeAlert,
   persistAlerts,
-} from '../../lib/rebalancingAlertService';
+} from '../../lib/analytics/rebalancingAlertService';
 import { makeCard, setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

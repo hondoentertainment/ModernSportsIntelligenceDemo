@@ -6,7 +6,7 @@ import {
   getConditionAlerts,
   getRiskColor,
   getSeverityColor,
-} from '../lib/iotConditionGuardianService';
+} from '../lib/utils/iotConditionGuardianService';
 
 interface IotConditionGuardianWidgetProps {
   onOpenModal?: () => void;

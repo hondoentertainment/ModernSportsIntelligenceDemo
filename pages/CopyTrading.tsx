@@ -34,7 +34,7 @@ import {
   Timeframe,
   TradeSignal,
   CopyPortfolio,
-} from '../lib/copyTradingService';
+} from '../lib/trading/copyTradingService';
 
 const CATEGORIES: CollectorCategory[] = ['Overall', 'Modern Basketball', 'Vintage Baseball', 'Modern Football', 'Pokemon'];
 const TIMEFRAMES: { value: Timeframe; label: string }[] = [

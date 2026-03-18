@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Ghost, ChevronRight, TrendingUp, Zap, Crown, Rocket, Play } from 'lucide-react';
-import { getSavedPortfolios, getPresetStrategies } from '../lib/phantomBacktesterService';
+import { getSavedPortfolios, getPresetStrategies } from '../lib/analytics/phantomBacktesterService';
 
 interface PhantomBacktesterWidgetProps {
   onClick?: () => void;

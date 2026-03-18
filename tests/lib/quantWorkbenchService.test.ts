@@ -9,7 +9,7 @@ import {
   deleteStrategy,
   SCREENER_FIELDS,
   SCREENER_OPERATORS,
-} from '../../lib/quantWorkbenchService';
+} from '../../lib/utils/quantWorkbenchService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

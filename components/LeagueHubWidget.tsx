@@ -6,7 +6,7 @@ import {
 import {
   getLeagueStandings, getRookieWatch,
   type LeagueSport, type LeagueStanding, type LeagueRookieWatch,
-} from '../lib/leagueHubService.ts';
+} from '../lib/social/leagueHubService.ts';
 
 interface LeagueHubWidgetProps {
   sport?: LeagueSport;

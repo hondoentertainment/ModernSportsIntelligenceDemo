@@ -22,7 +22,7 @@ import {
   type GradingTrend,
   type SubmissionRecommendation,
   type PriceImpact,
-} from '../lib/gradingAuditorService';
+} from '../lib/core/gradingAuditorService';
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from 'recharts';

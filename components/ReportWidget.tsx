@@ -22,7 +22,7 @@ import {
   saveReportToHistory,
   cacheReport,
   GeneratedReport,
-} from '../lib/reportService';
+} from '../lib/utils/reportService';
 
 interface ReportWidgetProps {
   inventory: CardInventory[];

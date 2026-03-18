@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { RefreshCw, Link2, AlertTriangle, Ghost, ChevronRight } from 'lucide-react';
-import { getSyncReport, getGhostListings } from '../lib/inventorySyncService';
+import { getSyncReport, getGhostListings } from '../lib/core/inventorySyncService';
 
 interface InventorySyncWidgetProps {
   onClick?: () => void;

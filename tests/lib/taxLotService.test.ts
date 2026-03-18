@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { TaxLotService } from '../../lib/taxLotService';
+import { TaxLotService } from '../../lib/utils/taxLotService';
 import { makeCard } from '../helpers';
 
 describe('TaxLotService', () => {

@@ -17,7 +17,7 @@ import {
   getSentimentEvents,
   getHalfLifeModels,
   getSentimentStats,
-} from '../lib/sentimentHalfLifeService';
+} from '../lib/analytics/sentimentHalfLifeService';
 
 interface SentimentHalfLifeModalProps {
   isOpen: boolean;

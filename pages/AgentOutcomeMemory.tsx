@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Brain, CheckCircle, XCircle, Clock, TrendingUp } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { useAgentRecommendations } from '../lib/useAgentRecommendations';
+import { useAgentRecommendations } from '../lib/utils/useAgentRecommendations';
 import { ChartSkeleton } from '../components/SkeletonLoader';
 
 const AgentOutcomeMemory: React.FC = () => {

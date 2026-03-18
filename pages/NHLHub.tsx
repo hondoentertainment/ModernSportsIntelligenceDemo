@@ -12,7 +12,7 @@ import {
   getCardMarketTrends, getRookieWatch,
   type LeagueStanding, type LeagueDraftClass, type LeagueSeasonEvent,
   type LeagueStatLeader, type LeagueCardMarketTrend, type LeagueRookieWatch,
-} from '../lib/leagueHubService.ts';
+} from '../lib/social/leagueHubService.ts';
 
 type NHLTab = 'standings' | 'draft' | 'calendar' | 'leaders' | 'market' | 'playoffs';
 

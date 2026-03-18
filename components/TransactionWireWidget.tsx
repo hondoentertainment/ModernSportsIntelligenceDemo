@@ -7,7 +7,7 @@ import {
   TrendingDown,
   Zap,
 } from 'lucide-react';
-import { getRecentTransactions, getTransactionStats, Transaction } from '../lib/transactionWireService';
+import { getRecentTransactions, getTransactionStats, Transaction } from '../lib/trading/transactionWireService';
 
 interface TransactionWireWidgetProps {
   onOpenModal: () => void;

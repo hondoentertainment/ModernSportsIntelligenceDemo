@@ -45,7 +45,7 @@ import {
   exportCollection,
   undoImport,
   ALL_CARD_FIELDS,
-} from '../lib/importService';
+} from '../lib/core/importService';
 
 interface ImportModalProps {
   isOpen: boolean;

@@ -7,7 +7,7 @@ import {
   getAlertThresholds,
   getConfidenceConfig,
   formatCurrency,
-} from '../lib/pricePredictionService';
+} from '../lib/analytics/pricePredictionService';
 
 interface PricePredictionWidgetProps {
   onOpenModal?: () => void;

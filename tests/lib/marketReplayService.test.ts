@@ -22,7 +22,7 @@ import {
   WhatIfScenario,
   ReplayStats,
   PriceDataPoint,
-} from '../../lib/marketReplayService';
+} from '../../lib/analytics/marketReplayService';
 
 describe('marketReplayService', () => {
   beforeEach(() => {

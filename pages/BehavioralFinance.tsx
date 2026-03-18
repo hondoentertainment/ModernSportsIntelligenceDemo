@@ -30,7 +30,7 @@ import {
   type CoolDownRule,
   type OverpaymentEntry,
   type Nudge,
-} from '../lib/behavioralFinanceService.ts';
+} from '../lib/analytics/behavioralFinanceService.ts';
 import {
   BarChart,
   Bar,

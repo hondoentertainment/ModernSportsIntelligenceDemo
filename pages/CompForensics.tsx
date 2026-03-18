@@ -27,7 +27,7 @@ import {
   type CompAnalysis,
   type ForensicReport,
   type SellerReputation as SellerReputationType,
-} from '../lib/compForensicsService.ts';
+} from '../lib/analytics/compForensicsService.ts';
 import {
   BarChart,
   Bar,

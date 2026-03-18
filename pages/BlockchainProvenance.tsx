@@ -18,7 +18,7 @@ import {
   type SmartContract,
   type VerificationResult,
   type TransactionRecord,
-} from '../lib/blockchainProvenanceService';
+} from '../lib/core/blockchainProvenanceService';
 import {
   BarChart, Bar, PieChart, Pie, LineChart, Line,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,

@@ -4,7 +4,7 @@ import {
   RealTimeEvent,
   SubscriptionHandle,
   FeatureChannelName,
-} from '../lib/realTimeFeatureHub';
+} from '../lib/utils/realTimeFeatureHub';
 
 // ---------------------------------------------------------------------------
 // Types

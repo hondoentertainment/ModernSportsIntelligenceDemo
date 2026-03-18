@@ -26,7 +26,7 @@ import {
   type EnvironmentalRisk,
   type InsuranceTrigger,
   type StorageComparison,
-} from '../lib/conditionAgingService.ts';
+} from '../lib/core/conditionAgingService.ts';
 import {
   LineChart,
   Line,

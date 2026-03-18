@@ -24,7 +24,7 @@ import {
   formatTimestamp,
   formatDate,
   type EmotionalState,
-} from '../lib/biometricTradingGuardService';
+} from '../lib/utils/biometricTradingGuardService';
 
 const EMOTION_LABELS: Record<EmotionalState, string> = {
   calm: 'Calm',

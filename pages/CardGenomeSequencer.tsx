@@ -13,12 +13,12 @@ import {
 import type {
   GenomeProfile, GenomePairMatch, PopulationGenomics, GenomeEvolution,
   GradePrediction, CardGene, GeneCategory,
-} from '../lib/cardGenomeService.ts';
+} from '../lib/core/cardGenomeService.ts';
 import {
   getAllGenomes, getCardGenome, compareGenomes, getPopulationGenomics,
   findGeneticTwins, getGenomeEvolution, predictGradeFromGenome,
   getGeneDistribution, GENE_DEFINITIONS,
-} from '../lib/cardGenomeService.ts';
+} from '../lib/core/cardGenomeService.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants

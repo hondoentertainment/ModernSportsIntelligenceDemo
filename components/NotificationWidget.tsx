@@ -15,7 +15,7 @@ import {
   NotificationPriority,
   NotificationCategory,
   NotificationSummary,
-} from '../lib/notificationCenterService';
+} from '../lib/utils/notificationCenterService';
 
 interface NotificationWidgetProps {
   cards: CardInventory[];

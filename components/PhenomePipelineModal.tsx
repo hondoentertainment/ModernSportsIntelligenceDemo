@@ -17,7 +17,7 @@ import {
 import {
   getPhenoms,
   getPhenomStats,
-} from '../lib/phenomePipelineService';
+} from '../lib/utils/phenomePipelineService';
 
 interface PhenomePipelineModalProps {
   isOpen: boolean;

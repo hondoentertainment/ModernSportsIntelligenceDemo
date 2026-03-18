@@ -4,7 +4,7 @@ import {
   getCollectionHealthReport,
   getStorageRecommendations,
   getInsuranceTriggers,
-} from '../lib/conditionAgingService';
+} from '../lib/core/conditionAgingService';
 
 interface ConditionAgingWidgetProps {
   onOpenModal?: () => void;

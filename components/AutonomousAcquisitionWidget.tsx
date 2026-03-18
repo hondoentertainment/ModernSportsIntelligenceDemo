@@ -9,7 +9,7 @@ import {
   getAgentActivityFeed,
   getAcquisitionAnalytics,
   CampaignStatus,
-} from '../lib/autonomousAcquisitionService';
+} from '../lib/trading/autonomousAcquisitionService';
 
 interface AutonomousAcquisitionWidgetProps {
   onOpenModal?: () => void;

@@ -1,8 +1,8 @@
 
 import React, { useState, useCallback } from 'react';
 import { Search, Sparkles, Target, Zap, ArrowRight, ShieldCheck, Info, Loader2 } from 'lucide-react';
-import { findSimilarCards } from '../lib/gemini.ts';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
+import { findSimilarCards } from '../lib/utils/gemini.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import { useToast } from '../contexts/ToastContext.tsx';
 import { logger } from '../lib/logger';
 import CardImage from '../components/CardImage.tsx';

@@ -4,7 +4,7 @@ import {
   getTrackedCards,
   getRecentComps,
   formatCurrency,
-} from '../lib/compForensicsService';
+} from '../lib/analytics/compForensicsService';
 
 interface CompForensicsWidgetProps {
   onOpenModal?: () => void;

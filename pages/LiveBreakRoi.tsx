@@ -50,7 +50,7 @@ import {
   type BreakPlatform,
   type BreakType,
   type BreakHit,
-} from '../lib/liveBreakRoiService.ts';
+} from '../lib/social/liveBreakRoiService.ts';
 
 const CHART_COLORS = [
   '#a78bfa', '#60a5fa', '#f87171', '#c084fc', '#34d399',
