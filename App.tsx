@@ -9,6 +9,7 @@ import {
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import { AutoTierGate } from './components/TieredRoute';
 import GlobalErrorBoundary from './components/GlobalErrorBoundary.tsx';
 import Sidebar from './components/Sidebar.tsx';
 import Header from './components/Header.tsx';
@@ -495,6 +496,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
         )}
 
         <main className="flex-1 p-4 md:p-8 page-container overflow-y-auto pb-24 md:pb-8">
+          <AutoTierGate>
           <LazyErrorBoundary>
             <Suspense fallback={<PageLoadingFallback />}>
               <Routes>
@@ -848,6 +850,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
               </Routes>
             </Suspense>
           </LazyErrorBoundary>
+          </AutoTierGate>
         </main>
 
         {/* Mobile Navigation */}
