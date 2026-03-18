@@ -2,6 +2,8 @@
 // Provides production-grade offline support with sync queue, caching,
 // conflict resolution, and storage management.
 
+import { store } from './dal/syncStore';
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export type OfflineStatus = 'online' | 'offline' | 'syncing';
@@ -121,23 +123,17 @@ function generateId(): string {
 }
 
 function safeGetItem<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return fallback;
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
+  return store.get<T>(key, fallback);
 }
 
 function safeSetItem(key: string, value: unknown): void {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    store.set(key, value);
   } catch {
     // storage full — evict oldest cache entries
     evictOldestCacheEntries(1);
     try {
-      localStorage.setItem(key, JSON.stringify(value));
+      store.set(key, value);
     } catch {
       // still full; nothing we can do
     }
@@ -161,7 +157,7 @@ function evictOldestCacheEntries(count: number): void {
   entries.sort((a, b) => (a.cached!.cachedAt - b.cached!.cachedAt));
   const toRemove = entries.slice(0, count);
   for (const entry of toRemove) {
-    localStorage.removeItem(`${KEYS.CACHE_PREFIX}${entry.key}`);
+    store.remove(`${KEYS.CACHE_PREFIX}${entry.key}`);
   }
   const remaining = index.filter((k) => !toRemove.some((r) => r.key === k));
   safeSetItem(KEYS.CACHE_INDEX, remaining);
@@ -387,10 +383,10 @@ export async function prefetchData(scope: string): Promise<void> {
 export function clearCache(): void {
   const index = safeGetItem<string[]>(KEYS.CACHE_INDEX, []);
   for (const key of index) {
-    localStorage.removeItem(`${KEYS.CACHE_PREFIX}${key}`);
+    store.remove(`${KEYS.CACHE_PREFIX}${key}`);
   }
   safeSetItem(KEYS.CACHE_INDEX, []);
-  localStorage.removeItem(KEYS.PORTFOLIO);
+  store.remove(KEYS.PORTFOLIO);
 }
 
 export function exportOfflineData(): string {

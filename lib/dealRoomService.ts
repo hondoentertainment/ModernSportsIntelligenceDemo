@@ -1,3 +1,4 @@
+import { store } from './dal/syncStore';
 import {
   fetchDealRoomAttachments,
   fetchDealRoomMessages,
@@ -85,31 +86,27 @@ const STORAGE_KEY_ROOMS = 'dealRoom_rooms';
 const STORAGE_KEY_IOI = 'dealRoom_ioi';
 
 function loadRooms(): DealRoom[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_ROOMS);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
+  const cached = store.get<DealRoom[] | null>(STORAGE_KEY_ROOMS, null);
+  if (cached) return cached;
   const rooms = generateMockRooms();
-  localStorage.setItem(STORAGE_KEY_ROOMS, JSON.stringify(rooms));
+  store.set(STORAGE_KEY_ROOMS, rooms);
   return rooms;
 }
 
 function saveRooms(rooms: DealRoom[]) {
-  localStorage.setItem(STORAGE_KEY_ROOMS, JSON.stringify(rooms));
+  store.set(STORAGE_KEY_ROOMS, rooms);
 }
 
 function loadIOI(): IOIBroadcast[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_IOI);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
+  const cached = store.get<IOIBroadcast[] | null>(STORAGE_KEY_IOI, null);
+  if (cached) return cached;
   const ioi = generateMockIOI();
-  localStorage.setItem(STORAGE_KEY_IOI, JSON.stringify(ioi));
+  store.set(STORAGE_KEY_IOI, ioi);
   return ioi;
 }
 
 function saveIOI(list: IOIBroadcast[]) {
-  localStorage.setItem(STORAGE_KEY_IOI, JSON.stringify(list));
+  store.set(STORAGE_KEY_IOI, list);
 }
 
 // ── Mock data generators ────────────────────────────────────────────────────────

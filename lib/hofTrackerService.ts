@@ -2,6 +2,8 @@
 // ML-powered HOF probability calculator with historical vote modeling,
 // card value impact projections, and "invest before the call" timing signals.
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export interface HOFCandidate {
@@ -66,17 +68,11 @@ export interface HOFStats {
 const STORAGE_KEY = 'msi_hof_tracker';
 
 function _loadStorage(): { lastUpdated: string } {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return { lastUpdated: new Date().toISOString() };
+  return store.get<{ lastUpdated: string }>(STORAGE_KEY, { lastUpdated: new Date().toISOString() });
 }
 
 function saveStorage(data: { lastUpdated: string }) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch { /* ignore */ }
+  store.set(STORAGE_KEY, data);
 }
 
 // ---- Candidate Data ----

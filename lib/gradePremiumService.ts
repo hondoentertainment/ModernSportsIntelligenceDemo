@@ -1,4 +1,5 @@
 import { CardInventory } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -429,19 +430,9 @@ export interface GradePremiumPrefs {
 }
 
 export function loadGradePremiumPrefs(): GradePremiumPrefs {
-  try {
-    const raw = localStorage.getItem(PREFS_KEY);
-    if (!raw) return {};
-    return JSON.parse(raw) as GradePremiumPrefs;
-  } catch {
-    return {};
-  }
+  return store.get<GradePremiumPrefs>(PREFS_KEY, {});
 }
 
 export function saveGradePremiumPrefs(prefs: GradePremiumPrefs): void {
-  try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
-  } catch {
-    // quota exceeded
-  }
+  store.set(PREFS_KEY, prefs);
 }

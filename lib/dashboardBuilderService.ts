@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Phase 5: Custom Dashboard Builder Service
 // Drag-and-drop widget dashboard system with layout persistence
 
@@ -286,23 +288,11 @@ export function getWidgetCatalog(): WidgetCatalogItem[] {
 // ---- Layout Persistence ----
 
 function loadLayoutsFromStorage(): DashboardLayout[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      return JSON.parse(raw) as DashboardLayout[];
-    }
-  } catch {
-    // ignore parse errors
-  }
-  return [];
+  return store.get<DashboardLayout[]>(STORAGE_KEY, []);
 }
 
 function saveLayoutsToStorage(layouts: DashboardLayout[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(layouts));
-  } catch {
-    // storage full or unavailable
-  }
+  store.set(STORAGE_KEY, layouts);
 }
 
 export function getDashboardLayouts(): DashboardLayout[] {
@@ -332,19 +322,11 @@ export function deleteDashboardLayout(id: string): void {
 }
 
 export function getActiveLayoutId(): string | null {
-  try {
-    return localStorage.getItem(ACTIVE_LAYOUT_KEY);
-  } catch {
-    return null;
-  }
+  return store.get<string | null>(ACTIVE_LAYOUT_KEY, null);
 }
 
 export function setActiveLayoutId(id: string): void {
-  try {
-    localStorage.setItem(ACTIVE_LAYOUT_KEY, id);
-  } catch {
-    // ignore
-  }
+  store.set(ACTIVE_LAYOUT_KEY, id);
 }
 
 // ---- Default Layout ----

@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ── Interfaces ──────────────────────────────────────────────────────────────────
 
 export type CardPresence = 'high' | 'medium' | 'low' | 'none';
@@ -308,17 +310,11 @@ const STRATEGIES: DraftNightStrategy[] = [
 // ── localStorage helpers ────────────────────────────────────────────────────────
 
 function loadPersistedData(): { watchedProspects: string[] } {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return { watchedProspects: [] };
+  return store.get<{ watchedProspects: string[] }>(STORAGE_KEY, { watchedProspects: [] });
 }
 
 function persistData(data: { watchedProspects: string[] }): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch { /* ignore */ }
+  store.set(STORAGE_KEY, data);
 }
 
 export function watchProspect(prospectId: string): void {

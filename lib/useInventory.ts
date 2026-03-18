@@ -2,6 +2,7 @@ import { logger } from './logger';
 import { useState, useEffect, useCallback } from 'react';
 import { CardInventory, TargetWatchlist } from '../types.ts';
 import { MOCK_CARDS } from '../constants.tsx';
+import { store } from './dal/syncStore';
 
 const STORAGE_KEY = 'cardx_inventory';
 const TARGETS_KEY = 'cardx_targets';
@@ -18,49 +19,27 @@ export interface SyncMeta {
  */
 export function useInventory() {
     const [inventory, setInventory] = useState<CardInventory[]>(() => {
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                // Only use saved data if it has items
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    return parsed;
-                }
-            }
-            // Otherwise initialize with empty array for first-time onboarding experience
-            return [];
-        } catch (e) {
-            logger.warn('Failed to parse inventory from localStorage', e);
-            return [];
+        const parsed = store.get<CardInventory[]>(STORAGE_KEY, []);
+        // Only use saved data if it has items
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
         }
+        // Otherwise initialize with empty array for first-time onboarding experience
+        return [];
     });
 
     const [targets, setTargets] = useState<TargetWatchlist[]>(() => {
-        try {
-            const saved = localStorage.getItem(TARGETS_KEY);
-            return saved ? JSON.parse(saved) : [];
-        } catch (e) {
-            logger.warn('Failed to parse targets', e);
-            return [];
-        }
+        return store.get<TargetWatchlist[]>(TARGETS_KEY, []);
     });
 
     const [syncMeta, setSyncMeta] = useState<SyncMeta>(() => {
-        try {
-            const meta = localStorage.getItem(SYNC_META_KEY);
-            if (meta) {
-                return JSON.parse(meta);
-            }
-        } catch (e) {
-            logger.warn('Failed to parse sync meta', e);
-        }
-        return { lastSyncTime: null, totalValue: 0, assetCount: 0 };
+        return store.get<SyncMeta>(SYNC_META_KEY, { lastSyncTime: null, totalValue: 0, assetCount: 0 });
     });
 
     // Persist inventory changes to localStorage
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(inventory));
-        localStorage.setItem(TARGETS_KEY, JSON.stringify(targets));
+        store.set(STORAGE_KEY, inventory);
+        store.set(TARGETS_KEY, targets);
 
         // Update sync meta
         const totalValue = inventory.reduce((sum, c) => sum + (c.currentValue || 0), 0);
@@ -69,7 +48,7 @@ export function useInventory() {
             totalValue,
             assetCount: inventory.length
         };
-        localStorage.setItem(SYNC_META_KEY, JSON.stringify(meta));
+        store.set(SYNC_META_KEY, meta);
         setSyncMeta(meta);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [inventory, targets]);
@@ -106,16 +85,9 @@ export function useInventory() {
     }, []);
 
     const refreshFromStorage = useCallback(() => {
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    setInventory(parsed);
-                }
-            }
-        } catch (e) {
-            logger.warn('Failed to refresh inventory from storage', e);
+        const parsed = store.get<CardInventory[]>(STORAGE_KEY, []);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            setInventory(parsed);
         }
     }, []);
 
@@ -123,7 +95,7 @@ export function useInventory() {
     const initializeFullInventory = useCallback(() => {
         if (inventory.length === 0 || inventory.length < MOCK_CARDS.length) {
             setInventory(MOCK_CARDS);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_CARDS));
+            store.set(STORAGE_KEY, MOCK_CARDS);
         }
     }, [inventory.length]);
 

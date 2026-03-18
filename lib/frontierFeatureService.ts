@@ -4,6 +4,7 @@ import {
   FrontierFeatureStage,
   FrontierFeatureView,
 } from '../types';
+import { store } from './dal/syncStore';
 
 const FRONTIER_STATE_KEY = 'msi_frontier_feature_states';
 
@@ -290,24 +291,13 @@ export const FRONTIER_FEATURES: FrontierFeatureBlueprint[] = [
   },
 ];
 
-function hasWindow() {
-  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
-}
-
 function readStateMap(): Record<string, FrontierFeatureState> {
-  if (!hasWindow()) return {};
-  try {
-    const raw = window.localStorage.getItem(FRONTIER_STATE_KEY);
-    const parsed = raw ? JSON.parse(raw) : {};
-    return parsed && typeof parsed === 'object' ? parsed : {};
-  } catch {
-    return {};
-  }
+  const parsed = store.get<Record<string, FrontierFeatureState>>(FRONTIER_STATE_KEY, {});
+  return parsed && typeof parsed === 'object' ? parsed : {};
 }
 
 function writeStateMap(next: Record<string, FrontierFeatureState>) {
-  if (!hasWindow()) return;
-  window.localStorage.setItem(FRONTIER_STATE_KEY, JSON.stringify(next));
+  store.set(FRONTIER_STATE_KEY, next);
 }
 
 export function getFrontierFeatureBlueprints(): FrontierFeatureBlueprint[] {

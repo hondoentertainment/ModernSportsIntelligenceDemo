@@ -1,3 +1,4 @@
+import { store } from './dal/syncStore';
 import { CardInventory } from '../types';
 
 // ---- Types ----
@@ -106,21 +107,11 @@ interface StoredPopData {
 }
 
 function loadStoredData(): StoredPopData[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as StoredPopData[];
-  } catch {
-    return [];
-  }
+  return store.get<StoredPopData[]>(STORAGE_KEY, []);
 }
 
 function saveStoredData(data: StoredPopData[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch {
-    // quota exceeded — silently fail
-  }
+  store.set(STORAGE_KEY, data);
 }
 
 // ---- Pop History Generation ----

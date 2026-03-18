@@ -1,6 +1,8 @@
 // Achievement & Badges System Service
 // Manages collector achievements, XP levels, seasonal challenges, and leaderboards
 
+import { store } from './dal/syncStore';
+
 export type AchievementCategory = 'collection' | 'trading' | 'grading' | 'social' | 'financial' | 'milestone';
 export type AchievementTier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
 
@@ -65,16 +67,11 @@ export interface AchievementStats {
 const STORAGE_PREFIX = 'msi_achievements';
 
 function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_${key}`);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
+  return store.get<T>(`${STORAGE_PREFIX}_${key}`, fallback);
 }
 
 function saveToStorage<T>(key: string, data: T): void {
-  localStorage.setItem(`${STORAGE_PREFIX}_${key}`, JSON.stringify(data));
+  store.set(`${STORAGE_PREFIX}_${key}`, data);
 }
 
 const DEFAULT_ACHIEVEMENTS: Achievement[] = [

@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Phase 143: Overproduction & Print Run Intelligence
 // Tracks print run data, production volumes, scarcity metrics across all major card manufacturers
 
@@ -568,20 +570,11 @@ const MOCK_INSERT_ODDS: InsertOdds[] = [
 // ---- localStorage Helpers ----
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    return raw ? (JSON.parse(raw) as T) : null;
-  } catch {
-    return null;
-  }
+  return store.get<T | null>(`${STORAGE_KEY}_${key}`, null);
 }
 
 function saveData<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // storage full or unavailable
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ---- Helper Functions ----

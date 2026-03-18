@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type ParallelRarity = 'common' | 'uncommon' | 'rare' | 'super_rare' | 'ssp' | 'one_of_one';
@@ -405,25 +407,19 @@ const MOCK_SETS: ParallelSet[] = [
 // ---- Helper Functions ----
 
 function loadCards(): ParallelCard[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // ignore parse errors
+  if (store.has(STORAGE_KEY)) {
+    return store.get<ParallelCard[]>(STORAGE_KEY, JSON.parse(JSON.stringify(MOCK_CARDS)));
   }
   return JSON.parse(JSON.stringify(MOCK_CARDS));
 }
 
 function saveCards(cards: ParallelCard[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
+  store.set(STORAGE_KEY, cards);
 }
 
 function loadSets(): ParallelSet[] {
-  try {
-    const raw = localStorage.getItem(SETS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // ignore parse errors
+  if (store.has(SETS_KEY)) {
+    return store.get<ParallelSet[]>(SETS_KEY, JSON.parse(JSON.stringify(MOCK_SETS)));
   }
   return JSON.parse(JSON.stringify(MOCK_SETS));
 }

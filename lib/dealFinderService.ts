@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -121,39 +122,19 @@ function dateSeed(): number {
 // ---- localStorage helpers ----
 
 export function loadPrefs(): DealFilter {
-  try {
-    const raw = localStorage.getItem(PREFS_KEY);
-    if (!raw) return {};
-    return JSON.parse(raw) as DealFilter;
-  } catch {
-    return {};
-  }
+  return store.get<DealFilter>(PREFS_KEY, {});
 }
 
 export function savePrefs(prefs: DealFilter): void {
-  try {
-    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
-  } catch {
-    // quota exceeded
-  }
+  store.set(PREFS_KEY, prefs);
 }
 
 export function getDealHistory(): DealHistory[] {
-  try {
-    const raw = localStorage.getItem(HISTORY_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as DealHistory[];
-  } catch {
-    return [];
-  }
+  return store.get<DealHistory[]>(HISTORY_KEY, []);
 }
 
 function saveDealHistory(history: DealHistory[]): void {
-  try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(-100)));
-  } catch {
-    // quota exceeded
-  }
+  store.set(HISTORY_KEY, history.slice(-100));
 }
 
 export function logDealAction(

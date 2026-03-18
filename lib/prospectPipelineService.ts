@@ -1,3 +1,4 @@
+import { store } from './dal/syncStore';
 import { Sport } from '../types';
 
 // ── Types ────────────────────────────────────────────────────────────────────────
@@ -364,16 +365,11 @@ export function getRecentPromotions(): Prospect[] {
 // ── Stash tracker (localStorage CRUD) ────────────────────────────────────────────
 
 export function getStashEntries(): StashEntry[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_STASH);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+  return store.get<StashEntry[]>(STORAGE_STASH, []);
 }
 
 function saveStashEntries(entries: StashEntry[]): void {
-  localStorage.setItem(STORAGE_STASH, JSON.stringify(entries));
+  store.set(STORAGE_STASH, entries);
 }
 
 export function addStashEntry(entry: Omit<StashEntry, 'id'>): StashEntry {
@@ -409,25 +405,20 @@ export function getStashSummary(): StashPortfolioSummary {
 // ── Followed prospects (localStorage) ────────────────────────────────────────────
 
 export function getFollowedProspects(): string[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_FOLLOWED);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+  return store.get<string[]>(STORAGE_FOLLOWED, []);
 }
 
 export function followProspect(id: string): void {
   const followed = getFollowedProspects();
   if (!followed.includes(id)) {
     followed.push(id);
-    localStorage.setItem(STORAGE_FOLLOWED, JSON.stringify(followed));
+    store.set(STORAGE_FOLLOWED, followed);
   }
 }
 
 export function unfollowProspect(id: string): void {
   const followed = getFollowedProspects().filter(fid => fid !== id);
-  localStorage.setItem(STORAGE_FOLLOWED, JSON.stringify(followed));
+  store.set(STORAGE_FOLLOWED, followed);
 }
 
 export function isProspectFollowed(id: string): boolean {
@@ -437,19 +428,14 @@ export function isProspectFollowed(id: string): boolean {
 // ── Alert acknowledgement ────────────────────────────────────────────────────────
 
 function getAcknowledgedAlerts(): string[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_ALERTS_ACK);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+  return store.get<string[]>(STORAGE_ALERTS_ACK, []);
 }
 
 export function acknowledgeAlert(alertId: string): void {
   const acked = getAcknowledgedAlerts();
   if (!acked.includes(alertId)) {
     acked.push(alertId);
-    localStorage.setItem(STORAGE_ALERTS_ACK, JSON.stringify(acked));
+    store.set(STORAGE_ALERTS_ACK, acked);
   }
 }
 
@@ -468,15 +454,13 @@ const DEFAULT_PREFS: AlertPreferences = {
 };
 
 export function getAlertPreferences(): AlertPreferences {
-  try {
-    const stored = localStorage.getItem(STORAGE_PREFS);
-    return stored ? { ...DEFAULT_PREFS, ...JSON.parse(stored) } : DEFAULT_PREFS;
-  } catch {
-    return DEFAULT_PREFS;
+  if (store.has(STORAGE_PREFS)) {
+    return { ...DEFAULT_PREFS, ...store.get<Partial<AlertPreferences>>(STORAGE_PREFS, {}) };
   }
+  return DEFAULT_PREFS;
 }
 
 export function saveAlertPreferences(prefs: Partial<AlertPreferences>): void {
   const current = getAlertPreferences();
-  localStorage.setItem(STORAGE_PREFS, JSON.stringify({ ...current, ...prefs }));
+  store.set(STORAGE_PREFS, { ...current, ...prefs });
 }

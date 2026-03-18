@@ -1,6 +1,8 @@
 // Social Proof & Community Consensus Pricing Service
 // Provides community-driven price consensus, expert leaderboards, sentiment polls, and trending analysis
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type SentimentLevel = 'very_bullish' | 'bullish' | 'neutral' | 'bearish' | 'very_bearish';
@@ -1371,21 +1373,11 @@ const TRENDING_CARDS: TrendingCard[] = [
 // ---- localStorage Persistence Helpers ----
 
 function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_${key}`);
-    if (raw) return JSON.parse(raw) as T;
-  } catch {
-    // ignore parse errors
-  }
-  return fallback;
+  return store.get<T>(`${STORAGE_PREFIX}_${key}`, fallback);
 }
 
 function saveToStorage<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_PREFIX}_${key}`, JSON.stringify(data));
-  } catch {
-    // ignore quota errors
-  }
+  store.set(`${STORAGE_PREFIX}_${key}`, data);
 }
 
 // ---- Exported Functions ----

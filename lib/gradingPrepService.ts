@@ -1,5 +1,7 @@
 // Card Grading Prep Guide Service
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type PrepCategory = 'cleaning' | 'holders' | 'submission' | 'inspection' | 'shipping';
@@ -365,16 +367,15 @@ const SUBMISSION_TIPS: string[] = [
 // ---- Helper Functions ----
 
 function loadFromStorage<T>(key: string, fallback: T): T {
-  const stored = localStorage.getItem(key);
-  if (stored) {
-    return JSON.parse(stored) as T;
+  if (store.has(key)) {
+    return store.get<T>(key, fallback);
   }
-  localStorage.setItem(key, JSON.stringify(fallback));
+  store.set(key, fallback);
   return fallback;
 }
 
 function saveToStorage<T>(key: string, data: T): void {
-  localStorage.setItem(key, JSON.stringify(data));
+  store.set(key, data);
 }
 
 // ---- Exported Functions ----

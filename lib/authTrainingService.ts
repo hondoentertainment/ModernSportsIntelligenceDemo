@@ -1,6 +1,8 @@
 // Phase 136: AI Authentication Training Academy
 // Gamified training system for card authentication with challenges, XP, badges, and community review
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type TrainingCategory = 'fake_detection' | 'trimming' | 'recoloring' | 'reprints' | 'autograph_verification' | 'patch_manipulation';
@@ -143,21 +145,11 @@ const DIFFICULTY_COLORS: Record<Difficulty, { text: string; bg: string }> = {
 // ---- localStorage helpers ----
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  return store.get<T | null>(`${STORAGE_KEY}_${key}`, null);
 }
 
 function saveData<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // quota exceeded
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ---- Mock Challenges ----

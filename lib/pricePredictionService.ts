@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Phase 146: AI Price Prediction & Fair Offer Generator
 // Machine learning-powered price forecasting with fair market offer ranges and valuation reports
 
@@ -127,21 +129,11 @@ export interface BatchPrediction {
 const STORAGE_KEY = 'msi_price_prediction';
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  return store.get<T | null>(`${STORAGE_KEY}_${key}`, null);
 }
 
 function saveData<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // Storage full or unavailable
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ---- Helpers ----

@@ -291,12 +291,13 @@ export function saveGradingResult(result: VisionGradingResult): void {
   const history = getGradingHistory();
   history.unshift(result);
   if (history.length > 50) history.pop();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  store.set(STORAGE_KEY, history);
 }
 
+import { store } from './dal/syncStore';
 export function getGradingHistory(): VisionGradingResult[] {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    return store.get(STORAGE_KEY, []);
   } catch {
     return [];
   }

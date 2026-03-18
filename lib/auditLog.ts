@@ -1,5 +1,6 @@
 import { supabase, isDemoMode } from './supabase';
 import { logger } from './logger';
+import { store } from './dal/syncStore';
 
 const LOCAL_AUDIT_KEY = 'msi_audit_events';
 const LOCAL_AUDIT_LIMIT = 200;
@@ -16,19 +17,14 @@ export interface AuditEventInput {
 }
 
 function getLocalAuditEvents(): any[] {
-    try {
-        const raw = localStorage.getItem(LOCAL_AUDIT_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        return Array.isArray(parsed) ? parsed : [];
-    } catch {
-        return [];
-    }
+    const parsed = store.get<any[]>(LOCAL_AUDIT_KEY, []);
+    return Array.isArray(parsed) ? parsed : [];
 }
 
 function writeLocalAuditEvent(event: any): void {
     const events = getLocalAuditEvents();
     const next = [event, ...events].slice(0, LOCAL_AUDIT_LIMIT);
-    localStorage.setItem(LOCAL_AUDIT_KEY, JSON.stringify(next));
+    store.set(LOCAL_AUDIT_KEY, next);
 }
 
 export async function logAuditEvent(input: AuditEventInput): Promise<void> {

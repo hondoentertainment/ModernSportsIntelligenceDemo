@@ -53,9 +53,7 @@ const ALERTS_KEY = 'msi_watchlist_alerts';
 
 function loadItems(): WatchlistItem[] {
   try {
-    const raw = localStorage.getItem(WATCHLIST_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as WatchlistItem[];
+    return store.get(WATCHLIST_KEY, []);
   } catch {
     return [];
   }
@@ -63,7 +61,7 @@ function loadItems(): WatchlistItem[] {
 
 function saveItems(items: WatchlistItem[]): void {
   try {
-    localStorage.setItem(WATCHLIST_KEY, JSON.stringify(items));
+    store.set(WATCHLIST_KEY, items);
   } catch {
     // quota exceeded
   }
@@ -71,9 +69,7 @@ function saveItems(items: WatchlistItem[]): void {
 
 function loadAlerts(): PriceAlert[] {
   try {
-    const raw = localStorage.getItem(ALERTS_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as PriceAlert[];
+    return store.get(ALERTS_KEY, []);
   } catch {
     return [];
   }
@@ -81,7 +77,7 @@ function loadAlerts(): PriceAlert[] {
 
 function saveAlerts(alerts: PriceAlert[]): void {
   try {
-    localStorage.setItem(ALERTS_KEY, JSON.stringify(alerts));
+    store.set(ALERTS_KEY, alerts);
   } catch {
     // quota exceeded
   }
@@ -573,6 +569,7 @@ export function getAlertColor(type: AlertType): string {
   }
 }
 
+import { store } from './dal/syncStore';
 export function getSportIcon(sport: string): string {
   switch (sport) {
     case 'Baseball': return '\u26BE';

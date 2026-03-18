@@ -1,6 +1,8 @@
 // Collection Insurance Vault Service
 // Comprehensive insurance management for high-value sports card collections
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type CoverageType = 'basic' | 'premium' | 'collector';
@@ -487,29 +489,27 @@ const MOCK_CLAIMS: ClaimHistory[] = [
 // ---- Helper Functions ----
 
 function loadItems(): InsuredItem[] {
-  const raw = localStorage.getItem(ITEMS_KEY);
-  if (raw) {
-    return JSON.parse(raw) as InsuredItem[];
+  if (store.has(ITEMS_KEY)) {
+    return store.get<InsuredItem[]>(ITEMS_KEY, []);
   }
-  localStorage.setItem(ITEMS_KEY, JSON.stringify(MOCK_INSURED_ITEMS));
+  store.set(ITEMS_KEY, MOCK_INSURED_ITEMS);
   return [...MOCK_INSURED_ITEMS];
 }
 
 function saveItems(items: InsuredItem[]): void {
-  localStorage.setItem(ITEMS_KEY, JSON.stringify(items));
+  store.set(ITEMS_KEY, items);
 }
 
 function loadClaims(): ClaimHistory[] {
-  const raw = localStorage.getItem(CLAIMS_KEY);
-  if (raw) {
-    return JSON.parse(raw) as ClaimHistory[];
+  if (store.has(CLAIMS_KEY)) {
+    return store.get<ClaimHistory[]>(CLAIMS_KEY, []);
   }
-  localStorage.setItem(CLAIMS_KEY, JSON.stringify(MOCK_CLAIMS));
+  store.set(CLAIMS_KEY, MOCK_CLAIMS);
   return [...MOCK_CLAIMS];
 }
 
 function saveClaims(claims: ClaimHistory[]): void {
-  localStorage.setItem(CLAIMS_KEY, JSON.stringify(claims));
+  store.set(CLAIMS_KEY, claims);
 }
 
 // ---- Exported Functions ----

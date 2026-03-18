@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export interface CardShow {
@@ -139,29 +141,13 @@ const CACHE_KEYS = {
 // ---- Offline Cache Helpers ----
 
 function saveToCache<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(key, JSON.stringify({ data, timestamp: new Date().toISOString() }));
-  } catch {
-    // Storage full — remove oldest entries
-    const oldest = Object.values(CACHE_KEYS).sort(() => Math.random() - 0.5)[0];
-    localStorage.removeItem(oldest);
-    try {
-      localStorage.setItem(key, JSON.stringify({ data, timestamp: new Date().toISOString() }));
-    } catch {
-      // silently fail
-    }
-  }
+  store.set(key, { data, timestamp: new Date().toISOString() });
 }
 
 function loadFromCache<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return parsed.data as T;
-  } catch {
-    return null;
-  }
+  const parsed = store.get<{ data: T; timestamp: string } | null>(key, null);
+  if (!parsed) return null;
+  return parsed.data;
 }
 
 // ---- Mock Data ----
@@ -334,7 +320,7 @@ export function getActiveShow(): (CardShow & { isActive: true }) | null {
 }
 
 export function endShowMode(): void {
-  localStorage.removeItem(CACHE_KEYS.ACTIVE_SHOW);
+  store.remove(CACHE_KEYS.ACTIVE_SHOW);
 }
 
 export function getShowVendors(): ShowVendor[] {

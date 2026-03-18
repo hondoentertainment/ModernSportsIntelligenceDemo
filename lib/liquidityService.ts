@@ -1,5 +1,6 @@
 import { CardInventory, ExitPlan, Sport } from '../types';
 import { generatePopData } from './scarcityService';
+import { store } from './dal/syncStore';
 
 // ─── Phase 68: Liquidity Intelligence Types ─────────────────────────────────
 
@@ -517,25 +518,19 @@ export function generateEmergencyLiquidationPlan(
 // ─── Persistence ────────────────────────────────────────────────────────────
 
 export function saveLiquidityData(data: Record<string, LiquidityScoreDetail>): void {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch { /* quota */ }
+  store.set(STORAGE_KEY, data);
 }
 
 export function loadLiquidityData(): Record<string, LiquidityScoreDetail> {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch { return {}; }
+  return store.get<Record<string, LiquidityScoreDetail>>(STORAGE_KEY, {});
 }
 
 export function saveLiquiditySettings(settings: LiquiditySettings): void {
-  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch { /* quota */ }
+  store.set(SETTINGS_KEY, settings);
 }
 
 export function loadLiquiditySettings(): LiquiditySettings {
-  try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    return raw ? JSON.parse(raw) : { emergencyTargetAmount: 5000, emergencyTargetDays: 7 };
-  } catch { return { emergencyTargetAmount: 5000, emergencyTargetDays: 7 }; }
+  return store.get<LiquiditySettings>(SETTINGS_KEY, { emergencyTargetAmount: 5000, emergencyTargetDays: 7 });
 }
 
 // ─── Batch Operations ───────────────────────────────────────────────────────

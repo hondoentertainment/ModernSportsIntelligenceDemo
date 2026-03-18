@@ -1,4 +1,5 @@
 import { CardInventory, Sport, League } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -666,25 +667,14 @@ export function executeImport(
 // ---- Import History ----
 
 export function getImportHistory(): ImportHistory {
-  try {
-    const raw = localStorage.getItem(IMPORT_HISTORY_KEY);
-    if (!raw) return { records: [] };
-    return JSON.parse(raw) as ImportHistory;
-  } catch {
-    return { records: [] };
-  }
+  return store.get<ImportHistory>(IMPORT_HISTORY_KEY, { records: [] });
 }
 
 export function saveImportHistory(history: ImportHistory): void {
-  try {
-    // Keep last 100 records
-    const trimmed: ImportHistory = {
-      records: history.records.slice(-100),
-    };
-    localStorage.setItem(IMPORT_HISTORY_KEY, JSON.stringify(trimmed));
-  } catch {
-    // quota exceeded — silent
-  }
+  const trimmed: ImportHistory = {
+    records: history.records.slice(-100),
+  };
+  store.set(IMPORT_HISTORY_KEY, trimmed);
 }
 
 // ---- Export Collection ----

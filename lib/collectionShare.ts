@@ -1,4 +1,5 @@
 import { CardInventory } from '../types';
+import { store } from './dal/syncStore';
 
 export interface ShareableCollection {
   id: string;
@@ -99,21 +100,16 @@ function saveCollection(collection: ShareableCollection): void {
   const idx = existing.findIndex(c => c.id === collection.id);
   if (idx >= 0) existing[idx] = collection;
   else existing.push(collection);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+  store.set(STORAGE_KEY, existing);
 }
 
 export function getSharedCollections(): ShareableCollection[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+  return store.get<ShareableCollection[]>(STORAGE_KEY, []);
 }
 
 export function deleteSharedCollection(id: string): void {
   const collections = getSharedCollections().filter(c => c.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
+  store.set(STORAGE_KEY, collections);
 }
 
 /**

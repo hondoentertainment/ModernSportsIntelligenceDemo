@@ -96,9 +96,7 @@ function _seededRange(seed: number, offset: number, min: number, max: number): n
 
 function loadData<T>(key: string): T | null {
   try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
+    return store.get(`${STORAGE_KEY}_${key}`, null);
   } catch {
     return null;
   }
@@ -106,7 +104,7 @@ function loadData<T>(key: string): T | null {
 
 function saveData<T>(key: string, data: T): void {
   try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
+    store.set(`${STORAGE_KEY}_${key}`, data);
   } catch {
     // quota exceeded
   }
@@ -578,6 +576,7 @@ export function getStatusColor(status: GameStatus): { text: string; bg: string; 
   return colors[status];
 }
 
+import { store } from './dal/syncStore';
 export function getRecommendationConfig(rec: AlertRecommendation): { label: string; text: string; bg: string; border: string } {
   const map: Record<AlertRecommendation, { label: string; text: string; bg: string; border: string }> = {
     buy_before: { label: 'BUY BEFORE', text: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },

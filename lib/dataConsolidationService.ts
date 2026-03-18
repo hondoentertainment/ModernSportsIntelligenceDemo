@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ── Phase 88: Unified Market Data Consolidation Engine ──────────────────────
 
 // ── Interfaces ──────────────────────────────────────────────────────────────────
@@ -368,18 +370,11 @@ function buildQualityReports(): DataQualityReport[] {
 // ── localStorage persistence ────────────────────────────────────────────────────
 
 function saveToStorage(key: string, data: unknown): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch { /* quota exceeded, ignore */ }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 function loadFromStorage<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
+  return store.get<T | null>(`${STORAGE_KEY}_${key}`, null);
 }
 
 // ── Public API ──────────────────────────────────────────────────────────────────

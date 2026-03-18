@@ -1,4 +1,5 @@
 import { CardInventory } from '../types';
+import { store } from './dal/syncStore';
 
 // ── Types ────────────────────────────────────────────────────────────────────────
 
@@ -531,15 +532,11 @@ export function getInternationalAlerts(inventory: CardInventory[]): Internationa
 // ── localStorage persistence ─────────────────────────────────────────────────────
 
 export function getCurrencyPreferences(): CurrencyPreferences {
-  try {
-    const stored = localStorage.getItem(STORAGE_PREFS_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch { /* ignore */ }
-  return { selectedCurrency: 'USD', lastUpdated: new Date().toISOString() };
+  return store.get<CurrencyPreferences>(STORAGE_PREFS_KEY, { selectedCurrency: 'USD', lastUpdated: new Date().toISOString() });
 }
 
 export function saveCurrencyPreferences(prefs: CurrencyPreferences): void {
-  localStorage.setItem(STORAGE_PREFS_KEY, JSON.stringify(prefs));
+  store.set(STORAGE_PREFS_KEY, prefs);
 }
 
 export function setSelectedCurrency(code: CurrencyCode): void {
@@ -554,25 +551,19 @@ export function getSelectedCurrency(): CurrencyCode {
 }
 
 export function cacheExchangeRates(rates: ExchangeRate[]): void {
-  try {
-    localStorage.setItem(STORAGE_RATES_KEY, JSON.stringify({
-      rates,
-      cachedAt: new Date().toISOString(),
-    }));
-  } catch { /* ignore */ }
+  store.set(STORAGE_RATES_KEY, {
+    rates,
+    cachedAt: new Date().toISOString(),
+  });
 }
 
 export function getCachedExchangeRates(): { rates: ExchangeRate[]; cachedAt: string } | null {
-  try {
-    const stored = localStorage.getItem(STORAGE_RATES_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch { /* ignore */ }
-  return null;
+  return store.get<{ rates: ExchangeRate[]; cachedAt: string } | null>(STORAGE_RATES_KEY, null);
 }
 
 /**
  * Clear all currency-related cached data.
  */
 export function clearCurrencyCache(): void {
-  localStorage.removeItem(STORAGE_RATES_KEY);
+  store.remove(STORAGE_RATES_KEY);
 }

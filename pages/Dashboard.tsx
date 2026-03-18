@@ -1,4 +1,5 @@
 
+import { store } from '../lib/dal/syncStore';
 import React, {
   Suspense,
   useMemo,
@@ -133,8 +134,8 @@ const Dashboard: React.FC = () => {
   const [userSettings, _setUserSettings] = useState<UserSettings | null>(() => {
   const [userSettings, setUserSettings] = useState<any>(() => {
     try {
-      const saved = localStorage.getItem('msi_user_settings');
-      return saved ? JSON.parse(saved) : null;
+      const saved = store.get<any>('msi_user_settings', null);
+      return saved;
     } catch {
       return null;
     }
@@ -149,7 +150,7 @@ const Dashboard: React.FC = () => {
 
   // Morning Briefing Logic
   useEffect(() => {
-    const lastSeen = localStorage.getItem('lastMorningBriefing');
+    const lastSeen = store.get<string>('lastMorningBriefing', '');
     const today = new Date().toDateString();
 
     // Show if we haven't seen it today and have inventory
@@ -157,7 +158,7 @@ const Dashboard: React.FC = () => {
       // Delay slightly for effect
       const timer = setTimeout(() => {
         setShowBriefing(true);
-        localStorage.setItem('lastMorningBriefing', today);
+        store.set('lastMorningBriefing', today);
       }, 1000);
       return () => clearTimeout(timer);
     }

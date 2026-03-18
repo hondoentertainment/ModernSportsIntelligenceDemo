@@ -1,6 +1,8 @@
 // Community Trading Floor Service
 // Peer-to-peer trading hub for sports card collectors with reputation, offers, and social features
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type PostType = 'want' | 'have' | 'trade';
@@ -77,16 +79,11 @@ export interface TradeActivity {
 const STORAGE_PREFIX = 'msi_community_trading';
 
 function loadFromStorage<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_${key}`);
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
+  return store.get<T | null>(`${STORAGE_PREFIX}_${key}`, null);
 }
 
 function saveToStorage<T>(key: string, data: T): void {
-  localStorage.setItem(`${STORAGE_PREFIX}_${key}`, JSON.stringify(data));
+  store.set(`${STORAGE_PREFIX}_${key}`, data);
 }
 
 // ---- Mock Data ----

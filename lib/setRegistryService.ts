@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -440,21 +441,11 @@ function getSetCards(set: CardSet): SetCard[] {
 // ---- localStorage helpers ----
 
 export function loadEnrollments(): SetEnrollment[] {
-  try {
-    const raw = localStorage.getItem(ENROLLMENT_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as SetEnrollment[];
-  } catch {
-    return [];
-  }
+  return store.get<SetEnrollment[]>(ENROLLMENT_KEY, []);
 }
 
 export function saveEnrollments(enrollments: SetEnrollment[]): void {
-  try {
-    localStorage.setItem(ENROLLMENT_KEY, JSON.stringify(enrollments));
-  } catch {
-    // quota exceeded
-  }
+  store.set(ENROLLMENT_KEY, enrollments);
 }
 
 function saveEnrollment(enrollment: SetEnrollment): void {

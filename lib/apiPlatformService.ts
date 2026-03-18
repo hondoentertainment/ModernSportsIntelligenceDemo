@@ -1,6 +1,8 @@
 // Phase 91: MSI API & Data Export Platform Service
 // Bloomberg API/Data License equivalent for sports card analytics
 
+import { store } from './dal/syncStore';
+
 const STORAGE_KEYS = {
   apiKeys: 'msi_api_keys',
   webhooks: 'msi_webhooks',
@@ -90,20 +92,11 @@ function maskKey(key: string): string {
 }
 
 function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
+  return store.get<T>(key, fallback);
 }
 
 function saveToStorage<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch {
-    // quota exceeded — silently fail
-  }
+  store.set(key, data);
 }
 
 // ---- Seed Data ----

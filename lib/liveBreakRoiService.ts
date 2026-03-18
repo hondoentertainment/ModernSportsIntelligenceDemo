@@ -2,6 +2,8 @@
 // Live Break Integration & ROI Tracker – Service Layer
 // ─────────────────────────────────────────────────────────────
 
+import { store } from './dal/syncStore';
+
 // ── Types ────────────────────────────────────────────────────
 
 export type BreakType =
@@ -131,20 +133,11 @@ export interface ProductEV {
 const STORAGE_PREFIX = 'msi_live_break';
 
 function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_${key}`);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
+  return store.get<T>(`${STORAGE_PREFIX}_${key}`, fallback);
 }
 
 function saveToStorage<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_PREFIX}_${key}`, JSON.stringify(data));
-  } catch {
-    // Storage full or unavailable – silently degrade
-  }
+  store.set(`${STORAGE_PREFIX}_${key}`, data);
 }
 
 // ── Mock Data: Live Breaks ───────────────────────────────────

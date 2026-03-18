@@ -6,6 +6,7 @@ import { insertAgentOutcome, insertExecutionApproval, upsertAgentRecommendation,
 import { ExecutionService, OrderIntent } from "./executionService";
 import { ensureMockExecutionAdapter } from "./phaseEndpoints";
 import { logger } from "./logger";
+import { store } from "./dal/syncStore";
 
 const STORAGE_KEY = 'msi_autopilot_config';
 const ACTIONS_KEY = 'msi_autonomous_actions';
@@ -52,31 +53,15 @@ function mapActionToRecommendationStatus(action: AutonomousAction): 'approved' |
 
 export class AutonomousExecutionService {
     static getConfig(): AutoPilotConfig {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            try {
-                return JSON.parse(saved);
-            } catch (e) {
-                logger.error("Failed to parse autopilot config", e);
-            }
-        }
-        return DEFAULT_CONFIG;
+        return store.get<AutoPilotConfig>(STORAGE_KEY, DEFAULT_CONFIG);
     }
 
     static saveConfig(config: AutoPilotConfig) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+        store.set(STORAGE_KEY, config);
     }
 
     static getActions(): AutonomousAction[] {
-        const saved = localStorage.getItem(ACTIONS_KEY);
-        if (saved) {
-            try {
-                return JSON.parse(saved);
-            } catch (e) {
-                logger.error("Failed to parse autonomous actions", e);
-            }
-        }
-        return [];
+        return store.get<AutonomousAction[]>(ACTIONS_KEY, []);
     }
 
     static getTodayActionCount(actions: AutonomousAction[] = this.getActions()): number {
@@ -229,7 +214,7 @@ export class AutonomousExecutionService {
         }
 
         const updated = [action, ...actions].slice(0, 50);
-        localStorage.setItem(ACTIONS_KEY, JSON.stringify(updated));
+        store.set(ACTIONS_KEY, updated);
 
         await logAuditEvent({
             category: 'autonomy',
@@ -369,7 +354,7 @@ export class AutonomousExecutionService {
         }
 
         actions = actions.map(action => action.id === updatedAction?.id ? updatedAction! : action);
-        localStorage.setItem(ACTIONS_KEY, JSON.stringify(actions));
+        store.set(ACTIONS_KEY, actions);
 
         if (updatedAction?.recommendationId) {
             await upsertAgentRecommendation({

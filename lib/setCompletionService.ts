@@ -2,6 +2,8 @@
 // Tracks card set completion progress, missing cards, source recommendations,
 // and cost-to-complete analytics for sports card collectors.
 
+import { store } from './dal/syncStore';
+
 const STORAGE_PREFIX = 'msi_set_completion';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -387,15 +389,11 @@ export function getRarityLabel(rarity: MissingCard['rarity']): string {
 // ─── Storage ────────────────────────────────────────────────────────────────
 
 function loadSets(): CardSet[] {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_sets`);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-  return [...MOCK_SETS];
+  return store.get<CardSet[]>(`${STORAGE_PREFIX}_sets`, [...MOCK_SETS]);
 }
 
 function saveSets(sets: CardSet[]): void {
-  localStorage.setItem(`${STORAGE_PREFIX}_sets`, JSON.stringify(sets));
+  store.set(`${STORAGE_PREFIX}_sets`, sets);
 }
 
 // ─── Core Functions ─────────────────────────────────────────────────────────

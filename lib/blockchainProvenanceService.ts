@@ -1,6 +1,8 @@
 // Phase 148: Blockchain Provenance & Digital Card Passport
 // Verifiable ownership history and authenticity chains for physical and digital cards
 
+import { store } from './dal/syncStore';
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export type BlockchainNetwork = 'ethereum' | 'polygon' | 'solana' | 'cardano' | 'immutable_x' | 'flow';
@@ -151,15 +153,11 @@ export interface ChainOfCustody {
 const STORAGE_KEY = 'msi_blockchain_provenance';
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch { return null; }
+  return store.get<T | null>(`${STORAGE_KEY}_${key}`, null);
 }
 
 function saveData<T>(key: string, data: T): void {
-  try { localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data)); } catch { /* quota */ }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ── Mock Data ────────────────────────────────────────────────────────────────

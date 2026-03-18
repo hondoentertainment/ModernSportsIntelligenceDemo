@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Cross-Platform Arbitrage Alerts Service
 // Real-time cross-platform price spread detection, fee-adjusted profit calculation,
 // and arbitrage opportunity tracking across major sports card marketplaces.
@@ -95,20 +97,11 @@ export interface ArbitrageAlert {
 const STORAGE_PREFIX = 'msi_arbitrage';
 
 function loadFromStorage<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_PREFIX}_${key}`);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
+  return store.get<T>(`${STORAGE_PREFIX}_${key}`, fallback);
 }
 
 function saveToStorage<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_PREFIX}_${key}`, JSON.stringify(data));
-  } catch {
-    // Storage full or unavailable — silently ignore
-  }
+  store.set(`${STORAGE_PREFIX}_${key}`, data);
 }
 
 // ── Platform Metadata ─────────────────────────────────────────────────────────

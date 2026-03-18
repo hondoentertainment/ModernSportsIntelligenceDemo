@@ -4,6 +4,7 @@
  */
 
 import { logger } from './logger';
+import { store } from './dal/syncStore';
 import { CardInventory, TargetWatchlist } from '../types.ts';
 import {
   syncPortfolio,
@@ -45,13 +46,8 @@ const CONFIG_KEY = 'cardx_sync_config';
  * Get sync configuration from localStorage
  */
 export function getSyncConfig(): SyncSchedulerConfig {
-    try {
-        const saved = localStorage.getItem(CONFIG_KEY);
-        return saved ? { ...DEFAULT_CONFIG, ...JSON.parse(saved) } : DEFAULT_CONFIG;
-    } catch (e) {
-        logger.warn('Failed to parse sync config:', e);
-        return DEFAULT_CONFIG;
-    }
+    const saved = store.get<Partial<SyncSchedulerConfig> | null>(CONFIG_KEY, null);
+    return saved ? { ...DEFAULT_CONFIG, ...saved } : DEFAULT_CONFIG;
 }
 
 /**
@@ -60,20 +56,16 @@ export function getSyncConfig(): SyncSchedulerConfig {
 export function setSyncConfig(config: Partial<SyncSchedulerConfig>): void {
     const current = getSyncConfig();
     const updated = { ...current, ...config };
-    localStorage.setItem(CONFIG_KEY, JSON.stringify(updated));
+    store.set(CONFIG_KEY, updated);
 }
 
 /**
  * Get current sync schedule
  */
 export function getSyncSchedule(): SyncSchedule {
-    try {
-        const saved = localStorage.getItem(SCHEDULE_KEY);
-        if (saved) {
-            return JSON.parse(saved);
-        }
-    } catch (e) {
-        logger.warn('Failed to parse sync schedule:', e);
+    const saved = store.get<SyncSchedule | null>(SCHEDULE_KEY, null);
+    if (saved) {
+        return saved;
     }
 
     // Calculate from last sync
@@ -92,7 +84,7 @@ export function getSyncSchedule(): SyncSchedule {
  * Save sync schedule
  */
 function setSyncSchedule(schedule: SyncSchedule): void {
-    localStorage.setItem(SCHEDULE_KEY, JSON.stringify(schedule));
+    store.set(SCHEDULE_KEY, schedule);
 }
 
 /**

@@ -165,9 +165,7 @@ const STORAGE_KEY = 'msi_vending_machine';
 
 function loadData<T>(key: string): T | null {
   try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
+    return store.get(`${STORAGE_KEY}_${key}`, null);
   } catch {
     return null;
   }
@@ -175,7 +173,7 @@ function loadData<T>(key: string): T | null {
 
 function saveData<T>(key: string, data: T): void {
   try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
+    store.set(`${STORAGE_KEY}_${key}`, data);
   } catch {
     // Storage full or unavailable
   }
@@ -624,6 +622,7 @@ export function calculateExpectedValue(packId: string): { ev: number; price: num
   };
 }
 
+import { store } from './dal/syncStore';
 export function getStreakBonus(): { currentStreak: number; nextBonusAt: number; bonusMultiplier: number; description: string } {
   const profile = getCollectorProfile();
   const streakBonuses = [

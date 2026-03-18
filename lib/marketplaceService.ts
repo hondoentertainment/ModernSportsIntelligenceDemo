@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Phase 40: Marketplace and Network Effects
 
 const REPUTATION_KEY = 'msi_market_reputation';
@@ -48,16 +50,14 @@ export function verifyListing(listingId: string, authenticityConfidence: number,
 }
 
 export function saveReputation(profile: ReputationProfile): void {
-    const raw = localStorage.getItem(REPUTATION_KEY);
-    const all = raw ? JSON.parse(raw) : {};
+    const all = store.get<Record<string, ReputationProfile>>(REPUTATION_KEY, {});
     all[profile.userId] = profile;
-    localStorage.setItem(REPUTATION_KEY, JSON.stringify(all));
+    store.set(REPUTATION_KEY, all);
 }
 
 export function getReputation(userId: string): ReputationProfile | null {
     try {
-        const raw = localStorage.getItem(REPUTATION_KEY);
-        const all = raw ? JSON.parse(raw) : {};
+        const all = store.get<Record<string, ReputationProfile>>(REPUTATION_KEY, {});
         return all[userId] || null;
     } catch {
         return null;
@@ -65,16 +65,14 @@ export function getReputation(userId: string): ReputationProfile | null {
 }
 
 export function addReferralEdge(fromUserId: string, toUserId: string): void {
-    const raw = localStorage.getItem(REFERRAL_KEY);
-    const graph: Record<string, string[]> = raw ? JSON.parse(raw) : {};
+    const graph = store.get<Record<string, string[]>>(REFERRAL_KEY, {});
     const edges = new Set(graph[fromUserId] || []);
     edges.add(toUserId);
     graph[fromUserId] = [...edges];
-    localStorage.setItem(REFERRAL_KEY, JSON.stringify(graph));
+    store.set(REFERRAL_KEY, graph);
 }
 
 export function getReferralCount(userId: string): number {
-    const raw = localStorage.getItem(REFERRAL_KEY);
-    const graph: Record<string, string[]> = raw ? JSON.parse(raw) : {};
+    const graph = store.get<Record<string, string[]>>(REFERRAL_KEY, {});
     return (graph[userId] || []).length;
 }

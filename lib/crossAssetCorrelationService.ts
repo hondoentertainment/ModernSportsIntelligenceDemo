@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -700,39 +701,27 @@ export function getFullDashboard(cards: CardInventory[]): CorrelationDashboard {
 // ---- Persistence ----
 
 export function saveCorrelationSettings(settings: { preferredWindow: TimeWindow; selectedAssets: string[] }): void {
-  try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-  } catch { /* noop */ }
+  store.set(SETTINGS_KEY, settings);
 }
 
 export function loadCorrelationSettings(): { preferredWindow: TimeWindow; selectedAssets: string[] } {
-  try {
-    const data = localStorage.getItem(SETTINGS_KEY);
-    if (data) return JSON.parse(data);
-  } catch { /* noop */ }
-  return { preferredWindow: 90, selectedAssets: ['sp500', 'bitcoin', 'gold'] };
+  return store.get<{ preferredWindow: TimeWindow; selectedAssets: string[] }>(SETTINGS_KEY, { preferredWindow: 90, selectedAssets: ['sp500', 'bitcoin', 'gold'] });
 }
 
 export function saveDashboardSnapshot(dashboard: CorrelationDashboard): void {
-  try {
-    const snapshots = loadDashboardSnapshots();
-    snapshots.unshift({
-      timestamp: new Date().toISOString(),
-      score: dashboard.report.score,
-      beta: dashboard.report.portfolioBeta,
-      regime: dashboard.report.currentRegime,
-    });
-    // keep last 30
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshots.slice(0, 30)));
-  } catch { /* noop */ }
+  const snapshots = loadDashboardSnapshots();
+  snapshots.unshift({
+    timestamp: new Date().toISOString(),
+    score: dashboard.report.score,
+    beta: dashboard.report.portfolioBeta,
+    regime: dashboard.report.currentRegime,
+  });
+  // keep last 30
+  store.set(STORAGE_KEY, snapshots.slice(0, 30));
 }
 
 export function loadDashboardSnapshots(): { timestamp: string; score: number; beta: number; regime: MarketRegime }[] {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (data) return JSON.parse(data);
-  } catch { /* noop */ }
-  return [];
+  return store.get<{ timestamp: string; score: number; beta: number; regime: MarketRegime }[]>(STORAGE_KEY, []);
 }
 
 // ========================================================================

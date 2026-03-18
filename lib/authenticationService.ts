@@ -1,4 +1,5 @@
 import { CardInventory } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -104,22 +105,12 @@ interface AuthHistoryEntry {
 }
 
 function loadAuthHistory(): AuthHistoryEntry[] {
-  try {
-    const raw = localStorage.getItem(AUTH_HISTORY_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as AuthHistoryEntry[];
-  } catch {
-    return [];
-  }
+  return store.get<AuthHistoryEntry[]>(AUTH_HISTORY_KEY, []);
 }
 
 function saveAuthHistory(entries: AuthHistoryEntry[]): void {
-  try {
-    const trimmed = entries.slice(-200);
-    localStorage.setItem(AUTH_HISTORY_KEY, JSON.stringify(trimmed));
-  } catch {
-    // quota exceeded
-  }
+  const trimmed = entries.slice(-200);
+  store.set(AUTH_HISTORY_KEY, trimmed);
 }
 
 // ---- Helper: get era key ----

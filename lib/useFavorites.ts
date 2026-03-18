@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { logger } from './logger';
 import { CardInventory } from '../types';
+import { store } from './dal/syncStore';
 
 const STORAGE_KEY = 'msi_card_favorites';
 
@@ -16,18 +17,12 @@ export interface CardFavorite {
 
 export function useFavorites() {
     const [favorites, setFavorites] = useState<CardFavorite[]>(() => {
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            return saved ? JSON.parse(saved) : [];
-        } catch (e) {
-            logger.warn('Error loading card favorites:', e);
-            return [];
-        }
+        return store.get<CardFavorite[]>(STORAGE_KEY, []);
     });
 
     // Persist to localStorage
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+        store.set(STORAGE_KEY, favorites);
     }, [favorites]);
 
     const addFavorite = useCallback((card: CardInventory) => {

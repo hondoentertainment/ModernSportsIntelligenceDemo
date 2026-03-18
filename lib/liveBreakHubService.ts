@@ -1,6 +1,8 @@
 // Phase 145: Live Event & Break Streaming Hub
 // Real-time hub for live card breaks, auction events, and streaming sessions across platforms
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type Platform = 'whatnot' | 'loupe' | 'youtube' | 'twitch' | 'ebay_live' | 'fanatics_live' | 'drip' | 'steel_city';
@@ -128,21 +130,11 @@ const STORAGE_KEY = 'msi_live_break_hub';
 // ---- localStorage helpers ----
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  return store.has(`${STORAGE_KEY}_${key}`) ? store.get<T>(`${STORAGE_KEY}_${key}`, null as unknown as T) : null;
 }
 
 function saveData<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // quota exceeded
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ---- Data ----

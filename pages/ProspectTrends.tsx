@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { store } from '../lib/dal/syncStore';
 import {
   TrendingUp,
   Activity,
@@ -38,22 +39,17 @@ const ProspectTrends: React.FC = () => {
     const data = await getRealTimeLeagueTrends(leagueToFetch);
     if (data && data.length > 0) {
       setProspects(data.map((d, i) => ({ ...d, id: d.name.replace(/\s+/g, '-').toLowerCase() + '-' + i, league: d.league as MiLBProspect['league'] })));
-      localStorage.setItem(`cardx_trends_${leagueToFetch}`, JSON.stringify(data));
-      localStorage.setItem(`cardx_trends_last_updated_${leagueToFetch}`, new Date().toISOString());
+      store.set(`cardx_trends_${leagueToFetch}`, data);
+      store.set(`cardx_trends_last_updated_${leagueToFetch}`, new Date().toISOString());
     }
     setIsLoading(false);
   };
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(`cardx_trends_${activeLeague}`);
-      if (saved) {
-        setProspects(JSON.parse(saved));
-      } else {
-        fetchTrends();
-      }
-    } catch (e) {
-      logger.warn('Failed to parse prospect trends', e);
+    const saved = store.get<MiLBProspect[]>(`cardx_trends_${activeLeague}`, []);
+    if (saved.length > 0) {
+      setProspects(saved);
+    } else {
       fetchTrends();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,8 +89,8 @@ const ProspectTrends: React.FC = () => {
           <div className="text-right hidden md:block">
             <p className="text-[10px] font-black text-brand-muted uppercase tracking-tighter">Last Synced ({activeLeague})</p>
             <p className="text-xs font-bold text-white">
-              {localStorage.getItem(`cardx_trends_last_updated_${activeLeague}`)
-                ? new Date(localStorage.getItem(`cardx_trends_last_updated_${activeLeague}`)!).toLocaleTimeString()
+              {store.get<string>(`cardx_trends_last_updated_${activeLeague}`, '')
+                ? new Date(store.get<string>(`cardx_trends_last_updated_${activeLeague}`, '')).toLocaleTimeString()
                 : 'Never'}
             </p>
           </div>

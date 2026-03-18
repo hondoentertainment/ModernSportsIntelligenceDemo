@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export type PostType = 'pickup' | 'pull' | 'collection_highlight' | 'grading_result' | 'milestone';
@@ -65,16 +67,11 @@ const PROFILES_KEY = 'msi_social_feed_profiles';
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function readJson<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
+  return store.get<T>(key, fallback);
 }
 
 function writeJson<T>(key: string, value: T): void {
-  localStorage.setItem(key, JSON.stringify(value));
+  store.set(key, value);
 }
 
 function generateId(): string {
@@ -219,16 +216,16 @@ const MOCK_NOTIFICATIONS: Notification[] = [
 // ─── Service functions ───────────────────────────────────────────────────────
 
 function ensureSeeded(): void {
-  if (!localStorage.getItem(POSTS_KEY)) {
+  if (!store.has(POSTS_KEY)) {
     writeJson(POSTS_KEY, MOCK_POSTS);
   }
-  if (!localStorage.getItem(PROFILES_KEY)) {
+  if (!store.has(PROFILES_KEY)) {
     writeJson(PROFILES_KEY, MOCK_PROFILES);
   }
-  if (!localStorage.getItem(NOTIFICATIONS_KEY)) {
+  if (!store.has(NOTIFICATIONS_KEY)) {
     writeJson(NOTIFICATIONS_KEY, MOCK_NOTIFICATIONS);
   }
-  if (!localStorage.getItem(FOLLOWING_KEY)) {
+  if (!store.has(FOLLOWING_KEY)) {
     writeJson(FOLLOWING_KEY, ['user-1', 'user-3']);
   }
 }

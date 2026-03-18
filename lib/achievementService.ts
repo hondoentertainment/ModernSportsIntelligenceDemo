@@ -1,4 +1,5 @@
 import { CardInventory, Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -562,11 +563,7 @@ export function getRecentlyUnlocked(inventory: CardInventory[]): Achievement[] {
 export function markAsSeen(achievementId: string): void {
   const seenIds = getSeenIds();
   seenIds.add(achievementId);
-  try {
-    localStorage.setItem(SEEN_KEY, JSON.stringify([...seenIds]));
-  } catch {
-    // localStorage unavailable
-  }
+  store.set(SEEN_KEY, [...seenIds]);
 }
 
 export function calculateLevel(totalPoints: number): { level: number; levelProgress: number } {
@@ -587,30 +584,18 @@ export function calculateLevel(totalPoints: number): { level: number; levelProgr
 // ---- Helpers ----
 
 function getSeenIds(): Set<string> {
-  try {
-    const raw = localStorage.getItem(SEEN_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return new Set(parsed);
-    }
-  } catch {
-    // ignore
-  }
-  return new Set();
+  const parsed = store.get<string[]>(SEEN_KEY, []);
+  return new Set(parsed);
 }
 
 function getUnlockTimestamp(achievementId: string): string {
   const key = `achievement_unlock_${achievementId}`;
-  try {
-    const stored = localStorage.getItem(key);
-    if (stored) return stored;
-    // First time we see this as unlocked — record now
-    const now = new Date().toISOString();
-    localStorage.setItem(key, now);
-    return now;
-  } catch {
-    return new Date().toISOString();
-  }
+  const stored = store.get<string | null>(key, null);
+  if (stored) return stored;
+  // First time we see this as unlocked — record now
+  const now = new Date().toISOString();
+  store.set(key, now);
+  return now;
 }
 
 export const TIER_COLORS: Record<AchievementTier, string> = {

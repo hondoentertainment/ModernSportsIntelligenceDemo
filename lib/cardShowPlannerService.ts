@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type ShowType = 'local' | 'regional' | 'national' | 'convention';
@@ -327,16 +329,11 @@ export function getShowsByState(state: string): CardShow[] {
 // ---- Plan Functions ----
 
 function loadPlans(): ShowPlan[] {
-  try {
-    const raw = localStorage.getItem(PLANS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return store.get<ShowPlan[]>(PLANS_KEY, []);
 }
 
 function savePlans(plans: ShowPlan[]): void {
-  localStorage.setItem(PLANS_KEY, JSON.stringify(plans));
+  store.set(PLANS_KEY, plans);
 }
 
 export function getShowPlans(): ShowPlan[] {
@@ -372,16 +369,11 @@ export function addExpense(planId: string, expense: ExpenseItem): ShowPlan | und
 // ---- Post-Show Report Functions ----
 
 function loadReports(): PostShowReport[] {
-  try {
-    const raw = localStorage.getItem(REPORTS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return store.get<PostShowReport[]>(REPORTS_KEY, []);
 }
 
 function saveReports(reports: PostShowReport[]): void {
-  localStorage.setItem(REPORTS_KEY, JSON.stringify(reports));
+  store.set(REPORTS_KEY, reports);
 }
 
 export function getPostShowReports(): PostShowReport[] {

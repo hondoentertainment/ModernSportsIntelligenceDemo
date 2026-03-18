@@ -1,6 +1,7 @@
 import { logger } from './logger';
 import { useState, useEffect, useCallback } from 'react';
 import { Alert, AlertType } from '../types.ts';
+import { store } from './dal/syncStore';
 
 const STORAGE_KEY = 'cardx_alerts';
 const MAX_ALERTS = 50; // Keep last 50 alerts
@@ -10,23 +11,16 @@ const MAX_ALERTS = 50; // Keep last 50 alerts
  */
 export function useAlerts() {
     const [alerts, setAlerts] = useState<Alert[]>(() => {
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed)) {
-                    return parsed;
-                }
-            }
-        } catch (e) {
-            logger.warn('Failed to parse alerts from localStorage', e);
+        const parsed = store.get<Alert[]>(STORAGE_KEY, []);
+        if (Array.isArray(parsed)) {
+            return parsed;
         }
         return [];
     });
 
     // Persist changes to localStorage
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(alerts.slice(0, MAX_ALERTS)));
+        store.set(STORAGE_KEY, alerts.slice(0, MAX_ALERTS));
     }, [alerts]);
 
     const addAlert = useCallback((

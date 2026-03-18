@@ -19,6 +19,8 @@ export interface ImageSource {
 
 export type ImageSourceMap = Record<string, ImageSource>;
 
+import { store } from './dal/syncStore';
+
 const LOCALSTORAGE_KEY = 'msi_image_sources';
 
 /**
@@ -398,16 +400,11 @@ function normalizeUrl(url: string): string {
 }
 
 function getUserSources(): ImageSourceMap {
-  try {
-    const raw = localStorage.getItem(LOCALSTORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
+  return store.get<ImageSourceMap>(LOCALSTORAGE_KEY, {});
 }
 
 function saveUserSources(sources: ImageSourceMap): void {
-  localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(sources));
+  store.set(LOCALSTORAGE_KEY, sources);
 }
 
 /**

@@ -1,3 +1,4 @@
+import { store } from './dal/syncStore';
 import { NegotiationSession } from '../types';
 
 const STORAGE_KEY = 'msi-negotiation-history';
@@ -55,18 +56,13 @@ export function recordNegotiation(
   };
 
   history.push(record);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  store.set(STORAGE_KEY, history);
   return record;
 }
 
 /** Get negotiation history */
 export function getHistory(): NegotiationRecord[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+  return store.get<NegotiationRecord[]>(STORAGE_KEY, []);
 }
 
 /** Calculate aggregate negotiation statistics */

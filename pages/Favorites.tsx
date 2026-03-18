@@ -11,17 +11,12 @@ import WatchlistPriceCard from '../components/WatchlistPriceCard.tsx';
 import AddTargetModal from '../components/AddTargetModal.tsx';
 import { useToast } from '../contexts/ToastContext.tsx';
 import { logger } from '../lib/logger';
+import { store } from '../lib/dal/syncStore';
 
 const Favorites: React.FC = () => {
   // MLB Player favorites (existing)
   const [playerFavorites, setPlayerFavorites] = useState<any[]>(() => {
-    try {
-      const saved = localStorage.getItem('cardx_favorites');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      console.warn("Error parsing player favorites", e);
-      return [];
-    }
+    return store.get<any[]>('cardx_favorites', []);
   });
 
   const { addToast } = useToast();
@@ -46,7 +41,7 @@ const Favorites: React.FC = () => {
   const [syncProgress, setSyncProgress] = useState({ current: 0, total: 0 });
 
   useEffect(() => {
-    localStorage.setItem('cardx_favorites', JSON.stringify(playerFavorites));
+    store.set('cardx_favorites', playerFavorites);
   }, [playerFavorites]);
 
   const handleSearch = async () => {

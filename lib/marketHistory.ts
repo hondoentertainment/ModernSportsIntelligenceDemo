@@ -1,4 +1,5 @@
 import { logger } from './logger';
+import { store } from './dal/syncStore';
 import { PortfolioSnapshot } from './marketSync.ts';
 
 const HISTORY_KEY = 'cardx_sync_history';
@@ -18,7 +19,7 @@ export interface MarketDelta {
  */
 export function getHistoricalDelta(periodHours: number = 24): MarketDelta | null {
     try {
-        const history: PortfolioSnapshot[] = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        const history: PortfolioSnapshot[] = store.get<PortfolioSnapshot[]>(HISTORY_KEY, []);
 
         if (history.length < 2) return null;
 

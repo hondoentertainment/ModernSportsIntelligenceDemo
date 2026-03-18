@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type GradingCompany = 'PSA' | 'BGS' | 'SGC' | 'CGC';
@@ -81,21 +83,16 @@ const MOCK_REPORTS: TurnaroundReport[] = [
 // ---- Storage helpers ----
 
 function loadReports(): TurnaroundReport[] {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (data) {
-      return JSON.parse(data) as TurnaroundReport[];
-    }
-  } catch {
-    // ignore parse errors
+  if (store.has(STORAGE_KEY)) {
+    return store.get<TurnaroundReport[]>(STORAGE_KEY, []);
   }
   const initial = [...MOCK_REPORTS];
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+  store.set(STORAGE_KEY, initial);
   return initial;
 }
 
 function saveReports(reports: TurnaroundReport[]): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(reports));
+  store.set(STORAGE_KEY, reports);
 }
 
 // ---- Utility functions ----

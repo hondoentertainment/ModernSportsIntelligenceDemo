@@ -475,9 +475,7 @@ interface StoredPortfolioItem {
 
 function loadPortfolio(): StoredPortfolioItem[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as StoredPortfolioItem[];
+    return store.get(STORAGE_KEY, []);
   } catch {
     return [];
   }
@@ -485,7 +483,7 @@ function loadPortfolio(): StoredPortfolioItem[] {
 
 function savePortfolio(items: StoredPortfolioItem[]): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    store.set(STORAGE_KEY, items);
   } catch {
     // quota exceeded
   }
@@ -603,6 +601,7 @@ export function getSupplyLabel(s: SupplyStatus): string {
   return map[s];
 }
 
+import { store } from './dal/syncStore';
 export function getSupplyColor(s: SupplyStatus): string {
   const map: Record<SupplyStatus, string> = {
     sealed_limited: 'text-amber-400',

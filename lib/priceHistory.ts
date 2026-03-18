@@ -11,6 +11,7 @@
  */
 
 import { logger } from './logger';
+import { store } from './dal/syncStore';
 import { isDemoMode } from './supabase';
 import {
     fetchAllPriceHistory,
@@ -41,24 +42,14 @@ let _initialized = false;
  * Get all price history from localStorage (fast synchronous read)
  */
 function getAllHistory(): CardPriceHistory {
-    try {
-        const data = localStorage.getItem(STORAGE_KEY);
-        return data ? JSON.parse(data) : {};
-    } catch (e) {
-        logger.warn('Failed to parse price history', e);
-        return {};
-    }
+    return store.get<CardPriceHistory>(STORAGE_KEY, {});
 }
 
 /**
  * Save all price history to localStorage
  */
 function saveAllHistory(history: CardPriceHistory): void {
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-    } catch (e) {
-        logger.warn('Failed to save price history', e);
-    }
+    store.set(STORAGE_KEY, history);
 }
 
 /**
@@ -311,5 +302,5 @@ export function getPortfolioNAVHistory(limit: number = 10): { name: string; val:
  * Clear all price history (for testing/reset)
  */
 export function clearPriceHistory(): void {
-    localStorage.removeItem(STORAGE_KEY);
+    store.remove(STORAGE_KEY);
 }

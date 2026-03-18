@@ -6,6 +6,7 @@
 
 import { CardInventory } from '../types';
 import { generatePriceHistory, PriceDataPoint } from './priceChartService';
+import { store } from './dal/syncStore';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -662,7 +663,7 @@ const ANNOTATIONS_KEY = 'msi_chart_annotations';
 
 export function saveAnnotations(annotations: ChartAnnotation[]): void {
   try {
-    localStorage.setItem(ANNOTATIONS_KEY, JSON.stringify(annotations));
+    store.set(ANNOTATIONS_KEY, annotations);
   } catch {
     // quota exceeded — ignore
   }
@@ -670,9 +671,7 @@ export function saveAnnotations(annotations: ChartAnnotation[]): void {
 
 export function loadAnnotations(): ChartAnnotation[] {
   try {
-    const raw = localStorage.getItem(ANNOTATIONS_KEY);
-    if (!raw) return [];
-    return JSON.parse(raw) as ChartAnnotation[];
+    return store.get(ANNOTATIONS_KEY, []);
   } catch {
     return [];
   }

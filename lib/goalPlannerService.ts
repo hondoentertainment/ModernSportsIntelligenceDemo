@@ -1,4 +1,5 @@
 import { CardInventory } from '../types';
+import { store } from './dal/syncStore';
 
 // ---- Types ----
 
@@ -141,42 +142,27 @@ function addMonths(dateStr: string, months: number): string {
 // ---- localStorage helpers ----
 
 function loadGoals(): CollectionGoal[] {
-  try {
-    const raw = localStorage.getItem(GOALS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return store.get<CollectionGoal[]>(GOALS_KEY, []);
 }
 
 function saveGoals(goals: CollectionGoal[]): void {
-  localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
+  store.set(GOALS_KEY, goals);
 }
 
 function loadMilestones(): GoalMilestone[] {
-  try {
-    const raw = localStorage.getItem(MILESTONES_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return store.get<GoalMilestone[]>(MILESTONES_KEY, []);
 }
 
 function saveMilestones(milestones: GoalMilestone[]): void {
-  localStorage.setItem(MILESTONES_KEY, JSON.stringify(milestones));
+  store.set(MILESTONES_KEY, milestones);
 }
 
 function loadSnapshots(): ProgressSnapshot[] {
-  try {
-    const raw = localStorage.getItem(SNAPSHOTS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return store.get<ProgressSnapshot[]>(SNAPSHOTS_KEY, []);
 }
 
 function saveSnapshots(snapshots: ProgressSnapshot[]): void {
-  localStorage.setItem(SNAPSHOTS_KEY, JSON.stringify(snapshots));
+  store.set(SNAPSHOTS_KEY, snapshots);
 }
 
 // ---- Portfolio metric calculators ----

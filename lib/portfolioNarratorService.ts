@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type NarrativePeriod = 'daily' | 'weekly' | 'monthly' | 'quarterly';
@@ -414,19 +416,14 @@ export function getPriorityColor(priority: ActionPriority): string {
 // ---- Data Access Functions ----
 
 function loadNarratives(): NarrativeReport[] {
-  const stored = localStorage.getItem(NARRATIVES_KEY);
-  if (stored) {
-    try {
-      return JSON.parse(stored);
-    } catch {
-      return [...mockNarratives];
-    }
+  if (store.has(NARRATIVES_KEY)) {
+    return store.get<NarrativeReport[]>(NARRATIVES_KEY, [...mockNarratives]);
   }
   return [...mockNarratives];
 }
 
 function saveNarratives(narratives: NarrativeReport[]): void {
-  localStorage.setItem(NARRATIVES_KEY, JSON.stringify(narratives));
+  store.set(NARRATIVES_KEY, narratives);
 }
 
 export function getNarratives(): NarrativeReport[] {
@@ -490,13 +487,8 @@ export function getNarrativeById(id: string): NarrativeReport | undefined {
 }
 
 export function getPreferences(): NarrativePreferences {
-  const stored = localStorage.getItem(PREFERENCES_KEY);
-  if (stored) {
-    try {
-      return JSON.parse(stored);
-    } catch {
-      return { ...defaultPreferences };
-    }
+  if (store.has(PREFERENCES_KEY)) {
+    return store.get<NarrativePreferences>(PREFERENCES_KEY, { ...defaultPreferences });
   }
   return { ...defaultPreferences };
 }
@@ -504,7 +496,7 @@ export function getPreferences(): NarrativePreferences {
 export function updatePreferences(prefs: Partial<NarrativePreferences>): NarrativePreferences {
   const current = getPreferences();
   const updated = { ...current, ...prefs };
-  localStorage.setItem(PREFERENCES_KEY, JSON.stringify(updated));
+  store.set(PREFERENCES_KEY, updated);
   return updated;
 }
 

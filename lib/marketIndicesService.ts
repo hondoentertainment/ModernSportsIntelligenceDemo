@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // Phase 86 — MSI Market Indices & Proprietary Benchmarks Service
 
 // ---- Types ----
@@ -352,11 +354,9 @@ function generateComponents(ticker: string, limit: number): IndexComponent[] {
 
 function loadFromStorage(): MarketIndex[] | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
+    const parsed = store.get<{ indices: MarketIndex[]; timestamp: number } | null>(STORAGE_KEY, null);
     if (parsed && parsed.timestamp && Date.now() - parsed.timestamp < 3600000) {
-      return parsed.indices as MarketIndex[];
+      return parsed.indices;
     }
     return null;
   } catch {
@@ -365,11 +365,7 @@ function loadFromStorage(): MarketIndex[] | null {
 }
 
 function saveToStorage(indices: MarketIndex[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ indices, timestamp: Date.now() }));
-  } catch {
-    // Storage full or unavailable
-  }
+  store.set(STORAGE_KEY, { indices, timestamp: Date.now() });
 }
 
 // ---- Public API ----

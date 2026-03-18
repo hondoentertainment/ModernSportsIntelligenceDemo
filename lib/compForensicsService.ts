@@ -1,6 +1,8 @@
 // Phase 132: Real-Time Comparable Sales Forensics
 // Statistical analysis of comparable sales with outlier detection, seller reputation, and fair market value estimation
 
+import { store } from './dal/syncStore';
+
 // ---- Types ----
 
 export type Platform = 'ebay' | 'goldin' | 'pwcc' | 'heritage' | 'myslabs' | 'comc';
@@ -97,21 +99,11 @@ const STORAGE_KEY = 'msi_comp_forensics';
 // ---- localStorage helpers ----
 
 function loadData<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(`${STORAGE_KEY}_${key}`);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
-  } catch {
-    return null;
-  }
+  return store.get<T | null>(`${STORAGE_KEY}_${key}`, null);
 }
 
 function saveData<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(`${STORAGE_KEY}_${key}`, JSON.stringify(data));
-  } catch {
-    // quota exceeded
-  }
+  store.set(`${STORAGE_KEY}_${key}`, data);
 }
 
 // ---- Mock Data: Cards ----

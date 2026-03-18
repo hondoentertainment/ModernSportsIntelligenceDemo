@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type ProductType = 'hobby_box' | 'retail_box' | 'blaster' | 'mega_box' | 'case' | 'pack';
@@ -495,25 +497,15 @@ function buildDistribution(
 }
 
 function saveSimulationToHistory(result: SimulationResult): void {
-  try {
-    const raw = localStorage.getItem(HISTORY_KEY);
-    const history: SimulationResult[] = raw ? JSON.parse(raw) : [];
-    history.unshift(result);
-    // Keep last 50 simulations
-    if (history.length > 50) history.length = 50;
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
-  } catch {
-    // Storage not available
-  }
+  const history = store.get<SimulationResult[]>(HISTORY_KEY, []);
+  history.unshift(result);
+  // Keep last 50 simulations
+  if (history.length > 50) history.length = 50;
+  store.set(HISTORY_KEY, history);
 }
 
 export function getSimulationHistory(): SimulationResult[] {
-  try {
-    const raw = localStorage.getItem(HISTORY_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+  return store.get<SimulationResult[]>(HISTORY_KEY, []);
 }
 
 export function compareProducts(ids: string[]): FlipComparison | null {

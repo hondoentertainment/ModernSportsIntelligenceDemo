@@ -1,3 +1,5 @@
+import { store } from './dal/syncStore';
+
 // P2P Marketplace — Peer-to-Peer Trading Marketplace
 // Community-driven sports card trading with listings, offers, reputation system,
 // deal scoring, and marketplace analytics.
@@ -84,14 +86,11 @@ export interface MarketplaceStats {
 const STORAGE_KEY = 'msi_p2p_marketplace_v1';
 
 function loadStorage(): { listings: Listing[]; offers: Offer[]; sellers: SellerProfile[] } | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
+  return store.get<{ listings: Listing[]; offers: Offer[]; sellers: SellerProfile[] } | null>(STORAGE_KEY, null);
 }
 
 function _saveStorage(data: { listings: Listing[]; offers: Offer[]; sellers: SellerProfile[] }): void {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch { /* quota */ }
+  store.set(STORAGE_KEY, data);
 }
 
 // ── Mock Sellers ────────────────────────────────────────────────────────────────
