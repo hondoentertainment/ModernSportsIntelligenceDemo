@@ -250,6 +250,70 @@ export const GameEventSchema = z.object({
 
 export type GameEventValidated = z.infer<typeof GameEventSchema>;
 
+// ─── BGS/SGC Grading ─────────────────────────────────────────────
+
+export const BGSSubgradeSchema = z.object({
+  category: z.enum(['centering', 'corners', 'edges', 'surface']),
+  grade: z.number().min(1).max(10),
+});
+
+export const BGSCertResponseSchema = z.object({
+  certNumber: z.string(),
+  company: z.enum(['BGS', 'SGC']),
+  verified: z.boolean(),
+  year: z.string().optional(),
+  brand: z.string().optional(),
+  set: z.string().optional(),
+  cardNumber: z.string().optional(),
+  player: z.string().optional(),
+  grade: z.string().optional(),
+  subgrades: z.array(BGSSubgradeSchema).optional(),
+  labelType: z.string().optional(),
+  imageUrl: z.string().url().optional(),
+  lookupDate: z.string(),
+});
+
+export type BGSCertResponseValidated = z.infer<typeof BGSCertResponseSchema>;
+
+// ─── Sports Data / Player ────────────────────────────────────────
+
+export const PlayerProfileSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  sport: z.enum(['baseball', 'basketball', 'football', 'hockey', 'soccer']),
+  league: z.string(),
+  team: z.string(),
+  position: z.string(),
+  number: z.string().optional(),
+  birthDate: z.string().optional(),
+  age: z.number().optional(),
+  imageUrl: z.string().url().optional(),
+  isRookie: z.boolean(),
+  isActive: z.boolean(),
+  experience: z.number().int().min(0),
+  externalIds: z.object({
+    mlbId: z.number().optional(),
+    espnId: z.number().optional(),
+    basketballReferenceId: z.string().optional(),
+    proFootballReferenceId: z.string().optional(),
+  }),
+});
+
+export type PlayerProfileValidated = z.infer<typeof PlayerProfileSchema>;
+
+export const PlayerStatsSummarySchema = z.object({
+  playerId: z.string(),
+  season: z.string(),
+  gamesPlayed: z.number().int().min(0),
+  stats: z.record(z.string(), z.any()),
+  performanceRating: z.number().min(0).max(100),
+  trending: z.enum(['up', 'down', 'stable']),
+});
+
+export type PlayerStatsSummaryValidated = z.infer<typeof PlayerStatsSummarySchema>;
+
 // ─── Utility: Safe Parse with Logging ────────────────────────────────
 
 import { logger } from './logger';
