@@ -347,6 +347,18 @@ const GradingBatchPlanner = lazy(() => import('./pages/GradingBatchPlanner.tsx')
 const EbayListingGenerator = lazy(() => import('./pages/EbayListingGenerator.tsx'));
 const WaxBreakRoiTracker = lazy(() => import('./pages/WaxBreakRoiTracker.tsx'));
 
+// Industry-first new features (v11)
+const RegretMinimizationEngine = lazy(() => import('./pages/RegretMinimizationEngine.tsx'));
+const MentalHealthSafeguards = lazy(() => import('./pages/MentalHealthSafeguards.tsx'));
+const GradeInflationDetector = lazy(() => import('./pages/GradeInflationDetector.tsx'));
+const SubscriptionBoxOptimizer = lazy(() => import('./pages/SubscriptionBoxOptimizer.tsx'));
+const ReverseDutchAuctionEngine = lazy(() => import('./pages/ReverseDutchAuctionEngine.tsx'));
+const CarbonFootprintTracker = lazy(() => import('./pages/CarbonFootprintTracker.tsx'));
+const BidderPsychologyProfiler = lazy(() => import('./pages/BidderPsychologyProfiler.tsx'));
+const ProductAnnouncementRadar = lazy(() => import('./pages/ProductAnnouncementRadar.tsx'));
+const CollectorSuccessionProtocol = lazy(() => import('./pages/CollectorSuccessionProtocol.tsx'));
+const CrossHobbyArbitrageBridge = lazy(() => import('./pages/CrossHobbyArbitrageBridge.tsx'));
+
 // Previously unrouted pages — Advanced Trading & Analysis
 const LiveGameImpactEngine = lazy(() => import('./pages/LiveGameImpactEngine.tsx'));
 const PreGradeIntelligence = lazy(() => import('./pages/PreGradeIntelligence.tsx'));
@@ -780,6 +792,17 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/grading-batch-planner" element={<GradingBatchPlanner />} />
                 <Route path="/ebay-listing-generator" element={<EbayListingGenerator />} />
                 <Route path="/wax-break-roi-tracker" element={<WaxBreakRoiTracker />} />
+                {/* Industry-first features v11 */}
+                <Route path="/regret-minimization-engine" element={<RegretMinimizationEngine />} />
+                <Route path="/mental-health-safeguards" element={<MentalHealthSafeguards />} />
+                <Route path="/grade-inflation-detector" element={<GradeInflationDetector />} />
+                <Route path="/subscription-box-optimizer" element={<SubscriptionBoxOptimizer />} />
+                <Route path="/reverse-dutch-auction-engine" element={<ReverseDutchAuctionEngine />} />
+                <Route path="/carbon-footprint-tracker" element={<CarbonFootprintTracker />} />
+                <Route path="/bidder-psychology-profiler" element={<BidderPsychologyProfiler />} />
+                <Route path="/product-announcement-radar" element={<ProductAnnouncementRadar />} />
+                <Route path="/collector-succession-protocol" element={<CollectorSuccessionProtocol />} />
+                <Route path="/cross-hobby-arbitrage-bridge" element={<CrossHobbyArbitrageBridge />} />
                 {/* Interactive Demo Flow */}
                 <Route path="/demo-flow" element={<DemoFlowPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

@@ -19,7 +19,7 @@ import {
   Key,
   Activity,
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import {
   getBeneficiaries,
   getLiquidationWaterfall,
@@ -371,7 +371,7 @@ const CollectorSuccessionProtocol: React.FC = () => {
                   />
                   <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                     {waterfallChartData.map((_, idx) => (
-                      <rect key={idx} fill={TIER_COLORS[idx]} />
+                      <Cell key={`cell-${idx}`} fill={TIER_COLORS[idx]} />
                     ))}
                   </Bar>
                 </BarChart>
