@@ -1,5 +1,7 @@
 import { showToast } from './toast';
 import { serverApiRequest } from './serverApi';
+import { GeminiResponseSchema, safeParse } from './schemas';
+import { geminiCircuit } from './apiResilience';
 
 interface GeminiGenerateConfig {
     responseMimeType?: string;
@@ -32,10 +34,19 @@ export function createGeminiClient(): GeminiClientLike {
         models: {
             async generateContent(request: GeminiGenerateRequest): Promise<GeminiGenerateResponse> {
                 try {
-                    return await serverApiRequest<GeminiGenerateResponse>('/api/ai/generate', {
-                        method: 'POST',
-                        body: JSON.stringify(request),
-                    });
+                    const raw = await geminiCircuit.execute(() =>
+                        serverApiRequest<unknown>('/api/ai/generate', {
+                            method: 'POST',
+                            body: JSON.stringify(request),
+                        })
+                    );
+
+                    // Validate the response shape
+                    const validated = safeParse(GeminiResponseSchema, raw, 'gemini');
+                    if (!validated) {
+                        throw new Error('Invalid response from Gemini API');
+                    }
+                    return validated;
                 } catch (error) {
                     if (!missingProxyWarned) {
                         missingProxyWarned = true;

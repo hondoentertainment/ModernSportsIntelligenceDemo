@@ -1,3 +1,5 @@
+import { withRetry, type RetryOptions } from './apiResilience';
+
 interface ApiErrorPayload {
   error?: string;
 }
@@ -16,27 +18,58 @@ export function getServerApiUrl(path: string): string {
   return baseUrl ? `${baseUrl}${normalizedPath}` : normalizedPath;
 }
 
-export async function serverApiRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(getServerApiUrl(path), {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init.headers || {}),
-    },
-  });
-
-  if (!response.ok) {
-    let errorMessage = `Request failed with status ${response.status}`;
-    try {
-      const errorPayload = await response.json() as ApiErrorPayload;
-      if (errorPayload.error) {
-        errorMessage = errorPayload.error;
-      }
-    } catch {
-      // Ignore JSON parsing issues for error responses.
+/** Default retry options for server API calls */
+const SERVER_RETRY: RetryOptions = {
+  maxAttempts: 3,
+  baseDelayMs: 1000,
+  maxDelayMs: 8000,
+  timeoutMs: 20000,
+  shouldRetry: (err) => {
+    // Don't retry client errors (4xx), only retry network/server errors
+    if (err instanceof ServerApiError && err.status >= 400 && err.status < 500) {
+      return false;
     }
-    throw new Error(errorMessage);
-  }
+    return true;
+  },
+};
 
-  return response.json() as Promise<T>;
+export class ServerApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number
+  ) {
+    super(message);
+    this.name = 'ServerApiError';
+  }
+}
+
+export async function serverApiRequest<T>(
+  path: string,
+  init: RequestInit = {},
+  retryOptions?: RetryOptions
+): Promise<T> {
+  return withRetry(async () => {
+    const response = await fetch(getServerApiUrl(path), {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(init.headers || {}),
+      },
+    });
+
+    if (!response.ok) {
+      let errorMessage = `Request failed with status ${response.status}`;
+      try {
+        const errorPayload = (await response.json()) as ApiErrorPayload;
+        if (errorPayload.error) {
+          errorMessage = errorPayload.error;
+        }
+      } catch {
+        // Ignore JSON parsing issues for error responses.
+      }
+      throw new ServerApiError(errorMessage, response.status);
+    }
+
+    return response.json() as Promise<T>;
+  }, retryOptions ?? SERVER_RETRY);
 }

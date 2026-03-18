@@ -1,14 +1,15 @@
 
-import React, { Suspense, useState, lazy } from 'react';
+import React, { Suspense, useState, useEffect, lazy } from 'react';
 import {
   HashRouter as Router,
   Routes,
   Route,
   Navigate,
 } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import GlobalErrorBoundary from './components/GlobalErrorBoundary.tsx';
 import Sidebar from './components/Sidebar.tsx';
 import Header from './components/Header.tsx';
 import MobileNav from './components/MobileNav.tsx';
@@ -24,6 +25,11 @@ import GuidedTour from './components/GuidedTour.tsx';
 import InstitutionalWallHUD from './components/InstitutionalWallHUD.tsx';
 import GrailShowcase from './components/GrailShowcase.tsx';
 import DemoFlowWidget from './components/DemoFlowWidget.tsx';
+import { validateEnv } from './lib/env';
+import { initDAL } from './lib/dal';
+
+// Validate environment on startup
+validateEnv();
 
 // ─── Lazy-loaded Page Components ──────────────────────────────────────
 // Critical path: Dashboard loads first, everything else is code-split
@@ -432,6 +438,16 @@ const Signup = lazy(() => import('./pages/Signup.tsx'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword.tsx'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword.tsx'));
 const PublicPortfolio = lazy(() => import('./pages/PublicPortfolio.tsx'));
+
+// ─── DAL Initializer ─────────────────────────────────────────────────
+// Initializes the Data Access Layer when auth state is known.
+const DALInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+  useEffect(() => {
+    initDAL(user?.id ?? null);
+  }, [user?.id]);
+  return <>{children}</>;
+};
 
 // ─── App Layout ───────────────────────────────────────────────────────
 
@@ -847,35 +863,39 @@ const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
-    <AuthProvider>
-      <MigrationProvider>
-        <ToastProvider>
-          <Router>
-            <LazyErrorBoundary>
-              <Suspense fallback={<PageLoadingFallback />}>
-                <Routes>
-                  {/* Public Routes */}
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/p/:username" element={<PublicPortfolio />} />
+    <GlobalErrorBoundary>
+      <AuthProvider>
+        <DALInitializer>
+          <MigrationProvider>
+            <ToastProvider>
+              <Router>
+                <LazyErrorBoundary>
+                  <Suspense fallback={<PageLoadingFallback />}>
+                    <Routes>
+                      {/* Public Routes */}
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/signup" element={<Signup />} />
+                      <Route path="/forgot-password" element={<ForgotPassword />} />
+                      <Route path="/reset-password" element={<ResetPassword />} />
+                      <Route path="/p/:username" element={<PublicPortfolio />} />
 
-                  {/* Protected Routes */}
-                  <Route path="/*" element={
-                    <ProtectedRoute>
-                      <SyncSchedulerInitializer>
-                        <AppLayout isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
-                      </SyncSchedulerInitializer>
-                    </ProtectedRoute>
-                  } />
-                </Routes>
-              </Suspense>
-            </LazyErrorBoundary>
-          </Router>
-        </ToastProvider>
-      </MigrationProvider>
-    </AuthProvider>
+                      {/* Protected Routes */}
+                      <Route path="/*" element={
+                        <ProtectedRoute>
+                          <SyncSchedulerInitializer>
+                            <AppLayout isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+                          </SyncSchedulerInitializer>
+                        </ProtectedRoute>
+                      } />
+                    </Routes>
+                  </Suspense>
+                </LazyErrorBoundary>
+              </Router>
+            </ToastProvider>
+          </MigrationProvider>
+        </DALInitializer>
+      </AuthProvider>
+    </GlobalErrorBoundary>
   );
 };
 
