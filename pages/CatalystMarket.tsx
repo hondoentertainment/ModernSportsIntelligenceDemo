@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory';
 import { ensureCatalystMarket } from '../lib/fiveDifferentiatorService';
+import { withRetry } from '../lib/retry';
 import { CatalystMarketEvent } from '../types';
 import { ChartSkeleton } from '../components/SkeletonLoader';
 
@@ -31,7 +32,10 @@ const CatalystMarket: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const data = await ensureCatalystMarket(user.id, inventory.filter(card => card.status !== 'sold'));
+        const data = await withRetry(
+          () => ensureCatalystMarket(user.id, inventory.filter(card => card.status !== 'sold')),
+          { maxAttempts: 3, initialDelayMs: 400, timeoutMs: 15_000 }
+        );
         setEvents(data ?? []);
       } catch (e) {
         const message = e instanceof Error ? e.message : 'Failed to load catalyst events';
@@ -56,7 +60,10 @@ const CatalystMarket: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await ensureCatalystMarket(user.id, inventory.filter(card => card.status !== 'sold'));
+      const data = await withRetry(
+        () => ensureCatalystMarket(user.id, inventory.filter(card => card.status !== 'sold')),
+        { maxAttempts: 3, initialDelayMs: 400, timeoutMs: 15_000 }
+      );
       setEvents(data ?? []);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load');

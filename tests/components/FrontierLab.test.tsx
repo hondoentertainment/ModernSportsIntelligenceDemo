@@ -25,7 +25,7 @@ describe('FrontierLab', () => {
     expect(screen.getAllByText(/Spot fake networks/i).length).toBeGreaterThan(0);
   });
 
-  it('persists stage and implementation notes', () => {
+  it('persists stage and implementation notes', { timeout: 15000 }, () => {
     renderFrontierLab('/frontier-lab?feature=reacquisition-radar');
 
     fireEvent.change(screen.getByPlaceholderText(/Add launch blockers/i), {

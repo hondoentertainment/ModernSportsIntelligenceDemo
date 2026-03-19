@@ -1,15 +1,11 @@
 import { GoogleGenAI, Type, GoogleSearchRetrieval } from '@google/genai';
-import { CardInventory, PricingAnalysis, TargetWatchlist } from '../types.ts';
+import { CardInventory, PricingAnalysis, TargetWatchlist, VisualAuditResult, MacroSignal, GradingPremiumAnalysis } from '../types.ts';
 import { ebayApi } from './ebayApi.ts';
 import { showToast } from './toast.ts';
-import { Type } from "@google/genai";
-import { CardInventory, PricingAnalysis, TargetWatchlist, VisualAuditResult, MacroSignal, GradingPremiumAnalysis } from "../types.ts";
-import { ebayApi } from "./ebayApi.ts";
-import { showToast } from "./toast.ts";
-import { attachValuationQuality } from "./valuationQuality.ts";
-import { estimateGeminiCostUsd, recordModelUsage } from "./telemetryService.ts";
-import { createGeminiClient } from "./geminiClient.ts";
-import { logger } from "./logger";
+import { attachValuationQuality } from './valuationQuality.ts';
+import { estimateGeminiCostUsd, recordModelUsage } from './telemetryService.ts';
+import { createGeminiClient } from './geminiClient.ts';
+import { logger } from './logger';
 
 const ai = createGeminiClient();
 
@@ -127,7 +123,7 @@ export async function getEbayCardPrice(card: CardInventory, _signal?: AbortSigna
           searchUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(`${card.year} ${card.player} ${card.set}`)}&LH_Sold=1&LH_Complete=1`,
           lastUpdated: new Date().toISOString(),
           rationale,
-          salesData: ebayResult.recentSales,
+          salesData: ebayResult.recentSales.map(s => ({ itemId: s.itemId, title: s.title, price: s.price, condition: s.condition, soldAt: s.date })),
           valuationSource: 'ebay-api',
           valuationTimestamp: new Date().toISOString()
         });
@@ -252,7 +248,7 @@ export async function getWatchlistItemPrice(target: TargetWatchlist, _signal?: A
           searchUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(`${target.player} ${target.cardDescription}`)}&LH_Sold=1&LH_Complete=1`,
           lastUpdated: new Date().toISOString(),
           rationale,
-          salesData: ebayResult.recentSales,
+          salesData: ebayResult.recentSales.map(s => ({ itemId: s.itemId, title: s.title, price: s.price, condition: s.condition, soldAt: s.date })),
           valuationSource: 'ebay-api',
           valuationTimestamp: new Date().toISOString()
         });

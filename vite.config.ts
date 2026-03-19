@@ -14,6 +14,9 @@ export default defineConfig({
     }
   },
   build: {
+    // Avoid Windows/OneDrive EPERM failures when the tracked dist folder is locked
+    // during local builds. CI/deploy still emits fresh hashed assets and index.html.
+    emptyOutDir: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -37,6 +40,8 @@ export default defineConfig({
         }
       }
     },
+    // See PRODUCTION_READINESS.md §2.3 — run npm run build:size for top 5 chunks + total;
+    // performance budget: bundle size < 500KB gzipped, Lighthouse score > 90.
     chunkSizeWarningLimit: 1000
   },
   test: {

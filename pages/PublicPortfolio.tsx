@@ -8,9 +8,20 @@ import { getRarityTier, getTierStyles } from '../lib/rarity';
 import { LEAGUES } from '../constants';
 import { useToast } from '../contexts/ToastContext';
 import { logger } from '../lib/logger';
+import { withRetry } from '../lib/retry';
+import { validateUsername } from '../lib/apiValidation';
 
 const PublicPortfolio: React.FC = () => {
-    const { username } = useParams<{ username: string }>();
+    const { username: usernameParam } = useParams<{ username: string }>();
+    let username: string | null = null;
+    let usernameError: string | null = null;
+    if (usernameParam) {
+        try {
+            username = validateUsername(usernameParam);
+        } catch {
+            usernameError = 'Invalid username';
+        }
+    }
     const { addToast } = useToast();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [inventory, setInventory] = useState<CardInventory[]>([]);
@@ -26,13 +37,23 @@ const PublicPortfolio: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            const user = await fetchPublicProfile(username);
-            if (user) {
-                setProfile(user);
-                const cards = await fetchPublicInventory(user.id);
-                setInventory(cards);
+            const user = await withRetry(
+                async () => {
+                    const u = await fetchPublicProfile(username);
+                    if (u) {
+                        const cards = await fetchPublicInventory(u.id);
+                        return { user: u, cards };
+                    }
+                    return { user: null, cards: [] };
+                },
+                { maxAttempts: 3, initialDelayMs: 400, timeoutMs: 15_000 }
+            );
+            if (user.user) {
+                setProfile(user.user);
+                setInventory(user.cards);
             } else {
                 setProfile(null);
+                setInventory([]);
             }
         } catch (err) {
             logger.error('Failed to load public profile', err);
@@ -44,8 +65,12 @@ const PublicPortfolio: React.FC = () => {
     }, [username, addToast]);
 
     useEffect(() => {
+        if (!username) {
+            setLoading(false);
+            return;
+        }
         void loadData();
-    }, [loadData]);
+    }, [loadData, username]);
 
     const copyLink = () => {
         if (username) {
@@ -61,6 +86,17 @@ const PublicPortfolio: React.FC = () => {
         const matchesLeague = filterLeague === 'All' || c.league === filterLeague;
         return matchesSearch && matchesLeague;
     });
+
+    if (usernameError || !usernameParam) {
+        return (
+            <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                <Shield size={64} className="text-red-500/80 mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Invalid username</h2>
+                <p className="text-slate-400 mb-6">{usernameError ?? 'Username is required.'}</p>
+                <Link to="/" className="px-6 py-3 bg-brand-lime text-brand-charcoal font-bold rounded-xl uppercase tracking-widest hover:bg-brand-green transition-colors">Return to Base</Link>
+            </div>
+        );
+    }
 
     if (loading && !profile) {
         return <div className="flex items-center justify-center h-full text-brand-lime animate-pulse">Loading Asset Data...</div>;
@@ -85,7 +121,7 @@ const PublicPortfolio: React.FC = () => {
             <div className="flex flex-col items-center justify-center h-full text-center">
                 <Shield size={64} className="text-slate-600 mb-4" />
                 <h2 className="text-2xl font-bold text-white mb-2">Portfolio Not Found</h2>
-                <p className="text-slate-400">The user @{username} does not exist or has a private portfolio.</p>
+                <p className="text-slate-400">The user @{username ?? usernameParam} does not exist or has a private portfolio.</p>
                 <Link to="/" className="mt-8 px-6 py-3 bg-brand-lime text-brand-charcoal font-bold rounded-xl uppercase tracking-widest hover:bg-brand-green transition-colors">Return to Base</Link>
             </div>
         );

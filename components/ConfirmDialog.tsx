@@ -72,14 +72,18 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
           <div className="flex gap-3 justify-end">
             <button
+              type="button"
               onClick={onCancel}
               className="px-6 py-3 bg-brand-charcoal/50 hover:bg-brand-charcoal border border-slate-800 rounded-2xl text-xs font-black uppercase tracking-widest text-brand-muted hover:text-white transition-all"
+              aria-label={cancelLabel}
             >
               {cancelLabel}
             </button>
             <button
+              type="button"
               onClick={onConfirm}
               className={`px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${styles.confirmBg}`}
+              aria-label={confirmLabel}
             >
               {confirmLabel}
             </button>

@@ -117,8 +117,23 @@ export function checkUsageLimit(tier: SubscriptionTier, type: 'cards' | 'aiValua
   return current < limit;
 }
 
+/**
+ * Generate a stable idempotency key for checkout (backend should forward as Stripe Idempotency-Key).
+ * Uses a 1-minute bucket so retries within the same minute are deduplicated.
+ */
+function idempotencyKeyForCheckout(userId: string, tier: SubscriptionTier): string {
+  const bucket = Math.floor(Date.now() / 60_000);
+  return `checkout-${userId}-${tier}-${bucket}`;
+}
+
 // Create Stripe checkout session
-export async function createCheckoutSession(userId: string, tier: SubscriptionTier, successUrl?: string, cancelUrl?: string) {
+export async function createCheckoutSession(
+  userId: string,
+  tier: SubscriptionTier,
+  successUrl?: string,
+  cancelUrl?: string,
+  idempotencyKey?: string
+) {
   const stripe = await getStripe();
   if (!stripe) {
     throw new Error('Stripe not configured');
@@ -129,13 +144,16 @@ export async function createCheckoutSession(userId: string, tier: SubscriptionTi
     throw new Error(`Price ID not configured for tier: ${tier}`);
   }
 
-  // Create checkout session via Supabase Edge Function or your backend
+  const key = idempotencyKey ?? idempotencyKeyForCheckout(userId, tier);
+  // Create checkout session via Supabase Edge Function or your backend.
+  // Backend must send key to Stripe as Idempotency-Key header (see docs/PAYMENT_SECURITY.md).
   const { data, error } = await supabase.functions.invoke('create-checkout-session', {
     body: {
       userId,
       priceId,
       successUrl: successUrl || `${window.location.href.split('#')[0]}#/billing?success=true`,
       cancelUrl: cancelUrl || `${window.location.href.split('#')[0]}#/billing?canceled=true`,
+      idempotencyKey: key,
     },
   });
 
@@ -159,12 +177,22 @@ export async function redirectToCheckout(sessionId: string) {
   }
 }
 
+/**
+ * Idempotency key for portal session (optional; backend may use for logging/dedup).
+ */
+function idempotencyKeyForPortal(userId: string): string {
+  const bucket = Math.floor(Date.now() / 60_000);
+  return `portal-${userId}-${bucket}`;
+}
+
 // Create billing portal session
-export async function createBillingPortalSession(userId: string, returnUrl?: string) {
+export async function createBillingPortalSession(userId: string, returnUrl?: string, idempotencyKey?: string) {
+  const key = idempotencyKey ?? idempotencyKeyForPortal(userId);
   const { data, error } = await supabase.functions.invoke('create-billing-portal-session', {
     body: {
       userId,
       returnUrl: returnUrl || `${window.location.href.split('#')[0]}#/billing`,
+      idempotencyKey: key,
     },
   });
 

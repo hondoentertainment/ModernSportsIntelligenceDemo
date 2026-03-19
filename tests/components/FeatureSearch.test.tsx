@@ -54,7 +54,7 @@ describe('FeatureSearch', () => {
     fireEvent.click(screen.getByLabelText('Search features (Ctrl+K)'));
     const input = screen.getByLabelText('Search features');
     fireEvent.change(input, { target: { value: 'xyzqwerty999' } });
-    expect(screen.getByText(/No features found/i)).toBeInTheDocument();
+    expect(screen.getByText(/No features match/i)).toBeInTheDocument();
   });
 
   it('closes modal on Escape key', () => {

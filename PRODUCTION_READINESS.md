@@ -4,6 +4,46 @@ Current state: **Prototype / Demo** — The platform has an impressive feature s
 
 ---
 
+## Phase 2 progress (production-grade hardening)
+
+Completed in recent sprints (post–v4.3):
+
+| Area | Done |
+|------|------|
+| **1.3 Environment** | `.env.example` added with all `VITE_*` variables documented; env validation (dev-only) already in place. |
+| **2.2 Error handling** | `lib/retry.ts`: `withRetry()` and `withTimeout()` for resilient data loads. `useAgentRecommendations` uses retry + 15s timeout. `lib/errorReporting.ts`: `reportError()` logs and optionally beacons to `VITE_ERROR_REPORTING_URL`; `ErrorBoundary` and `LazyErrorBoundary` call it. |
+| **Security headers** | `vercel.json`: `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy` on all responses. |
+| **Operations** | `api/health.ts`: GET/HEAD returns 200 for monitoring. `.github/dependabot.yml`: weekly npm updates with grouped PRs. |
+
+**Phase 3–5 (agent swarm):** Retry/timeout expanded to CatalystMarket, CounterpartyTrustGraph, PrivateDealRoomAgent, PublicPortfolio. Test coverage: `errorReporting.test.ts`, `billingService.test.ts`, E2E `api-health.spec.ts` (skips when endpoint unavailable). Payment security: `docs/PAYMENT_SECURITY.md` and audit (no raw card data; webhook signature required). Input validation: Zod in `lib/apiValidation.ts` (public portfolio username), `api/market/ebay.ts` body validation. Monitoring: `docs/MONITORING.md` (health, reportError, CI). Public portfolio validates username before fetch; optional CI health run against deployment URL.
+
+**Phase 6 (next-phase hardening):** Global unhandled promise rejections reported via `reportError` (same pipeline as ErrorBoundary). API routes use structured logging: `api/lib/logger.ts` (`apiLogger.error/warn/info`) in `api/market/ebay.ts` and `api/ai/generate.ts` so production logs are consistent and grep-able.
+
+**Phase 7–11 (agent swarm, production-grade):**
+- **Phase 7 – Test coverage:** Unit tests for `lib/envValidation.ts` and `lib/apiValidation.ts`; E2E test "feature search opens and shows featured features" in `release-smoke.spec.ts`.
+- **Phase 8 – Performance:** `React.memo()` on `CardGridItem` and Collection grid item; `scripts/bundle-size.cjs` and `npm run build:size`; PRODUCTION_READINESS §2.3 and MONITORING bundle-size note; vite `chunkSizeWarningLimit` comment.
+- **Phase 9 – Security:** Content-Security-Policy-Report-Only in `vercel.json`; Zod body validation in `api/ai/generate.ts`; rate-limiting note in `docs/MONITORING.md`.
+- **Phase 10 – Type safety:** `HealthResponse` in `api/health.ts`; `ApiRequest`/`ApiResponse` in `api/ai/generate.ts`; JSDoc on `lib/retry.ts` and `lib/errorReporting.ts`.
+- **Phase 11 – Sentry & runbook:** `lib/sentry.ts` (optional init when `VITE_SENTRY_DSN` set, `captureException`); `reportError` calls `captureException`; Runbook in `docs/MONITORING.md`; `.env.example` documents `VITE_SENTRY_DSN`. Optional dep `@sentry/react` for builds when Sentry is used.
+
+**Coverage:** CI runs `npm run test:coverage` and uploads the report; current thresholds (vite.config) are 60% statements/branches/functions/lines. **Target: 80%** (see §2.1); raise thresholds gradually as tests are added.
+
+**Idempotency:** Client sends `idempotencyKey` with checkout and portal requests; backend Edge Functions must forward it to Stripe as `Idempotency-Key` (see docs/PAYMENT_SECURITY.md §c).
+
+**Completed (roadmap progression):**
+- Fixed `constants.tsx` duplicate icon imports (Shield, Sparkles, Dices).
+- Fixed `lib/gemini.ts` duplicate imports (merged duplicate blocks; single clean import).
+- Unhandled rejection handler: already wired in `index.tsx` (calls `reportError`).
+- `reportError` → `captureException` (Sentry) already wired in `lib/errorReporting.ts`.
+- Phase 10 JSDoc: `lib/retry.ts` and `lib/errorReporting.ts` already have JSDoc.
+
+**Next:**
+- Fix any remaining TypeScript errors in `lib/fiveDifferentiatorService.ts` if present; run `npm run typecheck` to verify.
+- Enable `strict: true` in tsconfig once all errors resolved.
+- Continue raising test coverage toward 80%.
+
+---
+
 ## Phase 1: Foundation (Critical — Do First)
 
 ### 1.1 Replace localStorage with Real Backend Services
@@ -75,6 +115,7 @@ Current state: **Prototype / Demo** — The platform has an impressive feature s
 - Implement virtual scrolling for card lists (already have `@tanstack/react-virtual` — verify it's used everywhere needed)
 - Add image optimization (lazy loading, WebP format, CDN URLs instead of base64)
 - Set a performance budget in CI: bundle size < 500KB gzipped, Lighthouse score > 90
+- **Bundle size tracking:** Run `npm run build:size` to build and print `dist/assets/*.js` sizes (top 5 chunks and total). Use this to track bundle size; see also `docs/MONITORING.md`.
 
 ---
 
@@ -130,6 +171,8 @@ Current state: **Prototype / Demo** — The platform has an impressive feature s
 - Verify webhook signature validation in Stripe webhook handlers
 - Add idempotency keys to all payment operations
 - Implement proper subscription lifecycle handling (upgrades, downgrades, cancellations, failed payments)
+
+**Checklist:** See **docs/PAYMENT_SECURITY.md** for the Phase 3 payment-security checklist (no raw card data, webhook signature verification, idempotency keys, env vars).
 
 ### 4.3 API Security
 
@@ -189,6 +232,8 @@ Current state: **Prototype / Demo** — The platform has an impressive feature s
 ---
 
 ## Quick Wins (Can Do This Week)
+
+**Status:** Items 1, 3, 4, 7 done. Item 2 (strict) blocked on fixing existing TS errors. Items 5 (audit), 6 (supabase gen types) pending.
 
 1. **Create `.env.example`** with all required variables documented
 2. **Enable `strict: true`** in `tsconfig.json` and fix type errors

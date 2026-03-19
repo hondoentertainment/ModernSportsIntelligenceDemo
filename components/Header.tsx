@@ -1,7 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, ChevronDown, User, LogOut, Settings, Terminal } from 'lucide-react';
 import { Search, Bell, ChevronDown, User, LogOut, Settings, Terminal, Zap, Shield, Sparkles, Maximize2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSupabaseInventory } from '../lib/useSupabaseInventory';
@@ -19,6 +18,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
   const { user, signOut, isDemoMode } = useAuth();
   const { syncStatus, lastSyncError } = useSupabaseInventory();
   const navigate = useNavigate();
+  const userMenuButtonRef = useRef<HTMLButtonElement>(null);
 
   // Keyboard Shortcuts
   useEffect(() => {
@@ -31,6 +31,19 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  // Close user dropdown on Escape; return focus to trigger (Interaction + A11y)
+  useEffect(() => {
+    if (!showDropdown) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowDropdown(false);
+        requestAnimationFrame(() => userMenuButtonRef.current?.focus());
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [showDropdown]);
 
   const isCommand = searchQuery.startsWith('/');
 
@@ -89,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
             }}
             placeholder={isCommand ? "Enter terminal command (e.g. /scan, /buy, /compare)..." : "MSI Intel: Search card populations, market caps, or trajectories..."}
             aria-label="Search cards, commands, and market data"
-            className={`w-full bg-brand-slate border rounded-full py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:ring-1 transition-all placeholder:text-slate-500 font-medium ${isCommand ? 'border-brand-lime/50 ring-brand-lime/20 text-brand-lime font-mono' : 'border-slate-800 focus:ring-brand-lime'}`}
+            className={`w-full bg-brand-slate border rounded-full py-2.5 pl-10 pr-4 text-base md:text-sm focus:outline-none focus:ring-1 transition-all placeholder:text-slate-500 font-medium ${isCommand ? 'border-brand-lime/50 ring-brand-lime/20 text-brand-lime font-mono' : 'border-slate-800 focus:ring-brand-lime'}`}
           />
           <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
             {!isCommand && (
@@ -139,8 +152,9 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
         <FeatureSearch />
 
         <button
+          type="button"
           onClick={() => setIsSwarmOpen(true)}
-          className="p-2 text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative group"
+          className="p-2 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative group"
           title="Open Swarm Intelligence"
           aria-label="Open Swarm Intelligence"
         >
@@ -149,8 +163,9 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
         </button>
 
         <button
+          type="button"
           onClick={onToggleWallHUD}
-          className="p-2 text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative group"
+          className="p-2 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative group"
           title="Institutional Wall HUD"
           aria-label="Institutional Wall HUD"
         >
@@ -158,14 +173,22 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
         </button>
 
         <button
+          type="button"
           aria-label="Notifications"
-          className="p-2 text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative"
+          title="Notifications"
+          className="p-2 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative"
         >
           <Bell size={20} />
           <span className="absolute top-2 right-2 w-2 h-2 bg-brand-red rounded-full" aria-hidden="true"></span>
         </button>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-charcoal border border-slate-800 rounded-full group cursor-help transition-all hover:bg-brand-slate" title={syncStatus === 'synced' ? 'Cloud Sync Active' : syncStatus === 'migrating' ? 'Migrating Data...' : 'Local Storage Mode'}>
+        <div
+          role="status"
+          aria-live="polite"
+          aria-label={syncStatus === 'synced' ? 'Cloud sync active' : syncStatus === 'migrating' ? 'Migrating data' : 'Local storage mode'}
+          className="flex items-center gap-2 px-3 py-1.5 bg-brand-charcoal border border-slate-800 rounded-full group cursor-help transition-all hover:bg-brand-slate"
+          title={syncStatus === 'synced' ? 'Cloud Sync Active' : syncStatus === 'migrating' ? 'Migrating Data...' : 'Local Storage Mode'}
+        >
           <div className={`w-1.5 h-1.5 rounded-full ${syncStatus === 'synced' ? 'bg-brand-lime animate-pulse' : syncStatus === 'migrating' ? 'bg-brand-blue animate-bounce' : 'bg-slate-600'}`}></div>
           <span className={`text-[9px] font-black uppercase tracking-[0.15em] ${syncStatus === 'synced' ? 'text-brand-lime' : syncStatus === 'migrating' ? 'text-brand-blue' : 'text-slate-500'}`}>
             {syncStatus}
@@ -182,6 +205,8 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
         {/* User Dropdown */}
         <div className="relative">
           <button
+            ref={userMenuButtonRef}
+            type="button"
             onClick={() => setShowDropdown(!showDropdown)}
             aria-haspopup="menu"
             aria-expanded={showDropdown}
@@ -210,19 +235,23 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
                   <p className="text-sm font-medium text-white truncate">{displayName}</p>
                   <p className="text-xs text-slate-400 truncate">{displayEmail}</p>
                 </div>
-                <div className="p-2">
+                <div className="p-2" role="none">
                   <button
+                    type="button"
+                    role="menuitem"
                     onClick={() => { navigate('/settings'); setShowDropdown(false); }}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:bg-slate-700/50 rounded-xl transition-colors"
+                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:bg-slate-700/50 rounded-xl transition-colors text-left"
                   >
-                    <Settings size={16} />
+                    <Settings size={16} aria-hidden />
                     Settings
                   </button>
                   <button
+                    type="button"
+                    role="menuitem"
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
+                    className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-xl transition-colors text-left"
                   >
-                    <LogOut size={16} />
+                    <LogOut size={16} aria-hidden />
                     Sign Out
                   </button>
                 </div>

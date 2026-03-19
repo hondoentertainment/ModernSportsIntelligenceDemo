@@ -1,8 +1,28 @@
 import { GoogleGenAI } from '@google/genai';
+import { z } from 'zod';
+import { apiLogger } from '../lib/logger';
+
+const generateBodySchema = z.object({
+  model: z.string().min(1),
+  contents: z.any(),
+  config: z.any().optional(),
+});
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 
-function setCorsHeaders(res: any) {
+/** Minimal request type for Vercel serverless handler (no @vercel/node dependency). */
+type ApiRequest = {
+  method?: string;
+  body?: unknown;
+};
+
+/** Minimal response type for Vercel serverless handler. */
+type ApiResponse = {
+  setHeader: (name: string, value: string) => void;
+  status: (code: number) => { json: (body: object) => unknown; end?: () => void };
+};
+
+function setCorsHeaders(res: ApiResponse) {
   res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
   res.setHeader('Access-Control-Allow-Methods', ALLOWED_METHODS);
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -12,7 +32,7 @@ function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Internal Server Error';
 }
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: ApiRequest, res: ApiResponse) {
   setCorsHeaders(res);
 
   if (req.method === 'OPTIONS') {
@@ -29,23 +49,26 @@ export default async function handler(req: any, res: any) {
   }
 
   const body = req.body ?? {};
-  if (!body.model || !body.contents) {
-    return res.status(400).json({ error: 'Missing required AI request payload.' });
+  const parsed = generateBodySchema.safeParse(body);
+  if (!parsed.success) {
+    const message = parsed.error.errors.map((e) => e.message).join('; ') || 'Invalid request body';
+    return res.status(400).json({ error: message });
   }
+  const { model, contents, config } = parsed.data;
 
   try {
     const client = new GoogleGenAI({ apiKey });
     const response = await client.models.generateContent({
-      model: body.model,
-      contents: body.contents,
-      config: body.config,
+      model,
+      contents,
+      config,
     });
 
     return res.status(200).json({
       text: response.text || '',
     });
   } catch (error) {
-    console.error('[api/ai/generate]', error);
+    apiLogger.error('AI generate failed', error);
     return res.status(500).json({ error: getErrorMessage(error) });
   }
 }

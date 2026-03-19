@@ -1,5 +1,25 @@
+import { z } from 'zod';
+import { apiLogger } from '../lib/logger';
+
 const ALLOWED_METHODS = 'POST, OPTIONS';
 const SPORTS_CATEGORY_IDS = [213, 50132, 2737, 175690, 3034];
+
+const ebaySearchParamsSchema = z.object({
+  playerName: z.string().optional(),
+  cardYear: z.string().optional(),
+  cardSet: z.string().optional(),
+  cardNumber: z.string().optional(),
+  maxPrice: z.union([z.string(), z.number()]).optional(),
+  condition: z.string().optional(),
+  limit: z.number().optional(),
+}).strict();
+
+const ebayBodySchema = z.object({
+  action: z.enum(['token', 'search', 'item']),
+  sandbox: z.boolean().optional(),
+  params: ebaySearchParamsSchema.optional(),
+  itemId: z.string().optional(),
+}).strict();
 
 function setCorsHeaders(res: any) {
   res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
@@ -108,13 +128,15 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const body = req.body ?? {};
+  const rawBody = req.body ?? {};
+  const parseResult = ebayBodySchema.safeParse(rawBody);
+  if (!parseResult.success) {
+    const message = parseResult.error.errors?.map(e => `${e.path.join('.')}: ${e.message}`).join('; ') ?? 'Invalid request body';
+    return res.status(400).json({ error: message });
+  }
+  const body = parseResult.data;
   const action = body.action;
   const sandbox = Boolean(body.sandbox);
-
-  if (!action) {
-    return res.status(400).json({ error: 'Missing eBay action.' });
-  }
 
   try {
     const accessToken = await getAccessToken(sandbox);
@@ -127,7 +149,7 @@ export default async function handler(req: any, res: any) {
       if (!body.params?.playerName) {
         return res.status(400).json({ error: 'Missing playerName for eBay search.' });
       }
-      const results = await searchListings(accessToken, sandbox, body.params);
+      const results = await searchListings(accessToken, sandbox, body.params!);
       return res.status(200).json(results);
     }
 
@@ -141,7 +163,7 @@ export default async function handler(req: any, res: any) {
 
     return res.status(400).json({ error: 'Unsupported eBay action.' });
   } catch (error) {
-    console.error('[api/market/ebay]', error);
+    apiLogger.error('eBay handler failed', error);
     return res.status(500).json({ error: getErrorMessage(error) });
   }
 }

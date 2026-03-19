@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Brain, CheckCircle, XCircle, Clock, TrendingUp } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -77,7 +78,25 @@ const AgentOutcomeMemory: React.FC = () => {
       <section className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-6" aria-labelledby="outcome-memory-heading">
         <h2 id="outcome-memory-heading" className="text-sm font-semibold text-white mb-4 flex items-center gap-2"><TrendingUp size={16} /> Recommendation history</h2>
         {recommendations.length === 0 ? (
-          <p className="text-slate-500 text-sm">No agent recommendations yet. Use the War Room or Auto-Pilot to generate recommendations; outcomes will appear here.</p>
+          <div className="rounded-xl border border-slate-700/50 bg-slate-800/30 p-6 text-center space-y-4">
+            <p className="text-slate-400 text-sm max-w-lg mx-auto">
+              No recommendations logged yet. When you run the Analyst War Room or Auto-Pilot, approved or rejected actions show up here with outcomes.
+            </p>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Link
+                to="/war-room"
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-brand-lime text-brand-charcoal text-xs font-black uppercase tracking-wider hover:opacity-90"
+              >
+                Open War Room
+              </Link>
+              <Link
+                to="/"
+                className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-slate-600 text-slate-300 text-xs font-bold uppercase tracking-wider hover:bg-slate-800"
+              >
+                Back to dashboard
+              </Link>
+            </div>
+          </div>
         ) : (
           <ul className="space-y-3" role="list">
             {recommendations.slice(0, 20).map(rec => (

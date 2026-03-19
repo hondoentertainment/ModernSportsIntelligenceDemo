@@ -24,6 +24,7 @@ import GuidedTour from './components/GuidedTour.tsx';
 import InstitutionalWallHUD from './components/InstitutionalWallHUD.tsx';
 import GrailShowcase from './components/GrailShowcase.tsx';
 import DemoFlowWidget from './components/DemoFlowWidget.tsx';
+import DocumentTitleSync from './components/DocumentTitleSync.tsx';
 
 // ─── Lazy-loaded Page Components ──────────────────────────────────────
 // Critical path: Dashboard loads first, everything else is code-split
@@ -445,6 +446,12 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
 
   return (
     <div className="flex h-screen overflow-hidden bg-brand-charcoal text-slate-100 font-sans selection:bg-brand-lime/30 luminous-container">
+      <a
+        href="#main-content"
+        className="absolute left-[-9999px] w-px h-px overflow-hidden focus:left-4 focus:top-4 focus:z-[100] focus:w-auto focus:h-auto focus:overflow-visible focus:px-4 focus:py-2 focus:bg-brand-lime focus:text-brand-charcoal focus:font-bold focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
+      >
+        Skip to main content
+      </a>
       <LuminousTracker />
       {/* Desktop Sidebar */}
       <Sidebar isOpen={isSidebarOpen} toggle={() => setIsSidebarOpen(!isSidebarOpen)} />
@@ -478,7 +485,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
           />
         )}
 
-        <main className="flex-1 p-4 md:p-8 page-container overflow-y-auto pb-24 md:pb-8">
+        <main id="main-content" className="flex-1 p-4 md:p-8 page-container overflow-y-auto pb-24 md:pb-8" role="main">
           <LazyErrorBoundary>
             <Suspense fallback={<PageLoadingFallback />}>
               <Routes>
@@ -851,6 +858,7 @@ const App: React.FC = () => {
       <MigrationProvider>
         <ToastProvider>
           <Router>
+            <DocumentTitleSync />
             <LazyErrorBoundary>
               <Suspense fallback={<PageLoadingFallback />}>
                 <Routes>

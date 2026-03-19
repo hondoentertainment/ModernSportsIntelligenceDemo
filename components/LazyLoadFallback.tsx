@@ -3,7 +3,13 @@ import { DashboardSkeleton, CardGridSkeleton, ChartSkeleton } from './SkeletonLo
 
 /** Full-page loading fallback for lazily loaded route components */
 export const PageLoadingFallback: React.FC = () => (
-  <div className="space-y-8 animate-in fade-in duration-500">
+  <div
+    className="space-y-8 animate-in fade-in duration-500"
+    role="status"
+    aria-live="polite"
+    aria-busy="true"
+  >
+    <span className="sr-only">Loading page…</span>
     <DashboardSkeleton />
   </div>
 );

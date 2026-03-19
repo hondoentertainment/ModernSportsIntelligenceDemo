@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { buildCounterpartyTrustGraph, CounterpartyTrustGraphView } from '../lib/fiveDifferentiatorService';
 import { logger } from '../lib/logger';
+import { withRetry } from '../lib/retry';
 
 const riskTone: Record<string, string> = {
   low: 'text-emerald-300',
@@ -22,7 +23,10 @@ const CounterpartyTrustGraph: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      setGraph(await buildCounterpartyTrustGraph(user?.id));
+      setGraph(await withRetry(
+        () => buildCounterpartyTrustGraph(user?.id),
+        { maxAttempts: 3, initialDelayMs: 400, timeoutMs: 15_000 }
+      ));
     } catch (loadError) {
       logger.error('Failed to load counterparty trust graph:', loadError);
       setError(loadError instanceof Error ? loadError.message : 'Unable to load trust graph.');

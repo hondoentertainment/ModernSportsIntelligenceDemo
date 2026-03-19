@@ -1,5 +1,5 @@
 import React, { ErrorInfo, ReactNode } from 'react';
-import { logger } from '../lib/logger';
+import { reportError } from '../lib/errorReporting';
 
 interface Props {
   children: ReactNode;
@@ -24,7 +24,7 @@ class LazyErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    logger.error('[LazyErrorBoundary]', error?.message, info?.componentStack);
+    reportError(error, { componentStack: info?.componentStack, boundary: 'LazyErrorBoundary' });
   }
 
   handleRetry = () => {

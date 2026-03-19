@@ -55,8 +55,8 @@ export interface CardGridItemProps {
   onOpenAnomaly?: (_card: CardInventory) => void;
 }
 
-/** Renders a single card — shared between virtualized and static grid */
-const CardGridItem: React.FC<CardGridItemProps> = ({
+/** Renders a single card — shared between virtualized and static grid. Memoized for list performance so parent re-renders don't re-render unchanged items. */
+const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
   card,
   getRarityTier,
   getTierStyles,
@@ -383,6 +383,8 @@ const CardGridItem: React.FC<CardGridItemProps> = ({
       </div>
     </div>
   );
-};
+});
+
+CardGridItem.displayName = 'CardGridItem';
 
 export default CardGridItem;

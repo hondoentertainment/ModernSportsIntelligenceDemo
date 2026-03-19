@@ -7,6 +7,7 @@ import { getActiveListingsAsync, Listing } from '../lib/p2pMarketplaceService';
 import { getDealRoomsAsync } from '../lib/dealRoomService';
 import type { DealRoom } from '../lib/dealRoomService';
 import { logger } from '../lib/logger';
+import { withRetry } from '../lib/retry';
 
 const fmt = (value: number) => `$${Math.round(value).toLocaleString()}`;
 
@@ -24,10 +25,13 @@ const PrivateDealRoomAgent: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const [nextListings, nextRooms] = await Promise.all([
-        getActiveListingsAsync(user?.id),
-        getDealRoomsAsync(user?.id),
-      ]);
+      const [nextListings, nextRooms] = await withRetry(
+        () => Promise.all([
+          getActiveListingsAsync(user?.id),
+          getDealRoomsAsync(user?.id),
+        ]),
+        { maxAttempts: 3, initialDelayMs: 400, timeoutMs: 15_000 }
+      );
       setListings(nextListings.filter(listing => listing.askingPrice >= 1000));
       setRooms(nextRooms);
       setSelectedRoom(nextRooms[0] || null);

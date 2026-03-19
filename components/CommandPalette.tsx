@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, LayoutDashboard, Package, TrendingUp, Star, BarChart3, Target, Bell, User, FileText, Zap } from 'lucide-react';
 import { Search, LayoutDashboard, Package, TrendingUp, BarChart3, Bell, FileText, Zap, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useFocusTrap } from '../lib/useFocusTrap';
@@ -121,9 +120,10 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onAddC
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       role="dialog"
       aria-modal="true"
-      aria-label="Command palette"
+      aria-labelledby="command-palette-title"
     >
       <div ref={trapRef} className="w-full max-w-lg bg-brand-slate border border-slate-700 rounded-2xl shadow-2xl overflow-hidden" onKeyDown={handleKeyDown}>
+        <h2 id="command-palette-title" className="sr-only">Command palette</h2>
         {/* Search input */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-800">
           <Search size={18} className="text-brand-muted flex-shrink-0" />
@@ -152,6 +152,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onAddC
                 const idx = flatIndex;
                 return (
                   <button
+                    type="button"
                     key={item.id}
                     onClick={item.action}
                     onMouseEnter={() => setSelectedIndex(idx)}

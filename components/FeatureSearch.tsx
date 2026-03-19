@@ -96,9 +96,11 @@ const FeatureSearch: React.FC = () => {
     <>
       {/* Trigger button */}
       <button
+        type="button"
         onClick={() => setIsOpen(true)}
         className="flex items-center gap-2 px-3 py-1.5 bg-brand-slate border border-slate-800 rounded-full text-brand-muted hover:text-white hover:border-slate-600 transition-all text-[10px] font-black uppercase tracking-widest group"
         aria-label="Search features (Ctrl+K)"
+        title="Search features (⌘K)"
       >
         <Search size={14} className="group-hover:text-brand-lime transition-colors" />
         <span className="hidden lg:inline">Features</span>
@@ -114,28 +116,39 @@ const FeatureSearch: React.FC = () => {
           onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false); }}
           role="dialog"
           aria-modal="true"
-          aria-label="Feature search"
+          aria-labelledby="feature-search-title"
         >
           <div
             ref={trapRef}
             className="w-full max-w-2xl bg-brand-slate border border-slate-700 rounded-2xl shadow-2xl overflow-hidden"
             onKeyDown={handleKeyDown}
           >
+            <h2 id="feature-search-title" className="sr-only">
+              Feature search
+            </h2>
             {/* Search input */}
             <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-800">
-              <Search size={18} className="text-brand-lime flex-shrink-0" />
+              <Search size={18} className="text-brand-lime flex-shrink-0" aria-hidden />
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') setIsOpen(false);
+                }}
                 placeholder={`Search ${DISCOVERABLE_FEATURE_CATALOG.length} verified features... (e.g. grading, live, tax, AI)`}
-                className="flex-1 bg-transparent text-sm text-white placeholder:text-slate-500 outline-none"
+                className="flex-1 bg-transparent text-base md:text-sm text-white placeholder:text-slate-500 outline-none"
                 aria-label="Search features"
               />
               {query && (
-                <button onClick={() => setQuery('')} className="text-slate-500 hover:text-white transition-colors">
-                  <X size={16} />
+                <button
+                  type="button"
+                  onClick={() => setQuery('')}
+                  className="text-slate-500 hover:text-white transition-colors p-1 rounded-lg"
+                  aria-label="Clear search"
+                >
+                  <X size={16} aria-hidden />
                 </button>
               )}
               <kbd className="hidden md:inline text-[9px] font-mono text-brand-muted bg-brand-charcoal px-2 py-1 rounded-lg border border-slate-800">ESC</kbd>
@@ -151,9 +164,19 @@ const FeatureSearch: React.FC = () => {
             {/* Results list */}
             <div ref={listRef} className="max-h-[50vh] overflow-y-auto py-2" role="listbox">
               {flatResults.length === 0 && (
-                <div className="px-5 py-12 text-center">
-                  <p className="text-sm text-slate-400">No features found for &quot;{query}&quot;</p>
-                  <p className="text-[10px] text-brand-muted mt-2">Try searching by category (Analytics, Trading, AI) or tier (Differentiated, Industry-First)</p>
+                <div className="px-5 py-12 text-center" role="status">
+                  <p className="text-sm text-slate-400">No features match &quot;{query}&quot;</p>
+                  <p className="text-xs text-brand-muted mt-2 max-w-md mx-auto">
+                    Try a shorter keyword (e.g. <strong className="text-slate-400">grading</strong>,{' '}
+                    <strong className="text-slate-400">tax</strong>, <strong className="text-slate-400">AI</strong>) or open the full directory.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => { setIsOpen(false); navigate('/features'); }}
+                    className="mt-4 px-4 py-2 rounded-xl bg-brand-lime/15 text-brand-lime text-xs font-bold uppercase tracking-wider hover:bg-brand-lime/25"
+                  >
+                    Browse all features
+                  </button>
                 </div>
               )}
 
@@ -174,6 +197,7 @@ const FeatureSearch: React.FC = () => {
                       const isSelected = globalIdx === selectedIndex;
                       return (
                         <button
+                          type="button"
                           key={feature.id}
                           data-feature-item
                           onClick={() => handleSelect(feature)}
@@ -213,6 +237,7 @@ const FeatureSearch: React.FC = () => {
                 <span><kbd className="font-mono bg-brand-charcoal px-1.5 py-0.5 rounded border border-slate-800">↵</kbd> go to feature</span>
               </div>
               <button
+                type="button"
                 onClick={() => { setIsOpen(false); navigate('/features'); }}
                 className="text-brand-lime hover:underline font-bold uppercase tracking-wider"
               >

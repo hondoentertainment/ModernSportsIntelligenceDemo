@@ -1,10 +1,3 @@
-
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Plus,
@@ -24,24 +17,17 @@ import {
   Clock,
   XCircle,
   CheckSquare,
-  Trash2,
   Download,
-  Sparkles,
   Cloud,
   CloudOff,
   Star,
   Calculator,
   Share2,
-  BriefcaseBusiness
+  BriefcaseBusiness,
+  Loader2,
 } from 'lucide-react';
-import {
-  CardInventory,
-  TargetWatchlist,
-  League,
-  ExitPlan,
-} from '../types';
-import { Link } from 'react-router-dom';
 import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
+import { Link } from 'react-router-dom';
 import { getEbayCardPrice } from '../lib/gemini';
 import { logger } from '../lib/logger';
 import { LEAGUES } from '../constants';
@@ -54,7 +40,6 @@ import { getRarityTier, getTierStyles } from '../lib/rarity';
 import { generatePopData, ScarcityService } from '../lib/scarcityService';
 import Sparkline from '../components/Sparkline';
 import { getPriceTrend, getSparklineData } from '../lib/priceHistory';
-import { Loader2, Cloud, CloudOff } from 'lucide-react';
 import CardImage from '../components/CardImage';
 import ImageLightbox from '../components/ImageLightbox';
 import ScarcityBadge from '../components/ScarcityBadge';
@@ -79,9 +64,6 @@ import CardGridItem from '../components/collection/CardGridItem';
 import SwipeableCard from '../components/collection/SwipeableCard';
 import VirtualizedGrid from '../components/collection/VirtualizedGrid';
 import { useKeyboardShortcuts } from '../lib/useKeyboardShortcuts';
-
-type SortField = 'player' | 'value' | 'purchasePrice' | 'date' | 'roi' | 'league';
-type SortDir = 'asc' | 'desc';
 import { LiquidityService } from '../lib/liquidityService';
 import { OpportunityBadge } from '../components/OpportunityBadge';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -89,6 +71,9 @@ import GradingPremiumTool from '../components/GradingPremiumTool';
 import ShareAlphaModal from '../components/ShareAlphaModal';
 import { fetchPublicProfile } from '../lib/socialService';
 import { useAuth } from '../contexts/AuthContext';
+
+type SortField = 'player' | 'value' | 'purchasePrice' | 'date' | 'roi' | 'league';
+type SortDir = 'asc' | 'desc';
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -118,8 +103,8 @@ interface CardGridItemProps {
   key?: React.Key;
 }
 
-/** Renders a single card - shared between virtualized and static grid */
-function CardGridItem({
+/** Renders a single card - shared between virtualized and static grid. Memoized for list performance so parent re-renders don't re-render unchanged items. */
+const CardGridItem = React.memo(function CardGridItem({
   card,
   getRarityTier,
   getTierStyles,
@@ -282,7 +267,7 @@ function CardGridItem({
       </div >
     </div >
   );
-}
+});
 
 function VirtualizedGrid({
   items,

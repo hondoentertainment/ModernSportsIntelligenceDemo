@@ -34,4 +34,16 @@ test.describe('Release smoke coverage', () => {
             page.getByText(/portfolio not found|portfolio value|@demo_user|could not load portfolio|retry|return to base/i).first()
         ).toBeVisible({ timeout: 10000 });
     });
+
+    test('feature search opens and shows featured features', async ({ page }) => {
+        await page.goto('/#/');
+        const searchTrigger = page.getByRole('button', { name: /search features/i });
+        await expect(searchTrigger).toBeVisible({ timeout: 10000 });
+        await searchTrigger.click();
+        const dialog = page.getByRole('dialog');
+        await expect(dialog).toBeVisible({ timeout: 5000 });
+        await expect(
+            page.getByText(/popular features|feature search|search \d+ verified features/i).first()
+        ).toBeVisible({ timeout: 3000 });
+    });
 });

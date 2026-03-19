@@ -69,8 +69,6 @@ import {
   Calculator,
   Package,
   AlertOctagon,
-  Shield,
-  Sparkles,
   DollarSign,
   BellRing,
   Award,
@@ -110,7 +108,6 @@ import {
   Network,
   PlayCircle,
   MessageSquare,
-  Dices,
   Shuffle,
 } from 'lucide-react';
 import { CardInventory, Sport } from './types.ts';

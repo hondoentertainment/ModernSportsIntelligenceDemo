@@ -718,4 +718,4 @@ ModernSportsIntelligenceDemo/
 
 ---
 
-*This PRD is a living document updated with each feature release. Version 4.3 (March 2026) documents production readiness: app-wide production-safe logger (no console in prod), loading/error/toast/retry on data-fetching pages, env validation gated to dev, error-boundary and test-suite fixes, and Vite build chunk fix (no circular dependency). Version 4.2 added the v5.1+ Frontier industry-absent features.*
+*This PRD is a living document updated with each feature release. Version 4.3 (March 2026) documents production readiness: app-wide production-safe logger (no console in prod), loading/error/toast/retry on data-fetching pages, env validation gated to dev, error-boundary and test-suite fixes, and Vite build chunk fix (no circular dependency). Post–4.3 production-grade phases: `.env.example`, security headers (Vercel), retry/timeout utilities and error reporting (beacon), `/api/health`, Dependabot, and ErrorBoundary integration with reportError. Version 4.2 added the v5.1+ Frontier industry-absent features.*

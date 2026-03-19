@@ -237,13 +237,15 @@ export async function runScenarioTheater(inventory: CardInventory[], userId?: st
     const bands = Array.isArray(result.percentileBands) ? result.percentileBands : [];
     const lastBand = bands[bands.length - 1];
     const projected = lastBand?.mean ?? portfolioValue * (1 + (result.impact ?? 0) / 100);
+    const scenarioWithFactors = scenario as { factors?: unknown[]; category?: string };
+    const templateKind = scenarioWithFactors.category === 'market' ? 'market' : scenarioWithFactors.category === 'player' ? 'player' : (scenario.id === 'star-scandal' ? 'player' : 'market');
     const snapshot: ScenarioSnapshot = {
         id: crypto.randomUUID(),
         ownerUserId: userId || null,
         name: `${scenario.name} Snapshot`,
-        templateKind: scenario.category === 'market' ? 'market' : scenario.category === 'player' ? 'player' : 'custom',
+        templateKind,
         description: scenario.description,
-        inputs: { scenarioId: scenario.id, shocks: scenario.shocks, assetCount: inventory.length },
+        inputs: { scenarioId: scenario.id, shocks: scenarioWithFactors.factors ?? [], assetCount: inventory.length },
         summary: `Scenario theater snapshot for ${scenario.name}`,
         createdAt: new Date().toISOString(),
     };

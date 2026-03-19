@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fetchAgentRecommendations } from './differentiatorData';
+import { withRetry } from './retry';
 import type { AgentRecommendationRecord } from '../types';
 
 export interface UseAgentRecommendationsResult {
@@ -28,7 +29,10 @@ export function useAgentRecommendations(ownerUserId: string | undefined): UseAge
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchAgentRecommendations(ownerUserId);
+      const data = await withRetry(
+        () => fetchAgentRecommendations(ownerUserId),
+        { maxAttempts: 3, initialDelayMs: 400, timeoutMs: 15_000 }
+      );
       setRecommendations(data ?? []);
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Failed to load recommendations';

@@ -1,5 +1,5 @@
 import React, { ErrorInfo, ReactNode } from 'react';
-import { logger } from '../lib/logger';
+import { reportError } from '../lib/errorReporting';
 
 interface Props {
   children: ReactNode;
@@ -19,7 +19,7 @@ class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    logger.error('[ErrorBoundary]', error?.message, info?.componentStack);
+    reportError(error, { componentStack: info?.componentStack, boundary: 'ErrorBoundary' });
   }
 
   handleReset = () => {
