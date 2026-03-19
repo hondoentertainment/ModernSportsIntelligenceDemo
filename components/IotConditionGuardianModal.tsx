@@ -38,7 +38,7 @@ import {
   OPTIMAL_HUMIDITY_MAX,
   MAX_UV_INDEX,
   MAX_VIBRATION,
-} from '../lib/iotConditionGuardianService';
+} from '../lib/utils/iotConditionGuardianService';
 
 interface IotConditionGuardianModalProps {
   isOpen: boolean;

@@ -25,7 +25,7 @@ import {
   ERROR_TYPE_META,
   RARITY_META,
   DIFFICULTY_META,
-} from '../lib/errorCardService';
+} from '../lib/core/errorCardService';
 
 // ---- Helpers ----
 

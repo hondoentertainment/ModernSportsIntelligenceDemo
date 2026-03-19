@@ -41,7 +41,7 @@ import {
   type WalkingRoute,
   type DealAlert,
   type ShowMap,
-} from '../lib/cardShowGpsService';
+} from '../lib/utils/cardShowGpsService';
 
 // ---- Types ----
 

@@ -63,7 +63,7 @@ import {
   type PhantomStrategy,
   type WhatIfResult,
   type BenchmarkComparison,
-} from '../lib/phantomBacktesterService';
+} from '../lib/analytics/phantomBacktesterService';
 
 // ---- Tab type ----
 type TabId = 'builder' | 'presets' | 'results' | 'library' | 'leaderboard';

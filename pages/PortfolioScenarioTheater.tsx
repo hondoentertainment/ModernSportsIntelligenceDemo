@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Activity, FlaskConical, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory';
-import { runScenarioTheater, ScenarioTheaterView } from '../lib/fiveDifferentiatorService';
-import { getAllScenarios } from '../lib/stressTestService';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import { runScenarioTheater, ScenarioTheaterView } from '../lib/utils/fiveDifferentiatorService';
+import { getAllScenarios } from '../lib/analytics/stressTestService';
 
 const fmt = (value: number) => `$${Math.round(value).toLocaleString()}`;
 

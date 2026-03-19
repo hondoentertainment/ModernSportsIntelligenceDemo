@@ -12,7 +12,7 @@ import {
   getOptimizationScore,
   getRebalanceRecommendations,
   RebalanceAction,
-} from '../lib/portfolioRebalancerService';
+} from '../lib/analytics/portfolioRebalancerService';
 
 interface RebalancerWidgetProps {
   onClick?: () => void;

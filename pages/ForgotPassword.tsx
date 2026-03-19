@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { getFriendlyAuthMessage } from '../lib/authErrors';
+import { getFriendlyAuthMessage } from '../lib/utils/authErrors';
 import { Mail, ArrowLeft, Loader2, Check, TrendingUp, Shield } from 'lucide-react';
 
 const ForgotPassword: React.FC = () => {

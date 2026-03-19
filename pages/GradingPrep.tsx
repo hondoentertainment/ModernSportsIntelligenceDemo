@@ -25,7 +25,7 @@ import {
   type PrepCategory,
   type CardSize,
   type MistakeSeverity,
-} from '../lib/gradingPrepService.ts';
+} from '../lib/core/gradingPrepService.ts';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, PieChart, Pie, Cell } from 'recharts';
 
 type Tab = 'guides' | 'checklists' | 'mistakes' | 'holders';

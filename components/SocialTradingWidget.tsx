@@ -6,7 +6,7 @@ import {
   getLeaderboard,
   getTradingStats,
   formatCurrency,
-} from '../lib/socialTradingService';
+} from '../lib/social/socialTradingService';
 
 interface SocialTradingWidgetProps {
   onOpenModal?: () => void;

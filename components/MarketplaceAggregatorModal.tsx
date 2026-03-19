@@ -47,7 +47,7 @@ import {
   MarketplacePlatform,
   PriceComparison,
   PlatformHealth,
-} from '../lib/marketplaceAggregatorService';
+} from '../lib/trading/marketplaceAggregatorService';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 

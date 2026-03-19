@@ -8,7 +8,7 @@ import {
   Activity,
   Image as _ImageIcon,
 } from 'lucide-react';
-import { parseCardImage } from '../lib/gemini.ts';
+import { parseCardImage } from '../lib/utils/gemini.ts';
 import { CardInventory } from '../types.ts';
 import CameraFeed from './CameraFeed.tsx';
 

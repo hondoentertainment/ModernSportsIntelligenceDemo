@@ -42,7 +42,7 @@ import {
   type IRSFactor,
   type TaxRecommendation,
   type ScheduleComparison,
-} from '../lib/taxAutopilotService';
+} from '../lib/utils/taxAutopilotService';
 
 // ---------------------------------------------------------------------------
 // Constants

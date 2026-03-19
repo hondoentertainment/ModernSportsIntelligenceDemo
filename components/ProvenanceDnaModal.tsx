@@ -25,7 +25,7 @@ import {
   type OwnershipChainEntry,
   type ProvenanceScore,
   type CounterfeitResult,
-} from '../lib/provenanceDnaService';
+} from '../lib/core/provenanceDnaService';
 
 interface ProvenanceDnaModalProps {
   isOpen: boolean;

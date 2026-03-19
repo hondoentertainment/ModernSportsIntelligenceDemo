@@ -19,7 +19,7 @@ import {
   getPriorityColor,
   NarrativeReport,
   NarrativePeriod,
-} from '../../lib/portfolioNarratorService';
+} from '../../lib/analytics/portfolioNarratorService';
 
 describe('portfolioNarratorService', () => {
   beforeEach(() => {

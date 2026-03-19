@@ -8,7 +8,7 @@ import {
   getPlatformConfig,
   getFormatConfig,
   formatCurrency,
-} from '../lib/liveBreakHubService';
+} from '../lib/social/liveBreakHubService';
 
 interface LiveBreakHubWidgetProps {
   onOpenModal?: () => void;

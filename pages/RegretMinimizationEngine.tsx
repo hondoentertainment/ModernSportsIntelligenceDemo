@@ -15,7 +15,7 @@ import {
   type RegretCoefficient,
   type RegretAlert,
   type RegretSummary,
-} from '../lib/regretMinimizationService.ts';
+} from '../lib/analytics/regretMinimizationService.ts';
 
 const CHART_COLORS = ['#f87171', '#fb923c', '#fbbf24', '#a78bfa', '#60a5fa', '#34d399'];
 

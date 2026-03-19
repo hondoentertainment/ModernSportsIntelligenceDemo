@@ -34,7 +34,7 @@ import {
   type MentorStatus,
   type SkillLevel,
   type SessionType,
-} from '../lib/mentorshipService.ts';
+} from '../lib/social/mentorshipService.ts';
 
 type TabId = 'mentors' | 'paths' | 'sessions' | 'skills';
 

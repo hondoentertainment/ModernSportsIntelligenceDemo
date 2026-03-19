@@ -6,7 +6,7 @@ import {
   getSnapshots,
   generateHistoricalSnapshots,
   captureSnapshot,
-} from '../lib/timeMachineService';
+} from '../lib/analytics/timeMachineService';
 
 interface TimelineWidgetProps {
   cards: CardInventory[];

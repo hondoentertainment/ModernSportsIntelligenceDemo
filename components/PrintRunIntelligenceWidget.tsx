@@ -5,7 +5,7 @@ import {
   getScarcityIndices,
   getSaturationAlerts,
   formatNumber,
-} from '../lib/printRunIntelligenceService';
+} from '../lib/analytics/printRunIntelligenceService';
 
 interface PrintRunIntelligenceWidgetProps {
   onOpenModal?: () => void;

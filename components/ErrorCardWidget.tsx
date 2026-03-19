@@ -6,7 +6,7 @@ import {
   getPremiumMetrics,
   getErrorCategories,
   formatCurrency,
-} from '../lib/errorCardService';
+} from '../lib/core/errorCardService';
 
 interface ErrorCardWidgetProps {
   onOpenModal?: () => void;

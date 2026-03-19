@@ -18,7 +18,7 @@ import {
 import {
   getSniperAlerts,
   getSniperStats,
-} from '../lib/mysterySniperDetectorService';
+} from '../lib/analytics/mysterySniperDetectorService';
 
 interface MysterySniperDetectorModalProps {
   isOpen: boolean;

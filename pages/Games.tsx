@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Calendar, Target, Zap, Clock, Activity, ChevronRight, ChevronLeft } from 'lucide-react';
-import { generateDailySchedule, GameMatchup } from '../lib/matchupEngine.ts';
+import { generateDailySchedule, GameMatchup } from '../lib/utils/matchupEngine.ts';
 
 const Games: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());

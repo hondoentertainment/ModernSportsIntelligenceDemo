@@ -61,7 +61,7 @@ import {
   type StorageEnvironment,
   type LightExposure,
   type DecayPoint,
-} from '../lib/cardDecayService';
+} from '../lib/core/cardDecayService';
 
 // ---- Constants ----
 

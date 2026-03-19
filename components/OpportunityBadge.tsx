@@ -1,6 +1,6 @@
 import React from 'react';
 import { TargetWatchlist, CardInventory } from '../types';
-import { ArbitrageService } from '../lib/ArbitrageService';
+import { ArbitrageService } from '../lib/trading/ArbitrageService';
 import { Sparkles, TrendingDown, Clock, Activity } from 'lucide-react';
 
 interface OpportunityBadgeProps {

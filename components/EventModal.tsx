@@ -48,7 +48,7 @@ import {
   getEventHistory,
   generateWantList,
   exportPrepListHTML,
-} from '../lib/eventPlannerService';
+} from '../lib/utils/eventPlannerService';
 
 interface EventModalProps {
   isOpen: boolean;

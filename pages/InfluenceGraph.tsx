@@ -34,7 +34,7 @@ import {
   actionColor,
   signalLabel,
   type CardCategory,
-} from '../lib/influenceGraphService';
+} from '../lib/analytics/influenceGraphService';
 
 const CATEGORY_FILTERS: { label: string; value: CardCategory | 'all' }[] = [
   { label: 'All', value: 'all' },

@@ -17,7 +17,7 @@ import {
   getTrendIcon,
   getTrendColor,
   TurnaroundReport,
-} from '../../lib/gradingTurnaroundService';
+} from '../../lib/core/gradingTurnaroundService';
 
 describe('gradingTurnaroundService', () => {
   beforeEach(() => {

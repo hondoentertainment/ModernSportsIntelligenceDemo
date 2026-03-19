@@ -22,7 +22,7 @@ import {
   getMarketPhaseColor,
   getDayColor,
   type DayOfWeek,
-} from '../lib/circadianOptimizerService';
+} from '../lib/analytics/circadianOptimizerService';
 
 const DAY_ORDER: DayOfWeek[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 

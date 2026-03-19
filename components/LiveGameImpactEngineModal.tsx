@@ -31,8 +31,8 @@ import {
   type MilestoneAlert,
   type AlertPreference,
   type PlayerPerformance,
-} from '../lib/liveGameImpactEngineService.ts';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
+} from '../lib/analytics/liveGameImpactEngineService.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import {
   AreaChart,
   Area,

@@ -29,7 +29,7 @@ import {
   type ClaimStatus,
   type PolicyStatus,
   type ClaimDocument,
-} from '../lib/insuranceAppraisalService';
+} from '../lib/core/insuranceAppraisalService';
 
 const TABS = ['Appraisals', 'Policies', 'Claims', 'Coverage Analyzer'] as const;
 type Tab = (typeof TABS)[number];

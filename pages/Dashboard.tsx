@@ -1,4 +1,5 @@
 
+import { store } from '../lib/dal/syncStore';
 import React, {
   Suspense,
   useMemo,
@@ -48,21 +49,21 @@ import {
   PolarGrid,
   PolarAngleAxis,
 } from 'recharts';
-import { calculateAlphaScore, getCollectorTier, getPortfolioDNA } from '../lib/analytics.ts';
-import { generatePortfolioSentiment } from '../lib/gemini.ts';
-import { detectSignals } from '../lib/signals.ts';
-import { syncPortfolio, SyncProgress } from '../lib/marketSync.ts';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
-import { useAlerts } from '../lib/useAlerts.ts';
+import { calculateAlphaScore, getCollectorTier, getPortfolioDNA } from '../lib/analytics/analytics.ts';
+import { generatePortfolioSentiment } from '../lib/utils/gemini.ts';
+import { detectSignals } from '../lib/utils/signals.ts';
+import { syncPortfolio, SyncProgress } from '../lib/utils/marketSync.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
+import { useAlerts } from '../lib/utils/useAlerts.ts';
 import ReportModal from '../components/ReportModal.tsx';
 import MorningBriefingModal from '../components/MorningBriefingModal.tsx';
 import ShareAlphaModal from '../components/ShareAlphaModal.tsx';
 import OCRIngestionModal from '../components/OCRIngestionModal.tsx';
-import { getRarityTier, getTierStyles } from '../lib/rarity.ts';
-import { getHistoricalDelta } from '../lib/marketHistory.ts';
+import { getRarityTier, getTierStyles } from '../lib/utils/rarity.ts';
+import { getHistoricalDelta } from '../lib/analytics/marketHistory.ts';
 import { logger } from '../lib/logger';
-import { StatsService } from '../lib/statsService.ts';
-import { AggregationService } from '../lib/aggregationService.ts';
+import { StatsService } from '../lib/utils/statsService.ts';
+import { AggregationService } from '../lib/analytics/aggregationService.ts';
 import { Cloud, CloudOff, Gavel } from 'lucide-react';
 import CardImage from '../components/CardImage.tsx';
 import NegotiationModal from '../components/NegotiationModal.tsx';
@@ -133,8 +134,8 @@ const Dashboard: React.FC = () => {
   const [userSettings, _setUserSettings] = useState<UserSettings | null>(() => {
   const [userSettings, setUserSettings] = useState<any>(() => {
     try {
-      const saved = localStorage.getItem('msi_user_settings');
-      return saved ? JSON.parse(saved) : null;
+      const saved = store.get<any>('msi_user_settings', null);
+      return saved;
     } catch {
       return null;
     }
@@ -149,7 +150,7 @@ const Dashboard: React.FC = () => {
 
   // Morning Briefing Logic
   useEffect(() => {
-    const lastSeen = localStorage.getItem('lastMorningBriefing');
+    const lastSeen = store.get<string>('lastMorningBriefing', '');
     const today = new Date().toDateString();
 
     // Show if we haven't seen it today and have inventory
@@ -157,7 +158,7 @@ const Dashboard: React.FC = () => {
       // Delay slightly for effect
       const timer = setTimeout(() => {
         setShowBriefing(true);
-        localStorage.setItem('lastMorningBriefing', today);
+        store.set('lastMorningBriefing', today);
       }, 1000);
       return () => clearTimeout(timer);
     }

@@ -6,7 +6,7 @@ import {
   getEraBreakdown,
   getGrowthMetrics,
   formatCurrency,
-} from '../lib/vintageMarketService';
+} from '../lib/analytics/vintageMarketService';
 
 interface VintageMarketWidgetProps {
   onOpenModal?: () => void;

@@ -1,6 +1,6 @@
 
 import React, { useEffect } from 'react';
-import { useInventory, calculateStats } from '../lib/useInventory.ts';
+import { useInventory, calculateStats } from '../lib/utils/useInventory.ts';
 
 /**
  * LuminousTracker handles global mouse tracking and ambient environmental UI.

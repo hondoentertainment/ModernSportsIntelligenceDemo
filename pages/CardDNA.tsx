@@ -24,7 +24,7 @@ import {
   getAuthenticationHistory,
   getDNAStats,
   getCounterfeitAlerts,
-} from '../lib/cardDNAService';
+} from '../lib/core/cardDNAService';
 
 function confidenceColor(value: number): string {
   if (value >= 85) return '#34d399';

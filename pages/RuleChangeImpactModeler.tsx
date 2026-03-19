@@ -62,7 +62,7 @@ import {
   type RuleChangeTimelineEvent,
   type RuleChangeScenario,
   type Sport,
-} from '../lib/ruleChangeService.ts';
+} from '../lib/analytics/ruleChangeService.ts';
 
 type TabId = 'dashboard' | 'historical' | 'stat-shifts' | 'winners-losers' | 'scenario' | 'timeline';
 

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { X, AlertTriangle, AlertCircle, Info, TrendingUp, TrendingDown, Minus, ArrowRight } from 'lucide-react';
-import { MacroAlert, getIndicatorHistory, getRelatedIndicators, MacroIndicator } from '../lib/macroSentinelService';
+import { MacroAlert, getIndicatorHistory, getRelatedIndicators, MacroIndicator } from '../lib/analytics/macroSentinelService';
 
 interface MacroAlertModalProps {
   isOpen: boolean;

@@ -7,8 +7,8 @@ import {
   calculateBollingerBands,
   detectTrendline,
   getSupportResistance,
-} from '../../lib/priceChartService';
-import type { PriceDataPoint } from '../../lib/priceChartService';
+} from '../../lib/analytics/priceChartService';
+import type { PriceDataPoint } from '../../lib/analytics/priceChartService';
 import { makeCard } from '../helpers';
 
 describe('priceChartService', () => {

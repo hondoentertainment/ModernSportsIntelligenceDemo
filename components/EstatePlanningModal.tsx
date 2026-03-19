@@ -17,7 +17,7 @@ import {
   getEstatePlan,
   getEstatePerformanceContext,
   DocumentStatus,
-} from '../lib/estatePlanningService';
+} from '../lib/core/estatePlanningService';
 
 interface EstatePlanningModalProps {
   isOpen: boolean;

@@ -10,7 +10,7 @@ import {
   ArrowDownCircle,
 } from 'lucide-react';
 import { CardInventory } from '../types';
-import { generatePriceHistory } from '../lib/priceChartService';
+import { generatePriceHistory } from '../lib/analytics/priceChartService';
 import {
   calculateRSI,
   calculateMACD,
@@ -18,7 +18,7 @@ import {
   generateTASignals,
   TASignal,
   TASentiment,
-} from '../lib/technicalAnalysisService';
+} from '../lib/analytics/technicalAnalysisService';
 
 interface TAWidgetProps {
   cards: CardInventory[];

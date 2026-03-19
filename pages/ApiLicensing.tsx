@@ -23,7 +23,7 @@ import {
   type EmbedWidget,
   type TierPricing,
   type APIRequest,
-} from '../lib/apiLicensingService.ts';
+} from '../lib/utils/apiLicensingService.ts';
 import {
   AreaChart,
   Area,

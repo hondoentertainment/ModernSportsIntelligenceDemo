@@ -32,7 +32,7 @@ import {
   generateWeeklyDigest,
   submitFeedback,
   getFeedbackStats,
-} from '../lib/advisorService';
+} from '../lib/analytics/advisorService';
 
 interface AdvisorModalProps {
   isOpen: boolean;

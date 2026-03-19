@@ -5,7 +5,7 @@ import {
   getIndexComparison,
   calculatePortfolioBeta,
   getTopComponents,
-} from '../../lib/marketIndicesService';
+} from '../../lib/analytics/marketIndicesService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

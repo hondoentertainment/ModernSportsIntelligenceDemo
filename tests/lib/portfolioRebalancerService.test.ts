@@ -5,7 +5,7 @@ import {
   getOptimizationScore,
   getPortfolioHealthScore,
   getRiskMetrics,
-} from '../../lib/portfolioRebalancerService';
+} from '../../lib/analytics/portfolioRebalancerService';
 
 describe('portfolioRebalancerService', () => {
   describe('getPortfolioAllocations', () => {

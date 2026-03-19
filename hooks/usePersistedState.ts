@@ -12,6 +12,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { logger } from '../lib/logger';
+import { store } from '../lib/dal/syncStore';
 
 const LS_HOOK_PREFIX = 'msi_ps_';
 const DEFAULT_DEBOUNCE_MS = 300;
@@ -21,18 +22,12 @@ const DEFAULT_DEBOUNCE_MS = 300;
 // ---------------------------------------------------------------------------
 
 function readFromStorage<T>(fullKey: string, defaultValue: T): T {
-  try {
-    const raw = localStorage.getItem(fullKey);
-    if (raw === null) return defaultValue;
-    return JSON.parse(raw) as T;
-  } catch {
-    return defaultValue;
-  }
+  return store.get<T>(fullKey, defaultValue);
 }
 
 function writeToStorage(fullKey: string, value: unknown): boolean {
   try {
-    localStorage.setItem(fullKey, JSON.stringify(value));
+    store.set(fullKey, value);
     return true;
   } catch (err: unknown) {
     if (err instanceof DOMException && (err.name === 'QuotaExceededError' || err.code === 22)) {

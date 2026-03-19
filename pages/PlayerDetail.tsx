@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft, TrendingUp, BarChart, Flame, CreditCard } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { MOCK_PLAYERS } from '../constants.tsx';
-import { getAthleteHeadshotUrl } from '../lib/mlbApi.ts';
+import { getAthleteHeadshotUrl } from '../lib/utils/mlbApi.ts';
 
 const PlayerDetail: React.FC = () => {
   const { id } = useParams();

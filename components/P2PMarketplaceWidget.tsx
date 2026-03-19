@@ -12,7 +12,7 @@ import {
   getOffers,
   getMarketplaceStats,
   getListingDealScore,
-} from '../lib/p2pMarketplaceService';
+} from '../lib/trading/p2pMarketplaceService';
 
 interface P2PMarketplaceWidgetProps {
   onOpenModal: () => void;

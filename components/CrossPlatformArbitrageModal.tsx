@@ -25,7 +25,7 @@ import {
   formatPercent,
   getPlatformLabel,
   getRiskColor,
-} from '../lib/crossPlatformArbitrageService';
+} from '../lib/trading/crossPlatformArbitrageService';
 import type {
   ArbitrageOpportunity,
   ArbitrageStats,
@@ -33,7 +33,7 @@ import type {
   FeeComparison,
   ArbitrageAlert,
   RiskLevel,
-} from '../lib/crossPlatformArbitrageService';
+} from '../lib/trading/crossPlatformArbitrageService';
 
 interface CrossPlatformArbitrageModalProps {
   isOpen: boolean;

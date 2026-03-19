@@ -47,7 +47,7 @@ import {
   formatPercent,
   getROIColor,
   getProfitColor,
-} from '../lib/breakEvenCalculatorService';
+} from '../lib/analytics/breakEvenCalculatorService';
 
 // ─── Tab Definition ────────────────────────────────────────────────────────
 

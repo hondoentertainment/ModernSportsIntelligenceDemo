@@ -39,7 +39,7 @@ import {
   loadPreferences,
   savePreferences,
   ALL_CATEGORIES,
-} from '../lib/notificationCenterService';
+} from '../lib/utils/notificationCenterService';
 
 interface NotificationModalProps {
   isOpen: boolean;

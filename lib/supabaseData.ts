@@ -1,7 +1,7 @@
 import { supabase, isDemoMode } from './supabase';
 import { logger } from './logger';
 import { CardInventory, TargetWatchlist } from '../types';
-import type { PriceSnapshot } from './priceHistory';
+import type { PriceSnapshot } from './analytics/priceHistory';
 
 type DbCardRow = {
     id: string;

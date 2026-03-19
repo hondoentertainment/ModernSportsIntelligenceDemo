@@ -65,7 +65,7 @@ import {
   type VolRegime,
   type SignalType,
   type EmotionVector,
-} from '../lib/sentimentVolatilityService.ts';
+} from '../lib/analytics/sentimentVolatilityService.ts';
 
 // ── Constants ───────────────────────────────────────────────────────────────
 

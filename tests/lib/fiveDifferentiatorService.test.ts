@@ -4,7 +4,7 @@ import {
     buildLiquidityTwinAssets,
     ensureCatalystMarket,
     runScenarioTheater,
-} from '../../lib/fiveDifferentiatorService';
+} from '../../lib/utils/fiveDifferentiatorService';
 import { CardInventory } from '../../types';
 
 const sampleInventory: CardInventory[] = [

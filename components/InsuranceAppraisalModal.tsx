@@ -8,7 +8,7 @@ import {
   type AppraisalReport,
   type AppraisalLineItem,
   type AppraisalComparable,
-} from '../lib/insuranceAppraisalService';
+} from '../lib/core/insuranceAppraisalService';
 
 interface InsuranceAppraisalModalProps {
   isOpen: boolean;

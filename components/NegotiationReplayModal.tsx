@@ -15,7 +15,7 @@ import {
   DollarSign,
   BarChart3,
 } from 'lucide-react';
-import { getReplays, getPatterns } from '../lib/negotiationReplayService';
+import { getReplays, getPatterns } from '../lib/trading/negotiationReplayService';
 
 interface Props {
   isOpen: boolean;

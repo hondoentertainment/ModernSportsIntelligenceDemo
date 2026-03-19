@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, History, Link2, ShieldCheck, FileSearch, Clock, Award, CheckCircle2 } from 'lucide-react';
-import { getChains } from '../lib/vintageProvenanceService';
+import { getChains } from '../lib/analytics/vintageProvenanceService';
 
 interface Props {
   isOpen: boolean;

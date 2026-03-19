@@ -46,7 +46,7 @@ import {
   VaultTheme,
   VaultVisibility,
   VaultTour,
-} from '../lib/arVaultWalkthroughService';
+} from '../lib/utils/arVaultWalkthroughService';
 
 interface ArVaultWalkthroughModalProps {
   isOpen: boolean;

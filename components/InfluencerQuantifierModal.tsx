@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, Megaphone, TrendingUp, BarChart3, Users, Eye, Star } from 'lucide-react';
-import { getInfluencers } from '../lib/influencerQuantifierService';
+import { getInfluencers } from '../lib/analytics/influencerQuantifierService';
 
 interface Props {
   isOpen: boolean;

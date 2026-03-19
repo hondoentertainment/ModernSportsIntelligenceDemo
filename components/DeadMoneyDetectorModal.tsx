@@ -33,7 +33,7 @@ import {
   type DeadMoneyAlert,
   type PortfolioHealthScore,
   type CapitalEfficiency,
-} from '../lib/deadMoneyDetectorService';
+} from '../lib/analytics/deadMoneyDetectorService';
 
 interface DeadMoneyDetectorModalProps {
   isOpen: boolean;

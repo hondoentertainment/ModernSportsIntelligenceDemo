@@ -26,7 +26,7 @@ import {
   type CollectionTheme,
   type LegacyMemo,
   type NarrativeExport,
-} from '../lib/collectionNarrativeService';
+} from '../lib/core/collectionNarrativeService';
 
 interface CollectionNarrativeModalProps {
   isOpen: boolean;

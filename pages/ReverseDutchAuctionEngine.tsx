@@ -15,7 +15,7 @@ import {
   type DutchAuctionAlert,
   type DutchAuctionHistory,
   type MyListing,
-} from '../lib/reverseDutchAuctionService.ts';
+} from '../lib/trading/reverseDutchAuctionService.ts';
 
 const CHART_COLORS = ['#10b981', '#60a5fa', '#f87171', '#a78bfa', '#fbbf24'];
 

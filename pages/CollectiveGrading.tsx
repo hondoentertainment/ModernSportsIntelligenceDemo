@@ -10,7 +10,7 @@ import {
   getCompanyColor,
   getPoolStatusLabel,
   getPoolStatusColor,
-} from '../lib/collectiveGradingService';
+} from '../lib/core/collectiveGradingService';
 
 const CollectiveGrading: React.FC = () => {
   const pools = useMemo(() => getGradingPools(), []);

@@ -17,8 +17,8 @@ import {
   getProductTypeLabel,
   getProductTypeColor,
   getProbabilityColor,
-} from '../../lib/ripFlipSimService';
-import type { Product } from '../../lib/ripFlipSimService';
+} from '../../lib/trading/ripFlipSimService';
+import type { Product } from '../../lib/trading/ripFlipSimService';
 
 describe('ripFlipSimService', () => {
   beforeEach(() => {

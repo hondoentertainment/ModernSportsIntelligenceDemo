@@ -16,8 +16,8 @@ import {
   type LiveGame,
   type PortfolioImpactCard,
   type MilestoneAlert,
-} from '../lib/liveGameImpactEngineService.ts';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory.ts';
+} from '../lib/analytics/liveGameImpactEngineService.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 
 interface Props {
   onOpenModal?: () => void;

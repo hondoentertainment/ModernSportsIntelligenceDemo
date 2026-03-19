@@ -9,7 +9,7 @@ import {
   getTotalAUM,
   getTopFundIRR,
   getActiveSyndicatesCount,
-} from '../lib/fundManagerService';
+} from '../lib/utils/fundManagerService';
 
 interface FundManagerWidgetProps {
   onClick?: () => void;

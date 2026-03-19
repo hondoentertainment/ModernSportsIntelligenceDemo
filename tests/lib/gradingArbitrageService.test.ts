@@ -13,7 +13,7 @@ import {
   getGradingArbitrageStats,
   addSubmission,
   updateSubmissionStatus,
-} from '../../lib/gradingArbitrageService';
+} from '../../lib/analytics/gradingArbitrageService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

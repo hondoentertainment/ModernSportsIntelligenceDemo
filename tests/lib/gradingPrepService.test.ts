@@ -23,7 +23,7 @@ import {
   type CommonMistake,
   type HolderRecommendation,
   type PrepStats,
-} from '../../lib/gradingPrepService';
+} from '../../lib/core/gradingPrepService';
 
 describe('gradingPrepService', () => {
   beforeEach(() => {

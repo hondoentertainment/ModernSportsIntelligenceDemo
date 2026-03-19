@@ -6,7 +6,7 @@ import {
   getMissingCards,
   getCompletionSummary,
   formatCurrency,
-} from '../lib/setRegistryService';
+} from '../lib/core/setRegistryService';
 
 interface SetRegistryWidgetProps {
   onOpenModal?: () => void;

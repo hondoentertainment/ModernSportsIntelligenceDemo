@@ -6,8 +6,8 @@ import {
     postStrategyBacktest,
     postWorkflowRun,
     toggleExecutionKillSwitch
-} from '../../lib/phaseEndpoints';
-import { getDefaultWorkflowTemplates } from '../../lib/copilotService';
+} from '../../lib/utils/phaseEndpoints';
+import { getDefaultWorkflowTemplates } from '../../lib/utils/copilotService';
 
 describe('phaseEndpoints', () => {
     beforeEach(() => {

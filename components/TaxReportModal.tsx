@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { X, FileText, ArrowUpRight, ArrowDownRight, Scale, TrendingDown, AlertTriangle } from 'lucide-react';
 import { CardInventory } from '../types';
-import { TaxLotService, CostBasisMethod } from '../lib/taxLotService';
+import { TaxLotService, CostBasisMethod } from '../lib/utils/taxLotService';
 
 interface TaxReportModalProps {
   isOpen: boolean;

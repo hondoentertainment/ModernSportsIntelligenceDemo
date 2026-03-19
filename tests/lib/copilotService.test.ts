@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createExplainabilityCard, getDefaultWorkflowTemplates, runWorkflowTemplate } from '../../lib/copilotService';
+import { createExplainabilityCard, getDefaultWorkflowTemplates, runWorkflowTemplate } from '../../lib/utils/copilotService';
 
 describe('copilotService', () => {
     it('runs workflow and blocks when approval is missing', () => {

@@ -7,7 +7,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { CardInventory } from '../types';
-import { generatePortfolioQuotes, getLiquidityPoolStats } from '../lib/instantBuyService';
+import { generatePortfolioQuotes, getLiquidityPoolStats } from '../lib/trading/instantBuyService';
 
 interface LiquidityPoolWidgetProps {
   inventory: CardInventory[];

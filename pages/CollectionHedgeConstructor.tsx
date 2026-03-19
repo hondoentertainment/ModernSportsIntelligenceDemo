@@ -64,7 +64,7 @@ import {
   type HedgePortfolio,
   type HedgeRecommendation,
   type ProtectionCost,
-} from '../lib/hedgeConstructorService.ts';
+} from '../lib/analytics/hedgeConstructorService.ts';
 
 // ─── Tab Definitions ─────────────────────────────────────────────────────────
 

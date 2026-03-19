@@ -21,7 +21,7 @@ import {
   type MarketConsensusItem,
   type StreakRecord,
   type SocialTradingSummary,
-} from '../lib/socialTradingService';
+} from '../lib/social/socialTradingService';
 import {
   BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
 } from 'recharts';

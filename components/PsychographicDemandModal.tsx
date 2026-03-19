@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, Users, TrendingUp, TrendingDown, Brain, Clock, Target, Zap } from 'lucide-react';
-import { getCohorts, getForecasts, getNostalgiaWaves } from '../lib/psychographicDemandService';
+import { getCohorts, getForecasts, getNostalgiaWaves } from '../lib/analytics/psychographicDemandService';
 
 interface Props {
   isOpen: boolean;

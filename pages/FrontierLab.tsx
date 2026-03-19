@@ -5,7 +5,7 @@ import {
   buildFrontierRoadmapExport,
   getMergedFrontierFeatures,
   saveFrontierFeatureState,
-} from '../lib/frontierFeatureService';
+} from '../lib/utils/frontierFeatureService';
 import { FrontierFeatureCategory, FrontierFeatureStage, FrontierFeatureView } from '../types';
 
 const stageTone: Record<FrontierFeatureStage, string> = {

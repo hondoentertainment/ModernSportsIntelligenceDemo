@@ -36,7 +36,7 @@ import {
   getMonthlyTrendData,
   getProviderName,
   type SubscriptionProvider,
-} from '../lib/subscriptionBoxService';
+} from '../lib/utils/subscriptionBoxService';
 
 interface SubscriptionBoxModalProps {
   isOpen: boolean;

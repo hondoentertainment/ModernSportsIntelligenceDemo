@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getFriendlyAuthMessage } from '../../lib/authErrors';
+import { getFriendlyAuthMessage } from '../../lib/utils/authErrors';
 
 describe('getFriendlyAuthMessage', () => {
     it('returns empty string for null', () => {

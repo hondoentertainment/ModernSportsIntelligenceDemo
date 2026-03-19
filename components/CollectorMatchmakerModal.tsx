@@ -27,7 +27,7 @@ import {
   getTradeProposals,
   formatCurrency,
   type MatchResult,
-} from '../lib/collectorMatchmakerService';
+} from '../lib/core/collectorMatchmakerService';
 
 interface CollectorMatchmakerModalProps {
   isOpen: boolean;

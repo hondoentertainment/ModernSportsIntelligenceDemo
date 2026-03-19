@@ -15,7 +15,7 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from 'recharts';
-import { getAllFingerprints, getDNAMatches } from '../lib/cardDNAService';
+import { getAllFingerprints, getDNAMatches } from '../lib/core/cardDNAService';
 
 interface CardDNAModalProps {
   isOpen: boolean;

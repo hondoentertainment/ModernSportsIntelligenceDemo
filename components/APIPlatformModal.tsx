@@ -57,7 +57,7 @@ import {
   getExportHistory,
   getAPIPlatformStats,
   WEBHOOK_EVENTS,
-} from '../lib/apiPlatformService';
+} from '../lib/utils/apiPlatformService';
 
 interface APIPlatformModalProps {
   isOpen: boolean;

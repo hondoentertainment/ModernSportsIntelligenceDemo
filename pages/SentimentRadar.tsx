@@ -16,7 +16,7 @@ import {
   getScatterData,
   type SentimentData,
   type SentimentAlert,
-} from '../lib/sentimentRadarService';
+} from '../lib/analytics/sentimentRadarService';
 
 const SPORT_FILTERS = ['All', 'NBA', 'NFL', 'MLB', 'NHL', 'WNBA'] as const;
 

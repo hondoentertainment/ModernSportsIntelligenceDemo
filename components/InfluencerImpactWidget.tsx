@@ -12,7 +12,7 @@ import {
   getTopInfluencers,
   getContentEvents,
   formatFollowers,
-} from '../lib/influencerImpactService';
+} from '../lib/analytics/influencerImpactService';
 
 interface InfluencerImpactWidgetProps {
   onOpenModal?: () => void;

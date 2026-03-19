@@ -18,7 +18,7 @@ import {
   getRiskMetrics,
   RebalanceAction,
   PortfolioAllocation,
-} from '../lib/portfolioRebalancerService';
+} from '../lib/analytics/portfolioRebalancerService';
 
 const COLORS = ['#84cc16', '#60A5FA', '#FCD34D', '#F87171', '#C084FC', '#34D399'];
 

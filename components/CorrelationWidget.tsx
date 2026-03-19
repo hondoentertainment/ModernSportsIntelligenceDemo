@@ -12,7 +12,7 @@ import {
   getDiversificationReport,
   REGIME_LABELS,
   DiversificationReport,
-} from '../lib/crossAssetCorrelationService';
+} from '../lib/analytics/crossAssetCorrelationService';
 
 interface CorrelationWidgetProps {
   inventory: CardInventory[];

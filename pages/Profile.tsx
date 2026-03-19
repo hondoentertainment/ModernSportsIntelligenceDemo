@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { store } from '../lib/dal/syncStore';
 import { User, Settings, Heart, History, Shield, LogOut, Save, Eye, Check, Zap, Share2, Copy, Globe, Smartphone, CreditCard, ChevronRight, Cloud, Database, RefreshCw } from 'lucide-react';
 import { useMigration } from '../contexts/MigrationContext';
 import { useAuth } from '../contexts/AuthContext';
 import { MOCK_TEAMS, SPORTS } from '../constants';
-import { requestNotificationPermission, sendLocalNotification } from '../lib/notifications';
+import { requestNotificationPermission, sendLocalNotification } from '../lib/utils/notifications';
 import { Link } from 'react-router-dom';
 
 interface UserSettings {
@@ -42,8 +43,8 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   const [settings, setSettings] = useState<UserSettings>(() => {
     try {
-      const saved = localStorage.getItem('msi_user_settings');
-      return saved ? { ...defaultSettings, ...JSON.parse(saved) } : defaultSettings;
+      const saved = store.get<UserSettings>('msi_user_settings', defaultSettings);
+      return { ...defaultSettings, ...saved };
     } catch {
       return defaultSettings;
     }
@@ -52,7 +53,7 @@ const Profile: React.FC = () => {
 
   // Persist settings
   useEffect(() => {
-    localStorage.setItem('msi_user_settings', JSON.stringify(settings));
+    store.set('msi_user_settings', settings);
   }, [settings]);
 
   const handleLogout = async () => {

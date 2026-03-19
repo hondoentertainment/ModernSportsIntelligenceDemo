@@ -23,7 +23,7 @@ import {
   type VolumeBySource as VolumeBySourceType,
   type PriceTrend,
   type TimeRange,
-} from '../lib/realTimePriceEngineService';
+} from '../lib/analytics/realTimePriceEngineService';
 
 // ── Source Badge ──────────────────────────────────────────────────────────
 

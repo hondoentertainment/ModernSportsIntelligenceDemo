@@ -44,7 +44,7 @@ import {
   addClaim,
   getCoverageHistory,
   ensureSampleData,
-} from '../lib/insurancePolicyService';
+} from '../lib/core/insurancePolicyService';
 
 interface InsurancePolicyModalProps {
   isOpen: boolean;

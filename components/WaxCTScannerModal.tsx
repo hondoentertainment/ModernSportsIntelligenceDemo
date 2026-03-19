@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { X, Box, Scan, AlertCircle, CheckCircle, Activity, Layers } from 'lucide-react';
-import { getScans } from '../lib/waxCTScannerService';
+import { getScans } from '../lib/utils/waxCTScannerService';
 
 interface Props {
   isOpen: boolean;

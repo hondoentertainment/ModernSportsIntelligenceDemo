@@ -1,6 +1,6 @@
 import React from 'react';
 import { Award, ChevronRight, TrendingUp, Star } from 'lucide-react';
-import { getHOFCandidates, getHOFStats } from '../lib/hofTrackerService';
+import { getHOFCandidates, getHOFStats } from '../lib/utils/hofTrackerService';
 
 interface HOFTrackerWidgetProps {
   onOpenModal: () => void;

@@ -9,7 +9,7 @@ import {
   getTierLabel,
   getTierColor,
   getRoleColor,
-} from '../lib/clubManagementService';
+} from '../lib/utils/clubManagementService';
 
 const ClubManagement: React.FC = () => {
   const clubs = useMemo(() => getClubs(), []);

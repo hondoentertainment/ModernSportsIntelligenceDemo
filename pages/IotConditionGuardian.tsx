@@ -6,7 +6,7 @@ import {
   getConditionAlerts,
   getRiskColor,
   getSeverityColor,
-} from '../lib/iotConditionGuardianService';
+} from '../lib/utils/iotConditionGuardianService';
 import IotConditionGuardianWidget from '../components/IotConditionGuardianWidget';
 import IotConditionGuardianModal from '../components/IotConditionGuardianModal';
 

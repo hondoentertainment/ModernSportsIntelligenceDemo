@@ -30,7 +30,7 @@ import {
   verifyBeforePurchase,
   registerCard,
   type VerificationResult,
-} from '../lib/provenanceChainService.ts';
+} from '../lib/core/provenanceChainService.ts';
 
 // ---------------------------------------------------------------------------
 // Helpers

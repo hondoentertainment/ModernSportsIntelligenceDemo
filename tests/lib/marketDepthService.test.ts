@@ -3,7 +3,7 @@ import {
   generateMarketDepth,
   getVolumeMetrics,
   generatePortfolioLiquidityReport,
-} from '../../lib/marketDepthService';
+} from '../../lib/analytics/marketDepthService';
 import { makeCard } from '../helpers';
 
 describe('marketDepthService', () => {

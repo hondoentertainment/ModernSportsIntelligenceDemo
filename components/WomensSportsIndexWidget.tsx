@@ -5,7 +5,7 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-react';
-import { getMarketIndices, getAthleteCards, getInvestmentSignals } from '../lib/womensSportsIndexService';
+import { getMarketIndices, getAthleteCards, getInvestmentSignals } from '../lib/analytics/womensSportsIndexService';
 
 interface WomensSportsIndexWidgetProps {
   onOpenModal?: () => void;

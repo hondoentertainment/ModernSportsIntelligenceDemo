@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, ChevronRight, ChevronLeft, Sparkles, Zap, Radio, ScanEye, Landmark, BarChart3, Layers } from 'lucide-react';
+import { store } from '../lib/dal/syncStore';
 
 const TOUR_STORAGE_KEY = 'msi-guided-tour-completed';
 
@@ -95,7 +96,7 @@ const GuidedTour: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const completed = localStorage.getItem(TOUR_STORAGE_KEY);
+    const completed = store.get<string>(TOUR_STORAGE_KEY, '');
     if (!completed) {
       // Show after a brief delay so the page loads first
       const timer = setTimeout(() => setIsVisible(true), 1500);
@@ -104,7 +105,7 @@ const GuidedTour: React.FC = () => {
   }, []);
 
   const completeTour = useCallback(() => {
-    localStorage.setItem(TOUR_STORAGE_KEY, 'true');
+    store.set(TOUR_STORAGE_KEY, 'true');
     setIsVisible(false);
   }, []);
 

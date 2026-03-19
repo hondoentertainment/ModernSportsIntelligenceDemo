@@ -27,14 +27,14 @@ import {
   getPricingSuggestion,
   getTemplates,
   getListingStats,
-} from '../lib/ebayListingGeneratorService';
+} from '../lib/utils/ebayListingGeneratorService';
 import type {
   ListingDraft,
   TitleSuggestion,
   PricingSuggestion,
   ListingTemplate,
   ListingStats,
-} from '../lib/ebayListingGeneratorService';
+} from '../lib/utils/ebayListingGeneratorService';
 
 interface Props {
   isOpen: boolean;

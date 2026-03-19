@@ -30,7 +30,7 @@ import {
   getCooldownScore,
   getAlerts,
   getBehaviorStats,
-} from '../lib/dopamineCycleTrackerService';
+} from '../lib/utils/dopamineCycleTrackerService';
 import type {
   DopamineCycle,
   PurchasePattern,
@@ -39,7 +39,7 @@ import type {
   BehaviorStats,
   CyclePhase,
   AlertSeverity,
-} from '../lib/dopamineCycleTrackerService';
+} from '../lib/utils/dopamineCycleTrackerService';
 
 interface DopamineCycleTrackerModalProps {
   isOpen: boolean;

@@ -27,7 +27,7 @@ import {
   type HofComparable,
   type HofPricingModel,
   type HofSport,
-} from '../lib/hofProbabilityService';
+} from '../lib/utils/hofProbabilityService';
 
 // ── Types ────────────────────────────────────────────────────────────────────────
 

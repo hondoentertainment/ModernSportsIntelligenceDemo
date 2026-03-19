@@ -11,7 +11,7 @@ import {
   getContrarianPicks,
   getUnreadCount,
   ReportType,
-} from '../lib/researchReportsService';
+} from '../lib/utils/researchReportsService';
 
 interface ResearchReportsWidgetProps {
   onOpenModal: () => void;

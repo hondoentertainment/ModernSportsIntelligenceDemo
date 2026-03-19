@@ -1,27 +1,22 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Star, Search, Trash2, User, ChevronRight, LayoutGrid, List, CreditCard, TrendingUp, Target, RefreshCw, Plus, Loader2, Zap } from 'lucide-react';
-import { searchMLBPlayers } from '../lib/mlbApi.ts';
-import { useFavorites } from '../lib/useFavorites.ts';
-import { useInventory } from '../lib/useInventory.ts';
-import { useTargets } from '../lib/useTargets.ts';
-import { useAlerts } from '../lib/useAlerts.ts';
-import { syncWatchlistPrices } from '../lib/marketSync.ts';
+import { searchMLBPlayers } from '../lib/utils/mlbApi.ts';
+import { useFavorites } from '../lib/utils/useFavorites.ts';
+import { useInventory } from '../lib/utils/useInventory.ts';
+import { useTargets } from '../lib/utils/useTargets.ts';
+import { useAlerts } from '../lib/utils/useAlerts.ts';
+import { syncWatchlistPrices } from '../lib/utils/marketSync.ts';
 import WatchlistPriceCard from '../components/WatchlistPriceCard.tsx';
 import AddTargetModal from '../components/AddTargetModal.tsx';
 import { useToast } from '../contexts/ToastContext.tsx';
 import { logger } from '../lib/logger';
+import { store } from '../lib/dal/syncStore';
 
 const Favorites: React.FC = () => {
   // MLB Player favorites (existing)
   const [playerFavorites, setPlayerFavorites] = useState<any[]>(() => {
-    try {
-      const saved = localStorage.getItem('cardx_favorites');
-      return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      console.warn("Error parsing player favorites", e);
-      return [];
-    }
+    return store.get<any[]>('cardx_favorites', []);
   });
 
   const { addToast } = useToast();
@@ -46,7 +41,7 @@ const Favorites: React.FC = () => {
   const [syncProgress, setSyncProgress] = useState({ current: 0, total: 0 });
 
   useEffect(() => {
-    localStorage.setItem('cardx_favorites', JSON.stringify(playerFavorites));
+    store.set('cardx_favorites', playerFavorites);
   }, [playerFavorites]);
 
   const handleSearch = async () => {

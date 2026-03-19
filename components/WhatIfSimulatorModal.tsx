@@ -29,14 +29,14 @@ import {
   getDiversificationImpact,
   getSimulatorStats,
   compareScenarios,
-} from '../lib/whatIfSimulatorService';
+} from '../lib/analytics/whatIfSimulatorService';
 import type {
   Scenario,
   NavProjection,
   DiversificationImpact,
   SimulatorStats,
   ScenarioType,
-} from '../lib/whatIfSimulatorService';
+} from '../lib/analytics/whatIfSimulatorService';
 
 interface Props {
   isOpen: boolean;

@@ -6,7 +6,7 @@ import {
   MessageSquare,
   Sparkles,
 } from 'lucide-react';
-import { getDailyBriefing, getProactiveNudges, getCopilotSuggestions } from '../lib/portfolioCopilotService';
+import { getDailyBriefing, getProactiveNudges, getCopilotSuggestions } from '../lib/utils/portfolioCopilotService';
 
 interface PortfolioCopilotWidgetProps {
   onOpenModal?: () => void;

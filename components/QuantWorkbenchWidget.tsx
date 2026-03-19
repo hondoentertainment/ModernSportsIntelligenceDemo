@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Code, ChevronRight, Play, FlaskConical } from 'lucide-react';
-import { getSavedStrategies } from '../lib/quantWorkbenchService';
+import { getSavedStrategies } from '../lib/utils/quantWorkbenchService';
 
 interface QuantWorkbenchWidgetProps {
   onOpenModal: () => void;

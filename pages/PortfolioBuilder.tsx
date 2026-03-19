@@ -33,9 +33,9 @@ import {
   LayoutGrid,
 } from 'lucide-react';
 import { CardInventory } from '../types';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory';
-import { useCardGroups, type CardGroup } from '../lib/useCardGroups';
-import { getRarityTier, getTierStyles } from '../lib/rarity';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import { useCardGroups, type CardGroup } from '../lib/utils/useCardGroups';
+import { getRarityTier, getTierStyles } from '../lib/utils/rarity';
 import CardImage from '../components/CardImage';
 
 // ─── Icon resolver ──────────────────────────────────────────────────

@@ -24,7 +24,7 @@ import {
   getPortfolioHealthScore,
   getAttributionEnrichedContext,
   RebalanceAction,
-} from '../lib/portfolioRebalancerService';
+} from '../lib/analytics/portfolioRebalancerService';
 
 interface RebalancerModalProps {
   isOpen: boolean;

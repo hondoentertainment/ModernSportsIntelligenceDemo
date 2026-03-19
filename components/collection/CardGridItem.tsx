@@ -24,7 +24,7 @@ import CardImage from '../CardImage';
 import ScarcityBadge from '../ScarcityBadge';
 import { LiquidityBadge } from '../LiquidityBadge';
 import Sparkline from '../Sparkline';
-import { LiquidityService } from '../../lib/liquidityService';
+import { LiquidityService } from '../../lib/analytics/liquidityService';
 
 export interface CardGridItemProps {
   card: CardInventory;

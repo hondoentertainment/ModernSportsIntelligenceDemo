@@ -26,14 +26,14 @@ import {
   getProducts,
   getRoiTrends,
   getBreakStats,
-} from '../lib/waxBreakRoiTrackerService';
+} from '../lib/analytics/waxBreakRoiTrackerService';
 import type {
   WaxBreak,
   BreakProduct,
   RoiTrend,
   BreakStats,
   HitType,
-} from '../lib/waxBreakRoiTrackerService';
+} from '../lib/analytics/waxBreakRoiTrackerService';
 
 interface Props {
   isOpen: boolean;

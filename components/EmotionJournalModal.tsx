@@ -31,7 +31,7 @@ import {
   EmotionPnL,
   BehaviorInsight,
   EmotionTag,
-} from '../lib/emotionJournalService';
+} from '../lib/utils/emotionJournalService';
 
 interface EmotionJournalModalProps {
   isOpen: boolean;

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Activity } from 'lucide-react';
 import CardImage from '../CardImage';
-import { getRarityTier, getTierStyles } from '../../lib/rarity';
+import { getRarityTier, getTierStyles } from '../../lib/utils/rarity';
 import { CardInventory } from '../../types';
 
 interface RecentlyIngestedProps {

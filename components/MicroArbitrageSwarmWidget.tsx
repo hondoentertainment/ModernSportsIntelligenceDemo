@@ -7,7 +7,7 @@ import {
   type PriceSighting,
   type ArbitrageOpportunity,
   SIGHTING_SOURCE_LABELS,
-} from '../lib/microArbitrageSwarmService';
+} from '../lib/analytics/microArbitrageSwarmService';
 
 interface MicroArbitrageSwarmWidgetProps {
   onViewAll?: () => void;

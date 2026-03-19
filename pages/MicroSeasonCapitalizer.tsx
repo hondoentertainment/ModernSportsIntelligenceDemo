@@ -61,7 +61,7 @@ import {
   type SeasonalReturn,
   type EventImpactRecord,
   type EventCategory,
-} from '../lib/microSeasonService.ts';
+} from '../lib/analytics/microSeasonService.ts';
 
 type TabId = 'active' | 'heatmap' | 'elasticity' | 'signals' | 'patterns' | 'returns';
 

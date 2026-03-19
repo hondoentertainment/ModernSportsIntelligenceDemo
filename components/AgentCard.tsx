@@ -1,6 +1,6 @@
 import React from 'react';
 import { AgentInsight } from '../types';
-import { MultiAgentService } from '../lib/MultiAgentService';
+import { MultiAgentService } from '../lib/utils/MultiAgentService';
 import { Brain, TrendingUp, ShieldAlert, BadgeDollarSign, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
 
 interface AgentCardProps {

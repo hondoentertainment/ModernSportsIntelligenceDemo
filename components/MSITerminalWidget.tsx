@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Terminal, ChevronRight, Command, Zap } from 'lucide-react';
-import { executeCommand, CommandResult } from '../lib/msiTerminalService';
+import { executeCommand, CommandResult } from '../lib/utils/msiTerminalService';
 
 interface MSITerminalWidgetProps {
   onOpenModal: () => void;

@@ -14,7 +14,7 @@ import {
   getEventHistory,
   CardEvent,
   EventROI,
-} from '../lib/eventPlannerService';
+} from '../lib/utils/eventPlannerService';
 
 interface EventWidgetProps {
   cards: CardInventory[];

@@ -18,7 +18,7 @@ import {
   formatPercent,
   getROIColor,
   getProfitColor,
-} from '../../lib/breakEvenCalculatorService';
+} from '../../lib/analytics/breakEvenCalculatorService';
 
 // ─── Test Helpers ──────────────────────────────────────────────────────────
 

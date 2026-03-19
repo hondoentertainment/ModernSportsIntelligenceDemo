@@ -32,7 +32,7 @@ import {
   type RiskFactor,
   type AppraisalCertificate,
   type AppraiserSummary,
-} from '../lib/collectionAppraiserService';
+} from '../lib/core/collectionAppraiserService';
 import {
   BarChart,
   Bar,

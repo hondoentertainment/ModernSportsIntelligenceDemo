@@ -1,10 +1,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { validateEnv } from './lib/envValidation.ts';
+import { validateEnv } from './lib/utils/env';
 import { initSentry } from './lib/sentry';
 import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
-import { validateRuntimeConfig } from './lib/runtimeConfig';
+import { validateRuntimeConfig } from './lib/utils/runtimeConfig';
 import { logger } from './lib/logger';
 import { reportError } from './lib/errorReporting';
 

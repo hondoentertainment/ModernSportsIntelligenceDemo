@@ -9,7 +9,7 @@ import {
   getNarrativeTrends, getCulturalMoments, getNarrativePremiumLeaderboard,
   predictNarrativeTrajectory,
   type NarrativeArc, type ArcType,
-} from '../lib/narrativeArcService';
+} from '../lib/analytics/narrativeArcService';
 
 const ARC_COLORS: Record<ArcType, string> = {
   rise: '#22c55e', peak: '#eab308', decline: '#ef4444', redemption: '#a855f7',

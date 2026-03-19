@@ -25,9 +25,9 @@ import {
     postWebhook,
     postWorkflowRun,
     toggleExecutionKillSwitch
-} from '../lib/phaseEndpoints';
-import { StrategyDefinition } from '../lib/strategyEngine';
-import { getDefaultWorkflowTemplates } from '../lib/copilotService';
+} from '../lib/utils/phaseEndpoints';
+import { StrategyDefinition } from '../lib/utils/strategyEngine';
+import { getDefaultWorkflowTemplates } from '../lib/utils/copilotService';
 
 const strategy: StrategyDefinition = {
     id: 'phase-ops-momentum',

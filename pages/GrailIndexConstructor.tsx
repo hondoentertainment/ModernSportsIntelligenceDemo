@@ -57,7 +57,7 @@ import {
   type RebalanceEvent,
   type IndexComparison,
   type BacktestResult,
-} from '../lib/grailIndexService';
+} from '../lib/analytics/grailIndexService';
 
 // ---- Constants ----
 

@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { CardInventory } from '../types';
-import { FiscalService } from '../lib/FiscalService';
-import { TaxStrategyAgent } from '../lib/TaxStrategyAgent';
+import { FiscalService } from '../lib/utils/FiscalService';
+import { TaxStrategyAgent } from '../lib/utils/TaxStrategyAgent';
 import { Shield, TrendingDown, AlertTriangle, Info } from 'lucide-react';
 
 interface FiscalShieldWidgetProps {

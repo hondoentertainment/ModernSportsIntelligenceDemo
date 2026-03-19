@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { X, BarChart3, Clock, TrendingUp, ArrowDown, ArrowUp } from 'lucide-react';
 import { CardInventory } from '../types';
-import { generateMarketDepth, getVolumeMetrics } from '../lib/marketDepthService';
+import { generateMarketDepth, getVolumeMetrics } from '../lib/analytics/marketDepthService';
 
 interface MarketDepthModalProps {
   isOpen: boolean;

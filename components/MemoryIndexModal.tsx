@@ -29,7 +29,7 @@ import {
   GenerationalView,
   IconicPlayer,
   CulturalTier,
-} from '../lib/memoryIndexService';
+} from '../lib/utils/memoryIndexService';
 
 interface MemoryIndexModalProps {
   isOpen: boolean;

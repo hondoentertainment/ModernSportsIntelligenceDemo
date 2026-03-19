@@ -19,7 +19,7 @@ import {
   AnomalySeverity,
   detectAnomalies,
   acknowledgeAnomaly,
-} from '../lib/anomalyDetectionService';
+} from '../lib/analytics/anomalyDetectionService';
 
 interface AnomalyDetailModalProps {
   isOpen: boolean;

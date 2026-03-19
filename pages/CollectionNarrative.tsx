@@ -32,7 +32,7 @@ import {
   type LegacyMemo,
   type NarrativeExport,
   type SuggestedAddition,
-} from '../lib/collectionNarrativeService';
+} from '../lib/core/collectionNarrativeService';
 
 function significanceColor(score: number): string {
   if (score >= 80) return '#34d399';

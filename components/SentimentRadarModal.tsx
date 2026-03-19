@@ -37,7 +37,7 @@ import {
   getScatterData,
   type SentimentData,
   type SentimentAlert,
-} from '../lib/sentimentRadarService';
+} from '../lib/analytics/sentimentRadarService';
 
 interface Props {
   isOpen: boolean;

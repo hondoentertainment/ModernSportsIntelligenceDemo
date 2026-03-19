@@ -42,7 +42,7 @@ import {
   acknowledgeAlert,
   snoozeAlert,
   exportWatchlistCSV,
-} from '../lib/watchlistService';
+} from '../lib/trading/watchlistService';
 
 type TabKey = 'watchlists' | 'alerts' | 'scanner' | 'analytics';
 

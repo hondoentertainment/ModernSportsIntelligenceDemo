@@ -36,7 +36,7 @@ import {
   type RegionalTrend,
   type RiskAssessment,
   type ArbitrageResult,
-} from '../lib/internationalArbitrageService';
+} from '../lib/analytics/internationalArbitrageService';
 import {
   BarChart,
   Bar,

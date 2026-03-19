@@ -11,7 +11,7 @@ import {
   getAuctionHistory,
   generateMockAuctions,
   type AuctionListing,
-} from '../../lib/auctionSniperService';
+} from '../../lib/trading/auctionSniperService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

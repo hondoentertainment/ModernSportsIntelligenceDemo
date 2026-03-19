@@ -43,7 +43,7 @@ import {
   loadLiquiditySettings,
   LiquidityScoreDetail,
   EmergencyLiquidationPlan,
-} from '../lib/liquidityService';
+} from '../lib/analytics/liquidityService';
 
 interface LiquidityModalProps {
   isOpen: boolean;

@@ -38,7 +38,7 @@ import {
   getSpreadAlerts,
   getMarketDepthBySegment,
   LiquidityScore,
-} from '../lib/predictiveMarketMakerService';
+} from '../lib/analytics/predictiveMarketMakerService';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildComplianceBundle, evaluateRiskPolicy, RiskPolicy } from '../../lib/riskOffice';
+import { buildComplianceBundle, evaluateRiskPolicy, RiskPolicy } from '../../lib/utils/riskOffice';
 import { AutonomousAction } from '../../types';
 
 describe('riskOffice', () => {

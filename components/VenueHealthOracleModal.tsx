@@ -12,7 +12,7 @@ import {
   BarChart3,
   ChevronRight,
 } from 'lucide-react';
-import { getVenues, getComparisons } from '../lib/venueHealthOracleService';
+import { getVenues, getComparisons } from '../lib/analytics/venueHealthOracleService';
 
 interface Props {
   isOpen: boolean;

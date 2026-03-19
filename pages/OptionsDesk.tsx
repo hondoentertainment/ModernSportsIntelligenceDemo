@@ -16,7 +16,7 @@ import {
   type PortfolioGreeks,
   type StrategyTemplate,
   type PnlDataPoint,
-} from '../lib/optionsDeskService.ts';
+} from '../lib/trading/optionsDeskService.ts';
 import {
   LineChart,
   Line,

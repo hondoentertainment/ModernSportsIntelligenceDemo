@@ -18,7 +18,7 @@ import {
   type CoverageGap,
   type ClaimHistory,
   type InsuranceReport,
-} from '../../lib/insuranceVaultService';
+} from '../../lib/core/insuranceVaultService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

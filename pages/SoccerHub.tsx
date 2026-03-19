@@ -13,7 +13,7 @@ import {
   type LeagueStanding, type LeagueDraftClass, type LeagueSeasonEvent,
   type LeagueStatLeader, type LeagueCardMarketTrend, type LeagueRookieWatch,
   type TransferImpact,
-} from '../lib/leagueHubService.ts';
+} from '../lib/social/leagueHubService.ts';
 
 type SoccerTab = 'tables' | 'youngstars' | 'calendar' | 'leaders' | 'market' | 'transfers';
 type LeagueFilter = 'all' | 'Premier League' | 'La Liga' | 'Serie A' | 'Bundesliga' | 'MLS';

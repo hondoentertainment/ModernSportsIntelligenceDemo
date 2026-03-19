@@ -65,7 +65,7 @@ import {
   type SportWeather,
   type PressureSystem,
   type SignalCategory,
-} from '../lib/cardWeatherService';
+} from '../lib/utils/cardWeatherService';
 
 // ---- Weather Icon Component with CSS Animations ----
 

@@ -34,7 +34,7 @@ import {
   CollectionWill,
   LiquidationTrigger,
   EducationModule,
-} from '../lib/estateSuccessionService';
+} from '../lib/core/estateSuccessionService';
 
 interface EstateSuccessionModalProps {
   isOpen: boolean;

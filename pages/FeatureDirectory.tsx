@@ -9,7 +9,7 @@ import {
   getCategories,
   Feature,
   FeatureTier,
-} from '../lib/featureCatalog';
+} from '../lib/utils/featureCatalog';
 
 /** Functional area groupings for organized browsing */
 const FUNCTIONAL_AREAS: { id: string; label: string; icon: string; color: string; bgColor: string; borderColor: string; description: string; categoryMatch: string[]; keywordMatch: string[] }[] = [

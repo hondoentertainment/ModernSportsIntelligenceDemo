@@ -6,7 +6,7 @@ import {
   getRevenueMetrics,
   getListingSummary,
   formatCurrency,
-} from '../lib/listingOptimizerService';
+} from '../lib/trading/listingOptimizerService';
 
 interface ListingOptimizerWidgetProps {
   onOpenModal?: () => void;

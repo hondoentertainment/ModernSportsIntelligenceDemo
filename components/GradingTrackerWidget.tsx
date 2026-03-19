@@ -8,7 +8,7 @@ import {
   getStatusLabel,
   getCompanyLabel,
   getStatusProgress,
-} from '../lib/gradingTrackerService';
+} from '../lib/core/gradingTrackerService';
 
 interface GradingTrackerWidgetProps {
   onOpenModal?: () => void;

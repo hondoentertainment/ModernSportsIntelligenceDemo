@@ -60,7 +60,7 @@ import {
   type RegimeSignal,
   type RegimePrediction,
   type RegimeComparison,
-} from '../lib/marketRegimeService.ts';
+} from '../lib/analytics/marketRegimeService.ts';
 
 type TabId = 'current' | 'history' | 'matrix' | 'strategy' | 'indicators' | 'predictions';
 

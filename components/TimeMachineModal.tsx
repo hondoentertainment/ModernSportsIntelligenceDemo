@@ -34,7 +34,7 @@ import {
   getJournalEntries,
   addJournalEntry,
   generateYearlyReview,
-} from '../lib/timeMachineService';
+} from '../lib/analytics/timeMachineService';
 
 interface TimeMachineModalProps {
   isOpen: boolean;

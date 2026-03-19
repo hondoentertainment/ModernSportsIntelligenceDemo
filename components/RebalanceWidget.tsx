@@ -14,7 +14,7 @@ import {
   generateRebalanceAlerts,
   getPortfolioHealth,
   SportDrift,
-} from '../lib/rebalancingAlertService';
+} from '../lib/analytics/rebalancingAlertService';
 
 interface RebalanceWidgetProps {
   inventory: CardInventory[];

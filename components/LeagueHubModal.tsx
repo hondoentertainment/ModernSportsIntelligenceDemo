@@ -10,7 +10,7 @@ import {
   getLeagueStandings, getDraftClass, getCardMarketTrends, getRookieWatch, getStatLeaders,
   type LeagueSport, type LeagueStanding, type LeagueDraftClass,
   type LeagueCardMarketTrend, type LeagueRookieWatch, type LeagueStatLeader,
-} from '../lib/leagueHubService.ts';
+} from '../lib/social/leagueHubService.ts';
 
 interface LeagueHubModalProps {
   isOpen: boolean;

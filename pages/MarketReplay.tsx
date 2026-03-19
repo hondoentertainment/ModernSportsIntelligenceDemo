@@ -17,7 +17,7 @@ import {
   calculateReturn, formatCurrency, formatPercent,
   getReturnColor, getStrategyColor,
   CardTimeline, BacktestStrategy, BacktestResult, WhatIfScenario, ReplayStats
-} from '../lib/marketReplayService';
+} from '../lib/analytics/marketReplayService';
 
 type TabId = 'replay' | 'backtester' | 'whatif' | 'performance';
 

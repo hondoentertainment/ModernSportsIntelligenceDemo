@@ -5,7 +5,7 @@ import {
   getGenomeStats,
   getTypeLabel,
   getTraitLabel,
-} from '../lib/collectionGenomeService';
+} from '../lib/core/collectionGenomeService';
 
 interface CollectionGenomeWidgetProps {
   onClick?: () => void;

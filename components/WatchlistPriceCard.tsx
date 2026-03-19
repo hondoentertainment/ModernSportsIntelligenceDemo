@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { TargetWatchlist } from '../types.ts';
 import Sparkline from './Sparkline.tsx';
-import { getSparklineData, getPriceTrend } from '../lib/priceHistory.ts';
+import { getSparklineData, getPriceTrend } from '../lib/analytics/priceHistory.ts';
 
 interface WatchlistPriceCardProps {
     target: TargetWatchlist;

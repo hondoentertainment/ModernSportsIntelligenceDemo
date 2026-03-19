@@ -1,113 +1,202 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import * as billing from '../../lib/billingService';
+import {
+  SUBSCRIPTION_TIERS,
+  hasFeatureAccess,
+  checkUsageLimit,
+  getUserSubscription,
+  type SubscriptionTier,
+} from '../../lib/utils/billingService';
+
+// Mock supabase
+vi.mock('../../lib/supabase', () => ({
+  supabase: {
+    from: vi.fn(),
+  },
+  isDemoMode: false,
+}));
+
+// Mock logger
+vi.mock('../../lib/logger', () => ({
+  logger: { warn: vi.fn(), error: vi.fn(), info: vi.fn() },
+}));
 
 describe('billingService', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+  // ── SUBSCRIPTION_TIERS ──────────────────────────────────────────────
+
+  describe('SUBSCRIPTION_TIERS', () => {
+    it('has exactly 4 tiers', () => {
+      const tierKeys = Object.keys(SUBSCRIPTION_TIERS);
+      expect(tierKeys).toHaveLength(4);
+      expect(tierKeys).toEqual(['free', 'basic', 'pro', 'alpha']);
+    });
+
+    it('free tier has price 0', () => {
+      expect(SUBSCRIPTION_TIERS.free.price).toBe(0);
+    });
+
+    it('basic tier costs $9.90 (990 cents)', () => {
+      expect(SUBSCRIPTION_TIERS.basic.price).toBe(990);
+    });
+
+    it('pro tier costs $29 (2900 cents)', () => {
+      expect(SUBSCRIPTION_TIERS.pro.price).toBe(2900);
+    });
+
+    it('alpha tier costs $99 (9900 cents)', () => {
+      expect(SUBSCRIPTION_TIERS.alpha.price).toBe(9900);
+    });
+
+    it('each tier has an id, name, features array, and limits', () => {
+      for (const [key, config] of Object.entries(SUBSCRIPTION_TIERS)) {
+        expect(config.id).toBe(key);
+        expect(typeof config.name).toBe('string');
+        expect(Array.isArray(config.features)).toBe(true);
+        expect(config.features.length).toBeGreaterThan(0);
+        expect(config.limits).toHaveProperty('cards');
+        expect(config.limits).toHaveProperty('aiValuations');
+      }
+    });
+
+    it('free and basic tiers have finite limits', () => {
+      expect(SUBSCRIPTION_TIERS.free.limits.cards).toBe(50);
+      expect(SUBSCRIPTION_TIERS.free.limits.aiValuations).toBe(10);
+      expect(SUBSCRIPTION_TIERS.basic.limits.cards).toBe(200);
+      expect(SUBSCRIPTION_TIERS.basic.limits.aiValuations).toBe(100);
+    });
+
+    it('pro and alpha tiers have unlimited (-1) limits', () => {
+      expect(SUBSCRIPTION_TIERS.pro.limits.cards).toBe(-1);
+      expect(SUBSCRIPTION_TIERS.pro.limits.aiValuations).toBe(-1);
+      expect(SUBSCRIPTION_TIERS.alpha.limits.cards).toBe(-1);
+      expect(SUBSCRIPTION_TIERS.alpha.limits.aiValuations).toBe(-1);
+    });
   });
 
-  it('exports expected public API', () => {
-    expect(typeof billing.getStripe).toBe('function');
-    expect(typeof billing.getUserSubscription).toBe('function');
-    expect(typeof billing.hasFeatureAccess).toBe('function');
-    expect(typeof billing.checkUsageLimit).toBe('function');
-    expect(typeof billing.createCheckoutSession).toBe('function');
-    expect(typeof billing.redirectToCheckout).toBe('function');
-    expect(typeof billing.createBillingPortalSession).toBe('function');
-    expect(typeof billing.getSubscriptionPricing).toBe('function');
-    expect(billing.SUBSCRIPTION_TIERS).toBeDefined();
-    expect(billing.SUBSCRIPTION_TIERS.free).toBeDefined();
-    expect(billing.SUBSCRIPTION_TIERS.basic).toBeDefined();
-    expect(billing.SUBSCRIPTION_TIERS.pro).toBeDefined();
-  });
-
-  it('uses only publishable key and server-side session (no raw card data)', () => {
-    // Billing flow: getStripe() uses VITE_STRIPE_PUBLISHABLE_KEY only;
-    // createCheckoutSession invokes Supabase Edge Function (server creates Stripe session).
-    // No card numbers or secrets in client code.
-    const tierConfig = billing.SUBSCRIPTION_TIERS;
-    const tiers = Object.keys(tierConfig) as (keyof typeof tierConfig)[];
-    expect(tiers).toContain('free');
-    expect(tiers).toContain('basic');
-    expect(tiers).toContain('pro');
-    // Subscription config has no card/payment fields
-    for (const tier of tiers) {
-      const config = tierConfig[tier];
-      expect(config).toHaveProperty('id');
-      expect(config).toHaveProperty('name');
-      expect(config).toHaveProperty('price');
-      expect(config).toHaveProperty('features');
-      expect(config).not.toHaveProperty('cardNumber');
-      expect(config).not.toHaveProperty('secretKey');
-      expect(config).not.toHaveProperty('cvc');
-    }
-  });
+  // ── hasFeatureAccess ────────────────────────────────────────────────
 
   describe('hasFeatureAccess', () => {
-    it('returns true for unlimited_cards on pro/alpha', () => {
-      expect(billing.hasFeatureAccess('pro', 'unlimited_cards')).toBe(true);
-      expect(billing.hasFeatureAccess('alpha', 'unlimited_cards')).toBe(true);
+    it('unlimited_cards: only pro and alpha', () => {
+      expect(hasFeatureAccess('free', 'unlimited_cards')).toBe(false);
+      expect(hasFeatureAccess('basic', 'unlimited_cards')).toBe(false);
+      expect(hasFeatureAccess('pro', 'unlimited_cards')).toBe(true);
+      expect(hasFeatureAccess('alpha', 'unlimited_cards')).toBe(true);
     });
-    it('returns false for unlimited_cards on free/basic', () => {
-      expect(billing.hasFeatureAccess('free', 'unlimited_cards')).toBe(false);
-      expect(billing.hasFeatureAccess('basic', 'unlimited_cards')).toBe(false);
+
+    it('unlimited_ai_valuations: only pro and alpha', () => {
+      expect(hasFeatureAccess('free', 'unlimited_ai_valuations')).toBe(false);
+      expect(hasFeatureAccess('basic', 'unlimited_ai_valuations')).toBe(false);
+      expect(hasFeatureAccess('pro', 'unlimited_ai_valuations')).toBe(true);
+      expect(hasFeatureAccess('alpha', 'unlimited_ai_valuations')).toBe(true);
     });
-    it('returns true for tax_export on pro/alpha only', () => {
-      expect(billing.hasFeatureAccess('pro', 'tax_export')).toBe(true);
-      expect(billing.hasFeatureAccess('alpha', 'tax_export')).toBe(true);
-      expect(billing.hasFeatureAccess('basic', 'tax_export')).toBe(false);
-      expect(billing.hasFeatureAccess('free', 'tax_export')).toBe(false);
+
+    it('tax_export: only pro and alpha', () => {
+      expect(hasFeatureAccess('free', 'tax_export')).toBe(false);
+      expect(hasFeatureAccess('basic', 'tax_export')).toBe(false);
+      expect(hasFeatureAccess('pro', 'tax_export')).toBe(true);
+      expect(hasFeatureAccess('alpha', 'tax_export')).toBe(true);
     });
-    it('returns true for api_access on alpha only', () => {
-      expect(billing.hasFeatureAccess('alpha', 'api_access')).toBe(true);
-      expect(billing.hasFeatureAccess('pro', 'api_access')).toBe(false);
+
+    it('population_reports: only pro and alpha', () => {
+      expect(hasFeatureAccess('free', 'population_reports')).toBe(false);
+      expect(hasFeatureAccess('basic', 'population_reports')).toBe(false);
+      expect(hasFeatureAccess('pro', 'population_reports')).toBe(true);
+      expect(hasFeatureAccess('alpha', 'population_reports')).toBe(true);
     });
-    it('returns true for unlimited_ai_valuations on pro/alpha only', () => {
-      expect(billing.hasFeatureAccess('pro', 'unlimited_ai_valuations')).toBe(true);
-      expect(billing.hasFeatureAccess('alpha', 'unlimited_ai_valuations')).toBe(true);
-      expect(billing.hasFeatureAccess('basic', 'unlimited_ai_valuations')).toBe(false);
+
+    it('api_access: only alpha', () => {
+      expect(hasFeatureAccess('free', 'api_access')).toBe(false);
+      expect(hasFeatureAccess('basic', 'api_access')).toBe(false);
+      expect(hasFeatureAccess('pro', 'api_access')).toBe(false);
+      expect(hasFeatureAccess('alpha', 'api_access')).toBe(true);
     });
-    it('returns true for population_reports on pro/alpha', () => {
-      expect(billing.hasFeatureAccess('pro', 'population_reports')).toBe(true);
-      expect(billing.hasFeatureAccess('alpha', 'population_reports')).toBe(true);
-      expect(billing.hasFeatureAccess('basic', 'population_reports')).toBe(false);
+
+    it('marketplace_fee_discount: only alpha', () => {
+      expect(hasFeatureAccess('free', 'marketplace_fee_discount')).toBe(false);
+      expect(hasFeatureAccess('basic', 'marketplace_fee_discount')).toBe(false);
+      expect(hasFeatureAccess('pro', 'marketplace_fee_discount')).toBe(false);
+      expect(hasFeatureAccess('alpha', 'marketplace_fee_discount')).toBe(true);
     });
-    it('returns true for marketplace_fee_discount on alpha only', () => {
-      expect(billing.hasFeatureAccess('alpha', 'marketplace_fee_discount')).toBe(true);
-      expect(billing.hasFeatureAccess('pro', 'marketplace_fee_discount')).toBe(false);
-    });
-    it('returns false for unknown feature', () => {
-      expect(billing.hasFeatureAccess('pro', 'unknown_feature')).toBe(false);
+
+    it('returns false for unknown features', () => {
+      expect(hasFeatureAccess('alpha', 'nonexistent_feature')).toBe(false);
+      expect(hasFeatureAccess('free', 'something_random')).toBe(false);
     });
   });
+
+  // ── checkUsageLimit ─────────────────────────────────────────────────
 
   describe('checkUsageLimit', () => {
-    it('returns true for unlimited tiers (-1 limit)', () => {
-      expect(billing.checkUsageLimit('pro', 'cards', 9999)).toBe(true);
-      expect(billing.checkUsageLimit('pro', 'aiValuations', 9999)).toBe(true);
+    it('returns true when current usage is under the limit', () => {
+      expect(checkUsageLimit('free', 'cards', 0)).toBe(true);
+      expect(checkUsageLimit('free', 'cards', 49)).toBe(true);
+      expect(checkUsageLimit('basic', 'aiValuations', 99)).toBe(true);
     });
-    it('returns true when under limit', () => {
-      expect(billing.checkUsageLimit('free', 'cards', 10)).toBe(true);
-      expect(billing.checkUsageLimit('free', 'aiValuations', 5)).toBe(true);
-      expect(billing.checkUsageLimit('basic', 'cards', 100)).toBe(true);
+
+    it('returns false when current usage equals the limit', () => {
+      expect(checkUsageLimit('free', 'cards', 50)).toBe(false);
+      expect(checkUsageLimit('free', 'aiValuations', 10)).toBe(false);
+      expect(checkUsageLimit('basic', 'cards', 200)).toBe(false);
+      expect(checkUsageLimit('basic', 'aiValuations', 100)).toBe(false);
     });
-    it('returns false when at or over limit', () => {
-      expect(billing.checkUsageLimit('free', 'cards', 50)).toBe(false);
-      expect(billing.checkUsageLimit('free', 'cards', 51)).toBe(false);
-      expect(billing.checkUsageLimit('basic', 'aiValuations', 100)).toBe(false);
+
+    it('returns false when current usage exceeds the limit', () => {
+      expect(checkUsageLimit('free', 'cards', 51)).toBe(false);
+      expect(checkUsageLimit('basic', 'aiValuations', 150)).toBe(false);
+    });
+
+    it('returns true for unlimited tiers (-1) regardless of usage', () => {
+      expect(checkUsageLimit('pro', 'cards', 0)).toBe(true);
+      expect(checkUsageLimit('pro', 'cards', 999999)).toBe(true);
+      expect(checkUsageLimit('pro', 'aiValuations', 999999)).toBe(true);
+      expect(checkUsageLimit('alpha', 'cards', 999999)).toBe(true);
+      expect(checkUsageLimit('alpha', 'aiValuations', 999999)).toBe(true);
     });
   });
 
-  describe('getSubscriptionPricing', () => {
-    it('returns pricing for all tiers with price in dollars', () => {
-      const pricing = billing.getSubscriptionPricing();
-      expect(pricing).toHaveLength(4); // free, basic, pro, alpha
-      const free = pricing.find((p) => p.id === 'free');
-      expect(free?.isFree).toBe(true);
-      expect(free?.price).toBe(0);
-      const basic = pricing.find((p) => p.id === 'basic');
-      expect(basic?.price).toBe(9.9);
-      expect(basic?.isFree).toBe(false);
+  // ── getUserSubscription ─────────────────────────────────────────────
+
+  describe('getUserSubscription', () => {
+    let mockFrom: ReturnType<typeof vi.fn>;
+    let mockSelect: ReturnType<typeof vi.fn>;
+    let mockEq: ReturnType<typeof vi.fn>;
+    let mockSingle: ReturnType<typeof vi.fn>;
+
+    beforeEach(async () => {
+      vi.clearAllMocks();
+
+      mockSingle = vi.fn();
+      mockEq = vi.fn(() => ({ single: mockSingle }));
+      mockSelect = vi.fn(() => ({ eq: mockEq }));
+      mockFrom = vi.fn(() => ({ select: mockSelect }));
+
+      const { supabase } = await import('../../lib/supabase');
+      (supabase.from as ReturnType<typeof vi.fn>) = mockFrom;
+    });
+
+    it('queries the profiles table with the correct user ID', async () => {
+      mockSingle.mockResolvedValue({
+        data: { subscription_tier: 'pro', subscription_status: 'active' },
+        error: null,
+      });
+
+      const result = await getUserSubscription('user-123');
+
+      expect(mockFrom).toHaveBeenCalledWith('profiles');
+      expect(mockSelect).toHaveBeenCalledWith(
+        'subscription_tier, subscription_status, ai_valuations_used, card_tracking_limit, billing_cycle_start'
+      );
+      expect(mockEq).toHaveBeenCalledWith('id', 'user-123');
+      expect(result).toEqual({ subscription_tier: 'pro', subscription_status: 'active' });
+    });
+
+    it('returns null when supabase returns an error', async () => {
+      mockSingle.mockResolvedValue({
+        data: null,
+        error: { message: 'Not found' },
+      });
+
+      const result = await getUserSubscription('bad-id');
+      expect(result).toBeNull();
     });
   });
 });

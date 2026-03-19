@@ -5,7 +5,7 @@ import {
   getAchievementSummary,
   TIER_COLORS,
   AchievementTier,
-} from '../lib/achievementService';
+} from '../lib/utils/achievementService';
 
 interface AchievementWidgetProps {
   inventory: CardInventory[];

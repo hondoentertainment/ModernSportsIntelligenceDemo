@@ -50,7 +50,7 @@ import {
   type PriceWaveProjection,
   type TopNostalgiaPlay,
   type DemographicCohort,
-} from '../lib/nostalgiaPredictorService.ts';
+} from '../lib/analytics/nostalgiaPredictorService.ts';
 
 // ---- Constants ----
 

@@ -22,7 +22,7 @@ import {
   type DailyBriefing,
   type ProactiveNudge,
   type CopilotSuggestion,
-} from '../lib/portfolioCopilotService.ts';
+} from '../lib/utils/portfolioCopilotService.ts';
 import {
   AreaChart,
   Area,

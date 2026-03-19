@@ -24,7 +24,7 @@ import {
   getBiasColor,
   type CounterpartyProfile,
   type CounterpartyArchetype,
-} from '../lib/counterpartyFingerprintService';
+} from '../lib/trading/counterpartyFingerprintService';
 
 const CounterpartyFingerprint: React.FC = () => {
   const profiles = useMemo(() => getCounterpartyProfiles(), []);

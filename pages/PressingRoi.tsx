@@ -26,7 +26,7 @@ import {
   type ServiceComparison,
   type RestorationRisk,
   type PressingStats,
-} from '../lib/pressingRoiService.ts';
+} from '../lib/utils/pressingRoiService.ts';
 import {
   BarChart,
   Bar,

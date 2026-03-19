@@ -25,7 +25,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import { getConsignmentOptions, ConsignmentOption } from '../lib/consignmentRouterService';
+import { getConsignmentOptions, ConsignmentOption } from '../lib/trading/consignmentRouterService';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────────
 

@@ -6,7 +6,7 @@ import {
   getFeaturedRoom,
   calculateRoomValue,
   VAULT_THEME_META,
-} from '../lib/arVaultWalkthroughService';
+} from '../lib/utils/arVaultWalkthroughService';
 
 interface ArVaultWalkthroughWidgetProps {
   onClick?: () => void;

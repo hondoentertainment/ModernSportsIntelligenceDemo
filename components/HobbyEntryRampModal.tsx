@@ -18,7 +18,7 @@ import {
   getEntryRamps,
   getRampProgress,
   getEntryStats,
-} from '../lib/hobbyEntryRampService';
+} from '../lib/utils/hobbyEntryRampService';
 
 interface HobbyEntryRampModalProps {
   isOpen: boolean;

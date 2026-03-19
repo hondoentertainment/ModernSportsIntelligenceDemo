@@ -13,7 +13,7 @@ import {
   isQuoteValid,
   recordInstantBuy,
   InstantBuyQuote,
-} from '../lib/instantBuyService';
+} from '../lib/trading/instantBuyService';
 
 interface InstantBuyModalProps {
   isOpen: boolean;

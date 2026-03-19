@@ -29,7 +29,7 @@ import {
   getWebVitals,
   measureRouteLoad,
   type PerformanceReport,
-} from '../lib/performanceOptimizer';
+} from '../lib/utils/performanceOptimizer';
 
 // Guard: only render in development
 const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV;

@@ -4,7 +4,7 @@ import {
   getUserProgress,
   getTrainingModules,
   getLevelProgress,
-} from '../lib/authTrainingService';
+} from '../lib/utils/authTrainingService';
 
 interface AuthTrainingWidgetProps {
   onOpenModal?: () => void;

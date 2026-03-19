@@ -31,7 +31,7 @@ import {
   VendorProfile,
   LiveScan,
   CrowdHeatzone,
-} from '../lib/voiceCardShowService';
+} from '../lib/social/voiceCardShowService';
 
 interface VoiceCardShowModalProps {
   isOpen: boolean;

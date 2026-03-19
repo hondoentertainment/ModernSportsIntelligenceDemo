@@ -5,7 +5,7 @@ import {
   ShieldCheck,
   Activity,
 } from 'lucide-react';
-import { getCardPassports, getRecentVerifications, getNetworkStats } from '../lib/blockchainProvenanceService';
+import { getCardPassports, getRecentVerifications, getNetworkStats } from '../lib/core/blockchainProvenanceService';
 
 interface BlockchainProvenanceWidgetProps {
   onOpenModal?: () => void;

@@ -8,7 +8,7 @@ import {
   getDashboardTemplates,
   getSharedDashboardStats,
   getAccessColor,
-} from '../lib/sharedDashboardService';
+} from '../lib/social/sharedDashboardService';
 
 const WIDGET_COLORS: Record<string, string> = {
   emerald: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30',

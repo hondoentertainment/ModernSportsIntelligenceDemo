@@ -13,14 +13,14 @@ import {
   TrendingDown,
   Minus,
 } from 'lucide-react';
-import { getAllGenomes, type GenomeProfile } from '../lib/cardGenomeService.ts';
-import { getInjuryProbabilities, type InjuryProbability } from '../lib/injuryIntelService.ts';
-import { getAssetCorrelations, type AssetCorrelation } from '../lib/crossAssetCorrelationService.ts';
-import { getStressTestResults, type StressTestResult } from '../lib/portfolioStressTestService.ts';
-import { getActiveOpportunities, type ArbitrageOpportunity } from '../lib/temporalArbitrageService.ts';
-import { getFarmMetrics, type YieldFarmMetrics } from '../lib/yieldFarmingService.ts';
-import { getMarketEntropy, type MarketEntropy } from '../lib/chaosTheoryService.ts';
-import { getAllLiquidityProfiles, type LiquidityProfile } from '../lib/liquidityDepthService.ts';
+import { getAllGenomes, type GenomeProfile } from '../lib/core/cardGenomeService.ts';
+import { getInjuryProbabilities, type InjuryProbability } from '../lib/analytics/injuryIntelService.ts';
+import { getAssetCorrelations, type AssetCorrelation } from '../lib/analytics/crossAssetCorrelationService.ts';
+import { getStressTestResults, type StressTestResult } from '../lib/analytics/portfolioStressTestService.ts';
+import { getActiveOpportunities, type ArbitrageOpportunity } from '../lib/analytics/temporalArbitrageService.ts';
+import { getFarmMetrics, type YieldFarmMetrics } from '../lib/utils/yieldFarmingService.ts';
+import { getMarketEntropy, type MarketEntropy } from '../lib/analytics/chaosTheoryService.ts';
+import { getAllLiquidityProfiles, type LiquidityProfile } from '../lib/analytics/liquidityDepthService.ts';
 
 // ---------------------------------------------------------------------------
 // Types

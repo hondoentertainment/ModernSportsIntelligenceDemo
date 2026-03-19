@@ -41,7 +41,7 @@ import {
   type HedgeCalculation,
   type VolatilitySurface as _VolSurfaceType,
   type ScenarioResult,
-} from '../lib/derivativesDeskService';
+} from '../lib/trading/derivativesDeskService';
 
 interface Props {
   isOpen: boolean;

@@ -1,6 +1,6 @@
 
 import { describe, it, expect } from 'vitest';
-import { NegotiationService } from '../../lib/negotiationService';
+import { NegotiationService } from '../../lib/trading/negotiationService';
 
 describe('NegotiationService', () => {
     const mockItem = {

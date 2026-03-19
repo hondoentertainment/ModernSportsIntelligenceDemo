@@ -20,7 +20,7 @@ import {
   type PriceAlert,
   type WatchlistStats,
   type PricePoint,
-} from '../lib/watchlistService.ts';
+} from '../lib/trading/watchlistService.ts';
 
 type TabKey = 'watchlist' | 'alerts' | 'movers' | 'trends';
 

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { CardInventory } from '../types';
-import { CorrelationService, HedgeRecommendation } from '../lib/CorrelationService';
+import { CorrelationService, HedgeRecommendation } from '../lib/analytics/CorrelationService';
 import { AlertTriangle, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 
 interface HedgeAdvisorProps {

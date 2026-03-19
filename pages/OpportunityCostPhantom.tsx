@@ -22,7 +22,7 @@ import {
   getReasonLabel,
   getReasonColor,
   getActionLabel,
-} from '../lib/opportunityCostService';
+} from '../lib/analytics/opportunityCostService';
 
 const OpportunityCostPhantom: React.FC = () => {
   const acquisitions = useMemo(() => getPhantomAcquisitions(), []);

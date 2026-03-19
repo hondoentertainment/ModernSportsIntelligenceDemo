@@ -10,14 +10,14 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { CardPosition, UserPortfolioState } from '../lib/userStatePersistence';
+import type { CardPosition, UserPortfolioState } from '../lib/utils/userStatePersistence';
 import { logger } from '../lib/logger';
 import {
   loadUserState,
   saveUserState,
-} from '../lib/userStatePersistence';
+} from '../lib/utils/userStatePersistence';
 
-export type { CardPosition } from '../lib/userStatePersistence';
+export type { CardPosition } from '../lib/utils/userStatePersistence';
 
 // ---------------------------------------------------------------------------
 // Helpers

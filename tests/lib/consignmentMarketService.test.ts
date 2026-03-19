@@ -17,13 +17,13 @@ import {
   getStatusColor,
   getStatusLabel,
   getRatingColor,
-} from '../../lib/consignmentMarketService';
+} from '../../lib/trading/consignmentMarketService';
 import type {
   ConsignmentHouse,
   ConsignmentListing,
   ConsignmentComparison,
   ConsignmentStats,
-} from '../../lib/consignmentMarketService';
+} from '../../lib/trading/consignmentMarketService';
 
 const localStorageMock = setupLocalStorageMock();
 

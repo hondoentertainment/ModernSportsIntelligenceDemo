@@ -36,7 +36,7 @@ import {
   CopyPortfolio,
   PerformanceMetrics,
   TradeHistory,
-} from '../lib/copyTradingService';
+} from '../lib/trading/copyTradingService';
 
 interface CopyTradingModalProps {
   isOpen: boolean;

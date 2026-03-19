@@ -29,7 +29,7 @@ import {
   type SentimentTimeline,
   type TopInfluencer,
   type PlatformBreakdown,
-} from '../lib/hypeRadarService.ts';
+} from '../lib/analytics/hypeRadarService.ts';
 import {
   AreaChart,
   Area,

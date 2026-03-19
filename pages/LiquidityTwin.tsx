@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowRightLeft, Clock3, Layers3, RadioTower, Wallet } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useSupabaseInventory } from '../lib/useSupabaseInventory';
-import { buildLiquidityTwinAssets, getLiquidityTwinOrderBook, getPortfolioLiquiditySummary, LiquidityTwinAssetView } from '../lib/fiveDifferentiatorService';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import { buildLiquidityTwinAssets, getLiquidityTwinOrderBook, getPortfolioLiquiditySummary, LiquidityTwinAssetView } from '../lib/utils/fiveDifferentiatorService';
 import { CardInventory } from '../types';
 
 const formatCurrency = (value?: number) => value ? `$${Math.round(value).toLocaleString()}` : 'N/A';

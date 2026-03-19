@@ -30,7 +30,7 @@ import {
   type CheckInStatus,
   type ShowStatus,
   type MemberAssignment,
-} from '../lib/cardShowSquadService.ts';
+} from '../lib/utils/cardShowSquadService.ts';
 
 // ---- Helpers ----
 

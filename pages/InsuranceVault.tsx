@@ -39,7 +39,7 @@ import {
   type CoverageGap,
   type ClaimHistory,
   type InsuranceReport,
-} from '../lib/insuranceVaultService';
+} from '../lib/core/insuranceVaultService';
 
 type TabKey = 'overview' | 'gaps' | 'claims' | 'reports';
 

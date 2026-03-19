@@ -43,7 +43,7 @@ import {
   evaluateRules,
   CONDITION_LABELS,
   ACTION_LABELS,
-} from '../lib/rulesEngineService';
+} from '../lib/utils/rulesEngineService';
 
 interface RulesEngineModalProps {
   isOpen: boolean;

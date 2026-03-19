@@ -6,7 +6,7 @@ import {
   getTaxOwed,
   getHarvestOpportunities,
   formatCurrency,
-} from '../lib/taxCalculatorService';
+} from '../lib/utils/taxCalculatorService';
 
 interface TaxCalculatorWidgetProps {
   onOpenModal?: () => void;

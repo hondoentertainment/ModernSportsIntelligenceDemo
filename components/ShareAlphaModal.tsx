@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Share2, Globe, Lock, Copy, CheckCircle2, Trophy, Eye, Zap, ShieldCheck } from 'lucide-react';
 import { UserProfile } from '../types';
-import { generateShareLink } from '../lib/socialService';
+import { generateShareLink } from '../lib/social/socialService';
 
 interface Props {
     isOpen: boolean;

@@ -34,8 +34,8 @@ import {
   getProductTypeLabel,
   getProductTypeColor,
   getProbabilityColor,
-} from '../lib/ripFlipSimService';
-import type { Product, SimulationResult } from '../lib/ripFlipSimService';
+} from '../lib/trading/ripFlipSimService';
+import type { Product, SimulationResult } from '../lib/trading/ripFlipSimService';
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
 

@@ -19,7 +19,7 @@ import {
   getForecast,
   conditionLabel,
   type WeatherCondition,
-} from '../lib/cardWeatherService';
+} from '../lib/utils/cardWeatherService';
 
 interface CardWeatherWidgetProps {
   onClick?: () => void;

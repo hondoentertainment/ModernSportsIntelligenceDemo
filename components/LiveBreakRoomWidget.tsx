@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tv, ChevronRight, Users, Flame, Timer, Gavel, Bell } from 'lucide-react';
-import { getLiveBreakRooms, getLiveAuctions } from '../lib/liveBreakRoomService.ts';
+import { getLiveBreakRooms, getLiveAuctions } from '../lib/social/liveBreakRoomService.ts';
 
 interface Props {
   onOpenModal?: () => void;

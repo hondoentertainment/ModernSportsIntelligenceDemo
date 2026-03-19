@@ -9,7 +9,7 @@ import { CardInventory } from '../types';
 import {
   getCollectionAuthScore,
   getAuthAlerts,
-} from '../lib/authenticationService';
+} from '../lib/utils/authenticationService';
 
 interface AuthWidgetProps {
   cards: CardInventory[];

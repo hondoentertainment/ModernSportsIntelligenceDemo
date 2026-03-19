@@ -14,7 +14,7 @@ import {
   getStatusColor,
   formatCurrency,
   formatROI,
-} from '../../lib/liveBreakRoiService';
+} from '../../lib/social/liveBreakRoiService';
 
 describe('liveBreakRoiService', () => {
   describe('getLiveBreaks', () => {

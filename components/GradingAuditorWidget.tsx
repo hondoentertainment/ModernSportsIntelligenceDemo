@@ -6,7 +6,7 @@ import {
   getCrossoverResults,
   getSeverityConfig,
   getCompanyConfig,
-} from '../lib/gradingAuditorService';
+} from '../lib/core/gradingAuditorService';
 
 interface GradingAuditorWidgetProps {
   onOpenModal?: () => void;

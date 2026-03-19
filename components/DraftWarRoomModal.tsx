@@ -38,7 +38,7 @@ import {
   type CardPresence,
   type LandingSpotFit,
   type DraftStrategy,
-} from '../lib/draftWarRoomService';
+} from '../lib/utils/draftWarRoomService';
 
 interface Props {
   isOpen: boolean;

@@ -48,7 +48,7 @@ import {
   Sport,
   CardGrade,
   CardCondition,
-} from '../lib/p2pMarketplaceService';
+} from '../lib/trading/p2pMarketplaceService';
 
 // ── Constants ───────────────────────────────────────────────────────────────────
 

@@ -10,7 +10,7 @@ import {
   PLATFORM_COLORS,
   ALL_PLATFORMS,
   CARD_SEEDS,
-} from '../../lib/dataConsolidationService';
+} from '../../lib/utils/dataConsolidationService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

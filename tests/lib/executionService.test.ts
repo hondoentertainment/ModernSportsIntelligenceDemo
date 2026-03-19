@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { ExecutionService, ExecutionAdapter, OrderIntent } from '../../lib/executionService';
+import { ExecutionService, ExecutionAdapter, OrderIntent } from '../../lib/utils/executionService';
 
 describe('executionService', () => {
     const adapter: ExecutionAdapter = {

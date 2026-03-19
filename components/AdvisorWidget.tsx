@@ -11,7 +11,7 @@ import {
   assessRisk,
   generateWeeklyDigest,
   StrategyProfile,
-} from '../lib/advisorService';
+} from '../lib/analytics/advisorService';
 
 interface AdvisorWidgetProps {
   inventory: CardInventory[];

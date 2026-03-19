@@ -12,7 +12,7 @@ import {
   getSocialAlphaSignals,
   platformIcon,
   platformColor,
-} from '../lib/influenceGraphService';
+} from '../lib/analytics/influenceGraphService';
 
 interface InfluenceGraphWidgetProps {
   onOpenModal?: () => void;

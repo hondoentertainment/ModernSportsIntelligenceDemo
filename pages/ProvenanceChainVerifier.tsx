@@ -11,7 +11,7 @@ import {
   type ProvenanceCard, type ChainEvent, type ProvenanceScore as PScore,
   type ChainOfCustody as CoC, type ProvenanceReport as PReport, type PhotoEvidence as PPhoto,
   type ProvenanceFlag, type ProvenanceComparison as PComparison,
-} from '../lib/provenanceChainService';
+} from '../lib/core/provenanceChainService';
 
 const TABS = [
   { id: 'chain', label: 'Chain Explorer', icon: Link },

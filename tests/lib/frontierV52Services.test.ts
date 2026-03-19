@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { FEATURE_CATALOG } from '../../lib/featureCatalog';
+import { FEATURE_CATALOG } from '../../lib/utils/featureCatalog';
 
 describe('v5.2 Frontier services', () => {
   it('catalog has at least 10 features with phase >= 279 (v5.2 Frontier range)', () => {

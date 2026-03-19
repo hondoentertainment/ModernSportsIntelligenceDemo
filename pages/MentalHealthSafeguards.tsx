@@ -17,7 +17,7 @@ import {
   type WellnessScore,
   type SpendingVelocity,
   type WellnessTip,
-} from '../lib/mentalHealthSafeguardsService.ts';
+} from '../lib/utils/mentalHealthSafeguardsService.ts';
 
 const MentalHealthSafeguards: React.FC = () => {
   const [breakers, setBreakers] = useState<SpendingCircuitBreaker[]>([]);

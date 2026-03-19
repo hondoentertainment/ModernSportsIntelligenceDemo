@@ -47,7 +47,7 @@ import {
   type GradePrediction as GradePredictionType,
   type GradingCompany,
   type SubgradeCategory,
-} from '../lib/gradePredictionService.ts';
+} from '../lib/analytics/gradePredictionService.ts';
 
 // ---- Tab type ----
 type TabId = 'predictions' | 'costs' | 'population' | 'roi' | 'tracker' | 'upload';

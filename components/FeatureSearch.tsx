@@ -9,8 +9,8 @@ import {
   DISCOVERABLE_FEATURE_CATALOG,
   FEATURED_FEATURE_CATALOG,
   Feature,
-} from '../lib/featureCatalog';
-import { useFocusTrap } from '../lib/useFocusTrap';
+} from '../lib/utils/featureCatalog';
+import { useFocusTrap } from '../lib/utils/useFocusTrap';
 
 const FeatureSearch: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);

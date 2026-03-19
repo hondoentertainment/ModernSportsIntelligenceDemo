@@ -29,7 +29,7 @@ import {
   getIndexComparison,
   calculatePortfolioBeta,
   MarketIndex,
-} from '../lib/marketIndicesService';
+} from '../lib/analytics/marketIndicesService';
 
 // ---- Props ----
 

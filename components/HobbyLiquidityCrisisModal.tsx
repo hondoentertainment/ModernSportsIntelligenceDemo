@@ -25,7 +25,7 @@ import {
   type SystemicRiskLevel,
   type MacroIndicator,
   type CrisisAlert,
-} from '../lib/hobbyLiquidityCrisisService';
+} from '../lib/utils/hobbyLiquidityCrisisService';
 
 interface HobbyLiquidityCrisisModalProps {
   isOpen: boolean;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { attachValuationQuality, evaluateValuationQuality } from '../../lib/valuationQuality';
+import { attachValuationQuality, evaluateValuationQuality } from '../../lib/analytics/valuationQuality';
 import { PricingAnalysis } from '../../types';
 
 describe('valuationQuality', () => {

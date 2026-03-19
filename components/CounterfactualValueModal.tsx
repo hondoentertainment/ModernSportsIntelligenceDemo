@@ -21,7 +21,7 @@ import {
   CounterfactualScenario,
   AlternateTimeline,
   CounterfactualComparable,
-} from '../lib/counterfactualValueService';
+} from '../lib/analytics/counterfactualValueService';
 
 interface CounterfactualValueModalProps {
   isOpen: boolean;

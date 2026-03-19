@@ -20,7 +20,7 @@ import {
   getPlatformLabel,
   getRiskColor,
   getTypeLabel,
-} from '../../lib/crossPlatformArbitrageService';
+} from '../../lib/trading/crossPlatformArbitrageService';
 import { setupLocalStorageMock } from '../helpers';
 
 const localStorageMock = setupLocalStorageMock();

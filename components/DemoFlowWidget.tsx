@@ -4,8 +4,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ChevronRight, X, Minimize2, Maximize2, Play, Layers,
 } from 'lucide-react';
-import type { DemoStep, DemoFlow } from '../lib/demoFlowService.ts';
-import { getDemoFlows, getDemoFlow, advanceStep, getDemoProgress } from '../lib/demoFlowService.ts';
+import type { DemoStep, DemoFlow } from '../lib/utils/demoFlowService.ts';
+import { getDemoFlows, getDemoFlow, advanceStep, getDemoProgress } from '../lib/utils/demoFlowService.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types

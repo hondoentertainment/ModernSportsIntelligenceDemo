@@ -4,7 +4,7 @@ import {
   getTrendingSentiments,
   getMarketSentimentOverview,
   type SentimentData,
-} from '../lib/sentimentRadarService';
+} from '../lib/analytics/sentimentRadarService';
 
 interface SentimentRadarWidgetProps {
   onOpenModal?: () => void;

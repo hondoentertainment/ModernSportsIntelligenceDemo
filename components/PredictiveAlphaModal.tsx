@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { X, TrendingUp, TrendingDown, Minus, Zap, Shield, Target, AlertTriangle, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { CardInventory } from '../types';
-import { forecastPriceTrajectory, analyzeBreakoutPotential, PriceTrajectory, BreakoutAnalysis } from '../lib/predictiveAlpha';
+import { forecastPriceTrajectory, analyzeBreakoutPotential, PriceTrajectory, BreakoutAnalysis } from '../lib/analytics/predictiveAlpha';
+import { store } from '../lib/dal/syncStore';
 
 interface PredictiveAlphaModalProps {
   isOpen: boolean;
@@ -179,9 +180,7 @@ const PredictiveAlphaModal: React.FC<PredictiveAlphaModalProps> = ({ isOpen, onC
 /** Helper to get history count without importing priceHistory directly */
 function getCardHistoryCount(cardId: string): number {
   try {
-    const data = localStorage.getItem('cardx_price_history');
-    if (!data) return 0;
-    const history = JSON.parse(data);
+    const history = store.get<Record<string, unknown[]>>('cardx_price_history', {});
     return (history[cardId] || []).length;
   } catch { return 0; }
 }

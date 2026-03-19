@@ -3,8 +3,8 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import { NAV_ITEMS } from '../constants.tsx';
-import { PRIMARY_NAV_IDS } from '../lib/productSurface';
-import { useAlerts } from '../lib/useAlerts.ts';
+import { PRIMARY_NAV_IDS } from '../lib/utils/productSurface';
+import { useAlerts } from '../lib/utils/useAlerts.ts';
 
 interface SidebarProps {
   isOpen: boolean;

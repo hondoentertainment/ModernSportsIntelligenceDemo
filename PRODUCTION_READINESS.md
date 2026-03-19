@@ -37,10 +37,24 @@ Completed in recent sprints (post–v4.3):
 - `reportError` → `captureException` (Sentry) already wired in `lib/errorReporting.ts`.
 - Phase 10 JSDoc: `lib/retry.ts` and `lib/errorReporting.ts` already have JSDoc.
 
+**Phase 1.1 DAL (implemented):**
+- `lib/dal.ts`: `IDataAccessLayer` interface, `createDataAccessLayer(userId)`, `LocalStorageDAL`, `SupabaseDAL`.
+- Entity methods: `getCards()`, `setCards()`, `getTargets()`, `setTargets()`; generic `getJson`/`setJson`/`remove`.
+- Migration guide in JSDoc. Tests: `tests/lib/dal.test.ts`.
+
+**Phase 1.2 Auth + RLS (implemented):**
+- `ProtectedRoute` wraps all app routes. RLS policies in `supabase-schema.sql` and `supabase/migrations/00001_rls_audit_events.sql`.
+
+**Phase 3 (implemented):**
+- `Dockerfile`: multi-stage Node build → nginx for static SPA.
+- `docker-compose.yml`: app service on port 3000.
+- `supabase/migrations/`: migration folder for incremental schema changes.
+
 **Next:**
 - Fix any remaining TypeScript errors in `lib/fiveDifferentiatorService.ts` if present; run `npm run typecheck` to verify.
 - Enable `strict: true` in tsconfig once all errors resolved.
 - Continue raising test coverage toward 80%.
+- Gradually migrate services from direct localStorage to DAL (see lib/dal.ts migration guide).
 
 ---
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import { GuildService } from '../../lib/guildService';
+import { GuildService } from '../../lib/social/guildService';
 import { JointAcquisitionProposal } from '../../types';
 
 describe('GuildService', () => {

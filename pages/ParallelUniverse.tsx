@@ -43,7 +43,7 @@ import {
   type ParallelSet,
   type ParallelStats,
   type RarityTier,
-} from '../lib/parallelUniverseService';
+} from '../lib/utils/parallelUniverseService';
 
 type TabId = 'parallels' | 'sets' | 'rarity' | 'stats';
 

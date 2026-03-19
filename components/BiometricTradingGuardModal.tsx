@@ -36,7 +36,7 @@ import {
   type CooldownEvent,
   type EmotionalState,
   type GuardConfig,
-} from '../lib/biometricTradingGuardService';
+} from '../lib/utils/biometricTradingGuardService';
 
 interface BiometricTradingGuardModalProps {
   isOpen: boolean;
