@@ -51,7 +51,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   const body = req.body ?? {};
   const parsed = generateBodySchema.safeParse(body);
   if (!parsed.success) {
-    const message = parsed.error.errors.map((e) => e.message).join('; ') || 'Invalid request body';
+    const message = parsed.error.issues.map((e) => e.message).join('; ') || 'Invalid request body';
     return res.status(400).json({ error: message });
   }
   const { model, contents, config } = parsed.data;

@@ -6,3 +6,5 @@
 export { useSupabaseInventory, useInventory, calculateStats } from '../../lib/useInventory';
 export { createDataAccessLayer, DAL_KEYS, type IDataAccessLayer, type SyncMeta } from '../../lib/dal';
 export type { CardInventory, TargetWatchlist } from '../../types';
+
+// Re-export for feature-based imports: import { useSupabaseInventory } from '@/features/portfolio'

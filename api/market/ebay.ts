@@ -131,7 +131,7 @@ export default async function handler(req: any, res: any) {
   const rawBody = req.body ?? {};
   const parseResult = ebayBodySchema.safeParse(rawBody);
   if (!parseResult.success) {
-    const message = parseResult.error.errors?.map(e => `${e.path.join('.')}: ${e.message}`).join('; ') ?? 'Invalid request body';
+    const message = parseResult.error.issues?.map(e => `${e.path.join('.')}: ${e.message}`).join('; ') ?? 'Invalid request body';
     return res.status(400).json({ error: message });
   }
   const body = parseResult.data;

@@ -37,22 +37,19 @@ Completed in recent sprints (post–v4.3):
 - `reportError` → `captureException` (Sentry) already wired in `lib/errorReporting.ts`.
 - Phase 10 JSDoc: `lib/retry.ts` and `lib/errorReporting.ts` already have JSDoc.
 
-**Phase 1.1 DAL (implemented):**
-- `lib/dal.ts`: `IDataAccessLayer` interface, `createDataAccessLayer(userId)`, `LocalStorageDAL`, `SupabaseDAL`.
-- Entity methods: `getCards()`, `setCards()`, `getTargets()`, `setTargets()`; generic `getJson`/`setJson`/`remove`.
-- Migration guide in JSDoc. Tests: `tests/lib/dal.test.ts`.
+**Implemented (all phases):**
+- **Phase 1.1 DAL:** `lib/dal.ts` — `createDataAccessLayer(userId)`, `IDataAccessLayer` (getCards, setCards, getTargets, setTargets, getJson, setJson, remove). Supabase-backed when userId + configured; localStorage fallback. Tests: `tests/lib/dal.test.ts`.
+- **Phase 1.2 Auth/RLS:** ProtectedRoute on all protected routes; `supabase-schema.sql` and `supabase/migrations/00001_rls_audit_events.sql` for RLS policies.
+- **Phase 3.1 Docker:** `Dockerfile` (multi-stage, nginx), `docker-compose.yml` for production image.
+- **Phase 3.3 Migrations:** `supabase/migrations/` folder with RLS migration.
+- **Phase 4 Stripe webhook:** `api/stripe-webhook.ts` — signature verification, raw body; idempotency per PAYMENT_SECURITY.
+- **Phase 5.1 Features:** `features/portfolio/index.ts` — barrel exports for portfolio (useSupabaseInventory, dal, types).
 
-**Phase 1.2 Auth + RLS (implemented):**
-- `ProtectedRoute` wraps all app routes. RLS policies in `supabase-schema.sql` and `supabase/migrations/00001_rls_audit_events.sql`.
-
-**Phase 3 (implemented):**
-- `Dockerfile`: multi-stage Node build → nginx for static SPA.
-- `docker-compose.yml`: app service on port 3000.
-- `supabase/migrations/`: migration folder for incremental schema changes.
+**Next phases (TypeScript / Zod):**
+- **Done:** Zod v4 — `error.issues` in api/ai/generate.ts and api/market/ebay.ts; `z.record(z.string(), z.unknown())` in lib/schemas.ts; Stripe webhook `apiVersion: '2026-01-28.clover'` and `apiLogger.info(message, meta)`; geminiClient returns `{ text: validated.text ?? '' }`. **`npm run typecheck` passes.**
 
 **Next:**
-- Fix any remaining TypeScript errors in `lib/fiveDifferentiatorService.ts` if present; run `npm run typecheck` to verify.
-- Enable `strict: true` in tsconfig once all errors resolved.
+- Enable `strict: true` in tsconfig when desired.
 - Continue raising test coverage toward 80%.
 - Gradually migrate services from direct localStorage to DAL (see lib/dal.ts migration guide).
 
@@ -62,10 +59,12 @@ Completed in recent sprints (post–v4.3):
 
 ### 1.1 Replace localStorage with Real Backend Services
 
+**Status:** DAL implemented. `lib/dal.ts` provides `createDataAccessLayer(userId)`; use `dal.getCards()`, `dal.setCards()`, `dal.getTargets()`, `dal.setTargets()`, `dal.getJson()`, `dal.setJson()`. Supabase-backed when userId present; localStorage fallback otherwise. `useSupabaseInventory` remains primary for React. `tests/lib/dal.test.ts` covers LocalStorageDAL.
+
 **Why:** 426 localStorage references across 106 service files means all user data is ephemeral, device-locked, and unrecoverable. This is the single largest gap.
 
 **Actions:**
-- Define a data access layer (DAL) abstraction so services call `dal.getCards()` instead of `localStorage.getItem()`
+- ~~Define a data access layer (DAL) abstraction so services call `dal.getCards()` instead of `localStorage.getItem()`~~ ✅
 - Implement the DAL against Supabase (schema already exists in `supabase-schema.sql`)
 - Migrate services in priority order: inventory → authentication → billing → trading → analytics
 - Add offline-first caching (e.g., TanStack Query with Supabase realtime sync) so the UX stays snappy

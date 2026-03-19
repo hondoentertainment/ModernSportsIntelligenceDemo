@@ -46,7 +46,7 @@ export function createGeminiClient(): GeminiClientLike {
                     if (!validated) {
                         throw new Error('Invalid response from Gemini API');
                     }
-                    return validated;
+                    return { text: validated.text ?? '' };
                 } catch (error) {
                     if (!missingProxyWarned) {
                         missingProxyWarned = true;
