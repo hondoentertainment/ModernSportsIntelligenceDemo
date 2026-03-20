@@ -56,6 +56,7 @@ export default defineConfig({
       // 100% on the explicit whitelist below. Everything else is out of scope for this
       // gate (UI, feature-catalog services, API routes, etc.). See docs/COVERAGE_POLICY.md.
       // all: false — do not pull in untested project files (would drag the global % down).
+      // @ts-expect-error Vitest exposes `all`; older @vitest/coverage-v8 typings omit it
       all: false,
       include: [
         'constants.tsx',

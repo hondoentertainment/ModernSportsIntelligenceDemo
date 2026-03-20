@@ -96,7 +96,7 @@ function cardSeed(card: CardInventory): number {
   return hashString(card.id + card.player + card.year);
 }
 
-// ---- localStorage helpers ----
+// ---- Auth history persistence (DAL-backed syncStore) ----
 
 interface AuthHistoryEntry {
   cardId: string;

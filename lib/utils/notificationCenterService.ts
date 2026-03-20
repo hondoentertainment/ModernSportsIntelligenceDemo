@@ -532,7 +532,7 @@ export function groupNotifications(notifications: Notification[]): NotificationG
   });
 }
 
-// ---- localStorage Persistence ----
+// ---- Persistence (DAL-backed syncStore) ----
 
 function loadReadIds(): Set<string> {
   return new Set(store.get<string[]>(READ_KEY, []));

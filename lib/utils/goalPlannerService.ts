@@ -139,7 +139,7 @@ function addMonths(dateStr: string, months: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-// ---- localStorage helpers ----
+// ---- Persistence (DAL-backed syncStore) ----
 
 function loadGoals(): CollectionGoal[] {
   return store.get<CollectionGoal[]>(GOALS_KEY, []);

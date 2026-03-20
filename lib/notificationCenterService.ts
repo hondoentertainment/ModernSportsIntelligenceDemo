@@ -531,46 +531,32 @@ export function groupNotifications(notifications: Notification[]): NotificationG
   });
 }
 
-// ---- localStorage Persistence ----
+// ---- Persistence (DAL-backed syncStore) ----
 
 function loadReadIds(): Set<string> {
-  try {
-    const raw = localStorage.getItem(READ_KEY);
-    return raw ? new Set(JSON.parse(raw)) : new Set();
-  } catch {
-    return new Set();
-  }
+  const arr = store.get<string[]>(READ_KEY, []);
+  return new Set(Array.isArray(arr) ? arr : []);
 }
 
 function saveReadIds(ids: Set<string>): void {
-  localStorage.setItem(READ_KEY, JSON.stringify([...ids]));
+  store.set(READ_KEY, [...ids]);
 }
 
 function loadDismissedIds(): Set<string> {
-  try {
-    const raw = localStorage.getItem(DISMISSED_KEY);
-    return raw ? new Set(JSON.parse(raw)) : new Set();
-  } catch {
-    return new Set();
-  }
+  const arr = store.get<string[]>(DISMISSED_KEY, []);
+  return new Set(Array.isArray(arr) ? arr : []);
 }
 
 function saveDismissedIds(ids: Set<string>): void {
-  localStorage.setItem(DISMISSED_KEY, JSON.stringify([...ids]));
+  store.set(DISMISSED_KEY, [...ids]);
 }
 
 export function loadPreferences(): NotificationPreferences {
-  try {
-    const raw = localStorage.getItem(PREFS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // fall through to default
-  }
-  return getDefaultPreferences();
+  return store.get(PREFS_KEY, getDefaultPreferences());
 }
 
 export function savePreferences(prefs: NotificationPreferences): void {
-  localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+  store.set(PREFS_KEY, prefs);
 }
 
 function getDefaultPreferences(): NotificationPreferences {

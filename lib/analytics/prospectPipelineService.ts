@@ -362,7 +362,7 @@ export function getRecentPromotions(): Prospect[] {
   return getAllProspectsInternal().filter(p => p.recentPromotion);
 }
 
-// ── Stash tracker (localStorage CRUD) ────────────────────────────────────────────
+// ── Stash tracker (syncStore) ────────────────────────────────────────────
 
 export function getStashEntries(): StashEntry[] {
   return store.get<StashEntry[]>(STORAGE_STASH, []);
@@ -402,7 +402,7 @@ export function getStashSummary(): StashPortfolioSummary {
   return { totalInvested, currentValue, targetValue, roi, count: entries.length };
 }
 
-// ── Followed prospects (localStorage) ────────────────────────────────────────────
+// ── Followed prospects (syncStore) ────────────────────────────────────────────
 
 export function getFollowedProspects(): string[] {
   return store.get<string[]>(STORAGE_FOLLOWED, []);

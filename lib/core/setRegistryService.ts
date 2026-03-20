@@ -438,7 +438,7 @@ function getSetCards(set: CardSet): SetCard[] {
   return cards;
 }
 
-// ---- localStorage helpers ----
+// ---- Persistence (DAL-backed syncStore) ----
 
 export function loadEnrollments(): SetEnrollment[] {
   return store.get<SetEnrollment[]>(ENROLLMENT_KEY, []);

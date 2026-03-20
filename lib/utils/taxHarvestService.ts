@@ -635,7 +635,7 @@ export function getTaxHarvestSummary(cards: CardInventory[]): TaxHarvestSummary 
   };
 }
 
-// ---- localStorage CRUD ----
+// ---- Tax harvest persistence (DAL-backed syncStore) ----
 
 function loadHarvestedRecords(): HarvestedRecord[] {
   return store.get<HarvestedRecord[]>(STORAGE_HARVESTED_KEY, []);

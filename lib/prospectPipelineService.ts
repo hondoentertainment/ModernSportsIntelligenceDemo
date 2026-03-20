@@ -1,4 +1,5 @@
 import { Sport } from '../types';
+import { store } from './dal/syncStore';
 
 // ── Types ────────────────────────────────────────────────────────────────────────
 
@@ -437,19 +438,14 @@ export function isProspectFollowed(id: string): boolean {
 // ── Alert acknowledgement ────────────────────────────────────────────────────────
 
 function getAcknowledgedAlerts(): string[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_ALERTS_ACK);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+  return store.get<string[]>(STORAGE_ALERTS_ACK, []);
 }
 
 export function acknowledgeAlert(alertId: string): void {
   const acked = getAcknowledgedAlerts();
   if (!acked.includes(alertId)) {
     acked.push(alertId);
-    localStorage.setItem(STORAGE_ALERTS_ACK, JSON.stringify(acked));
+    store.set(STORAGE_ALERTS_ACK, acked);
   }
 }
 

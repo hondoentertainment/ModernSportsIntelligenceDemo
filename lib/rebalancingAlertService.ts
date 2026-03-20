@@ -351,21 +351,11 @@ export function getPortfolioHealth(inventory: CardInventory[]): PortfolioHealthR
 // ---- Alert Persistence ----
 
 export function getAlertHistory(): RebalanceAlert[] {
-  try {
-    const raw = localStorage.getItem(ALERT_STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as RebalanceAlert[];
-  } catch {
-    // ignore
-  }
-  return [];
+  return store.get<RebalanceAlert[]>(ALERT_STORAGE_KEY, []);
 }
 
 export function saveAlertHistory(alerts: RebalanceAlert[]): void {
-  try {
-    localStorage.setItem(ALERT_STORAGE_KEY, JSON.stringify(alerts));
-  } catch {
-    // ignore
-  }
+  store.set(ALERT_STORAGE_KEY, alerts);
 }
 
 export function acknowledgeAlert(alertId: string): RebalanceAlert[] {

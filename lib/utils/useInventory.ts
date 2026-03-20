@@ -36,7 +36,7 @@ export function useInventory() {
         return store.get<SyncMeta>(SYNC_META_KEY, { lastSyncTime: null, totalValue: 0, assetCount: 0 });
     });
 
-    // Persist inventory changes to localStorage
+    // Persist via syncStore (localStorage fast path + Supabase flush when signed in)
     useEffect(() => {
         store.set(STORAGE_KEY, inventory);
         store.set(TARGETS_KEY, targets);
