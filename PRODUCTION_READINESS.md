@@ -26,7 +26,7 @@ Completed in recent sprints (post–v4.3):
 - **Phase 10 – Type safety:** `HealthResponse` in `api/health.ts`; `ApiRequest`/`ApiResponse` in `api/ai/generate.ts`; JSDoc on `lib/retry.ts` and `lib/errorReporting.ts`.
 - **Phase 11 – Sentry & runbook:** `lib/sentry.ts` (optional init when `VITE_SENTRY_DSN` set, `captureException`); `reportError` calls `captureException`; Runbook in `docs/MONITORING.md`; `.env.example` documents `VITE_SENTRY_DSN`. Optional dep `@sentry/react` for builds when Sentry is used.
 
-**Coverage:** CI runs `npm run test:coverage` and uploads the report; current thresholds (vite.config) are 60% statements/branches/functions/lines. **Target: 80%** (see §2.1); raise thresholds gradually as tests are added.
+**Coverage:** CI runs `npm run test:coverage` and uploads the report. `vite.config.ts` uses `coverage.all: false` and an explicit `coverage.include` whitelist; `test.coverage.thresholds` enforce the current aggregate (statements/lines/functions **92%**, branches **80%** — raise as the whitelist improves). Policy: **[docs/COVERAGE_POLICY.md](docs/COVERAGE_POLICY.md)**. Long-term: **~80%+** on business-critical modules (§2.1) and/or **100%** on a shrinking whitelist.
 
 **Idempotency:** Client sends `idempotencyKey` with checkout and portal requests; backend Edge Functions must forward it to Stripe as `Idempotency-Key` (see docs/PAYMENT_SECURITY.md §c).
 
@@ -48,16 +48,31 @@ Completed in recent sprints (post–v4.3):
 **Next phases (TypeScript / Zod):**
 - **Done:** Zod v4 — `error.issues` in api/ai/generate.ts and api/market/ebay.ts; `z.record(z.string(), z.unknown())` in lib/schemas.ts; Stripe webhook `apiVersion: '2026-01-28.clover'` and `apiLogger.info(message, meta)`; geminiClient returns `{ text: validated.text ?? '' }`. **`npm run typecheck` passes.**
 
+**Phase 12 (production-grade — XSS + types workflow + DAL export):**
+- **HTML sanitization:** `lib/sanitizeHtml.ts` uses DOMPurify with an allowlist; `APIPlatformModal` and `EbayListingGeneratorModal` sanitize before `dangerouslySetInnerHTML`. Tests: `tests/lib/sanitizeHtml.test.ts`.
+- **Supabase generated types:** `docs/SUPABASE_TYPES.md` documents `npm run types:supabase` (CLI → `types/supabase.gen.ts`). Placeholder `types/supabase.gen.ts` committed until first generation.
+- **DAL:** `initDAL` re-exported from `lib/dal.ts` so `import { initDAL } from './lib/dal'` resolves (file previously shadowed `lib/dal/index.ts`).
+
+**Phase 14 (agent swarm — production-grade next steps):**
+- **Strict TypeScript (incremental):** `tsconfig.strict.json` + `npm run typecheck:strict` — see `docs/TYPESCRIPT_STRICT.md` (expects many errors until codebase is tightened).
+- **E2E smoke:** `release-smoke.spec.ts` — test `billing or settings surface shows subscription or account copy` (settings copy after demo login).
+- **CI dependency visibility:** Non-blocking `npm audit --audit-level=high` in `.github/workflows/ci.yml`; local `npm run audit:high`; `docs/MONITORING.md` § Dependency audit.
+- **DAL migration doc:** `docs/DAL_MIGRATION.md`; `lib/useFavorites.ts` re-exports `lib/utils/useFavorites` (single store-backed implementation).
+
 **Next:**
-- Enable `strict: true` in tsconfig when desired.
-- Continue raising test coverage toward 80%.
-- Gradually migrate services from direct localStorage to DAL (see lib/dal.ts migration guide).
+- Run `npm run typecheck:strict` periodically and fix files incrementally (see `docs/TYPESCRIPT_STRICT.md`).
+- **Phase 13 – Coverage:** `tests/lib/syncStore.test.ts` exercises `lib/dal/syncStore` (get/set/has/remove/clear, localStorage fallbacks, adapter hydrate/flush/forceFlush); `sanitizeHtml.test.ts` expanded with non-string input, disallowed tags, and event/`javascript:` URL stripping. Global coverage thresholds in `vite.config.ts` track the **current aggregate** on instrumented files so CI stays honest; raise them gradually as tests are added (see [docs/COVERAGE_POLICY.md](docs/COVERAGE_POLICY.md)).
+- Continue raising test coverage toward 80% on critical paths and/or narrowing `coverage.include` toward a 100% gate on core modules.
+- Gradually migrate services from direct localStorage to DAL (see [docs/DAL_MIGRATION.md](docs/DAL_MIGRATION.md)).
+- Before enforcing a blocking CSP in production, follow [docs/CSP_ROLLOUT.md](docs/CSP_ROLLOUT.md).
 
 ---
 
 ## Phase 1: Foundation (Critical — Do First)
 
 ### 1.1 Replace localStorage with Real Backend Services
+
+**Docs:** [docs/DAL_MIGRATION.md](docs/DAL_MIGRATION.md) — how `lib/dal.ts`, `initDAL`, and `lib/dal/syncStore.ts` fit together.
 
 **Status:** DAL implemented. `lib/dal.ts` provides `createDataAccessLayer(userId)`; use `dal.getCards()`, `dal.setCards()`, `dal.getTargets()`, `dal.setTargets()`, `dal.getJson()`, `dal.setJson()`. Supabase-backed when userId present; localStorage fallback otherwise. `useSupabaseInventory` remains primary for React. `tests/lib/dal.test.ts` covers LocalStorageDAL.
 

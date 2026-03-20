@@ -1,40 +1,184 @@
-import { describe, expect, it } from 'vitest';
-import { attachValuationQuality, evaluateValuationQuality } from '../../lib/analytics/valuationQuality';
-import { PricingAnalysis } from '../../types';
+import { describe, it, expect } from 'vitest';
+import { evaluateValuationQuality, attachValuationQuality } from '../../lib/analytics/valuationQuality';
+import type { PricingAnalysis } from '../../types';
 
 describe('valuationQuality', () => {
-    it('flags stale low-confidence valuations', () => {
-        const analysis: PricingAnalysis = {
-            estimatedValue: 100,
-            low: 80,
-            high: 120,
-            avg: 100,
-            confidence: 0.4,
-            salesCount: 1,
-            lastUpdated: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
-            valuationSource: 'fallback'
-        };
-
-        const quality = evaluateValuationQuality(analysis, new Date());
-        expect(quality.isStale).toBe(true);
-        expect(quality.confidenceTier).toBe('Low');
-        expect(quality.warnings.length).toBeGreaterThan(0);
+  describe('evaluateValuationQuality', () => {
+    it('evaluates quality for fresh high-confidence analysis', () => {
+      const analysis: PricingAnalysis = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        confidence: 0.9,
+        salesCount: 20,
+        lastUpdated: new Date().toISOString(),
+        valuationSource: 'ebay-api',
+        valuationTimestamp: new Date().toISOString(),
+      };
+      const quality = evaluateValuationQuality(analysis);
+      expect(quality.qualityScore).toBeGreaterThan(80);
+      expect(quality.confidenceTier).toBe('High');
+      expect(quality.isStale).toBe(false);
     });
 
-    it('attaches quality metadata to analysis', () => {
-        const analysis: PricingAnalysis = {
-            estimatedValue: 250,
-            low: 220,
-            high: 280,
-            avg: 250,
-            confidence: 0.9,
-            salesCount: 14,
-            lastUpdated: new Date().toISOString(),
-            valuationSource: 'ebay-api'
-        };
-
-        const enriched = attachValuationQuality(analysis);
-        expect(enriched.quality).toBeDefined();
-        expect(enriched.quality?.qualityScore).toBeGreaterThan(70);
+    it('marks stale valuations', () => {
+      const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+      const analysis: PricingAnalysis = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        confidence: 0.9,
+        salesCount: 20,
+        lastUpdated: threeDaysAgo,
+        valuationTimestamp: threeDaysAgo,
+      };
+      const quality = evaluateValuationQuality(analysis);
+      expect(quality.isStale).toBe(true);
+      expect(quality.warnings).toContain('Valuation data is stale (>48h).');
     });
+
+    it('warns about low sales depth', () => {
+      const analysis: PricingAnalysis = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        confidence: 0.9,
+        salesCount: 2,
+        lastUpdated: new Date().toISOString(),
+        valuationTimestamp: new Date().toISOString(),
+      };
+      const quality = evaluateValuationQuality(analysis);
+      expect(quality.warnings).toContain('Low sales depth may reduce reliability.');
+    });
+
+    it('warns about low confidence', () => {
+      const analysis: PricingAnalysis = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        confidence: 0.4,
+        salesCount: 20,
+        lastUpdated: new Date().toISOString(),
+        valuationTimestamp: new Date().toISOString(),
+      };
+      const quality = evaluateValuationQuality(analysis);
+      expect(quality.confidenceTier).toBe('Low');
+      expect(quality.warnings).toContain('Model confidence is low.');
+    });
+
+    it('gives boost for eBay API source', () => {
+      const analysis: PricingAnalysis = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        confidence: 0.8,
+        salesCount: 20,
+        lastUpdated: new Date().toISOString(),
+        valuationSource: 'ebay-api',
+        valuationTimestamp: new Date().toISOString(),
+      };
+      const quality = evaluateValuationQuality(analysis);
+      expect(quality.qualityScore).toBeGreaterThan(80);
+    });
+
+    it('gives boost for Gemini source', () => {
+      const analysis: PricingAnalysis = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        confidence: 0.8,
+        salesCount: 20,
+        lastUpdated: new Date().toISOString(),
+        valuationSource: 'gemini',
+        valuationTimestamp: new Date().toISOString(),
+      };
+      const quality = evaluateValuationQuality(analysis);
+      expect(quality.qualityScore).toBeGreaterThan(70);
+    });
+
+    it('handles missing confidence', () => {
+      const analysis: PricingAnalysis = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        salesCount: 20,
+        lastUpdated: new Date().toISOString(),
+        valuationTimestamp: new Date().toISOString(),
+      };
+      const quality = evaluateValuationQuality(analysis);
+      expect(quality.confidenceTier).toBe('Low');
+    });
+
+    it('calculates freshness score correctly', () => {
+      const oneDayAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString();
+      const analysis: PricingAnalysis = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        confidence: 0.8,
+        salesCount: 20,
+        lastUpdated: oneDayAgo,
+        valuationTimestamp: oneDayAgo,
+      };
+      const quality = evaluateValuationQuality(analysis);
+      expect(quality.freshnessHours).toBeLessThan(25);
+    });
+
+    it('treats invalid timestamps as stale (NaN date branch)', () => {
+      const analysis: PricingAnalysis = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        confidence: 0.8,
+        salesCount: 20,
+        lastUpdated: 'not-a-real-iso-date',
+        valuationTimestamp: 'also-invalid',
+      };
+      const quality = evaluateValuationQuality(analysis);
+      expect(quality.isStale).toBe(true);
+    });
+  });
+
+  describe('attachValuationQuality', () => {
+    it('attaches quality to analysis', () => {
+      const analysis: PricingAnalysis = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        confidence: 0.9,
+        salesCount: 20,
+        lastUpdated: new Date().toISOString(),
+        valuationTimestamp: new Date().toISOString(),
+      };
+      const result = attachValuationQuality(analysis);
+      expect(result.quality).toBeDefined();
+      expect(result.quality?.qualityScore).toBeGreaterThan(0);
+    });
+
+    it('preserves all original analysis fields', () => {
+      const analysis: PricingAnalysis = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        confidence: 0.9,
+        salesCount: 20,
+        lastUpdated: new Date().toISOString(),
+        valuationTimestamp: new Date().toISOString(),
+      };
+      const result = attachValuationQuality(analysis);
+      expect(result.estimatedValue).toBe(100);
+      expect(result.confidence).toBe(0.9);
+    });
+  });
 });

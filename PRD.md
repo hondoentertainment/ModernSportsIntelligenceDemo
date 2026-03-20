@@ -1,9 +1,20 @@
 # Modern Sports Intelligence Platform — Product Requirements Document (PRD)
 
 **Version:** 4.3
-**Last Updated:** March 18, 2026
-**Status:** Active Development — v4.0 delivered; v5.0/v5.1 roadmap defined; production hardening complete
+**Last Updated:** March 20, 2026
+**Status:** Active Development — v4.0 delivered; v5.0/v5.1 roadmap defined; **UI and ops hardening in progress** (see note below)
 **Platform:** Web (React SPA), PWA-enabled
+
+### Production readiness (single definition)
+
+Use this distinction when planning releases:
+
+| Layer | Meaning |
+|--------|---------|
+| **Demo / feature surface** | Routes, components, and services exist; many flows use **localStorage**, mocks, or AI estimates. Suitable for demos and internal QA. |
+| **Production for subscribers** | User data is **durable** (Supabase + DAL), **RLS and auth** protect tenant data, **money paths** are tested, and **monitoring** (health, errors) is configured. |
+
+Engineering checklist and phased work: **[PRODUCTION_READINESS.md](PRODUCTION_READINESS.md)**. Product backlog: **§14 Roadmap** below and **[lib/featureCatalog.ts](lib/featureCatalog.ts)** (`beta` = not yet production-grade). Beta exit criteria: **[docs/BETA_FEATURE_EXIT_CRITERIA.md](docs/BETA_FEATURE_EXIT_CRITERIA.md)**.
 
 ---
 
@@ -718,4 +729,4 @@ ModernSportsIntelligenceDemo/
 
 ---
 
-*This PRD is a living document updated with each feature release. Version 4.3 (March 2026) documents production readiness: app-wide production-safe logger (no console in prod), loading/error/toast/retry on data-fetching pages, env validation gated to dev, error-boundary and test-suite fixes, and Vite build chunk fix (no circular dependency). Post–4.3 production-grade phases: `.env.example`, security headers (Vercel), retry/timeout utilities and error reporting (beacon), `/api/health`, Dependabot, and ErrorBoundary integration with reportError. Version 4.2 added the v5.1+ Frontier industry-absent features.*
+*This PRD is a living document updated with each feature release. Version 4.3 (March 2026) documents **demo/ops hardening** (logging, retries, error reporting, health checks, security headers). **Production for subscribers** additionally requires durable data (DAL/Supabase migration), RLS/auth breadth, and monitoring — see [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md) and the PRD “Production readiness (single definition)” callout. Version 4.2 added the v5.1+ Frontier industry-absent features.*

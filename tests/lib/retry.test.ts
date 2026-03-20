@@ -23,6 +23,18 @@ describe('withRetry', () => {
     await expect(withRetry(fn, { maxAttempts: 2, initialDelayMs: 20 })).rejects.toThrow('always fails');
     expect(fn).toHaveBeenCalledTimes(2);
   });
+
+  it('throws undefined lastError when maxAttempts is zero (loop skipped)', async () => {
+    const fn = vi.fn().mockRejectedValue(new Error('never called'));
+    let caught: unknown;
+    try {
+      await withRetry(fn, { maxAttempts: 0 });
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught).toBeUndefined();
+    expect(fn).not.toHaveBeenCalled();
+  });
 });
 
 describe('withTimeout', () => {

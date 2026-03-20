@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { sanitizeHtml } from '../lib/sanitizeHtml';
 import {
   X,
   ShoppingBag,
@@ -272,7 +273,10 @@ const EbayListingGeneratorModal: React.FC<Props> = ({ isOpen, onClose }) => {
                       <span className="text-xs text-slate-400">{tmpl.popularity}% popular</span>
                     </div>
                   </div>
-                  <div className="bg-white rounded-lg p-3 mb-3 text-sm" dangerouslySetInnerHTML={{ __html: tmpl.previewHtml }} />
+                  <div
+                    className="bg-white rounded-lg p-3 mb-3 text-sm"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(tmpl.previewHtml) }}
+                  />
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-400 capitalize">{tmpl.style} style</span>
                     <button className="px-3 py-1.5 bg-orange-600/20 text-orange-400 hover:bg-orange-600/30 rounded-lg text-xs font-medium transition-colors">

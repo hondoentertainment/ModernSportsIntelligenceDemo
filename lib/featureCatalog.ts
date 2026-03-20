@@ -5,6 +5,7 @@ import { FEATURED_FEATURE_IDS, SEARCHABLE_FEATURE_IDS } from './productSurface';
  * Feature Catalog — master registry of platform features
  * organized by tier and category. Used by FeatureSearch, FeatureDirectory,
  * and GuidedTour components.
+ * `beta` vs `live`: see docs/BETA_FEATURE_EXIT_CRITERIA.md.
  */
 
 export type FeatureTier =

@@ -174,3 +174,9 @@ export function createDataAccessLayer(userId: string | null): IDataAccessLayer {
   }
   return new LocalStorageDAL();
 }
+
+/**
+ * Wire SyncedStore + storage adapter for the signed-in user (or local demo).
+ * Re-exported from `lib/dal/index.ts` — `import './lib/dal'` resolves to this file, not the folder.
+ */
+export { initDAL } from './dal/index';

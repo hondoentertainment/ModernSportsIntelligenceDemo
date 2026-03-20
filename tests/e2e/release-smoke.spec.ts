@@ -1,16 +1,30 @@
 import { expect, test } from '@playwright/test';
 
 async function enterDemoMode(page: import('@playwright/test').Page) {
+    await page.context().clearCookies();
     await page.goto('/#/login');
-    const demoButton = page.getByRole('button', { name: /demo|enter demo/i });
+    await page.evaluate(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+    });
+    await page.reload();
+    await page.goto('/#/login');
+    const demoButton = page.getByRole('button', { name: /demo|enter demo mode/i });
     await expect(demoButton).toBeVisible({ timeout: 10000 });
     await demoButton.click();
-    await expect(page).toHaveURL(/#\/$/, { timeout: 15000 });
+    await expect(page).toHaveURL(/#\/?$/, { timeout: 15000 });
 }
 
 test.describe('Release smoke coverage', () => {
     test.beforeEach(async ({ page }) => {
         await enterDemoMode(page);
+    });
+
+    test('billing or settings surface shows subscription or account copy', async ({ page }) => {
+        await page.goto('/#/settings');
+        await expect(page.getByText(/subscription & billing|public profile|collector identity/i).first()).toBeVisible({
+            timeout: 10000,
+        });
     });
 
     test('core navigation routes render expected surfaces', async ({ page }) => {

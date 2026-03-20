@@ -38,6 +38,15 @@ describe('withRetry', () => {
     ).rejects.toThrow('client error');
     expect(fn).toHaveBeenCalledTimes(1);
   });
+
+  it('logs non-Error rejection between retries', async () => {
+    const warnSpy = vi.spyOn((await import('../../lib/logger')).logger, 'warn').mockImplementation(() => {});
+    const fn = vi.fn().mockRejectedValueOnce('string-fail').mockResolvedValue('ok');
+    const result = await withRetry(fn, { maxAttempts: 3, baseDelayMs: 5, timeoutMs: 5000 });
+    expect(result).toBe('ok');
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
 });
 
 describe('withTimeout', () => {
@@ -88,5 +97,52 @@ describe('CircuitBreaker', () => {
     const cb = new CircuitBreaker('test', { failureThreshold: 1 });
     cb.reset();
     expect(cb.getState()).toBe('closed');
+  });
+
+  it('should handle half-open state correctly', async () => {
+    const cb = new CircuitBreaker('test', { failureThreshold: 1, resetTimeoutMs: 50 });
+    await expect(cb.execute(() => Promise.reject(new Error('fail')))).rejects.toThrow();
+    expect(cb.getState()).toBe('open');
+
+    await new Promise((r) => setTimeout(r, 60));
+    // Should be half-open now
+    const result = await cb.execute(() => Promise.resolve('ok'));
+    expect(result).toBe('ok');
+    expect(cb.getState()).toBe('closed');
+  });
+
+  it('should use default options when not provided', () => {
+    const cb = new CircuitBreaker('test');
+    expect(cb.getState()).toBe('closed');
+  });
+});
+
+describe('resilientFetch', () => {
+  it('should fetch with retry', async () => {
+    global.fetch = vi.fn()
+      .mockRejectedValueOnce(new Error('network error'))
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: 'test' }) } as Response);
+
+    const { resilientFetch } = await import('../../lib/apiResilience');
+    const response = await resilientFetch('/test', {
+      retry: { maxAttempts: 2, baseDelayMs: 10 },
+    });
+    expect(response.ok).toBe(true);
+  });
+
+  it('should use circuit breaker when provided', async () => {
+    const { resilientFetch, CircuitBreaker } = await import('../../lib/apiResilience');
+    const circuit = new CircuitBreaker('test', { failureThreshold: 5 });
+    global.fetch = vi.fn().mockResolvedValue({ ok: true } as Response);
+
+    await resilientFetch('/test', { circuit });
+    expect(global.fetch).toHaveBeenCalled();
+  });
+
+  it('should call fetch with only url when init is omitted', async () => {
+    global.fetch = vi.fn().mockResolvedValue({ ok: true } as Response);
+    const { resilientFetch } = await import('../../lib/apiResilience');
+    await resilientFetch('https://example.com/api');
+    expect(global.fetch).toHaveBeenCalledWith('https://example.com/api', {});
   });
 });

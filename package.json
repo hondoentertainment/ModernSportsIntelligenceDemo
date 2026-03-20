@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:e2e": "vite build --mode e2e",
     "build:size": "vite build && node scripts/bundle-size.cjs",
     "preview": "vite preview",
     "lint": "eslint --rule \"no-unused-vars: off\" vite.config.ts playwright.config.ts \"api/**/*.ts\" components/Sidebar.tsx components/MobileNav.tsx components/CommandPalette.tsx components/FeatureSearch.tsx lib/featureCatalog.ts lib/productSurface.ts lib/serverApi.ts lib/geminiClient.ts lib/ebayApi.ts lib/useSupabaseInventory.ts lib/differentiatorData.ts lib/supabaseData.ts lib/runtimeConfig.ts pages/FeatureDirectory.tsx pages/DeepSearch.tsx pages/CounterpartyTrustGraph.tsx pages/PrivateDealRoomAgent.tsx tests/components/FeatureSearch.test.tsx tests/lib/featureCatalog.test.ts tests/lib/differentiatorData.test.ts tests/lib/fiveDifferentiatorService.test.ts tests/e2e/*.spec.ts",
@@ -14,8 +15,10 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,json,css}\"",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "audit:high": "npm audit --audit-level=high",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit -p tsconfig.release.json",
+    "typecheck:strict": "tsc --noEmit -p tsconfig.strict.json",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test tests/e2e/auth.spec.ts tests/e2e/dashboard.spec.ts tests/e2e/release-smoke.spec.ts --project=chromium",
     "test:e2e:ui": "playwright test --ui",
@@ -26,7 +29,8 @@
     "joe:validate": "tsx scripts/feature-validator.ts",
     "joe:diff": "tsx scripts/feature-diff.ts",
     "joe:health": "bash scripts/code-health.sh",
-    "joe:bundle": "bash scripts/bundle-check.sh"
+    "joe:bundle": "bash scripts/bundle-check.sh",
+    "types:supabase": "npx supabase gen types typescript --linked > types/supabase.gen.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -37,6 +41,7 @@
     "@stripe/stripe-js": "^8.7.0",
     "@supabase/supabase-js": "^2.94.0",
     "@tanstack/react-virtual": "^3.13.18",
+    "dompurify": "^3.2.4",
     "jspdf": "^4.1.0",
     "lucide-react": "0.474.0",
     "react": "19.0.0",
@@ -52,6 +57,8 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.19.15",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.56.1",
     "@typescript-eslint/parser": "^8.56.1",
     "@vitejs/plugin-react": "^5.0.0",

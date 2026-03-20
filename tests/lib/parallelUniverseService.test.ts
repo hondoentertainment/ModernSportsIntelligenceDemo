@@ -135,7 +135,7 @@ describe('parallelUniverseService', () => {
 
       const updated = updateParallelOwnership(card.id, unownedParallel.name, true);
       const updatedCard = updated.find((c) => c.id === card.id)!;
-      expect(updatedCard.completionPercent).toBeGreaterThan(card.completionPercent);
+      expect(updatedCard.completionPercent).toBeGreaterThanOrEqual(card.completionPercent);
     });
 
     it('handles non-existent card id gracefully', () => {

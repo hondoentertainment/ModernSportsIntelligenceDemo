@@ -2,12 +2,18 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Dashboard (after demo login)', () => {
     test.beforeEach(async ({ page }) => {
+        await page.context().clearCookies();
         await page.goto('/#/login');
-        const demoButton = page.getByRole('button', { name: /demo|enter demo/i });
-        if (await demoButton.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await demoButton.click();
-            await expect(page).toHaveURL(/#\/$/, { timeout: 15000 });
-        }
+        await page.evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+        });
+        await page.reload();
+        await page.goto('/#/login');
+        const demoButton = page.getByRole('button', { name: /demo|enter demo mode/i });
+        await expect(demoButton).toBeVisible({ timeout: 10000 });
+        await demoButton.click();
+        await expect(page).toHaveURL(/#\/?$/, { timeout: 15000 });
     });
 
     test('Dashboard loads after demo login', async ({ page }) => {

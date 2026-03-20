@@ -35,7 +35,13 @@ export class LocalStorageAdapter implements StorageAdapter {
     try {
       localStorage.setItem(this.prefixedKey(key), serialized);
     } catch (err: unknown) {
-      if (err instanceof DOMException && err.name === 'QuotaExceededError') {
+      const isQuota =
+        (err instanceof DOMException && err.name === 'QuotaExceededError') ||
+        (typeof err === 'object' &&
+          err !== null &&
+          'name' in err &&
+          (err as { name: string }).name === 'QuotaExceededError');
+      if (isQuota) {
         logger.warn(`[DAL:local] Quota exceeded writing key "${key}", attempting cleanup`);
         this.pruneOldEntries();
         try {

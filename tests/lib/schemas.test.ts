@@ -155,4 +155,128 @@ describe('safeParse', () => {
     const result = safeParse(GeminiResponseSchema, { wrong: 'shape' }, 'test');
     expect(result).toBeNull();
   });
+
+  it('should return null on failure without context (log prefix branch)', () => {
+    const result = safeParse(GeminiResponseSchema, { wrong: 'shape' });
+    expect(result).toBeNull();
+  });
+
+  it('should work without context', () => {
+    const result = safeParse(GeminiResponseSchema, { text: 'hello' });
+    expect(result).toEqual({ text: 'hello' });
+  });
+});
+
+describe('MarketListingSchema', () => {
+  it('should accept valid listing', async () => {
+    const { MarketListingSchema } = await import('../../lib/schemas');
+    const result = MarketListingSchema.safeParse({
+      id: '123',
+      source: 'ebay',
+      title: 'Test Card',
+      price: 100,
+      condition: 'Mint',
+      isSold: false,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('should reject invalid source', async () => {
+    const { MarketListingSchema } = await import('../../lib/schemas');
+    const result = MarketListingSchema.safeParse({
+      id: '123',
+      source: 'invalid',
+      title: 'Test',
+      price: 100,
+      condition: 'Mint',
+      isSold: false,
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('PriceAggregateSchema', () => {
+  it('should accept valid aggregate', async () => {
+    const { PriceAggregateSchema } = await import('../../lib/schemas');
+    const result = PriceAggregateSchema.safeParse({
+      averagePrice: 100,
+      medianPrice: 95,
+      lowPrice: 80,
+      highPrice: 120,
+      totalListings: 10,
+      soldListings: 5,
+      trendPercent: 5.5,
+      lastUpdated: '2024-01-01',
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe('GameEventSchema', () => {
+  it('should accept valid game event', async () => {
+    const { GameEventSchema } = await import('../../lib/schemas');
+    const result = GameEventSchema.safeParse({
+      id: 'event-1',
+      type: 'milestone',
+      playerId: 'player-1',
+      playerName: 'Test Player',
+      sport: 'baseball',
+      headline: 'Test Headline',
+      description: 'Test Description',
+      impactScore: 50,
+      priceImpactPercent: 10,
+      timestamp: '2024-01-01',
+      source: 'MLB',
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe('BGSCertResponseSchema', () => {
+  it('should accept valid BGS cert', async () => {
+    const { BGSCertResponseSchema } = await import('../../lib/schemas');
+    const result = BGSCertResponseSchema.safeParse({
+      certNumber: '123456',
+      company: 'BGS',
+      verified: true,
+      lookupDate: '2024-01-01',
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe('PlayerProfileSchema', () => {
+  it('should accept valid player profile', async () => {
+    const { PlayerProfileSchema } = await import('../../lib/schemas');
+    const result = PlayerProfileSchema.safeParse({
+      id: 'player-1',
+      name: 'Test Player',
+      firstName: 'Test',
+      lastName: 'Player',
+      sport: 'baseball',
+      league: 'MLB',
+      team: 'Angels',
+      position: 'OF',
+      isRookie: false,
+      isActive: true,
+      experience: 5,
+      externalIds: {},
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe('PlayerStatsSummarySchema', () => {
+  it('should accept valid stats summary', async () => {
+    const { PlayerStatsSummarySchema } = await import('../../lib/schemas');
+    const result = PlayerStatsSummarySchema.safeParse({
+      playerId: 'player-1',
+      season: '2024',
+      gamesPlayed: 100,
+      stats: { hits: 150 },
+      performanceRating: 85,
+      trending: 'up',
+    });
+    expect(result.success).toBe(true);
+  });
 });

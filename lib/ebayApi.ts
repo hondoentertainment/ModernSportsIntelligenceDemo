@@ -104,7 +104,7 @@ export const ebayApi = {
 
     // Extract pricing data
     const prices: number[] = [];
-    const sales = [];
+    const sales: Array<{ price: number; date: string; condition: string; title: string; itemId: string }> = [];
 
     searchResults.itemSummaries.forEach((item: EbayItemSummary) => {
       if (item.price && item.price.value) {

@@ -9,10 +9,9 @@ import { z } from 'zod';
 import { logger } from '../logger';
 
 const envSchema = z.object({
-  // Supabase — required for auth and data persistence
+  // Supabase — required for auth and data persistence; empty = demo mode
   VITE_SUPABASE_URL: z
-    .string()
-    .url('VITE_SUPABASE_URL must be a valid URL')
+    .union([z.string().url(), z.literal('')])
     .optional()
     .default(''),
   VITE_SUPABASE_ANON_KEY: z

@@ -617,7 +617,11 @@ export const MOCK_GAMES = [
 
 export const MOCK_INVENTORY_SUMMARY = PREPOPULATED_SUMMARY;
 
-export const MOCK_INVENTORY_ITEMS = PREPOPULATED_CARDS.slice(0, 5).map(card => ({
+/** First five mock rows include at least one graded card so demo UI covers both status branches */
+const _gradedDemoCard = PREPOPULATED_CARDS.find((c) => c.isGraded)!;
+const MOCK_INVENTORY_CARD_SOURCE = [...PREPOPULATED_CARDS.slice(0, 4), _gradedDemoCard];
+
+export const MOCK_INVENTORY_ITEMS = MOCK_INVENTORY_CARD_SOURCE.map(card => ({
   id: card.id,
   image: card.image,
   cardName: `${card.year} ${card.manufacturer} ${card.player}`,

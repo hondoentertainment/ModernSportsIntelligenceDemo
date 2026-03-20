@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import { sanitizeHtml } from '../lib/sanitizeHtml';
 import {
   X,
   Key,
@@ -108,7 +109,7 @@ function SyntaxJSON({ code }: { code: string }) {
   return (
     <pre
       className="text-xs font-mono bg-slate-950 border border-slate-800 rounded-lg p-3 overflow-x-auto text-slate-300 whitespace-pre"
-      dangerouslySetInnerHTML={{ __html: highlighted }}
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(highlighted) }}
     />
   );
 }

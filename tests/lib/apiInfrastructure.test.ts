@@ -56,6 +56,13 @@ describe('ApiCache', () => {
     expect(cache.get('nonexistent')).toBeUndefined();
   });
 
+  it('delete removes a key', () => {
+    const cache = new ApiCache();
+    cache.set('a', 1);
+    expect(cache.delete('a')).toBe(true);
+    expect(cache.get('a')).toBeUndefined();
+  });
+
   it('expires entries after TTL', () => {
     const cache = new ApiCache({ defaultTtlMs: 50 });
     cache.set('key1', 'value');
@@ -96,6 +103,46 @@ describe('ApiCache', () => {
     expect(r1).toBe('fetched');
     expect(r2).toBe('fetched');
     expect(fetcher).toHaveBeenCalledTimes(1); // second call served from cache
+  });
+
+  it('getOrFetch coalesces duplicate in-flight requests', async () => {
+    const cache = new ApiCache();
+    let resolveFn: (value: string) => void;
+    const promise = new Promise<string>((resolve) => {
+      resolveFn = resolve;
+    });
+    const fetcher = vi.fn().mockReturnValue(promise);
+
+    const p1 = cache.getOrFetch('k', fetcher);
+    const p2 = cache.getOrFetch('k', fetcher); // should reuse same promise
+
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    resolveFn!('result');
+    expect(await p1).toBe('result');
+    expect(await p2).toBe('result');
+  });
+
+  it('getOrFetch removes inflight on error', async () => {
+    const cache = new ApiCache();
+    const fetcher = vi.fn().mockRejectedValue(new Error('fetch failed'));
+
+    await expect(cache.getOrFetch('k', fetcher)).rejects.toThrow('fetch failed');
+    // Second call should trigger new fetch (not reuse failed promise)
+    await expect(cache.getOrFetch('k', fetcher)).rejects.toThrow('fetch failed');
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+
+  it('getOrFetch respects custom TTL', async () => {
+    vi.useFakeTimers();
+    const cache = new ApiCache({ defaultTtlMs: 1000 });
+    const fetcher = vi.fn().mockResolvedValue('value');
+
+    await cache.getOrFetch('k', fetcher, 50);
+    vi.advanceTimersByTime(100);
+    const result = await cache.getOrFetch('k', fetcher, 50);
+    expect(result).toBe('value');
+    expect(fetcher).toHaveBeenCalledTimes(2); // expired, so fetched again
+    vi.useRealTimers();
   });
 
   it('tracks hit/miss stats', () => {
@@ -141,6 +188,33 @@ describe('ApiCache', () => {
     const purged = cache.purgeExpired();
     expect(purged).toBe(1); // only 'a' expired
     expect(cache.has('b')).toBe(true);
+    vi.useRealTimers();
+  });
+
+  it('hitRate is zero when there are no hits or misses', () => {
+    const cache = new ApiCache();
+    expect(cache.getStats().hitRate).toBe(0);
+  });
+
+  it('evicts oldest entry when at max capacity and setting a new key', () => {
+    const cache = new ApiCache({ maxEntries: 2 });
+    cache.set('a', 1);
+    cache.set('b', 2);
+    cache.set('c', 3);
+    expect(cache.get('a')).toBeUndefined();
+    expect(cache.get('c')).toBe(3);
+  });
+
+  it('logs when purgeExpired purges at least one entry', async () => {
+    const { logger } = await import('../../lib/logger');
+    const logSpy = vi.spyOn(logger, 'info').mockImplementation(() => {});
+    vi.useFakeTimers();
+    const cache = new ApiCache({ defaultTtlMs: 10 });
+    cache.set('expire-me', 1);
+    vi.advanceTimersByTime(100);
+    expect(cache.purgeExpired()).toBeGreaterThan(0);
+    expect(logSpy).toHaveBeenCalled();
+    logSpy.mockRestore();
     vi.useRealTimers();
   });
 });

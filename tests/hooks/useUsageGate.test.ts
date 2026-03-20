@@ -173,6 +173,12 @@ describe('useUsageGate', () => {
       expect(result.current.canUseAiValuation().allowed).toBe(true);
     });
 
+    it('treats missing ai_valuations_used as zero when profile JSON is valid', () => {
+      lsMock.setItem('msi_user_profile', JSON.stringify({ other: 1 }));
+      const { result } = renderHook(() => useUsageGate());
+      expect(result.current.canUseAiValuation().allowed).toBe(true);
+    });
+
     it('basic tier: not allowed when at 100 valuations', () => {
       setAuth('basic');
       lsMock.setItem(

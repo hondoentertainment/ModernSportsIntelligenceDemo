@@ -5,7 +5,7 @@ import { z } from 'zod';
 // is hard to mock, so we test the schema validation logic independently)
 
 const envSchema = z.object({
-  VITE_SUPABASE_URL: z.string().url().optional().default(''),
+  VITE_SUPABASE_URL: z.union([z.string().url(), z.literal('')]).optional().default(''),
   VITE_SUPABASE_ANON_KEY: z.string().optional().default(''),
   VITE_STRIPE_PUBLISHABLE_KEY: z.string().optional().default(''),
   VITE_SERVER_API_BASE_URL: z.string().optional().default(''),

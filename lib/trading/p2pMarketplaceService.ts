@@ -629,7 +629,8 @@ export async function submitMarketplaceOffer(input: {
     expiresAt: new Date(Date.now() + 3 * 86400000).toISOString(),
   };
 
-  await upsertListingOffer(record, input.ownerUserId);
+  const ownerId = input.ownerUserId ?? undefined;
+  await upsertListingOffer(record, ownerId);
   await insertTrustEvent({
     id: crypto.randomUUID(),
     counterpartyId: buyerProfile.id,
@@ -639,7 +640,7 @@ export async function submitMarketplaceOffer(input: {
     referenceId: record.id,
     notes: `Offer submitted for ${input.listing.player}`,
     createdAt: new Date().toISOString(),
-  }, input.ownerUserId);
+  }, ownerId);
 
   return mapOfferRecordToOffer(record, `${input.listing.player} ${input.listing.cardDescription}`);
 }

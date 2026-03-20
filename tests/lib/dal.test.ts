@@ -87,4 +87,81 @@ describe('createDataAccessLayer', () => {
     expect(loaded).toHaveLength(1);
     expect(loaded[0].player).toBe('Player');
   });
+
+  it('getCards returns empty array when localStorage has invalid JSON', async () => {
+    storage[DAL_KEYS.INVENTORY] = 'invalid json {{{';
+    const dal = createDataAccessLayer(null);
+    const cards = await dal.getCards();
+    expect(cards).toEqual([]);
+  });
+
+  it('getTargets returns empty array when localStorage has invalid JSON', async () => {
+    storage[DAL_KEYS.TARGETS] = 'not valid json]';
+    const dal = createDataAccessLayer(null);
+    const targets = await dal.getTargets();
+    expect(targets).toEqual([]);
+  });
+
+  it('returns LocalStorageDAL when userId is provided but in demo mode', async () => {
+    // Mock isDemoMode to be true
+    vi.doMock('../../lib/supabase', () => ({
+      isDemoMode: true,
+    }));
+
+    const dal = createDataAccessLayer('user-123');
+    const cards = await dal.getCards();
+    expect(cards).toEqual([]);
+  });
+
+  it('handles localStorage write errors gracefully', async () => {
+    const originalSetItem = localStorage.setItem;
+    localStorage.setItem = vi.fn(() => {
+      throw new Error('Quota exceeded');
+    });
+
+    const dal = createDataAccessLayer(null);
+    await dal.setCards([{
+      id: 'c1',
+      player: 'Test',
+      year: 2024,
+      manufacturer: 'Test',
+      cardNumber: '1',
+      set: 'Test',
+      sport: 'Baseball',
+      league: 'MLB',
+      isAutographed: false,
+      condition: 'Mint',
+      isGraded: false,
+      purchasePrice: 100,
+      purchaseDate: '2024-01-01',
+    }]);
+
+    // Should not throw
+    expect(localStorage.setItem).toHaveBeenCalled();
+
+    localStorage.setItem = originalSetItem;
+  });
+
+  it('handles localStorage read errors gracefully', async () => {
+    const originalGetItem = localStorage.getItem;
+    localStorage.getItem = vi.fn(() => {
+      throw new Error('Storage error');
+    });
+
+    const dal = createDataAccessLayer(null);
+    const cards = await dal.getCards();
+    expect(cards).toEqual([]);
+
+    localStorage.getItem = originalGetItem;
+  });
+
+  it('handles localStorage remove errors gracefully', async () => {
+    const originalRemove = localStorage.removeItem;
+    localStorage.removeItem = vi.fn(() => {
+      throw new Error('remove failed');
+    });
+    const dal = createDataAccessLayer(null);
+    await expect(dal.remove('any')).resolves.toBeUndefined();
+    localStorage.removeItem = originalRemove;
+  });
 });

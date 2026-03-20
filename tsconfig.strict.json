@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.release.json",
+  "compilerOptions": {
+    "strict": true,
+    "types": ["node", "react", "react-dom", "vitest/globals", "@testing-library/jest-dom"]
+  },
+  "exclude": [
+    "scripts/**",
+    "scripts/templates/**",
+    "dist/**",
+    "node_modules/**",
+    "coverage/**",
+    "playwright-report/**",
+    "test-results/**"
+  ]
+}
