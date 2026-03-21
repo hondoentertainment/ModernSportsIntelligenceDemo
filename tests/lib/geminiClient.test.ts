@@ -4,7 +4,7 @@ vi.mock('../../lib/serverApi', () => ({
   serverApiRequest: vi.fn(),
 }));
 
-vi.mock('../../lib/toast', () => ({
+vi.mock('../../lib/utils/toast', () => ({
   showToast: vi.fn(),
 }));
 

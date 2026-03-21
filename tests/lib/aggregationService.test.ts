@@ -1,21 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AggregationService } from '../../lib/aggregationService';
+import { AggregationService } from '../../lib/analytics/aggregationService';
 import { getCardHistory } from '../../lib/analytics/priceHistory';
-import { LiquidityService } from '../../lib/liquidityService';
-import { CorrelationService } from '../../lib/CorrelationService';
+import { LiquidityService } from '../../lib/analytics/liquidityService';
+import { CorrelationService } from '../../lib/analytics/CorrelationService';
 import type { CardInventory } from '../../types';
 
 vi.mock('../../lib/analytics/priceHistory', () => ({
   getCardHistory: vi.fn(),
 }));
 
-vi.mock('../../lib/liquidityService', () => ({
+vi.mock('../../lib/analytics/liquidityService', () => ({
   LiquidityService: {
     calculateLiquidityScore: vi.fn().mockReturnValue(50),
   },
 }));
 
-vi.mock('../../lib/CorrelationService', () => ({
+vi.mock('../../lib/analytics/CorrelationService', () => ({
   CorrelationService: {
     calculateDiversificationScore: vi.fn().mockReturnValue(75),
   },

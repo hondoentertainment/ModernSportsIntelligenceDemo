@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { StatsService } from '../../lib/statsService';
-import { getPlayerStats, searchMLBPlayers } from '../../lib/mlbApi';
+import { StatsService } from '../../lib/utils/statsService';
+import { getPlayerStats, searchMLBPlayers } from '../../lib/utils/mlbApi';
 import { logger } from '../../lib/logger';
 
-vi.mock('../../lib/mlbApi', () => ({
+vi.mock('../../lib/utils/mlbApi', () => ({
   getPlayerStats: vi.fn(),
   searchMLBPlayers: vi.fn(),
 }));
