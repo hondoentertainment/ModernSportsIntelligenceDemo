@@ -52,6 +52,10 @@ Aligned with [PRODUCTION_READINESS.md §1.1](../PRODUCTION_READINESS.md#11-repla
 
 After each batch: smoke-test signed-in Supabase user (hydrate/flush), run relevant unit tests, and avoid new raw `localStorage` in migrated modules.
 
+### Root `lib/*.ts` barrel waves (duplicate cleanup)
+
+Large root files that already have a same-named twin under `lib/utils`, `lib/analytics`, `lib/core`, `lib/trading`, or `lib/social` are replaced with a **thin re-export** so there is a single canonical implementation. Batch 3 covered trading-heavy names; a **second wave** (largest remaining duplicates first) barreled 45 more modules (e.g. `realTimePriceEngineService`, `smartNotificationsService`, `gemini`, `socialService`). To run another slice: adjust the slice size in [`scripts/barrel-wave2.mjs`](../scripts/barrel-wave2.mjs), run `node scripts/barrel-wave2.mjs`, then `npm run typecheck` and `npx vitest run`.
+
 ## See also
 
 - [PRODUCTION_READINESS.md §1.1](../PRODUCTION_READINESS.md#11-replace-localstorage-with-real-backend-services) — roadmap status and remaining work
