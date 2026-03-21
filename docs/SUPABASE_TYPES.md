@@ -48,3 +48,4 @@ Optional: add a CI step that runs `npm run types:supabase` and fails if `git dif
 
 - `PRODUCTION_READINESS.md` §5.2 (type safety)
 - `supabase-schema.sql` — reference schema before migrations
+- **[docs/SUPABASE_RLS.md](./SUPABASE_RLS.md)** — RLS policies, migrations, verification queries

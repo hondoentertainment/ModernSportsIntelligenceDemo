@@ -26,7 +26,7 @@ Companion to [MONITORING.md](./MONITORING.md) and [PRODUCTION_READINESS.md](../P
 ## Auth and routes
 
 - **App shell:** [App.tsx](../App.tsx) wraps non-public routes in `ProtectedRoute`; public: login, signup, password flows, `/p/:username`.
-- **Manual — RLS audit:** In Supabase SQL editor or dashboard, verify policies match product intent (per-user rows only). Spot-check: second test account cannot read first account’s inventory.
+- **Manual — RLS audit:** Follow **[docs/SUPABASE_RLS.md](./SUPABASE_RLS.md)** (policy map, verification SQL, two-account spot-check). Apply `supabase/migrations/` after baseline schema; confirm `user_data` has RLS for DAL cloud sync.
 
 ## Security
 

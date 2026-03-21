@@ -841,14 +841,18 @@ CREATE INDEX IF NOT EXISTS idx_user_data_user_id ON user_data(user_id);
 
 ALTER TABLE user_data ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read their own data" ON user_data;
 CREATE POLICY "Users can read their own data"
   ON user_data FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert their own data" ON user_data;
 CREATE POLICY "Users can insert their own data"
   ON user_data FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own data" ON user_data;
 CREATE POLICY "Users can update their own data"
   ON user_data FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own data" ON user_data;
 CREATE POLICY "Users can delete their own data"
   ON user_data FOR DELETE USING (auth.uid() = user_id);

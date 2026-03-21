@@ -39,9 +39,9 @@ Completed in recent sprints (post–v4.3):
 
 **Implemented (all phases):**
 - **Phase 1.1 DAL:** `lib/dal.ts` — `createDataAccessLayer(userId)`, `IDataAccessLayer` (getCards, setCards, getTargets, setTargets, getJson, setJson, remove). Supabase-backed when userId + configured; localStorage fallback. Tests: `tests/lib/dal.test.ts`.
-- **Phase 1.2 Auth/RLS:** ProtectedRoute on all protected routes; `supabase-schema.sql` and `supabase/migrations/00001_rls_audit_events.sql` for RLS policies.
+- **Phase 1.2 Auth/RLS:** ProtectedRoute on all protected routes; `supabase-schema.sql` and `supabase/migrations/` (`00001`–`00003`) for RLS; **[docs/SUPABASE_RLS.md](docs/SUPABASE_RLS.md)** for policy map and verification SQL.
 - **Phase 3.1 Docker:** `Dockerfile` (multi-stage, nginx), `docker-compose.yml` for production image.
-- **Phase 3.3 Migrations:** `supabase/migrations/` folder with RLS migration.
+- **Phase 3.3 Migrations:** `supabase/migrations/` (`00001`–`00003`: audit_events, `user_data` DAL, `handle_new_user` search_path); see [docs/SUPABASE_RLS.md](docs/SUPABASE_RLS.md).
 - **Phase 4 Stripe webhook:** `api/stripe-webhook.ts` — signature verification, raw body; idempotency per PAYMENT_SECURITY.
 - **Phase 5.1 Features:** `features/portfolio/index.ts` — barrel exports for portfolio (useSupabaseInventory, dal, types).
 
@@ -207,7 +207,7 @@ Completed in recent sprints (post–v4.3):
 - Add API key rotation strategy
 - Implement request signing for sensitive operations
 - Set up CORS properly for production domains only
-- Audit all Supabase RLS policies with a security review
+- Audit all Supabase RLS policies with a security review ([docs/SUPABASE_RLS.md](docs/SUPABASE_RLS.md))
 
 ---
 
