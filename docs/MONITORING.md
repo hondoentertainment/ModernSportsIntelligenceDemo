@@ -28,7 +28,9 @@ For a broader checklist (deploy, RLS audit, env vars, CSP), see **[OPS_RUNBOOK.m
 
 ## Rate limiting
 
-API routes (e.g. `/api/health`, `/api/market/ebay`, `/api/ai/generate`) should be protected by rate limiting in production (e.g. Vercel rate limit or a middleware). Implement per-IP or per-key limits to prevent abuse.
+- **Implemented:** `api/lib/rateLimit.ts` — fixed-window per client key on **`api/ai/generate`** and **`api/market/ebay`** (key = `x-forwarded-for` first hop, then `x-real-ip`, then socket). Returns **429** with `Retry-After` when exceeded.
+- **Env (server-only):** `RATE_LIMIT_AI_MAX_PER_MINUTE` (default **30**), `RATE_LIMIT_EBAY_MAX_PER_MINUTE` (default **60**). Set **`RATE_LIMIT_DISABLED=1`** only for local debugging (never in production).
+- **Caveat:** In-memory buckets are **per serverless isolate**; for a single global budget across all regions/instances, use **Vercel KV**, **Upstash Redis**, or an edge middleware. `/api/health` and **`api/stripe-webhook`** are not throttled (health probes and signed Stripe traffic).
 
 ## Bundle size
 

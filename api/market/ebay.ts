@@ -1,5 +1,11 @@
 import { z } from 'zod';
 import { apiLogger } from '../lib/logger';
+import {
+  checkRateLimit,
+  clientKeyFromRequest,
+  envRateLimitMax,
+  rateLimitDisabled,
+} from '../lib/rateLimit';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 const SPORTS_CATEGORY_IDS = [213, 50132, 2737, 175690, 3034];
@@ -21,7 +27,19 @@ const ebayBodySchema = z.object({
   itemId: z.string().optional(),
 }).strict();
 
-function setCorsHeaders(res: any) {
+type ApiRequest = {
+  method?: string;
+  body?: unknown;
+  headers?: Record<string, string | string[] | undefined>;
+  socket?: { remoteAddress?: string | null };
+};
+
+type ApiResponse = {
+  setHeader: (name: string, value: string) => void;
+  status: (code: number) => { json: (body: object) => unknown; end?: () => void };
+};
+
+function setCorsHeaders(res: ApiResponse) {
   res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
   res.setHeader('Access-Control-Allow-Methods', ALLOWED_METHODS);
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -61,7 +79,11 @@ async function getAccessToken(sandbox: boolean): Promise<string> {
   return payload.access_token;
 }
 
-async function searchListings(token: string, sandbox: boolean, params: any) {
+async function searchListings(
+  token: string,
+  sandbox: boolean,
+  params: z.infer<typeof ebaySearchParamsSchema>
+) {
   let query = `${params.playerName ?? ''}`.trim();
   if (params.cardYear) query += ` ${params.cardYear}`;
   if (params.cardSet) query += ` ${params.cardSet}`;
@@ -117,7 +139,7 @@ async function getItem(token: string, sandbox: boolean, itemId: string) {
   return response.json();
 }
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req: ApiRequest, res: ApiResponse) {
   setCorsHeaders(res);
 
   if (req.method === 'OPTIONS') {
@@ -126,6 +148,15 @@ export default async function handler(req: any, res: any) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  if (!rateLimitDisabled()) {
+    const maxPerMin = envRateLimitMax('RATE_LIMIT_EBAY_MAX_PER_MINUTE', 60);
+    const rl = checkRateLimit(`ebay:${clientKeyFromRequest(req)}`, maxPerMin, 60_000);
+    if (rl.limited) {
+      res.setHeader('Retry-After', String(rl.retryAfterSec));
+      return res.status(429).json({ error: 'Too many requests', retryAfterSec: rl.retryAfterSec });
+    }
   }
 
   const rawBody = req.body ?? {};

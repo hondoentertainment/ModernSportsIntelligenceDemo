@@ -22,7 +22,7 @@ Completed in recent sprints (post–v4.3):
 **Phase 7–11 (agent swarm, production-grade):**
 - **Phase 7 – Test coverage:** Unit tests for `lib/envValidation.ts` and `lib/apiValidation.ts`; E2E test "feature search opens and shows featured features" in `release-smoke.spec.ts`.
 - **Phase 8 – Performance:** `React.memo()` on `CardGridItem` and Collection grid item; `scripts/bundle-size.cjs` and `npm run build:size`; PRODUCTION_READINESS §2.3 and MONITORING bundle-size note; vite `chunkSizeWarningLimit` comment.
-- **Phase 9 – Security:** Content-Security-Policy-Report-Only in `vercel.json`; Zod body validation in `api/ai/generate.ts`; rate-limiting note in `docs/MONITORING.md`.
+- **Phase 9 – Security:** Content-Security-Policy-Report-Only in `vercel.json`; Zod body validation in `api/ai/generate.ts`; per-IP rate limits on `api/ai/generate.ts` and `api/market/ebay.ts` (`api/lib/rateLimit.ts`, env in `.env.example`); details in `docs/MONITORING.md`.
 - **Phase 10 – Type safety:** `HealthResponse` in `api/health.ts`; `ApiRequest`/`ApiResponse` in `api/ai/generate.ts`; JSDoc on `lib/retry.ts` and `lib/errorReporting.ts`.
 - **Phase 11 – Sentry & runbook:** `lib/sentry.ts` (optional init when `VITE_SENTRY_DSN` set, `captureException`); `reportError` calls `captureException`; Runbook in `docs/MONITORING.md`; `.env.example` documents `VITE_SENTRY_DSN`. Optional dep `@sentry/react` for builds when Sentry is used.
 

@@ -20,6 +20,7 @@ Core logic that is practical to unit-test in Vitest (jsdom): DAL, utilities, sch
 | `lib/priceHistory.ts` | Legacy duplicate; runtime uses `lib/analytics/priceHistory.ts`. |
 | `lib/utils/gemini.ts`, `lib/gemini.ts` | Heavy AI + network; covered indirectly via `geminiClient` tests and integration. |
 | `lib/**/useSupabaseInventory.ts` | Large React hook + Supabase; better suited to integration/E2E tests. |
+| Root `lib/*.ts` that are **thin re-exports** only (e.g. `lib/statsService.ts` → `lib/utils/statsService.ts`) | No logic to test; coverage targets the **canonical** file under `lib/utils/` / `lib/analytics/`. |
 
 ## Changing the policy
 

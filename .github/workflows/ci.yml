@@ -35,6 +35,10 @@ jobs:
       - name: TypeScript type checking
         run: npm run typecheck
 
+      - name: TypeScript strict (informational)
+        run: npm run typecheck:strict
+        continue-on-error: true
+
       - name: Lint
         run: npm run lint
 

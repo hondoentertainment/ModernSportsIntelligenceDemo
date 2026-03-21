@@ -27,6 +27,7 @@ Companion to [MONITORING.md](./MONITORING.md) and [PRODUCTION_READINESS.md](../P
 
 - **App shell:** [App.tsx](../App.tsx) wraps non-public routes in `ProtectedRoute`; public: login, signup, password flows, `/p/:username`.
 - **Manual — RLS audit:** Follow **[docs/SUPABASE_RLS.md](./SUPABASE_RLS.md)** (policy map, verification SQL, two-account spot-check). Apply `supabase/migrations/` after baseline schema; confirm `user_data` has RLS for DAL cloud sync.
+- **API abuse:** `api/ai/generate` and `api/market/ebay` enforce per-IP rate limits (see **[MONITORING.md](./MONITORING.md)** § Rate limiting). Tune `RATE_LIMIT_*_MAX_PER_MINUTE` on Vercel if needed; use shared storage (KV/Redis) for strict global caps.
 
 ## Security
 
