@@ -31,7 +31,10 @@ for (const f of files) {
 }
 
 cands.sort((a, b) => b.lineCount - a.lineCount);
-const take = cands.slice(0, 45);
+
+const limitArg = process.argv.find((a) => a.startsWith("--limit="));
+const limit = limitArg ? Math.max(1, parseInt(limitArg.split("=")[1], 10) || 45) : 45;
+const take = cands.slice(0, limit);
 
 for (const { f, d, prefix } of take) {
   const p = path.join(root, f);

@@ -54,7 +54,7 @@ After each batch: smoke-test signed-in Supabase user (hydrate/flush), run releva
 
 ### Root `lib/*.ts` barrel waves (duplicate cleanup)
 
-Large root files that already have a same-named twin under `lib/utils`, `lib/analytics`, `lib/core`, `lib/trading`, or `lib/social` are replaced with a **thin re-export** so there is a single canonical implementation. Batch 3 covered trading-heavy names; a **second wave** (largest remaining duplicates first) barreled 45 more modules (e.g. `realTimePriceEngineService`, `smartNotificationsService`, `gemini`, `socialService`). To run another slice: adjust the slice size in [`scripts/barrel-wave2.mjs`](../scripts/barrel-wave2.mjs), run `node scripts/barrel-wave2.mjs`, then `npm run typecheck` and `npx vitest run`.
+Large root files that already have a same-named twin under `lib/utils`, `lib/analytics`, `lib/core`, `lib/trading`, or `lib/social` are replaced with a **thin re-export** so there is a single canonical implementation. Batch 3 covered trading-heavy names; **wave 2** barreled 45 modules (e.g. `realTimePriceEngineService`, `gemini`, `socialService`). **Waves 3–4** each ran the same script again for the next 45 largest remaining duplicates (90 more modules). To continue: run `node scripts/barrel-wave2.mjs` (45 per run by default, or e.g. `--limit=80`), then `npm run typecheck` and `npx vitest run`.
 
 ## See also
 
