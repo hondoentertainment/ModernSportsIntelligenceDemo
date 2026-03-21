@@ -10,8 +10,9 @@ import {
   Zap,
   ArrowUpRight,
   ArrowDownRight,
+  Loader2,
 } from 'lucide-react';
-import { useInventory } from '../lib/utils/useInventory.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import { AggregationService } from '../lib/analytics/aggregationService';
 import {
   AreaChart,
@@ -27,7 +28,7 @@ import {
 } from 'recharts';
 
 const Trends: React.FC = () => {
-  const { inventory } = useInventory();
+  const { inventory, loading: inventoryLoading } = useSupabaseInventory();
   const [timeframe, setTimeframe] = useState<'7d' | '30d' | '6m' | '1y'>('30d');
 
   // Calculate aggregate metrics
@@ -77,6 +78,14 @@ const Trends: React.FC = () => {
   }, [inventory]);
 
   const COLORS = ['#D9F99D', '#22C55E', '#10B981', '#059669', '#047857'];
+
+  if (inventoryLoading && inventory.length === 0) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-brand-lime" aria-label="Loading inventory" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-12 animate-in fade-in duration-700 pb-20">

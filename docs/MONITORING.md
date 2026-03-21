@@ -1,5 +1,7 @@
 # Production Monitoring & Observability
 
+For a broader checklist (deploy, RLS audit, env vars, CSP), see **[OPS_RUNBOOK.md](./OPS_RUNBOOK.md)**.
+
 ## Health check
 
 - **Endpoint:** `GET /api/health` (or `HEAD /api/health`)

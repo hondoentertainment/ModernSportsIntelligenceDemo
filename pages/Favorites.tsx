@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Star, Search, Trash2, User, ChevronRight, LayoutGrid, List, CreditCard, TrendingUp, Target, RefreshCw, Plus, Loader2, Zap } from 'lucide-react';
 import { searchMLBPlayers } from '../lib/utils/mlbApi.ts';
 import { useFavorites } from '../lib/utils/useFavorites.ts';
-import { useInventory } from '../lib/utils/useInventory.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import { useTargets } from '../lib/utils/useTargets.ts';
 import { useAlerts } from '../lib/utils/useAlerts.ts';
 import { syncWatchlistPrices } from '../lib/utils/marketSync.ts';
@@ -23,7 +23,7 @@ const Favorites: React.FC = () => {
 
   // Card favorites
   const { favorites: cardFavorites, removeFavorite: removeCardFavorite } = useFavorites();
-  const { inventory } = useInventory();
+  const { inventory } = useSupabaseInventory();
 
   // Acquisition targets
   const { targets, setTargets, addTarget, deleteTarget, markAcquired } = useTargets();

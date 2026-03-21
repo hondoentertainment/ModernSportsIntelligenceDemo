@@ -21,7 +21,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import { useInventory } from '../lib/utils/useInventory.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import { CardInventory } from '../types.ts';
 import { generateCompareAnalysis } from '../lib/analytics/compareAnalysis.ts';
 import { getCardHistory } from '../lib/analytics/priceHistory';
@@ -29,7 +29,7 @@ import CardImage from '../components/CardImage.tsx';
 import ImageLightbox from '../components/ImageLightbox.tsx';
 
 const Compare: React.FC = () => {
-  const { inventory } = useInventory();
+  const { inventory, loading: inventoryLoading } = useSupabaseInventory();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Initialize from URL params if present
@@ -232,6 +232,14 @@ const Compare: React.FC = () => {
       </div>
     );
   };
+
+  if (inventoryLoading && inventory.length === 0) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-brand-lime" aria-label="Loading inventory" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-12 animate-in fade-in duration-700 pb-20">

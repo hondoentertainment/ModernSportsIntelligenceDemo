@@ -1,13 +1,14 @@
 
 import React, { useEffect } from 'react';
-import { useInventory, calculateStats } from '../lib/utils/useInventory.ts';
+import { calculateStats } from '../lib/utils/useInventory.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 
 /**
  * LuminousTracker handles global mouse tracking and ambient environmental UI.
  * It updates CSS variables used by .luminous-card and .ambient-glow.
  */
 const LuminousTracker: React.FC = () => {
-    const { inventory } = useInventory();
+    const { inventory } = useSupabaseInventory();
 
     useEffect(() => {
         const stats = calculateStats(inventory);
