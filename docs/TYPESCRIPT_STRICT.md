@@ -21,11 +21,11 @@ npm run typecheck:strict
 
 ## Practical adoption steps
 
-1. **Baseline** — Run `npm run typecheck:strict` and capture the error list (or fix count). Treat this as a backlog, not a blocker, unless you promote strict to CI.
+1. **Baseline** — Run `npm run typecheck:strict` before pushing; CI fails on violations. Capture any new errors as a fix-first backlog when expanding the compiled graph.
 2. **Prefer local wins** — Enable stricter checks in new code; when touching a file, fix nearby strict errors if cheap.
 3. **Narrow scope** — For a focused pass, you can temporarily add an `include` array to a dedicated config (or extend `tsconfig.release.json` with `strict: true`) so only part of the tree is checked under strict mode.
 4. **Use types deliberately** — Replace `any` with unknown + narrowing, add explicit null checks, type function parameters and return values on exported APIs.
-5. **CI policy** — When strict is clean (or clean enough), consider switching `typecheck` to use `tsconfig.strict.json` or adding `typecheck:strict` to CI as a non-blocking or required job.
+5. **CI policy** — GitHub Actions runs **`npm run typecheck:strict`** after `npm run typecheck` as a **required** step (same job as lint/tests). Regressions fail the pipeline.
 
 ## What `tsconfig.strict.json` adds
 
@@ -35,4 +35,4 @@ Besides `compilerOptions.strict: true`, this file sets an explicit **`exclude`**
 
 **`npm run typecheck:strict` passes** as of the Phase 14 migration. The strict config extends `tsconfig.release.json` (narrow include) with `strict: true`, and uses `@types/react` / `@types/react-dom` for JSX. Remaining strict errors in api/, lib/, and tests were fixed (optional chaining, explicit types, null coalescing).
 
-It remains a **local / opt-in** gate—CI runs `npm run typecheck` (release config). Consider adding `typecheck:strict` to CI when ready.
+CI runs both **`typecheck`** (release) and **`typecheck:strict`** (strict null checks on the same graph). Keep fixing new strict violations when touching code.

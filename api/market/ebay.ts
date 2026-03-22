@@ -143,7 +143,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   setCorsHeaders(res);
 
   if (req.method === 'OPTIONS') {
-    return res.status(204).end();
+    const r = res.status(204);
+    r.end?.();
+    return;
   }
 
   if (req.method !== 'POST') {

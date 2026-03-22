@@ -54,13 +54,13 @@ Completed in recent sprints (post–v4.3):
 - **DAL:** `initDAL` re-exported from `lib/dal.ts` so `import { initDAL } from './lib/dal'` resolves (file previously shadowed `lib/dal/index.ts`).
 
 **Phase 14 (agent swarm — production-grade next steps):**
-- **Strict TypeScript (incremental):** `tsconfig.strict.json` + `npm run typecheck:strict` — see `docs/TYPESCRIPT_STRICT.md` (expects many errors until codebase is tightened).
+- **Strict TypeScript:** `tsconfig.strict.json` + `npm run typecheck:strict` — **required in CI** alongside release typecheck; see `docs/TYPESCRIPT_STRICT.md`.
 - **E2E smoke:** `release-smoke.spec.ts` — test `billing or settings surface shows subscription or account copy` (settings copy after demo login).
 - **CI dependency visibility:** Non-blocking `npm audit --audit-level=high` in `.github/workflows/ci.yml`; local `npm run audit:high`; `docs/MONITORING.md` § Dependency audit.
 - **DAL migration doc:** `docs/DAL_MIGRATION.md`; `lib/useFavorites.ts` re-exports `lib/utils/useFavorites` (single store-backed implementation).
 
 **Next:**
-- Run `npm run typecheck:strict` periodically and fix files incrementally (see `docs/TYPESCRIPT_STRICT.md`).
+- **`npm run typecheck:strict`** is required in CI (see `docs/TYPESCRIPT_STRICT.md`); fix new violations when they appear.
 - **Phase 13 – Coverage:** `tests/lib/syncStore.test.ts` exercises `lib/dal/syncStore` (get/set/has/remove/clear, localStorage fallbacks, adapter hydrate/flush/forceFlush); `sanitizeHtml.test.ts` expanded with non-string input, disallowed tags, and event/`javascript:` URL stripping. Global coverage thresholds in `vite.config.ts` track the **current aggregate** on instrumented files so CI stays honest; raise them gradually as tests are added (see [docs/COVERAGE_POLICY.md](docs/COVERAGE_POLICY.md)).
 - Continue raising test coverage toward 80% on critical paths and/or narrowing `coverage.include` toward a 100% gate on core modules.
 - Gradually migrate services from direct localStorage to DAL (see [docs/DAL_MIGRATION.md](docs/DAL_MIGRATION.md)).

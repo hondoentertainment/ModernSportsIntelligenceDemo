@@ -41,7 +41,7 @@ Companion to [MONITORING.md](./MONITORING.md) and [PRODUCTION_READINESS.md](../P
 ## Quality (ongoing)
 
 - **Coverage:** Raise [vite.config.ts](../vite.config.ts) thresholds as tests land ([COVERAGE_POLICY.md](./COVERAGE_POLICY.md)).
-- **Strict TS:** `npm run typecheck:strict` periodically; fix files incrementally ([TYPESCRIPT_STRICT.md](./TYPESCRIPT_STRICT.md) if present).
+- **Strict TS:** CI runs `npm run typecheck:strict` (required). Locally: same before risky merges ([TYPESCRIPT_STRICT.md](./TYPESCRIPT_STRICT.md)).
 
 ## Beta features
 
