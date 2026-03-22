@@ -10,6 +10,10 @@ import React, {
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isDemoMode } from '../lib/supabase';
 import { logger } from '../lib/logger';
+import { store } from '../lib/dal/syncStore';
+
+const LS_DEMO_SESSION = 'msi_demo_session';
+const LS_USER_PROFILE = 'msi_user_profile';
 
 interface AuthContextType {
     user: User | null;
@@ -103,9 +107,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     useEffect(() => {
         let mounted = true;
 
-        // Check for demo mode session
-        const demoSession = localStorage.getItem('msi_demo_session');
-        if (isDemoMode && demoSession) {
+        // Check for demo mode session (store + DAL path; legacy raw string still readable via JSON.parse)
+        const demoSession = store.get<boolean | string | null>(LS_DEMO_SESSION, null);
+        const demoActive = demoSession === true || demoSession === 'true';
+        if (isDemoMode && demoActive) {
             setUser({ id: 'demo-user', email: 'demo@sportsintel.io' } as User);
             setLoading(false);
             return;
@@ -156,7 +161,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                         setRecoveryMode(false);
                         stopSessionRefreshTimer();
                         setUserTier('free');
-                        localStorage.removeItem('msi_user_profile');
+                        store.remove(LS_USER_PROFILE);
                         break;
                     case 'USER_UPDATED':
                         setRecoveryMode(false);
@@ -204,7 +209,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const signOut = async () => {
         if (isDemoMode) {
-            localStorage.removeItem('msi_demo_session');
+            store.remove(LS_DEMO_SESSION);
             setUser(null);
             setSession(null);
             return;
@@ -268,7 +273,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const validTiers: Array<'free' | 'basic' | 'pro' | 'alpha'> = ['free', 'basic', 'pro', 'alpha'];
             const tier = validTiers.includes(data.subscription_tier) ? data.subscription_tier : 'free';
             setUserTier(tier);
-            localStorage.setItem('msi_user_profile', JSON.stringify(data));
+            store.set(LS_USER_PROFILE, data);
         } catch (e) {
             logger.warn('Error fetching user profile:', e);
             setUserTier('free');
@@ -283,7 +288,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }, [user, fetchUserProfile]);
 
     const demoLogin = () => {
-        localStorage.setItem('msi_demo_session', 'true');
+        store.set(LS_DEMO_SESSION, true);
         setUser({ id: 'demo-user', email: 'demo@sportsintel.io' } as User);
         setUserTier('alpha');
     };

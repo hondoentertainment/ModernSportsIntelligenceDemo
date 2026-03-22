@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useUsageGate } from '../../hooks/useUsageGate';
+import { store } from '../../lib/dal/syncStore';
 import { setupLocalStorageMock } from '../helpers';
 
 // Mock useAuth from AuthContext
@@ -18,6 +19,7 @@ describe('useUsageGate', () => {
   let lsMock: ReturnType<typeof setupLocalStorageMock>;
 
   beforeEach(() => {
+    store.clear();
     lsMock = setupLocalStorageMock();
     vi.clearAllMocks();
   });

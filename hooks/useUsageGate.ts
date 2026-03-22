@@ -2,13 +2,16 @@
  * useUsageGate — enforces subscription usage limits.
  *
  * Returns gate functions that check limits before allowing actions.
- * Reads the cached profile from localStorage (msi_user_profile) and
- * the billing tier config from billingService.
+ * Reads the cached profile from SyncedStore (`msi_user_profile`, set by AuthContext)
+ * and the billing tier config from billingService.
  */
 
 import { useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { SUBSCRIPTION_TIERS, checkUsageLimit } from '../lib/utils/billingService';
+import { store } from '../lib/dal/syncStore';
+import { SUBSCRIPTION_TIERS } from '../lib/utils/billingService';
+
+type CachedProfile = { ai_valuations_used?: number } | null;
 
 export interface UsageGateResult {
   /** Check if user can add another card. Returns { allowed: boolean; message?: string } */
@@ -48,17 +51,9 @@ export function useUsageGate(): UsageGateResult {
 
     if (limit === -1) return { allowed: true, limit: -1 };
 
-    // Read current usage from cached profile
-    let used = 0;
-    try {
-      const profile = localStorage.getItem('msi_user_profile');
-      if (profile) {
-        const parsed = JSON.parse(profile);
-        used = parsed.ai_valuations_used ?? 0;
-      }
-    } catch {
-      // ignore
-    }
+    const profile = store.get<CachedProfile>('msi_user_profile', null);
+    const used =
+      profile && typeof profile === 'object' ? (profile.ai_valuations_used ?? 0) : 0;
 
     if (used >= limit) {
       return {

@@ -39,6 +39,7 @@ Call **`initDAL(user?.id ?? null)`** once when auth state is known (e.g. [`App.t
 ## Optional migration completed in-repo
 
 - **`lib/useFavorites.ts`** was an unused duplicate of the favorites hook that read/wrote **`localStorage` directly**. It now **re-exports** [`lib/utils/useFavorites.ts`](../lib/utils/useFavorites.ts), which uses **`store`** and stays consistent with DAL-backed persistence. Production pages already import from `lib/utils/useFavorites`.
+- **Auth / usage:** [`contexts/AuthContext.tsx`](../contexts/AuthContext.tsx) persists **`msi_demo_session`** and the cached **`msi_user_profile`** row via **`store`** (SyncedStore) so values flush to the active adapter with the rest of app state. [`hooks/useUsageGate.ts`](../hooks/useUsageGate.ts) reads **`msi_user_profile`** through **`store`** for AI valuation counts.
 
 ## Next migration batches (priority order)
 
