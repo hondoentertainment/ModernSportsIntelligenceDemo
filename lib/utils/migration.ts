@@ -1,6 +1,6 @@
 /**
  * Data Migration Utility
- * Handles migration from localStorage to Supabase for multi-tenant support
+ * Migrates persisted MSI keys (via syncStore) to Supabase for multi-tenant support.
  */
 
 import { logger } from '../logger';
@@ -8,7 +8,7 @@ import { store } from '../dal/syncStore';
 import { CardInventory, TargetWatchlist } from '../../types.ts';
 import { supabase } from '../supabase';
 
-// LocalStorage keys
+// Known MSI persistence keys (syncStore + DAL)
 const STORAGE_KEYS = {
     INVENTORY: 'cardx_inventory',
     TARGETS: 'cardx_targets',
@@ -38,18 +38,9 @@ export function needsMigration(): boolean {
     return hasLocalData;
 }
 
-/**
- * Get data from localStorage
- */
-function getLocalStorageData<T>(key: string): T | null {
+/** Read a known MSI key from syncStore (null if missing). */
+function getPersistedData<T>(key: string): T | null {
     return store.get<T | null>(key, null);
-}
-
-/**
- * Save data to localStorage
- */
-function _setLocalStorageData<T>(key: string, data: T): void {
-    store.set(key, data);
 }
 
 /**
@@ -136,7 +127,7 @@ async function _migrateTarget(target: TargetWatchlist, userId: string): Promise<
 }
 
 /**
- * Perform full migration from localStorage to Supabase
+ * Perform full migration from persisted MSI data to Supabase
  */
 export async function migrateToSupabase(userId: string): Promise<MigrationResult> {
     const result: MigrationResult = {
@@ -149,7 +140,7 @@ export async function migrateToSupabase(userId: string): Promise<MigrationResult
 
     try {
         // Migrate cards
-        const cards = getLocalStorageData<CardInventory[]>(STORAGE_KEYS.INVENTORY) || [];
+        const cards = getPersistedData<CardInventory[]>(STORAGE_KEYS.INVENTORY) || [];
         if (cards.length > 0) {
             const { bulkUpsertCards } = await import('../supabaseData');
             const cardSuccess = await bulkUpsertCards(cards, userId);
@@ -161,7 +152,7 @@ export async function migrateToSupabase(userId: string): Promise<MigrationResult
         }
 
         // Migrate targets
-        const targets = getLocalStorageData<TargetWatchlist[]>(STORAGE_KEYS.TARGETS) || [];
+        const targets = getPersistedData<TargetWatchlist[]>(STORAGE_KEYS.TARGETS) || [];
         if (targets.length > 0) {
             const { bulkUpsertTargets } = await import('../supabaseData');
             const targetSuccess = await bulkUpsertTargets(targets, userId);
@@ -172,19 +163,17 @@ export async function migrateToSupabase(userId: string): Promise<MigrationResult
             }
         }
 
-        // Favorites are stored as card IDs, we'll keep them in localStorage for now
-        // as they reference cards that are now in Supabase
-        const favorites = getLocalStorageData<string[]>(STORAGE_KEYS.FAVORITES) || [];
+        // Favorites stay client-side (card IDs referencing Supabase-backed cards).
+        const favorites = getPersistedData<string[]>(STORAGE_KEYS.FAVORITES) || [];
         result.favoritesMigrated = favorites.length;
 
         // Migration successful if no critical errors
         result.success = result.errors.length === 0;
 
-        // If successful, clear migrated data from localStorage
         if (result.success) {
             store.remove(STORAGE_KEYS.INVENTORY);
             store.remove(STORAGE_KEYS.TARGETS);
-            if (import.meta.env.DEV) logger.log('Migration complete, cleared localStorage data');
+            if (import.meta.env.DEV) logger.log('Migration complete, cleared inventory/targets from store');
         }
 
     } catch (e) {
@@ -194,9 +183,7 @@ export async function migrateToSupabase(userId: string): Promise<MigrationResult
     return result;
 }
 
-/**
- * Backup localStorage data before migration
- */
+/** JSON backup of known MSI keys (via syncStore). */
 export function backupLocalStorage(): string {
     const backup: Record<string, unknown> = {};
 
@@ -222,14 +209,12 @@ export function restoreLocalStorage(backupJson: string): boolean {
 
         return true;
     } catch (e) {
-        logger.error('Failed to restore localStorage backup:', e);
+        logger.error('Failed to restore MSI backup:', e);
         return false;
     }
 }
 
-/**
- * Clear all localStorage data (use with caution)
- */
+/** Remove all known MSI keys from syncStore (use with caution). */
 export function clearLocalStorage(): void {
     Object.values(STORAGE_KEYS).forEach(key => {
         store.remove(key);

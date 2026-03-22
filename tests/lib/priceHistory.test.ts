@@ -262,7 +262,7 @@ describe('priceHistory', () => {
       vi.mocked(fetchAllPriceHistory).mockRejectedValueOnce(new Error('offline'));
       await initPriceHistory('user-off');
       expect(logger.warn).toHaveBeenCalledWith(
-        '[PriceHistory] Initialization failed, falling back to localStorage',
+        '[PriceHistory] Initialization failed, falling back to local cache',
         expect.any(Error)
       );
     });

@@ -3,10 +3,10 @@
  * Tracks per-card valuation snapshots for sparkline charts and historical analysis.
  *
  * Architecture: Write-through cache
- * - localStorage serves as the fast synchronous read cache
+ * - SyncedStore (`lib/dal/syncStore`) is the fast synchronous read/write cache (memory + localStorage + DAL)
  * - Supabase is the durable cloud store for authenticated users
- * - On init: Supabase data is merged into localStorage
- * - On write: localStorage is updated immediately, Supabase asynchronously
+ * - On init: Supabase data is merged into the store under STORAGE_KEY
+ * - On write: store is updated immediately, Supabase asynchronously
  * - All read APIs remain synchronous (no breaking changes for consumers)
  */
 
@@ -39,14 +39,14 @@ let _currentUserId: string | null = null;
 let _initialized = false;
 
 /**
- * Get all price history from localStorage (fast synchronous read)
+ * Get all price history from SyncedStore (fast synchronous read)
  */
 function getAllHistory(): CardPriceHistory {
     return store.get<CardPriceHistory>(STORAGE_KEY, {});
 }
 
 /**
- * Save all price history to localStorage
+ * Save all price history to SyncedStore
  */
 function saveAllHistory(history: CardPriceHistory): void {
     store.set(STORAGE_KEY, history);
@@ -77,7 +77,7 @@ function persistBatchToCloud(snapshots: Array<{ cardId: string } & PriceSnapshot
 
 /**
  * Initialize the price history service for the current user.
- * Hydrates localStorage from Supabase so subsequent reads are fast and complete.
+ * Hydrates SyncedStore from Supabase so subsequent reads are fast and complete.
  * Call once after authentication (e.g., in SyncSchedulerInitializer).
  */
 export async function initPriceHistory(userId: string): Promise<void> {
@@ -128,7 +128,7 @@ export async function initPriceHistory(userId: string): Promise<void> {
 
         if (import.meta.env.DEV) logger.log(`[PriceHistory] Initialized for user ${userId.slice(0, 8)}... — ${Object.keys(merged).length} cards hydrated`);
     } catch (e) {
-        logger.warn('[PriceHistory] Initialization failed, falling back to localStorage', e);
+        logger.warn('[PriceHistory] Initialization failed, falling back to local cache', e);
         _initialized = true;
     }
 }
@@ -157,7 +157,7 @@ export function isPriceHistoryInitialized(): boolean {
 
 /**
  * Record a price snapshot for a card.
- * Writes to localStorage immediately and Supabase asynchronously.
+ * Writes to SyncedStore immediately and Supabase asynchronously.
  */
 export function recordPriceSnapshot(cardId: string, value: number, provenance: Omit<PriceSnapshot, 'timestamp' | 'value'> = {}): void {
     if (!cardId || value === undefined || value === null) return;
@@ -183,7 +183,7 @@ export function recordPriceSnapshot(cardId: string, value: number, provenance: O
 
 /**
  * Record multiple price snapshots at once (batch operation).
- * Writes to localStorage immediately and Supabase asynchronously.
+ * Writes to SyncedStore immediately and Supabase asynchronously.
  */
 export function recordBatchSnapshots(cards: Array<{
     id: string;

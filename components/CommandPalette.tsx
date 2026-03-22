@@ -29,33 +29,66 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onAddC
   const trapRef = useFocusTrap<HTMLDivElement>(isOpen);
   const navigate = useNavigate();
 
-  const commandIcons: Record<string, React.ReactNode> = {
-    'nav-dashboard': <LayoutDashboard size={16} />,
-    'nav-collection': <Package size={16} />,
-    'nav-prospects': <TrendingUp size={16} />,
-    'nav-alerts': <Bell size={16} />,
-    'nav-mlb-stats': <BarChart3 size={16} />,
-    'nav-audit': <FileText size={16} />,
-    'nav-search': <Search size={16} />,
-    'nav-settings': <Settings size={16} />,
-    'nav-dossier': <FileText size={16} />,
-  };
+  const commands: CommandItem[] = useMemo(() => {
+    const commandIcons: Record<string, React.ReactNode> = {
+      'nav-dashboard': <LayoutDashboard size={16} />,
+      'nav-collection': <Package size={16} />,
+      'nav-prospects': <TrendingUp size={16} />,
+      'nav-alerts': <Bell size={16} />,
+      'nav-mlb-stats': <BarChart3 size={16} />,
+      'nav-audit': <FileText size={16} />,
+      'nav-search': <Search size={16} />,
+      'nav-settings': <Settings size={16} />,
+      'nav-dossier': <FileText size={16} />,
+    };
+    return [
+      ...COMMAND_ROUTES.map((command) => ({
+        id: command.id,
+        label: command.label,
+        description: command.description,
+        icon: commandIcons[command.id] || <Search size={16} />,
+        action: () => {
+          navigate(command.path);
+          onClose();
+        },
+        section: 'Navigate',
+        keywords: [...command.keywords],
+      })),
 
-  const commands: CommandItem[] = useMemo(() => [
-    ...COMMAND_ROUTES.map(command => ({
-      id: command.id,
-      label: command.label,
-      description: command.description,
-      icon: commandIcons[command.id] || <Search size={16} />,
-      action: () => { navigate(command.path); onClose(); },
-      section: 'Navigate',
-      keywords: [...command.keywords],
-    })),
-
-    // Actions
-    ...(onAddCard ? [{ id: 'action-add', label: 'Add New Card', description: 'Add a card to your collection', icon: <Package size={16} />, action: () => { onAddCard(); onClose(); }, section: 'Actions', keywords: ['new', 'create'] }] : []),
-    ...(onOpenScanner ? [{ id: 'action-scan', label: 'Scan Card (Camera)', description: 'Use camera to identify a card', icon: <Zap size={16} />, action: () => { onOpenScanner(); onClose(); }, section: 'Actions', keywords: ['ocr', 'photo', 'vision'] }] : []),
-  ], [navigate, onClose, onAddCard, onOpenScanner]);
+      ...(onAddCard
+        ? [
+            {
+              id: 'action-add',
+              label: 'Add New Card',
+              description: 'Add a card to your collection',
+              icon: <Package size={16} />,
+              action: () => {
+                onAddCard();
+                onClose();
+              },
+              section: 'Actions',
+              keywords: ['new', 'create'],
+            },
+          ]
+        : []),
+      ...(onOpenScanner
+        ? [
+            {
+              id: 'action-scan',
+              label: 'Scan Card (Camera)',
+              description: 'Use camera to identify a card',
+              icon: <Zap size={16} />,
+              action: () => {
+                onOpenScanner();
+                onClose();
+              },
+              section: 'Actions',
+              keywords: ['ocr', 'photo', 'vision'],
+            },
+          ]
+        : []),
+    ];
+  }, [navigate, onClose, onAddCard, onOpenScanner]);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return commands;

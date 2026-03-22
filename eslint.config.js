@@ -37,6 +37,13 @@ export default [
     },
   },
   {
+    // apiLogger.info uses console.log for structured INFO lines
+    files: ['api/**/*.ts'],
+    rules: {
+      'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
+    },
+  },
+  {
     // Relax rules in test files
     files: ['tests/**/*.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/*.test.{ts,tsx}'],
     rules: {

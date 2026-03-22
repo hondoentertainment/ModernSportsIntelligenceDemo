@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { Search, Sparkles, Target, Zap, ArrowRight, ShieldCheck, Info, Loader2 } from 'lucide-react';
-import { findSimilarCards } from '../lib/utils/gemini.ts';
+import { findSimilarCards, type SimilarCardResult } from '../lib/utils/gemini.ts';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import { useToast } from '../contexts/ToastContext.tsx';
 import { logger } from '../lib/logger';
@@ -12,7 +12,7 @@ const DeepSearch: React.FC = () => {
     const { inventory } = useSupabaseInventory();
     const { addToast } = useToast();
     const [query, setQuery] = useState('');
-    const [results, setResults] = useState<any[]>([]);
+    const [results, setResults] = useState<SimilarCardResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
     const [searchError, setSearchError] = useState<string | null>(null);
