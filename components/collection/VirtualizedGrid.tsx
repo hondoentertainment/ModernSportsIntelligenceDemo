@@ -3,11 +3,12 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { CardInventory } from '../../types';
 import CardGridItem, { CardGridItemProps } from './CardGridItem';
 
-type VirtualizedGridProps = Omit<CardGridItemProps, 'card'> & {
+type VirtualizedGridProps = Omit<CardGridItemProps, 'card' | 'isSelected'> & {
   items: CardInventory[];
   columns: number;
   cardHeight: number;
   rowGap: number;
+  isItemSelected?: (id: string) => boolean;
 };
 
 const VirtualizedGrid: React.FC<VirtualizedGridProps> = ({
@@ -15,6 +16,7 @@ const VirtualizedGrid: React.FC<VirtualizedGridProps> = ({
   columns,
   cardHeight,
   rowGap,
+  isItemSelected,
   ...cardItemProps
 }) => {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -47,7 +49,12 @@ const VirtualizedGrid: React.FC<VirtualizedGridProps> = ({
               className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8"
             >
               {rowItems.map(card => (
-                <CardGridItem key={card.id} card={card} {...cardItemProps} />
+                <CardGridItem
+                  key={card.id}
+                  card={card}
+                  {...cardItemProps}
+                  isSelected={isItemSelected?.(card.id)}
+                />
               ))}
             </div>
           );

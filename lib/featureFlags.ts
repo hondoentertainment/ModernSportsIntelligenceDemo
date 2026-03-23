@@ -103,3 +103,18 @@ export function resetFeatureFlags(): void {
   _flags = loadFlags();
   logger.info('[FeatureFlags] Reset to environment defaults');
 }
+
+/** FMV / Market Nav chip: live eBay comps vs demo estimate (USE_REAL_EBAY). */
+export function getValuationSourceChip(): { label: string; className: string } {
+  if (isFeatureEnabled('USE_REAL_EBAY')) {
+    return {
+      label: 'Live comps',
+      className:
+        'text-brand-teal bg-brand-lime/5 border border-brand-teal/25',
+    };
+  }
+  return {
+    label: 'Estimate',
+    className: 'text-brand-muted bg-brand-charcoal/50 border border-slate-700/50',
+  };
+}

@@ -1,4 +1,5 @@
 // Phase 112: AI Deal Negotiation Agent — Modal (5-tab layout)
+// Phase 16: negotiation playbooks (strategy templates) on Negotiations + Analytics tabs.
 import React, { useState, useMemo } from 'react';
 import {
   X,
@@ -20,6 +21,7 @@ import {
   Package,
   Zap,
   ArrowRight,
+  ScrollText,
 } from 'lucide-react';
 import {
   BarChart,
@@ -43,6 +45,7 @@ import {
   pauseCampaign,
   resumeCampaign,
   createCampaign,
+  getSmartPricingRecommendation,
   AcquisitionCampaign,
   NegotiationStage,
   EscrowState,
@@ -51,6 +54,13 @@ import {
   MarketplacePlatform,
   UrgencyLevel,
 } from '../lib/trading/autonomousAcquisitionService';
+import {
+  getNegotiationPlaybooks,
+  getSelectedPlaybookId,
+  setSelectedPlaybookId,
+  getPlaybookById,
+  getSelectedPlaybook,
+} from '../lib/trading/negotiationPlaybooks';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 
@@ -364,10 +374,62 @@ const ActivityFeedTab: React.FC = () => {
 const NegotiationsTab: React.FC = () => {
   const negotiations = useMemo(() => getAllNegotiations(), []);
   const [selectedId, setSelectedId] = useState<string>(negotiations[0]?.id || '');
+  const [playbookId, setPlaybookId] = useState(() => getSelectedPlaybookId());
   const selected = negotiations.find(n => n.id === selectedId);
+  const playbooks = useMemo(() => getNegotiationPlaybooks(), []);
+  const activePlaybook = getPlaybookById(playbookId) ?? getSelectedPlaybook();
+
+  const pricingPreview = useMemo(() => {
+    if (!selected) return null;
+    return getSmartPricingRecommendation({
+      price: selected.listingPrice,
+      player: selected.listingTitle.slice(0, 80),
+      grade: 'Graded',
+      platform: selected.platform,
+      sellerId: selected.sellerId,
+    });
+  }, [selected, playbookId]);
 
   return (
     <div className="space-y-4">
+      {/* Phase 16 — negotiation playbook */}
+      <div className="bg-violet-500/5 border border-violet-500/20 rounded-xl p-4 space-y-3">
+        <p className="text-xs font-semibold text-violet-300 flex items-center gap-2">
+          <ScrollText size={14} />
+          Negotiation playbook
+        </p>
+        <p className="text-[11px] text-slate-500 leading-relaxed">
+          Templates shape opening offers, target discounts, and agent tone for new and ongoing negotiations (persisted for this device / account).
+        </p>
+        <div>
+          <label className="text-[10px] text-slate-500 uppercase block mb-1">Active strategy</label>
+          <select
+            value={playbookId}
+            onChange={(e) => {
+              const id = e.target.value;
+              setSelectedPlaybookId(id);
+              setPlaybookId(id);
+            }}
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50"
+          >
+            {playbooks.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <p className="text-[11px] text-slate-400 leading-relaxed">{activePlaybook.description}</p>
+        <div className="flex flex-wrap gap-2 text-[10px] text-slate-500">
+          <span className="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700">
+            Open ~{Math.round(activePlaybook.openingPctOfAsk * 100)}% of ask
+          </span>
+          <span className="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700">
+            ~{activePlaybook.maxRoundsHint} rounds (planning hint)
+          </span>
+        </div>
+      </div>
+
       {/* Negotiation selector */}
       <div>
         <label className="text-xs text-slate-500 mb-1 block">Select negotiation</label>
@@ -417,9 +479,12 @@ const NegotiationsTab: React.FC = () => {
 
           {/* Negotiation transcript */}
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
+            <p className="text-xs font-semibold text-slate-400 flex items-center gap-1.5 flex-wrap">
               <MessageSquare size={12} />
               Negotiation Transcript — {selected.sellerName} ({selected.platform})
+              <span className="text-[10px] font-normal text-violet-400/90 px-2 py-0.5 rounded-md bg-violet-500/10 border border-violet-500/20">
+                Playbook: {activePlaybook.label}
+              </span>
             </p>
             <div className="space-y-2 max-h-[350px] overflow-y-auto pr-1">
               {selected.messages.map(msg => (
@@ -457,6 +522,27 @@ const NegotiationsTab: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {pricingPreview && (
+            <div className="bg-slate-800/70 border border-violet-500/20 rounded-xl p-4 space-y-2">
+              <p className="text-xs font-semibold text-violet-300 flex items-center gap-1.5">
+                <Zap size={12} />
+                Playbook-adjusted pricing (preview)
+              </p>
+              <p className="text-[11px] text-slate-400 leading-relaxed">{pricingPreview.reasoning}</p>
+              <div className="grid grid-cols-2 gap-2 text-center">
+                <div className="rounded-lg bg-slate-900/80 p-2 border border-slate-700/50">
+                  <p className="text-[9px] text-slate-500 uppercase">Suggested open</p>
+                  <p className="text-sm font-mono font-bold text-blue-400">${pricingPreview.openingOffer.toLocaleString()}</p>
+                </div>
+                <div className="rounded-lg bg-slate-900/80 p-2 border border-slate-700/50">
+                  <p className="text-[9px] text-slate-500 uppercase">Target settle</p>
+                  <p className="text-sm font-mono font-bold text-emerald-400">${pricingPreview.targetPrice.toLocaleString()}</p>
+                </div>
+              </div>
+              <p className="text-[10px] text-violet-300/90 leading-relaxed line-clamp-4">{pricingPreview.suggestedStrategy}</p>
+            </div>
+          )}
 
           {/* Price negotiation visual */}
           <div className="bg-slate-800/70 border border-slate-700/50 rounded-xl p-4">
@@ -587,6 +673,7 @@ const EscrowTab: React.FC = () => {
 const AnalyticsTab: React.FC = () => {
   const analytics = useMemo(() => getAcquisitionAnalytics(), []);
   const results = useMemo(() => getAllAcquisitionResults(), []);
+  const playbook = getSelectedPlaybook();
 
   const pieData = analytics.platformBreakdown.map(p => ({
     name: p.platform,
@@ -595,6 +682,15 @@ const AnalyticsTab: React.FC = () => {
 
   return (
     <div className="space-y-4">
+      <div className="flex items-start gap-2 p-3 rounded-xl bg-violet-500/5 border border-violet-500/15">
+        <ScrollText size={16} className="text-violet-400 shrink-0 mt-0.5" />
+        <div>
+          <p className="text-[10px] font-bold text-violet-400 uppercase tracking-wider">Active negotiation playbook</p>
+          <p className="text-sm font-semibold text-white">{playbook.label}</p>
+          <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">{playbook.description}</p>
+        </div>
+      </div>
+
       {/* KPI grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <div className="bg-slate-800/70 rounded-lg p-3 text-center border border-slate-700/50">

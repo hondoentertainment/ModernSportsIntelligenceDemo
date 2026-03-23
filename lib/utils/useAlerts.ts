@@ -1,9 +1,10 @@
-import { logger } from '../logger';
 import { useState, useEffect, useCallback } from 'react';
 import { Alert, AlertType } from '../../types.ts';
-import { store } from '../dal/syncStore';
+import { migrateLocalStorageJsonKeyOnce, store } from '../dal/syncStore';
 
-const STORAGE_KEY = 'cardx_alerts';
+migrateLocalStorageJsonKeyOnce('cardx_alerts', 'msi_alerts', 'msi_migration_done_alerts_v1');
+
+const STORAGE_KEY = 'msi_alerts';
 const MAX_ALERTS = 50; // Keep last 50 alerts
 
 /**

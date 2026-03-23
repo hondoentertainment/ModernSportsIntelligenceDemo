@@ -12,7 +12,11 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
     - **Password Reset:** Implement `ForgotPassword.tsx` and the corresponding `auth.resetPasswordForEmail` flow.
     - **Error Handling:** Add robust error state UI for `Login.tsx` and `Signup.tsx` (e.g., handling "Email already in use", "Invalid credentials", and Rate Limiting).
     - **Route Protection:** Audit `ProtectedRoute` logic to handle asynchronous session loading without "flicker."
-- **Status:** Foundations in place; UI/UX refinement needed.
+- **Current state (aligned with PRD 4.3 / production hardening):**
+    - **Password reset:** Shipped — `pages/ForgotPassword.tsx`, route `/#/forgot-password`, `AuthContext` `resetPassword` + demo-mode messaging.
+    - **Error handling:** Shipped — `lib/utils/authErrors.ts` (`getFriendlyAuthMessage`) wired on `Login.tsx` and `Signup.tsx`.
+    - **Route protection:** Core guards and Supabase session handling are in place across protected routes; optional polish remains (e.g. loading-state UX to avoid any perceived flicker on slow networks).
+- **Status:** **Largely complete for demo → subscriber path** — treat remaining work as UX hardening and edge-case messaging, not greenfield implementation.
 
 ### 1.2 Multi-Tenant Data Migration
 **Rationale:** Ensure `localStorage` data is seamlessly synced to Supabase when a user signs up.
@@ -20,7 +24,12 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
     - **Detection Logic:** Create a `MigrationProvider` that checks for `msi_inventory` in `localStorage` on successful login.
     - **Batch Upload:** Implementation of a "Sync Now" trigger that pushes local data to the Supabase `inventory` table.
     - **Conflict Resolution:** Define logic for handling duplicate items between local and cloud states.
-- **Status:** Hook logic exists; automated migration trigger pending.
+- **Current state:**
+    - **Detection + auto sync:** Shipped — `contexts/MigrationContext.tsx` runs `needsMigration()` and **auto-triggers** `migrateToSupabase` once per user after login when local data exists (non-demo, Supabase configured).
+    - **Manual sync:** Shipped — `components/MigrationBanner.tsx` ("Sync Now"), `pages/Profile.tsx` institutional sync control, both call `triggerMigration()`.
+    - **Persistence stack:** DAL + `store` (`lib/dal/syncStore.ts`, `lib/dal.ts`, `initDAL`) — see `docs/DAL_MIGRATION.md` and `PRODUCTION_READINESS.md`.
+    - **Conflict resolution:** Still **productize** — document and enforce explicit rules for duplicate keys / merge vs skip when cloud already has rows (today: migrate path exists; advanced merge policy is the gap).
+- **Status:** **Operational for typical first-time cloud sync** — prioritize conflict/duplicate policy and user-visible outcomes next, not the initial migration plumbing.
 
 ---
 
@@ -31,14 +40,20 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 - **Actions:**
     - **eBay API:** Integrate with the eBay Browse API to fetch "Completed/Sold" listings for more accurate FMV (Fair Market Value).
     - **MLB Stats API:** Map player IDs to performance endpoints to power "Performance vs. Price" correlation charts.
-- **Status:** Research phase.
+- **Current state:**
+    - **eBay:** **Partially shipped** — Vercel handler `api/market/ebay.ts` (OAuth client-credentials, Zod validation, rate limiting, structured logging); client surface `lib/ebayApi.ts` + feature flags (`VITE_FF_REAL_EBAY`, etc.). FMV across the product still mixes AI estimates with optional real calls — next step is **defaulting more flows to sold/comp-backed pricing** where keys are configured.
+    - **MLB:** **Client/API layer present** — `lib/utils/mlbApi.ts` (e.g. player stats by ID/season). Next step is **deeper UI binding** (Performance vs. Price charts, portfolio-linked alerts) and production key/ops hardening if not already env-complete.
+- **Status:** **Integration scaffolding live** — shift focus from "can we call the API?" to **coverage** (which screens use real comps by default) and **observability** in deploy.
 
 ### 2.2 Automated Market Sync Scheduler
 **Rationale:** Keep portfolio values fresh without manual intervention.
 - **Actions:**
     - **Background Sync:** Implement the `SyncScheduler` heartbeat to trigger price updates every 24 hours.
     - **Price Alerts:** Add browser push notification triggers when a "Watchlist" item drops below its target acquisition price.
-- **Status:** UI logic exists; backend scheduling pending.
+- **Current state:**
+    - **Scheduler:** Shipped — `lib/utils/syncScheduler.ts` (`SyncScheduler`, configurable **daily/hourly/weekly/manual**, watchdog heartbeat, `store`-backed config); integrates with `lib/utils/marketSync.ts` (portfolio + watchlist sync helpers, stale checks including 24h semantics).
+    - **Notifications:** **In-app / Notification API path** — `syncScheduler` can request notification permission; `lib/utils/notifications.ts` supports vibrate + `Notification` display patterns. Watchlist target UX exists in product surfaces (e.g. alerts/watchlist cards); **dedicated Web Push subscription + server-triggered pushes** remain optional product work if you want off-device alerts at scale.
+- **Status:** **Client scheduling and sync loop implemented** — remaining work is **product defaults** (what runs automatically for signed-in users) and, if required, **full push infrastructure** beyond on-device notifications.
 
 ---
 

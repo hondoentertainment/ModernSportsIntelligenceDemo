@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useCallback, useState, useEffect, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { isDemoMode } from '../lib/supabase';
-import { migrateToSupabase, needsMigration, MigrationResult } from '../lib/utils/migration';
+import { migrateToSupabase, needsMigration, MigrationResult, deniedMigrationResult } from '../lib/utils/migration';
 
 interface MigrationContextType {
     /** Whether migration is in progress */
@@ -33,7 +33,7 @@ export const MigrationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     const triggerMigration = useCallback(async (): Promise<MigrationResult> => {
         if (!user || isDemoMode) {
-            return { success: false, cardsMigrated: 0, targetsMigrated: 0, favoritesMigrated: 0, errors: ['Not authenticated'] };
+            return deniedMigrationResult(['Not authenticated']);
         }
         setIsMigrating(true);
         setLastResult(null);

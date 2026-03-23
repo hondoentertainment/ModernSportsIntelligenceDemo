@@ -6,7 +6,13 @@
 import { logger } from '../logger';
 import { store } from '../dal/syncStore';
 import { CardInventory, TargetWatchlist } from '../../types.ts';
-import { supabase } from '../supabase';
+import { isDemoMode } from '../supabase';
+import { fetchCards, fetchTargets } from '../supabaseData';
+import {
+    type MigrationConflictPolicy,
+    planCardMigration,
+    planTargetMigration,
+} from './migrationMerge';
 
 // Known MSI persistence keys (syncStore + DAL)
 const STORAGE_KEYS = {
@@ -20,12 +26,49 @@ const STORAGE_KEYS = {
     DEMO_SESSION: 'msi_demo_session',
 };
 
+const CONFLICT_POLICY_KEY = 'msi_migration_conflict_policy';
+
+export type { MigrationConflictPolicy } from './migrationMerge';
+
+const DEFAULT_CONFLICT_POLICY: MigrationConflictPolicy = 'prefer_local';
+
+export function getMigrationConflictPolicy(): MigrationConflictPolicy {
+    const v = store.get<string>(CONFLICT_POLICY_KEY, DEFAULT_CONFLICT_POLICY);
+    if (v === 'prefer_cloud' || v === 'merge_newer' || v === 'prefer_local') return v;
+    return DEFAULT_CONFLICT_POLICY;
+}
+
+export function setMigrationConflictPolicy(policy: MigrationConflictPolicy): void {
+    store.set(CONFLICT_POLICY_KEY, policy);
+}
+
+/** Result shape for blocked migrations (e.g. not signed in). */
+export function deniedMigrationResult(errors: string[]): MigrationResult {
+    return {
+        success: false,
+        cardsMigrated: 0,
+        targetsMigrated: 0,
+        favoritesMigrated: 0,
+        errors,
+        conflictPolicy: getMigrationConflictPolicy(),
+        cardsSkippedConflicts: 0,
+        cardsMergedOverwrites: 0,
+        targetsSkippedConflicts: 0,
+        targetsMergedOverwrites: 0,
+    };
+}
+
 export interface MigrationResult {
     success: boolean;
     cardsMigrated: number;
     targetsMigrated: number;
     favoritesMigrated: number;
     errors: string[];
+    conflictPolicy: MigrationConflictPolicy;
+    cardsSkippedConflicts: number;
+    cardsMergedOverwrites: number;
+    targetsSkippedConflicts: number;
+    targetsMergedOverwrites: number;
 }
 
 /**
@@ -44,110 +87,44 @@ function getPersistedData<T>(key: string): T | null {
 }
 
 /**
- * Migrate a single card to Supabase
- */
-async function _migrateCard(card: CardInventory, userId: string): Promise<boolean> {
-    try {
-        const { error } = await supabase
-            .from('cards')
-            .upsert({
-                user_id: userId,
-                player: card.player,
-                year: card.year,
-                manufacturer: card.manufacturer,
-                card_number: card.cardNumber,
-                set_name: card.set,
-                sport: card.sport,
-                league: card.league,
-                is_autographed: card.isAutographed,
-                condition: card.condition,
-                is_graded: card.isGraded,
-                grading_company: card.gradingCompany,
-                grade: card.grade,
-                purchase_price: card.purchasePrice,
-                purchase_date: card.purchaseDate,
-                current_value: card.currentValue,
-                last_valuation_date: card.lastValuationDate,
-                image_url: card.image,
-                notes: card.notes,
-                search_url: card.searchUrl,
-                tax_basis: card.taxBasis,
-                grading_fees: card.gradingFees,
-                shipping_fees: card.shippingFees,
-            }, {
-                onConflict: 'user_id,player,year,manufacturer,card_number,set_name',
-            });
-
-        if (error) {
-            logger.error('Failed to migrate card:', card.id, error);
-            return false;
-        }
-
-        return true;
-    } catch (e) {
-        logger.error('Error migrating card:', card.id, e);
-        return false;
-    }
-}
-
-/**
- * Migrate a single target to Supabase
- */
-async function _migrateTarget(target: TargetWatchlist, userId: string): Promise<boolean> {
-    try {
-        const { error } = await supabase
-            .from('targets')
-            .upsert({
-                user_id: userId,
-                player: target.player,
-                card_description: target.cardDescription,
-                priority: target.priority,
-                target_price: target.targetPrice,
-                current_market_price: target.currentMarketPrice,
-                sport: target.sport,
-                league: target.league,
-                status: target.status,
-                image_url: target.image,
-                search_url: target.searchUrl,
-                notes: target.notes,
-            }, {
-                onConflict: 'user_id,player,card_description',
-            });
-
-        if (error) {
-            logger.error('Failed to migrate target:', target.id, error);
-            return false;
-        }
-
-        return true;
-    } catch (e) {
-        logger.error('Error migrating target:', target.id, e);
-        return false;
-    }
-}
-
-/**
  * Perform full migration from persisted MSI data to Supabase
  */
 export async function migrateToSupabase(userId: string): Promise<MigrationResult> {
+    const policy = getMigrationConflictPolicy();
     const result: MigrationResult = {
         success: false,
         cardsMigrated: 0,
         targetsMigrated: 0,
         favoritesMigrated: 0,
         errors: [],
+        conflictPolicy: policy,
+        cardsSkippedConflicts: 0,
+        cardsMergedOverwrites: 0,
+        targetsSkippedConflicts: 0,
+        targetsMergedOverwrites: 0,
     };
 
     try {
-        // Migrate cards
+        const cloudCards = !isDemoMode ? await fetchCards(userId) : [];
+        const cloudTargets = !isDemoMode ? await fetchTargets(userId) : [];
+
+        // Migrate cards (with identity-level conflict policy)
         const cards = getPersistedData<CardInventory[]>(STORAGE_KEYS.INVENTORY) || [];
         if (cards.length > 0) {
             const { bulkUpsertCards } = await import('../supabaseData');
-            const cardSuccess = await bulkUpsertCards(cards, userId);
-            if (cardSuccess) {
-                result.cardsMigrated = cards.length;
+            const plan = planCardMigration(cards, cloudCards, policy);
+            result.cardsSkippedConflicts = plan.skippedConflicts;
+            result.cardsMergedOverwrites = plan.mergedOverwrites;
+
+            if (plan.toUpsert.length === 0) {
+                result.cardsMigrated = 0;
             } else {
-                result.errors.push(`Failed to migrate ${cards.length} cards`);
+                const cardSuccess = await bulkUpsertCards(plan.toUpsert, userId);
+                if (cardSuccess) {
+                    result.cardsMigrated = plan.toUpsert.length;
+                } else {
+                    result.errors.push(`Failed to migrate ${plan.toUpsert.length} cards`);
+                }
             }
         }
 
@@ -155,11 +132,19 @@ export async function migrateToSupabase(userId: string): Promise<MigrationResult
         const targets = getPersistedData<TargetWatchlist[]>(STORAGE_KEYS.TARGETS) || [];
         if (targets.length > 0) {
             const { bulkUpsertTargets } = await import('../supabaseData');
-            const targetSuccess = await bulkUpsertTargets(targets, userId);
-            if (targetSuccess) {
-                result.targetsMigrated = targets.length;
+            const tplan = planTargetMigration(targets, cloudTargets, policy);
+            result.targetsSkippedConflicts = tplan.skippedConflicts;
+            result.targetsMergedOverwrites = tplan.mergedOverwrites;
+
+            if (tplan.toUpsert.length === 0) {
+                result.targetsMigrated = 0;
             } else {
-                result.errors.push(`Failed to migrate ${targets.length} targets`);
+                const targetSuccess = await bulkUpsertTargets(tplan.toUpsert, userId);
+                if (targetSuccess) {
+                    result.targetsMigrated = tplan.toUpsert.length;
+                } else {
+                    result.errors.push(`Failed to migrate ${tplan.toUpsert.length} targets`);
+                }
             }
         }
 

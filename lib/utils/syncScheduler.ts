@@ -4,7 +4,7 @@
  */
 
 import { logger } from '../logger';
-import { store } from '../dal/syncStore';
+import { migrateLocalStorageJsonKeyOnce, store } from '../dal/syncStore';
 import { CardInventory, TargetWatchlist } from '../../types.ts';
 import {
   syncPortfolio,
@@ -15,6 +15,9 @@ import {
   syncWatchlistPrices,
   WatchlistSyncResult,
 } from './marketSync';
+
+migrateLocalStorageJsonKeyOnce('cardx_sync_config', 'msi_sync_scheduler_config', 'msi_migration_done_sched_cfg_v1');
+migrateLocalStorageJsonKeyOnce('cardx_sync_schedule', 'msi_sync_scheduler_schedule', 'msi_migration_done_sched_sch_v1');
 
 export type SyncInterval = 'manual' | 'hourly' | 'daily' | 'weekly';
 
@@ -39,8 +42,8 @@ const DEFAULT_CONFIG: SyncSchedulerConfig = {
     syncOnAppStart: true,
 };
 
-const SCHEDULE_KEY = 'cardx_sync_schedule';
-const CONFIG_KEY = 'cardx_sync_config';
+const SCHEDULE_KEY = 'msi_sync_scheduler_schedule';
+const CONFIG_KEY = 'msi_sync_scheduler_config';
 
 /**
  * Get sync configuration from localStorage

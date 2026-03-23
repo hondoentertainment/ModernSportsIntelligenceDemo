@@ -18,13 +18,16 @@ import {
   Package,
   LineChart,
   AlertTriangle,
+  CheckCircle2,
 } from 'lucide-react';
 import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import ScarcityBadge from '../ScarcityBadge';
 import { LiquidityBadge } from '../LiquidityBadge';
+import { OpportunityBadge } from '../OpportunityBadge';
 import Sparkline from '../Sparkline';
 import { LiquidityService } from '../../lib/analytics/liquidityService';
+import { getValuationSourceChip } from '../../lib/featureFlags';
 
 export interface CardGridItemProps {
   card: CardInventory;
@@ -53,6 +56,8 @@ export interface CardGridItemProps {
   onOpenPriceHistory?: (_card: CardInventory) => void;
   onOpenConsignment?: (_card: CardInventory) => void;
   onOpenAnomaly?: (_card: CardInventory) => void;
+  isSelected?: boolean;
+  onToggleSelect?: (_id: string) => void;
 }
 
 /** Renders a single card — shared between virtualized and static grid. Memoized for list performance so parent re-renders don't re-render unchanged items. */
@@ -83,14 +88,29 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
   onOpenPriceHistory,
   onOpenConsignment,
   onOpenAnomaly,
+  isSelected,
+  onToggleSelect,
 }) => {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
+  const valuationChip = getValuationSourceChip();
 
   return (
     <div
-      className={`group bg-brand-slate border ${styles.border} rounded-[2.5rem] overflow-hidden transition-all flex flex-col active:scale-[0.98] relative`}
+      className={`group bg-brand-slate border ${isSelected ? 'border-brand-lime ring-2 ring-brand-lime/20' : styles.border} rounded-[2.5rem] overflow-hidden transition-all flex flex-col active:scale-[0.98] relative`}
     >
+      {onToggleSelect && (
+        <button
+          type="button"
+          onClick={e => {
+            e.preventDefault();
+            onToggleSelect(card.id);
+          }}
+          className={`absolute top-6 left-6 z-20 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-brand-lime border-brand-lime text-brand-charcoal' : 'bg-black/50 border-white/20 text-transparent hover:border-white/50 opacity-0 group-hover:opacity-100'}`}
+        >
+          <CheckCircle2 size={16} strokeWidth={3} />
+        </button>
+      )}
       <div className="aspect-[4/5] bg-slate-950 relative overflow-hidden group">
         <CardImage
           src={card.image}
@@ -125,6 +145,12 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
           {card.isAutographed && (
             <div className="bg-white text-brand-charcoal px-4 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-2xl flex items-center gap-2">
               <Sparkles size={14} /> Auto
+            </div>
+          )}
+          {card.status === 'consignment' && card.consignment && (
+            <div className="bg-amber-500/20 text-amber-200 border border-amber-500/40 px-4 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-2xl flex items-center gap-2 max-w-[min(100%,14rem)]">
+              <Package size={14} />
+              <span className="truncate">Consigned · {card.consignment.houseName}</span>
             </div>
           )}
         </div>
@@ -204,11 +230,30 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
           </div>
           <div className="p-4 bg-brand-lime/5 border border-brand-lime/10 rounded-2xl">
             <p className="text-[9px] font-black text-brand-muted uppercase tracking-tighter mb-1">Market Nav</p>
-            <p className="text-sm font-mono font-black text-brand-lime">
-              {card.currentValue ? `$${Math.round(card.currentValue).toLocaleString()}` : '—'}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-mono font-black text-brand-lime">
+                {card.currentValue ? `$${Math.round(card.currentValue).toLocaleString()}` : '—'}
+              </p>
+              {card.currentValue !== undefined && (
+                <OpportunityBadge asset={card} size="sm" showLabel={false} />
+              )}
+            </div>
+            <span
+              className={`mt-2 inline-flex min-h-[26px] items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider ${valuationChip.className}`}
+            >
+              {valuationChip.label}
+            </span>
           </div>
         </div>
+        {card.pricingRationale && (
+          <div className="p-4 bg-brand-lime/5 border border-brand-lime/10 rounded-2xl">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles size={12} className="text-brand-lime" />
+              <span className="text-[9px] font-black text-brand-muted uppercase tracking-widest">Market Rationale</span>
+            </div>
+            <p className="text-[11px] leading-relaxed text-slate-300 italic">&quot;{card.pricingRationale}&quot;</p>
+          </div>
+        )}
         {(card.popReport || card.popCount !== undefined) && (
           <div className="flex items-center justify-between p-4 bg-brand-charcoal/30 border border-slate-800/30 rounded-2xl">
             <div className="flex items-center gap-2">
@@ -344,7 +389,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
             Price History
           </button>
         )}
-        {onOpenConsignment && card.status !== 'sold' && (
+        {onOpenConsignment && card.status !== 'sold' && card.status !== 'consignment' && (
           <button
             onClick={() => onOpenConsignment(card)}
             className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"

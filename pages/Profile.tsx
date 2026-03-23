@@ -7,6 +7,12 @@ import { useMigration } from '../contexts/MigrationContext';
 import { useAuth } from '../contexts/AuthContext';
 import { MOCK_TEAMS, SPORTS } from '../constants';
 import { requestNotificationPermission, sendLocalNotification } from '../lib/utils/notifications';
+import {
+  getMigrationConflictPolicy,
+  setMigrationConflictPolicy,
+  type MigrationConflictPolicy,
+} from '../lib/utils/migration';
+import { MIGRATION_CONFLICT_POLICY_OPTIONS } from '../lib/utils/migrationPolicyOptions';
 import { Link } from 'react-router-dom';
 
 interface UserSettings {
@@ -50,6 +56,12 @@ const Profile: React.FC = () => {
     }
   });
   const [saved, setSaved] = useState(false);
+  const [conflictPolicy, setConflictPolicy] = useState<MigrationConflictPolicy>(() => getMigrationConflictPolicy());
+
+  const handleConflictPolicyChange = (value: MigrationConflictPolicy) => {
+    setConflictPolicy(value);
+    setMigrationConflictPolicy(value);
+  };
 
   // Persist settings
   useEffect(() => {
@@ -364,7 +376,34 @@ const Profile: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-3 w-full md:w-auto">
+          <div className="flex flex-col gap-3 w-full md:w-auto md:min-w-[14rem]">
+            <div className="flex flex-col gap-1 w-full">
+              <label
+                htmlFor="msi-profile-migration-policy"
+                className="text-[10px] font-black text-brand-muted uppercase tracking-wider"
+              >
+                If a card already exists in the cloud
+              </label>
+              <select
+                id="msi-profile-migration-policy"
+                value={conflictPolicy}
+                onChange={(e) => handleConflictPolicyChange(e.target.value as MigrationConflictPolicy)}
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-brand-teal transition-all"
+                aria-describedby="msi-profile-migration-policy-hint msi-profile-migration-policy-banner-note"
+              >
+                {MIGRATION_CONFLICT_POLICY_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value} title={o.hint}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <p id="msi-profile-migration-policy-hint" className="text-[10px] text-slate-500 leading-snug">
+                {MIGRATION_CONFLICT_POLICY_OPTIONS.find((p) => p.value === conflictPolicy)?.hint}
+              </p>
+              <p id="msi-profile-migration-policy-banner-note" className="text-[10px] text-brand-muted leading-snug">
+                Force Sync uses this same policy as the top banner.
+              </p>
+            </div>
             <button
               onClick={async () => {
                 const result = await triggerMigration();

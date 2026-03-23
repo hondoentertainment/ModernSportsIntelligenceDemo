@@ -1,15 +1,10 @@
-
 import { logger } from '../logger';
 import { store } from '../dal/syncStore';
 import { CardInventory, TargetWatchlist } from '../../types.ts';
 import { getEbayCardPrice, getWatchlistItemPrice } from './gemini.ts';
 import { recordBatchSnapshots } from '../analytics/priceHistory.ts';
 import { showToast } from './toast.ts';
-import { CardInventory, PricingAnalysis, TargetWatchlist } from "../../types.ts";
-import { getEbayCardPrice, getWatchlistItemPrice } from "./gemini.ts";
-import { recordBatchSnapshots } from "../analytics/priceHistory.ts";
-import { showToast } from "./toast.ts";
-import { incrementCounter, recordMetric } from "./telemetryService.ts";
+import { incrementCounter, recordMetric } from './telemetryService.ts';
 
 export interface SyncProgress {
     total: number;

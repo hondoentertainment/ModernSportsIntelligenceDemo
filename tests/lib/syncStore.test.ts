@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { store } from '../../lib/dal/syncStore';
+import {
+  listLocalStorageKeysWithPrefix,
+  migrateLocalStorageJsonKeyOnce,
+  store,
+} from '../../lib/dal/syncStore';
 
 vi.mock('../../lib/logger', () => ({
   logger: {
@@ -11,6 +15,10 @@ vi.mock('../../lib/logger', () => ({
 // Mock localStorage
 const storage: Record<string, string> = {};
 const localStorageMock = {
+  get length() {
+    return Object.keys(storage).length;
+  },
+  key: (i: number) => Object.keys(storage)[i] ?? null,
   getItem: (key: string) => storage[key] ?? null,
   setItem: (key: string, value: string) => {
     storage[key] = value;
@@ -238,6 +246,84 @@ describe('syncStore', () => {
       store.clear();
       expect(store.get('key1', 'default')).toBe('default');
       expect(store.get('key2', 'default')).toBe('default');
+    });
+  });
+
+  describe('listLocalStorageKeysWithPrefix', () => {
+    it('returns keys matching prefix', () => {
+      localStorage.setItem('msi_a', '1');
+      localStorage.setItem('msi_b', '2');
+      localStorage.setItem('other', '3');
+      expect(listLocalStorageKeysWithPrefix('msi_').sort()).toEqual(['msi_a', 'msi_b']);
+    });
+
+    it('returns all keys when prefix is empty', () => {
+      localStorage.setItem('x', '1');
+      expect(listLocalStorageKeysWithPrefix('')).toContain('x');
+    });
+  });
+
+  describe('migrateLocalStorageJsonKeyOnce', () => {
+    it('copies legacy to canonical and sets done flag', () => {
+      localStorage.setItem('legacy_k', JSON.stringify({ a: 1 }));
+      localStorage.removeItem('canonical_k');
+      localStorage.removeItem('done_k');
+      migrateLocalStorageJsonKeyOnce('legacy_k', 'canonical_k', 'done_k');
+      expect(JSON.parse(localStorage.getItem('canonical_k')!)).toEqual({ a: 1 });
+      expect(localStorage.getItem('legacy_k')).toBeNull();
+      expect(localStorage.getItem('done_k')).toBe('1');
+    });
+
+    it('does not overwrite canonical if already present', () => {
+      localStorage.setItem('legacy_k2', JSON.stringify({ old: true }));
+      localStorage.setItem('canonical_k2', JSON.stringify({ keep: true }));
+      localStorage.removeItem('done_k2');
+      migrateLocalStorageJsonKeyOnce('legacy_k2', 'canonical_k2', 'done_k2');
+      expect(JSON.parse(localStorage.getItem('canonical_k2')!)).toEqual({ keep: true });
+      expect(localStorage.getItem('legacy_k2')).not.toBeNull();
+      expect(localStorage.getItem('done_k2')).toBe('1');
+    });
+
+    it('sets done flag when legacy is absent', () => {
+      localStorage.removeItem('legacy_k3');
+      localStorage.removeItem('canonical_k3');
+      localStorage.removeItem('done_k3');
+      migrateLocalStorageJsonKeyOnce('legacy_k3', 'canonical_k3', 'done_k3');
+      expect(localStorage.getItem('canonical_k3')).toBeNull();
+      expect(localStorage.getItem('done_k3')).toBe('1');
+    });
+
+    it('returns early when done flag already set', () => {
+      localStorage.setItem('legacy_k4', JSON.stringify({ x: 1 }));
+      localStorage.removeItem('canonical_k4');
+      localStorage.setItem('done_k4', '1');
+      migrateLocalStorageJsonKeyOnce('legacy_k4', 'canonical_k4', 'done_k4');
+      expect(localStorage.getItem('canonical_k4')).toBeNull();
+      expect(localStorage.getItem('legacy_k4')).not.toBeNull();
+    });
+  });
+
+  describe('SSR-style localStorage absence', () => {
+    it('listLocalStorageKeysWithPrefix and migrate no-op without localStorage', () => {
+      vi.stubGlobal(
+        'localStorage',
+        undefined as unknown as Storage,
+      );
+      expect(listLocalStorageKeysWithPrefix('msi_')).toEqual([]);
+      migrateLocalStorageJsonKeyOnce('a', 'b', 'c');
+      vi.unstubAllGlobals();
+    });
+
+    it('skips null keys from localStorage.key', () => {
+      vi.stubGlobal('localStorage', {
+        length: 2,
+        key: (i: number) => (i === 0 ? null : 'ok'),
+        getItem: (k: string) => (k === 'ok' ? '"v"' : null),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+      } as unknown as Storage);
+      expect(listLocalStorageKeysWithPrefix('')).toEqual(['ok']);
+      vi.unstubAllGlobals();
     });
   });
 });

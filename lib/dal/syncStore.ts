@@ -208,3 +208,42 @@ class SyncedStore {
 
 /** Singleton store instance */
 export const store = new SyncedStore();
+
+/**
+ * List localStorage key names, optionally filtered by prefix (empty string = all keys).
+ * For prune/clear/diagnostics; not a substitute for async DAL `keys()`.
+ */
+export function listLocalStorageKeysWithPrefix(prefix: string): string[] {
+  if (typeof localStorage === 'undefined') return [];
+  const out: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (!k) continue;
+    if (prefix === '' || k.startsWith(prefix)) out.push(k);
+  }
+  return out;
+}
+
+/**
+ * One-time JSON key migration: copy legacyKey → canonicalKey in localStorage, remove legacy.
+ * Sets doneFlagKey to "1" so migration runs once per browser profile.
+ */
+export function migrateLocalStorageJsonKeyOnce(
+  legacyKey: string,
+  canonicalKey: string,
+  doneFlagKey: string,
+): void {
+  if (typeof localStorage === 'undefined') return;
+  if (localStorage.getItem(doneFlagKey) === '1') return;
+  try {
+    if (localStorage.getItem(canonicalKey) === null) {
+      const raw = localStorage.getItem(legacyKey);
+      if (raw !== null) {
+        localStorage.setItem(canonicalKey, raw);
+        localStorage.removeItem(legacyKey);
+      }
+    }
+  } finally {
+    localStorage.setItem(doneFlagKey, '1');
+  }
+}

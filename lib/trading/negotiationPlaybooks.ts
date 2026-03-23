@@ -1,144 +1,83 @@
+// Phase 16: reusable negotiation strategies for the AI acquisition agent (demo / prototype).
 import { store } from '../dal/syncStore';
+
+const STORAGE_KEY = 'msi_negotiation_playbook_id';
 
 export interface NegotiationPlaybook {
   id: string;
-  name: string;
+  label: string;
   description: string;
-  icon: string;               // emoji for UI display
-  openingMultiplier: number;   // Starting offer as fraction of ask price
-  incrementRate: number;       // How much to raise each round (fraction of gap)
-  maxRounds: number;           // Walk away after N rounds
-  firmness: 'soft' | 'moderate' | 'firm' | 'aggressive';
-  walkAwayThreshold: number;   // Walk away if seller won't go below this % of ask
+  /** Opening offer as a fraction of seller ask (e.g. 0.78). */
+  openingPctOfAsk: number;
+  /** Added to seller- or market-average discount % to derive target settlement (can be negative). */
+  targetDiscountAdjustPts: number;
+  /** Planning horizon for mock agent behavior copy. */
+  maxRoundsHint: number;
+  /** Instruction line merged into strategy / future Gemini prompts. */
+  agentDirective: string;
 }
 
-/** Built-in negotiation strategy templates */
-export const PLAYBOOKS: NegotiationPlaybook[] = [
+export const NEGOTIATION_PLAYBOOKS: NegotiationPlaybook[] = [
   {
-    id: 'lowball-walk',
-    name: 'Lowball & Walk',
-    description: 'Start very low, move slowly, walk away if seller resists. Best for buyers market conditions.',
-    icon: '🎯',
-    openingMultiplier: 0.50,
-    incrementRate: 0.15,
-    maxRounds: 4,
-    firmness: 'aggressive',
-    walkAwayThreshold: 0.75
+    id: 'lowball_walk',
+    label: 'Lowball & Walk',
+    description: 'Aggressive open, few counters. Exit if the seller will not move toward your max.',
+    openingPctOfAsk: 0.72,
+    targetDiscountAdjustPts: 4,
+    maxRoundsHint: 2,
+    agentDirective: 'Maximize discount; be ready to walk away rather than chase marginal gains.',
   },
   {
-    id: 'fair-market',
-    name: 'Fair Market Anchor',
-    description: 'Anchor to recent comps and FMV. Reasonable starting point with moderate flexibility.',
-    icon: '⚖️',
-    openingMultiplier: 0.75,
-    incrementRate: 0.30,
-    maxRounds: 6,
-    firmness: 'moderate',
-    walkAwayThreshold: 0.90
+    id: 'fair_market_anchor',
+    label: 'Fair Market Anchor',
+    description: 'Open closer to comps; collaborative tone; expect several constructive rounds.',
+    openingPctOfAsk: 0.82,
+    targetDiscountAdjustPts: -2,
+    maxRoundsHint: 4,
+    agentDirective: 'Anchor to comparable sales and seek a fair midpoint both sides can accept.',
   },
   {
-    id: 'bundle-discount',
-    name: 'Bundle Discount',
-    description: 'Offer to buy multiple items for a volume discount. Emphasize total deal size.',
-    icon: '📦',
-    openingMultiplier: 0.70,
-    incrementRate: 0.25,
-    maxRounds: 5,
-    firmness: 'moderate',
-    walkAwayThreshold: 0.85
+    id: 'bundle_friendly',
+    label: 'Bundle Discount',
+    description: 'Optimize for multi-card lots and tiered pricing when the seller has depth.',
+    openingPctOfAsk: 0.78,
+    targetDiscountAdjustPts: 2,
+    maxRoundsHint: 3,
+    agentDirective: 'Signal appetite for multiple cards and ask for package pricing where possible.',
   },
   {
-    id: 'quick-close',
-    name: 'Quick Close',
-    description: 'Start near ask, close fast. Best for hot cards where speed matters more than savings.',
-    icon: '⚡',
-    openingMultiplier: 0.90,
-    incrementRate: 0.50,
-    maxRounds: 3,
-    firmness: 'soft',
-    walkAwayThreshold: 0.98
-  }
+    id: 'patient_comps',
+    label: 'Patient Comps',
+    description: 'Slower cadence; emphasize fresh comps between rounds before moving price.',
+    openingPctOfAsk: 0.76,
+    targetDiscountAdjustPts: 0,
+    maxRoundsHint: 5,
+    agentDirective: 'Pause between counters to cite or request updated comparable sales.',
+  },
 ];
 
-export const STORAGE_KEY = 'msi-custom-playbooks';
+const DEFAULT_ID = 'fair_market_anchor';
 
-/** Load user's custom playbooks from localStorage */
-export function getCustomPlaybooks(): NegotiationPlaybook[] {
-  return store.get<NegotiationPlaybook[]>(STORAGE_KEY, []);
+export function getNegotiationPlaybooks(): NegotiationPlaybook[] {
+  return NEGOTIATION_PLAYBOOKS;
 }
 
-/** Save a custom playbook */
-export function saveCustomPlaybook(playbook: NegotiationPlaybook): void {
-  const existing = getCustomPlaybooks();
-  const idx = existing.findIndex(p => p.id === playbook.id);
-  if (idx >= 0) {
-    existing[idx] = playbook;
-  } else {
-    existing.push(playbook);
-  }
-  store.set(STORAGE_KEY, existing);
+export function getPlaybookById(id: string): NegotiationPlaybook | undefined {
+  return NEGOTIATION_PLAYBOOKS.find((p) => p.id === id);
 }
 
-/** Delete a custom playbook */
-export function deleteCustomPlaybook(id: string): void {
-  const existing = getCustomPlaybooks().filter(p => p.id !== id);
-  store.set(STORAGE_KEY, existing);
+export function getSelectedPlaybookId(): string {
+  const id = store.get<string>(STORAGE_KEY, DEFAULT_ID);
+  return getPlaybookById(id) ? id : DEFAULT_ID;
 }
 
-/** Get all playbooks (built-in + custom) */
-export function getAllPlaybooks(): NegotiationPlaybook[] {
-  return [...PLAYBOOKS, ...getCustomPlaybooks()];
+export function setSelectedPlaybookId(id: string): void {
+  if (!getPlaybookById(id)) return;
+  store.set(STORAGE_KEY, id);
 }
 
-/**
- * Calculate the agent's next offer based on a playbook strategy.
- * Returns null if the agent should walk away.
- */
-export function getPlaybookOffer(
-  playbook: NegotiationPlaybook,
-  askPrice: number,
-  maxWillingToPay: number,
-  currentOffer: number,
-  roundNumber: number
-): { amount: number; shouldWalk: boolean; message: string } {
-  // Walk away if exceeded max rounds
-  if (roundNumber > playbook.maxRounds) {
-    return {
-      amount: currentOffer,
-      shouldWalk: true,
-      message: `I've reached my limit. I'll pass at this price.`
-    };
-  }
-
-  // First offer
-  if (currentOffer === 0 || roundNumber === 1) {
-    const opening = Math.floor(askPrice * playbook.openingMultiplier);
-    const capped = Math.min(opening, maxWillingToPay);
-    return {
-      amount: capped,
-      shouldWalk: false,
-      message: `I'll start at $${capped.toLocaleString()}.`
-    };
-  }
-
-  // Subsequent offers: close the gap incrementally
-  const gap = askPrice - currentOffer;
-  const increment = Math.floor(gap * playbook.incrementRate);
-  const nextOffer = Math.min(currentOffer + increment, maxWillingToPay);
-
-  // Walk away if we'd exceed our threshold
-  const thresholdPrice = askPrice * playbook.walkAwayThreshold;
-  if (nextOffer > thresholdPrice && nextOffer < askPrice * 0.95) {
-    return {
-      amount: nextOffer,
-      shouldWalk: true,
-      message: `$${nextOffer.toLocaleString()} is my final offer. Take it or leave it.`
-    };
-  }
-
-  return {
-    amount: nextOffer,
-    shouldWalk: false,
-    message: `I can go to $${nextOffer.toLocaleString()}.`
-  };
+export function getSelectedPlaybook(): NegotiationPlaybook {
+  const found = getPlaybookById(getSelectedPlaybookId());
+  if (found) return found;
+  return NEGOTIATION_PLAYBOOKS.find((p) => p.id === DEFAULT_ID) ?? NEGOTIATION_PLAYBOOKS[0];
 }

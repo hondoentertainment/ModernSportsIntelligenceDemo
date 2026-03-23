@@ -14,7 +14,7 @@
  */
 
 import { logger } from '../logger';
-import { store } from '../dal/syncStore';
+import { listLocalStorageKeysWithPrefix, store } from '../dal/syncStore';
 import type { Sport } from '../../types';
 
 // ---------------------------------------------------------------------------
@@ -340,13 +340,9 @@ function lsRemove(key: string): void {
  * primary state key.
  */
 function pruneLocalStorage(): void {
-  const keysToRemove: string[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && key.startsWith(LS_PREFIX) && key !== lsKey('state') && key !== LS_META_KEY) {
-      keysToRemove.push(key);
-    }
-  }
+  const keysToRemove = listLocalStorageKeysWithPrefix(LS_PREFIX).filter(
+    (key) => key !== lsKey('state') && key !== LS_META_KEY,
+  );
   // Remove oldest half to free space
   const half = Math.ceil(keysToRemove.length / 2);
   for (let i = 0; i < half; i++) {
@@ -522,15 +518,7 @@ export function loadUserStateSync(userId?: string): UserState {
  * Wipe all persisted user data from every backend.
  */
 export async function clearUserState(): Promise<void> {
-  // localStorage
-  const keysToRemove: string[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && key.startsWith(LS_PREFIX)) {
-      keysToRemove.push(key);
-    }
-  }
-  keysToRemove.forEach((k) => store.remove(k));
+  listLocalStorageKeysWithPrefix(LS_PREFIX).forEach((k) => store.remove(k));
 
   // IndexedDB
   await idbClear();

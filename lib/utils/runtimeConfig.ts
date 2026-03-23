@@ -1,3 +1,6 @@
+/** Product version aligned with PRD (see package.json). */
+export const APP_VERSION = '4.3.0' as const;
+
 export interface RuntimeConfigIssue {
     key: string;
     severity: 'warning' | 'error';

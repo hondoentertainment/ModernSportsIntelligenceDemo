@@ -2,7 +2,7 @@
 // Provides production-grade offline support with sync queue, caching,
 // conflict resolution, and storage management.
 
-import { store } from '../dal/syncStore';
+import { listLocalStorageKeysWithPrefix, store } from '../dal/syncStore';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -301,14 +301,11 @@ export function getStorageStats(): OfflineStorageStats {
   let oldest: number | null = null;
   let newest: number | null = null;
 
-  // Full-origin estimate (includes keys outside MSI/syncStore); not replaceable by store alone.
+  // Full-origin estimate (includes keys outside MSI/syncStore).
   if (typeof localStorage !== 'undefined') {
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key) {
-        const val = localStorage.getItem(key) || '';
-        usedBytes += key.length * 2 + val.length * 2;
-      }
+    for (const key of listLocalStorageKeysWithPrefix('')) {
+      const val = localStorage.getItem(key) || '';
+      usedBytes += key.length * 2 + val.length * 2;
     }
   }
 

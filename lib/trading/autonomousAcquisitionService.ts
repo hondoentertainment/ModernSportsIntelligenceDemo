@@ -1,6 +1,8 @@
 // Phase 112: AI Deal Negotiation Agent with Autonomous Acquisition
 // Autonomous agent that hunts, evaluates, negotiates, and acquires cards across platforms.
 
+import { getSelectedPlaybook } from './negotiationPlaybooks';
+
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 export type CampaignStatus = 'active' | 'paused' | 'completed' | 'failed' | 'pending_review';
@@ -162,6 +164,8 @@ export interface SmartPricingRecommendation {
   sellerLikelihood: number;
   suggestedStrategy: string;
   comparables: { card: string; soldPrice: number; date: string }[];
+  playbookId: string;
+  playbookLabel: string;
 }
 
 // ── Mock Data ──────────────────────────────────────────────────────────────────
@@ -563,10 +567,18 @@ export function getSmartPricingRecommendation(listing: {
   platform: MarketplacePlatform;
   sellerId?: string;
 }): SmartPricingRecommendation {
+  const playbook = getSelectedPlaybook();
   const seller = listing.sellerId ? MOCK_SELLERS.find(s => s.id === listing.sellerId) : undefined;
-  const discountPct = seller ? seller.avgDiscountPct : 14;
+  const baseDiscount = seller ? seller.avgDiscountPct : 14;
+  const discountPct = Math.min(42, Math.max(8, baseDiscount + playbook.targetDiscountAdjustPts));
+  const openingPct = Math.min(0.88, Math.max(0.65, playbook.openingPctOfAsk));
   const targetPrice = Math.round(listing.price * (1 - discountPct / 100));
-  const openingOffer = Math.round(listing.price * 0.78);
+  const openingOffer = Math.round(listing.price * openingPct);
+
+  const sellerTone =
+    seller && seller.avgNegotiationRounds <= 2.5
+      ? 'Quick-deal seller — favor decisive offers.'
+      : 'Plan for several rounds; use comps to anchor.';
 
   return {
     openingOffer,
@@ -574,17 +586,17 @@ export function getSmartPricingRecommendation(listing: {
     maxPrice: listing.price,
     confidence: seller ? Math.min(95, 60 + seller.acceptanceRate * 0.3) : 68,
     reasoning: seller
-      ? `${seller.name} has a ${seller.acceptanceRate}% acceptance rate with avg ${seller.avgDiscountPct}% discount over ${seller.avgNegotiationRounds} rounds. Opening at 78% of ask with target at ${100 - discountPct}%.`
-      : `No seller history available. Using market-average strategy: open at 78% of ask, target ${100 - discountPct}% of listing price.`,
+      ? `${seller.name} has a ${seller.acceptanceRate}% acceptance rate with avg ${seller.avgDiscountPct}% discount over ${seller.avgNegotiationRounds} rounds. Playbook “${playbook.label}” opens at ~${Math.round(openingPct * 100)}% of ask; target settlement ~${100 - discountPct}% of list.`
+      : `No seller history available. Playbook “${playbook.label}” suggests opening ~${Math.round(openingPct * 100)}% of ask and targeting ~${100 - discountPct}% of list.`,
     sellerLikelihood: seller ? seller.acceptanceRate : 65,
-    suggestedStrategy: seller && seller.avgNegotiationRounds <= 2.5
-      ? 'Quick Deal — seller prefers fast transactions. Make competitive opening offer.'
-      : 'Standard Negotiation — plan for 3-4 rounds with comp-based anchoring.',
+    suggestedStrategy: `[${playbook.label}] ${playbook.agentDirective} ${sellerTone} Cap active negotiation planning around ~${playbook.maxRoundsHint} rounds for this playbook.`,
     comparables: [
       { card: `${listing.player} ${listing.grade} — Comp 1`, soldPrice: Math.round(listing.price * 0.88), date: '2026-03-08' },
       { card: `${listing.player} ${listing.grade} — Comp 2`, soldPrice: Math.round(listing.price * 0.92), date: '2026-03-02' },
       { card: `${listing.player} ${listing.grade} — Comp 3`, soldPrice: Math.round(listing.price * 0.85), date: '2026-02-25' },
     ],
+    playbookId: playbook.id,
+    playbookLabel: playbook.label,
   };
 }
 

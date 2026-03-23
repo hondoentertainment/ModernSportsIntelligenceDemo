@@ -22,6 +22,16 @@ export interface PopReport {
   badge?: 'Apex' | 'Low Pop' | 'Standard';
 }
 
+/** Phase 17 — consignment partner snapshot (persisted via notes codec in cloud sync). */
+export interface CardConsignmentSnapshot {
+  houseId: string;
+  houseName: string;
+  entryId: string;
+  submittedAt: string;
+  reservePrice: number;
+  sellerFeePercent?: number;
+  trackingNumber?: string;
+}
 
 export interface CardInventory {
   id: string;
@@ -56,7 +66,10 @@ export interface CardInventory {
   insuranceFees?: number;
   salePrice?: number;
   saleDate?: string;
-  status?: 'active' | 'sold';
+  /** active = held; sold = disposed; consignment = out with a partner (see consignment snapshot). */
+  status?: 'active' | 'sold' | 'consignment';
+  /** Live consignment routing (see CardConsignmentSnapshot). */
+  consignment?: CardConsignmentSnapshot;
   // Portfolio Builder Groups
   group?: string;
   groupOrder?: number;

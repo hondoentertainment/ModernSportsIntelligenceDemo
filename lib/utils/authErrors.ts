@@ -27,6 +27,10 @@ const FRIENDLY_MESSAGES: Record<string, string> = {
     password_no_upper: 'Password must contain at least one uppercase letter.',
     password_no_lower: 'Password must contain at least one lowercase letter.',
     password_no_number: 'Password must contain at least one numeric character.',
+    network_error: 'Network error. Check your connection and try again.',
+    server_error: 'Our servers are not responding. Please try again shortly.',
+    flow_state_expired: 'This sign-in link expired. Start the flow again from the login page.',
+    same_password: 'New password must be different from your current password.',
 };
 
 export function getFriendlyAuthMessage(error: AuthError | null): string {
@@ -59,6 +63,23 @@ export function getFriendlyAuthMessage(error: AuthError | null): string {
     }
     if (message.includes('user not found') || message.includes('no user')) {
         return FRIENDLY_MESSAGES.email_not_found;
+    }
+    if (
+        message.includes('failed to fetch') ||
+        message.includes('network') ||
+        message.includes('load failed') ||
+        message.includes('networkerror')
+    ) {
+        return FRIENDLY_MESSAGES.network_error;
+    }
+    if (message.includes('gateway') || message.includes('502') || message.includes('503') || message.includes('504')) {
+        return FRIENDLY_MESSAGES.server_error;
+    }
+    if (message.includes('flow state') || message.includes('flow_state')) {
+        return FRIENDLY_MESSAGES.flow_state_expired;
+    }
+    if (message.includes('same password') || message.includes('reauthentication')) {
+        return FRIENDLY_MESSAGES.same_password;
     }
 
     return error.message;

@@ -2,6 +2,7 @@ import { supabase, isDemoMode } from './supabase';
 import { logger } from './logger';
 import { CardInventory, TargetWatchlist } from '../types';
 import type { PriceSnapshot } from './analytics/priceHistory';
+import { mergeConsignmentIntoNotes, parseConsignmentFromNotes } from './utils/cardConsignmentCodec';
 
 type DbCardRow = {
     id: string;
@@ -72,6 +73,11 @@ type DbTargetRow = {
 
 // Transform database row to CardInventory type
 function dbToCard(row: DbCardRow): CardInventory {
+    const { userNotes, consignment: parsedConsignment } = parseConsignmentFromNotes(row.notes);
+    const consignment = row.status === 'sold' ? undefined : parsedConsignment;
+    const status: CardInventory['status'] =
+        row.status === 'sold' ? 'sold' : consignment ? 'consignment' : 'active';
+
     return {
         id: row.id,
         player: row.player,
@@ -91,7 +97,8 @@ function dbToCard(row: DbCardRow): CardInventory {
         currentValue: row.current_value,
         lastValuationDate: row.last_valuation_date,
         image: row.image_url,
-        notes: row.notes,
+        notes: userNotes,
+        consignment,
         searchUrl: row.search_url,
         valuationConfidence: row.valuation_confidence,
         taxBasis: row.tax_basis,
@@ -100,7 +107,7 @@ function dbToCard(row: DbCardRow): CardInventory {
         insuranceFees: row.insurance_fees,
         salePrice: row.sale_price,
         saleDate: row.sale_date,
-        status: row.status,
+        status,
         group: row.card_group,
         groupOrder: row.group_order,
         popCount: row.pop_count,
@@ -123,6 +130,13 @@ function dbToCard(row: DbCardRow): CardInventory {
 
 // Transform CardInventory to database row format
 function cardToDb(card: CardInventory, userId: string): DbCardRow & { user_id: string } {
+    const notesForDb = mergeConsignmentIntoNotes(
+        card.notes,
+        card.status === 'consignment' && card.consignment ? card.consignment : undefined
+    );
+    const statusForDb =
+        card.status === 'consignment' ? 'active' : card.status === 'sold' ? 'sold' : 'active';
+
     return {
         id: card.id,
         user_id: userId,
@@ -143,7 +157,7 @@ function cardToDb(card: CardInventory, userId: string): DbCardRow & { user_id: s
         current_value: card.currentValue,
         last_valuation_date: card.lastValuationDate,
         image_url: card.image,
-        notes: card.notes,
+        notes: notesForDb,
         search_url: card.searchUrl,
         valuation_confidence: card.valuationConfidence,
         tax_basis: card.taxBasis,
@@ -152,7 +166,7 @@ function cardToDb(card: CardInventory, userId: string): DbCardRow & { user_id: s
         insurance_fees: card.insuranceFees,
         sale_price: card.salePrice,
         sale_date: card.saleDate,
-        status: card.status,
+        status: statusForDb,
         card_group: card.group,
         group_order: card.groupOrder,
         pop_count: card.popCount,

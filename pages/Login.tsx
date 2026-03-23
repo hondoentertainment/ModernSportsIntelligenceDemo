@@ -121,7 +121,11 @@ const Login: React.FC = () => {
                     )}
 
                     {error && (
-                        <div className={`mb-6 p-4 rounded-2xl border animate-in fade-in slide-in-from-top-2 ${error.includes('wait') || error.includes('rate') ? 'bg-amber-500/10 border-amber-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
+                        <div
+                            role="alert"
+                            aria-live="polite"
+                            className={`mb-6 p-4 rounded-2xl border animate-in fade-in slide-in-from-top-2 ${error.includes('wait') || error.includes('rate') ? 'bg-amber-500/10 border-amber-500/30' : 'bg-red-500/10 border-red-500/30'}`}
+                        >
                             <div className="flex items-start gap-3">
                                 {error.includes('wait') || error.includes('rate') ? (
                                     <Zap className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />

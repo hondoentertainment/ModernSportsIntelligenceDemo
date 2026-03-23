@@ -4,6 +4,19 @@
 
 [Vercel `headers`](../vercel.json) send **`Content-Security-Policy-Report-Only`** so browsers log violations without blocking. This is appropriate while the SPA still relies on `'unsafe-inline'` for scripts/styles (typical for Vite + Tailwind during transition).
 
+Report-Only policy (summary):
+
+- **`base-uri 'self'`** / **`frame-ancestors 'self'`** — align with same-origin framing expectations.
+- **`script-src`** — `'self'`, `'unsafe-inline'`, **`https://cdn.tailwindcss.com`** (dev index), **`https://js.stripe.com`** (Stripe.js).
+- **`font-src`** — `'self'`, **`https://fonts.gstatic.com`**, **`data:`** (icons).
+- **`img-src`** — `'self'`, **`data:`**, **`blob:`**, **`https:`** (card images and CDNs).
+- **`connect-src`** — `'self'`, **`https:`**, **`wss:`** (Supabase HTTP + Realtime).
+- **`worker-src 'self'`** — service worker.
+- **`manifest-src 'self'`** — PWA manifest.
+- **`media-src`** — `'self'` + **`https:`** for streamed assets if used.
+- **`frame-src`** — **`https://js.stripe.com`**, **`https://hooks.stripe.com`** (Stripe Elements / 3DS).
+- **`form-action`** — `'self'` + **`https://checkout.stripe.com`** (hosted Checkout redirects).
+
 ## When to enforce blocking CSP
 
 Move to a **blocking** `Content-Security-Policy` header only after:

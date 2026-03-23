@@ -11,7 +11,7 @@ import {
   Send,
   ShoppingCart,
 } from 'lucide-react';
-import { CardInventory } from '../types';
+import { CardInventory, CardConsignmentSnapshot } from '../types';
 import {
   ConsignmentService,
   ConsignmentEntry,
@@ -24,6 +24,7 @@ interface ConsignmentModalProps {
   onClose: () => void;
   card: CardInventory | null;
   inventory: CardInventory[];
+  onConsignmentStarted?: (cardId: string, patch: Partial<CardInventory>) => void | Promise<void>;
 }
 
 const STATUS_COLORS: Record<ConsignmentStatus, { bg: string; text: string; label: string }> = {
@@ -50,7 +51,7 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
   isOpen,
   onClose,
   card,
-  _inventory,
+  onConsignmentStarted,
 }) => {
   const [selectedHouseId, setSelectedHouseId] = useState('');
   const [askingPrice, setAskingPrice] = useState(0);
@@ -84,9 +85,12 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
 
   if (!isOpen || !card) return null;
 
-  const handleSubmit = () => {
-    if (!selectedHouseId || askingPrice <= 0) return;
-    ConsignmentService.createConsignment(
+  const handleSubmit = async () => {
+    if (!selectedHouseId || askingPrice <= 0 || !card) return;
+    const house = houses.find((h) => h.id === selectedHouseId);
+    if (!house) return;
+
+    const entry = ConsignmentService.createConsignment(
       card.id,
       `${card.player} ${card.year} ${card.set}`,
       card.sport,
@@ -96,6 +100,18 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
       insuranceCost,
       cardValue,
     );
+
+    const snapshot: CardConsignmentSnapshot = {
+      houseId: house.id,
+      houseName: house.name,
+      entryId: entry.id,
+      submittedAt: entry.dateShipped,
+      reservePrice: askingPrice,
+      sellerFeePercent: house.commissionRate,
+      trackingNumber: entry.trackingNumber,
+    };
+
+    await onConsignmentStarted?.(card.id, { status: 'consignment', consignment: snapshot });
     setCardConsignments(ConsignmentService.getConsignmentsByCard(card.id));
   };
 
