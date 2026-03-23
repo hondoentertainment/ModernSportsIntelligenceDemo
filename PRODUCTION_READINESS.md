@@ -46,7 +46,7 @@ Completed in recent sprints (post–v4.3):
 - **Phase 5.1 Features:** `features/portfolio/index.ts` — barrel exports for portfolio (useSupabaseInventory, dal, types).
 
 **Next phases (TypeScript / Zod):**
-- **Done:** Zod v4 — `error.issues` in api/ai/generate.ts and api/market/ebay.ts; `z.record(z.string(), z.unknown())` in lib/schemas.ts; Stripe webhook `apiVersion: '2026-01-28.clover'` and `apiLogger.info(message, meta)`; geminiClient returns `{ text: validated.text ?? '' }`. **`npm run typecheck` passes.**
+- **Done:** Zod v4 — `error.issues` in api/ai/generate.ts and api/market/ebay.ts; `z.record(z.string(), z.unknown())` in lib/schemas.ts; Stripe webhook `apiVersion: '2026-02-25.clover'` (must match `stripe` package typings) and `apiLogger.info(message, meta)`; geminiClient returns `{ text: validated.text ?? '' }`. **`npm run typecheck` passes.**
 
 **Phase 12 (production-grade — XSS + types workflow + DAL export):**
 - **HTML sanitization:** `lib/sanitizeHtml.ts` uses DOMPurify with an allowlist; `APIPlatformModal` and `EbayListingGeneratorModal` sanitize before `dangerouslySetInnerHTML`. Tests: `tests/lib/sanitizeHtml.test.ts`.

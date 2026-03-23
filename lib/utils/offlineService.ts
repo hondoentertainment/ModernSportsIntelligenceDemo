@@ -301,11 +301,14 @@ export function getStorageStats(): OfflineStorageStats {
   let oldest: number | null = null;
   let newest: number | null = null;
 
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key) {
-      const val = localStorage.getItem(key) || '';
-      usedBytes += key.length * 2 + val.length * 2;
+  // Full-origin estimate (includes keys outside MSI/syncStore); not replaceable by store alone.
+  if (typeof localStorage !== 'undefined') {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) {
+        const val = localStorage.getItem(key) || '';
+        usedBytes += key.length * 2 + val.length * 2;
+      }
     }
   }
 
