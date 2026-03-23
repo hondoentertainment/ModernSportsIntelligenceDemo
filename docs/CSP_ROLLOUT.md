@@ -10,7 +10,7 @@ Move to a **blocking** `Content-Security-Policy` header only after:
 
 1. **Violations are near-zero** in report-only mode (check browser devtools or a reporting endpoint `report-uri` / `report-to`).
 2. **Inline script reliance is reduced** — e.g. nonces or hashes for any required inline scripts, or none in production build.
-3. **`connect-src`** lists every API origin (Supabase, Stripe, Gemini proxy, eBay, error beacon, Sentry, etc.).
+3. **`connect-src`** lists every API origin (Supabase HTTP + **WebSocket `wss:`** for Realtime, Stripe, Gemini proxy, eBay, error beacon, Sentry, etc.). Report-Only policy in `vercel.json` includes `wss:` alongside `https:` so violations surface early.
 4. **Staging verification** on a preview deployment with real auth and payments test mode.
 
 ## How to flip in `vercel.json`

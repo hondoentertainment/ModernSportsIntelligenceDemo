@@ -1,5 +1,5 @@
 // Bump when shell/offline behavior changes so clients drop stale caches (see PRODUCTION_READINESS PWA notes).
-const CACHE_VERSION = 'msi-v3';
+const CACHE_VERSION = 'msi-v4';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 const API_CACHE = `api-${CACHE_VERSION}`;

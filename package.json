@@ -33,7 +33,8 @@
     "joe:diff": "tsx scripts/feature-diff.ts",
     "joe:health": "bash scripts/code-health.sh",
     "joe:bundle": "bash scripts/bundle-check.sh",
-    "types:supabase": "npx supabase gen types typescript --linked > types/supabase.gen.ts"
+    "types:supabase": "npx supabase gen types typescript --linked > types/supabase.gen.ts",
+    "verify": "npm run typecheck && npm run typecheck:strict && npm run lint && npm run format:check && npm run test:coverage && npm run build"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -1,9 +1,9 @@
 /**
  * usePersistedState
  *
- * A drop-in replacement for React useState that transparently persists
- * values to localStorage with debounced writes. Handles quota errors,
- * SSR safety, and cross-tab synchronization via the storage event.
+ * Like useState, but persists via SyncedStore (`lib/dal/syncStore`) with debounced writes
+ * so values flow through the same adapter path as the rest of MSI (Supabase when signed in).
+ * Cross-tab sync uses the native `storage` event (localStorage-backed keys).
  *
  * Usage:
  *   const [count, setCount] = usePersistedState('my-count', 0);
@@ -44,14 +44,14 @@ function writeToStorage(fullKey: string, value: unknown): boolean {
 // ---------------------------------------------------------------------------
 
 export interface UsePersistedStateOptions {
-  /** Debounce interval in ms before flushing to localStorage. Default 300. */
+  /** Debounce interval in ms before flushing to SyncedStore. Default 300. */
   debounceMs?: number;
   /** Custom key prefix. Default 'msi_ps_'. */
   prefix?: string;
 }
 
 /**
- * Like useState, but persists to localStorage with debounced writes.
+ * Like useState, but persists through SyncedStore with debounced writes.
  *
  * @param key   Unique persistence key (prefixed automatically)
  * @param defaultValue  Value used when nothing is stored
