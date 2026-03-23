@@ -62,6 +62,7 @@ Completed in recent sprints (post–v4.3):
 **Next:**
 - **`npm run typecheck:strict`** is required in CI (see `docs/TYPESCRIPT_STRICT.md`); fix new violations when they appear.
 - **Phase 13 – Coverage:** `tests/lib/syncStore.test.ts` exercises `lib/dal/syncStore` (get/set/has/remove/clear, localStorage fallbacks, adapter hydrate/flush/forceFlush); `sanitizeHtml.test.ts` expanded with non-string input, disallowed tags, and event/`javascript:` URL stripping. Global coverage thresholds in `vite.config.ts` track the **current aggregate** on instrumented files so CI stays honest; raise them gradually as tests are added (see [docs/COVERAGE_POLICY.md](docs/COVERAGE_POLICY.md)).
+- **PWA / offline (v4 hardening):** `components/PwaUpdateBanner.tsx` listens for `sw-update-available` (from `index.html`) and reloads after `SKIP_WAITING`; service worker cache generation bumped in `public/sw.js` when shell caching behavior changes.
 - Continue raising test coverage toward 80% on critical paths and/or narrowing `coverage.include` toward a 100% gate on core modules.
 - Gradually migrate services from direct localStorage to DAL (see [docs/DAL_MIGRATION.md](docs/DAL_MIGRATION.md)) — **AuthContext** / **useUsageGate** profile + demo keys now use **`store`**.
 - Before enforcing a blocking CSP in production, follow [docs/CSP_ROLLOUT.md](docs/CSP_ROLLOUT.md).

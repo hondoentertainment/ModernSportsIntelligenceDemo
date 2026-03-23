@@ -87,4 +87,16 @@ describe('featureFlags', () => {
     expect(logger.info).toHaveBeenCalledWith('[FeatureFlags] All adapters using mock data');
   });
 
+  it('logs active adapter list when at least one real flag is on', () => {
+    vi.stubEnv('VITE_FF_REAL_EBAY', 'true');
+    vi.stubEnv('VITE_FF_REAL_PSA', '');
+    vi.stubEnv('VITE_FF_REAL_BGS', '');
+    vi.stubEnv('VITE_FF_REAL_SPORTS', '');
+    vi.stubEnv('VITE_FF_REAL_COMC', '');
+    vi.stubEnv('VITE_FF_REAL_GEMINI', '');
+    resetFeatureFlags();
+    initFeatureFlags();
+    expect(logger.info).toHaveBeenCalledWith(expect.stringMatching(/\[FeatureFlags\] Active:.*USE_REAL_EBAY/s));
+  });
+
 });

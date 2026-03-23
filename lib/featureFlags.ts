@@ -34,9 +34,17 @@ const DEFAULT_FLAGS: FeatureFlags = {
   USE_REAL_GEMINI: false,
 };
 
-function readEnvFlag(key: string): boolean {
+type FeatureFlagEnvKey =
+  | 'VITE_FF_REAL_EBAY'
+  | 'VITE_FF_REAL_PSA'
+  | 'VITE_FF_REAL_BGS'
+  | 'VITE_FF_REAL_SPORTS'
+  | 'VITE_FF_REAL_COMC'
+  | 'VITE_FF_REAL_GEMINI';
+
+function readEnvFlag(key: FeatureFlagEnvKey): boolean {
   if (typeof import.meta === 'undefined') return false;
-  const val = (import.meta as any).env?.[key];
+  const val = import.meta.env[key];
   return val === 'true' || val === '1';
 }
 

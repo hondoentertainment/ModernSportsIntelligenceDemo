@@ -18,6 +18,7 @@ import SyncSchedulerInitializer from './components/SyncSchedulerInitializer.tsx'
 import LuminousTracker from './components/LuminousTracker.tsx';
 import { MigrationProvider } from './contexts/MigrationContext.tsx';
 import MigrationBanner from './components/MigrationBanner.tsx';
+import PwaUpdateBanner from './components/PwaUpdateBanner.tsx';
 import MarketTicker from './components/MarketTicker.tsx';
 import { useSupabaseInventory } from './lib/utils/useSupabaseInventory.ts';
 import LazyErrorBoundary from './components/LazyErrorBoundary.tsx';
@@ -477,6 +478,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
         <Header onToggleWallHUD={() => setIsWallHUDOpen(true)} />
         <MarketTicker inventory={inventory} />
         <MigrationBanner />
+        <PwaUpdateBanner />
 
         {isWallHUDOpen && (
           <InstitutionalWallHUD
