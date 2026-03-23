@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   ScrollText, Shield, AlertTriangle, CheckCircle, XCircle,
-  Clock, Eye, Lock, BarChart3, FileText, Database, Zap,
+  Lock, FileText, Database, RefreshCw,
 } from 'lucide-react';
 import {
   getAuditEvents,
@@ -15,7 +15,11 @@ import {
 } from '../lib/utils/auditTrailService';
 
 const AuditTrail: React.FC = () => {
-  const events = useMemo(() => getAuditEvents(), []);
+  const [eventsRefresh, setEventsRefresh] = useState(0);
+  const reloadEvents = useCallback(() => setEventsRefresh((n) => n + 1), []);
+
+  const events = useMemo(() => getAuditEvents(), [eventsRefresh]);
+  const recordedCount = useMemo(() => events.filter((e) => e.source === 'recorded').length, [events]);
   const rules = useMemo(() => getComplianceRules(), []);
   const compReports = useMemo(() => getComplianceReports(), []);
   const retention = useMemo(() => getRetentionPolicies(), []);
@@ -30,12 +34,29 @@ const AuditTrail: React.FC = () => {
             <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
               <ScrollText size={22} className="text-violet-400" />
             </div>
-            <div>
+            <div className="flex-1 min-w-0">
               <h1 className="text-2xl font-bold text-white">Audit Trail & Compliance Logging</h1>
               <p className="text-slate-400 text-sm">
-                Immutable audit trail with compliance dashboards, regulatory reporting, and data retention policies
+                Recorded actions from this session (portfolio, valuations, autonomy) appear first; sample enterprise
+                scenarios follow for demos.
+              </p>
+              <p className="text-slate-500 text-xs mt-1">
+                {recordedCount > 0 ? (
+                  <>{recordedCount} recorded event{recordedCount === 1 ? '' : 's'} · </>
+                ) : (
+                  <>No recorded events yet — use the app to generate audit entries · </>
+                )}
+                refresh to pull the latest from storage
               </p>
             </div>
+            <button
+              type="button"
+              onClick={reloadEvents}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide bg-violet-500/20 text-violet-300 border border-violet-500/40 hover:bg-violet-500/30 transition-colors flex-shrink-0"
+            >
+              <RefreshCw size={14} aria-hidden />
+              Refresh
+            </button>
           </div>
         </div>
       </div>
@@ -81,10 +102,20 @@ const AuditTrail: React.FC = () => {
                      e.result === 'blocked' ? <XCircle size={16} className="text-red-400 mt-0.5" /> :
                      <AlertTriangle size={16} className="text-amber-400 mt-0.5" />}
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${getSeverityColor(e.severity)}`}>{e.severity}</span>
                         <span className={`text-xs font-semibold ${getCategoryColor(e.category)}`}>{e.category}</span>
                         <code className="text-slate-400 text-[10px] font-mono">{e.action}</code>
+                        {e.source === 'recorded' && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30">
+                            Recorded
+                          </span>
+                        )}
+                        {e.source === 'sample' && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-slate-400 bg-slate-500/10 border border-slate-600">
+                            Sample
+                          </span>
+                        )}
                       </div>
                       <p className="text-slate-300 text-xs">{e.details}</p>
                       <div className="flex items-center gap-2 mt-1 text-[10px] text-slate-500">

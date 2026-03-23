@@ -23,3 +23,26 @@ interface ImportMetaEnv {
 interface ImportMeta {
     readonly env: ImportMetaEnv;
 }
+
+/** Experimental Barcode Detection API (Chromium / some mobile browsers). */
+interface BarcodeDetectorOptions {
+    formats?: string[];
+}
+
+interface DetectedBarcode {
+    rawValue: string;
+    format: string;
+}
+
+interface BarcodeDetector {
+    detect(image: ImageBitmapSource): Promise<DetectedBarcode[]>;
+}
+
+interface BarcodeDetectorConstructor {
+    new (options?: BarcodeDetectorOptions): BarcodeDetector;
+    getSupportedFormats(): Promise<string[]>;
+}
+
+interface Window {
+    BarcodeDetector?: BarcodeDetectorConstructor;
+}

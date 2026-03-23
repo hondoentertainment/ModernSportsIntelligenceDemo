@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { RefreshCw, Link2, AlertTriangle, Ghost, QrCode, Clock, CheckCircle, XCircle, ArrowRightLeft } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { RefreshCw, Link2, AlertTriangle, Ghost, QrCode, Clock, CheckCircle, XCircle, ArrowRightLeft, Camera, X } from 'lucide-react';
+import CameraFeed from '../components/CameraFeed.tsx';
+import { isBarcodeDetectionSupported } from '../lib/utils/barcodeDetection.ts';
 import {
   getConnections,
   getSyncedInventory,
@@ -60,6 +62,20 @@ const InventorySync: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [platformFilter, setPlatformFilter] = useState<string>('');
   const [scanCodes, setScanCodes] = useState('');
+  const [scannerOpen, setScannerOpen] = useState(false);
+
+  const appendScannedCode = useCallback((value: string) => {
+    const v = value.trim();
+    if (!v) return;
+    setScanCodes((prev) => {
+      const lines = prev
+        .split('\n')
+        .map((l) => l.trim())
+        .filter(Boolean);
+      if (lines.includes(v)) return prev;
+      return prev.trim() ? `${prev.trim()}\n${v}` : v;
+    });
+  }, []);
 
   useEffect(() => {
     try {
@@ -422,6 +438,47 @@ const InventorySync: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {scannerOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="inventory-scan-title"
+        >
+          <div className="w-full max-w-lg rounded-2xl border border-slate-600 bg-slate-900 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700 shrink-0">
+              <span id="inventory-scan-title" className="text-sm font-bold text-white">
+                Scan barcode or QR
+              </span>
+              <button
+                type="button"
+                onClick={() => setScannerOpen(false)}
+                className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Close scanner"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-4 space-y-3 overflow-y-auto">
+              {!isBarcodeDetectionSupported() && (
+                <p className="text-xs text-amber-400/90 leading-relaxed">
+                  Live barcode decode is not available in this browser. Use Chrome or Edge (including Android), or paste codes in the field
+                  below.
+                </p>
+              )}
+              <CameraFeed
+                isActive={scannerOpen}
+                onCapture={() => {}}
+                onBarcodeDetected={isBarcodeDetectionSupported() ? appendScannedCode : undefined}
+              />
+              <p className="text-[10px] text-slate-500 leading-relaxed">
+                Point at a PSA cert QR, product UPC, or other supported code. Values append to the bulk list; close when finished.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

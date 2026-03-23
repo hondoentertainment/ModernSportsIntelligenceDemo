@@ -141,7 +141,7 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
                     {!previewUrl ? (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto">
                             {mode === 'camera' ? (
-                                <CameraFeed isActive={isOpen} onCapture={handleCapture} facingMode="environment" />
+                                <CameraFeed isActive={isOpen} onCapture={handleCapture} />
                             ) : (
                                 <div
                                     onClick={() => fileInputRef.current?.click()}

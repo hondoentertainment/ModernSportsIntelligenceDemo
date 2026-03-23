@@ -3,6 +3,8 @@
  * Enterprise-grade immutable audit trail with compliance dashboards and regulatory reporting.
  */
 
+import { getLocalAuditTrail } from './auditLog';
+
 export type AuditCategory = 'portfolio' | 'trading' | 'auth' | 'admin' | 'finance' | 'api' | 'compliance' | 'data';
 export type AuditSeverity = 'info' | 'warning' | 'critical' | 'security';
 export type ComplianceStatus = 'compliant' | 'review-needed' | 'violation' | 'remediated';
@@ -20,6 +22,8 @@ export interface AuditEvent {
   sessionId: string;
   result: 'success' | 'failure' | 'blocked';
   metadata: Record<string, string>;
+  /** Persisted via `logAuditEvent` / SyncedStore vs. illustrative demo rows */
+  source?: 'recorded' | 'sample';
 }
 
 export interface ComplianceRule {
@@ -65,19 +69,97 @@ export interface AuditTrailStats {
   exportsPending: number;
 }
 
-function getAuditEvents(): AuditEvent[] {
+type LogCategory = 'portfolio' | 'valuation' | 'autonomy' | 'auth' | 'system';
+
+function mapLogCategoryToTrail(cat: string): AuditCategory {
+  const c = cat as LogCategory;
+  if (c === 'portfolio' || c === 'valuation') return 'portfolio';
+  if (c === 'autonomy') return 'trading';
+  if (c === 'auth') return 'auth';
+  return 'data';
+}
+
+function metadataToStrings(meta: unknown): Record<string, string> {
+  if (!meta || typeof meta !== 'object') return {};
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(meta as Record<string, unknown>)) {
+    out[k] = typeof v === 'string' ? v : JSON.stringify(v);
+  }
+  return out;
+}
+
+function formatTimestamp(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function formatDetails(meta: unknown, entityType: string, action: string): string {
+  const metaStr = metadataToStrings(meta);
+  const parts = Object.entries(metaStr)
+    .slice(0, 5)
+    .map(([k, v]) => `${k}: ${v}`);
+  if (parts.length > 0) return parts.join(' · ');
+  return `${action} · ${entityType}`;
+}
+
+/** Maps rows from `logAuditEvent` / `getLocalAuditTrail` into UI rows. */
+export function mapStoredRecordToAuditEvent(raw: unknown, index: number): AuditEvent | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const r = raw as Record<string, unknown>;
+  const action = typeof r.action === 'string' ? r.action : null;
+  const entityType = typeof r.entity_type === 'string' ? r.entity_type : 'record';
+  if (!action) return null;
+
+  const createdRaw = r.created_at;
+  const created = typeof createdRaw === 'string' ? createdRaw : new Date().toISOString();
+  const catStr = typeof r.category === 'string' ? r.category : 'system';
+  const category = mapLogCategoryToTrail(catStr);
+  const severity: AuditSeverity =
+    catStr === 'auth' && /fail|denied|blocked|invalid/i.test(action) ? 'security' : 'info';
+
+  const entityId = typeof r.entity_id === 'string' ? r.entity_id : null;
+  const userId = typeof r.user_id === 'string' ? r.user_id : null;
+  const actor = userId ? `user:${userId.slice(0, 8)}…` : 'local';
+
+  return {
+    id: `rec-${index}-${created}-${action}`,
+    timestamp: formatTimestamp(created),
+    category,
+    severity,
+    actor,
+    action,
+    resource: entityId ? `${entityType} · ${entityId}` : entityType,
+    details: formatDetails(r.metadata, entityType, action),
+    ipAddress: '—',
+    sessionId: '—',
+    result: 'success',
+    metadata: metadataToStrings(r.metadata),
+    source: 'recorded',
+  };
+}
+
+function getSampleAuditEvents(): AuditEvent[] {
   return [
-    { id: 'ae-1', timestamp: '2026-03-17 14:45:22', category: 'trading', severity: 'info', actor: 'ProspectHunter', action: 'trade.executed', resource: 'Trade #4582', details: 'Sold 2024 Bowman Chrome lot — 15 cards for $1,250', ipAddress: '192.168.1.45', sessionId: 'sess_a8f2', result: 'success', metadata: { amount: '$1,250', cards: '15' } },
-    { id: 'ae-2', timestamp: '2026-03-17 14:32:15', category: 'auth', severity: 'security', actor: 'unknown', action: 'auth.login_failed', resource: 'Login Portal', details: 'Failed login attempt from TOR exit node — 3rd attempt in 10 minutes', ipAddress: '185.220.101.4', sessionId: 'none', result: 'blocked', metadata: { attempts: '3', source: 'TOR' } },
-    { id: 'ae-3', timestamp: '2026-03-17 14:15:08', category: 'finance', severity: 'info', actor: 'CardShark92', action: 'report.generated', resource: 'NAV Report', details: 'Generated February 2026 NAV report for LP distribution', ipAddress: '192.168.1.10', sessionId: 'sess_c3d1', result: 'success', metadata: { reportType: 'nav-report' } },
-    { id: 'ae-4', timestamp: '2026-03-17 13:55:44', category: 'admin', severity: 'warning', actor: 'WaxBreaker99', action: 'permission.escalation', resource: 'Admin Settings', details: 'Attempted to access admin settings without admin role', ipAddress: '203.45.67.89', sessionId: 'sess_e5f2', result: 'blocked', metadata: { requiredRole: 'admin', userRole: 'trader' } },
-    { id: 'ae-5', timestamp: '2026-03-17 13:40:30', category: 'api', severity: 'info', actor: 'api_key:msi_live_a3f2', action: 'api.request', resource: '/api/v1/portfolio', details: 'Portfolio data fetch — 847 holdings returned', ipAddress: '34.102.45.90', sessionId: 'api_sess_1', result: 'success', metadata: { latency: '45ms', records: '847' } },
-    { id: 'ae-6', timestamp: '2026-03-17 12:20:11', category: 'compliance', severity: 'critical', actor: 'system', action: 'compliance.check', resource: 'AML Screening', details: 'New counterparty flagged by OFAC screening — manual review required', ipAddress: 'internal', sessionId: 'sys_check', result: 'failure', metadata: { counterparty: 'Redacted', matchType: 'partial' } },
-    { id: 'ae-7', timestamp: '2026-03-17 11:05:55', category: 'portfolio', severity: 'info', actor: 'DataDiana', action: 'portfolio.valuation', resource: 'Fund NAV', details: 'Daily mark-to-market completed — NAV: $4,890,000', ipAddress: '10.0.1.22', sessionId: 'sess_g7h3', result: 'success', metadata: { nav: '$4,890,000', change: '+$42,000' } },
-    { id: 'ae-8', timestamp: '2026-03-17 10:30:18', category: 'data', severity: 'info', actor: 'system', action: 'data.sync', resource: 'Market Data Feed', details: 'Synced 12,450 price points from 5 marketplace APIs', ipAddress: 'internal', sessionId: 'sys_sync', result: 'success', metadata: { records: '12,450', sources: '5' } },
-    { id: 'ae-9', timestamp: '2026-03-17 09:15:02', category: 'auth', severity: 'info', actor: 'CardShark92', action: 'auth.login', resource: 'Login Portal', details: 'Successful login with MFA verification', ipAddress: '192.168.1.10', sessionId: 'sess_c3d1', result: 'success', metadata: { mfa: 'totp', device: 'Chrome/Desktop' } },
-    { id: 'ae-10', timestamp: '2026-03-16 23:45:00', category: 'compliance', severity: 'info', actor: 'system', action: 'compliance.daily_check', resource: 'All Rules', details: 'Daily compliance scan completed — 0 new violations detected', ipAddress: 'internal', sessionId: 'sys_check', result: 'success', metadata: { rulesChecked: '24', violations: '0' } },
+    { id: 'ae-1', timestamp: '2026-03-17 14:45:22', category: 'trading', severity: 'info', actor: 'ProspectHunter', action: 'trade.executed', resource: 'Trade #4582', details: 'Sold 2024 Bowman Chrome lot — 15 cards for $1,250', ipAddress: '192.168.1.45', sessionId: 'sess_a8f2', result: 'success', metadata: { amount: '$1,250', cards: '15' }, source: 'sample' },
+    { id: 'ae-2', timestamp: '2026-03-17 14:32:15', category: 'auth', severity: 'security', actor: 'unknown', action: 'auth.login_failed', resource: 'Login Portal', details: 'Failed login attempt from TOR exit node — 3rd attempt in 10 minutes', ipAddress: '185.220.101.4', sessionId: 'none', result: 'blocked', metadata: { attempts: '3', source: 'TOR' }, source: 'sample' },
+    { id: 'ae-3', timestamp: '2026-03-17 14:15:08', category: 'finance', severity: 'info', actor: 'CardShark92', action: 'report.generated', resource: 'NAV Report', details: 'Generated February 2026 NAV report for LP distribution', ipAddress: '192.168.1.10', sessionId: 'sess_c3d1', result: 'success', metadata: { reportType: 'nav-report' }, source: 'sample' },
+    { id: 'ae-4', timestamp: '2026-03-17 13:55:44', category: 'admin', severity: 'warning', actor: 'WaxBreaker99', action: 'permission.escalation', resource: 'Admin Settings', details: 'Attempted to access admin settings without admin role', ipAddress: '203.45.67.89', sessionId: 'sess_e5f2', result: 'blocked', metadata: { requiredRole: 'admin', userRole: 'trader' }, source: 'sample' },
+    { id: 'ae-5', timestamp: '2026-03-17 13:40:30', category: 'api', severity: 'info', actor: 'api_key:msi_live_a3f2', action: 'api.request', resource: '/api/v1/portfolio', details: 'Portfolio data fetch — 847 holdings returned', ipAddress: '34.102.45.90', sessionId: 'api_sess_1', result: 'success', metadata: { latency: '45ms', records: '847' }, source: 'sample' },
+    { id: 'ae-6', timestamp: '2026-03-17 12:20:11', category: 'compliance', severity: 'critical', actor: 'system', action: 'compliance.check', resource: 'AML Screening', details: 'New counterparty flagged by OFAC screening — manual review required', ipAddress: 'internal', sessionId: 'sys_check', result: 'failure', metadata: { counterparty: 'Redacted', matchType: 'partial' }, source: 'sample' },
+    { id: 'ae-7', timestamp: '2026-03-17 11:05:55', category: 'portfolio', severity: 'info', actor: 'DataDiana', action: 'portfolio.valuation', resource: 'Fund NAV', details: 'Daily mark-to-market completed — NAV: $4,890,000', ipAddress: '10.0.1.22', sessionId: 'sess_g7h3', result: 'success', metadata: { nav: '$4,890,000', change: '+$42,000' }, source: 'sample' },
+    { id: 'ae-8', timestamp: '2026-03-17 10:30:18', category: 'data', severity: 'info', actor: 'system', action: 'data.sync', resource: 'Market Data Feed', details: 'Synced 12,450 price points from 5 marketplace APIs', ipAddress: 'internal', sessionId: 'sys_sync', result: 'success', metadata: { records: '12,450', sources: '5' }, source: 'sample' },
+    { id: 'ae-9', timestamp: '2026-03-17 09:15:02', category: 'auth', severity: 'info', actor: 'CardShark92', action: 'auth.login', resource: 'Login Portal', details: 'Successful login with MFA verification', ipAddress: '192.168.1.10', sessionId: 'sess_c3d1', result: 'success', metadata: { mfa: 'totp', device: 'Chrome/Desktop' }, source: 'sample' },
+    { id: 'ae-10', timestamp: '2026-03-16 23:45:00', category: 'compliance', severity: 'info', actor: 'system', action: 'compliance.daily_check', resource: 'All Rules', details: 'Daily compliance scan completed — 0 new violations detected', ipAddress: 'internal', sessionId: 'sys_check', result: 'success', metadata: { rulesChecked: '24', violations: '0' }, source: 'sample' },
   ];
+}
+
+function getAuditEvents(): AuditEvent[] {
+  const stored = getLocalAuditTrail()
+    .map((row, i) => mapStoredRecordToAuditEvent(row, i))
+    .filter((e): e is AuditEvent => e !== null);
+  return [...stored, ...getSampleAuditEvents()];
 }
 
 function getComplianceRules(): ComplianceRule[] {

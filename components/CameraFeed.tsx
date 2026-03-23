@@ -1,21 +1,42 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Camera, RefreshCw, AlertCircle } from 'lucide-react';
 import { logger } from '../lib/logger';
+import { createBarcodeDetector } from '../lib/utils/barcodeDetection.ts';
 
 interface CameraFeedProps {
     onCapture: (_base64: string) => void;
     isActive: boolean;
+    /** Live decode (Barcode Detection API). Fires when a new value is seen. */
+    onBarcodeDetected?: (_value: string, _format: string) => void;
 }
 
 const isMobile = () => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive }) => {
+const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive, onBarcodeDetected }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [error, setError] = useState<string | null>(null);
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
+    const onBarcodeRef = useRef(onBarcodeDetected);
+    onBarcodeRef.current = onBarcodeDetected;
+    const lastBarcodeRef = useRef<string | null>(null);
+
+    const handleCapture = useCallback(() => {
+        if (videoRef.current && canvasRef.current) {
+            const video = videoRef.current;
+            const canvas = canvasRef.current;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const base64 = canvas.toDataURL('image/jpeg', 0.8);
+                onCapture(base64);
+            }
+        }
+    }, [onCapture]);
 
     useEffect(() => {
         if (isActive) {
@@ -26,6 +47,47 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive }) => {
         return () => stopCamera();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isActive, facingMode]);
+
+    // Live barcode / QR scan (Chromium; card-show / mobile use case)
+    useEffect(() => {
+        if (!isActive || !stream || !onBarcodeDetected) return;
+
+        let cancelled = false;
+        let detector: BarcodeDetector | null = null;
+        let intervalId: ReturnType<typeof setInterval> | undefined;
+
+        (async () => {
+            detector = await createBarcodeDetector();
+            if (cancelled || !detector) return;
+
+            intervalId = window.setInterval(async () => {
+                const video = videoRef.current;
+                if (!video || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || !detector) return;
+                try {
+                    const bitmap = await createImageBitmap(video);
+                    const codes = await detector.detect(bitmap);
+                    bitmap.close();
+                    const first = codes[0];
+                    if (!first?.rawValue) return;
+                    const v = first.rawValue.trim();
+                    if (!v || v === lastBarcodeRef.current) return;
+                    lastBarcodeRef.current = v;
+                    onBarcodeRef.current?.(v, first.format);
+                    if ('vibrate' in navigator) {
+                        navigator.vibrate(40);
+                    }
+                } catch {
+                    // ignore per-frame failures
+                }
+            }, 400);
+        })();
+
+        return () => {
+            cancelled = true;
+            if (intervalId !== undefined) clearInterval(intervalId);
+            lastBarcodeRef.current = null;
+        };
+    }, [isActive, stream, onBarcodeDetected]);
 
     const startCamera = async () => {
         try {
@@ -58,21 +120,6 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive }) => {
 
     const toggleFacingMode = () => {
         setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
-    };
-
-    const captureFrame = () => {
-        if (videoRef.current && canvasRef.current) {
-            const video = videoRef.current;
-            const canvas = canvasRef.current;
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const base64 = canvas.toDataURL('image/jpeg', 0.8);
-                onCapture(base64);
-            }
-        }
     };
 
     if (error) {
@@ -124,7 +171,7 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive }) => {
                 )}
 
                 <button
-                    onClick={captureFrame}
+                    onClick={handleCapture}
                     className="w-20 h-20 min-h-[80px] min-w-[80px] bg-brand-lime rounded-full border-[6px] border-white/20 shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group touch-manipulation"
                     aria-label="Capture card"
                 >
