@@ -26,7 +26,14 @@ export function evaluateValuationQuality(
             : 1 - ((freshnessHours - 24) / (168 - 24));
 
     const salesDepthScore = Math.max(0, Math.min(1, (analysis.salesCount || 0) / 20));
-    const sourceBoost = analysis.valuationSource === 'ebay-api' ? 8 : analysis.valuationSource === 'gemini' ? 3 : 0;
+    const sourceBoost =
+        analysis.valuationSource === 'ebay-api'
+            ? 8
+            : analysis.valuationSource === 'historical-comps'
+                ? 5
+                : analysis.valuationSource === 'gemini'
+                    ? 3
+                    : 0;
 
     const qualityScore = Math.round(
         Math.max(0, Math.min(100,

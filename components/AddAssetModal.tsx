@@ -10,6 +10,7 @@ import {
   Tag,
   Hash,
   Calendar,
+  Package,
 } from 'lucide-react';
 import { CardInventory, Sport, League } from '../types.ts';
 
@@ -42,7 +43,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
     const [isAutographed, setIsAutographed] = useState(false);
     const [purchasePrice, setPurchasePrice] = useState('');
     const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
-    const [status, setStatus] = useState<'active' | 'sold'>('active');
+    const [status, setStatus] = useState<'active' | 'sold' | 'consignment'>('active');
     const [salePrice, setSalePrice] = useState('');
     const [saleDate, setSaleDate] = useState(new Date().toISOString().split('T')[0]);
     const [notes, setNotes] = useState('');
@@ -63,7 +64,8 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             setIsAutographed(editCard.isAutographed);
             setPurchasePrice(editCard.purchasePrice.toString());
             setPurchaseDate(editCard.purchaseDate || new Date().toISOString().split('T')[0]);
-            setStatus(editCard.status || 'active');
+            const s = editCard.status || 'active';
+            setStatus(s === 'consignment' ? 'consignment' : s === 'sold' ? 'sold' : 'active');
             setSalePrice(editCard.salePrice?.toString() || '');
             setSaleDate(editCard.saleDate || new Date().toISOString().split('T')[0]);
             setNotes(editCard.notes || '');
@@ -81,7 +83,10 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             setIsAutographed(initialData.isAutographed || false);
             setPurchasePrice('');
             setPurchaseDate(new Date().toISOString().split('T')[0]);
-            setStatus(initialData.status || 'active');
+            {
+                const s = initialData.status || 'active';
+                setStatus(s === 'consignment' ? 'consignment' : s === 'sold' ? 'sold' : 'active');
+            }
             setSalePrice(initialData.salePrice?.toString() || '');
             setSaleDate(initialData.saleDate || new Date().toISOString().split('T')[0]);
             setNotes(initialData.notes || '');
@@ -114,7 +119,10 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             return;
         }
 
-        const cardData: any = {
+        const resolvedStatus: CardInventory['status'] =
+            status === 'consignment' ? 'consignment' : status === 'sold' ? 'sold' : 'active';
+
+        const cardData: Partial<CardInventory> = {
             player: player.trim(),
             year: parseInt(year),
             manufacturer: manufacturer.trim(),
@@ -128,22 +136,28 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             isAutographed,
             purchasePrice: parseFloat(purchasePrice) || 0,
             purchaseDate,
-            status,
-            salePrice: status === 'sold' ? parseFloat(salePrice) || 0 : undefined,
-            saleDate: status === 'sold' ? saleDate : undefined,
+            status: resolvedStatus,
+            salePrice: resolvedStatus === 'sold' ? parseFloat(salePrice) || 0 : undefined,
+            saleDate: resolvedStatus === 'sold' ? saleDate : undefined,
             notes: notes.trim(),
             image: editCard?.image || 'https://images.unsplash.com/photo-1540553016722-983e48a2cd10?auto=format&fit=crop&q=80&w=600'
         };
 
         if (editCard && onUpdate) {
-            onUpdate(editCard.id, cardData);
+            const updates: Partial<CardInventory> = { ...cardData };
+            if (resolvedStatus !== 'consignment') {
+                updates.consignment = undefined;
+            } else if (editCard.consignment) {
+                updates.consignment = editCard.consignment;
+            }
+            onUpdate(editCard.id, updates);
         } else {
             // Generate ID for new card
             const id = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
                 ? crypto.randomUUID()
                 : Math.random().toString(36).substring(2, 11);
 
-            onAdd({ ...cardData, id, condition: isGraded ? 'Gem Mint' : 'Near Mint' });
+            onAdd({ ...cardData, id, condition: isGraded ? 'Gem Mint' : 'Near Mint' } as CardInventory);
         }
 
         onClose();
@@ -333,26 +347,58 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                     <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-3xl space-y-6">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <Tag size={18} className={status === 'sold' ? 'text-brand-lime' : 'text-slate-600'} />
-                                <span className={`font-bold ${status === 'sold' ? 'text-white' : 'text-slate-500'}`}>Asset Status</span>
+                                <Tag size={18} className={status === 'sold' ? 'text-brand-lime' : status === 'consignment' ? 'text-amber-400' : 'text-slate-600'} />
+                                <span className={`font-bold ${status === 'sold' ? 'text-white' : status === 'consignment' ? 'text-amber-200' : 'text-slate-500'}`}>Asset Status</span>
                             </div>
-                            <div className="flex p-1 bg-brand-charcoal rounded-xl border border-slate-800">
+                            {status === 'consignment' && editCard ? (
+                                <span className="text-[10px] font-black uppercase tracking-widest text-amber-400/90 border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 rounded-lg">
+                                    Consignment (read-only)
+                                </span>
+                            ) : (
+                                <div className="flex p-1 bg-brand-charcoal rounded-xl border border-slate-800">
+                                    <button
+                                        type="button"
+                                        onClick={() => setStatus('active')}
+                                        className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${status === 'active' ? 'bg-brand-lime text-brand-charcoal' : 'text-brand-muted hover:text-white'}`}
+                                    >
+                                        Active
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setStatus('sold')}
+                                        className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${status === 'sold' ? 'bg-brand-red text-white' : 'text-brand-muted hover:text-white'}`}
+                                    >
+                                        Sold
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {status === 'consignment' && editCard && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
+                                <div className="flex gap-3 p-4 rounded-2xl border border-amber-500/25 bg-amber-500/5">
+                                    <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 shrink-0 h-fit">
+                                        <Package size={18} />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-black text-amber-400/90 uppercase tracking-widest mb-1">On consignment</p>
+                                        <p className="text-sm text-white font-medium">
+                                            {editCard.consignment?.houseName ?? 'Consignment partner'}
+                                        </p>
+                                        <p className="text-xs text-brand-muted mt-1">
+                                            Edit other fields below. To mark this card back in your collection, use Back in collection (clears active consignment on save).
+                                        </p>
+                                    </div>
+                                </div>
                                 <button
                                     type="button"
                                     onClick={() => setStatus('active')}
-                                    className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${status === 'active' ? 'bg-brand-lime text-brand-charcoal' : 'text-brand-muted hover:text-white'}`}
+                                    className="w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest border border-slate-700 bg-brand-charcoal text-white hover:border-brand-lime/40 hover:text-brand-lime transition-all"
                                 >
-                                    Active
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setStatus('sold')}
-                                    className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${status === 'sold' ? 'bg-brand-red text-white' : 'text-brand-muted hover:text-white'}`}
-                                >
-                                    Sold
+                                    Back in collection
                                 </button>
                             </div>
-                        </div>
+                        )}
 
                         {status === 'sold' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2">

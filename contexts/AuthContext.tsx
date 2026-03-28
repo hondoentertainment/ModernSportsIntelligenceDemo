@@ -116,34 +116,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return;
         }
 
-        // Initialize session
-        const initSession = async () => {
-            try {
-                const { data: { session: initialSession } } = await supabase.auth.getSession();
-
-                if (mounted) {
-                    setSession(initialSession);
-                    setUser(initialSession?.user ?? null);
-                    if (initialSession) startSessionRefreshTimer();
+        // Demo mock client never invokes onAuthStateChange; resolve via getSession only.
+        if (isDemoMode) {
+            const initDemoSession = async () => {
+                try {
+                    const { data: { session: initialSession } } = await supabase.auth.getSession();
+                    if (mounted) {
+                        setSession(initialSession);
+                        setUser(initialSession?.user ?? null);
+                    }
+                } catch (error) {
+                    logger.error('Error initializing session:', error);
+                } finally {
+                    if (mounted) setLoading(false);
                 }
-            } catch (error) {
-                logger.error('Error initializing session:', error);
-            } finally {
-                if (mounted) setLoading(false);
-            }
-        };
+            };
+            void initDemoSession();
+            return () => {
+                mounted = false;
+            };
+        }
 
-        initSession();
-
-        // Listen for auth state changes
+        // Real client: end initial load on INITIAL_SESSION so user/session stay aligned (avoids
+        // getSession finishing before the first auth callback and briefly showing signed-out UI).
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
             if (mounted) {
                 setSession(currentSession);
                 setUser(currentSession?.user ?? null);
 
-                // Only change loading if it was somehow true (e.g. during a sign-in process that triggered this)
-                // But generally initSession handles the initial load.
-                // We keep it strictly coordinated.
+                if (event === 'INITIAL_SESSION') {
+                    if (currentSession) startSessionRefreshTimer();
+                    setLoading(false);
+                }
 
                 switch (event) {
                     case 'PASSWORD_RECOVERY':

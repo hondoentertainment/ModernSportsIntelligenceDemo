@@ -1,10 +1,9 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Star, Search, Trash2, User, ChevronRight, LayoutGrid, List, CreditCard, TrendingUp, Target, RefreshCw, Plus, Loader2, Zap } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Star, Search, Trash2, User, ChevronRight, LayoutGrid, List, CreditCard, TrendingUp, Target, RefreshCw, Plus, Loader2, Zap, AlertTriangle } from 'lucide-react';
 import { searchMLBPlayers } from '../lib/utils/mlbApi.ts';
 import { useFavorites } from '../lib/utils/useFavorites.ts';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
-import { useTargets } from '../lib/utils/useTargets.ts';
 import { useAlerts } from '../lib/utils/useAlerts.ts';
 import { syncWatchlistPrices } from '../lib/utils/marketSync.ts';
 import WatchlistPriceCard from '../components/WatchlistPriceCard.tsx';
@@ -12,6 +11,9 @@ import AddTargetModal from '../components/AddTargetModal.tsx';
 import { useToast } from '../contexts/ToastContext.tsx';
 import { logger } from '../lib/logger';
 import { store } from '../lib/dal/syncStore';
+import { computeFreshVerifiableCoverage, FRESH_VERIFIABLE_COVERAGE_TARGET_PCT } from '../lib/utils/valuationProvenance';
+import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAlerts';
+import { showToast } from '../lib/utils/toast';
 
 const Favorites: React.FC = () => {
   // MLB Player favorites (existing)
@@ -23,10 +25,8 @@ const Favorites: React.FC = () => {
 
   // Card favorites
   const { favorites: cardFavorites, removeFavorite: removeCardFavorite } = useFavorites();
-  const { inventory } = useSupabaseInventory();
+  const { inventory, targets, setTargets, addTarget, deleteTarget, markAcquired } = useSupabaseInventory();
 
-  // Acquisition targets
-  const { targets, setTargets, addTarget, deleteTarget, markAcquired } = useTargets();
   const { priceTargetHit, systemMessage } = useAlerts();
 
   const [activeTab, setActiveTab] = useState<'cards' | 'players' | 'targets'>('targets');
@@ -73,9 +73,13 @@ const Favorites: React.FC = () => {
     setSyncProgress({ current: 0, total: targets.filter(t => t.status === 'active').length });
 
     try {
-      const result = await syncWatchlistPrices(targets, (current, total) => {
-        setSyncProgress({ current, total });
-      });
+      const result = await syncWatchlistPrices(
+        targets,
+        (current, total) => {
+          setSyncProgress({ current, total });
+        },
+        { prioritizeVerifiableRefresh: true },
+      );
 
       // Update targets with new prices
       setTargets(result.updatedTargets);
@@ -113,6 +117,39 @@ const Favorites: React.FC = () => {
     const delta = (t.currentMarketPrice! - t.targetPrice) / t.targetPrice;
     return delta <= 0.1; // within 10% of target
   });
+  const targetCoverage = useMemo(
+    () => computeFreshVerifiableCoverage(activeTargets.map(target => ({ ...target, lastValuationDate: undefined }))),
+    [activeTargets],
+  );
+  const hasTargetCoverageGap =
+    targetCoverage.total > 0 &&
+    targetCoverage.coveragePct < FRESH_VERIFIABLE_COVERAGE_TARGET_PCT;
+
+  useEffect(() => {
+    const transition = trackCoverageHealthTransition(
+      'watchlist',
+      targetCoverage.coveragePct,
+      targetCoverage.total,
+      FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
+    );
+
+    if (transition.event === 'degraded') {
+      showToast(
+        'warning',
+        `Watchlist pricing degraded: ${targetCoverage.coveragePct}% fresh verifiable coverage.`,
+        { dedupeKey: 'coverage_watchlist_degraded' },
+      );
+      return;
+    }
+
+    if (transition.event === 'recovered') {
+      showToast(
+        'success',
+        `Watchlist pricing recovered: coverage returned to ${targetCoverage.coveragePct}%.`,
+        { dedupeKey: 'coverage_watchlist_recovered' },
+      );
+    }
+  }, [targetCoverage.coveragePct, targetCoverage.total]);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-12">
@@ -213,6 +250,19 @@ const Favorites: React.FC = () => {
           {/* Acquisition Targets Tab */}
           {activeTab === 'targets' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {hasTargetCoverageGap && (
+                <div className="col-span-full rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-amber-100">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle size={16} className="mt-0.5 shrink-0 text-amber-300" />
+                    <div>
+                      <p className="text-sm font-semibold">Watchlist pricing coverage below SLA.</p>
+                      <p className="mt-1 text-xs text-amber-200/90">
+                        Fresh verifiable targets: {targetCoverage.coveragePct}% ({targetCoverage.covered}/{targetCoverage.total}). Sync prices to refresh comp-backed valuations.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
               {activeTargets.length > 0 ? activeTargets.map((target) => (
                 <WatchlistPriceCard
                   key={target.id}
@@ -433,6 +483,12 @@ const Favorites: React.FC = () => {
                   </span>
                 </div>
               )}
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400 text-sm">Verified Fresh</span>
+                <span className={`font-bold ${targetCoverage.coveragePct >= FRESH_VERIFIABLE_COVERAGE_TARGET_PCT ? 'text-brand-green' : 'text-amber-300'}`}>
+                  {targetCoverage.coveragePct}% ({targetCoverage.covered}/{targetCoverage.total})
+                </span>
+              </div>
             </div>
           </div>
 

@@ -92,6 +92,14 @@ export function isFeatureEnabled(flag: keyof FeatureFlags): boolean {
   return _flags[flag];
 }
 
+/**
+ * When true, pricing flows may use live eBay comps (e.g. `getEbayCardPrice` when the eBay adapter is available).
+ * When false, callers should skip real listing APIs and use demo/AI paths so UI matches the "Estimate" chip.
+ */
+export function preferRealCompsWhenConfigured(): boolean {
+  return isFeatureEnabled('USE_REAL_EBAY');
+}
+
 /** Override a flag at runtime (for testing or admin panel). */
 export function setFeatureFlag(flag: keyof FeatureFlags, value: boolean): void {
   _flags[flag] = value;

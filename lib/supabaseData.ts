@@ -26,6 +26,9 @@ type DbCardRow = {
     notes?: string;
     search_url?: string;
     valuation_confidence?: number;
+    valuation_source?: CardInventory['valuationSource'];
+    valuation_timestamp?: string;
+    sales_data?: CardInventory['salesData'];
     tax_basis?: number;
     grading_fees?: number;
     shipping_fees?: number;
@@ -69,6 +72,9 @@ type DbTargetRow = {
     opportunity_score?: number;
     arbitrage_delta?: number;
     pricing_rationale?: string;
+    valuation_source?: TargetWatchlist['valuationSource'];
+    valuation_timestamp?: string;
+    sales_data?: TargetWatchlist['salesData'];
 };
 
 // Transform database row to CardInventory type
@@ -101,6 +107,9 @@ function dbToCard(row: DbCardRow): CardInventory {
         consignment,
         searchUrl: row.search_url,
         valuationConfidence: row.valuation_confidence,
+        valuationSource: row.valuation_source,
+        valuationTimestamp: row.valuation_timestamp,
+        salesData: row.sales_data || undefined,
         taxBasis: row.tax_basis,
         gradingFees: row.grading_fees,
         shippingFees: row.shipping_fees,
@@ -160,6 +169,9 @@ function cardToDb(card: CardInventory, userId: string): DbCardRow & { user_id: s
         notes: notesForDb,
         search_url: card.searchUrl,
         valuation_confidence: card.valuationConfidence,
+        valuation_source: card.valuationSource,
+        valuation_timestamp: card.valuationTimestamp,
+        sales_data: card.salesData,
         tax_basis: card.taxBasis,
         grading_fees: card.gradingFees,
         shipping_fees: card.shippingFees,
@@ -206,6 +218,9 @@ function dbToTarget(row: DbTargetRow): TargetWatchlist {
         opportunityScore: row.opportunity_score,
         arbitrageDelta: row.arbitrage_delta,
         pricingRationale: row.pricing_rationale,
+        valuationSource: row.valuation_source,
+        valuationTimestamp: row.valuation_timestamp,
+        salesData: row.sales_data || undefined,
     };
 }
 
@@ -228,6 +243,9 @@ function targetToDb(target: TargetWatchlist, userId: string): DbTargetRow & { us
         opportunity_score: target.opportunityScore,
         arbitrage_delta: target.arbitrageDelta,
         pricing_rationale: target.pricingRationale,
+        valuation_source: target.valuationSource,
+        valuation_timestamp: target.valuationTimestamp,
+        sales_data: target.salesData,
     };
 }
 

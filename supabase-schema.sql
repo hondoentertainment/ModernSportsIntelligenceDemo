@@ -54,6 +54,9 @@ CREATE TABLE IF NOT EXISTS cards (
   purchase_date DATE,
   current_value NUMERIC,
   last_valuation_date TIMESTAMP WITH TIME ZONE,
+  valuation_source TEXT CHECK (valuation_source IN ('ebay-api', 'historical-comps', 'gemini', 'fallback')),
+  valuation_timestamp TIMESTAMP WITH TIME ZONE,
+  sales_data JSONB DEFAULT '[]'::jsonb,
   image_url TEXT,
   notes TEXT,
   search_url TEXT,
@@ -75,6 +78,9 @@ CREATE TABLE IF NOT EXISTS targets (
   priority TEXT,
   target_price NUMERIC,
   current_market_price NUMERIC,
+  valuation_source TEXT CHECK (valuation_source IN ('ebay-api', 'historical-comps', 'gemini', 'fallback')),
+  valuation_timestamp TIMESTAMP WITH TIME ZONE,
+  sales_data JSONB DEFAULT '[]'::jsonb,
   sport TEXT,
   league TEXT,
   status TEXT DEFAULT 'active',
@@ -215,6 +221,9 @@ CREATE POLICY "Users can insert their own audit events" ON audit_events
 
 -- Backwards-compatible card and target enrichments
 ALTER TABLE cards ADD COLUMN IF NOT EXISTS valuation_confidence NUMERIC;
+ALTER TABLE cards ADD COLUMN IF NOT EXISTS valuation_source TEXT;
+ALTER TABLE cards ADD COLUMN IF NOT EXISTS valuation_timestamp TIMESTAMP WITH TIME ZONE;
+ALTER TABLE cards ADD COLUMN IF NOT EXISTS sales_data JSONB DEFAULT '[]'::jsonb;
 ALTER TABLE cards ADD COLUMN IF NOT EXISTS insurance_fees NUMERIC;
 ALTER TABLE cards ADD COLUMN IF NOT EXISTS sale_price NUMERIC;
 ALTER TABLE cards ADD COLUMN IF NOT EXISTS sale_date DATE;
@@ -237,7 +246,55 @@ ALTER TABLE cards ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE D
 
 ALTER TABLE targets ADD COLUMN IF NOT EXISTS opportunity_score NUMERIC;
 ALTER TABLE targets ADD COLUMN IF NOT EXISTS arbitrage_delta NUMERIC;
+ALTER TABLE targets ADD COLUMN IF NOT EXISTS valuation_source TEXT;
+ALTER TABLE targets ADD COLUMN IF NOT EXISTS valuation_timestamp TIMESTAMP WITH TIME ZONE;
+ALTER TABLE targets ADD COLUMN IF NOT EXISTS sales_data JSONB DEFAULT '[]'::jsonb;
 ALTER TABLE targets ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+
+UPDATE cards
+SET
+  valuation_source = COALESCE(
+    valuation_source,
+    CASE
+      WHEN valuation_confidence IS NOT NULL OR pricing_rationale IS NOT NULL THEN 'gemini'
+      ELSE 'fallback'
+    END
+  ),
+  valuation_timestamp = COALESCE(valuation_timestamp, last_valuation_date, updated_at, created_at, NOW())
+WHERE valuation_source IS NULL OR valuation_timestamp IS NULL;
+
+ALTER TABLE cards DROP CONSTRAINT IF EXISTS cards_valuation_source_check;
+ALTER TABLE cards
+  ADD CONSTRAINT cards_valuation_source_check
+  CHECK (
+    valuation_source IS NULL
+    OR valuation_source IN ('ebay-api', 'historical-comps', 'gemini', 'fallback')
+  );
+
+ALTER TABLE targets DROP CONSTRAINT IF EXISTS targets_valuation_source_check;
+ALTER TABLE targets
+  ADD CONSTRAINT targets_valuation_source_check
+  CHECK (
+    valuation_source IS NULL
+    OR valuation_source IN ('ebay-api', 'historical-comps', 'gemini', 'fallback')
+  );
+
+UPDATE targets
+SET
+  valuation_source = COALESCE(
+    valuation_source,
+    CASE
+      WHEN current_market_price IS NOT NULL OR pricing_rationale IS NOT NULL THEN 'gemini'
+      ELSE 'fallback'
+    END
+  ),
+  valuation_timestamp = COALESCE(valuation_timestamp, updated_at, created_at, NOW())
+WHERE valuation_source IS NULL OR valuation_timestamp IS NULL;
+
+CREATE INDEX IF NOT EXISTS cards_user_valuation_timestamp_idx
+  ON cards(user_id, valuation_timestamp DESC);
+CREATE INDEX IF NOT EXISTS targets_user_valuation_timestamp_idx
+  ON targets(user_id, valuation_timestamp DESC);
 
 CREATE UNIQUE INDEX IF NOT EXISTS cards_user_identity_idx
   ON cards(user_id, player, year, manufacturer, card_number, set_name);
@@ -288,6 +345,9 @@ SELECT
   c.grade,
   c.current_value,
   c.last_valuation_date,
+  c.valuation_source,
+  c.valuation_timestamp,
+  c.sales_data,
   c.image_url,
   c.search_url,
   c.pricing_rationale,

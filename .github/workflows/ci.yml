@@ -47,6 +47,9 @@ jobs:
       - name: Run tests with coverage
         run: npm run test:coverage
 
+      - name: Pricing truth guardrail
+        run: npm run guardrail:pricing-truth
+
       - name: Dependency audit (high severity)
         run: npm audit --audit-level=high
         continue-on-error: true
@@ -91,6 +94,9 @@ jobs:
 
       - name: Run smoke suite
         run: npm run test:e2e:smoke
+
+      - name: Run pricing truth coverage E2E
+        run: npm run test:e2e:pricing-truth
 
       - name: Upload Playwright report
         if: always()

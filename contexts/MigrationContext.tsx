@@ -1,13 +1,22 @@
 import React, { createContext, useContext, useCallback, useState, useEffect, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { isDemoMode } from '../lib/supabase';
-import { migrateToSupabase, needsMigration, MigrationResult, deniedMigrationResult } from '../lib/utils/migration';
+import {
+    migrateToSupabase,
+    needsMigration,
+    MigrationResult,
+    deniedMigrationResult,
+    buildMigrationMergeSummary,
+    type MigrationMergeSummary,
+} from '../lib/utils/migration';
 
 interface MigrationContextType {
     /** Whether migration is in progress */
     isMigrating: boolean;
     /** Last migration result (for toast/feedback) */
     lastResult: MigrationResult | null;
+    /** Last successful run merge/conflict tallies (plain object for UI) */
+    lastMergeSummary: MigrationMergeSummary | null;
     /** Manually trigger migration from localStorage to Supabase */
     triggerMigration: () => Promise<MigrationResult>;
     /** Whether migration is needed (local data exists, user is authenticated) */
@@ -26,6 +35,7 @@ export const MigrationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const { user } = useAuth();
     const [isMigrating, setIsMigrating] = useState(false);
     const [lastResult, setLastResult] = useState<MigrationResult | null>(null);
+    const [lastMergeSummary, setLastMergeSummary] = useState<MigrationMergeSummary | null>(null);
     // Prevent double-triggering when user object changes reference but userId stays the same
     const autoTriggeredForRef = useRef<string | null>(null);
 
@@ -37,9 +47,11 @@ export const MigrationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         }
         setIsMigrating(true);
         setLastResult(null);
+        setLastMergeSummary(null);
         try {
             const result = await migrateToSupabase(user.id);
             setLastResult(result);
+            setLastMergeSummary(buildMigrationMergeSummary(result));
             return result;
         } finally {
             setIsMigrating(false);
@@ -55,7 +67,9 @@ export const MigrationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }, [user, triggerMigration]);
 
     return (
-        <MigrationContext.Provider value={{ isMigrating, lastResult, triggerMigration, migrationAvailable }}>
+        <MigrationContext.Provider
+            value={{ isMigrating, lastResult, lastMergeSummary, triggerMigration, migrationAvailable }}
+        >
             {children}
         </MigrationContext.Provider>
     );

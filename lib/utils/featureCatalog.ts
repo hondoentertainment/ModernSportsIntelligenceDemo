@@ -1,5 +1,8 @@
-
 import { FEATURED_FEATURE_IDS, SEARCHABLE_FEATURE_IDS } from './productSurface';
+import type { Feature, FeatureStatus, FeatureTier } from './featureTypes';
+import { FEATURE_CATALOG_ROUTE_SUPPLEMENT } from './featureCatalogRouteSupplement';
+
+export type { Feature, FeatureStatus, FeatureTier } from './featureTypes';
 
 /**
  * Feature Catalog — master registry of platform features
@@ -7,36 +10,7 @@ import { FEATURED_FEATURE_IDS, SEARCHABLE_FEATURE_IDS } from './productSurface';
  * and GuidedTour components.
  */
 
-export type FeatureTier =
-  | 'Core'
-  | 'Differentiated'
-  | 'Industry-First'
-  | 'Competitive Moat'
-  | 'Bloomberg-Grade'
-  | 'Advanced Intelligence';
-
-export type FeatureStatus = 'live' | 'beta' | 'coming-soon';
-
-export interface Feature {
-  id: string;
-  name: string;
-  description: string;
-  tier: FeatureTier;
-  category: string;
-  status: FeatureStatus;
-  /** Route path if navigable, or null for modal-only features */
-  path: string | null;
-  /** Related modal component name (for reference) */
-  modalId?: string;
-  /** Lucide icon name */
-  icon: string;
-  /** Phase number from roadmap */
-  phase: number;
-  /** Keywords for search matching */
-  keywords: string[];
-}
-
-export const FEATURE_CATALOG: Feature[] = [
+const FEATURE_CATALOG_CORE: Feature[] = [
   // ─── Core (Phases 1-14) ─────────────────────────────────
   { id: 'dashboard', name: 'League Intelligence Dashboard', description: 'Dynamic NAV calculation, financial intelligence, and league HUD with P/L tracking.', tier: 'Core', category: 'Portfolio', status: 'live', path: '/', icon: 'LayoutDashboard', phase: 1, keywords: ['nav', 'portfolio', 'home', 'overview'] },
   { id: 'collection', name: 'Collection & Inventory', description: 'Automated ingestion, inventory management, sold vault, and grading support.', tier: 'Core', category: 'Portfolio', status: 'live', path: '/collection', icon: 'Layers', phase: 2, keywords: ['cards', 'inventory', 'vault'] },
@@ -105,7 +79,8 @@ export const FEATURE_CATALOG: Feature[] = [
   { id: 'multi-currency', name: 'Multi-Currency & International', description: 'Currency conversion, cross-border price comparison, and duty calculator.', tier: 'Advanced Intelligence', category: 'Finance', status: 'live', path: null, icon: 'Globe', phase: 60, keywords: ['currency', 'international', 'exchange', 'duty'] },
   { id: 'prospect-pipeline', name: 'Prospect Pipeline & Draft', description: 'Deep prospect tracking from minor leagues through draft to rookie year.', tier: 'Advanced Intelligence', category: 'Data', status: 'live', path: '/prospects', icon: 'GitPullRequest', phase: 61, keywords: ['prospect', 'draft', 'pipeline', 'stash'] },
   { id: 'goal-planner', name: 'Collection Goal Planner', description: 'Financial and collection targets with progress tracking and AI planning.', tier: 'Advanced Intelligence', category: 'Tools', status: 'live', path: null, icon: 'Target', phase: 62, keywords: ['goal', 'target', 'plan', 'milestone'] },
-  { id: 'notification-center', name: 'Notification Command Center', description: 'Unified notification hub with smart grouping, priority scoring, and digests.', tier: 'Advanced Intelligence', category: 'System', status: 'live', path: '/alerts', icon: 'Bell', phase: 63, keywords: ['notification', 'alert', 'inbox', 'digest'] },
+  { id: 'alerts', name: 'Portfolio Alerts', description: 'Alert rules and portfolio-triggered notifications.', tier: 'Advanced Intelligence', category: 'System', status: 'live', path: '/alerts', icon: 'Bell', phase: 63, keywords: ['alerts', 'rules', 'portfolio'] },
+  { id: 'notification-center', name: 'Notification Command Center', description: 'Unified notification hub with smart grouping, priority scoring, and digests.', tier: 'Advanced Intelligence', category: 'System', status: 'live', path: '/notification-center', icon: 'Inbox', phase: 63, keywords: ['notification', 'alert', 'inbox', 'digest', 'command center'] },
 
   // ─── Differentiated (Phases 64-68) ──────────────────────
   { id: 'stress-test', name: 'Monte Carlo Stress Testing', description: 'Financial-grade 1000+ simulation paths with VaR, drawdown, and scenario analysis.', tier: 'Differentiated', category: 'Analytics', status: 'live', path: null, icon: 'Activity', phase: 64, keywords: ['monte carlo', 'stress', 'var', 'risk', 'simulation'] },
@@ -315,6 +290,12 @@ export const FEATURE_CATALOG: Feature[] = [
   { id: 'liquidity-reserve-calculator', name: 'Liquidity Reserve Calculator', description: 'Calculate recommended liquidity reserves for portfolios.', tier: 'Industry-First', category: 'Portfolio', status: 'live', path: '/liquidity-reserve-calculator', icon: 'Droplets', phase: 286, keywords: ['liquidity', 'reserve', 'cash', 'buffer'] },
   { id: 'cross-sport-momentum', name: 'Cross-Sport Momentum', description: 'Cross-sport momentum and spillover effects across leagues.', tier: 'Industry-First', category: 'Analytics', status: 'live', path: '/cross-sport-momentum', icon: 'Activity', phase: 287, keywords: ['cross-sport', 'momentum', 'spillover'] },
   { id: 'agent-confidence-history', name: 'Agent Confidence History', description: 'Historical view of agent confidence and calibration over time.', tier: 'Industry-First', category: 'AI', status: 'live', path: '/agent-confidence-history', icon: 'Brain', phase: 288, keywords: ['agent', 'confidence', 'calibration', 'history'] },
+];
+
+/** Core + every App.tsx route has a matching catalog row with id + status (see featureCatalogRouteSupplement). */
+export const FEATURE_CATALOG: Feature[] = [
+  ...FEATURE_CATALOG_CORE,
+  ...FEATURE_CATALOG_ROUTE_SUPPLEMENT,
 ];
 
 /** Tier display order and color configuration */

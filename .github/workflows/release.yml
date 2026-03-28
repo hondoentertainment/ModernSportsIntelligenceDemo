@@ -66,7 +66,7 @@ jobs:
           PREV="${PREV_TAG}"
           CURRENT="HEAD"
 
-          echo "# Release ${{ env.TAG }}" > changelog.md
+          echo "# Release ${TAG}" > changelog.md
           echo "" >> changelog.md
           echo "**Date:** $(date -u '+%Y-%m-%d')" >> changelog.md
           echo "" >> changelog.md
@@ -189,6 +189,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Pricing truth guardrail
+        run: npm run guardrail:pricing-truth
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run pricing truth coverage E2E
+        run: npm run test:e2e:pricing-truth
 
       - name: Build production bundle
         run: npm run build

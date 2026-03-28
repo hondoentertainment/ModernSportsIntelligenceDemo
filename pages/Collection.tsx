@@ -19,6 +19,7 @@ import {
   Star,
   Share2,
   BriefcaseBusiness,
+  AlertTriangle,
 } from 'lucide-react';
 import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
 import { Link } from 'react-router-dom';
@@ -26,6 +27,7 @@ import { getEbayCardPrice } from '../lib/utils/gemini';
 import { logger } from '../lib/logger';
 import { LEAGUES } from '../constants';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import { syncPortfolio } from '../lib/utils/marketSync';
 import { useFavorites } from '../lib/utils/useFavorites';
 import AddTargetModal from '../components/AddTargetModal';
 import AddAssetModal from '../components/AddAssetModal';
@@ -39,7 +41,6 @@ import GradingAuditModal from '../components/GradingAuditModal';
 import { LiquidityBadge } from '../components/LiquidityBadge';
 import { ExitStrategyModal } from '../components/ExitStrategyModal';
 import ConsignmentModal from '../components/ConsignmentModal';
-import ConfirmDialog from '../components/ConfirmDialog';
 import CardGridItem from '../components/collection/CardGridItem';
 import VirtualizedGrid from '../components/collection/VirtualizedGrid';
 import { LiquidityService } from '../lib/analytics/liquidityService';
@@ -47,6 +48,16 @@ import GradingPremiumTool from '../components/GradingPremiumTool';
 import ShareAlphaModal from '../components/ShareAlphaModal';
 import { fetchPublicProfile } from '../lib/social/socialService';
 import { useAuth } from '../contexts/AuthContext';
+import { computePortfolioStats } from '../lib/portfolioUtils';
+import { getStaleValuationLabel } from '../lib/utils/valuationFreshness';
+import {
+  applyPricingAnalysisToCard,
+  computeFreshVerifiableCoverage,
+  FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
+  getValuationSourceChipForCard,
+} from '../lib/utils/valuationProvenance';
+import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAlerts';
+import { showToast } from '../lib/utils/toast';
 
 type SortField = 'player' | 'value' | 'purchasePrice' | 'date' | 'roi' | 'league';
 type SortDir = 'asc' | 'desc';
@@ -79,7 +90,8 @@ const Collection: React.FC = () => {
     isMigrating,
     loading,
     syncStatus,
-    lastSyncError
+    lastSyncError,
+    persistSyncToCloud,
   } = useSupabaseInventory();
 
   // Hydrate local inventory with Scarcity Data if missing
@@ -194,17 +206,28 @@ const Collection: React.FC = () => {
     const analysis = await getEbayCardPrice(card);
     if (analysis) {
       setInventory(prev => prev.map(c =>
-        c.id === card.id
-          ? {
-            ...c,
-            currentValue: analysis.estimatedValue,
-            lastValuationDate: analysis.lastUpdated,
-            searchUrl: analysis.searchUrl,
-            pricingRationale: analysis.rationale
-          }
-          : c
+        c.id === card.id ? applyPricingAnalysisToCard(c, analysis) : c
       ));
     }
+    setIsPricing(null);
+  };
+
+  const handleRefreshVerifiablePricing = async () => {
+    const activeInventory = inventory.filter(card => card.status !== 'sold');
+    if (activeInventory.length === 0) return;
+    setIsPricing('__bulk_refresh__');
+    const { inventory: refreshedActive } = await syncPortfolio(
+      activeInventory,
+      undefined,
+      { prioritizeVerifiableRefresh: true },
+    );
+    const refreshedMap = new Map(refreshedActive.map(card => [card.id, card] as const));
+    const nextInventory = inventory.map(card => refreshedMap.get(card.id) || card);
+    setInventory(nextInventory);
+    await persistSyncToCloud(nextInventory);
+    showToast('success', 'Refreshed pricing with stale/non-verifiable assets prioritized.', {
+      dedupeKey: 'refresh_verifiable_pricing',
+    });
     setIsPricing(null);
   };
 
@@ -284,15 +307,48 @@ const Collection: React.FC = () => {
   }, [inventory, searchQuery, filterLeague, activeTab]);
 
   const stats = useMemo(() => {
-    const totalValue = inventory.reduce((sum, c) => sum + (c.currentValue || 0), 0);
-    const totalCost = inventory.reduce((sum, c) => sum + (c.purchasePrice || 0), 0);
+    const p = computePortfolioStats(inventory, { excludeSold: true });
     return {
-      totalValue,
-      totalCost,
-      cardCount: inventory.length,
-      profit: totalValue - totalCost
+      totalValue: p.nav,
+      totalCost: p.totalCost,
+      cardCount: p.cardCount,
+      profit: p.unrealizedPl,
     };
   }, [inventory]);
+
+  const freshVerifiedCoverage = useMemo(
+    () => computeFreshVerifiableCoverage(inventory.filter(card => card.status !== 'sold')),
+    [inventory],
+  );
+  const hasCoverageGap =
+    freshVerifiedCoverage.total > 0 &&
+    freshVerifiedCoverage.coveragePct < FRESH_VERIFIABLE_COVERAGE_TARGET_PCT;
+
+  useEffect(() => {
+    const transition = trackCoverageHealthTransition(
+      'inventory',
+      freshVerifiedCoverage.coveragePct,
+      freshVerifiedCoverage.total,
+      FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
+    );
+
+    if (transition.event === 'degraded') {
+      showToast(
+        'warning',
+        `Pricing truth degraded: ${freshVerifiedCoverage.coveragePct}% fresh verifiable coverage in inventory.`,
+        { dedupeKey: 'coverage_inventory_degraded' },
+      );
+      return;
+    }
+
+    if (transition.event === 'recovered') {
+      showToast(
+        'success',
+        `Pricing truth recovered: inventory coverage returned to ${freshVerifiedCoverage.coveragePct}%.`,
+        { dedupeKey: 'coverage_inventory_recovered' },
+      );
+    }
+  }, [freshVerifiedCoverage.coveragePct, freshVerifiedCoverage.total]);
 
   return (
     <div className="space-y-12 animate-in fade-in duration-700 pb-20 relative">
@@ -323,6 +379,37 @@ const Collection: React.FC = () => {
             </span>
           </div>
           <p className="mt-2 text-amber-200/90">{lastSyncError}</p>
+        </section>
+      )}
+      {hasCoverageGap && (
+        <section className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-sm text-amber-100">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-2">
+              <AlertTriangle size={16} className="mt-0.5 shrink-0 text-amber-300" />
+              <div>
+                <p className="font-semibold">Pricing truth coverage is below SLA.</p>
+                <p className="mt-1 text-amber-200/90">
+                  Fresh verifiable valuations are at {freshVerifiedCoverage.coveragePct}% ({freshVerifiedCoverage.covered}/{freshVerifiedCoverage.total} active assets). Target is {FRESH_VERIFIABLE_COVERAGE_TARGET_PCT}%.
+                </p>
+              </div>
+            </div>
+            <div className="shrink-0 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleRefreshVerifiablePricing}
+                disabled={isPricing === '__bulk_refresh__'}
+                className="rounded-xl border border-amber-400/40 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-amber-100 hover:bg-amber-400/10 disabled:opacity-60"
+              >
+                {isPricing === '__bulk_refresh__' ? 'Refreshing…' : 'Refresh Verifiable Pricing'}
+              </button>
+              <Link
+                to="/favorites"
+                className="rounded-xl border border-amber-400/40 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-amber-100 hover:bg-amber-400/10"
+              >
+                Sync Watchlist
+              </Link>
+            </div>
+          </div>
         </section>
       )}
 
@@ -392,12 +479,19 @@ const Collection: React.FC = () => {
       </div>
 
       {/* Financial Quick-View */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <section className="grid grid-cols-2 lg:grid-cols-5 gap-6">
         {[
           { label: 'Portfolio NAV', val: stats.totalValue, color: 'text-brand-lime', isCurrency: true },
           { label: 'Capital Invested', val: stats.totalCost, color: 'text-white', isCurrency: true },
           { label: 'Unrealized G/L', val: stats.profit, color: stats.profit >= 0 ? 'text-brand-green' : 'text-brand-red', isCurrency: true, showSign: true },
-          { label: 'Total Holdings', val: stats.cardCount, color: 'text-brand-muted', suffix: ' Units' }
+          { label: 'Total Holdings', val: stats.cardCount, color: 'text-brand-muted', suffix: ' Units' },
+          {
+            label: 'Verified Fresh',
+            val: freshVerifiedCoverage.coveragePct,
+            color: freshVerifiedCoverage.coveragePct >= FRESH_VERIFIABLE_COVERAGE_TARGET_PCT ? 'text-brand-green' : 'text-amber-300',
+            suffix: '%',
+            meta: `${freshVerifiedCoverage.covered}/${freshVerifiedCoverage.total}`,
+          },
         ].map((s, i) => (
           <div key={i} className="bg-brand-slate border border-slate-800 p-6 rounded-[1.5rem] relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-24 h-24 bg-brand-lime/5 blur-3xl rounded-full group-hover:bg-brand-lime/10 transition-all"></div>
@@ -407,6 +501,9 @@ const Collection: React.FC = () => {
               {s.isCurrency ? `$${Math.round(s.val).toLocaleString()}` : s.val}
               {s.suffix}
             </p>
+            {s.meta && (
+              <p className="relative z-10 mt-2 text-[10px] font-black uppercase tracking-widest text-brand-muted">{s.meta}</p>
+            )}
           </div>
         ))}
       </section>
@@ -607,7 +704,19 @@ const Collection: React.FC = () => {
                           <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">{card.year} {card.manufacturer}</span>
                         </td>
                         <td className="px-8 py-4 text-right font-mono text-sm">${card.purchasePrice.toLocaleString()}</td>
-                        <td className="px-8 py-4 text-right font-mono text-sm text-brand-lime">${card.currentValue?.toLocaleString() || '—'}</td>
+                        <td className="px-8 py-4 text-right">
+                          <p className="font-mono text-sm text-brand-lime">${card.currentValue?.toLocaleString() || '—'}</p>
+                          <div className="mt-2 flex justify-end gap-1.5">
+                            <span className={`inline-flex items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider ${getValuationSourceChipForCard(card).className}`}>
+                              {getValuationSourceChipForCard(card).label}
+                            </span>
+                            {getStaleValuationLabel(card.lastValuationDate) && (
+                              <span className="inline-flex items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-500 bg-brand-charcoal/35 border border-slate-700/45">
+                                {getStaleValuationLabel(card.lastValuationDate)}
+                              </span>
+                            )}
+                          </div>
+                        </td>
                         <td className="px-8 py-4 text-center text-[10px] font-black uppercase">{card.isGraded ? `${card.gradingCompany} ${card.grade}` : 'Raw'}</td>
                         <td className="px-8 py-4 text-center">
                           <LiquidityBadge score={card.liquidityScore || LiquidityService.calculateLiquidityScore(card)} size="sm" />
@@ -831,6 +940,10 @@ const Collection: React.FC = () => {
           inventory={inventory}
           onConsignmentStarted={async (cardId, patch) => {
             await updateCard(cardId, patch);
+            setConsignmentCard(null);
+          }}
+          onConsignmentEnded={async (cardId) => {
+            await updateCard(cardId, { status: 'active', consignment: undefined });
             setConsignmentCard(null);
           }}
         />

@@ -6,6 +6,9 @@ import {
     getMigrationConflictPolicy,
     setMigrationConflictPolicy,
     type MigrationConflictPolicy,
+    buildMigrationMergeSummary,
+    formatMigrationMergeToast,
+    formatMigrationMergeLine,
 } from '../lib/utils/migration';
 import { MIGRATION_CONFLICT_POLICY_OPTIONS } from '../lib/utils/migrationPolicyOptions';
 
@@ -14,7 +17,7 @@ import { MIGRATION_CONFLICT_POLICY_OPTIONS } from '../lib/utils/migrationPolicyO
  * Provides conflict policy, "Sync Now" manual trigger, and migration status.
  */
 const MigrationBanner: React.FC = () => {
-    const { isMigrating, migrationAvailable, triggerMigration, lastResult } = useMigration();
+    const { isMigrating, migrationAvailable, triggerMigration, lastResult, lastMergeSummary } = useMigration();
     const { addToast } = useToast();
     const [policy, setPolicy] = useState<MigrationConflictPolicy>(() => getMigrationConflictPolicy());
 
@@ -29,12 +32,11 @@ const MigrationBanner: React.FC = () => {
         try {
             const result = await triggerMigration();
             if (result.success) {
-                const parts = [`${result.cardsMigrated} cards`, `${result.targetsMigrated} targets`];
-                const skip =
-                    result.cardsSkippedConflicts + result.targetsSkippedConflicts > 0
-                        ? ` (${result.cardsSkippedConflicts + result.targetsSkippedConflicts} cloud rows kept per policy)`
-                        : '';
-                addToast('success', `Cloud sync complete: ${parts.join(', ')} written.${skip}`);
+                const summary = buildMigrationMergeSummary(result);
+                addToast(
+                    'success',
+                    summary ? formatMigrationMergeToast(summary) : 'Uplink complete: portfolio synchronized.'
+                );
                 setTimeout(() => window.location.reload(), 1500);
             } else if (result.errors.length > 0) {
                 addToast('error', result.errors[0] || 'Sync failed. Please check your uplink.');
@@ -73,6 +75,11 @@ const MigrationBanner: React.FC = () => {
                               ? 'Your portfolio is now persistent across all platforms.'
                               : 'Bridge local data to your account for multi-device intelligence.'}
                     </p>
+                    {lastResult?.success && lastMergeSummary && (
+                        <p className="text-[10px] text-slate-400 font-semibold normal-case tracking-normal mt-1.5 leading-snug border-l-2 border-brand-teal/40 pl-2">
+                            {formatMigrationMergeLine(lastMergeSummary)}
+                        </p>
+                    )}
                     {migrationAvailable && !isMigrating && (
                         <div className="mt-2 flex flex-col gap-1 max-w-md">
                             <label htmlFor="msi-migration-policy" className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">

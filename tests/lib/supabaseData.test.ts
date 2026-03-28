@@ -39,6 +39,11 @@ describe('supabaseData', () => {
     isGraded: false,
     purchasePrice: 100,
     purchaseDate: '2024-01-01',
+    valuationSource: 'historical-comps',
+    valuationTimestamp: '2024-01-02T12:00:00.000Z',
+    salesData: [
+      { title: 'Comp A', price: 110, condition: 'Near Mint', soldAt: '2024-01-01T00:00:00.000Z' },
+    ],
   };
 
   const mockTarget: TargetWatchlist = {
@@ -51,6 +56,11 @@ describe('supabaseData', () => {
     league: 'MLB',
     status: 'active',
     createdAt: '2024-01-01',
+    valuationSource: 'gemini',
+    valuationTimestamp: '2024-01-02T12:00:00.000Z',
+    salesData: [
+      { title: 'Comp T', price: 45, condition: 'Raw', soldAt: '2024-01-01T00:00:00.000Z' },
+    ],
   };
 
   beforeEach(() => {
@@ -73,6 +83,9 @@ describe('supabaseData', () => {
         is_graded: false,
         purchase_price: 100,
         purchase_date: '2024-01-01',
+        valuation_source: 'historical-comps',
+        valuation_timestamp: '2024-01-02T12:00:00.000Z',
+        sales_data: [{ title: 'Comp A', price: 110, condition: 'Near Mint', soldAt: '2024-01-01T00:00:00.000Z' }],
         created_at: '2024-01-01',
       }];
 
@@ -89,6 +102,9 @@ describe('supabaseData', () => {
       const cards = await supabaseData.fetchCards(mockUserId);
       expect(cards).toHaveLength(1);
       expect(cards[0].player).toBe('Test Player');
+      expect(cards[0].valuationSource).toBe('historical-comps');
+      expect(cards[0].valuationTimestamp).toBe('2024-01-02T12:00:00.000Z');
+      expect(cards[0].salesData?.[0]?.title).toBe('Comp A');
       expect(supabase.from).toHaveBeenCalledWith('cards');
     });
 
@@ -118,6 +134,14 @@ describe('supabaseData', () => {
       const result = await supabaseData.upsertCard(mockCard, mockUserId);
       expect(result).toBe(true);
       expect(supabase.from).toHaveBeenCalledWith('cards');
+      expect(mockUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          valuation_source: 'historical-comps',
+          valuation_timestamp: '2024-01-02T12:00:00.000Z',
+          sales_data: expect.any(Array),
+        }),
+        { onConflict: 'id' }
+      );
     });
 
     it('returns false on error', async () => {
@@ -190,6 +214,9 @@ describe('supabaseData', () => {
         sport: 'Baseball',
         league: 'MLB',
         status: 'active',
+        valuation_source: 'gemini',
+        valuation_timestamp: '2024-01-02T12:00:00.000Z',
+        sales_data: [{ title: 'Comp T', price: 45, condition: 'Raw', soldAt: '2024-01-01T00:00:00.000Z' }],
         created_at: '2024-01-01',
       }];
 
@@ -206,6 +233,9 @@ describe('supabaseData', () => {
       const targets = await supabaseData.fetchTargets(mockUserId);
       expect(targets).toHaveLength(1);
       expect(targets[0].player).toBe('Target Player');
+      expect(targets[0].valuationSource).toBe('gemini');
+      expect(targets[0].valuationTimestamp).toBe('2024-01-02T12:00:00.000Z');
+      expect(targets[0].salesData?.[0]?.title).toBe('Comp T');
     });
 
     it('returns empty array on error', async () => {
@@ -233,6 +263,14 @@ describe('supabaseData', () => {
 
       const result = await supabaseData.upsertTarget(mockTarget, mockUserId);
       expect(result).toBe(true);
+      expect(mockUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          valuation_source: 'gemini',
+          valuation_timestamp: '2024-01-02T12:00:00.000Z',
+          sales_data: expect.any(Array),
+        }),
+        { onConflict: 'id' }
+      );
     });
 
     it('returns false on error', async () => {

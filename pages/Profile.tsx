@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { store } from '../lib/dal/syncStore';
 import { User, Settings, Heart, History, Shield, LogOut, Save, Eye, Check, Zap, Share2, Copy, Globe, Smartphone, CreditCard, ChevronRight, Cloud, Database, RefreshCw } from 'lucide-react';
 import { useMigration } from '../contexts/MigrationContext';
+import { useToast } from '../contexts/ToastContext';
 import { useAuth } from '../contexts/AuthContext';
 import { MOCK_TEAMS, SPORTS } from '../constants';
 import { requestNotificationPermission, sendLocalNotification } from '../lib/utils/notifications';
@@ -11,6 +12,9 @@ import {
   getMigrationConflictPolicy,
   setMigrationConflictPolicy,
   type MigrationConflictPolicy,
+  buildMigrationMergeSummary,
+  formatMigrationMergeToast,
+  formatMigrationMergeLine,
 } from '../lib/utils/migration';
 import { MIGRATION_CONFLICT_POLICY_OPTIONS } from '../lib/utils/migrationPolicyOptions';
 import { Link } from 'react-router-dom';
@@ -45,7 +49,8 @@ const defaultSettings: UserSettings = {
 
 const Profile: React.FC = () => {
   const { user, signOut, isDemoMode } = useAuth();
-  const { triggerMigration, isMigrating } = useMigration();
+  const { triggerMigration, isMigrating, lastResult, lastMergeSummary } = useMigration();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [settings, setSettings] = useState<UserSettings>(() => {
     try {
@@ -375,6 +380,11 @@ const Profile: React.FC = () => {
                 <span className="text-[10px] font-black text-brand-muted uppercase tracking-wider">Local: Cache Active</span>
               </div>
             </div>
+            {lastResult?.success && lastMergeSummary && (
+              <p className="text-[10px] text-slate-400 font-semibold leading-snug border-l-2 border-brand-teal/40 pl-2 pt-1 text-left mx-auto md:mx-0 max-w-xl">
+                Last uplink: {formatMigrationMergeLine(lastMergeSummary)}
+              </p>
+            )}
           </div>
           <div className="flex flex-col gap-3 w-full md:w-auto md:min-w-[14rem]">
             <div className="flex flex-col gap-1 w-full">
@@ -406,9 +416,20 @@ const Profile: React.FC = () => {
             </div>
             <button
               onClick={async () => {
-                const result = await triggerMigration();
-                if (result.success) {
-                  window.location.reload();
+                try {
+                  const result = await triggerMigration();
+                  if (result.success) {
+                    const summary = buildMigrationMergeSummary(result);
+                    addToast(
+                      'success',
+                      summary ? formatMigrationMergeToast(summary) : 'Uplink complete: portfolio synchronized.'
+                    );
+                    setTimeout(() => window.location.reload(), 1500);
+                  } else if (result.errors.length > 0) {
+                    addToast('error', result.errors[0] || 'Sync failed. Verify uplink credentials.');
+                  }
+                } catch {
+                  addToast('error', 'Uplink failure. Retry when connectivity stabilizes.');
                 }
               }}
               disabled={isMigrating || !user}

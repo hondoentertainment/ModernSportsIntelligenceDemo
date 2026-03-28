@@ -201,6 +201,60 @@ describe('marketSync', () => {
       expect(recordMetric).toHaveBeenCalled();
       expect(incrementCounter).toHaveBeenCalled();
     });
+
+    it('prioritizes stale/non-verifiable cards when requested', async () => {
+      const inventory: CardInventory[] = [
+        {
+          id: 'fresh-verifiable',
+          player: 'Fresh Verifiable',
+          year: 2024,
+          manufacturer: 'Topps',
+          cardNumber: '1',
+          set: 'Series 1',
+          sport: 'Baseball',
+          league: 'MLB',
+          isAutographed: false,
+          condition: 'Mint',
+          isGraded: false,
+          purchasePrice: 100,
+          purchaseDate: '2024-01-01',
+          valuationSource: 'ebay-api',
+          valuationTimestamp: '2026-03-26T10:00:00.000Z',
+        },
+        {
+          id: 'needs-refresh',
+          player: 'Needs Refresh',
+          year: 2024,
+          manufacturer: 'Topps',
+          cardNumber: '2',
+          set: 'Series 1',
+          sport: 'Baseball',
+          league: 'MLB',
+          isAutographed: false,
+          condition: 'Mint',
+          isGraded: false,
+          purchasePrice: 100,
+          purchaseDate: '2024-01-01',
+          valuationSource: 'gemini',
+          valuationTimestamp: '2026-03-10T10:00:00.000Z',
+        },
+      ];
+
+      vi.mocked(getEbayCardPrice).mockResolvedValue({
+        estimatedValue: 150,
+        low: 140,
+        high: 160,
+        avg: 150,
+        confidence: 0.9,
+        salesCount: 10,
+        lastUpdated: '2026-03-27T10:00:00.000Z',
+        rationale: 'Test',
+      });
+
+      await syncPortfolio(inventory, undefined, { prioritizeVerifiableRefresh: true });
+      const callOrder = vi.mocked(getEbayCardPrice).mock.calls.map(call => call[0].id);
+      expect(callOrder[0]).toBe('needs-refresh');
+    });
   });
 
   describe('syncWatchlistPrices', () => {
@@ -323,6 +377,50 @@ describe('marketSync', () => {
       const result = await syncWatchlistPrices(targets);
       expect(result.failedCount).toBeGreaterThanOrEqual(1);
       expect(showToast).toHaveBeenCalled();
+    });
+
+    it('prioritizes stale/non-verifiable targets when requested', async () => {
+      const targets: TargetWatchlist[] = [
+        {
+          id: 'target-fresh',
+          player: 'Fresh',
+          cardDescription: 'Card F',
+          priority: 'High',
+          targetPrice: 100,
+          sport: 'Baseball',
+          league: 'MLB',
+          status: 'active',
+          createdAt: '2024-01-01',
+          valuationSource: 'ebay-api',
+          valuationTimestamp: '2026-03-26T10:00:00.000Z',
+        },
+        {
+          id: 'target-stale',
+          player: 'Stale',
+          cardDescription: 'Card S',
+          priority: 'High',
+          targetPrice: 100,
+          sport: 'Baseball',
+          league: 'MLB',
+          status: 'active',
+          createdAt: '2024-01-01',
+          valuationSource: 'gemini',
+          valuationTimestamp: '2026-03-10T10:00:00.000Z',
+        },
+      ];
+      vi.mocked(getWatchlistItemPrice).mockResolvedValue({
+        estimatedValue: 90,
+        low: 80,
+        high: 100,
+        avg: 90,
+        confidence: 0.9,
+        salesCount: 5,
+        lastUpdated: '2026-03-27T10:00:00.000Z',
+      });
+
+      await syncWatchlistPrices(targets, undefined, { prioritizeVerifiableRefresh: true });
+      const callOrder = vi.mocked(getWatchlistItemPrice).mock.calls.map(call => call[0].id);
+      expect(callOrder[0]).toBe('target-stale');
     });
   });
 

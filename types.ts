@@ -156,7 +156,7 @@ export interface MLBPlayer {
   image?: string;
 }
 
-export type ValuationSource = 'ebay-api' | 'gemini' | 'fallback';
+export type ValuationSource = 'ebay-api' | 'historical-comps' | 'gemini' | 'fallback';
 
 export interface MarketComp {
   itemId?: string;

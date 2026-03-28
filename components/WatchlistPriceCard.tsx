@@ -12,6 +12,8 @@ import {
 import { TargetWatchlist } from '../types.ts';
 import Sparkline from './Sparkline.tsx';
 import { getSparklineData, getPriceTrend } from '../lib/analytics/priceHistory.ts';
+import { getStaleValuationLabel } from '../lib/utils/valuationFreshness.ts';
+import { getValuationSourceChipForTarget } from '../lib/utils/valuationProvenance.ts';
 
 interface WatchlistPriceCardProps {
     target: TargetWatchlist;
@@ -30,6 +32,8 @@ const WatchlistPriceCard: React.FC<WatchlistPriceCardProps> = ({ target, onDelet
     const sparklineData = getSparklineData(`target_${target.id}`);
     const trend = getPriceTrend(`target_${target.id}`);
     const priorityStyle = PRIORITY_STYLES[target.priority] || PRIORITY_STYLES.Medium;
+    const valuationChip = getValuationSourceChipForTarget(target);
+    const staleLabel = getStaleValuationLabel(target.valuationTimestamp);
 
     // Calculate how close the market price is to the target
     const proximityPercent = target.currentMarketPrice != null
@@ -111,6 +115,16 @@ const WatchlistPriceCard: React.FC<WatchlistPriceCardProps> = ({ target, onDelet
                         <p className={`text-lg font-black ${target.currentMarketPrice != null ? (priceHit ? 'text-green-400' : 'text-white') : 'text-slate-600'}`}>
                             {target.currentMarketPrice != null ? `$${target.currentMarketPrice.toLocaleString()}` : '—'}
                         </p>
+                        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                            <span className={`inline-flex items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider ${valuationChip.className}`}>
+                                {valuationChip.label}
+                            </span>
+                            {staleLabel && (
+                                <span className="inline-flex items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-500 bg-brand-charcoal/35 border border-slate-700/45">
+                                    {staleLabel}
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
 

@@ -5,6 +5,11 @@ import { getEbayCardPrice, getWatchlistItemPrice } from './gemini.ts';
 import { recordBatchSnapshots } from '../analytics/priceHistory.ts';
 import { showToast } from './toast.ts';
 import { incrementCounter, recordMetric } from './telemetryService.ts';
+import {
+    applyPricingAnalysisToCard,
+    applyPricingAnalysisToTarget,
+    sortByVerifiableRefreshPriority,
+} from './valuationProvenance';
 
 export interface SyncProgress {
     total: number;
@@ -66,13 +71,7 @@ async function syncCardValue(card: CardInventory): Promise<CardInventory> {
         const analysis = await getEbayCardPrice(card);
 
         if (analysis) {
-            return {
-                ...card,
-                currentValue: analysis.estimatedValue,
-                lastValuationDate: analysis.lastUpdated,
-                valuationConfidence: analysis.confidence,
-                pricingRationale: analysis.rationale
-            };
+            return applyPricingAnalysisToCard(card, analysis);
         }
 
         return card;
@@ -87,7 +86,8 @@ async function syncCardValue(card: CardInventory): Promise<CardInventory> {
  */
 export async function syncPortfolio(
     inventory: CardInventory[],
-    onProgress?: (_progress: SyncProgress) => void
+    onProgress?: (_progress: SyncProgress) => void,
+    options?: { prioritizeVerifiableRefresh?: boolean }
 ): Promise<{ inventory: CardInventory[]; result: SyncResult }> {
     const startTime = Date.now();
     const errors: string[] = [];
@@ -102,8 +102,11 @@ export async function syncPortfolio(
 
     if (onProgress) onProgress(progress);
 
-    const updatedInventory = await throttledParallel(
-        inventory,
+    const inventoryByPriority = options?.prioritizeVerifiableRefresh
+        ? sortByVerifiableRefreshPriority(inventory)
+        : inventory;
+    const updatedByPriority = await throttledParallel(
+        inventoryByPriority,
         async (card) => {
             const updated = await syncCardValue(card);
             if (updated.currentValue === card.currentValue && !updated.lastValuationDate) {
@@ -117,6 +120,8 @@ export async function syncPortfolio(
             if (onProgress) onProgress({ ...progress });
         }
     );
+    const updatedInventoryMap = new Map(updatedByPriority.map(card => [card.id, card] as const));
+    const updatedInventory = inventory.map(card => updatedInventoryMap.get(card.id) || card);
 
     const endTime = Date.now();
     const syncTime = new Date().toISOString();
@@ -221,24 +226,23 @@ export interface WatchlistSyncResult {
  */
 export async function syncWatchlistPrices(
     targets: TargetWatchlist[],
-    onProgress?: (_current: number, _total: number) => void
+    onProgress?: (_current: number, _total: number) => void,
+    options?: { prioritizeVerifiableRefresh?: boolean }
 ): Promise<WatchlistSyncResult> {
     const startTime = Date.now();
     const activeTargets = targets.filter(t => t.status === 'active');
+    const prioritizedActiveTargets = options?.prioritizeVerifiableRefresh
+        ? sortByVerifiableRefreshPriority(activeTargets)
+        : activeTargets;
     let failedCount = 0;
 
     const updatedTargets = await throttledParallel(
-        activeTargets,
+        prioritizedActiveTargets,
         async (target) => {
             try {
                 const analysis = await getWatchlistItemPrice(target);
                 if (analysis) {
-                    return {
-                        ...target,
-                        currentMarketPrice: analysis.estimatedValue,
-                        searchUrl: analysis.searchUrl,
-                        pricingRationale: analysis.rationale
-                    };
+                    return applyPricingAnalysisToTarget(target, analysis);
                 }
                 failedCount++;
                 return target;

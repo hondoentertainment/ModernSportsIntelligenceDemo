@@ -27,7 +27,8 @@ import { LiquidityBadge } from '../LiquidityBadge';
 import { OpportunityBadge } from '../OpportunityBadge';
 import Sparkline from '../Sparkline';
 import { LiquidityService } from '../../lib/analytics/liquidityService';
-import { getValuationSourceChip } from '../../lib/featureFlags';
+import { getStaleValuationLabel, isThinLiquidityScore } from '../../lib/utils/valuationFreshness';
+import { getValuationSourceChipForCard } from '../../lib/utils/valuationProvenance';
 
 export interface CardGridItemProps {
   card: CardInventory;
@@ -93,7 +94,11 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
 }) => {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
-  const valuationChip = getValuationSourceChip();
+  const valuationChip = getValuationSourceChipForCard(card);
+  const staleLabel = getStaleValuationLabel(card.lastValuationDate);
+  const showThinMarket = isThinLiquidityScore(card.liquidityScore);
+  const mutedChipClass =
+    'inline-flex min-h-[26px] items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-500 bg-brand-charcoal/35 border border-slate-700/45';
 
   return (
     <div
@@ -238,11 +243,13 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
                 <OpportunityBadge asset={card} size="sm" showLabel={false} />
               )}
             </div>
-            <span
-              className={`mt-2 inline-flex min-h-[26px] items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider ${valuationChip.className}`}
-            >
-              {valuationChip.label}
-            </span>
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              <span className={`inline-flex min-h-[26px] items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider ${valuationChip.className}`}>
+                {valuationChip.label}
+              </span>
+              {staleLabel && <span className={mutedChipClass}>{staleLabel}</span>}
+              {showThinMarket && <span className={mutedChipClass}>Thin market</span>}
+            </div>
           </div>
         </div>
         {card.pricingRationale && (

@@ -79,6 +79,7 @@ import FiscalHealthWidget from '../components/FiscalHealthWidget.tsx';
 import StrategyMap from '../components/StrategyMap.tsx';
 import ArbitrageSwarmDashboard from '../components/ArbitrageSwarmDashboard.tsx';
 import DashboardFeatureWidgets from '../components/DashboardFeatureWidgets.tsx';
+import PricingTruthHealthPanel from '../components/PricingTruthHealthPanel.tsx';
 
 
 const Dashboard: React.FC = () => {
@@ -575,6 +576,7 @@ const Dashboard: React.FC = () => {
 
           {/* Intelligence Signals - Feature Metric Widgets */}
           <DashboardFeatureWidgets />
+          <PricingTruthHealthPanel inventory={inventory} />
 
           {/* Strategic Signals Feed */}
           <div className="reveal-section bg-brand-charcoal/50 border border-slate-800 rounded-[2.5rem] p-8 overflow-hidden relative shadow-2xl shadow-brand-blue/5 animate-in slide-in-from-bottom-8 duration-700 order-1 lg:order-3" style={{ animationDelay: '400ms' }}>

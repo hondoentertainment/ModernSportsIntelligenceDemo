@@ -102,6 +102,30 @@ describe('valuationQuality', () => {
       expect(quality.qualityScore).toBeGreaterThan(70);
     });
 
+    it('scores historical comps above Gemini at equal confidence/depth', () => {
+      const base = {
+        estimatedValue: 100,
+        low: 90,
+        high: 110,
+        avg: 100,
+        confidence: 0.8,
+        salesCount: 20,
+        lastUpdated: new Date().toISOString(),
+        valuationTimestamp: new Date().toISOString(),
+      } satisfies PricingAnalysis;
+
+      const historical = evaluateValuationQuality({
+        ...base,
+        valuationSource: 'historical-comps',
+      });
+      const gemini = evaluateValuationQuality({
+        ...base,
+        valuationSource: 'gemini',
+      });
+
+      expect(historical.qualityScore).toBeGreaterThan(gemini.qualityScore);
+    });
+
     it('handles missing confidence', () => {
       const analysis: PricingAnalysis = {
         estimatedValue: 100,

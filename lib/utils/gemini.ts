@@ -6,6 +6,7 @@ import { attachValuationQuality } from '../analytics/valuationQuality.ts';
 import { estimateGeminiCostUsd, recordModelUsage } from './telemetryService.ts';
 import { createGeminiClient } from './geminiClient.ts';
 import { logger } from '../logger';
+import { preferRealCompsWhenConfigured } from '../featureFlags';
 
 const ai = createGeminiClient();
 
@@ -86,8 +87,8 @@ const MOCK_PROSPECTS: Record<string, ProspectData[]> = {
 };
 
 export async function getEbayCardPrice(card: CardInventory, _signal?: AbortSignal): Promise<PricingAnalysis | null> {
-  // Try eBay API first if configured
-  if (ebayApi.isAvailable()) {
+  // Try eBay API first when USE_REAL_EBAY is on and the adapter is configured
+  if (preferRealCompsWhenConfigured() && ebayApi.isAvailable()) {
     try {
       const ebayResult = await ebayApi.getMarketValue({
         playerName: card.player,

@@ -71,6 +71,53 @@ export interface MigrationResult {
     targetsMergedOverwrites: number;
 }
 
+/** Plain summary for UI after a successful migration (merge policy outcomes). */
+export interface MigrationMergeSummary {
+    cardsWritten: number;
+    targetsWritten: number;
+    /** Rows where local (or newer) replaced cloud per policy */
+    conflictsResolved: number;
+    /** Rows skipped because cloud copy was retained */
+    duplicatesSkipped: number;
+    conflictPolicy: MigrationConflictPolicy;
+}
+
+export function buildMigrationMergeSummary(result: MigrationResult): MigrationMergeSummary | null {
+    if (!result.success) return null;
+    return {
+        cardsWritten: result.cardsMigrated,
+        targetsWritten: result.targetsMigrated,
+        conflictsResolved: result.cardsMergedOverwrites + result.targetsMergedOverwrites,
+        duplicatesSkipped: result.cardsSkippedConflicts + result.targetsSkippedConflicts,
+        conflictPolicy: result.conflictPolicy,
+    };
+}
+
+/** Concise institutional line for banners and inline status. */
+export function formatMigrationMergeLine(summary: MigrationMergeSummary): string {
+    const w = `${summary.cardsWritten} card${summary.cardsWritten === 1 ? '' : 's'}, ${summary.targetsWritten} target${summary.targetsWritten === 1 ? '' : 's'} written`;
+    if (summary.conflictsResolved === 0 && summary.duplicatesSkipped === 0) {
+        return w;
+    }
+    const parts: string[] = [w];
+    if (summary.conflictsResolved > 0) {
+        parts.push(
+            `${summary.conflictsResolved} conflict${summary.conflictsResolved === 1 ? '' : 's'} resolved per policy`
+        );
+    }
+    if (summary.duplicatesSkipped > 0) {
+        parts.push(
+            `${summary.duplicatesSkipped} duplicate${summary.duplicatesSkipped === 1 ? '' : 's'} skipped (cloud retained)`
+        );
+    }
+    return parts.join(' · ');
+}
+
+/** Short toast body after sync. */
+export function formatMigrationMergeToast(summary: MigrationMergeSummary): string {
+    return `Uplink complete: ${formatMigrationMergeLine(summary)}`;
+}
+
 /**
  * Check if migration is needed
  */

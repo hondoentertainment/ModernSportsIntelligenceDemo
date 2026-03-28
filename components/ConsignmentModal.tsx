@@ -18,6 +18,7 @@ import {
   ConsignmentStatus,
   HouseComparison,
 } from '../lib/trading/consignmentService';
+import ConfirmDialog from './ConfirmDialog';
 
 interface ConsignmentModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ interface ConsignmentModalProps {
   card: CardInventory | null;
   inventory: CardInventory[];
   onConsignmentStarted?: (cardId: string, patch: Partial<CardInventory>) => void | Promise<void>;
+  onConsignmentEnded?: (cardId: string) => void | Promise<void>;
 }
 
 const STATUS_COLORS: Record<ConsignmentStatus, { bg: string; text: string; label: string }> = {
@@ -52,8 +54,10 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
   onClose,
   card,
   onConsignmentStarted,
+  onConsignmentEnded,
 }) => {
   const [selectedHouseId, setSelectedHouseId] = useState('');
+  const [confirmReturnOpen, setConfirmReturnOpen] = useState(false);
   const [askingPrice, setAskingPrice] = useState(0);
   const [shippingCost, setShippingCost] = useState(8);
   const [insuranceCost, setInsuranceCost] = useState(5);
@@ -84,6 +88,16 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
   }, [card, cardValue, optimalHouse]);
 
   if (!isOpen || !card) return null;
+
+  const hasActiveConsignment = card.status === 'consignment' && !!card.consignment;
+  const showReturnToCollection = hasActiveConsignment && !!onConsignmentEnded;
+
+  const handleConfirmReturnToCollection = async () => {
+    if (!card) return;
+    await onConsignmentEnded?.(card.id);
+    setConfirmReturnOpen(false);
+    onClose();
+  };
 
   const handleSubmit = async () => {
     if (!selectedHouseId || askingPrice <= 0 || !card) return;
@@ -128,6 +142,15 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+      <ConfirmDialog
+        isOpen={confirmReturnOpen}
+        title="Return to collection?"
+        message={`Mark "${card.player}" as back in your collection? Active consignment details will be cleared from this card; local consignment history is unchanged.`}
+        confirmLabel="Return to collection"
+        variant="info"
+        onConfirm={handleConfirmReturnToCollection}
+        onCancel={() => setConfirmReturnOpen(false)}
+      />
       <div className="w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-6 border-b border-slate-700 flex items-center justify-between bg-brand-charcoal/30">
@@ -155,6 +178,28 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
         </div>
 
         <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto no-scrollbar">
+          {showReturnToCollection && card.consignment && (
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-2xl border border-brand-lime/25 bg-brand-lime/5">
+              <div>
+                <p className="text-[10px] font-black text-brand-lime uppercase tracking-widest mb-1">
+                  On consignment
+                </p>
+                <p className="text-sm text-white font-medium">{card.consignment.houseName}</p>
+                <p className="text-[10px] text-brand-muted font-mono mt-0.5">
+                  Reserve ${card.consignment.reservePrice?.toLocaleString() ?? '—'} · Tracked {card.consignment.trackingNumber ?? '—'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setConfirmReturnOpen(true)}
+                className="shrink-0 flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest border border-slate-600 bg-slate-800/80 text-white hover:border-brand-lime/40 hover:bg-slate-800 transition-all"
+              >
+                <RotateCcw size={14} />
+                Return to collection
+              </button>
+            </div>
+          )}
+
           {/* House Comparison Table */}
           <div>
             <h3 className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-3">
@@ -298,7 +343,7 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
 
             <button
               onClick={handleSubmit}
-              disabled={!selectedHouseId || askingPrice <= 0}
+              disabled={hasActiveConsignment || !selectedHouseId || askingPrice <= 0}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-brand-lime text-brand-charcoal hover:bg-brand-lime/90"
             >
               <Send size={14} />

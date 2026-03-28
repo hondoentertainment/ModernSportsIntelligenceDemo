@@ -24,6 +24,26 @@ const STORAGE_KEY = 'cardx_inventory';
 const TARGETS_KEY = 'cardx_targets';
 const SYNC_META_KEY = 'cardx_sync_meta';
 
+type TargetDraft = Omit<TargetWatchlist, 'id' | 'createdAt' | 'status'>;
+
+function isTargetWatchlist(value: TargetDraft | TargetWatchlist): value is TargetWatchlist {
+    const maybe = value as TargetWatchlist;
+    return typeof maybe.id === 'string' && typeof maybe.createdAt === 'string' && typeof maybe.status === 'string';
+}
+
+export function coerceTargetWatchlist(value: TargetDraft | TargetWatchlist): TargetWatchlist {
+    if (isTargetWatchlist(value)) return value;
+    const id = (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function')
+        ? crypto.randomUUID()
+        : Math.random().toString(36).substring(2, 11);
+    return {
+        ...value,
+        id,
+        status: 'active',
+        createdAt: new Date().toISOString(),
+    };
+}
+
 export interface SyncMeta {
     lastSyncTime: string | null;
     totalValue: number;
@@ -273,7 +293,8 @@ export function useSupabaseInventory() {
         });
     }, [inventory, runCloudMutation, userId]);
 
-    const addTarget = useCallback(async (target: TargetWatchlist) => {
+    const addTarget = useCallback(async (targetInput: TargetDraft | TargetWatchlist) => {
+        const target = coerceTargetWatchlist(targetInput);
         setTargets(prev => [target, ...prev]);
 
         await runCloudMutation(
