@@ -7,6 +7,10 @@ import {
   acknowledgeAnomaly,
   getAnomalyHistory,
   getAnomalyTrend,
+  dedupeAnomaliesByCard,
+  ANOMALY_MAX_ALERTS_PER_CARD,
+  ANOMALY_SIGNAL_SOURCE,
+  type MarketAnomaly,
 } from '../../lib/analytics/anomalyDetectionService';
 import { makeCard, setupLocalStorageMock } from '../helpers';
 
@@ -89,6 +93,30 @@ describe('anomalyDetectionService', () => {
       expect(crash!.severity).toBe('critical');
     });
 
+    it('caps anomalies per card at ANOMALY_MAX_ALERTS_PER_CARD', () => {
+      const recentDate = new Date();
+      recentDate.setDate(recentDate.getDate() - 30);
+      const oldVal = new Date();
+      oldVal.setDate(oldVal.getDate() - 60);
+      const cardA = makeCard({
+        id: 'heavy',
+        purchasePrice: 100,
+        currentValue: 200,
+        purchaseDate: recentDate.toISOString(),
+        lastValuationDate: oldVal.toISOString(),
+      });
+      const cardB = makeCard({
+        id: 'anchor',
+        purchasePrice: 100,
+        currentValue: 100,
+        purchaseDate: '2020-01-01',
+        lastValuationDate: new Date().toISOString(),
+      });
+      const all = detectAnomalies([cardA, cardB]);
+      const forHeavy = all.filter(a => a.cardId === 'heavy');
+      expect(forHeavy.length).toBeLessThanOrEqual(ANOMALY_MAX_ALERTS_PER_CARD);
+    });
+
     it('preserves acknowledged status from stored anomalies', () => {
       // First detect anomalies to populate storage, then acknowledge
       const card = makeCard({ id: '1', purchasePrice: 100, currentValue: 40 });
@@ -104,6 +132,52 @@ describe('anomalyDetectionService', () => {
       const acked = refreshed.find(a => a.id === crashAnomaly!.id);
       expect(acked).toBeDefined();
       expect(acked!.isAcknowledged).toBe(true);
+    });
+  });
+
+  describe('dedupeAnomaliesByCard', () => {
+    const base = (partial: Partial<MarketAnomaly> & Pick<MarketAnomaly, 'id' | 'cardId' | 'type' | 'severity'>): MarketAnomaly => ({
+      player: 'P',
+      sport: 'Baseball',
+      title: 'T',
+      description: 'D',
+      detectedAt: '',
+      priceAtDetection: 1,
+      expectedPrice: 1,
+      deviationPercent: 0,
+      confidence: 50,
+      actionRecommendation: '',
+      expiresAt: '',
+      isAcknowledged: false,
+      ...partial,
+    });
+
+    it('keeps highest-severity anomalies per card up to max', () => {
+      const list = [
+        base({ id: 'a', cardId: 'c', type: 'stale_price', severity: 'low', deviationPercent: 0 }),
+        base({ id: 'b', cardId: 'c', type: 'crash', severity: 'critical', deviationPercent: -80 }),
+        base({ id: 'd', cardId: 'c', type: 'spike', severity: 'high', deviationPercent: 60 }),
+      ];
+      const d = dedupeAnomaliesByCard(list);
+      expect(d).toHaveLength(2);
+      expect(d.map(x => x.id).sort()).toEqual(['b', 'd']);
+    });
+
+    it('breaks severity ties by larger absolute deviation', () => {
+      const list = [
+        base({ id: 'a', cardId: 'c', type: 'mispricing', severity: 'medium', deviationPercent: 10 }),
+        base({ id: 'b', cardId: 'c', type: 'volume_surge', severity: 'medium', deviationPercent: 50 }),
+      ];
+      const d = dedupeAnomaliesByCard(list, 1);
+      expect(d).toHaveLength(1);
+      expect(d[0].id).toBe('b');
+    });
+  });
+
+  describe('ANOMALY_SIGNAL_SOURCE', () => {
+    it('documents inventory-based heuristics for UI', () => {
+      expect(ANOMALY_SIGNAL_SOURCE.length).toBeGreaterThan(60);
+      expect(ANOMALY_SIGNAL_SOURCE.toLowerCase()).toContain('inventory');
     });
   });
 

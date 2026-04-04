@@ -5,29 +5,47 @@ import { AutonomousExecutionService } from '../lib/trading/AutonomousExecutionSe
 import { CollaborativeThesis } from '../types';
 import AgentCard from './AgentCard';
 import AutoPilotControl from './AutoPilotControl';
-import { Brain, RefreshCw, Send, ShieldCheck, Target, TrendingUp, Info, Activity, Zap } from 'lucide-react';
+import { Brain, RefreshCw, Send, ShieldCheck, Target, TrendingUp, Info, Activity, Zap, Download } from 'lucide-react';
 import { showToast } from '../lib/utils/toast';
+import { store } from '../lib/dal/syncStore';
+import { safeParseCollaborativeThesis } from '../lib/schemas';
+import { downloadWarRoomThesisJson } from '../lib/utils/warRoomThesisAudit';
+
+const WAR_ROOM_THESIS_STORAGE_KEY = 'msi_war_room_last_thesis_v1';
 
 const AnalystWarRoom: React.FC = () => {
     const { inventory } = useSupabaseInventory();
-    const [thesis, setThesis] = useState<CollaborativeThesis | null>(null);
+    const [thesis, setThesis] = useState<CollaborativeThesis | null>(() => {
+        const raw = store.get<unknown>(WAR_ROOM_THESIS_STORAGE_KEY, null);
+        const parsed = safeParseCollaborativeThesis(raw);
+        if (raw !== null && parsed === null) {
+            store.remove(WAR_ROOM_THESIS_STORAGE_KEY);
+        }
+        return parsed;
+    });
     const [isGenerating, setIsGenerating] = useState(false);
     const [autoPilot, setAutoPilot] = useState(AutonomousExecutionService.getConfig().isActive);
     const [isExecuting, setIsExecuting] = useState(false);
 
     const generateThesis = async () => {
         setIsGenerating(true);
-        const config = AutonomousExecutionService.getConfig();
-        const result = await MultiAgentService.getCollaborativeThesis(inventory, config.isActive, 'war-room');
+        try {
+            const config = AutonomousExecutionService.getConfig();
+            const result = await MultiAgentService.getCollaborativeThesis(inventory, config.isActive, 'war-room');
 
-        if (result) {
-            setThesis(result);
-            if (config.isActive) {
-                // If autopilot is active, also trigger the execution cycle logic in the background
-                AutonomousExecutionService.runAutonomousCycle(inventory);
+            if (result) {
+                setThesis(result);
+                store.set(WAR_ROOM_THESIS_STORAGE_KEY, result);
+                if (config.isActive) {
+                    // If autopilot is active, also trigger the execution cycle logic in the background
+                    AutonomousExecutionService.runAutonomousCycle(inventory);
+                }
             }
+        } catch {
+            showToast('error', 'Unable to refresh intelligence right now. Please retry.');
+        } finally {
+            setIsGenerating(false);
         }
-        setIsGenerating(false);
     };
 
     useEffect(() => {
@@ -50,14 +68,19 @@ const AnalystWarRoom: React.FC = () => {
 
     const handleExecute = async () => {
         setIsExecuting(true);
-        const actions = await AutonomousExecutionService.previewAutonomousCycle(inventory);
-        if (!autoPilot) {
-            showToast('info', `Preview staged ${actions.actions.length} policy-scored actions. Enable Auto-Pilot to commit them.`);
-        } else {
-            const live = await AutonomousExecutionService.runAutonomousCycle(inventory);
-            showToast('success', `Auto-Pilot queued ${live.length} actions for review.`);
+        try {
+            const actions = await AutonomousExecutionService.previewAutonomousCycle(inventory);
+            if (!autoPilot) {
+                showToast('info', `Preview staged ${actions.actions.length} policy-scored actions. Enable Auto-Pilot to commit them.`);
+            } else {
+                const live = await AutonomousExecutionService.runAutonomousCycle(inventory);
+                showToast('success', `Auto-Pilot queued ${live.length} actions for review.`);
+            }
+        } catch {
+            showToast('error', 'Unable to execute strategy right now. Please retry.');
+        } finally {
+            setIsExecuting(false);
         }
-        setIsExecuting(false);
     };
 
     return (
@@ -75,18 +98,70 @@ const AnalystWarRoom: React.FC = () => {
                         )}
                     </p>
                 </div>
-                <button
-                    onClick={generateThesis}
-                    disabled={isGenerating || inventory.length === 0}
-                    className="flex items-center gap-2 bg-brand-charcoal hover:bg-brand-slate text-brand-lime border border-brand-lime/30 px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
-                >
-                    <RefreshCw className={`group-hover:rotate-180 transition-transform duration-500 ${isGenerating ? 'animate-spin' : ''}`} size={18} />
-                    {isGenerating ? 'CONVENING COMMITTEE...' : 'REFRESH INTELLIGENCE'}
-                </button>
+                <div className="flex flex-wrap items-center gap-3">
+                    {thesis && !isGenerating && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const ok = downloadWarRoomThesisJson(thesis);
+                                showToast(
+                                    ok ? 'success' : 'error',
+                                    ok
+                                        ? 'Thesis audit JSON downloaded.'
+                                        : 'Could not export thesis JSON. Try again or copy fields manually.',
+                                );
+                            }}
+                            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 px-5 py-3 rounded-xl font-bold transition-all"
+                        >
+                            <Download size={18} />
+                            EXPORT THESIS JSON
+                        </button>
+                    )}
+                    <button
+                        onClick={generateThesis}
+                        disabled={isGenerating || inventory.length === 0}
+                        className="flex items-center gap-2 bg-brand-charcoal hover:bg-brand-slate text-brand-lime border border-brand-lime/30 px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed group"
+                    >
+                        <RefreshCw className={`group-hover:rotate-180 transition-transform duration-500 ${isGenerating ? 'animate-spin' : ''}`} size={18} />
+                        {isGenerating ? 'CONVENING COMMITTEE...' : 'REFRESH INTELLIGENCE'}
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
+                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">
+                        Multi-agent output is AI-generated guidance. Use it as decision support and verify with live comps before executing trades.
+                    </div>
+
+                    {thesis && !isGenerating && thesis.runMetadata && (
+                        <div
+                            className="rounded-xl border border-slate-700 bg-brand-charcoal/60 p-4 text-[11px] text-slate-400 font-mono space-y-1.5"
+                            role="status"
+                        >
+                            <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted font-sans">Run traceability</p>
+                            <p>
+                                <span className="text-slate-500">Input fingerprint</span>{' '}
+                                <span className="text-brand-lime break-all">{thesis.runMetadata.inputHash}</span>
+                            </p>
+                            <p>
+                                <span className="text-slate-500">Prompt version</span> {thesis.runMetadata.promptVersion}
+                            </p>
+                            <p>
+                                <span className="text-slate-500">Model</span> {thesis.runMetadata.modelId}
+                            </p>
+                            <p>
+                                <span className="text-slate-500">Strategist agent</span>{' '}
+                                {thesis.runMetadata.includeStrategist ? 'included' : 'excluded'}
+                            </p>
+                        </div>
+                    )}
+                    {thesis && !isGenerating && !thesis.runMetadata && (
+                        <p className="text-[11px] text-slate-500 border border-slate-800 rounded-lg px-3 py-2 bg-slate-900/40">
+                            This thesis was saved before run traceability fields were added. Refresh intelligence to attach fingerprint, prompt version, and model id.
+                        </p>
+                    )}
+
                     {/* Auto-Pilot Control (NEW) */}
                     <AutoPilotControl />
 

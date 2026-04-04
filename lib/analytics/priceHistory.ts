@@ -233,6 +233,29 @@ export function getCardHistory(cardId: string): PriceSnapshot[] {
     return history[cardId] || [];
 }
 
+/** Set on `PriceSnapshot.source` (or metadata) so Predictive Alpha can treat rows as imported / external comp anchors. */
+export const MSI_IMPORTED_COMP_SOURCE = 'msi_imported_comp';
+
+export function countImportedCompSnapshots(cardId: string): number {
+    return getCardHistory(cardId).filter(
+        s =>
+            s.source === MSI_IMPORTED_COMP_SOURCE ||
+            s.metadata?.signalKind === 'imported_comp' ||
+            s.metadata?.importedComp === true
+    ).length;
+}
+
+/** Record a single imported-comp anchor without replacing your full valuation workflow. */
+export function recordImportedCompSnapshot(cardId: string, value: number, note?: string): void {
+    recordPriceSnapshot(cardId, value, {
+        source: MSI_IMPORTED_COMP_SOURCE,
+        metadata: {
+            signalKind: 'imported_comp',
+            ...(note ? { note } : {}),
+        },
+    });
+}
+
 /**
  * Get sparkline data (just the values) for a card
  * Returns values in chronological order (oldest first) for chart rendering

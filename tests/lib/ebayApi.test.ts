@@ -78,6 +78,24 @@ describe('ebayApi', () => {
         }),
       });
     });
+
+    it('passes offset and sort; strips legacy soldOnly from API params', async () => {
+      vi.mocked(serverApiRequest).mockResolvedValue({ itemSummaries: [] });
+      await ebayApi.searchSportsCards({
+        playerName: 'Test',
+        offset: 40,
+        sort: 'newlyListed',
+        soldOnly: true,
+      });
+      expect(serverApiRequest).toHaveBeenCalledWith('/api/market/ebay', {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'search',
+          sandbox: false,
+          params: { playerName: 'Test', offset: 40, sort: 'newlyListed' },
+        }),
+      });
+    });
   });
 
   describe('getMarketValue', () => {
@@ -93,7 +111,7 @@ describe('ebayApi', () => {
       });
     });
 
-    it('calculates market value from sold listings', async () => {
+    it('calculates market value from listing prices (Browse API — active listings)', async () => {
       vi.mocked(serverApiRequest).mockResolvedValue({
         itemSummaries: [
           {

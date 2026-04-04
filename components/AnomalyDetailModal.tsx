@@ -19,6 +19,7 @@ import {
   AnomalySeverity,
   detectAnomalies,
   acknowledgeAnomaly,
+  ANOMALY_SIGNAL_SOURCE,
 } from '../lib/analytics/anomalyDetectionService';
 
 interface AnomalyDetailModalProps {
@@ -115,6 +116,10 @@ export const AnomalyDetailModal: React.FC<AnomalyDetailModalProps> = ({
           >
             <X size={24} />
           </button>
+        </div>
+
+        <div className="px-8 py-3 bg-slate-800/80 border-b border-slate-700" role="status">
+          <p className="text-[11px] text-slate-400 leading-relaxed">{ANOMALY_SIGNAL_SOURCE}</p>
         </div>
 
         <div className="p-8 space-y-6 max-h-[75vh] overflow-y-auto no-scrollbar">

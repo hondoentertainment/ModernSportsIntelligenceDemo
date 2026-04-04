@@ -10,6 +10,9 @@ import {
   initPriceHistory,
   teardownPriceHistory,
   isPriceHistoryInitialized,
+  MSI_IMPORTED_COMP_SOURCE,
+  countImportedCompSnapshots,
+  recordImportedCompSnapshot,
 } from '../../lib/analytics/priceHistory';
 import {
   fetchAllPriceHistory,
@@ -116,6 +119,26 @@ describe('priceHistory', () => {
       ]);
       expect(getCardHistory('card-1')).toHaveLength(1);
       expect(getCardHistory('card-2')).toHaveLength(0);
+    });
+  });
+
+  describe('imported comp anchors', () => {
+    it('counts snapshots by source, metadata.signalKind, or metadata.importedComp', () => {
+      recordPriceSnapshot('c-import', 50, { source: MSI_IMPORTED_COMP_SOURCE });
+      recordPriceSnapshot('c-import', 55, { metadata: { signalKind: 'imported_comp' } });
+      recordPriceSnapshot('c-import', 60, { metadata: { importedComp: true } });
+      recordPriceSnapshot('c-import', 65, { source: 'ebay' });
+      expect(countImportedCompSnapshots('c-import')).toBe(3);
+    });
+
+    it('recordImportedCompSnapshot tags rows for predictive alpha', () => {
+      recordImportedCompSnapshot('c-imp2', 199, 'PSA 10 sale');
+      const h = getCardHistory('c-imp2');
+      expect(h).toHaveLength(1);
+      expect(h[0].source).toBe(MSI_IMPORTED_COMP_SOURCE);
+      expect(h[0].metadata?.signalKind).toBe('imported_comp');
+      expect(h[0].metadata?.note).toBe('PSA 10 sale');
+      expect(countImportedCompSnapshots('c-imp2')).toBe(1);
     });
   });
 

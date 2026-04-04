@@ -58,6 +58,7 @@ import {
   type EfficientFrontierPoint,
   type DrawdownEvent,
   type RollingCorrelationPoint,
+  CROSS_ASSET_DATA_SOURCE,
 } from '../lib/utils/crossAssetService';
 
 // ─── Tab Definitions ─────────────────────────────────────────────────────────
@@ -1307,9 +1308,8 @@ function DrawdownTab({ assetIds, period }: { assetIds: string[]; period: number 
             Drawdown Resilience Advantage
           </p>
           <p className="text-xs text-slate-400">
-            The Sports Cards Index exhibits shallower maximum drawdowns than Bitcoin (-62%),
-            NASDAQ (-33%), and Oil (-54%), while maintaining competitive risk-adjusted returns.
-            Average recovery time for card drawdowns is 4.2 months vs 8.6 months for crypto assets.
+            Illustrative scenario copy for the demo using the synthetic series above—not a claim about
+            historical market facts. Use verified data before any real allocation decisions.
           </p>
         </div>
       </div>
@@ -1412,6 +1412,12 @@ const CrossAssetCorrelation: React.FC<CrossAssetCorrelationPageProps> = ({ onBac
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-6 py-8">
+        <div
+          className="mb-6 rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-3 text-xs text-slate-300 leading-relaxed"
+          role="status"
+        >
+          {CROSS_ASSET_DATA_SOURCE}
+        </div>
         {loading ? (
           <div className="flex items-center justify-center h-96">
             <div className="flex flex-col items-center gap-3">

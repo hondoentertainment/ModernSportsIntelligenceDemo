@@ -18,6 +18,10 @@ const ebaySearchParamsSchema = z.object({
   maxPrice: z.union([z.string(), z.number()]).optional(),
   condition: z.string().optional(),
   limit: z.number().optional(),
+  /** Browse API pagination offset (max 10k results total). */
+  offset: z.number().int().min(0).optional(),
+  /** e.g. price, distance, newlyListed — passed through when valid. */
+  sort: z.string().optional(),
 }).strict();
 
 const ebayBodySchema = z.object({
@@ -94,13 +98,18 @@ async function searchListings(
   if (params.maxPrice) filters.push(`price:[0..${params.maxPrice}]`);
   if (params.condition) filters.push(`condition:${params.condition}`);
 
+  const sort = params.sort && params.sort.trim() ? params.sort.trim() : 'price';
   const searchParams = new URLSearchParams({
     q: query,
     category_ids: SPORTS_CATEGORY_IDS.join(','),
-    limit: String(params.limit || 50),
-    sort: 'price',
+    limit: String(Math.min(params.limit || 50, 200)),
+    sort,
     fieldgroups: 'EXTENDED',
   });
+
+  if (params.offset != null && params.offset > 0) {
+    searchParams.set('offset', String(params.offset));
+  }
 
   if (filters.length > 0) {
     searchParams.append('filter', filters.join(','));

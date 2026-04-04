@@ -1,6 +1,16 @@
 import { CardInventory, Sport } from '../../types';
 import { store } from '../dal/syncStore';
 
+/**
+ * Human-readable description of what feeds detection (for UI / support).
+ * Not live order-book or venue feeds — heuristics on the user’s inventory only.
+ */
+export const ANOMALY_SIGNAL_SOURCE =
+  'Heuristics on your MSI inventory: purchase price vs current value, sport-level averages within your collection, last valuation age, and a small deterministic “volume surge” simulation. Arbitrage rows use modeled venue labels for planning only—not live quotes.';
+
+/** Caps simultaneous alerts per card to reduce noise (beta exit: alert fatigue). */
+export const ANOMALY_MAX_ALERTS_PER_CARD = 2;
+
 // ---- Types ----
 
 export type AnomalyType = 'spike' | 'crash' | 'arbitrage' | 'mispricing' | 'volume_surge' | 'stale_price';
@@ -109,6 +119,38 @@ function determineSeverity(deviationPercent: number): AnomalySeverity {
   if (abs >= 40) return 'high';
   if (abs >= 20) return 'medium';
   return 'low';
+}
+
+const SEVERITY_RANK: Record<AnomalySeverity, number> = {
+  critical: 0,
+  high: 1,
+  medium: 2,
+  low: 3,
+};
+
+/**
+ * Keeps the highest-severity anomalies per card (max {@link ANOMALY_MAX_ALERTS_PER_CARD}).
+ */
+export function dedupeAnomaliesByCard(
+  items: MarketAnomaly[],
+  maxPerCard: number = ANOMALY_MAX_ALERTS_PER_CARD
+): MarketAnomaly[] {
+  const byCard = new Map<string, MarketAnomaly[]>();
+  for (const a of items) {
+    const list = byCard.get(a.cardId) ?? [];
+    list.push(a);
+    byCard.set(a.cardId, list);
+  }
+  const out: MarketAnomaly[] = [];
+  for (const list of byCard.values()) {
+    const sorted = [...list].sort((x, y) => {
+      const sd = SEVERITY_RANK[x.severity] - SEVERITY_RANK[y.severity];
+      if (sd !== 0) return sd;
+      return Math.abs(y.deviationPercent) - Math.abs(x.deviationPercent);
+    });
+    out.push(...sorted.slice(0, maxPerCard));
+  }
+  return out;
 }
 
 function expiresFromNow(hours: number): string {
@@ -290,17 +332,19 @@ export function detectAnomalies(inventory: CardInventory[]): MarketAnomaly[] {
     }
   }
 
+  const deduped = dedupeAnomaliesByCard(anomalies);
+
   // Merge acknowledgment status from stored anomalies
   const stored = loadStoredAnomalies();
   const ackSet = new Set(stored.filter(a => a.isAcknowledged).map(a => a.id));
-  for (const anomaly of anomalies) {
+  for (const anomaly of deduped) {
     if (ackSet.has(anomaly.id)) {
       anomaly.isAcknowledged = true;
     }
   }
 
-  saveAnomalies(anomalies);
-  return anomalies;
+  saveAnomalies(deduped);
+  return deduped;
 }
 
 // ---- Arbitrage detection ----

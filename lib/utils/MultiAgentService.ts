@@ -1,11 +1,15 @@
-import { GoogleGenAI, Type } from "@google/genai";
-import { CardInventory, CollaborativeThesis } from "../../types.ts";
 import { Type } from "@google/genai";
-import { AgentRecommendationOrigin, CardInventory, CollaborativeThesis, AgentInsight, SwarmInsight, JointAcquisitionProposal } from "../../types.ts";
+import { AgentRecommendationOrigin, CardInventory, CollaborativeThesis, SwarmInsight } from "../../types.ts";
 import { showToast } from "./toast.ts";
 import { createGeminiClient } from "./geminiClient.ts";
 import { upsertAgentRecommendation } from "./differentiatorData.ts";
 import { logger } from "../logger";
+import { safeParse, WarRoomCommitteeResponseSchema } from "../schemas.ts";
+import {
+    WAR_ROOM_COMMITTEE_MODEL_ID,
+    WAR_ROOM_PROMPT_VERSION,
+    computeWarRoomInputFingerprint,
+} from "./warRoomThesisAudit.ts";
 
 const ai = createGeminiClient();
 
@@ -82,9 +86,11 @@ export class MultiAgentService {
       ]
     }`;
 
+        const inputHash = computeWarRoomInputFingerprint(inventory, includeStrategist);
+
         try {
             const response = await ai.models.generateContent({
-                model: "gemini-1.5-flash",
+                model: WAR_ROOM_COMMITTEE_MODEL_ID,
                 contents: prompt,
                 config: {
                     responseMimeType: "application/json",
@@ -132,33 +138,69 @@ export class MultiAgentService {
                 }
             });
 
-            const data = JSON.parse(response.text || "{}");
+            let parsedJson: unknown;
+            try {
+                parsedJson = JSON.parse(response.text || "{}");
+            } catch {
+                showToast('error', 'Committee response was not valid JSON. Try again.');
+                return null;
+            }
+
+            const data = safeParse(WarRoomCommitteeResponseSchema, parsedJson, 'war-room-committee');
+            if (!data) {
+                showToast('error', 'Committee returned an unexpected format. Try Refresh again.');
+                return null;
+            }
+
             const recommendationId = crypto.randomUUID();
+            const runMetadata = {
+                inputHash,
+                promptVersion: WAR_ROOM_PROMPT_VERSION,
+                modelId: WAR_ROOM_COMMITTEE_MODEL_ID,
+                includeStrategist,
+            };
             const thesis: CollaborativeThesis = {
-                ...data,
+                summary: data.summary,
+                keyTakeaways: data.keyTakeaways,
+                riskAssessment: data.riskAssessment,
+                recommendedAction: data.recommendedAction,
+                agents: data.agents,
+                executionPlan: data.executionPlan as CollaborativeThesis['executionPlan'],
                 id: crypto.randomUUID(),
                 recommendationId,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                runMetadata,
             };
 
-            await upsertAgentRecommendation({
-                id: recommendationId,
-                source,
-                cycleId: thesis.executionPlan?.[0]?.cycleId,
-                thesisId: thesis.id,
-                summary: thesis.summary,
-                recommendedAction: thesis.recommendedAction,
-                riskAssessment: thesis.riskAssessment,
-                status: includeStrategist ? 'pending_approval' : 'queued',
-                keyTakeaways: thesis.keyTakeaways,
-                agents: thesis.agents,
-                executionPlan: thesis.executionPlan,
-                metadata: {
-                    includeStrategist,
-                    inventorySize: inventory.length,
-                },
-                createdAt: thesis.createdAt,
-            });
+            try {
+                await upsertAgentRecommendation({
+                    id: recommendationId,
+                    source,
+                    cycleId: thesis.executionPlan?.[0]?.cycleId,
+                    thesisId: thesis.id,
+                    summary: thesis.summary,
+                    recommendedAction: thesis.recommendedAction,
+                    riskAssessment: thesis.riskAssessment,
+                    status: includeStrategist ? 'pending_approval' : 'queued',
+                    keyTakeaways: thesis.keyTakeaways,
+                    agents: thesis.agents,
+                    executionPlan: thesis.executionPlan,
+                    metadata: {
+                        includeStrategist,
+                        inventorySize: inventory.length,
+                        inputHash,
+                        promptVersion: WAR_ROOM_PROMPT_VERSION,
+                        modelId: WAR_ROOM_COMMITTEE_MODEL_ID,
+                    },
+                    createdAt: thesis.createdAt,
+                });
+            } catch (persistErr) {
+                logger.error('War Room: failed to persist agent recommendation', persistErr);
+                showToast(
+                    'warning',
+                    'Thesis is ready on this device, but saving to your recommendation log failed. Use Export if you need a file copy.',
+                );
+            }
 
             return thesis;
         } catch (error) {

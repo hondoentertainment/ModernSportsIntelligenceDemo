@@ -9,12 +9,15 @@ Companion to [MONITORING.md](./MONITORING.md) and [PRODUCTION_READINESS.md](../P
 
 ## Environment (Vercel / hosting)
 
-| Variable | Purpose |
-|----------|---------|
-| `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` | Auth + cloud data |
-| `VITE_SENTRY_DSN` | Optional client errors ([lib/sentry.ts](../lib/sentry.ts)) |
-| `VITE_ERROR_REPORTING_URL` | Optional error beacon ([lib/errorReporting.ts](../lib/errorReporting.ts)) |
-| `VITE_*` for Gemini, Stripe, eBay, etc. | Feature flags; see `.env.example` if present |
+| Variable                                       | Purpose                                                                                  |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` | Auth + cloud data                                                                        |
+| `VITE_SENTRY_DSN`                              | Optional client errors ([lib/sentry.ts](../lib/sentry.ts))                               |
+| `VITE_ERROR_REPORTING_URL`                     | Optional error beacon ([lib/errorReporting.ts](../lib/errorReporting.ts))                |
+| `RATE_LIMIT_AI_MAX_PER_MINUTE`                 | Server: cap for `api/ai/generate` (default **30**; see [MONITORING.md](./MONITORING.md)) |
+| `RATE_LIMIT_EBAY_MAX_PER_MINUTE`               | Server: cap for `api/market/ebay` (default **60**)                                       |
+| `RATE_LIMIT_DISABLED`                          | Set `1` or `true` to disable throttling — **local debugging only**, never Production     |
+| `VITE_*` for Gemini, Stripe, eBay, etc.        | Feature flags; see `.env.example`                                                        |
 
 **Manual:** Rotate keys on incident; never commit secrets.
 

@@ -2,9 +2,9 @@
 
 ## Current state
 
-[Vercel `headers`](../vercel.json) send **`Content-Security-Policy-Report-Only`** so browsers log violations without blocking. This is appropriate while the SPA still relies on `'unsafe-inline'` for scripts/styles (typical for Vite + Tailwind during transition).
+[Vercel `headers`](../vercel.json) send a **blocking** **`Content-Security-Policy`** (same directive set that previously shipped as Report-Only). Monitor real traffic for violations; if a third-party origin is blocked, extend `connect-src` / `script-src` / `frame-src` as needed, or temporarily restore Report-Only while fixing.
 
-Report-Only policy (summary):
+Policy (summary):
 
 - **`base-uri 'self'`** / **`frame-ancestors 'self'`** — align with same-origin framing expectations.
 - **`script-src`** — `'self'`, `'unsafe-inline'`, **`https://cdn.tailwindcss.com`** (dev index), **`https://js.stripe.com`** (Stripe.js).

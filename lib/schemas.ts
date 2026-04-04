@@ -6,6 +6,7 @@
  */
 
 import { z } from 'zod';
+import type { CollaborativeThesis } from '../types';
 
 // ─── Gemini AI Response ──────────────────────────────────────────────
 
@@ -314,6 +315,60 @@ export const PlayerStatsSummarySchema = z.object({
 
 export type PlayerStatsSummaryValidated = z.infer<typeof PlayerStatsSummarySchema>;
 
+// ─── War Room / multi-agent committee JSON ───────────────────────────
+
+export const WarRoomAgentInsightSchema = z.object({
+  agentId: z.string(),
+  agentName: z.string(),
+  persona: z.string(),
+  insight: z.string(),
+  sentiment: z.enum(['positive', 'neutral', 'negative']),
+  confidence: z.number(),
+});
+
+export const WarRoomCommitteeExecutionActionSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  assetName: z.string(),
+  amount: z.number(),
+  rationale: z.string(),
+  timestamp: z.string(),
+  status: z.string(),
+});
+
+/** Parsed body from Gemini structured output for the War Room committee flow. */
+export const WarRoomCommitteeResponseSchema = z.object({
+  summary: z.string(),
+  keyTakeaways: z.array(z.string()),
+  riskAssessment: z.string(),
+  recommendedAction: z.string(),
+  agents: z.array(WarRoomAgentInsightSchema),
+  executionPlan: z.array(WarRoomCommitteeExecutionActionSchema).optional(),
+});
+
+export type WarRoomCommitteeResponseValidated = z.infer<typeof WarRoomCommitteeResponseSchema>;
+
+export const WarRoomRunMetadataStoredSchema = z.object({
+  inputHash: z.string(),
+  promptVersion: z.string(),
+  modelId: z.string(),
+  includeStrategist: z.boolean(),
+});
+
+/** Hydrated thesis from `msi_war_room_last_thesis_v1` — lenient on executionPlan shape. */
+export const CollaborativeThesisStoredSchema = z.object({
+  id: z.string().min(1),
+  summary: z.string(),
+  keyTakeaways: z.array(z.string()),
+  riskAssessment: z.string(),
+  recommendedAction: z.string(),
+  agents: z.array(WarRoomAgentInsightSchema),
+  createdAt: z.string(),
+  recommendationId: z.string().optional(),
+  executionPlan: z.array(z.record(z.string(), z.unknown())).optional(),
+  runMetadata: WarRoomRunMetadataStoredSchema.optional(),
+});
+
 // ─── Utility: Safe Parse with Logging ────────────────────────────────
 
 import { logger } from './logger';
@@ -335,4 +390,10 @@ export function safeParse<T>(
     .join('; ');
   logger.warn(`[Schema${context ? `:${context}` : ''}] Validation failed: ${issues}`);
   return null;
+}
+
+/** Drop-in validation for War Room localStorage thesis payloads (prevents corrupt JSON from crashing the page). */
+export function safeParseCollaborativeThesis(value: unknown): CollaborativeThesis | null {
+  const result = CollaborativeThesisStoredSchema.safeParse(value);
+  return result.success ? (result.data as unknown as CollaborativeThesis) : null;
 }

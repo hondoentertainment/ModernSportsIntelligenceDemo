@@ -44,6 +44,10 @@ jobs:
             # Extract version from tag (e.g. v1.2.0 -> 1.2.0)
             VERSION="${GITHUB_REF#refs/tags/v}"
           fi
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid version format: $VERSION"
+            exit 1
+          fi
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "TAG=v$VERSION" >> "$GITHUB_ENV"
           echo "Releasing version: $VERSION"
@@ -51,11 +55,15 @@ jobs:
       - name: Get previous tag
         id: prev_tag
         run: |
-          # Get the most recent tag before the current one
-          PREV_TAG=$(git tag --sort=-creatordate | grep -E '^v[0-9]' | head -2 | tail -1)
+          # Get previous version tag for changelog baseline
+          if [ "${{ github.event_name }}" = "push" ]; then
+            PREV_TAG=$(git describe --tags --abbrev=0 "${GITHUB_REF#refs/tags/}^" 2>/dev/null || true)
+          else
+            PREV_TAG=$(git tag --sort=-creatordate | grep -E '^v[0-9]' | sed -n '1p')
+          fi
           if [ -z "$PREV_TAG" ]; then
             # No previous tag, use the initial commit
-            PREV_TAG=$(git rev-list --max-parents=0 HEAD | head -1)
+            PREV_TAG=$(git rev-list --max-parents=0 HEAD | sed -n '1p')
           fi
           echo "PREV_TAG=$PREV_TAG" >> "$GITHUB_ENV"
           echo "Previous tag: $PREV_TAG"
@@ -166,29 +174,19 @@ jobs:
           echo "" >> changelog.md
           echo "**Stats:** ${COMMIT_COUNT} commits by ${CONTRIBUTOR_COUNT} contributor(s), ${FILES_CHANGED} changed" >> changelog.md
 
-      - name: Bump version in package.json
-        if: github.event_name == 'workflow_dispatch'
+      - name: Verify package version matches release
         run: |
-          # Update version in package.json without npm version (which creates a commit)
-          node -e "
-            const pkg = require('./package.json');
-            pkg.version = '${VERSION}';
-            require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-          "
-
-          # Commit the version bump
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json
-          git commit -m "chore: bump version to ${VERSION}" || true
-
-          # Create and push tag for manual releases
-          git tag -a "${TAG}" -m "Release ${TAG}"
-          git push origin "${TAG}" || true
-          git push origin HEAD || true
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$PKG_VERSION" != "$VERSION" ]; then
+            echo "package.json version ($PKG_VERSION) does not match release version ($VERSION)."
+            exit 1
+          fi
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Verify quality gates
+        run: npm run verify
 
       - name: Pricing truth guardrail
         run: npm run guardrail:pricing-truth

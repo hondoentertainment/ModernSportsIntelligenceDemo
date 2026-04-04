@@ -101,8 +101,8 @@ export function useSupabaseInventory() {
     const userId = user?.id || null;
     const isAuthenticated = !!userId && !isDemoMode;
 
-    const [inventory, setInventory] = useState<CardInventory[]>([]);
-    const [targets, setTargets] = useState<TargetWatchlist[]>([]);
+    const [inventory, setInventory] = useState<CardInventory[]>(() => readLocalRows<CardInventory>(STORAGE_KEY));
+    const [targets, setTargets] = useState<TargetWatchlist[]>(() => readLocalRows<TargetWatchlist>(TARGETS_KEY));
     const [loading, setLoading] = useState(true);
     const [isMigrating, setIsMigrating] = useState(false);
     const [syncMeta, setSyncMeta] = useState<SyncMeta>({

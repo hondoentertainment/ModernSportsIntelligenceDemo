@@ -12,15 +12,15 @@ Core logic that is practical to unit-test in Vitest (jsdom): DAL, utilities, sch
 
 ## What is excluded (and why)
 
-| Pattern | Reason |
-|--------|--------|
-| `pages/**`, `components/**`, `contexts/**`, `App.tsx`, `main.tsx` | UI-heavy; primary verification via **E2E** (`npm run test:e2e`) and manual flows. |
-| `api/**` | Vercel/serverless handlers; not part of the Vite test bundle. |
-| `lib/**/*Service.ts(x)` | Large **feature catalog** of demo/business services; covering all of them would be enormous with little marginal value vs. sampling + E2E. |
-| `lib/priceHistory.ts` | Legacy duplicate; runtime uses `lib/analytics/priceHistory.ts`. |
-| `lib/utils/gemini.ts`, `lib/gemini.ts` | Heavy AI + network; covered indirectly via `geminiClient` tests and integration. |
-| `lib/**/useSupabaseInventory.ts` | Large React hook + Supabase; better suited to integration/E2E tests. |
-| Root `lib/*.ts` that are **thin re-exports** only (e.g. `lib/statsService.ts` → `lib/utils/statsService.ts`) | No logic to test; coverage targets the **canonical** file under `lib/utils/` / `lib/analytics/`. |
+| Pattern                                                                                                      | Reason                                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `pages/**`, `components/**`, `contexts/**`, `App.tsx`, `main.tsx`                                            | UI-heavy; primary verification via **E2E** (`npm run test:e2e`) and manual flows.                                                          |
+| `api/**`                                                                                                     | Vercel/serverless handlers; not part of the Vite test bundle.                                                                              |
+| `lib/**/*Service.ts(x)`                                                                                      | Large **feature catalog** of demo/business services; covering all of them would be enormous with little marginal value vs. sampling + E2E. |
+| `lib/priceHistory.ts`                                                                                        | Legacy duplicate; runtime uses `lib/analytics/priceHistory.ts`.                                                                            |
+| `lib/utils/gemini.ts`, `lib/gemini.ts`                                                                       | Heavy AI + network; covered indirectly via `geminiClient` tests and integration.                                                           |
+| `lib/**/useSupabaseInventory.ts`                                                                             | Large React hook + Supabase; better suited to integration/E2E tests.                                                                       |
+| Root `lib/*.ts` that are **thin re-exports** only (e.g. `lib/statsService.ts` → `lib/utils/statsService.ts`) | No logic to test; coverage targets the **canonical** file under `lib/utils/` / `lib/analytics/`.                                           |
 
 ## Changing the policy
 

@@ -2,6 +2,8 @@
 // Autonomous agent that hunts, evaluates, negotiates, and acquires cards across platforms.
 
 import { getSelectedPlaybook } from './negotiationPlaybooks';
+import { store } from '../dal/syncStore';
+import { showToast } from '../utils/toast';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -168,9 +170,13 @@ export interface SmartPricingRecommendation {
   playbookLabel: string;
 }
 
+export const AUTONOMOUS_ACQUISITION_DATA_MODE = 'simulated' as const;
+export const AUTONOMOUS_ACQUISITION_DISCLOSURE =
+  'Acquisition campaigns, negotiations, and escrow events are simulated demo data and should not be treated as live marketplace execution.';
+
 // ── Mock Data ──────────────────────────────────────────────────────────────────
 
-const MOCK_CAMPAIGNS: AcquisitionCampaign[] = [
+const DEFAULT_CAMPAIGNS: AcquisitionCampaign[] = [
   {
     id: 'camp-001', name: 'Ohtani Bowman Chrome Hunt',
     criteria: { player: 'Shohei Ohtani', year: '2018', set: 'Bowman Chrome', grade: 'PSA 10', gradingCompany: 'PSA', maxPrice: 850, targetROI: 25, urgency: 'high', platforms: ['eBay', 'COMC', 'MySlabs'] },
@@ -250,7 +256,133 @@ const MOCK_CAMPAIGNS: AcquisitionCampaign[] = [
   },
 ];
 
-const MOCK_NEGOTIATIONS: NegotiationSession[] = [
+const CAMPAIGNS_STORE_KEY = 'msi_autonomous_acquisition_campaigns_v1';
+const NEGOTIATIONS_STORE_KEY = 'msi_autonomous_acquisition_negotiations_v1';
+const ESCROW_STORE_KEY = 'msi_autonomous_acquisition_escrow_v1';
+const RESULTS_STORE_KEY = 'msi_autonomous_acquisition_results_v1';
+const ACTIVITY_STORE_KEY = 'msi_autonomous_acquisition_activity_v1';
+
+/** Store keys for campaigns plus simulated negotiation datasets (persisted per device / account). */
+export const AUTONOMOUS_ACQUISITION_STORE_KEYS = {
+  campaigns: CAMPAIGNS_STORE_KEY,
+  negotiations: NEGOTIATIONS_STORE_KEY,
+  escrow: ESCROW_STORE_KEY,
+  results: RESULTS_STORE_KEY,
+  activity: ACTIVITY_STORE_KEY,
+} as const;
+
+function cloneDefaultCampaigns(): AcquisitionCampaign[] {
+  return JSON.parse(JSON.stringify(DEFAULT_CAMPAIGNS)) as AcquisitionCampaign[];
+}
+
+function isValidCampaign(raw: unknown): raw is AcquisitionCampaign {
+  if (!raw || typeof raw !== 'object') return false;
+  const campaign = raw as Partial<AcquisitionCampaign>;
+  return (
+    typeof campaign.id === 'string' &&
+    typeof campaign.name === 'string' &&
+    typeof campaign.createdAt === 'string' &&
+    typeof campaign.updatedAt === 'string' &&
+    typeof campaign.status === 'string' &&
+    typeof campaign.criteria === 'object' &&
+    Array.isArray((campaign.criteria as CampaignCriteria | undefined)?.platforms)
+  );
+}
+
+function loadCampaignStore(): AcquisitionCampaign[] {
+  const persisted = store.get<unknown[]>(CAMPAIGNS_STORE_KEY, []);
+  if (!Array.isArray(persisted) || persisted.length === 0) {
+    const seeded = cloneDefaultCampaigns();
+    store.set(CAMPAIGNS_STORE_KEY, seeded);
+    return seeded;
+  }
+  const valid = persisted.filter(isValidCampaign);
+  if (valid.length === 0) {
+    const seeded = cloneDefaultCampaigns();
+    store.set(CAMPAIGNS_STORE_KEY, seeded);
+    return seeded;
+  }
+  return JSON.parse(JSON.stringify(valid)) as AcquisitionCampaign[];
+}
+
+function persistCampaignStore(): void {
+  store.set(CAMPAIGNS_STORE_KEY, MOCK_CAMPAIGNS);
+}
+
+const MOCK_CAMPAIGNS: AcquisitionCampaign[] = loadCampaignStore();
+
+function isValidNegotiation(raw: unknown): raw is NegotiationSession {
+  if (!raw || typeof raw !== 'object') return false;
+  const n = raw as Partial<NegotiationSession>;
+  return (
+    typeof n.id === 'string' &&
+    typeof n.campaignId === 'string' &&
+    typeof n.platform === 'string' &&
+    Array.isArray(n.messages)
+  );
+}
+
+function isValidEscrow(raw: unknown): raw is EscrowTransaction {
+  if (!raw || typeof raw !== 'object') return false;
+  const e = raw as Partial<EscrowTransaction>;
+  return (
+    typeof e.id === 'string' &&
+    typeof e.campaignId === 'string' &&
+    typeof e.state === 'string' &&
+    Array.isArray(e.events)
+  );
+}
+
+function isValidAcquisitionResult(raw: unknown): raw is AcquisitionResult {
+  if (!raw || typeof raw !== 'object') return false;
+  const r = raw as Partial<AcquisitionResult>;
+  return (
+    typeof r.id === 'string' &&
+    typeof r.campaignId === 'string' &&
+    typeof r.acquiredPrice === 'number' &&
+    Number.isFinite(r.acquiredPrice) &&
+    typeof r.savings === 'number' &&
+    Number.isFinite(r.savings) &&
+    typeof r.savingsPct === 'number' &&
+    Number.isFinite(r.savingsPct)
+  );
+}
+
+function isValidAgentActivity(raw: unknown): raw is AgentActivity {
+  if (!raw || typeof raw !== 'object') return false;
+  const a = raw as Partial<AgentActivity>;
+  return (
+    typeof a.id === 'string' &&
+    typeof a.timestamp === 'string' &&
+    typeof a.campaignId === 'string' &&
+    typeof a.actionType === 'string' &&
+    typeof a.message === 'string'
+  );
+}
+
+function loadJsonStoreAcquisition<T extends object>(
+  key: string,
+  seed: T[],
+  isValid: (x: unknown) => x is T,
+  recoveryLabel: string
+): T[] {
+  const persisted = store.get<unknown[]>(key, []);
+  const hadPayload = Array.isArray(persisted) && persisted.length > 0;
+  const valid = Array.isArray(persisted) ? persisted.filter(isValid) : [];
+  if (valid.length === 0) {
+    if (hadPayload) {
+      showToast('warning', `Reset ${recoveryLabel} to demo defaults — saved data was unreadable.`, {
+        dedupeKey: `aacq-reset-${key}`,
+      });
+    }
+    const seeded = JSON.parse(JSON.stringify(seed)) as T[];
+    store.set(key, seeded);
+    return seeded;
+  }
+  return JSON.parse(JSON.stringify(valid)) as T[];
+}
+
+const SEED_NEGOTIATIONS: NegotiationSession[] = [
   {
     id: 'neg-001', campaignId: 'camp-001', sellerId: 'seller-001', sellerName: 'CardKing2024', platform: 'eBay',
     listingTitle: '2018 Bowman Chrome Shohei Ohtani RC PSA 10 #1 Gem Mint', listingPrice: 899,
@@ -332,6 +464,13 @@ const MOCK_NEGOTIATIONS: NegotiationSession[] = [
   },
 ];
 
+const MOCK_NEGOTIATIONS: NegotiationSession[] = loadJsonStoreAcquisition(
+  NEGOTIATIONS_STORE_KEY,
+  SEED_NEGOTIATIONS,
+  isValidNegotiation,
+  'negotiation sessions'
+);
+
 const MOCK_SELLERS: SellerProfile[] = [
   { id: 'seller-001', name: 'CardKing2024', platform: 'eBay', totalListings: 342, avgResponseTime: 2.5, acceptanceRate: 73, avgNegotiationRounds: 3.2, avgDiscountPct: 12, reputationScore: 92, preferredPaymentMethods: ['PayPal', 'eBay Managed'], lastActiveAt: '2026-03-13T10:30:00Z', behaviorNotes: ['Responds quickly during business hours', 'Tends to counter once then accept split', 'More flexible on cards listed 14+ days'] },
   { id: 'seller-002', name: 'WembyWorld', platform: 'eBay', totalListings: 28, avgResponseTime: 8, acceptanceRate: 60, avgNegotiationRounds: 3.8, avgDiscountPct: 15, reputationScore: 78, preferredPaymentMethods: ['PayPal'], lastActiveAt: '2026-03-10T14:00:00Z', behaviorNotes: ['New seller, may overvalue cards', 'Responds to payment speed incentives', 'Weekend seller — slower weekday responses'] },
@@ -342,7 +481,7 @@ const MOCK_SELLERS: SellerProfile[] = [
   { id: 'seller-007', name: 'BravesNation', platform: 'Facebook Groups', totalListings: 67, avgResponseTime: 3, acceptanceRate: 78, avgNegotiationRounds: 2.8, avgDiscountPct: 14, reputationScore: 85, preferredPaymentMethods: ['PayPal G&S', 'Venmo'], lastActiveAt: '2026-03-13T09:30:00Z', behaviorNotes: ['Active FB group member', 'Team collector — easier to negotiate non-Braves', 'Responds to fee coverage offers'] },
 ];
 
-const MOCK_ESCROW: EscrowTransaction[] = [
+const SEED_ESCROW: EscrowTransaction[] = [
   {
     id: 'esc-001', negotiationId: 'neg-002', campaignId: 'camp-002', cardDescription: '2023 Prizm Wembanyama BGS 9.5 Silver',
     amount: 980, state: 'authentication_in_progress', createdAt: '2026-03-10T15:00:00Z', updatedAt: '2026-03-13T10:00:00Z',
@@ -379,7 +518,14 @@ const MOCK_ESCROW: EscrowTransaction[] = [
   },
 ];
 
-const MOCK_RESULTS: AcquisitionResult[] = [
+const MOCK_ESCROW: EscrowTransaction[] = loadJsonStoreAcquisition(
+  ESCROW_STORE_KEY,
+  SEED_ESCROW,
+  isValidEscrow,
+  'escrow transactions'
+);
+
+const SEED_RESULTS: AcquisitionResult[] = [
   { id: 'acq-001', campaignId: 'camp-001', cardDescription: '2018 Bowman Chrome Ohtani #1 PSA 10', player: 'Shohei Ohtani', grade: 'PSA 10', platform: 'COMC', listingPrice: 920, acquiredPrice: 800, estimatedFMV: 850, savings: 120, savingsPct: 13.0, roi: 6.3, acquiredAt: '2026-03-07T16:00:00Z', sellerName: 'PremiumSlabs', negotiationRounds: 2, timeToAcquire: 55 },
   { id: 'acq-002', campaignId: 'camp-001', cardDescription: '2018 Bowman Chrome Ohtani #1 PSA 10 Refractor', player: 'Shohei Ohtani', grade: 'PSA 10', platform: 'eBay', listingPrice: 1100, acquiredPrice: 920, estimatedFMV: 1050, savings: 180, savingsPct: 16.4, roi: 14.1, acquiredAt: '2026-03-02T14:00:00Z', sellerName: 'SlabCity', negotiationRounds: 4, timeToAcquire: 72 },
   { id: 'acq-003', campaignId: 'camp-002', cardDescription: '2023 Prizm Wembanyama BGS 9.5 Base', player: 'Victor Wembanyama', grade: 'BGS 9.5', platform: 'eBay', listingPrice: 780, acquiredPrice: 650, estimatedFMV: 720, savings: 130, savingsPct: 16.7, roi: 10.8, acquiredAt: '2026-03-04T10:00:00Z', sellerName: 'HoopsVault', negotiationRounds: 3, timeToAcquire: 48 },
@@ -397,7 +543,14 @@ const MOCK_RESULTS: AcquisitionResult[] = [
   { id: 'acq-015', campaignId: 'camp-008', cardDescription: '2019 Topps Heritage Tatis Jr. RC PSA 9', player: 'Fernando Tatis Jr.', grade: 'PSA 9', platform: 'Facebook Groups', listingPrice: 190, acquiredPrice: 150, estimatedFMV: 175, savings: 40, savingsPct: 21.1, roi: 16.7, acquiredAt: '2026-01-12T16:00:00Z', sellerName: 'GroupPulls', negotiationRounds: 1, timeToAcquire: 6 },
 ];
 
-const MOCK_ACTIVITY: AgentActivity[] = [
+const MOCK_RESULTS: AcquisitionResult[] = loadJsonStoreAcquisition(
+  RESULTS_STORE_KEY,
+  SEED_RESULTS,
+  isValidAcquisitionResult,
+  'acquisition results'
+);
+
+const SEED_ACTIVITY: AgentActivity[] = [
   { id: 'act-001', timestamp: '2026-03-13T16:02:00Z', campaignId: 'camp-002', campaignName: 'Wembanyama Prizm RC Collection', actionType: 'scan', message: 'Scanning eBay for Wembanyama Prizm BGS 9.5 listings...', platform: 'eBay' },
   { id: 'act-002', timestamp: '2026-03-13T16:01:00Z', campaignId: 'camp-002', campaignName: 'Wembanyama Prizm RC Collection', actionType: 'found', message: 'Found 3 new listings matching criteria on eBay. Best price: $1,050.', platform: 'eBay', amount: 1050 },
   { id: 'act-003', timestamp: '2026-03-13T15:55:00Z', campaignId: 'camp-001', campaignName: 'Ohtani Bowman Chrome Hunt', actionType: 'counter_sent', message: 'Sent counter-offer of $780 to CardKing2024 for Ohtani PSA 10.', platform: 'eBay', amount: 780 },
@@ -418,14 +571,61 @@ const MOCK_ACTIVITY: AgentActivity[] = [
   { id: 'act-018', timestamp: '2026-03-13T11:00:00Z', campaignId: 'camp-006', campaignName: 'Judge Rookie Blitz', actionType: 'accepted', message: 'SlabDeals accepted $420 for Judge Chrome PSA 10 on MySlabs! Savings: $60.', platform: 'MySlabs', amount: 420 },
 ];
 
+const MOCK_ACTIVITY: AgentActivity[] = loadJsonStoreAcquisition(
+  ACTIVITY_STORE_KEY,
+  SEED_ACTIVITY,
+  isValidAgentActivity,
+  'agent activity feed'
+);
+
+const ANALYTICS_MONTH_LABELS = ['Oct 2025', 'Nov 2025', 'Dec 2025', 'Jan 2026', 'Feb 2026', 'Mar 2026'] as const;
+
+const UTC_MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
+
+function monthLabelUtc(iso: string): string | null {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return `${UTC_MONTH_SHORT[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
+function buildMonthlySavingsFromResults(results: AcquisitionResult[]): { month: string; saved: number; spent: number }[] {
+  const map = new Map<string, { saved: number; spent: number }>();
+  for (const m of ANALYTICS_MONTH_LABELS) {
+    map.set(m, { saved: 0, spent: 0 });
+  }
+  for (const r of results) {
+    const key = monthLabelUtc(r.acquiredAt);
+    if (!key) continue;
+    const bucket = map.get(key);
+    if (!bucket) continue;
+    bucket.saved += r.savings;
+    bucket.spent += r.acquiredPrice;
+  }
+  return ANALYTICS_MONTH_LABELS.map(month => ({
+    month,
+    saved: map.get(month)!.saved,
+    spent: map.get(month)!.spent,
+  }));
+}
+
 // ── Service Functions ──────────────────────────────────────────────────────────
 
 export function createCampaign(criteria: CampaignCriteria): AcquisitionCampaign {
+  const safeCriteria: CampaignCriteria = {
+    ...criteria,
+    player: criteria.player.trim(),
+    set: criteria.set?.trim() || undefined,
+    grade: criteria.grade?.trim() || undefined,
+    maxPrice: Number.isFinite(criteria.maxPrice) && criteria.maxPrice > 0 ? criteria.maxPrice : 1,
+    targetROI: Number.isFinite(criteria.targetROI) ? Math.max(0, Math.min(200, criteria.targetROI)) : 0,
+    platforms: criteria.platforms.length > 0 ? criteria.platforms : ['eBay'],
+    notes: criteria.notes?.trim() || undefined,
+  };
   const id = `camp-${Date.now()}`;
   const campaign: AcquisitionCampaign = {
     id,
-    name: `${criteria.player} ${criteria.set || ''} ${criteria.grade || ''}`.trim(),
-    criteria,
+    name: `${safeCriteria.player} ${safeCriteria.set || ''} ${safeCriteria.grade || ''}`.trim(),
+    criteria: safeCriteria,
     status: 'active',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -439,6 +639,7 @@ export function createCampaign(criteria: CampaignCriteria): AcquisitionCampaign 
     progressPct: 0,
   };
   MOCK_CAMPAIGNS.push(campaign);
+  persistCampaignStore();
   return campaign;
 }
 
@@ -498,7 +699,10 @@ export function getAcquisitionAnalytics(): AcquisitionAnalytics {
   const successfulNegs = MOCK_NEGOTIATIONS.filter(n => n.stage === 'accepted').length;
   const totalNegs = MOCK_NEGOTIATIONS.length;
 
-  const bestDeal = results.reduce((best, r) => r.savingsPct > best.savingsPct ? r : best, results[0]);
+  const bestDealRow =
+    results.length > 0
+      ? results.reduce((best, r) => (r.savingsPct > best.savingsPct ? r : best), results[0])
+      : null;
 
   const platformMap = new Map<MarketplacePlatform, { count: number; discountSum: number }>();
   for (const r of results) {
@@ -522,23 +726,16 @@ export function getAcquisitionAnalytics(): AcquisitionAnalytics {
     avgNegotiationRounds: Math.round(avgRounds * 10) / 10,
     avgTimeToAcquire: Math.round(avgTime),
     bestDeal: {
-      card: bestDeal?.cardDescription || '',
-      savings: bestDeal?.savings || 0,
-      savingsPct: bestDeal?.savingsPct || 0,
+      card: bestDealRow?.cardDescription || '',
+      savings: bestDealRow?.savings || 0,
+      savingsPct: bestDealRow?.savingsPct || 0,
     },
     platformBreakdown: Array.from(platformMap.entries()).map(([platform, data]) => ({
       platform,
       acquisitions: data.count,
       avgDiscount: Math.round((data.discountSum / data.count) * 10) / 10,
     })),
-    monthlySavings: [
-      { month: 'Oct 2025', saved: 0, spent: 0 },
-      { month: 'Nov 2025', saved: 0, spent: 0 },
-      { month: 'Dec 2025', saved: 95, spent: 450 },
-      { month: 'Jan 2026', saved: 520, spent: 2100 },
-      { month: 'Feb 2026', saved: 575, spent: 2280 },
-      { month: 'Mar 2026', saved: totalSaved - 1190, spent: totalSpent - 4830 },
-    ],
+    monthlySavings: buildMonthlySavingsFromResults(results),
   };
 }
 
@@ -547,6 +744,7 @@ export function pauseCampaign(id: string): AcquisitionCampaign | undefined {
   if (campaign && campaign.status === 'active') {
     campaign.status = 'paused';
     campaign.updatedAt = new Date().toISOString();
+    persistCampaignStore();
   }
   return campaign;
 }
@@ -556,6 +754,7 @@ export function resumeCampaign(id: string): AcquisitionCampaign | undefined {
   if (campaign && campaign.status === 'paused') {
     campaign.status = 'active';
     campaign.updatedAt = new Date().toISOString();
+    persistCampaignStore();
   }
   return campaign;
 }

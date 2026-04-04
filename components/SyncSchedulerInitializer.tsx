@@ -5,6 +5,11 @@ import { useAuth } from '../contexts/AuthContext.tsx';
 import { useMigration } from '../contexts/MigrationContext.tsx';
 import { initializeScheduler, stopScheduler } from '../lib/utils/syncScheduler.ts';
 import { initPriceHistory, teardownPriceHistory, isPriceHistoryInitialized } from '../lib/analytics/priceHistory.ts';
+import {
+    initMarketEvents,
+    teardownMarketEvents,
+    isMarketEventsInitialized,
+} from '../lib/analytics/marketEventsService.ts';
 import { isDemoMode } from '../lib/supabase.ts';
 import { showToast } from '../lib/utils/toast.ts';
 import { logger } from '../lib/logger';
@@ -20,10 +25,14 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
         if (user?.id && !isPriceHistoryInitialized()) {
             initPriceHistory(user.id);
         }
+        if (user?.id && !isMarketEventsInitialized()) {
+            initMarketEvents(user.id);
+        }
 
         return () => {
             // Tear down on unmount (sign-out causes ProtectedRoute to unmount this)
             teardownPriceHistory();
+            teardownMarketEvents();
         };
     }, [user?.id]);
 

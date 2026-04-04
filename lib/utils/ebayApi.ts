@@ -53,14 +53,18 @@ export const ebayApi = {
     condition?: string;
     maxPrice?: number;
     limit?: number;
+    /** Browse API offset for pagination (see eBay item_summary/search). */
+    offset?: number;
+    sort?: string;
     soldOnly?: boolean;
   }): Promise<EbaySearchResponse> {
+    const { soldOnly: _legacy, ...apiParams } = params;
     return serverApiRequest<EbaySearchResponse>('/api/market/ebay', {
       method: 'POST',
       body: JSON.stringify({
         action: 'search',
         sandbox: !!this.config.sandbox,
-        params,
+        params: apiParams,
       }),
     });
   },
@@ -86,10 +90,11 @@ export const ebayApi = {
       itemId: string;
     }>;
   }> {
-    // Search for sold items
+    // Browse API returns active listings; `soldOnly` is reserved for future sold-comp feeds.
     const searchResults = await this.searchSportsCards({
       ...params,
-      limit: 100
+      limit: 100,
+      sort: 'price',
     });
 
     if (!searchResults.itemSummaries || searchResults.itemSummaries.length === 0) {

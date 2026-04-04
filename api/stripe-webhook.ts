@@ -1,78 +1,92 @@
 /**
  * Stripe webhook handler — verifies signature and processes events.
  * Deploy as Vercel serverless. Requires STRIPE_WEBHOOK_SECRET in env.
- * Configure Vercel for raw body: vercel.json "api": {"stripe-webhook": {"bodyParser": false}}
+ *
+ * Uses the Web `Request` API and `request.text()` so the body stays raw for
+ * `constructEvent`. Legacy `(req, res)` handlers with parsed `req.body` break
+ * signature verification for `application/json` payloads.
  *
  * @see docs/PAYMENT_SECURITY.md §(b)
  */
 
 import Stripe from 'stripe';
 import { apiLogger } from './lib/logger';
-
-type ApiResponse = {
-  setHeader: (k: string, v: string) => void;
-  status: (n: number) => { json: (o: object) => unknown };
-};
+import { markStripeEventProcessed, wasStripeEventProcessed } from './lib/stripeWebhookIdempotency';
+import {
+  syncProfileFromCheckoutSession,
+  syncProfileFromInvoice,
+  syncProfileFromSubscription,
+  syncProfileOnSubscriptionDeleted,
+} from './lib/stripeProfileSync';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-export default async function handler(
-  req: { method?: string; body?: string | Buffer | unknown; headers?: Record<string, string | string[] | undefined> },
-  res: ApiResponse
-) {
-  res.setHeader('Content-Type', 'application/json');
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+export async function POST(request: Request): Promise<Response> {
   if (!webhookSecret) {
     apiLogger.error('STRIPE_WEBHOOK_SECRET not configured');
-    return res.status(500).json({ error: 'Webhook secret not configured' });
+    return Response.json({ error: 'Webhook secret not configured' }, { status: 500 });
   }
 
-  const sig =
-    typeof req.headers?.['stripe-signature'] === 'string'
-      ? req.headers['stripe-signature']
-      : Array.isArray(req.headers?.['stripe-signature'])
-        ? req.headers['stripe-signature'][0]
-        : '';
-
+  const sig = request.headers.get('stripe-signature') ?? '';
   if (!sig) {
-    return res.status(400).json({ error: 'Missing Stripe-Signature' });
+    return Response.json({ error: 'Missing Stripe-Signature' }, { status: 400 });
   }
 
-  const rawBody =
-    typeof req.body === 'string' ? req.body : Buffer.isBuffer(req.body) ? req.body.toString('utf8') : '';
+  const rawBody = await request.text();
   if (!rawBody) {
-    return res.status(400).json({ error: 'Missing request body; configure bodyParser: false' });
+    return Response.json({ error: 'Missing request body' }, { status: 400 });
   }
 
   let event: Stripe.Event;
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+    apiVersion: '2026-02-25.clover',
+  });
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-      apiVersion: '2026-02-25.clover',
-    });
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Invalid signature';
     apiLogger.warn('Stripe webhook signature verification failed', msg);
-    return res.status(400).json({ error: msg });
+    return Response.json({ error: msg }, { status: 400 });
   }
 
   apiLogger.info('Stripe webhook', { type: event.type, id: event.id });
 
-  switch (event.type) {
-    case 'checkout.session.completed':
-    case 'customer.subscription.updated':
-    case 'customer.subscription.deleted':
-    case 'invoice.payment_succeeded':
-    case 'invoice.payment_failed':
-      // Backend should update profiles table via Supabase. Implement per event.
-      break;
-    default:
-      apiLogger.info('Unhandled event type', event.type);
+  if (await wasStripeEventProcessed(event.id)) {
+    apiLogger.info('Stripe webhook duplicate delivery ignored', { id: event.id });
+    return Response.json({ received: true, duplicate: true });
   }
 
-  return res.status(200).json({ received: true });
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed':
+        await syncProfileFromCheckoutSession(stripe, event.data.object as Stripe.Checkout.Session);
+        break;
+      case 'customer.subscription.updated':
+        await syncProfileFromSubscription(event.data.object as Stripe.Subscription);
+        break;
+      case 'customer.subscription.deleted':
+        await syncProfileOnSubscriptionDeleted(event.data.object as Stripe.Subscription);
+        break;
+      case 'invoice.payment_succeeded':
+        await syncProfileFromInvoice(stripe, event.data.object as Stripe.Invoice);
+        break;
+      case 'invoice.payment_failed':
+        await syncProfileFromInvoice(stripe, event.data.object as Stripe.Invoice);
+        break;
+      default:
+        apiLogger.info('Unhandled event type', event.type);
+    }
+  } catch (syncErr) {
+    apiLogger.error('Stripe profile sync failed', syncErr);
+    return Response.json({ received: false, error: 'sync_failed' }, { status: 500 });
+  }
+
+  try {
+    await markStripeEventProcessed(event.id);
+  } catch (e) {
+    apiLogger.error('Failed to record Stripe event id (will retry on Stripe redelivery)', e);
+    return Response.json({ received: false, error: 'persist_failed' }, { status: 500 });
+  }
+
+  return Response.json({ received: true });
 }
