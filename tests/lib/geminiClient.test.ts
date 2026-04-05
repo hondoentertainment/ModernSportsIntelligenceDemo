@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('../../lib/serverApi', () => ({
-  serverApiRequest: vi.fn(),
+  serverApiRequestAuthenticated: vi.fn(),
 }));
 
 vi.mock('../../lib/utils/toast', () => ({
@@ -26,11 +26,11 @@ describe('geminiClient', () => {
     expect(typeof client.models.generateContent).toBe('function');
   });
 
-  it('generateContent calls serverApiRequest', async () => {
+  it('generateContent calls serverApiRequestAuthenticated', async () => {
     const { createGeminiClient } = await import('../../lib/geminiClient');
-    const { serverApiRequest } = await import('../../lib/serverApi');
+    const { serverApiRequestAuthenticated } = await import('../../lib/serverApi');
     const mockResponse = { text: 'Generated text' };
-    vi.mocked(serverApiRequest).mockResolvedValue(mockResponse);
+    vi.mocked(serverApiRequestAuthenticated).mockResolvedValue(mockResponse);
 
     const client = createGeminiClient();
     const result = await client.models.generateContent({
@@ -39,7 +39,7 @@ describe('geminiClient', () => {
     });
 
     expect(result).toEqual(mockResponse);
-    expect(serverApiRequest).toHaveBeenCalledWith('/api/ai/generate', {
+    expect(serverApiRequestAuthenticated).toHaveBeenCalledWith('/api/ai/generate', {
       method: 'POST',
       body: expect.stringContaining('gemini-pro'),
     });
@@ -47,10 +47,10 @@ describe('geminiClient', () => {
 
   it('generateContent shows toast on error', async () => {
     const { createGeminiClient } = await import('../../lib/geminiClient');
-    const { serverApiRequest } = await import('../../lib/serverApi');
+    const { serverApiRequestAuthenticated } = await import('../../lib/serverApi');
     const { showToast } = await import('../../lib/toast');
     const error = new Error('API error');
-    vi.mocked(serverApiRequest).mockRejectedValue(error);
+    vi.mocked(serverApiRequestAuthenticated).mockRejectedValue(error);
 
     const client = createGeminiClient();
     
@@ -69,10 +69,10 @@ describe('geminiClient', () => {
     // Reset modules to clear missingProxyWarned flag
     vi.resetModules();
     const { createGeminiClient } = await import('../../lib/geminiClient');
-    const { serverApiRequest } = await import('../../lib/serverApi');
+    const { serverApiRequestAuthenticated } = await import('../../lib/serverApi');
     const { showToast } = await import('../../lib/toast');
     const error = new Error('API error');
-    vi.mocked(serverApiRequest).mockRejectedValue(error);
+    vi.mocked(serverApiRequestAuthenticated).mockRejectedValue(error);
 
     const client = createGeminiClient();
     
@@ -92,9 +92,9 @@ describe('geminiClient', () => {
 
   it('generateContent includes config in request', async () => {
     const { createGeminiClient } = await import('../../lib/geminiClient');
-    const { serverApiRequest } = await import('../../lib/serverApi');
+    const { serverApiRequestAuthenticated } = await import('../../lib/serverApi');
     const mockResponse = { text: 'Response' };
-    vi.mocked(serverApiRequest).mockResolvedValue(mockResponse);
+    vi.mocked(serverApiRequestAuthenticated).mockResolvedValue(mockResponse);
 
     const client = createGeminiClient();
     await client.models.generateContent({
@@ -106,7 +106,7 @@ describe('geminiClient', () => {
       },
     });
 
-    expect(serverApiRequest).toHaveBeenCalledWith(
+    expect(serverApiRequestAuthenticated).toHaveBeenCalledWith(
       '/api/ai/generate',
       expect.objectContaining({
         method: 'POST',

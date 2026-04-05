@@ -2,10 +2,17 @@
  * Sync Stripe subscription state into Supabase `profiles` via REST + service role.
  * Requires checkout/session metadata or profile rows keyed by `stripe_customer_id`.
  *
+ * In production, missing Supabase env, failed PATCH, or unmapped price IDs throw so the
+ * webhook can release the idempotency claim and Stripe will retry.
+ *
  * @see docs/PAYMENT_SECURITY.md
  */
 
 import type Stripe from 'stripe';
+
+function isStripeProfileSyncProduction(): boolean {
+  return process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
+}
 
 type SubscriptionTier = 'free' | 'basic' | 'pro' | 'alpha';
 type SubscriptionStatusDb = 'active' | 'canceled' | 'past_due' | 'incomplete' | 'trialing';
@@ -55,10 +62,15 @@ function mapStripeStatus(status: Stripe.Subscription.Status): SubscriptionStatus
   }
 }
 
-async function patchProfiles(filter: string, body: Record<string, unknown>): Promise<boolean> {
+async function patchProfiles(filter: string, body: Record<string, unknown>): Promise<void> {
   const url = supabaseUrl();
   const key = serviceKey();
-  if (!url || !key) return false;
+  if (!url || !key) {
+    if (isStripeProfileSyncProduction()) {
+      throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required for Stripe profile sync');
+    }
+    return;
+  }
 
   const res = await fetch(`${url}/rest/v1/profiles?${filter}`, {
     method: 'PATCH',
@@ -73,7 +85,10 @@ async function patchProfiles(filter: string, body: Record<string, unknown>): Pro
       updated_at: new Date().toISOString(),
     }),
   });
-  return res.ok;
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '');
+    throw new Error(`profiles PATCH failed (${res.status}): ${detail.slice(0, 300)}`);
+  }
 }
 
 function userIdFromSession(session: Stripe.Checkout.Session): string | undefined {
@@ -101,10 +116,6 @@ export async function syncProfileFromCheckoutSession(
   stripe: Stripe,
   session: Stripe.Checkout.Session
 ): Promise<void> {
-  const url = supabaseUrl();
-  const key = serviceKey();
-  if (!url || !key) return;
-
   const mode = session.mode;
   if (mode !== 'subscription') return;
 
@@ -114,12 +125,24 @@ export async function syncProfileFromCheckoutSession(
       : session.subscription && typeof session.subscription === 'object'
         ? (session.subscription as { id: string }).id
         : undefined;
-  if (!subscriptionId) return;
+  if (!subscriptionId) {
+    if (isStripeProfileSyncProduction()) {
+      throw new Error('checkout.session.completed missing subscription id for mode=subscription');
+    }
+    return;
+  }
 
   const sub = await stripe.subscriptions.retrieve(subscriptionId);
   const priceId = sub.items.data[0]?.price?.id;
   const tier = tierFromStripePriceId(priceId);
-  if (!tier) return;
+  if (!tier) {
+    if (isStripeProfileSyncProduction() && priceId) {
+      throw new Error(
+        `Stripe price ${priceId} is not mapped; set STRIPE_BASIC_PRICE_ID / STRIPE_PRO_PRICE_ID / STRIPE_ALPHA_PRICE_ID`,
+      );
+    }
+    return;
+  }
 
   const userId = userIdFromSession(session) ?? userIdFromSubscription(sub);
   const cus = customerId(session);
@@ -141,14 +164,15 @@ export async function syncProfileFromCheckoutSession(
 
   if (cus) {
     await patchProfiles(`stripe_customer_id=eq.${encodeURIComponent(cus)}`, patch);
+    return;
+  }
+
+  if (isStripeProfileSyncProduction()) {
+    throw new Error('checkout.session missing user id and customer id in metadata — cannot update profile');
   }
 }
 
 export async function syncProfileFromSubscription(sub: Stripe.Subscription): Promise<void> {
-  const url = supabaseUrl();
-  const key = serviceKey();
-  if (!url || !key) return;
-
   const userId = userIdFromSubscription(sub);
   const cus = customerId(sub);
   const priceId = sub.items.data[0]?.price?.id;
@@ -163,10 +187,20 @@ export async function syncProfileFromSubscription(sub: Stripe.Subscription): Pro
     };
     if (userId) await patchProfiles(`id=eq.${encodeURIComponent(userId)}`, freePatch);
     else if (cus) await patchProfiles(`stripe_customer_id=eq.${encodeURIComponent(cus)}`, freePatch);
+    else if (isStripeProfileSyncProduction()) {
+      throw new Error('subscription canceled event missing user id and customer id');
+    }
     return;
   }
 
-  if (!tier) return;
+  if (!tier) {
+    if (isStripeProfileSyncProduction() && priceId) {
+      throw new Error(
+        `Stripe price ${priceId} is not mapped; set STRIPE_BASIC_PRICE_ID / STRIPE_PRO_PRICE_ID / STRIPE_ALPHA_PRICE_ID`,
+      );
+    }
+    return;
+  }
 
   const patch = {
     subscription_tier: tier,
@@ -184,6 +218,10 @@ export async function syncProfileFromSubscription(sub: Stripe.Subscription): Pro
   }
   if (cus) {
     await patchProfiles(`stripe_customer_id=eq.${encodeURIComponent(cus)}`, patch);
+    return;
+  }
+  if (isStripeProfileSyncProduction()) {
+    throw new Error('subscription update missing user id and customer id');
   }
 }
 
@@ -208,10 +246,6 @@ function subscriptionIdFromInvoice(invoice: Stripe.Invoice): string | undefined 
 
 /** Refresh `profiles` from the invoice’s subscription (payment succeeded or failed). */
 export async function syncProfileFromInvoice(stripe: Stripe, invoice: Stripe.Invoice): Promise<void> {
-  const url = supabaseUrl();
-  const key = serviceKey();
-  if (!url || !key) return;
-
   const subId = subscriptionIdFromInvoice(invoice);
   if (!subId) return;
 
@@ -221,10 +255,6 @@ export async function syncProfileFromInvoice(stripe: Stripe, invoice: Stripe.Inv
 
 /** `customer.subscription.deleted` — always downgrade to free (items may be missing on payload). */
 export async function syncProfileOnSubscriptionDeleted(sub: Stripe.Subscription): Promise<void> {
-  const url = supabaseUrl();
-  const key = serviceKey();
-  if (!url || !key) return;
-
   const userId = userIdFromSubscription(sub);
   const cus = customerId(sub);
   const freePatch = {
@@ -240,5 +270,9 @@ export async function syncProfileOnSubscriptionDeleted(sub: Stripe.Subscription)
   }
   if (cus) {
     await patchProfiles(`stripe_customer_id=eq.${encodeURIComponent(cus)}`, freePatch);
+    return;
+  }
+  if (isStripeProfileSyncProduction()) {
+    throw new Error('subscription.deleted missing user id and customer id');
   }
 }

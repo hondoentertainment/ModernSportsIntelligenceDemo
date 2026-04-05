@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ebayApi } from '../../lib/ebayApi';
-import { serverApiRequest } from '../../lib/serverApi';
+import { serverApiRequestAuthenticated } from '../../lib/serverApi';
 
 vi.mock('../../lib/serverApi', () => ({
-  serverApiRequest: vi.fn(),
+  serverApiRequestAuthenticated: vi.fn(),
 }));
 
 describe('ebayApi', () => {
@@ -30,25 +30,29 @@ describe('ebayApi', () => {
     });
   });
 
-  describe('getAccessToken', () => {
-    it('fetches access token', async () => {
-      vi.mocked(serverApiRequest).mockResolvedValue({ accessToken: 'token-123' });
-      const token = await ebayApi.getAccessToken();
-      expect(token).toBe('token-123');
-      expect(serverApiRequest).toHaveBeenCalledWith('/api/market/ebay', {
+  describe('verifyCredentials', () => {
+    it('calls verify action (no token returned to client)', async () => {
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue({ ok: true });
+      await ebayApi.verifyCredentials();
+      expect(serverApiRequestAuthenticated).toHaveBeenCalledWith('/api/market/ebay', {
         method: 'POST',
-        body: JSON.stringify({ action: 'token', sandbox: false }),
+        body: JSON.stringify({ action: 'verify', sandbox: false }),
       });
     });
 
     it('uses sandbox flag from config', async () => {
       ebayApi.initialize({ sandbox: true });
-      vi.mocked(serverApiRequest).mockResolvedValue({ accessToken: 'token' });
-      await ebayApi.getAccessToken();
-      expect(serverApiRequest).toHaveBeenCalledWith('/api/market/ebay', {
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue({ ok: true });
+      await ebayApi.verifyCredentials();
+      expect(serverApiRequestAuthenticated).toHaveBeenCalledWith('/api/market/ebay', {
         method: 'POST',
-        body: JSON.stringify({ action: 'token', sandbox: true }),
+        body: JSON.stringify({ action: 'verify', sandbox: true }),
       });
+    });
+
+    it('throws when server does not return ok', async () => {
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue({ ok: false });
+      await expect(ebayApi.verifyCredentials()).rejects.toThrow(/verify failed/i);
     });
   });
 
@@ -63,13 +67,13 @@ describe('ebayApi', () => {
           },
         ],
       };
-      vi.mocked(serverApiRequest).mockResolvedValue(mockResponse);
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue(mockResponse);
       const result = await ebayApi.searchSportsCards({
         playerName: 'Test Player',
         cardYear: '2024',
       });
       expect(result).toEqual(mockResponse);
-      expect(serverApiRequest).toHaveBeenCalledWith('/api/market/ebay', {
+      expect(serverApiRequestAuthenticated).toHaveBeenCalledWith('/api/market/ebay', {
         method: 'POST',
         body: JSON.stringify({
           action: 'search',
@@ -80,14 +84,14 @@ describe('ebayApi', () => {
     });
 
     it('passes offset and sort; strips legacy soldOnly from API params', async () => {
-      vi.mocked(serverApiRequest).mockResolvedValue({ itemSummaries: [] });
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue({ itemSummaries: [] });
       await ebayApi.searchSportsCards({
         playerName: 'Test',
         offset: 40,
         sort: 'newlyListed',
         soldOnly: true,
       });
-      expect(serverApiRequest).toHaveBeenCalledWith('/api/market/ebay', {
+      expect(serverApiRequestAuthenticated).toHaveBeenCalledWith('/api/market/ebay', {
         method: 'POST',
         body: JSON.stringify({
           action: 'search',
@@ -100,7 +104,7 @@ describe('ebayApi', () => {
 
   describe('getMarketValue', () => {
     it('returns zero values when no results', async () => {
-      vi.mocked(serverApiRequest).mockResolvedValue({ itemSummaries: [] });
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue({ itemSummaries: [] });
       const result = await ebayApi.getMarketValue({ playerName: 'Test' });
       expect(result).toEqual({
         averagePrice: 0,
@@ -112,7 +116,7 @@ describe('ebayApi', () => {
     });
 
     it('calculates market value from listing prices (Browse API — active listings)', async () => {
-      vi.mocked(serverApiRequest).mockResolvedValue({
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue({
         itemSummaries: [
           {
             itemId: '1',
@@ -146,7 +150,7 @@ describe('ebayApi', () => {
     });
 
     it('handles items without prices', async () => {
-      vi.mocked(serverApiRequest).mockResolvedValue({
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue({
         itemSummaries: [
           { itemId: '1', title: 'Card 1' },
           {
@@ -162,7 +166,7 @@ describe('ebayApi', () => {
     });
 
     it('returns zero aggregate when no item has a usable price', async () => {
-      vi.mocked(serverApiRequest).mockResolvedValue({
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue({
         itemSummaries: [
           { itemId: '1', title: 'No price' },
           { itemId: '2', title: 'Bad price', price: { value: '', currency: 'USD' } },
@@ -186,7 +190,7 @@ describe('ebayApi', () => {
         condition: 'Mint',
         itemCreationDate: `2024-01-${String(i + 1).padStart(2, '0')}`,
       }));
-      vi.mocked(serverApiRequest).mockResolvedValue({ itemSummaries: items });
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue({ itemSummaries: items });
       const result = await ebayApi.getMarketValue({ playerName: 'Test' });
       expect(result.recentSales).toHaveLength(10);
     });
@@ -199,10 +203,10 @@ describe('ebayApi', () => {
         title: 'Test Card',
         price: { value: '10.00', currency: 'USD' },
       };
-      vi.mocked(serverApiRequest).mockResolvedValue(mockItem);
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue(mockItem);
       const result = await ebayApi.getItemDetails('123');
       expect(result).toEqual(mockItem);
-      expect(serverApiRequest).toHaveBeenCalledWith('/api/market/ebay', {
+      expect(serverApiRequestAuthenticated).toHaveBeenCalledWith('/api/market/ebay', {
         method: 'POST',
         body: JSON.stringify({
           action: 'item',
@@ -215,13 +219,13 @@ describe('ebayApi', () => {
 
   describe('testConnection', () => {
     it('returns success message on successful connection', async () => {
-      vi.mocked(serverApiRequest).mockResolvedValue({ accessToken: 'token' });
+      vi.mocked(serverApiRequestAuthenticated).mockResolvedValue({ ok: true });
       const result = await ebayApi.testConnection();
       expect(result).toBe('eBay API connection successful');
     });
 
     it('returns error message on failed connection', async () => {
-      vi.mocked(serverApiRequest).mockRejectedValue(new Error('Network error'));
+      vi.mocked(serverApiRequestAuthenticated).mockRejectedValue(new Error('Network error'));
       const result = await ebayApi.testConnection();
       expect(result).toContain('eBay API connection failed');
     });

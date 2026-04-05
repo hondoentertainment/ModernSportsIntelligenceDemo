@@ -13,7 +13,7 @@ Run in CI workflow (`.github/workflows/ci.yml`):
 5. `npm run test:coverage`
 6. `npm run guardrail:pricing-truth`
 7. `npm run build`
-8. `npm run test:e2e:smoke`
+8. `npm run test:e2e:smoke` (auth, dashboard, release smoke, billing/checkout UX)
 9. `npm run test:e2e:pricing-truth`
 
 ## Release workflow gates

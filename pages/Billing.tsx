@@ -24,12 +24,17 @@ const Billing: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+  const [subscriptionRefreshToken, setSubscriptionRefreshToken] = useState(0);
 
   useEffect(() => {
     const success = searchParams.get('success');
     const canceled = searchParams.get('canceled');
     if (success === 'true') {
-      setMessage({ type: 'success', text: 'Subscription updated successfully.' });
+      setMessage({
+        type: 'success',
+        text: 'Payment received. Your plan will update momentarily once the server confirms the subscription.',
+      });
+      setSubscriptionRefreshToken((t) => t + 1);
       setSearchParams({}, { replace: true });
     }
     if (canceled === 'true') {
@@ -40,11 +45,18 @@ const Billing: React.FC = () => {
 
   useEffect(() => {
     if (!user?.id) return;
+    setLoading(true);
     getUserSubscription(user.id)
       .then((data) => setSubscription(data as typeof subscription))
-      .catch(() => setMessage({ type: 'error', text: 'Failed to load subscription.' }))
+      .catch(() =>
+        setMessage((prev) =>
+          prev?.type === 'success' || prev?.type === 'info'
+            ? prev
+            : { type: 'error', text: 'Failed to load subscription.' },
+        ),
+      )
       .finally(() => setLoading(false));
-  }, [user?.id]);
+  }, [user?.id, subscriptionRefreshToken]);
 
   const handleUpgrade = async (tier: SubscriptionTier) => {
     if (!user?.id || isDemoMode) return;
@@ -72,7 +84,11 @@ const Billing: React.FC = () => {
     try {
       const base = window.location.href.split('#')[0];
       const url = await createBillingPortalSession(user.id, `${base}#/billing`);
-      if (url) window.location.href = url;
+      if (url) {
+        window.location.href = url;
+      } else {
+        setMessage({ type: 'error', text: 'Billing portal did not return a URL. Try again or contact support.' });
+      }
     } catch (err) {
       setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Failed to open billing portal.' });
     }
@@ -102,7 +118,7 @@ const Billing: React.FC = () => {
     );
   }
 
-  if (loading) {
+  if (loading && !message) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="animate-spin text-brand-lime" size={32} />

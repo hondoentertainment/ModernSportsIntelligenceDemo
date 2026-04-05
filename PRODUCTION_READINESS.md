@@ -19,6 +19,8 @@ Completed in recent sprints (post–v4.3):
 
 **Phase 6 (next-phase hardening):** Global unhandled promise rejections reported via `reportError` (same pipeline as ErrorBoundary). API routes use structured logging: `api/lib/logger.ts` (`apiLogger.error/warn/info`) in `api/market/ebay.ts` and `api/ai/generate.ts` so production logs are consistent and grep-able.
 
+**Multi-agent production audit (follow-up):** Parallel security/CI/DAL reviews drove code changes (not only docs): (1) **eBay** — removed `action: token` that exposed OAuth `accessToken` to browsers; replaced with `verify` returning `{ ok: true }` only after server-side token fetch. (2) **`api/lib/httpProduction.ts`** — shared CORS (`ALLOWED_ORIGIN` or `https://$VERCEL_URL`, else `*` in non-prod) and generic `500` JSON (`code` + safe message, full error server-logged only). (3) **`initDAL`** — deduped by `userId|demo|live` and **`store.clear()`** on real user/mode changes to reduce stale in-memory cache when switching accounts. (4) **`useSupabaseInventory`** — load **epoch** so slower cloud fetches cannot overwrite newer user/session results; cloud fetch failures call **`markCloudFailure`**. (5) **`GlobalErrorBoundary`** — calls **`reportError`** (Sentry + beacon) like other boundaries.
+
 **Phase 7–11 (agent swarm, production-grade):**
 - **Phase 7 – Test coverage:** Unit tests for `lib/envValidation.ts` and `lib/apiValidation.ts`; E2E test "feature search opens and shows featured features" in `release-smoke.spec.ts`.
 - **Phase 8 – Performance:** `React.memo()` on `CardGridItem` and Collection grid item; `scripts/bundle-size.cjs` and `npm run build:size`; PRODUCTION_READINESS §2.3 and MONITORING bundle-size note; vite `chunkSizeWarningLimit` comment.

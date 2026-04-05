@@ -26,11 +26,27 @@ import { store } from './syncStore';
 import { isDemoMode } from '../supabase';
 import { logger } from '../logger';
 
+/** Dedupe `initDAL` across React re-renders; includes demo flag so tests can switch modes. */
+let lastDalInitKey = '';
+
+/** Test-only: clear dedupe state between Vitest cases. */
+export function resetDalInitKeyForTests(): void {
+  lastDalInitKey = '';
+}
+
 /**
  * Initialize the DAL with the appropriate adapter.
  * Call once at app startup (e.g. in App.tsx or AuthContext).
  */
 export function initDAL(userId: string | null): void {
+  const key = `${userId ?? ''}|${isDemoMode ? 'demo' : 'live'}`;
+  if (key === lastDalInitKey) {
+    return;
+  }
+  lastDalInitKey = key;
+
+  store.clear();
+
   if (userId && !isDemoMode) {
     const adapter = new SupabaseStorageAdapter(userId);
     setAdapter(adapter, 'supabase');
