@@ -1,5 +1,5 @@
 import { showToast } from './toast';
-import { serverApiRequest } from '../serverApi';
+import { serverApiRequestAuthenticated } from '../serverApi';
 import { GeminiResponseSchema, safeParse } from '../schemas';
 import { geminiCircuit } from '../apiResilience';
 
@@ -35,7 +35,7 @@ export function createGeminiClient(): GeminiClientLike {
             async generateContent(request: GeminiGenerateRequest): Promise<GeminiGenerateResponse> {
                 try {
                     const raw = await geminiCircuit.execute(() =>
-                        serverApiRequest<unknown>('/api/ai/generate', {
+                        serverApiRequestAuthenticated<unknown>('/api/ai/generate', {
                             method: 'POST',
                             body: JSON.stringify(request),
                         })

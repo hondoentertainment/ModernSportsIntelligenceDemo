@@ -54,6 +54,27 @@ export type EnvConfig = z.infer<typeof envSchema>;
 
 let _validated: EnvConfig | null = null;
 
+/** Populated when `import.meta.env.PROD` and Zod env parsing fails (malformed VITE_* values). */
+let envSchemaFailureMessages: string[] = [];
+
+export function getEnvSchemaFailureMessages(): string[] {
+  return envSchemaFailureMessages;
+}
+
+/** Supabase URL vs anon key consistency (for production banner). */
+export function getSupabaseEnvPairingIssues(cfg: Pick<EnvConfig, 'VITE_SUPABASE_URL' | 'VITE_SUPABASE_ANON_KEY'>): string[] {
+  const issues: string[] = [];
+  const url = (cfg.VITE_SUPABASE_URL ?? '').trim();
+  const key = (cfg.VITE_SUPABASE_ANON_KEY ?? '').trim();
+  if (url && !key) {
+    issues.push('VITE_SUPABASE_ANON_KEY is missing while VITE_SUPABASE_URL is set.');
+  }
+  if (!url && key) {
+    issues.push('VITE_SUPABASE_URL is missing while VITE_SUPABASE_ANON_KEY is set.');
+  }
+  return issues;
+}
+
 /**
  * Validate and return the environment configuration.
  * Logs warnings for missing optional keys and errors for malformed values.
@@ -81,11 +102,25 @@ export function validateEnv(): EnvConfig {
     logger.error(
       `[Env] Environment validation failed:\n${issues.join('\n')}`
     );
+    // Vitest: set VITEST_CAPTURE_ENV_SCHEMA=1 to cover the same banner copy path as production.
+    const persistFailures =
+      (typeof import.meta !== 'undefined' && !!import.meta.env?.PROD) ||
+      (typeof process !== 'undefined' &&
+        process.env.VITEST === 'true' &&
+        process.env.VITEST_CAPTURE_ENV_SCHEMA === '1');
+    if (persistFailures) {
+      envSchemaFailureMessages = result.error.issues.map(
+        (i) => `${i.path.join('.')}: ${i.message}`,
+      );
+    } else {
+      envSchemaFailureMessages = [];
+    }
     // Return defaults rather than crash in demo mode
     _validated = envSchema.parse({});
     return _validated;
   }
 
+  envSchemaFailureMessages = [];
   _validated = result.data;
 
   // Warn about missing optional but recommended keys

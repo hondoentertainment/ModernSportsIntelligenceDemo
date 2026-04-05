@@ -1,4 +1,4 @@
-import { serverApiRequest } from '../serverApi';
+import { serverApiRequestAuthenticated } from '../serverApi';
 
 // eBay API Integration for Sports Card Pricing
 export interface EbayConfig {
@@ -36,12 +36,15 @@ export const ebayApi = {
     return true;
   },
 
-  async getAccessToken(): Promise<string> {
-    const data = await serverApiRequest<{ accessToken: string }>('/api/market/ebay', {
+  /** Server-side OAuth only — confirms EBAY_CLIENT_ID / EBAY_CLIENT_SECRET; does not return a token. */
+  async verifyCredentials(): Promise<void> {
+    const data = await serverApiRequestAuthenticated<{ ok?: boolean }>('/api/market/ebay', {
       method: 'POST',
-      body: JSON.stringify({ action: 'token', sandbox: !!this.config.sandbox }),
+      body: JSON.stringify({ action: 'verify', sandbox: !!this.config.sandbox }),
     });
-    return data.accessToken;
+    if (!data?.ok) {
+      throw new Error('eBay credential verify failed');
+    }
   },
 
   async searchSportsCards(params: {
@@ -59,7 +62,7 @@ export const ebayApi = {
     soldOnly?: boolean;
   }): Promise<EbaySearchResponse> {
     const { soldOnly: _legacy, ...apiParams } = params;
-    return serverApiRequest<EbaySearchResponse>('/api/market/ebay', {
+    return serverApiRequestAuthenticated<EbaySearchResponse>('/api/market/ebay', {
       method: 'POST',
       body: JSON.stringify({
         action: 'search',
@@ -158,7 +161,7 @@ export const ebayApi = {
   },
 
   async getItemDetails(itemId: string): Promise<EbayItemSummary> {
-    return serverApiRequest<EbayItemSummary>('/api/market/ebay', {
+    return serverApiRequestAuthenticated<EbayItemSummary>('/api/market/ebay', {
       method: 'POST',
       body: JSON.stringify({
         action: 'item',
@@ -170,7 +173,7 @@ export const ebayApi = {
 
   async testConnection(): Promise<string> {
     try {
-      await this.getAccessToken();
+      await this.verifyCredentials();
       return 'eBay API connection successful';
     } catch (error) {
       return `eBay API connection failed: ${error}`;

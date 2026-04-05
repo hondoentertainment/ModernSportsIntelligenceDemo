@@ -21,8 +21,9 @@ Phase 3 checklist for production-safe Stripe usage in MSI. See also PRODUCTION_R
   - Read `Stripe-Signature` from the request headers.
   - Use `stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET)` (raw body required; do not verify against a pre-parsed JSON object).
   - Reject the request if verification fails. Never process unverified webhook payloads.
-- **Idempotency:** Before persisting subscription or billing side effects, deduplicate on Stripe `event.id` (e.g. store processed IDs) so retries do not double-apply updates.
-- **Implementation:** [`api/stripe-webhook.ts`](../api/stripe-webhook.ts) skips processing when `stripe_event_id` already exists in **`stripe_processed_events`**, and records the id after a successful handler pass. Optional env (Vercel/server): **`SUPABASE_URL`** and **`SUPABASE_SERVICE_ROLE_KEY`** — when both are set, deduplication is durable; when unset, the webhook still verifies signatures but does not persist ids (suitable only for local/dev).
+- **Idempotency:** Deduplicate on Stripe `event.id` before applying side effects. The handler uses **insert-first** `claimStripeWebhookEvent` (unique `stripe_event_id`) to avoid TOCTOU; on handler failure it **releases** the row so Stripe retries succeed. **Unhandled** `event.type` branches **release** the claim so future handlers are not blocked by a stuck row.
+- **Profile sync failures:** In production, [`api/lib/stripeProfileSync.ts`](../api/lib/stripeProfileSync.ts) **throws** on missing Supabase credentials, failed `profiles` PATCH, unknown price IDs, or missing user/customer identifiers when an update was required — the webhook returns **500**, releases the claim, and Stripe retries.
+- **Env (Vercel/server):** **`SUPABASE_URL`**, **`SUPABASE_SERVICE_ROLE_KEY`**, **`STRIPE_WEBHOOK_SECRET`**, **`STRIPE_SECRET_KEY`** (required in production for subscription retrieval). Optional **`STRIPE_WEBHOOK_FAIL_CLOSED=1`** aligns non-prod with production idempotency behavior (see [`api/lib/stripeWebhookIdempotency.ts`](../api/lib/stripeWebhookIdempotency.ts)).
 
 ### (c) Idempotency keys for payment operations
 

@@ -11,7 +11,10 @@
 
 import Stripe from 'stripe';
 import { apiLogger } from './lib/logger';
-import { markStripeEventProcessed, wasStripeEventProcessed } from './lib/stripeWebhookIdempotency';
+import {
+  claimStripeWebhookEvent,
+  releaseStripeWebhookEventClaim,
+} from './lib/stripeWebhookIdempotency';
 import {
   syncProfileFromCheckoutSession,
   syncProfileFromInvoice,
@@ -27,6 +30,12 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'Webhook secret not configured' }, { status: 500 });
   }
 
+  const stripeKey = process.env.STRIPE_SECRET_KEY?.trim();
+  if (!stripeKey && (process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production')) {
+    apiLogger.error('STRIPE_SECRET_KEY not configured in production');
+    return Response.json({ error: 'Stripe not configured' }, { status: 503 });
+  }
+
   const sig = request.headers.get('stripe-signature') ?? '';
   if (!sig) {
     return Response.json({ error: 'Missing Stripe-Signature' }, { status: 400 });
@@ -38,7 +47,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   let event: Stripe.Event;
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  const stripe = new Stripe(stripeKey || '', {
     apiVersion: '2026-02-25.clover',
   });
   try {
@@ -51,9 +60,13 @@ export async function POST(request: Request): Promise<Response> {
 
   apiLogger.info('Stripe webhook', { type: event.type, id: event.id });
 
-  if (await wasStripeEventProcessed(event.id)) {
+  const claim = await claimStripeWebhookEvent(event.id);
+  if (claim === 'duplicate') {
     apiLogger.info('Stripe webhook duplicate delivery ignored', { id: event.id });
     return Response.json({ received: true, duplicate: true });
+  }
+  if (claim === 'misconfigured' || claim === 'error') {
+    return Response.json({ received: false, error: 'idempotency_unavailable' }, { status: 503 });
   }
 
   try {
@@ -75,17 +88,12 @@ export async function POST(request: Request): Promise<Response> {
         break;
       default:
         apiLogger.info('Unhandled event type', event.type);
+        await releaseStripeWebhookEventClaim(event.id);
     }
   } catch (syncErr) {
     apiLogger.error('Stripe profile sync failed', syncErr);
+    await releaseStripeWebhookEventClaim(event.id);
     return Response.json({ received: false, error: 'sync_failed' }, { status: 500 });
-  }
-
-  try {
-    await markStripeEventProcessed(event.id);
-  } catch (e) {
-    apiLogger.error('Failed to record Stripe event id (will retry on Stripe redelivery)', e);
-    return Response.json({ received: false, error: 'persist_failed' }, { status: 500 });
   }
 
   return Response.json({ received: true });

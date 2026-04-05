@@ -55,4 +55,26 @@ describe('lib/utils/env', () => {
     vi.unstubAllEnvs();
     vi.resetModules();
   });
+
+  it('getEnvSchemaFailureMessages is empty after successful validation', async () => {
+    vi.resetModules();
+    const { validateEnv: v, getEnvSchemaFailureMessages: getMsgs } = await import('../../lib/utils/env');
+    v();
+    expect(getMsgs()).toEqual([]);
+  });
+
+  it('records schema failure messages when production or Vitest capture flag is on', async () => {
+    vi.resetModules();
+    const prev = process.env.VITEST_CAPTURE_ENV_SCHEMA;
+    process.env.VITEST_CAPTURE_ENV_SCHEMA = '1';
+    vi.stubEnv('VITE_SUPABASE_URL', 'not-a-valid-url');
+    const mod = await import('../../lib/utils/env');
+    mod.validateEnv();
+    expect(mod.getEnvSchemaFailureMessages().length).toBeGreaterThan(0);
+    expect(mod.getEnvSchemaFailureMessages()[0]).toMatch(/VITE_SUPABASE_URL/);
+    vi.unstubAllEnvs();
+    vi.resetModules();
+    if (prev === undefined) delete process.env.VITEST_CAPTURE_ENV_SCHEMA;
+    else process.env.VITEST_CAPTURE_ENV_SCHEMA = prev;
+  });
 });

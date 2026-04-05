@@ -176,7 +176,9 @@ describe('SupabaseStorageAdapter', () => {
 });
 
 describe('initDAL', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    const { resetDalInitKeyForTests } = await import('../../lib/dal/index');
+    resetDalInitKeyForTests();
     vi.stubGlobal('localStorage', ls);
     ls.clear();
     store.clear();

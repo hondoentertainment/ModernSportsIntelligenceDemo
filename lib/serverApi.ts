@@ -1,4 +1,5 @@
 import { withRetry, type RetryOptions } from './apiResilience';
+import { getServerApiAuthHeaders } from './serverApiAuth';
 
 interface ApiErrorPayload {
   error?: string;
@@ -72,4 +73,24 @@ export async function serverApiRequest<T>(
 
     return response.json() as Promise<T>;
   }, retryOptions ?? SERVER_RETRY);
+}
+
+/** Same as serverApiRequest but attaches Supabase session JWT when available (for protected /api routes). */
+export async function serverApiRequestAuthenticated<T>(
+  path: string,
+  init: RequestInit = {},
+  retryOptions?: RetryOptions,
+): Promise<T> {
+  const auth = await getServerApiAuthHeaders();
+  return serverApiRequest<T>(
+    path,
+    {
+      ...init,
+      headers: {
+        ...auth,
+        ...(init.headers as Record<string, string>),
+      },
+    },
+    retryOptions,
+  );
 }

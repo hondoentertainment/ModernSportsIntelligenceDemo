@@ -94,6 +94,7 @@ export default defineConfig({
         'lib/analytics/valuationQuality.ts',
         'lib/utils/marketSync.ts',
         'lib/utils/warRoomThesisAudit.ts',
+        'lib/htmlEscape.ts',
       ],
       // High coverage on whitelist lines/stmts/funcs; branches lag (~89%) due to
       // defensive branches, import.meta / env splits, and optional chaining.
@@ -106,6 +107,7 @@ export default defineConfig({
       },
       exclude: [
         '**/node_modules/**',
+        'api/lib/logger.ts',
         '**/e2e/**',
         '**/tests/**',
         '**/*.spec.ts',
