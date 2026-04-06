@@ -75,6 +75,11 @@ export function getSupabaseEnvPairingIssues(cfg: Pick<EnvConfig, 'VITE_SUPABASE_
   return issues;
 }
 
+/** True for production Vite builds (shell UI checks; mockable in tests). */
+export function isClientProductionBuild(): boolean {
+  return typeof import.meta !== 'undefined' && !!import.meta.env?.PROD;
+}
+
 /**
  * Validate and return the environment configuration.
  * Logs warnings for missing optional keys and errors for malformed values.

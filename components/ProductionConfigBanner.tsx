@@ -1,13 +1,19 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { env, getEnvSchemaFailureMessages, getSupabaseEnvPairingIssues } from '../lib/utils/env';
+import {
+  env,
+  getEnvSchemaFailureMessages,
+  getSupabaseEnvPairingIssues,
+  isClientProductionBuild,
+} from '../lib/utils/env';
 
 /**
  * Blocks the top of the shell when production build has invalid or mismatched public env.
  */
 const ProductionConfigBanner: React.FC = () => {
-  const schemaIssues = import.meta.env.PROD ? getEnvSchemaFailureMessages() : [];
-  const pairing = import.meta.env.PROD ? getSupabaseEnvPairingIssues(env()) : [];
+  const prod = isClientProductionBuild();
+  const schemaIssues = prod ? getEnvSchemaFailureMessages() : [];
+  const pairing = prod ? getSupabaseEnvPairingIssues(env()) : [];
   const all = [...schemaIssues, ...pairing];
   if (all.length === 0) return null;
 
