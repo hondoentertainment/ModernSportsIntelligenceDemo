@@ -16,14 +16,14 @@ Features marked `status: 'beta'` in [`lib/utils/featureCatalog.ts`](../lib/utils
 
 **Removed from this table when promoted:** `consignment` (Consignment Tracker) is now `live` with inventory + notes-codec persistence and in-UI disclosure that fee comparisons are illustrative. `cross-correlation` is `live` with a synthetic-data banner on `/cross-asset-correlation` and honest copy (no implied live feeds). `anomaly-detection` is `live` with documented signal sources in the widget/modal and per-card dedupe (max 2 alerts per card). `agentic-negotiation` is `live` with DAL-backed stores for campaigns plus negotiation/escrow/results/activity datasets, analytics aligned to persisted acquisitions, corrupt-store recovery with user-visible toast, and simulated-execution disclosure on all Autonomous Acquisition tabs (`/autonomous-acquisition`). `predictive-alpha` is `live` with explicit signal-source modes, auditable confidence breakdown in the Predictive Alpha modal (Dashboard / Breakout Radar), and optional imported-comp snapshots wired through price history. `multi-agent` is `live` with deterministic portfolio input fingerprint, prompt version + model id on thesis and recommendation metadata, on-screen traceability in the War Room, and JSON export of the thesis package (`/war-room`).
 
-| ID                    | Feature                         | Extra gates before `live`                                                                          |
-| --------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `liquidity-pool`      | Institutional Liquidity Pool    | Payout / quote logic reviewed for money-like flows; legal copy if simulating purchases.            |
-| `visual-audit`        | Visual Audit Simulation         | Vision path security (image handling); grade probabilities labeled as estimates.                   |
-| `live-impact`         | Live Game Impact Engine         | Live scores or explicit “replay / demo” mode; latency expectations documented.                     |
-| `vision-grading`      | AI Vision Grading Lab           | Same as visual-audit for uploads; no implied third-party grader certification.                     |
-| `fractional-vault`    | Fractional Vault & Copy-Trading | No implied securities offering; execution rails or clear “simulation only”.                        |
-| `provenance-chain`    | Provenance Chain & Digital Twin | Chain/mock distinction clear; no false verification claims.                                        |
+| ID                 | Feature                         | Extra gates before `live`                                                               |
+| ------------------ | ------------------------------- | --------------------------------------------------------------------------------------- |
+| `liquidity-pool`   | Institutional Liquidity Pool    | Payout / quote logic reviewed for money-like flows; legal copy if simulating purchases. |
+| `visual-audit`     | Visual Audit Simulation         | Vision path security (image handling); grade probabilities labeled as estimates.        |
+| `live-impact`      | Live Game Impact Engine         | Live scores or explicit “replay / demo” mode; latency expectations documented.          |
+| `vision-grading`   | AI Vision Grading Lab           | Same as visual-audit for uploads; no implied third-party grader certification.          |
+| `fractional-vault` | Fractional Vault & Copy-Trading | No implied securities offering; execution rails or clear “simulation only”.             |
+| `provenance-chain` | Provenance Chain & Digital Twin | Chain/mock distinction clear; no false verification claims.                             |
 
 ## Process
 

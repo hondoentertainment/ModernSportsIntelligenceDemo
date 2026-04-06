@@ -32,6 +32,12 @@ For a broader checklist (deploy, RLS audit, env vars, CSP), see **[OPS_RUNBOOK.m
 - **Env (server-only):** `RATE_LIMIT_AI_MAX_PER_MINUTE` (default **30**), `RATE_LIMIT_EBAY_MAX_PER_MINUTE` (default **60**). Set **`RATE_LIMIT_DISABLED=1`** only for local debugging (never in production).
 - **Caveat:** In-memory buckets are **per serverless isolate**; for a single global budget across all regions/instances, use **Vercel KV**, **Upstash Redis**, or an edge middleware. `/api/health` and **`api/stripe-webhook`** are not throttled (health probes and signed Stripe traffic).
 
+## CORS (AI and eBay API routes)
+
+- **`api/lib/httpProduction.ts`** sets `Access-Control-Allow-Origin` from **`ALLOWED_ORIGIN`** or **`https://$VERCEL_URL`**. Wildcard (`*`) is used only outside production; custom domains should set **`ALLOWED_ORIGIN`** to the canonical site URL.
+- **Preflight:** `Access-Control-Allow-Headers` includes **`Authorization`** so browsers may send Supabase session Bearer tokens to **`/api/ai/generate`** and **`/api/market/ebay`**.
+- **Misconfiguration:** If production has neither **`ALLOWED_ORIGIN`** nor **`VERCEL_URL`**, the handler logs a warning and omits `Access-Control-Allow-Origin` until env is corrected.
+
 ## Bundle size
 
 - **Script:** `npm run build:size` runs `vite build` then prints the size of `dist/assets/*.js` (top 5 largest chunks and total). Use it to track bundle size and enforce the performance budget (see PRODUCTION_READINESS.md §2.3).

@@ -106,6 +106,50 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
+  # Optional: set repository variable ENABLE_DEPLOYED_E2E=true and secret PLAYWRIGHT_DEPLOYMENT_URL (Vercel URL).
+  e2e_deployed:
+    name: E2E vs deployment (optional)
+    needs: ci
+    if: vars.ENABLE_DEPLOYED_E2E == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Require deployment URL
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_DEPLOYMENT_URL }}
+        run: |
+          if [ -z "$PLAYWRIGHT_BASE_URL" ]; then
+            echo "Set repository secret PLAYWRIGHT_DEPLOYMENT_URL (e.g. https://your-app.vercel.app) when ENABLE_DEPLOYED_E2E=true"
+            exit 1
+          fi
+
+      - name: Run deployed API checks
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_DEPLOYMENT_URL }}
+        run: npm run test:e2e:deployed
+
+      - name: Upload Playwright report (deployed)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-deployed
+          path: playwright-report/
+          retention-days: 7
+
   deploy:
     name: Deploy to GitHub Pages
     needs: [ci, e2e_smoke]

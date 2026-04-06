@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { z } from 'zod';
-import { getSupabaseEnvPairingIssues } from '../../lib/utils/env';
+import { getSupabaseEnvPairingIssues, isClientProductionBuild } from '../../lib/utils/env';
 
 // Test the schema shape directly (env.ts reads from import.meta.env which
 // is hard to mock, so we test the schema validation logic independently)
@@ -40,6 +40,12 @@ describe('Environment validation schema', () => {
       VITE_SERVER_API_BASE_URL: 'https://api.example.com',
     });
     expect(result.success).toBe(true);
+  });
+});
+
+describe('isClientProductionBuild', () => {
+  it('returns a boolean (Vite test env is typically non-production)', () => {
+    expect(typeof isClientProductionBuild()).toBe('boolean');
   });
 });
 
