@@ -25,6 +25,10 @@ Phase 3 checklist for production-safe Stripe usage in MSI. See also PRODUCTION_R
 - **Profile sync failures:** In production, [`api/lib/stripeProfileSync.ts`](../api/lib/stripeProfileSync.ts) **throws** on missing Supabase credentials, failed `profiles` PATCH, unknown price IDs, or missing user/customer identifiers when an update was required — the webhook returns **500**, releases the claim, and Stripe retries.
 - **Env (Vercel/server):** **`SUPABASE_URL`**, **`SUPABASE_SERVICE_ROLE_KEY`**, **`STRIPE_WEBHOOK_SECRET`**, **`STRIPE_SECRET_KEY`** (required in production for subscription retrieval). Optional **`STRIPE_WEBHOOK_FAIL_CLOSED=1`** aligns non-prod with production idempotency behavior (see [`api/lib/stripeWebhookIdempotency.ts`](../api/lib/stripeWebhookIdempotency.ts)).
 
+### (c1) Supabase Edge Functions (checkout / portal)
+
+**Contract:** See **[SUPABASE_EDGE_FUNCTIONS.md](./SUPABASE_EDGE_FUNCTIONS.md)** — functions invoked from the client must bind **`userId` to the JWT `sub`** and forward **`Idempotency-Key`** to Stripe.
+
 ### (c) Idempotency keys for payment operations
 
 - **Status:** Client sends a stable idempotency key with each checkout and portal request.

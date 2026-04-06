@@ -28,6 +28,8 @@
     "test:e2e:desktop": "playwright test --project=chromium",
     "test:e2e:mobile": "playwright test --project=Mobile Chrome",
     "test:e2e:pricing-truth": "playwright test tests/e2e/pricing-truth-coverage.spec.ts --project=chromium",
+    "test:e2e:deployed": "playwright test tests/e2e/deployed-api.spec.ts --project=chromium --workers=1",
+    "audit:localstorage": "node scripts/audit-localstorage.mjs",
     "guardrail:pricing-truth": "node scripts/check-pricing-truth-guardrail.mjs",
     "joe": "tsx scripts/orchestrator.ts",
     "joe:batch": "tsx scripts/batch-builder.ts",

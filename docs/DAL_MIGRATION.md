@@ -6,6 +6,8 @@ This document ties together the production persistence stack introduced under **
 
 The roadmap calls for moving off ad hoc `localStorage` toward durable backends. The codebase implements that in two complementary layers: an **async** DAL for inventory/targets and typed JSON (`lib/dal.ts`), and a **synchronous** cache + adapter pipeline (`lib/dal/syncStore.ts`, `lib/dal/index.ts`) used by most services. App startup calls **`initDAL`** once so the correct adapter (local vs Supabase) is selected.
 
+**Prioritization:** Run `npm run audit:localstorage` to list files with the most `localStorage` / `sessionStorage` references under `lib/`, `pages/`, `components/`, and `hooks/`.
+
 ## File map
 
 | Piece                                                           | Role                                                                                                                                                                                                                                                                                                                                   |

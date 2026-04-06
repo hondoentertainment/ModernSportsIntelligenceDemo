@@ -15,6 +15,7 @@ Run in CI workflow (`.github/workflows/ci.yml`):
 7. `npm run build`
 8. `npm run test:e2e:smoke` (auth, dashboard, release smoke, billing/checkout UX)
 9. `npm run test:e2e:pricing-truth`
+10. **Optional (Vercel):** `PLAYWRIGHT_BASE_URL=https://<deployment> npm run test:e2e:deployed` — asserts `/api/health` and unauthenticated 401/503 on protected API routes. CI: set repo variable `ENABLE_DEPLOYED_E2E=true` and secret `PLAYWRIGHT_DEPLOYMENT_URL` (see `.github/workflows/ci.yml`).
 
 ## Release workflow gates
 
