@@ -6,20 +6,26 @@ Companion to [MONITORING.md](./MONITORING.md) and [PRODUCTION_READINESS.md](../P
 
 - **GitHub:** Push to `main` triggers CI (typecheck, lint, tests, build, E2E smoke).
 - **Vercel:** Connect the repo; set env vars per environment (Production + Preview). Use Preview deployments for risky changes.
+- **Rollout checklist:** Phased production tasks (data, billing, security, observability) — **[PRODUCTION_ROLLOUT_PHASES.md](./PRODUCTION_ROLLOUT_PHASES.md)**.
+- **Post-deploy API checks (optional):** `PLAYWRIGHT_BASE_URL=https://<your-vercel-app> npm run test:e2e:deployed`. In GitHub: variable `ENABLE_DEPLOYED_E2E=true` and secret `PLAYWRIGHT_DEPLOYMENT_URL` to run the same job in CI (see `.github/workflows/ci.yml`).
 
 ## Environment (Vercel / hosting)
 
-| Variable                                       | Purpose                                                                                  |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` | Auth + cloud data                                                                        |
-| `VITE_SENTRY_DSN`                              | Optional client errors ([lib/sentry.ts](../lib/sentry.ts))                               |
-| `VITE_ERROR_REPORTING_URL`                     | Optional error beacon ([lib/errorReporting.ts](../lib/errorReporting.ts))                |
-| `RATE_LIMIT_AI_MAX_PER_MINUTE`                 | Server: cap for `api/ai/generate` (default **30**; see [MONITORING.md](./MONITORING.md)) |
-| `RATE_LIMIT_EBAY_MAX_PER_MINUTE`               | Server: cap for `api/market/ebay` (default **60**)                                       |
-| `RATE_LIMIT_DISABLED`                          | Set `1` or `true` to disable throttling — **local debugging only**, never Production     |
-| `VITE_*` for Gemini, Stripe, eBay, etc.        | Feature flags; see `.env.example`                                                        |
+| Variable                                       | Purpose                                                                                                         |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` | Auth + cloud data                                                                                               |
+| `VITE_SENTRY_DSN`                              | Optional client errors ([lib/sentry.ts](../lib/sentry.ts))                                                      |
+| `VITE_ERROR_REPORTING_URL`                     | Optional error beacon ([lib/errorReporting.ts](../lib/errorReporting.ts))                                       |
+| `RATE_LIMIT_AI_MAX_PER_MINUTE`                 | Server: cap for `api/ai/generate` (default **30**; see [MONITORING.md](./MONITORING.md))                        |
+| `RATE_LIMIT_EBAY_MAX_PER_MINUTE`               | Server: cap for `api/market/ebay` (default **60**)                                                              |
+| `RATE_LIMIT_DISABLED`                          | Set `1` or `true` to disable throttling — **local debugging only**, never Production                            |
+| `VITE_*` for Gemini, Stripe, eBay, etc.        | Feature flags; see `.env.example`                                                                               |
+| `SUPABASE_URL` / `SUPABASE_ANON_KEY`           | Server: JWT validation for `/api/ai/generate` and `/api/market/ebay` (match browser project)                    |
+| `ALLOWED_ORIGIN`                               | Server: CORS origin for custom domain (else `https://$VERCEL_URL`); see [MONITORING.md](./MONITORING.md) § CORS |
+| `MSI_SERVER_API_SECRET`                        | Optional: Bearer secret for trusted automation calling protected API routes                                     |
+| `SUPABASE_SERVICE_ROLE_KEY`                    | Server: Stripe webhook idempotency + `profiles` PATCH only; never `VITE_*`                                      |
 
-**Manual:** Rotate keys on incident; never commit secrets.
+**Manual:** Rotate keys on incident; never commit secrets. **Edge Functions:** checkout/portal must bind `userId` to JWT `sub` — [SUPABASE_EDGE_FUNCTIONS.md](./SUPABASE_EDGE_FUNCTIONS.md).
 
 ## Health and uptime
 
