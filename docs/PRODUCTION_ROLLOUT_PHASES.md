@@ -13,11 +13,11 @@ Ordered checklist to take the full app from demo-grade to production-grade. Comp
 
 ## Phase B — Billing & API trust boundaries
 
-| Step | Action                                                                                                       | Reference                                                                                                |
-| ---- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| B1   | Edge Functions: derive `userId` from verified JWT only; forward `Idempotency-Key` to Stripe                  | [SUPABASE_EDGE_FUNCTIONS.md](./SUPABASE_EDGE_FUNCTIONS.md), [PAYMENT_SECURITY.md](./PAYMENT_SECURITY.md) |
-| B2   | Vercel env: `STRIPE_*`, `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_WEBHOOK_SECRET`, price ID mapping               | `.env.example`                                                                                           |
-| B3   | Browser → `/api/ai`, `/api/market`: `ALLOWED_ORIGIN` on custom domain; never `MSI_API_AUTH_DISABLED` in prod | [MONITORING.md](./MONITORING.md)                                                                         |
+| Step | Action                                                                                                        | Reference                                                                                                                                                                 |
+| ---- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B1   | Deploy Edge Functions from `supabase/functions/`; JWT is source of truth; forward `Idempotency-Key` to Stripe | [supabase/functions/README.md](../supabase/functions/README.md), [SUPABASE_EDGE_FUNCTIONS.md](./SUPABASE_EDGE_FUNCTIONS.md), [PAYMENT_SECURITY.md](./PAYMENT_SECURITY.md) |
+| B2   | Vercel env: `STRIPE_*`, `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_WEBHOOK_SECRET`, price ID mapping                | `.env.example`                                                                                                                                                            |
+| B3   | Browser → `/api/ai`, `/api/market`: `ALLOWED_ORIGIN` on custom domain; never `MSI_API_AUTH_DISABLED` in prod  | [MONITORING.md](./MONITORING.md)                                                                                                                                          |
 
 ## Phase C — Security & CSP
 

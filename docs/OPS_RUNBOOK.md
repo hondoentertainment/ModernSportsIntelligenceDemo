@@ -8,6 +8,7 @@ Companion to [MONITORING.md](./MONITORING.md) and [PRODUCTION_READINESS.md](../P
 - **Vercel:** Connect the repo; set env vars per environment (Production + Preview). Use Preview deployments for risky changes.
 - **Rollout checklist:** Phased production tasks (data, billing, security, observability) — **[PRODUCTION_ROLLOUT_PHASES.md](./PRODUCTION_ROLLOUT_PHASES.md)**.
 - **Post-deploy API checks (optional):** `PLAYWRIGHT_BASE_URL=https://<your-vercel-app> npm run test:e2e:deployed`. In GitHub: variable `ENABLE_DEPLOYED_E2E=true` and secret `PLAYWRIGHT_DEPLOYMENT_URL` to run the same job in CI (see `.github/workflows/ci.yml`).
+- **Scheduled health ping (optional):** secret `HEALTH_CHECK_URL` (base URL, no trailing slash) — workflow [health-ping.yml](../.github/workflows/health-ping.yml) every 6 hours.
 
 ## Environment (Vercel / hosting)
 

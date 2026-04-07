@@ -126,7 +126,10 @@ function idempotencyKeyForCheckout(userId: string, tier: SubscriptionTier): stri
   return `checkout-${userId}-${tier}-${bucket}`;
 }
 
-// Create Stripe checkout session
+/**
+ * Create Stripe Checkout via Edge Function `create-checkout-session`.
+ * The function uses the **session JWT** as source of truth; body `userId` must match `sub` or be omitted.
+ */
 export async function createCheckoutSession(
   userId: string,
   tier: SubscriptionTier,
@@ -185,7 +188,9 @@ function idempotencyKeyForPortal(userId: string): string {
   return `portal-${userId}-${bucket}`;
 }
 
-// Create billing portal session
+/**
+ * Stripe Customer Portal via Edge Function `create-billing-portal-session` (JWT-bound; optional body `userId` must match).
+ */
 export async function createBillingPortalSession(userId: string, returnUrl?: string, idempotencyKey?: string) {
   const key = idempotencyKey ?? idempotencyKeyForPortal(userId);
   const { data, error } = await supabase.functions.invoke('create-billing-portal-session', {
