@@ -286,6 +286,17 @@ export const SEARCHABLE_FEATURE_IDS = [
   'crowding-risk-monitor',
   'carry-trade-analyzer',
   'cross-sectional-momentum-scanner',
+  // v17.0: Temporal & Cyclical Analytics
+  'seasonal-demand-oscillator',
+  'calendar-effect-quantifier',
+  'holding-period-optimizer',
+  'vintage-yield-curve',
+  'cycle-phase-detector',
+  'event-horizon-scanner',
+  'time-decay-modeler',
+  'anniversary-effect-tracker',
+  'momentum-half-life-calculator',
+  'temporal-clustering-engine',
 ] as const;
 
 export const COMMAND_ROUTES = [

@@ -441,6 +441,18 @@ const CrowdingRiskMonitor = lazy(() => import('./pages/CrowdingRiskMonitor.tsx')
 const CarryTradeAnalyzer = lazy(() => import('./pages/CarryTradeAnalyzer.tsx'));
 const CrossSectionalMomentumScanner = lazy(() => import('./pages/CrossSectionalMomentumScanner.tsx'));
 
+// Phase 17 — Temporal & Cyclical Analytics (v17.0)
+const SeasonalDemandOscillator = lazy(() => import('./pages/SeasonalDemandOscillator.tsx'));
+const CalendarEffectQuantifier = lazy(() => import('./pages/CalendarEffectQuantifier.tsx'));
+const HoldingPeriodOptimizer = lazy(() => import('./pages/HoldingPeriodOptimizer.tsx'));
+const VintageYieldCurve = lazy(() => import('./pages/VintageYieldCurve.tsx'));
+const CyclePhaseDetector = lazy(() => import('./pages/CyclePhaseDetector.tsx'));
+const EventHorizonScanner = lazy(() => import('./pages/EventHorizonScanner.tsx'));
+const TimeDecayModeler = lazy(() => import('./pages/TimeDecayModeler.tsx'));
+const AnniversaryEffectTracker = lazy(() => import('./pages/AnniversaryEffectTracker.tsx'));
+const MomentumHalfLifeCalculator = lazy(() => import('./pages/MomentumHalfLifeCalculator.tsx'));
+const TemporalClusteringEngine = lazy(() => import('./pages/TemporalClusteringEngine.tsx'));
+
 // Previously unrouted pages — Advanced Trading & Analysis
 const LiveGameImpactEngine = lazy(() => import('./pages/LiveGameImpactEngine.tsx'));
 const PreGradeIntelligence = lazy(() => import('./pages/PreGradeIntelligence.tsx'));
@@ -970,6 +982,17 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/crowding-risk-monitor" element={<CrowdingRiskMonitor />} />
                 <Route path="/carry-trade-analyzer" element={<CarryTradeAnalyzer />} />
                 <Route path="/cross-sectional-momentum-scanner" element={<CrossSectionalMomentumScanner />} />
+                {/* Phase 17 — Temporal & Cyclical Analytics */}
+                <Route path="/seasonal-demand-oscillator" element={<SeasonalDemandOscillator />} />
+                <Route path="/calendar-effect-quantifier" element={<CalendarEffectQuantifier />} />
+                <Route path="/holding-period-optimizer" element={<HoldingPeriodOptimizer />} />
+                <Route path="/vintage-yield-curve" element={<VintageYieldCurve />} />
+                <Route path="/cycle-phase-detector" element={<CyclePhaseDetector />} />
+                <Route path="/event-horizon-scanner" element={<EventHorizonScanner />} />
+                <Route path="/time-decay-modeler" element={<TimeDecayModeler />} />
+                <Route path="/anniversary-effect-tracker" element={<AnniversaryEffectTracker />} />
+                <Route path="/momentum-half-life-calculator" element={<MomentumHalfLifeCalculator />} />
+                <Route path="/temporal-clustering-engine" element={<TemporalClusteringEngine />} />
                 {/* Interactive Demo Flow */}
                 <Route path="/demo-flow" element={<DemoFlowPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
