@@ -381,6 +381,66 @@ const ProductAnnouncementRadar = lazy(() => import('./pages/ProductAnnouncementR
 const CollectorSuccessionProtocol = lazy(() => import('./pages/CollectorSuccessionProtocol.tsx'));
 const CrossHobbyArbitrageBridge = lazy(() => import('./pages/CrossHobbyArbitrageBridge.tsx'));
 
+// Phase 12 — Behavioral Intelligence (v12.0)
+const AnchoringBiasDetector = lazy(() => import('./pages/AnchoringBiasDetector.tsx'));
+const FomoPressureGauge = lazy(() => import('./pages/FomoPressureGauge.tsx'));
+const SunkCostLiberationEngine = lazy(() => import('./pages/SunkCostLiberationEngine.tsx'));
+const EndowmentEffectCalculator = lazy(() => import('./pages/EndowmentEffectCalculator.tsx'));
+const ConfirmationBiasScanner = lazy(() => import('./pages/ConfirmationBiasScanner.tsx'));
+const HerdImmunityDashboard = lazy(() => import('./pages/HerdImmunityDashboard.tsx'));
+const LossAversionProfiler = lazy(() => import('./pages/LossAversionProfiler.tsx'));
+const RecencyBiasCorrector = lazy(() => import('./pages/RecencyBiasCorrector.tsx'));
+const AvailabilityCascadeTracker = lazy(() => import('./pages/AvailabilityCascadeTracker.tsx'));
+const ParadoxOfChoiceOptimizer = lazy(() => import('./pages/ParadoxOfChoiceOptimizer.tsx'));
+
+// Phase 13 — Market Infrastructure (v13.0)
+const DarkPoolSignalDetector = lazy(() => import('./pages/DarkPoolSignalDetector.tsx'));
+const OrderFlowToxicityMeter = lazy(() => import('./pages/OrderFlowToxicityMeter.tsx'));
+const FlashCrashReplayEngine = lazy(() => import('./pages/FlashCrashReplayEngine.tsx'));
+const CircuitBreakerSimulator = lazy(() => import('./pages/CircuitBreakerSimulator.tsx'));
+const MarketFragmentationMapper = lazy(() => import('./pages/MarketFragmentationMapper.tsx'));
+const HighFrequencyListingDetector = lazy(() => import('./pages/HighFrequencyListingDetector.tsx'));
+const SettlementRiskDashboard = lazy(() => import('./pages/SettlementRiskDashboard.tsx'));
+const VenueMigrationAdvisor = lazy(() => import('./pages/VenueMigrationAdvisor.tsx'));
+const TickSizeOptimizer = lazy(() => import('./pages/TickSizeOptimizer.tsx'));
+const MarketMakerIncentiveAnalyzer = lazy(() => import('./pages/MarketMakerIncentiveAnalyzer.tsx'));
+
+// Phase 14 — Predictive Science (v14.0)
+const RegimeDetectionAutoswitch = lazy(() => import('./pages/RegimeDetectionAutoswitch.tsx'));
+const MeanReversionRadar = lazy(() => import('./pages/MeanReversionRadar.tsx'));
+const MomentumFactorDecomposition = lazy(() => import('./pages/MomentumFactorDecomposition.tsx'));
+const VolatilitySurfaceMapper = lazy(() => import('./pages/VolatilitySurfaceMapper.tsx'));
+const CointegrationPairFinder = lazy(() => import('./pages/CointegrationPairFinder.tsx'));
+const JumpDiffusionModeler = lazy(() => import('./pages/JumpDiffusionModeler.tsx'));
+const BayesianPortfolioOptimizer = lazy(() => import('./pages/BayesianPortfolioOptimizer.tsx'));
+const InformationRatioTracker = lazy(() => import('./pages/InformationRatioTracker.tsx'));
+const DrawdownRecoveryEstimator = lazy(() => import('./pages/DrawdownRecoveryEstimator.tsx'));
+const KellyCriterionPositionSizer = lazy(() => import('./pages/KellyCriterionPositionSizer.tsx'));
+
+// Phase 15 — Social Intelligence (v15.0)
+const TribalAffinityMapper = lazy(() => import('./pages/TribalAffinityMapper.tsx'));
+const ConsensusFlipPredictor = lazy(() => import('./pages/ConsensusFlipPredictor.tsx'));
+const InfluencerDecayCurve = lazy(() => import('./pages/InfluencerDecayCurve.tsx'));
+const SocialProofQuantifier = lazy(() => import('./pages/SocialProofQuantifier.tsx'));
+const CommunitySentimentDivergence = lazy(() => import('./pages/CommunitySentimentDivergence.tsx'));
+const WhaleTracker = lazy(() => import('./pages/WhaleTracker.tsx'));
+const SmartMoneyFlowIndex = lazy(() => import('./pages/SmartMoneyFlowIndex.tsx'));
+const NetworkEffectValuation = lazy(() => import('./pages/NetworkEffectValuation.tsx'));
+const EchoChamberDetector = lazy(() => import('./pages/EchoChamberDetector.tsx'));
+const CollectiveIntelligenceAggregator = lazy(() => import('./pages/CollectiveIntelligenceAggregator.tsx'));
+
+// Phase 16 — Advanced Quantitative (v16.0)
+const MicrostructureAlphaEngine = lazy(() => import('./pages/MicrostructureAlphaEngine.tsx'));
+const RelativeValueArbitrageScanner = lazy(() => import('./pages/RelativeValueArbitrageScanner.tsx'));
+const TailRiskHedgingEngine = lazy(() => import('./pages/TailRiskHedgingEngine.tsx'));
+const AlphaDecayMonitor = lazy(() => import('./pages/AlphaDecayMonitor.tsx'));
+const LiquidityPremiumDecomposer = lazy(() => import('./pages/LiquidityPremiumDecomposer.tsx'));
+const FactorTimingEngine = lazy(() => import('./pages/FactorTimingEngine.tsx'));
+const SyntheticSpreadEngine = lazy(() => import('./pages/SyntheticSpreadEngine.tsx'));
+const CrowdingRiskMonitor = lazy(() => import('./pages/CrowdingRiskMonitor.tsx'));
+const CarryTradeAnalyzer = lazy(() => import('./pages/CarryTradeAnalyzer.tsx'));
+const CrossSectionalMomentumScanner = lazy(() => import('./pages/CrossSectionalMomentumScanner.tsx'));
+
 // Previously unrouted pages — Advanced Trading & Analysis
 const LiveGameImpactEngine = lazy(() => import('./pages/LiveGameImpactEngine.tsx'));
 const PreGradeIntelligence = lazy(() => import('./pages/PreGradeIntelligence.tsx'));
@@ -855,6 +915,61 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/product-announcement-radar" element={<ProductAnnouncementRadar />} />
                 <Route path="/collector-succession-protocol" element={<CollectorSuccessionProtocol />} />
                 <Route path="/cross-hobby-arbitrage-bridge" element={<CrossHobbyArbitrageBridge />} />
+                {/* Phase 12 — Behavioral Intelligence */}
+                <Route path="/anchoring-bias-detector" element={<AnchoringBiasDetector />} />
+                <Route path="/fomo-pressure-gauge" element={<FomoPressureGauge />} />
+                <Route path="/sunk-cost-liberation-engine" element={<SunkCostLiberationEngine />} />
+                <Route path="/endowment-effect-calculator" element={<EndowmentEffectCalculator />} />
+                <Route path="/confirmation-bias-scanner" element={<ConfirmationBiasScanner />} />
+                <Route path="/herd-immunity-dashboard" element={<HerdImmunityDashboard />} />
+                <Route path="/loss-aversion-profiler" element={<LossAversionProfiler />} />
+                <Route path="/recency-bias-corrector" element={<RecencyBiasCorrector />} />
+                <Route path="/availability-cascade-tracker" element={<AvailabilityCascadeTracker />} />
+                <Route path="/paradox-of-choice-optimizer" element={<ParadoxOfChoiceOptimizer />} />
+                {/* Phase 13 — Market Infrastructure */}
+                <Route path="/dark-pool-signal-detector" element={<DarkPoolSignalDetector />} />
+                <Route path="/order-flow-toxicity-meter" element={<OrderFlowToxicityMeter />} />
+                <Route path="/flash-crash-replay-engine" element={<FlashCrashReplayEngine />} />
+                <Route path="/circuit-breaker-simulator" element={<CircuitBreakerSimulator />} />
+                <Route path="/market-fragmentation-mapper" element={<MarketFragmentationMapper />} />
+                <Route path="/high-frequency-listing-detector" element={<HighFrequencyListingDetector />} />
+                <Route path="/settlement-risk-dashboard" element={<SettlementRiskDashboard />} />
+                <Route path="/venue-migration-advisor" element={<VenueMigrationAdvisor />} />
+                <Route path="/tick-size-optimizer" element={<TickSizeOptimizer />} />
+                <Route path="/market-maker-incentive-analyzer" element={<MarketMakerIncentiveAnalyzer />} />
+                {/* Phase 14 — Predictive Science */}
+                <Route path="/regime-detection-autoswitch" element={<RegimeDetectionAutoswitch />} />
+                <Route path="/mean-reversion-radar" element={<MeanReversionRadar />} />
+                <Route path="/momentum-factor-decomposition" element={<MomentumFactorDecomposition />} />
+                <Route path="/volatility-surface-mapper" element={<VolatilitySurfaceMapper />} />
+                <Route path="/cointegration-pair-finder" element={<CointegrationPairFinder />} />
+                <Route path="/jump-diffusion-modeler" element={<JumpDiffusionModeler />} />
+                <Route path="/bayesian-portfolio-optimizer" element={<BayesianPortfolioOptimizer />} />
+                <Route path="/information-ratio-tracker" element={<InformationRatioTracker />} />
+                <Route path="/drawdown-recovery-estimator" element={<DrawdownRecoveryEstimator />} />
+                <Route path="/kelly-criterion-position-sizer" element={<KellyCriterionPositionSizer />} />
+                {/* Phase 15 — Social Intelligence */}
+                <Route path="/tribal-affinity-mapper" element={<TribalAffinityMapper />} />
+                <Route path="/consensus-flip-predictor" element={<ConsensusFlipPredictor />} />
+                <Route path="/influencer-decay-curve" element={<InfluencerDecayCurve />} />
+                <Route path="/social-proof-quantifier" element={<SocialProofQuantifier />} />
+                <Route path="/community-sentiment-divergence" element={<CommunitySentimentDivergence />} />
+                <Route path="/whale-tracker" element={<WhaleTracker />} />
+                <Route path="/smart-money-flow-index" element={<SmartMoneyFlowIndex />} />
+                <Route path="/network-effect-valuation" element={<NetworkEffectValuation />} />
+                <Route path="/echo-chamber-detector" element={<EchoChamberDetector />} />
+                <Route path="/collective-intelligence-aggregator" element={<CollectiveIntelligenceAggregator />} />
+                {/* Phase 16 — Advanced Quantitative */}
+                <Route path="/microstructure-alpha-engine" element={<MicrostructureAlphaEngine />} />
+                <Route path="/relative-value-arbitrage-scanner" element={<RelativeValueArbitrageScanner />} />
+                <Route path="/tail-risk-hedging-engine" element={<TailRiskHedgingEngine />} />
+                <Route path="/alpha-decay-monitor" element={<AlphaDecayMonitor />} />
+                <Route path="/liquidity-premium-decomposer" element={<LiquidityPremiumDecomposer />} />
+                <Route path="/factor-timing-engine" element={<FactorTimingEngine />} />
+                <Route path="/synthetic-spread-engine" element={<SyntheticSpreadEngine />} />
+                <Route path="/crowding-risk-monitor" element={<CrowdingRiskMonitor />} />
+                <Route path="/carry-trade-analyzer" element={<CarryTradeAnalyzer />} />
+                <Route path="/cross-sectional-momentum-scanner" element={<CrossSectionalMomentumScanner />} />
                 {/* Interactive Demo Flow */}
                 <Route path="/demo-flow" element={<DemoFlowPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
