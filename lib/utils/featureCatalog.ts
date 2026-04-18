@@ -29,12 +29,12 @@ const FEATURE_CATALOG_CORE: Feature[] = [
 
   // ─── Competitive Moat (Phases 15-38) ────────────────────
   { id: 'mobile-native', name: 'Mobile Native PWA', description: 'Service worker caching, background sync, haptic feedback, and swipeable cards.', tier: 'Competitive Moat', category: 'UX', status: 'live', path: null, icon: 'Smartphone', phase: 15, keywords: ['mobile', 'pwa', 'offline', 'swipe'] },
-  { id: 'agentic-negotiation', name: 'Agentic Negotiation', description: 'Prototype negotiation automation with analytics and configurable strategy scaffolding.', tier: 'Competitive Moat', category: 'Trading', status: 'beta', path: null, icon: 'Bot', phase: 16, keywords: ['agent', 'playbook', 'auto-negotiate'] },
+  { id: 'agentic-negotiation', name: 'Agentic Negotiation', description: 'Campaigns, playbooks, negotiations, escrow timelines, activity feed, and acquisition results persist in MSI store; analytics KPIs and monthly charts derive from stored acquisition rows. All execution remains simulated demo data with in-modal disclosure — not live marketplace trading.', tier: 'Competitive Moat', category: 'Trading', status: 'live', path: '/autonomous-acquisition', icon: 'Bot', phase: 16, keywords: ['agent', 'playbook', 'auto-negotiate'] },
   { id: 'liquidity-pool', name: 'Institutional Liquidity Pool', description: 'MSI House instant-liquidity concept and payout logic, currently staged as a beta workflow.', tier: 'Competitive Moat', category: 'Trading', status: 'beta', path: null, icon: 'Droplets', phase: 17, keywords: ['instant', 'sell', 'liquidity', 'house'] },
-  { id: 'predictive-alpha', name: 'Predictive Alpha Engine', description: 'Catalyst and trajectory prototype that still needs live data validation before full release.', tier: 'Competitive Moat', category: 'Analytics', status: 'beta', path: null, icon: 'TrendingUp', phase: 18, keywords: ['predict', 'forecast', 'breakout', 'alpha'] },
-  { id: 'multi-agent', name: 'Multi-Agent Intelligence', description: 'Multi-agent analysis workspace with consensus scaffolding and explainability patterns.', tier: 'Competitive Moat', category: 'AI', status: 'beta', path: null, icon: 'Brain', phase: 19, keywords: ['agent', 'atlas', 'apex', 'sentinel', 'viper'] },
+  { id: 'predictive-alpha', name: 'Predictive Alpha Engine', description: 'Trajectory and breakout scoring from inventory, MSI price snapshots, liquidity, and scarcity; signal modes (historical_only / hybrid / imported_comps) and confidence breakdown in the modal; optional imported comp anchors via price history — not third-party market execution.', tier: 'Competitive Moat', category: 'Analytics', status: 'live', path: '/', icon: 'TrendingUp', phase: 18, keywords: ['predict', 'forecast', 'breakout', 'alpha'] },
+  { id: 'multi-agent', name: 'Multi-Agent Intelligence', description: 'War Room Gemini committee on /war-room with last thesis cached in MSI store, deterministic input fingerprint + prompt version + model id on each run, JSON export for support/audit, and agent recommendations in local agent data (cloud upsert when Supabase is configured and not in demo isolation). LLM wording is not reproducible; inputs and trace metadata are.', tier: 'Competitive Moat', category: 'AI', status: 'live', path: '/war-room', icon: 'Brain', phase: 19, keywords: ['agent', 'atlas', 'apex', 'sentinel', 'viper'] },
   { id: 'liquidity-intel', name: 'Liquidity Intelligence', description: 'Order book simulation, market impact, volume velocity, and liquidity heatmap.', tier: 'Competitive Moat', category: 'Analytics', status: 'live', path: null, icon: 'BarChart3', phase: 20, keywords: ['liquidity', 'order book', 'depth', 'velocity'] },
-  { id: 'cross-correlation', name: 'Cross-Asset Correlation', description: 'Cross-asset and diversification modeling with simulated market inputs pending live data wiring.', tier: 'Competitive Moat', category: 'Analytics', status: 'beta', path: null, icon: 'GitBranch', phase: 21, keywords: ['correlation', 'hedge', 'diversification'] },
+  { id: 'cross-correlation', name: 'Cross-Asset Correlation', description: 'Cross-asset correlation, diversification, and drawdown views on synthetic seeded series; full-page experience at /cross-asset-correlation with on-screen data-source disclosure.', tier: 'Competitive Moat', category: 'Analytics', status: 'live', path: '/cross-asset-correlation', icon: 'GitBranch', phase: 21, keywords: ['correlation', 'hedge', 'diversification'] },
   { id: 'fiscal-intel', name: 'Fiscal Intelligence', description: 'Tax-lot analysis, Schedule D-style exports, and holding-period tracking from recorded transactions.', tier: 'Competitive Moat', category: 'Finance', status: 'live', path: null, icon: 'Calculator', phase: 22, keywords: ['tax', 'cost basis', 'schedule d', 'fiscal'] },
   { id: 'visual-audit', name: 'Visual Audit Simulation', description: 'Vision-grading prototype with ROI overlays and simulated pre-grade scoring.', tier: 'Competitive Moat', category: 'AI', status: 'beta', path: null, icon: 'ScanEye', phase: 23, keywords: ['grade', 'predict', 'audit', 'sub-grade'] },
   { id: 'macro-sentinel', name: 'Macro-Sentinel Monitoring', description: 'Early warning system for global market shifts affecting luxury assets.', tier: 'Competitive Moat', category: 'Analytics', status: 'live', path: null, icon: 'Radar', phase: 24, keywords: ['macro', 'sentinel', 'economy', 'warning'] },
@@ -49,10 +49,10 @@ const FEATURE_CATALOG_CORE: Feature[] = [
   { id: 'usability', name: 'Usability & Accessibility', description: 'Keyboard shortcuts, command palette, undo toasts, skeleton loaders, and ARIA.', tier: 'Competitive Moat', category: 'UX', status: 'live', path: null, icon: 'Accessibility', phase: 32, keywords: ['keyboard', 'accessibility', 'ux', 'shortcuts'] },
   { id: 'rebalance-alerts', name: 'Rebalancing Alerts', description: 'Automated alerts when portfolio drift exceeds configurable thresholds.', tier: 'Competitive Moat', category: 'Analytics', status: 'live', path: null, icon: 'RefreshCw', phase: 33, keywords: ['rebalance', 'drift', 'allocation'] },
   { id: 'auction-sniper', name: 'Auction Sniper', description: 'Auction monitoring and bid-timing concept pending marketplace integration.', tier: 'Competitive Moat', category: 'Trading', status: 'live', path: '/auction-sniper', icon: 'Crosshair', phase: 34, keywords: ['auction', 'snipe', 'bid', 'timer'] },
-  { id: 'consignment', name: 'Consignment Tracker', description: 'Consignment tracking with fee reconciliation and route comparison, currently local-first.', tier: 'Competitive Moat', category: 'Trading', status: 'beta', path: null, icon: 'Truck', phase: 35, keywords: ['consignment', 'pwcc', 'goldin', 'heritage'] },
+  { id: 'consignment', name: 'Consignment Tracker', description: 'Mark cards on consignment with a partner snapshot embedded in inventory (syncs with Supabase when signed in). Fee and house comparison UIs use illustrative models only—verify real terms with each venue.', tier: 'Competitive Moat', category: 'Trading', status: 'live', path: '/collection', icon: 'Truck', phase: 35, keywords: ['consignment', 'pwcc', 'goldin', 'heritage'] },
   { id: 'price-history', name: 'Price History Charts', description: 'Interactive time-series charts with SMA, Bollinger Bands, and statistics.', tier: 'Competitive Moat', category: 'Analytics', status: 'live', path: null, icon: 'LineChart', phase: 36, keywords: ['price', 'chart', 'history', 'technical'] },
   { id: 'achievements', name: 'Collection Achievements', description: 'Gamification with 30+ badges across 5 tiers and level progression.', tier: 'Competitive Moat', category: 'Social', status: 'live', path: null, icon: 'Award', phase: 37, keywords: ['achievement', 'badge', 'level', 'gamification'] },
-  { id: 'anomaly-detection', name: 'Market Anomaly Detection', description: 'Anomaly and arbitrage detection prototype awaiting live signal inputs.', tier: 'Competitive Moat', category: 'Analytics', status: 'beta', path: null, icon: 'AlertTriangle', phase: 38, keywords: ['anomaly', 'spike', 'crash', 'arbitrage'] },
+  { id: 'anomaly-detection', name: 'Market Anomaly Detection', description: 'Heuristic anomaly detection on your MSI inventory (purchase vs value, sport averages, stale valuations, simulated volume signal); arbitrage rows are modeled venues; max 2 alerts per card; dashboard widget on /.', tier: 'Competitive Moat', category: 'Analytics', status: 'live', path: '/', icon: 'AlertTriangle', phase: 38, keywords: ['anomaly', 'spike', 'crash', 'arbitrage'] },
 
   // ─── Advanced Intelligence (Phases 39-63) ───────────────
   { id: 'trade-block', name: 'Trade Block & Offers', description: 'Organize cards for trade, evaluate offers, and manage multi-card package deals.', tier: 'Advanced Intelligence', category: 'Trading', status: 'live', path: null, icon: 'ArrowLeftRight', phase: 39, keywords: ['trade', 'offer', 'block', 'swap'] },
@@ -310,13 +310,23 @@ export const TIER_CONFIG: Record<FeatureTier, { order: number; color: string; bg
 
 const searchableFeatureIds = new Set<string>(SEARCHABLE_FEATURE_IDS);
 const featuredFeatureIds = new Set<string>(FEATURED_FEATURE_IDS);
+const betaSurfaceEnabled =
+  typeof import.meta !== 'undefined' &&
+  (import.meta.env.VITE_FF_ENABLE_BETA_SURFACES === 'true' ||
+    import.meta.env.VITE_FF_ENABLE_BETA_SURFACES === '1');
+
+function isDiscoverable(feature: Feature): boolean {
+  if (!searchableFeatureIds.has(feature.id)) return false;
+  if (!betaSurfaceEnabled && feature.status === 'beta') return false;
+  return true;
+}
 
 export const DISCOVERABLE_FEATURE_CATALOG: Feature[] = FEATURE_CATALOG.filter(feature =>
-  searchableFeatureIds.has(feature.id)
+  isDiscoverable(feature)
 );
 
 export const FEATURED_FEATURE_CATALOG: Feature[] = FEATURE_CATALOG.filter(feature =>
-  featuredFeatureIds.has(feature.id)
+  featuredFeatureIds.has(feature.id) && isDiscoverable(feature)
 );
 
 /** Get all unique categories */

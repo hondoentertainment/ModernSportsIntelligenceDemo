@@ -6,6 +6,8 @@ import {
   MLBPlayerSchema,
   CardInventoryInputSchema,
   safeParse,
+  WarRoomCommitteeResponseSchema,
+  safeParseCollaborativeThesis,
 } from '../../lib/schemas';
 
 describe('GeminiResponseSchema', () => {
@@ -278,5 +280,94 @@ describe('PlayerStatsSummarySchema', () => {
       trending: 'up',
     });
     expect(result.success).toBe(true);
+  });
+});
+
+describe('WarRoomCommitteeResponseSchema', () => {
+  it('accepts a valid committee payload', () => {
+    const result = WarRoomCommitteeResponseSchema.safeParse({
+      summary: 'Balanced',
+      keyTakeaways: ['a', 'b', 'c'],
+      riskAssessment: 'Medium',
+      recommendedAction: 'Hold',
+      agents: [
+        {
+          agentId: 'scout',
+          agentName: 'Scout Prime',
+          persona: 'x',
+          insight: 'y',
+          sentiment: 'neutral',
+          confidence: 0.7,
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects invalid agent sentiment', () => {
+    const result = WarRoomCommitteeResponseSchema.safeParse({
+      summary: 'x',
+      keyTakeaways: ['a'],
+      riskAssessment: 'r',
+      recommendedAction: 'h',
+      agents: [
+        {
+          agentId: 'scout',
+          agentName: 'Scout Prime',
+          persona: 'x',
+          insight: 'y',
+          sentiment: 'bullish',
+          confidence: 0.7,
+        },
+      ],
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('safeParseCollaborativeThesis', () => {
+  it('returns null for corrupt or partial payloads', () => {
+    expect(safeParseCollaborativeThesis(null)).toBeNull();
+    expect(safeParseCollaborativeThesis({ id: 'x' })).toBeNull();
+    expect(
+      safeParseCollaborativeThesis({
+        id: 't1',
+        summary: 's',
+        keyTakeaways: 'not-array',
+        riskAssessment: 'r',
+        recommendedAction: 'a',
+        agents: [],
+        createdAt: '2026-01-01',
+      }),
+    ).toBeNull();
+  });
+
+  it('returns thesis for valid stored shape including runMetadata', () => {
+    const t = safeParseCollaborativeThesis({
+      id: 'thesis-1',
+      summary: 'S',
+      keyTakeaways: ['k'],
+      riskAssessment: 'low',
+      recommendedAction: 'hold',
+      agents: [
+        {
+          agentId: 'a',
+          agentName: 'A',
+          persona: 'p',
+          insight: 'i',
+          sentiment: 'positive',
+          confidence: 0.9,
+        },
+      ],
+      createdAt: '2026-01-01T00:00:00.000Z',
+      runMetadata: {
+        inputHash: '0'.repeat(32),
+        promptVersion: 'v1',
+        modelId: 'm',
+        includeStrategist: false,
+      },
+    });
+    expect(t).not.toBeNull();
+    expect(t?.runMetadata?.inputHash).toHaveLength(32);
   });
 });

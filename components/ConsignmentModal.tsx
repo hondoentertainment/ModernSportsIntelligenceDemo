@@ -178,6 +178,16 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
         </div>
 
         <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto no-scrollbar">
+          <div
+            role="status"
+            className="rounded-2xl border border-amber-500/35 bg-amber-500/10 px-4 py-3 text-xs text-amber-100/95 leading-relaxed"
+          >
+            <span className="font-semibold text-amber-200">Planning only: </span>
+            Commission tables, ratings, and timelines are illustrative models—not official quotes from any
+            consignment house. Marking a card “on consignment” here updates your MSI inventory only; it does not
+            submit to third parties. When you are signed in, consignment snapshots sync with your cards in the
+            cloud like the rest of your collection.
+          </div>
           {showReturnToCollection && card.consignment && (
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-2xl border border-brand-lime/25 bg-brand-lime/5">
               <div>

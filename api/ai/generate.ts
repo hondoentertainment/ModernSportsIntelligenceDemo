@@ -1,12 +1,13 @@
 import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
-import { apiLogger } from '../lib/logger';
+import { respondInternalError, setApiCorsHeaders } from '../lib/httpProduction';
 import {
   checkRateLimit,
   clientKeyFromRequest,
   envRateLimitMax,
   rateLimitDisabled,
 } from '../lib/rateLimit';
+import { isServerApiAuthConfigured, verifyServerApiAuth } from '../lib/verifyServerApiAuth';
 
 const generateBodySchema = z.object({
   model: z.string().min(1),
@@ -30,18 +31,8 @@ type ApiResponse = {
   status: (code: number) => { json: (body: object) => unknown; end?: () => void };
 };
 
-function setCorsHeaders(res: ApiResponse) {
-  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
-  res.setHeader('Access-Control-Allow-Methods', ALLOWED_METHODS);
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-}
-
-function getErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Internal Server Error';
-}
-
 export default async function handler(req: ApiRequest, res: ApiResponse) {
-  setCorsHeaders(res);
+  setApiCorsHeaders(res, { allowMethods: ALLOWED_METHODS });
 
   if (req.method === 'OPTIONS') {
     const r = res.status(204);
@@ -51,6 +42,16 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  if (!isServerApiAuthConfigured()) {
+    return res.status(503).json({
+      error: 'Server API authentication is not configured.',
+      code: 'api_auth_misconfigured',
+    });
+  }
+  if (!(await verifyServerApiAuth(req))) {
+    return res.status(401).json({ error: 'Unauthorized', code: 'api_auth_required' });
   }
 
   if (!rateLimitDisabled()) {
@@ -87,7 +88,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       text: response.text || '',
     });
   } catch (error) {
-    apiLogger.error('AI generate failed', error);
-    return res.status(500).json({ error: getErrorMessage(error) });
+    respondInternalError(res, error, 'AI generate failed', 'ai_generate_failed');
+    return;
   }
 }

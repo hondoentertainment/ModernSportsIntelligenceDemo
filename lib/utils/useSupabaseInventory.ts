@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { CardInventory, TargetWatchlist } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import { isDemoMode } from '../supabase';
@@ -101,8 +101,8 @@ export function useSupabaseInventory() {
     const userId = user?.id || null;
     const isAuthenticated = !!userId && !isDemoMode;
 
-    const [inventory, setInventory] = useState<CardInventory[]>([]);
-    const [targets, setTargets] = useState<TargetWatchlist[]>([]);
+    const [inventory, setInventory] = useState<CardInventory[]>(() => readLocalRows<CardInventory>(STORAGE_KEY));
+    const [targets, setTargets] = useState<TargetWatchlist[]>(() => readLocalRows<TargetWatchlist>(TARGETS_KEY));
     const [loading, setLoading] = useState(true);
     const [isMigrating, setIsMigrating] = useState(false);
     const [syncMeta, setSyncMeta] = useState<SyncMeta>({
@@ -112,6 +112,7 @@ export function useSupabaseInventory() {
     });
     const [lastSyncError, setLastSyncError] = useState<string | null>(null);
     const [syncStatus, setSyncStatus] = useState<InventorySyncStatus>('loading');
+    const loadEpochRef = useRef(0);
 
     const markCloudHealthy = useCallback(() => {
         setLastSyncError(null);
@@ -128,6 +129,7 @@ export function useSupabaseInventory() {
     }, []);
 
     useEffect(() => {
+        const epoch = ++loadEpochRef.current;
         const loadData = async () => {
             setLoading(true);
             setLastSyncError(null);
@@ -139,14 +141,18 @@ export function useSupabaseInventory() {
                     setSyncStatus('migrating');
                     try {
                         const migrationResult = await migrateToSupabase(userId);
+                        if (epoch !== loadEpochRef.current) return;
                         if (!migrationResult.success) {
                             markCloudFailure(migrationResult.errors.join(', '));
                         }
                     } catch (error) {
                         logger.error('Migration error:', error);
+                        if (epoch !== loadEpochRef.current) return;
                         markCloudFailure('System error during migration');
                     } finally {
-                        setIsMigrating(false);
+                        if (epoch === loadEpochRef.current) {
+                            setIsMigrating(false);
+                        }
                     }
                 }
 
@@ -155,12 +161,14 @@ export function useSupabaseInventory() {
                         fetchCards(userId),
                         fetchTargets(userId),
                     ]);
+                    if (epoch !== loadEpochRef.current) return;
                     setInventory(cards);
                     setTargets(watchlist);
                     setSyncMeta(calculateSyncMeta(cards, new Date().toISOString()));
                     setSyncStatus('synced');
-                } catch  {
-                    setLastSyncError('Failed to fetch data from cloud');
+                } catch {
+                    if (epoch !== loadEpochRef.current) return;
+                    markCloudFailure('Failed to fetch data from cloud');
                 }
             } else {
                 // Load from localStorage (demo mode)
@@ -169,6 +177,7 @@ export function useSupabaseInventory() {
                     const cachedTargets = readLocalRows<TargetWatchlist>(TARGETS_KEY);
                     const cachedMeta = readLocalMeta();
 
+                    if (epoch !== loadEpochRef.current) return;
                     setInventory(cachedInventory);
                     setTargets(cachedTargets);
                     setSyncMeta(cachedMeta || calculateSyncMeta(cachedInventory, null));
@@ -178,6 +187,7 @@ export function useSupabaseInventory() {
                     const cachedInventory = readLocalRows<CardInventory>(STORAGE_KEY);
                     const cachedTargets = readLocalRows<TargetWatchlist>(TARGETS_KEY);
                     const cachedMeta = readLocalMeta();
+                    if (epoch !== loadEpochRef.current) return;
                     setInventory(cachedInventory);
                     setTargets(cachedTargets);
                     if (cachedMeta) {
@@ -189,7 +199,9 @@ export function useSupabaseInventory() {
                 }
             }
 
-            setLoading(false);
+            if (epoch === loadEpochRef.current) {
+                setLoading(false);
+            }
         };
 
         void loadData();

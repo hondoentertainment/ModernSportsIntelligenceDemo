@@ -1,11 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": [
-      "node",
-      "vitest/globals",
-      "@testing-library/jest-dom"
-    ]
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom"]
   },
   "include": [
     "vite.config.ts",
@@ -35,8 +31,5 @@
     "tests/lib/fiveDifferentiatorService.test.ts",
     "tests/e2e/**/*.ts"
   ],
-  "exclude": [
-    "scripts/**",
-    "node_modules/**"
-  ]
+  "exclude": ["scripts/**", "node_modules/**"]
 }

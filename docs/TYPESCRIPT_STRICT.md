@@ -4,10 +4,10 @@ This repo’s default TypeScript config (`tsconfig.json`) does **not** enable [`
 
 ## Commands
 
-| Script | What it checks |
-|--------|----------------|
-| `npm run typecheck` | `tsconfig.release.json` — curated include list (CI-style gate today). |
-| `npm run typecheck:strict` | `tsconfig.strict.json` — same base as root, with `strict: true`. |
+| Script                     | What it checks                                                        |
+| -------------------------- | --------------------------------------------------------------------- |
+| `npm run typecheck`        | `tsconfig.release.json` — curated include list (CI-style gate today). |
+| `npm run typecheck:strict` | `tsconfig.strict.json` — same base as root, with `strict: true`.      |
 
 Run strict checks locally:
 
@@ -29,7 +29,7 @@ npm run typecheck:strict
 
 ## What `tsconfig.strict.json` adds
 
-Besides `compilerOptions.strict: true`, this file sets an explicit **`exclude`** list (`dist/`, `node_modules/`, `scripts/`, test artifacts, etc.). The root `tsconfig.json` only excludes `scripts/templates/**`; a custom `exclude` replaces TypeScript’s defaults, so without narrowing, `tsc` could follow `allowJs` into **`dist/**`** and use a very large file graph—enough to exhaust the Node heap on a full run. The strict config’s excludes keep the check **feasible** on typical dev machines.
+Besides `compilerOptions.strict: true`, this file sets an explicit **`exclude`** list (`dist/`, `node_modules/`, `scripts/`, test artifacts, etc.). The root `tsconfig.json` only excludes `scripts/templates/**`; a custom `exclude` replaces TypeScript’s defaults, so without narrowing, `tsc` could follow `allowJs` into **`dist/**`** and use a very large file graph—enough to exhaust the Node heap on a full run. The strict config’s excludes keep the check **feasible\*\* on typical dev machines.
 
 ## Current status
 

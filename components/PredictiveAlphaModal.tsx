@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { X, TrendingUp, TrendingDown, Minus, Zap, Shield, Target, AlertTriangle, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { CardInventory } from '../types';
 import { forecastPriceTrajectory, analyzeBreakoutPotential, PriceTrajectory, BreakoutAnalysis } from '../lib/analytics/predictiveAlpha';
-import { store } from '../lib/dal/syncStore';
 
 interface PredictiveAlphaModalProps {
   isOpen: boolean;
@@ -57,6 +56,22 @@ const PredictiveAlphaModal: React.FC<PredictiveAlphaModalProps> = ({ isOpen, onC
 
         <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto">
 
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200 space-y-2">
+            <p>
+              Projections are heuristic model output from your inventory, MSI price snapshots, and optional imported comp anchors — not a market guarantee. Confirm with live comps before trading.
+            </p>
+            <p className="text-[10px] text-amber-200/80">
+              Optional: add imported sale prices as price-history snapshots flagged as comp anchors (same store as your valuation history) to unlock hybrid mode and slightly higher confidence when history is deep enough.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2" role="status">
+            <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Signal source</span>
+            <span className="px-2.5 py-1 rounded-lg bg-brand-teal/15 border border-brand-teal/25 text-[11px] font-semibold text-brand-teal">
+              {trajectory.signalSourceLabel}
+            </span>
+          </div>
+
           {/* Trajectory + Recommendation Row */}
           <div className="grid grid-cols-2 gap-4">
             <div className={`p-6 rounded-2xl border ${tc.bg}`}>
@@ -110,8 +125,41 @@ const PredictiveAlphaModal: React.FC<PredictiveAlphaModalProps> = ({ isOpen, onC
             <div className="flex items-center gap-2 mt-3">
               <Shield size={14} className="text-brand-muted" />
               <span className="text-[10px] text-brand-muted">
-                Confidence: <span className="text-white font-bold">{trajectory.confidence}%</span> — based on {getCardHistoryCount(card.id)} data points
+                Confidence: <span className="text-white font-bold">{trajectory.confidence}%</span>
+                {' '}— {trajectory.confidenceBreakdown.historyPoints} snapshot(s), {trajectory.confidenceBreakdown.importedCompSnapshots} imported comp anchor(s)
               </span>
+            </div>
+
+            <div className="mt-4 rounded-2xl border border-slate-800 bg-brand-charcoal/30 p-4 space-y-3">
+              <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Why this confidence</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px]">
+                <BreakdownBar label="History depth (display)" value={trajectory.confidenceBreakdown.historyDepthScore} />
+                <BreakdownBar label="Liquidity" value={trajectory.confidenceBreakdown.liquidityQualityScore} />
+                <BreakdownBar label="Scarcity (POP)" value={trajectory.confidenceBreakdown.scarcityQualityScore} />
+                <div className="space-y-1">
+                  <p className="text-brand-muted">Volatility adj.</p>
+                  <p className={`font-mono font-bold ${trajectory.confidenceBreakdown.volatilityAdjustment >= 0 ? 'text-brand-green' : 'text-brand-orange'}`}>
+                    {trajectory.confidenceBreakdown.volatilityAdjustment >= 0 ? '+' : ''}{trajectory.confidenceBreakdown.volatilityAdjustment} pts
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-brand-muted">Grade bonus (model)</p>
+                  <p className="font-mono font-bold text-white">+{trajectory.confidenceBreakdown.gradeBonusPoints} pts</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-brand-muted">Imported comp bonus</p>
+                  <p className="font-mono font-bold text-white">+{trajectory.confidenceBreakdown.importedCompBonusPoints} pts</p>
+                </div>
+              </div>
+              <p className="text-[10px] text-brand-muted">
+                Model vs comp weighting: <span className="text-white font-semibold">{trajectory.confidenceBreakdown.sourceModelWeightPct}%</span> MSI heuristics /{' '}
+                <span className="text-white font-semibold">{trajectory.confidenceBreakdown.externalCompWeightPct}%</span> imported anchors (planning only).
+              </p>
+              <ul className="list-disc list-inside space-y-1 text-[10px] text-slate-400 leading-relaxed">
+                {trajectory.confidenceBreakdown.summaryLines.map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
+              </ul>
             </div>
           </div>
 
@@ -177,12 +225,19 @@ const PredictiveAlphaModal: React.FC<PredictiveAlphaModalProps> = ({ isOpen, onC
   );
 };
 
-/** Helper to get history count without importing priceHistory directly */
-function getCardHistoryCount(cardId: string): number {
-  try {
-    const history = store.get<Record<string, unknown[]>>('cardx_price_history', {});
-    return (history[cardId] || []).length;
-  } catch { return 0; }
+function BreakdownBar({ label, value }: { label: string; value: number }) {
+  const v = Math.max(0, Math.min(100, value));
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between text-brand-muted">
+        <span>{label}</span>
+        <span className="font-mono text-white">{Math.round(v)}</span>
+      </div>
+      <div className="h-1.5 bg-brand-charcoal rounded-full overflow-hidden">
+        <div className="h-full rounded-full bg-brand-teal/80 transition-all" style={{ width: `${v}%` }} />
+      </div>
+    </div>
+  );
 }
 
 export default PredictiveAlphaModal;

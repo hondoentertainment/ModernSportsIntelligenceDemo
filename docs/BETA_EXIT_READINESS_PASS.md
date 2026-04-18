@@ -1,0 +1,36 @@
+# Beta exit readiness — wave 1 complete (agentic negotiation, predictive alpha, multi-agent)
+
+Snapshot against [`BETA_FEATURE_EXIT_CRITERIA.md`](./BETA_FEATURE_EXIT_CRITERIA.md). **Wave 1 features are promoted to `status: 'live'`** in [`lib/utils/featureCatalog.ts`](../lib/utils/featureCatalog.ts). Tickets and acceptance criteria lived in [`BETA_PROMOTION_IMPLEMENTATION_PLAN.md`](./BETA_PROMOTION_IMPLEMENTATION_PLAN.md).
+
+## `agentic-negotiation` (Autonomous Acquisition + playbooks) — **live**
+
+| Area           | Shipped                                                                                                                                                                                                                                                                                                                                       | Residual demo / limits                                                                                  |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| State          | Campaigns, negotiations, escrow, activity, acquisition results, and analytics source rows persist via MSI `store` / DAL; read paths use repositories in [`autonomousAcquisitionService.ts`](../lib/trading/autonomousAcquisitionService.ts).                                                                                                  | Execution remains simulated; in-modal disclosure that data is demo-grade, not live marketplace trading. |
+| Disclosure     | [`AUTONOMOUS_ACQUISITION_DISCLOSURE`](../lib/trading/autonomousAcquisitionService.ts) at top of [`AutonomousAcquisitionModal.tsx`](../components/AutonomousAcquisitionModal.tsx).                                                                                                                                                             | —                                                                                                       |
+| Errors / tests | Sanitize / corrupt payload handling with user-visible feedback where applicable. Unit tests: [`tests/lib/autonomousAcquisitionService.test.ts`](../tests/lib/autonomousAcquisitionService.test.ts). E2E: campaign persists after reload in [`war-room-predictive-acquisition.spec.ts`](../tests/e2e/war-room-predictive-acquisition.spec.ts). | —                                                                                                       |
+
+## `predictive-alpha` (Predictive Alpha Engine) — **live**
+
+| Area           | Shipped                                                                                                                                                                                                                     | Residual demo / limits                                                     |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Inputs         | Portfolio, [`getCardHistory`](../lib/analytics/priceHistory.ts), liquidity, scarcity; signal modes `historical_only` / `hybrid` / `imported_comps` in [`predictiveAlpha.ts`](../lib/analytics/predictiveAlpha.ts).          | Heuristics + optional imported anchors — not third-party market execution. |
+| Disclosure     | Modal labels signal source; confidence breakdown (history depth, liquidity, scarcity, weighting) in [`PredictiveAlphaModal.tsx`](../components/PredictiveAlphaModal.tsx).                                                   | —                                                                          |
+| Errors / tests | Unit: [`tests/lib/predictiveAlpha.test.ts`](../tests/lib/predictiveAlpha.test.ts). E2E: sparse predictive engine path in [`war-room-predictive-acquisition.spec.ts`](../tests/e2e/war-room-predictive-acquisition.spec.ts). | —                                                                          |
+
+## `multi-agent` (Analyst War Room committee) — **live**
+
+| Area                  | Shipped                                                                                                                                                                                                                                                                                                                  | Residual demo / limits                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| State                 | Last thesis: `msi_war_room_last_thesis_v1` via `store` in [`AnalystWarRoom.tsx`](../components/AnalystWarRoom.tsx). Recommendations via [`upsertAgentRecommendation`](../lib/utils/differentiatorData.ts) with `inputHash`, `promptVersion`, `modelId` from [`MultiAgentService.ts`](../lib/utils/MultiAgentService.ts). | Gemini narrative is **non-deterministic**; fingerprint and metadata correlate inputs and config, not wording. |
+| Traceability / export | Deterministic input fingerprint, prompt version, model id ([`warRoomThesisAudit.ts`](../lib/utils/warRoomThesisAudit.ts)); on-screen panel + **Export thesis JSON** in War Room.                                                                                                                                         | —                                                                                                             |
+| Errors / tests        | Gemini failures: toast + null thesis in `MultiAgentService`. Unit: [`tests/lib/warRoomThesisAudit.test.ts`](../tests/lib/warRoomThesisAudit.test.ts). E2E: War Room load + refresh + export skeleton in [`war-room-predictive-acquisition.spec.ts`](../tests/e2e/war-room-predictive-acquisition.spec.ts).               | —                                                                                                             |
+
+## Related catalog rows
+
+Live routes such as `war-room`, `playbook-templates`, and `agent-thesis` remain separate catalog entries; promoting `multi-agent` documents the committee/traceability slice that powers the War Room experience.
+
+## Follow-ups (outside wave 1)
+
+- Other `beta` IDs in `featureCatalog` still subject to [`BETA_FEATURE_EXIT_CRITERIA.md`](./BETA_FEATURE_EXIT_CRITERIA.md) before `live`.
+- Optional: CSV export for War Room audit package (plan noted JSON first).

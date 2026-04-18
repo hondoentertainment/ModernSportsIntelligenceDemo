@@ -242,6 +242,15 @@ export interface AgentInsight {
   confidence: number;
 }
 
+/** Traceability for War Room / multi-agent runs (input fingerprint, prompt rev, model id). */
+export interface WarRoomRunMetadata {
+  /** Deterministic fingerprint from normalized portfolio + strategist flag. */
+  inputHash: string;
+  promptVersion: string;
+  modelId: string;
+  includeStrategist: boolean;
+}
+
 export interface CollaborativeThesis {
   id: string;
   summary: string;
@@ -252,6 +261,7 @@ export interface CollaborativeThesis {
   executionPlan?: AutonomousAction[];
   recommendationId?: string;
   createdAt: string;
+  runMetadata?: WarRoomRunMetadata;
 }
 
 export interface RiskCollar {

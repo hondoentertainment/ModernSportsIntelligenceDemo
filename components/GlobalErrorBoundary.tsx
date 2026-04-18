@@ -1,5 +1,6 @@
 import React, { ErrorInfo, ReactNode } from 'react';
 import { logger } from '../lib/logger';
+import { reportError } from '../lib/errorReporting';
 
 interface Props {
   children: ReactNode;
@@ -26,11 +27,7 @@ class GlobalErrorBoundary extends React.Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ errorInfo });
     logger.error('[GlobalErrorBoundary] Uncaught error:', error?.message, errorInfo?.componentStack);
-
-    // Future: Send to error tracking service (e.g. Sentry)
-    // if (typeof window !== 'undefined' && (window as any).Sentry) {
-    //   (window as any).Sentry.captureException(error, { extra: { componentStack: errorInfo?.componentStack } });
-    // }
+    reportError(error, { componentStack: errorInfo?.componentStack, source: 'GlobalErrorBoundary' });
   }
 
   handleReload = () => {

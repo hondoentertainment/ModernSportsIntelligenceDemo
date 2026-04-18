@@ -38,6 +38,7 @@ import {
 import {
   generateLiquidationPlan,
   getFireSaleValues,
+  renderCashOutPlanHTML,
   optimizeLiquidationOrder,
   calculateRecovery,
   generateEmergencyCashOut,
@@ -677,26 +678,25 @@ function CashOutGenerator({ urgency }: { urgency: 'immediate' | 'week' | 'month'
   const printRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
-    if (printRef.current) {
-      const printWindow = window.open('', '_blank');
-      if (printWindow) {
-        printWindow.document.write(`
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      const bodyHtml = renderCashOutPlanHTML(plan);
+      printWindow.document.write(`
           <html><head><title>Cash-Out Plan</title>
           <style>
             body { font-family: system-ui, sans-serif; padding: 2rem; color: #1e293b; }
             table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
             th, td { padding: 8px 12px; border: 1px solid #cbd5e1; text-align: left; font-size: 13px; }
             th { background: #f1f5f9; font-weight: 600; }
-            h1 { font-size: 1.5rem; } h2 { font-size: 1.1rem; margin-top: 1.5rem; }
-            .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0; }
-            .summary-item { padding: 1rem; background: #f8fafc; border-radius: 0.5rem; border: 1px solid #e2e8f0; }
+            tr.notes td { font-size: 12px; color: #475569; border-top: none; padding-top: 0; }
+            .meta { color: #64748b; font-size: 13px; }
+            .total { margin-top: 1rem; font-weight: 600; }
           </style></head><body>
-          ${printRef.current.innerHTML}
+          ${bodyHtml}
           </body></html>
         `);
-        printWindow.document.close();
-        printWindow.print();
-      }
+      printWindow.document.close();
+      printWindow.print();
     }
   };
 

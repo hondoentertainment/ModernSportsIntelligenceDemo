@@ -7,6 +7,12 @@
 [![CI / CD](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/actions/workflows/ci.yml/badge.svg)](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/actions/workflows/ci.yml)
 [![PR Checks](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/actions/workflows/pr-checks.yml)
 
+## Production rollout
+
+- **Phased checklist:** [docs/PRODUCTION_ROLLOUT_PHASES.md](docs/PRODUCTION_ROLLOUT_PHASES.md) (data, billing, security, observability, E2E against Vercel).
+- **Env & deploy:** [docs/DEPLOY_ENV_CHECKLIST.md](docs/DEPLOY_ENV_CHECKLIST.md) · **Edge Functions:** [supabase/functions/README.md](supabase/functions/README.md)
+- **Ops:** [docs/OPS_RUNBOOK.md](docs/OPS_RUNBOOK.md) · **Monitoring:** [docs/MONITORING.md](docs/MONITORING.md)
+
 # Run and deploy your AI Studio app
 
 This contains everything you need to run your app locally.
@@ -15,8 +21,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/1obS_fShKhJaA6YWydCVTdW
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
-
+**Prerequisites:** Node.js
 
 1. Install dependencies:
    `npm install`

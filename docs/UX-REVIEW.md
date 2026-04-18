@@ -23,20 +23,20 @@ The app has a strong foundation: clear primary navigation (sidebar + mobile nav)
 
 ## Recommendations by area
 
-| Area | Finding | Recommendation |
-|------|--------|----------------|
-| **Accessibility** | Keyboard users had no skip link. | ✅ **Done:** Skip-to-main link; visible on focus only. |
-| **Accessibility** | Focus ring was inconsistent or absent. | ✅ **Done:** Global `:focus-visible` outline (lime, 2px) in `index.html`. |
-| **Accessibility** | Main content landmark was implicit. | ✅ **Done:** `<main id="main-content" role="main">` for skip target and semantics. |
-| **IA & navigation** | Mobile nav did not expose current page to assistive tech. | ✅ **Done:** `aria-current="page"` on active link; active logic matches nested routes. |
-| **IA & navigation** | Mobile nav had no accessible name. | ✅ **Done:** `aria-label="Mobile navigation"` on `<nav>`. |
-| **Mobile** | Mobile nav tap targets could be under 44px. | ✅ **Done:** `min-h-[44px] min-w-[44px]` and padding on nav links and Install button. |
-| **Interaction** | ConfirmDialog buttons could submit forms. | ✅ **Done:** `type="button"` and `aria-label` on Cancel/Confirm. |
-| **Interaction** | Header user dropdown menu items were not marked as menuitems. | ✅ **Done:** `role="menuitem"` and `type="button"` on Settings/Sign Out; decorative icons `aria-hidden`. |
-| **Interaction** | User dropdown should close on Escape. | Consider adding `onKeyDown` (Escape) to close menu and return focus to trigger. |
-| **Content** | Empty states on some frontier pages could be more actionable. | Add “What you can do here” or one primary CTA where relevant. |
-| **Visual** | Some icon-only buttons lack tooltips. | Ensure `title` or `aria-label` everywhere (many already have it). |
-| **Performance** | Long lists (e.g. inventory) could benefit from virtualization. | Consider virtualized lists if scrolling or DOM size becomes an issue. |
+| Area                | Finding                                                        | Recommendation                                                                                           |
+| ------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Accessibility**   | Keyboard users had no skip link.                               | ✅ **Done:** Skip-to-main link; visible on focus only.                                                   |
+| **Accessibility**   | Focus ring was inconsistent or absent.                         | ✅ **Done:** Global `:focus-visible` outline (lime, 2px) in `index.html`.                                |
+| **Accessibility**   | Main content landmark was implicit.                            | ✅ **Done:** `<main id="main-content" role="main">` for skip target and semantics.                       |
+| **IA & navigation** | Mobile nav did not expose current page to assistive tech.      | ✅ **Done:** `aria-current="page"` on active link; active logic matches nested routes.                   |
+| **IA & navigation** | Mobile nav had no accessible name.                             | ✅ **Done:** `aria-label="Mobile navigation"` on `<nav>`.                                                |
+| **Mobile**          | Mobile nav tap targets could be under 44px.                    | ✅ **Done:** `min-h-[44px] min-w-[44px]` and padding on nav links and Install button.                    |
+| **Interaction**     | ConfirmDialog buttons could submit forms.                      | ✅ **Done:** `type="button"` and `aria-label` on Cancel/Confirm.                                         |
+| **Interaction**     | Header user dropdown menu items were not marked as menuitems.  | ✅ **Done:** `role="menuitem"` and `type="button"` on Settings/Sign Out; decorative icons `aria-hidden`. |
+| **Interaction**     | User dropdown should close on Escape.                          | Consider adding `onKeyDown` (Escape) to close menu and return focus to trigger.                          |
+| **Content**         | Empty states on some frontier pages could be more actionable.  | Add “What you can do here” or one primary CTA where relevant.                                            |
+| **Visual**          | Some icon-only buttons lack tooltips.                          | Ensure `title` or `aria-label` everywhere (many already have it).                                        |
+| **Performance**     | Long lists (e.g. inventory) could benefit from virtualization. | Consider virtualized lists if scrolling or DOM size becomes an issue.                                    |
 
 ---
 
@@ -62,13 +62,13 @@ The app has a strong foundation: clear primary navigation (sidebar + mobile nav)
 
 ## Subagent pass 2 (pipeline: IA → Interaction → Content → Visual → A11y → Mobile)
 
-| Subagent | Changes |
-|----------|---------|
-| **IA** | `DocumentTitleSync` + `pageTitleForPath()`: tab titles for auth, nav, feature catalog, `/p/*`, and humanized slugs. |
+| Subagent        | Changes                                                                                                                                                                                                                                                                                             |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **IA**          | `DocumentTitleSync` + `pageTitleForPath()`: tab titles for auth, nav, feature catalog, `/p/*`, and humanized slugs.                                                                                                                                                                                 |
 | **Interaction** | Feature search: Escape from input; empty-results state with **Browse all features** CTA. Agent Outcome Memory empty state: **Open War Room** + **Back to dashboard**. User menu: Escape returns focus to trigger. Page loading: `role="status"`, `aria-live="polite"`, **Loading page…** (sr-only). |
-| **Content** | Clearer no-match copy in feature search; friendlier Agent Outcome Memory empty copy. |
-| **Visual** | Header icon row: 44×44px touch targets on small screens; Notifications `title`; Feature search trigger `title`. |
-| **A11y** | Command palette / feature search: `aria-labelledby` + sr-only title inside focus trap; sync strip `role="status"` + `aria-live`; CommandPalette duplicate import fix + `type="button"` on options. |
-| **Mobile** | Omni-search + feature search input `text-base md:text-sm` (reduces iOS zoom-on-focus). Bottom nav + page padding use `env(safe-area-inset-bottom)`. `prefers-reduced-motion` reduces animations globally. |
+| **Content**     | Clearer no-match copy in feature search; friendlier Agent Outcome Memory empty copy.                                                                                                                                                                                                                |
+| **Visual**      | Header icon row: 44×44px touch targets on small screens; Notifications `title`; Feature search trigger `title`.                                                                                                                                                                                     |
+| **A11y**        | Command palette / feature search: `aria-labelledby` + sr-only title inside focus trap; sync strip `role="status"` + `aria-live`; CommandPalette duplicate import fix + `type="button"` on options.                                                                                                  |
+| **Mobile**      | Omni-search + feature search input `text-base md:text-sm` (reduces iOS zoom-on-focus). Bottom nav + page padding use `env(safe-area-inset-bottom)`. `prefers-reduced-motion` reduces animations globally.                                                                                           |
 
-*For subagent definitions, see `.cursor/skills/ux-design-review/subagents.md`.*
+_For subagent definitions, see `.cursor/skills/ux-design-review/subagents.md`._

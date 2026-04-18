@@ -1,0 +1,30 @@
+name: Health ping (optional)
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    name: GET /api/health
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping deployment
+        env:
+          BASE_URL: ${{ secrets.HEALTH_CHECK_URL }}
+        run: |
+          if [ -z "$BASE_URL" ]; then
+            echo "HEALTH_CHECK_URL secret not set — skipping (set to https://your-app.vercel.app)."
+            exit 0
+          fi
+          echo "Checking $BASE_URL/api/health"
+          res=$(curl -sS -w "\n%{http_code}" "$BASE_URL/api/health")
+          code=$(echo "$res" | tail -n1)
+          body=$(echo "$res" | sed '$d')
+          echo "$body"
+          test "$code" = "200" || exit 1
+          echo "$body" | jq -e '.ok == true' >/dev/null

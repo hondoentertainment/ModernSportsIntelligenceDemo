@@ -32,7 +32,14 @@ test.describe('Auth flows', () => {
     test('Signup link navigates to signup page', async ({ page }) => {
         await page.goto('/#/login');
         await expect(page.getByRole('heading', { name: /welcome back|sign in/i })).toBeVisible({ timeout: 10000 });
-        await page.getByRole('link', { name: /initialize account|sign up|create account/i }).first().click();
-        await expect(page).toHaveURL(/signup/);
+        const signupLink = page.getByRole('link', {
+            name: /initialize account|sign up|create account/i
+        }).first();
+        await expect(signupLink).toBeVisible({ timeout: 10000 });
+        await Promise.all([
+            page.waitForURL(/signup/, { timeout: 15000 }),
+            signupLink.click(),
+        ]);
+        await expect(page.getByRole('heading', { name: /create account|join the alpha/i }).first()).toBeVisible({ timeout: 10000 });
     });
 });

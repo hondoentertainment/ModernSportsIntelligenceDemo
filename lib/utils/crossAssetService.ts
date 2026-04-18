@@ -2,6 +2,10 @@
 // Correlates sports card values with traditional financial assets to demonstrate
 // cards as an investable alternative asset class.
 
+/** UI copy: series and stats are seeded/synthetic until live or imported data is wired. */
+export const CROSS_ASSET_DATA_SOURCE =
+  'Synthetic seeded time series and summary statistics for visualization and education—not live broker, exchange, or index feeds. Connecting real or user-imported series is future work.';
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export type AssetCategory =

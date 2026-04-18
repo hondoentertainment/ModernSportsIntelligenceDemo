@@ -1,6 +1,8 @@
 // Bankruptcy Shield Service - Worst-case liquidation planner
 // Feature #140: Collection Bankruptcy Shield
 
+import { escapeHtml } from '../htmlEscape';
+
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
 export type LiquidityTierLevel = 1 | 2 | 3 | 4;
@@ -514,6 +516,48 @@ export function generateEmergencyCashOut(
       averageDiscountPercent,
     },
   };
+}
+
+function formatUsd(n: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(n);
+}
+
+/** Safe HTML for print / document.write (all dynamic text escaped). */
+export function renderCashOutPlanHTML(plan: CashOutPlan): string {
+  const { summary, steps, generatedAt, urgency } = plan;
+  const urgencyLabel =
+    urgency === 'immediate' ? '24 Hours' : urgency === 'week' ? '7 Days' : '30 Days';
+  const rows = steps
+    .map(
+      (step) => `
+      <tr>
+        <td>${escapeHtml(step.order)}</td>
+        <td>${escapeHtml(step.action)}</td>
+        <td>${escapeHtml(step.asset.liquidityTier)}</td>
+        <td>${escapeHtml(step.channel)}</td>
+        <td>${escapeHtml(step.estimatedDays)}</td>
+        <td>${escapeHtml(formatUsd(step.expectedProceeds))}</td>
+        <td>${escapeHtml(formatUsd(step.cumulativeRecovery))}</td>
+      </tr>
+      <tr class="notes"><td colspan="7">${escapeHtml(step.notes)}</td></tr>`,
+    )
+    .join('');
+
+  return `
+<div class="cashout-print">
+  <p class="meta">Generated ${escapeHtml(new Date(generatedAt).toLocaleString())} · Urgency: ${escapeHtml(urgencyLabel)}</p>
+  <p>Best recovery: ${escapeHtml(summary.highestRecoveryAsset)} · Worst: ${escapeHtml(summary.lowestRecoveryAsset)}</p>
+  <table>
+    <thead><tr><th>#</th><th>Action</th><th>Tier</th><th>Channel</th><th>Days</th><th>Proceeds</th><th>Running</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <p class="total">Total expected recovery: ${escapeHtml(formatUsd(summary.totalExpectedRecovery))}
+    (${escapeHtml(String(summary.recoveryPercent))}% of ${escapeHtml(formatUsd(summary.totalMarketValue))} market value)</p>
+</div>`;
 }
 
 /**

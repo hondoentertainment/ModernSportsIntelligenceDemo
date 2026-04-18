@@ -278,6 +278,15 @@ const ConsignmentRouter: React.FC = () => {
         </div>
       </div>
 
+      <div
+        role="status"
+        className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/90"
+      >
+        <strong className="text-amber-200">Illustrative data: </strong>
+        Platform fees, scores, and sell-through rates are demo models for comparison—not live PWCC, Goldin,
+        Heritage, or eBay terms. Confirm all pricing and submission rules with the venue before consigning.
+      </div>
+
       {/* Input section */}
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-4">
         <div className="flex flex-wrap items-end gap-4">

@@ -1,6 +1,7 @@
 import { store } from '../dal/syncStore';
 import { CardInventory, Sport } from '../../types';
 import { buildCollectorAuditDossierReport } from '../core/collectorAuditDossierService';
+import { escapeHtml } from '../htmlEscape';
 
 // ---- Types ----
 
@@ -786,14 +787,14 @@ export function renderReportHTML(report: GeneratedReport): string {
   let sectionsHTML = '';
   for (const section of report.sections) {
     sectionsHTML += `<div class="section">`;
-    sectionsHTML += `<h2>${section.title}</h2>`;
+    sectionsHTML += `<h2>${escapeHtml(section.title)}</h2>`;
     if (section.sourceType || section.sourceNote) {
       sectionsHTML += `<div class="source-note">`;
       if (section.sourceType) {
-        sectionsHTML += `<span class="source-badge">${section.sourceType.replace(/-/g, ' ')}</span>`;
+        sectionsHTML += `<span class="source-badge">${escapeHtml(section.sourceType.replace(/-/g, ' '))}</span>`;
       }
       if (section.sourceNote) {
-        sectionsHTML += `<span>${section.sourceNote}</span>`;
+        sectionsHTML += `<span>${escapeHtml(section.sourceNote)}</span>`;
       }
       sectionsHTML += `</div>`;
     }
@@ -808,13 +809,13 @@ export function renderReportHTML(report: GeneratedReport): string {
         const summaryKey = key.toLowerCase();
         const isCurrencySummary = ['value', 'cost', 'liability', 'premium', 'gap', 'net', 'replacement'].some(token => summaryKey.includes(token));
         const isPercentSummary = key.includes('%') || summaryKey.includes('percent');
-        sectionsHTML += `<div class="summary-item"><span class="summary-label">${key}</span><span class="summary-value ${colorClass}">${
+        const displayValue =
           typeof value === 'number' && isCurrencySummary
             ? formatCurrency(value)
             : typeof value === 'number' && isPercentSummary
               ? formatPercent(value)
-              : value
-        }</span></div>`;
+              : escapeHtml(value);
+        sectionsHTML += `<div class="summary-item"><span class="summary-label">${escapeHtml(key)}</span><span class="summary-value ${colorClass}">${displayValue}</span></div>`;
       }
       sectionsHTML += `</div>`;
     }
@@ -823,7 +824,7 @@ export function renderReportHTML(report: GeneratedReport): string {
       sectionsHTML += `<div class="table-wrapper"><table><thead><tr>`;
       for (const col of section.columns) {
         const label = col.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase()).trim();
-        sectionsHTML += `<th>${label}</th>`;
+        sectionsHTML += `<th>${escapeHtml(label)}</th>`;
       }
       sectionsHTML += `</tr></thead><tbody>`;
       for (const row of section.data) {
@@ -835,7 +836,7 @@ export function renderReportHTML(report: GeneratedReport): string {
           const colorClass = !isNaN(numVal) && (col.includes('gainLoss') || col.includes('alpha') || col === 'return')
             ? (numVal < 0 ? 'negative' : numVal > 0 ? 'positive' : '')
             : '';
-          sectionsHTML += `<td class="${colorClass}">${rendered}</td>`;
+          sectionsHTML += `<td class="${colorClass}">${escapeHtml(rendered)}</td>`;
         }
         sectionsHTML += `</tr>`;
       }
@@ -850,7 +851,7 @@ export function renderReportHTML(report: GeneratedReport): string {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${report.title}</title>
+<title>${escapeHtml(report.title)}</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1e293b; background: #fff; padding: 40px; max-width: 1000px; margin: 0 auto; }
@@ -886,8 +887,8 @@ export function renderReportHTML(report: GeneratedReport): string {
 </style>
 </head>
 <body>
-<h1>${report.title}</h1>
-<div class="subtitle">Generated: ${genDate} &bull; Cards: ${report.cardCount}</div>
+<h1>${escapeHtml(report.title)}</h1>
+<div class="subtitle">Generated: ${escapeHtml(genDate)} &bull; Cards: ${escapeHtml(report.cardCount)}</div>
 ${sectionsHTML}
 </body>
 </html>`;

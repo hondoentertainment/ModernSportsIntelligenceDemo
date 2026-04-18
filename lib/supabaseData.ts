@@ -528,3 +528,91 @@ export async function prunePriceHistory(userId: string, keepPerCard: number = 30
             .in('id', idsToDelete);
     }
 }
+
+// === MARKET EVENTS (user catalyst / import feed) ===
+
+export type MarketEventRow = {
+    id: string;
+    kind: string;
+    title: string;
+    body: string | null;
+    payload: Record<string, unknown>;
+    occurredAt: string;
+    createdAt: string;
+};
+
+export async function fetchMarketEventsFromCloud(userId: string): Promise<MarketEventRow[]> {
+    if (isDemoMode) return [];
+
+    const { data, error } = await supabase
+        .from('market_events')
+        .select('id, kind, title, body, payload, occurred_at, created_at')
+        .eq('user_id', userId)
+        .order('occurred_at', { ascending: false });
+
+    if (error) {
+        logger.error('Error fetching market_events:', error);
+        return [];
+    }
+
+    return (data || []).map((row) => ({
+        id: row.id,
+        kind: row.kind,
+        title: row.title,
+        body: row.body,
+        payload: (row.payload as Record<string, unknown>) || {},
+        occurredAt: row.occurred_at,
+        createdAt: row.created_at,
+    }));
+}
+
+export async function insertMarketEventToCloud(
+    userId: string,
+    event: {
+        kind: string;
+        title: string;
+        body?: string;
+        payload?: Record<string, unknown>;
+        occurredAt: string;
+    }
+): Promise<MarketEventRow | null> {
+    if (isDemoMode) {
+        return {
+            id: `demo_${Date.now()}`,
+            kind: event.kind,
+            title: event.title,
+            body: event.body ?? null,
+            payload: event.payload ?? {},
+            occurredAt: event.occurredAt,
+            createdAt: event.occurredAt,
+        };
+    }
+
+    const { data, error } = await supabase
+        .from('market_events')
+        .insert({
+            user_id: userId,
+            kind: event.kind,
+            title: event.title,
+            body: event.body ?? null,
+            payload: event.payload ?? {},
+            occurred_at: event.occurredAt,
+        })
+        .select('id, kind, title, body, payload, occurred_at, created_at')
+        .single();
+
+    if (error || !data) {
+        logger.error('Error inserting market_event:', error);
+        return null;
+    }
+
+    return {
+        id: data.id,
+        kind: data.kind,
+        title: data.title,
+        body: data.body,
+        payload: (data.payload as Record<string, unknown>) || {},
+        occurredAt: data.occurred_at,
+        createdAt: data.created_at,
+    };
+}

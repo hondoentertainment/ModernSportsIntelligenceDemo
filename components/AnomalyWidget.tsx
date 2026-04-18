@@ -14,6 +14,8 @@ import {
   detectAnomalies,
   findArbitrageOpportunities,
   getAnomalySummary,
+  ANOMALY_SIGNAL_SOURCE,
+  ANOMALY_MAX_ALERTS_PER_CARD,
 } from '../lib/analytics/anomalyDetectionService';
 
 interface AnomalyWidgetProps {
@@ -85,6 +87,10 @@ export const AnomalyWidget: React.FC<AnomalyWidgetProps> = ({ inventory, onAnoma
           {trend.text}
         </div>
       </div>
+
+      <p className="text-[11px] text-slate-500 leading-relaxed" role="status">
+        {ANOMALY_SIGNAL_SOURCE} At most {ANOMALY_MAX_ALERTS_PER_CARD} simultaneous alerts per card.
+      </p>
 
       {/* Summary Bar */}
       <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">

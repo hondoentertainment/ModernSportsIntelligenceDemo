@@ -4,24 +4,26 @@ This app uses the **anon** Supabase key in the browser. Postgres RLS is the prim
 
 ## Roles and keys
 
-| Key / role | RLS |
-|------------|-----|
-| **Anon** (`VITE_SUPABASE_ANON_KEY`) | Enforced — policies must allow only the signed-in user’s rows. |
+| Key / role                                          | RLS                                                                    |
+| --------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Anon** (`VITE_SUPABASE_ANON_KEY`)                 | Enforced — policies must allow only the signed-in user’s rows.         |
 | **Service role** (server only, never in the client) | Bypasses RLS — use only in trusted API routes / Edge Functions / cron. |
 
 ## Tables and intent
 
 Reference DDL and full policy text live in **[`supabase-schema.sql`](../supabase-schema.sql)**. Migrations under [`supabase/migrations/`](../supabase/migrations/) apply incremental fixes (e.g. `user_data`, `audit_events`).
 
-| Table / area | Owner column | Notes |
-|--------------|--------------|--------|
-| `profiles` | `id` (= `auth.users.id`) | Users read/update own row; **public read** where `is_public = true`. |
-| `cards` | `user_id` | Full CRUD own rows; **SELECT** allowed for others when owner’s profile is public. |
-| `targets` | `user_id` | Full CRUD own rows only. |
-| `price_history` | `user_id` | Full CRUD own rows only. |
-| `audit_events` | `user_id` | See migration `00001` — consolidated **FOR ALL** on own rows. Server inserts with `user_id` null need **service role**. |
-| `user_data` | `user_id` | **DAL** (`SupabaseStorageAdapter`): SELECT/INSERT/UPDATE/DELETE own rows only. Migration **`00002_user_data_rls.sql`**. |
-| Trading / graph (counterparties, listings, deal_rooms, …) | `owner_user_id` (or membership via `deal_room_participants`) | Per-table policies in `supabase-schema.sql`; deal-room rows use **participant** checks for messages/attachments. |
+| Table / area                                              | Owner column                                                 | Notes                                                                                                                                |
+| --------------------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `profiles`                                                | `id` (= `auth.users.id`)                                     | Users read/update own row; **public read** where `is_public = true`.                                                                 |
+| `cards`                                                   | `user_id`                                                    | Full CRUD own rows; **SELECT** allowed for others when owner’s profile is public.                                                    |
+| `targets`                                                 | `user_id`                                                    | Full CRUD own rows only.                                                                                                             |
+| `price_history`                                           | `user_id`                                                    | Full CRUD own rows only. Migration **`00006_price_history_market_events_stripe.sql`** ensures incremental deploys include the table. |
+| `market_events`                                           | `user_id`                                                    | User catalyst / import feed; full CRUD own rows only. Migration **`00006`**.                                                         |
+| `stripe_processed_events`                                 | _(none — keyed by `stripe_event_id`)_                        | **No** anon/authenticated policies; **service role** (webhook) inserts rows for idempotency. Migration **`00006`**.                  |
+| `audit_events`                                            | `user_id`                                                    | See migration `00001` — consolidated **FOR ALL** on own rows. Server inserts with `user_id` null need **service role**.              |
+| `user_data`                                               | `user_id`                                                    | **DAL** (`SupabaseStorageAdapter`): SELECT/INSERT/UPDATE/DELETE own rows only. Migration **`00002_user_data_rls.sql`**.              |
+| Trading / graph (counterparties, listings, deal_rooms, …) | `owner_user_id` (or membership via `deal_room_participants`) | Per-table policies in `supabase-schema.sql`; deal-room rows use **participant** checks for messages/attachments.                     |
 
 ## Migrations (recommended order)
 
@@ -29,6 +31,9 @@ Reference DDL and full policy text live in **[`supabase-schema.sql`](../supabase
 2. **`00001_rls_audit_events.sql`** — RLS + single policy on `audit_events`.
 3. **`00002_user_data_rls.sql`** — `user_data` + policies (required for cloud DAL).
 4. **`00003_handle_new_user_search_path.sql`** — sets `search_path` on `handle_new_user()` (SECURITY DEFINER hardening).
+5. **`00004_valuation_provenance.sql`** — valuation columns on `cards` / `targets` (schema only; not RLS).
+6. **`00005_valuation_source_checks.sql`** — `valuation_source` CHECK constraints (schema only; not RLS).
+7. **`00006_price_history_market_events_stripe.sql`** — `price_history` (if missing), `market_events`, `stripe_processed_events` + RLS.
 
 ## Verify RLS in the dashboard
 

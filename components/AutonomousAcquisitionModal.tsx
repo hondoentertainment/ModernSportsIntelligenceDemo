@@ -46,6 +46,8 @@ import {
   resumeCampaign,
   createCampaign,
   getSmartPricingRecommendation,
+  AUTONOMOUS_ACQUISITION_DATA_MODE,
+  AUTONOMOUS_ACQUISITION_DISCLOSURE,
   AcquisitionCampaign,
   NegotiationStage,
   EscrowState,
@@ -53,6 +55,11 @@ import {
   CampaignStatus,
   MarketplacePlatform,
   UrgencyLevel,
+  type AgentActivity,
+  type NegotiationSession,
+  type EscrowTransaction,
+  type AcquisitionResult,
+  type AcquisitionAnalytics,
 } from '../lib/trading/autonomousAcquisitionService';
 import {
   getNegotiationPlaybooks,
@@ -61,6 +68,7 @@ import {
   getPlaybookById,
   getSelectedPlaybook,
 } from '../lib/trading/negotiationPlaybooks';
+import { showToast } from '../lib/utils/toast';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 
@@ -184,6 +192,9 @@ const CampaignsTab: React.FC = () => {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-[11px] text-amber-200">
+        {AUTONOMOUS_ACQUISITION_DISCLOSURE}
+      </div>
       <div className="flex items-center justify-between">
         <p className="text-xs text-slate-500">{campaigns.length} campaigns total</p>
         <button
@@ -334,10 +345,22 @@ const CampaignsTab: React.FC = () => {
 // ── Tab: Activity Feed ──────────────────────────────────────────────────────────
 
 const ActivityFeedTab: React.FC = () => {
-  const feed = useMemo(() => getAgentActivityFeed(), []);
+  const feed = useMemo((): AgentActivity[] => {
+    try {
+      return getAgentActivityFeed();
+    } catch {
+      showToast('error', 'Could not load the activity feed. If this persists, refresh the page.', {
+        dedupeKey: 'aacq-activity-feed',
+      });
+      return [];
+    }
+  }, []);
 
   return (
     <div className="space-y-2">
+      <div className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-2 text-[10px] text-amber-200/90 mb-2">
+        {AUTONOMOUS_ACQUISITION_DISCLOSURE}
+      </div>
       <p className="text-xs text-slate-500 mb-3">{feed.length} agent actions tracked</p>
       <div className="space-y-1.5 max-h-[500px] overflow-y-auto pr-1">
         {feed.map(a => (
@@ -372,8 +395,17 @@ const ActivityFeedTab: React.FC = () => {
 // ── Tab: Negotiations ───────────────────────────────────────────────────────────
 
 const NegotiationsTab: React.FC = () => {
-  const negotiations = useMemo(() => getAllNegotiations(), []);
-  const [selectedId, setSelectedId] = useState<string>(negotiations[0]?.id || '');
+  const negotiations = useMemo((): NegotiationSession[] => {
+    try {
+      return getAllNegotiations();
+    } catch {
+      showToast('error', 'Could not load negotiations. If this persists, refresh the page.', {
+        dedupeKey: 'aacq-negotiations',
+      });
+      return [];
+    }
+  }, []);
+  const [selectedId, setSelectedId] = useState<string>(() => negotiations[0]?.id ?? '');
   const [playbookId, setPlaybookId] = useState(() => getSelectedPlaybookId());
   const selected = negotiations.find(n => n.id === selectedId);
   const playbooks = useMemo(() => getNegotiationPlaybooks(), []);
@@ -392,6 +424,9 @@ const NegotiationsTab: React.FC = () => {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-2 text-[10px] text-amber-200/90">
+        {AUTONOMOUS_ACQUISITION_DISCLOSURE}
+      </div>
       {/* Phase 16 — negotiation playbook */}
       <div className="bg-violet-500/5 border border-violet-500/20 rounded-xl p-4 space-y-3">
         <p className="text-xs font-semibold text-violet-300 flex items-center gap-2">
@@ -430,6 +465,12 @@ const NegotiationsTab: React.FC = () => {
         </div>
       </div>
 
+      {negotiations.length === 0 ? (
+        <p className="text-sm text-slate-400 rounded-lg border border-slate-700/60 bg-slate-800/40 p-4">
+          No negotiation sessions to display. Refresh the page if data failed to load.
+        </p>
+      ) : (
+        <>
       {/* Negotiation selector */}
       <div>
         <label className="text-xs text-slate-500 mb-1 block">Select negotiation</label>
@@ -581,6 +622,8 @@ const NegotiationsTab: React.FC = () => {
           </div>
         </>
       )}
+        </>
+      )}
     </div>
   );
 };
@@ -588,7 +631,16 @@ const NegotiationsTab: React.FC = () => {
 // ── Tab: Escrow ─────────────────────────────────────────────────────────────────
 
 const EscrowTab: React.FC = () => {
-  const transactions = useMemo(() => getAllEscrow(), []);
+  const transactions = useMemo((): EscrowTransaction[] => {
+    try {
+      return getAllEscrow();
+    } catch {
+      showToast('error', 'Could not load escrow data. If this persists, refresh the page.', {
+        dedupeKey: 'aacq-escrow',
+      });
+      return [];
+    }
+  }, []);
 
   const ESCROW_STEPS: EscrowState[] = ['pending_payment', 'payment_held', 'item_shipped', 'authentication_in_progress', 'authentication_passed', 'funds_released'];
 
@@ -599,7 +651,16 @@ const EscrowTab: React.FC = () => {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-2 text-[10px] text-amber-200/90">
+        {AUTONOMOUS_ACQUISITION_DISCLOSURE}
+      </div>
       <p className="text-xs text-slate-500">{transactions.length} escrow transactions</p>
+
+      {transactions.length === 0 && (
+        <p className="text-sm text-slate-400 rounded-lg border border-slate-700/60 bg-slate-800/40 p-4">
+          No escrow rows to display. Refresh the page if data failed to load.
+        </p>
+      )}
 
       {transactions.map(tx => {
         const cfg = ESCROW_CONFIG[tx.state];
@@ -671,17 +732,48 @@ const EscrowTab: React.FC = () => {
 // ── Tab: Analytics ──────────────────────────────────────────────────────────────
 
 const AnalyticsTab: React.FC = () => {
-  const analytics = useMemo(() => getAcquisitionAnalytics(), []);
-  const results = useMemo(() => getAllAcquisitionResults(), []);
+  const { analytics, results, loadError } = useMemo(() => {
+    try {
+      return {
+        analytics: getAcquisitionAnalytics(),
+        results: getAllAcquisitionResults(),
+        loadError: null as string | null,
+      };
+    } catch {
+      showToast('error', 'Could not load acquisition analytics. If this persists, refresh the page.', {
+        dedupeKey: 'aacq-analytics',
+      });
+      return {
+        analytics: null as AcquisitionAnalytics | null,
+        results: [] as AcquisitionResult[],
+        loadError: 'Analytics could not be loaded.',
+      };
+    }
+  }, []);
   const playbook = getSelectedPlaybook();
 
-  const pieData = analytics.platformBreakdown.map(p => ({
-    name: p.platform,
-    value: p.acquisitions,
-  }));
+  const pieData =
+    analytics?.platformBreakdown.map(p => ({
+      name: p.platform,
+      value: p.acquisitions,
+    })) ?? [];
+
+  if (!analytics || loadError) {
+    return (
+      <div className="space-y-4">
+        <div className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-2 text-[10px] text-amber-200/90">
+          {AUTONOMOUS_ACQUISITION_DISCLOSURE}
+        </div>
+        <p className="text-sm text-slate-400 rounded-lg border border-red-500/20 bg-red-500/5 p-4">{loadError}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
+      <div className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-2 text-[10px] text-amber-200/90">
+        {AUTONOMOUS_ACQUISITION_DISCLOSURE}
+      </div>
       <div className="flex items-start gap-2 p-3 rounded-xl bg-violet-500/5 border border-violet-500/15">
         <ScrollText size={16} className="text-violet-400 shrink-0 mt-0.5" />
         <div>
@@ -827,7 +919,12 @@ const AutonomousAcquisitionModal: React.FC<AutonomousAcquisitionModalProps> = ({
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white">AI Acquisition Agent</h2>
-                <p className="text-xs text-slate-400">Autonomous deal negotiation &amp; card acquisition</p>
+                <p className="text-xs text-slate-400">
+                  Autonomous deal negotiation &amp; card acquisition
+                  <span className="ml-2 rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-amber-300">
+                    {AUTONOMOUS_ACQUISITION_DATA_MODE}
+                  </span>
+                </p>
               </div>
             </div>
             <button
