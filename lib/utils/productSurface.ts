@@ -220,6 +220,17 @@ export const SEARCHABLE_FEATURE_IDS = [
   'liquidity-reserve-calculator',
   'cross-sport-momentum',
   'agent-confidence-history',
+  // v11.0: Industry-Absent — Cognitive & Sustainability
+  'regret-minimization-engine',
+  'mental-health-safeguards',
+  'grade-inflation-detector',
+  'subscription-box-optimizer',
+  'reverse-dutch-auction-engine',
+  'carbon-footprint-tracker',
+  'bidder-psychology-profiler',
+  'product-announcement-radar',
+  'collector-succession-protocol',
+  'cross-hobby-arbitrage-bridge',
 ] as const;
 
 export const COMMAND_ROUTES = [
