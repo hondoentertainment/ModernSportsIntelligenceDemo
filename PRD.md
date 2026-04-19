@@ -730,3 +730,66 @@ ModernSportsIntelligenceDemo/
 ---
 
 *This PRD is a living document updated with each feature release. Version 4.3 (March 2026) documents **demo/ops hardening** (logging, retries, error reporting, health checks, security headers). **Production for subscribers** additionally requires durable data (DAL/Supabase migration), RLS/auth breadth, and monitoring — see [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md) and the PRD “Production readiness (single definition)” callout. Version 4.2 added the v5.1+ Frontier industry-absent features.*
+
+---
+
+## Phase 69-73: Production-Grade Infrastructure Wave
+
+### Phase 69: Dashboard Integration Hub 🏗️ PRODUCTION
+- **Objective**: Wire ALL phase 44-68 widgets and modals into the main Dashboard with proper state management, lazy loading, and modal rendering — fixing the critical “orphaned widget/modal” gap where clicking widgets opens nothing.
+- **Key Features**:
+    - Lazy-load all 25 phase widgets (SetCompletionWidget, TimeMachineWidget, TradingRulesWidget, TechnicalWidget, DataImportWidget, SocialWidget, WaxInvestWidget, AuthIntelWidget, PlayerIndexWidget, DisplayCaseWidget, GradePremiumWidget, DealFinderWidget, InsurancePolicyWidget, PopGrowthWidget, EventWidget, SeasonalWidget, CurrencyWidget, ProspectWidget, GoalWidget, NotificationWidget, StressTestWidget, GradePredictWidget, TaxHarvestWidget, CorrelationWidget, LiquidityWidget).
+    - Render corresponding modals at Dashboard bottom with proper isOpen/onClose state management.
+    - Widget visibility toggles: user can show/hide widgets, persisted to localStorage.
+    - Responsive 2-column grid layout for widget section.
+    - Section header “Intelligence Hub” with collapse/expand toggle.
+    - Performance: each widget wrapped in LazyErrorBoundary + Suspense with WidgetLoadingFallback.
+
+### Phase 70: App Shell Hardening 🏗️ PRODUCTION
+- **Objective**: Harden the application shell with granular error boundaries, 404 page, mobile navigation, scroll-to-top, and resilience patterns.
+- **Key Features**:
+    - NotFoundPage component for unmatched routes with “Return to Dashboard” link.
+    - Catch-all Route path=”*” in App.tsx routing.
+    - MobileNav integration into AppLayout (currently referenced but never rendered).
+    - ScrollToTop component that scrolls to top on route change.
+    - Widget-level error boundaries with “Retry” button and graceful fallback UI.
+    - WidgetErrorFallback component: shows widget name, “Something went wrong”, retry/dismiss buttons.
+    - Loading skeleton components for widget placeholder states.
+    - Keyboard shortcut legend accessible from header (? key).
+
+### Phase 71: Enhanced Command Center & Discovery 🏗️ PRODUCTION
+- **Objective**: Make all 68 phases and 100+ features discoverable through an enhanced command palette, feature cards, and keyboard-driven navigation.
+- **Key Features**:
+    - Enhanced CommandPalette with all phase 44-68 features indexed (name, description, icon, route/action).
+    - “Press ⌘K to search” hint text visible in header search bar.
+    - Feature categories: Analytics, Trading, Social, Risk, Tax, International, Grading, Events.
+    - Recent commands history (last 10 actions, persisted to localStorage).
+    - Quick actions: “Run Stress Test”, “Check Tax Harvests”, “View Liquidity”, “Open Grading Queue”.
+    - Keyboard shortcuts for top features (displayed in palette results).
+    - FeatureSpotlight component: rotating feature discovery cards on dashboard.
+    - Feature of the Day: highlight one underused feature with description and CTA.
+
+### Phase 72: Interactive Onboarding Suite 🏗️ PRODUCTION
+- **Objective**: Replace the basic 7-step tour with a comprehensive onboarding experience including setup wizard, progress checklist, and contextual help.
+- **Key Features**:
+    - SetupWizard: 5-step first-time wizard (Welcome → Add Cards → Set Budget → Choose Sports → Tour Dashboard).
+    - OnboardingChecklist: persistent sidebar checklist tracking 8 milestones (add first card, sync prices, set alert, run analysis, check tax, view social, stress test portfolio, export report).
+    - Progress tracking with animated completion percentage.
+    - Contextual tooltips: hover-triggered help bubbles on complex UI elements (VaR, beta, Sharpe ratio, wash-sale).
+    - GlossaryPanel: searchable glossary of 50+ sports card and financial terms.
+    - First-time feature hints: one-time tooltip shown when user first visits a new feature page.
+    - Celebration animations on milestone completion (confetti burst).
+    - All state persisted to localStorage with msi_onboarding_ prefix.
+
+### Phase 73: Unified Export & Report Engine 🏗️ PRODUCTION
+- **Objective**: Wire real service data from all phases into a comprehensive reporting and export system with PDF generation, CSV export, and performance attribution.
+- **Key Features**:
+    - PortfolioReportService: aggregates data from all 25+ services into unified report structure.
+    - Report types: Portfolio Summary, Tax Report, Insurance Valuation, Performance Attribution, Grading ROI, Liquidity Analysis, Stress Test Results.
+    - PDF generation using jsPDF with branded dark-theme styling, charts rendered as images.
+    - CSV export for all data tables (holdings, transactions, tax lots, grades, deals).
+    - Scheduled report preferences: daily/weekly/monthly email digest mockup.
+    - Report history with preview and re-download.
+    - One-click “Export All” for complete data backup as JSON.
+    - ReportDashboardWidget: quick access to generate/download recent reports.
+    - Enhanced ReportModal with live data preview, format selector, and delivery preferences.
