@@ -97,7 +97,6 @@
     "vitest": "^4.0.18"
   },
   "optionalDependencies": {
-    "@sentry/react": "^10.46.0"
     "@sentry/react": "^10.48.0"
   }
 }
