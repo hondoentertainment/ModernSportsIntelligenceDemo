@@ -67,6 +67,10 @@ const ShowcasesTab: React.FC<{
   const showcases = useMemo(() => getShowcases(), []);
   const cardMap = useMemo(() => new Map(cards.map(c => [c.id, c])), [cards]);
 
+  const handleEditShowcase = useCallback((showcase: Showcase) => onEdit(showcase), [onEdit]);
+  const handleDeleteShowcase = useCallback((id: string) => onDelete(id), [onDelete]);
+  const handleSelectShowcase = useCallback((showcase: Showcase) => onSelect(showcase), [onSelect]);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -115,21 +119,21 @@ const ShowcasesTab: React.FC<{
               </div>
               <div className="flex items-center gap-1">
                 <button
-                  onClick={() => onEdit(showcase)}
+                  onClick={() => handleEditShowcase(showcase)}
                   className="p-2 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors"
                   title="Edit"
                 >
                   <Edit3 size={14} />
                 </button>
                 <button
-                  onClick={() => onSelect(showcase)}
+                  onClick={() => handleSelectShowcase(showcase)}
                   className="p-2 hover:bg-slate-700 text-slate-400 hover:text-purple-400 rounded-lg transition-colors"
                   title="Share"
                 >
                   <Share2 size={14} />
                 </button>
                 <button
-                  onClick={() => onDelete(showcase.id)}
+                  onClick={() => handleDeleteShowcase(showcase.id)}
                   className="p-2 hover:bg-red-500/10 text-slate-400 hover:text-red-400 rounded-lg transition-colors"
                   title="Delete"
                 >

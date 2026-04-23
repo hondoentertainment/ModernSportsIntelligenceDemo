@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   X,
   Package,
@@ -63,6 +63,10 @@ const WaxBreakRoiTrackerModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const products = useMemo(() => getProducts(), []);
   const trends = useMemo(() => getRoiTrends(), []);
   const stats = useMemo(() => getBreakStats(), []);
+
+  const handleToggleBreak = useCallback((brkId: string) => {
+    setExpandedBreak(prev => (prev === brkId ? null : brkId));
+  }, []);
 
   if (!isOpen) return null;
 
@@ -137,7 +141,7 @@ const WaxBreakRoiTrackerModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 }`}>
                   <div
                     className="p-4 cursor-pointer"
-                    onClick={() => setExpandedBreak(expandedBreak === brk.id ? null : brk.id)}
+                    onClick={() => handleToggleBreak(brk.id)}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">

@@ -557,6 +557,8 @@ const DataConsolidationModal: React.FC<DataConsolidationModalProps> = ({ isOpen,
   const [activeTab, setActiveTab] = useState<TabId>('nbbo');
   const stats = useMemo(() => getConsolidationStats(), []);
 
+  const handleTabChange = useCallback((id: TabId) => setActiveTab(id), []);
+
   if (!isOpen) return null;
 
   return (
@@ -609,7 +611,7 @@ const DataConsolidationModal: React.FC<DataConsolidationModalProps> = ({ isOpen,
           {TABS.map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'bg-brand-lime/10 text-brand-lime border border-brand-lime/20'

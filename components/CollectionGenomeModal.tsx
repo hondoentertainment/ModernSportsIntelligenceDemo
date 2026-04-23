@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
   X,
   Dna,
@@ -56,6 +56,8 @@ const tabs: { id: TabId; label: string; icon: React.ReactNode }[] = [
 const CollectionGenomeModal: React.FC<CollectionGenomeModalProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabId>('genome');
 
+  const handleTabChange = useCallback((id: TabId) => setActiveTab(id), []);
+
   const genome = useMemo(() => analyzeGenome(), []);
   const biases = useMemo(() => getBehavioralBiases(), []);
   const comparison = useMemo(() => getCollectorComparison(), []);
@@ -107,7 +109,7 @@ const CollectionGenomeModal: React.FC<CollectionGenomeModalProps> = ({ isOpen, o
           {tabs.map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabChange(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-t-xl transition-all ${
                 activeTab === tab.id
                   ? 'bg-slate-800/60 text-brand-lime border-b-2 border-brand-lime'
