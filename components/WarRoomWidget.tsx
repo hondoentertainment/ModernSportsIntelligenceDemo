@@ -6,6 +6,7 @@ import { CollaborativeThesis } from '../types';
 import { Brain, RefreshCw, Target, TrendingUp, ShieldCheck, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { CatalystEngine } from '../lib/utils/catalystEngine';
+import { WidgetErrorBoundary } from './ui/WidgetErrorBoundary';
 
 const WarRoomWidget: React.FC = () => {
     const { inventory } = useSupabaseInventory();
@@ -29,6 +30,7 @@ const WarRoomWidget: React.FC = () => {
     }, [inventory]);
 
     return (
+        <WidgetErrorBoundary title="Analyst War Room">
         <div className="luminous-card rounded-[2rem] p-8 border border-slate-800 relative overflow-hidden group shadow-2xl">
             {/* Background Decorative Element */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-lime/5 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
@@ -100,6 +102,7 @@ const WarRoomWidget: React.FC = () => {
                 )}
             </div>
         </div>
+        </WidgetErrorBoundary>
     );
 };
 

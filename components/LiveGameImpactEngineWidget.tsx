@@ -19,6 +19,7 @@ import {
   type MilestoneAlert,
 } from '../lib/analytics/liveGameImpactEngineService.ts';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
+import { WidgetErrorBoundary } from './ui/WidgetErrorBoundary';
 
 interface Props {
   onOpenModal?: () => void;
@@ -70,26 +71,29 @@ const LiveGameImpactEngineWidget: React.FC<Props> = ({ onOpenModal }) => {
 
   if (error) {
     return (
-      <button
-        onClick={onOpenModal}
-        className="w-full text-left bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-6 hover:border-slate-700 transition-all group"
-      >
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-red-500/10 rounded-xl text-red-400">
-            <AlertTriangle size={22} />
+      <WidgetErrorBoundary title="Live Game Impact Engine">
+        <button
+          onClick={onOpenModal}
+          className="w-full text-left bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-6 hover:border-slate-700 transition-all group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-red-500/10 rounded-xl text-red-400">
+              <AlertTriangle size={22} />
+            </div>
+            <div>
+              <h3 className="text-3xl font-bebas tracking-widest text-white leading-tight">
+                Live Game <span className="text-red-400">Impact Engine</span>
+              </h3>
+              <p className="text-xs text-red-400">{error}</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-3xl font-bebas tracking-widest text-white leading-tight">
-              Live Game <span className="text-red-400">Impact Engine</span>
-            </h3>
-            <p className="text-xs text-red-400">{error}</p>
-          </div>
-        </div>
-      </button>
+        </button>
+      </WidgetErrorBoundary>
     );
   }
 
   return (
+    <WidgetErrorBoundary title="Live Game Impact Engine">
     <button
       onClick={onOpenModal}
       className="w-full text-left bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-6 animate-in slide-in-from-bottom-8 duration-700 hover:border-slate-700 transition-all group"
@@ -234,6 +238,7 @@ const LiveGameImpactEngineWidget: React.FC<Props> = ({ onOpenModal }) => {
         </>
       )}
     </button>
+    </WidgetErrorBoundary>
   );
 };
 

@@ -4,6 +4,7 @@ import { Activity, TrendingUp, TrendingDown, AlertTriangle, ShieldAlert, Cpu } f
 import { MacroSignal, MacroTrend } from '../types.ts';
 import { fetchMacroSignals, analyzeMacroImpactOnPortfolio } from '../lib/analytics/macroSentinel.ts';
 import { logger } from '../lib/logger';
+import { WidgetErrorBoundary } from './ui/WidgetErrorBoundary';
 
 interface Props {
     portfolioValue: number;
@@ -55,16 +56,19 @@ const MacroSentinelWidget: React.FC<Props> = ({ portfolioValue }) => {
 
     if (loading) {
         return (
-            <div className="glass-panel p-6 rounded-xl flex items-center justify-center min-h-[300px]">
-                <div className="flex flex-col items-center gap-3">
-                    <Activity className="animate-spin text-brand-lime" size={32} />
-                    <p className="font-bebas tracking-widest text-[#8F9BB3]">CALIBRATING SENORS...</p>
+            <WidgetErrorBoundary title="Macro Sentinel">
+                <div className="glass-panel p-6 rounded-xl flex items-center justify-center min-h-[300px]">
+                    <div className="flex flex-col items-center gap-3">
+                        <Activity className="animate-spin text-brand-lime" size={32} />
+                        <p className="font-bebas tracking-widest text-[#8F9BB3]">CALIBRATING SENORS...</p>
+                    </div>
                 </div>
-            </div>
+            </WidgetErrorBoundary>
         );
     }
 
     return (
+        <WidgetErrorBoundary title="Macro Sentinel">
         <div className="glass-panel p-6 rounded-xl border border-white/5 relative overflow-hidden group">
             {/* Background glow focus */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand-red/10 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none transition-opacity duration-1000 opacity-50 group-hover:opacity-100" />
@@ -120,6 +124,7 @@ const MacroSentinelWidget: React.FC<Props> = ({ portfolioValue }) => {
                 </div>
             )}
         </div>
+        </WidgetErrorBoundary>
     );
 };
 

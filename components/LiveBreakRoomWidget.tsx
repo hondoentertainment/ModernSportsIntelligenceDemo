@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tv, ChevronRight, Users, Flame, Timer, Gavel, Bell } from 'lucide-react';
 import { getLiveBreakRooms, getLiveAuctions } from '../lib/social/liveBreakRoomService.ts';
+import { WidgetErrorBoundary } from './ui/WidgetErrorBoundary';
 
 interface Props {
   onOpenModal?: () => void;
@@ -23,6 +24,7 @@ const LiveBreakRoomWidget: React.FC<Props> = ({ onOpenModal }) => {
   }, []);
 
   return (
+    <WidgetErrorBoundary title="Live Break Room">
     <button
       onClick={onOpenModal}
       className="w-full text-left bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 space-y-6 animate-in slide-in-from-bottom-8 duration-700 hover:border-slate-700 transition-all group"
@@ -154,6 +156,7 @@ const LiveBreakRoomWidget: React.FC<Props> = ({ onOpenModal }) => {
         </p>
       )}
     </button>
+    </WidgetErrorBoundary>
   );
 };
 

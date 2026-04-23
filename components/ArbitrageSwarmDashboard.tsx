@@ -4,6 +4,7 @@ import { CrossAssetInsight, ArbitrageNode } from '../types.ts';
 import { ArbitrageAgentService } from '../lib/trading/ArbitrageAgentService.ts';
 import ArbitrageNodeCard from './ArbitrageNodeCard.tsx';
 import { Network, ShieldAlert, Cpu, RefreshCw, Layers, TrendingUp } from 'lucide-react';
+import { WidgetErrorBoundary } from './ui/WidgetErrorBoundary';
 
 const ArbitrageSwarmDashboard: React.FC = () => {
     const [insight, setInsight] = useState<CrossAssetInsight | null>(null);
@@ -22,10 +23,12 @@ const ArbitrageSwarmDashboard: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-                <RefreshCw className="text-indigo-500 animate-spin" size={48} />
-                <div className="font-bebas text-2xl text-slate-400 tracking-widest animate-pulse">Convening Arbitrage Swarm...</div>
-            </div>
+            <WidgetErrorBoundary title="Arbitrage Swarm">
+                <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+                    <RefreshCw className="text-indigo-500 animate-spin" size={48} />
+                    <div className="font-bebas text-2xl text-slate-400 tracking-widest animate-pulse">Convening Arbitrage Swarm...</div>
+                </div>
+            </WidgetErrorBoundary>
         );
     }
 
@@ -38,6 +41,7 @@ const ArbitrageSwarmDashboard: React.FC = () => {
     };
 
     return (
+        <WidgetErrorBoundary title="Arbitrage Swarm">
         <div className="space-y-8 p-4">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-white/10">
@@ -118,6 +122,7 @@ const ArbitrageSwarmDashboard: React.FC = () => {
                 </button>
             </div>
         </div>
+        </WidgetErrorBoundary>
     );
 };
 
