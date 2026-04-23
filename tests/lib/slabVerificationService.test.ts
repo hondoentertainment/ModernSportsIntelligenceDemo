@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   describe,
   it,
@@ -5,6 +6,23 @@ import {
   beforeEach,
   vi,
 } from 'vitest';
+
+// Mock syncStore before importing the service
+vi.mock('../../lib/dal/syncStore', () => {
+  const mem: Record<string, unknown> = {};
+  return {
+    store: {
+      get: vi.fn((key: string, fallback: unknown) => (key in mem ? mem[key] : fallback)),
+      set: vi.fn((key: string, value: unknown) => { mem[key] = value; }),
+      has: vi.fn((key: string) => key in mem),
+    },
+  };
+});
+
+vi.mock('../../lib/logger', () => ({
+  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() },
+}));
+
 import {
   getVerificationHistory,
   verifyCert,
