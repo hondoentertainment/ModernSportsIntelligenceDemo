@@ -99,6 +99,102 @@ const GeminiPricingResponseSchema = z.object({
   rationale: z.string(),
 });
 
+const ProspectDataSchema = z.object({
+  name: z.string(),
+  team: z.string(),
+  position: z.string(),
+  league: z.string(),
+  trendScore: z.number(),
+  change24h: z.number(),
+  trendDirection: z.enum(['up', 'down', 'stable']),
+  history7d: z.array(z.number()),
+  breakoutScore: z.number(),
+  summary: z.string(),
+  stats: z.object({ primary: z.string(), secondary: z.string(), label: z.string() }).optional(),
+  image: z.string(),
+});
+
+const CardImageSchema = z.object({
+  player: z.string().optional(),
+  year: z.union([z.number(), z.string()]).optional(),
+  manufacturer: z.string().optional(),
+  set: z.string().optional(),
+  cardNumber: z.string().optional(),
+  sport: z.string().optional(),
+  league: z.string().optional(),
+  team: z.string().optional(),
+  parentTeam: z.string().optional(),
+  isGraded: z.boolean().optional(),
+  gradingCompany: z.string().optional(),
+  grade: z.string().optional(),
+  isProspectCard: z.boolean().optional(),
+}).passthrough();
+
+const SimilarCardResultSchema = z.object({
+  id: z.string().optional(),
+  name: z.string(),
+  team: z.string(),
+  reason: z.string(),
+  similarityScore: z.number(),
+  estimatedValue: z.number(),
+  image: z.string(),
+  league: z.string(),
+});
+
+const NegotiationSellerResponseSchema = z.object({
+  action: z.enum(['accept', 'counter', 'reject']),
+  sentiment: z.enum(['positive', 'neutral', 'negative', 'aggressive']),
+  message: z.string(),
+  counterAmount: z.number().optional(),
+});
+
+const AgenticOfferSchema = z.object({
+  offerAmount: z.number(),
+  message: z.string(),
+  reasoning: z.string(),
+});
+
+const VisualAuditResultSchema = z.object({
+  predictedGrade: z.string(),
+  confidenceScore: z.number(),
+  subgrades: z.object({
+    centering: z.number(),
+    corners: z.number(),
+    edges: z.number(),
+    surface: z.number(),
+  }),
+  defects: z.array(z.object({
+    type: z.string(),
+    location: z.string(),
+    severity: z.string(),
+    description: z.string(),
+  })),
+  summary: z.string(),
+  estimatedGradingPremium: z.number().optional(),
+});
+
+const GradingPremiumAnalysisSchema = z.object({
+  rawPrice: z.number(),
+  psa10Price: z.number(),
+  psa9Price: z.number(),
+  bgs95Price: z.number(),
+  gradingFees: z.number(),
+  potentialNetGain: z.number(),
+  recommendation: z.enum(['Submit', 'Hold Raw', 'Sell Now']),
+  rationale: z.string(),
+});
+
+const MacroSignalSchema = z.object({
+  id: z.string(),
+  indicator: z.string(),
+  value: z.string(),
+  trend: z.string(),
+  impact: z.enum(['High', 'Medium', 'Low']),
+  description: z.string(),
+  aiAnalysis: z.string().optional(),
+  updatedAt: z.string(),
+});
+
 export async function getEbayCardPrice(card: CardInventory, _signal?: AbortSignal): Promise<PricingAnalysis | null> {
   // Try eBay API first when USE_REAL_EBAY is on and the adapter is configured
   if (preferRealCompsWhenConfigured() && ebayApi.isAvailable()) {
@@ -407,7 +503,7 @@ export async function getRealTimeLeagueTrends(league: string, _signal?: AbortSig
       },
     });
 
-    const data: ProspectData[] = JSON.parse(response.text || "[]");
+    const data = safeParseJson(response.text || "[]", z.array(ProspectDataSchema), 'trends') ?? [];
     return data.length > 0 ? data : (MOCK_PROSPECTS[league] || MOCK_PROSPECTS.MiLB);
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return [];
@@ -487,9 +583,9 @@ export async function parseCardImage(imageBase64: string, mimeType: string = "im
     });
 
     const text = response.text || "";
-    // Clean JSON if it has markdown blocks
+    // Clean JSON if it has markdown blocks (safeParseJson also strips fences, but be explicit)
     const cleanJson = text.replace(/```json|```/g, "").trim();
-    return JSON.parse(cleanJson);
+    return safeParseJson(cleanJson, CardImageSchema, 'card_image') as Partial<CardInventory> | null;
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return null;
     logger.error("Gemini Vision Error:", error);
@@ -561,7 +657,7 @@ export async function findSimilarCards(query: string, _inventory: CardInventory[
     });
 
     const text = response.text || "[]";
-    return JSON.parse(text) as SimilarCardResult[];
+    return safeParseJson(text, z.array(SimilarCardResultSchema), 'similar_cards') ?? [];
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return [];
     logger.error("Gemini Deep Search Error:", error);
@@ -630,13 +726,9 @@ Return JSON with: action (accept|counter|reject), sentiment (positive|neutral|ne
       },
     });
 
-    const data = JSON.parse(response.text || "{}");
-    return {
-      action: data.action || "counter",
-      sentiment: data.sentiment || "neutral",
-      message: data.message || "Let me think about it.",
-      counterAmount: data.counterAmount,
-    };
+    const data = safeParseJson(response.text || "{}", NegotiationSellerResponseSchema, 'negotiation');
+    if (!data) return { action: 'counter', sentiment: 'neutral', message: 'Let me think about it.' };
+    return data;
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return null;
     logger.error("Gemini Negotiation Error:", error);
@@ -703,11 +795,12 @@ Return JSON with: offerAmount (number), message (string for the seller), reasoni
       },
     });
 
-    const data = JSON.parse(response.text || "{}");
+    const data = safeParseJson(response.text || "{}", AgenticOfferSchema, 'agentic_offer');
+    if (!data) return { offerAmount: userCurrentOffer, message: "I'd like to make another offer.", reasoning: "Incremental step to reach a deal." };
     return {
-      offerAmount: Math.min(data.offerAmount || userCurrentOffer, userMaxBudget),
-      message: data.message || "I'd like to make another offer.",
-      reasoning: data.reasoning || "Incremental step to reach a deal.",
+      offerAmount: Math.min(data.offerAmount, userMaxBudget),
+      message: data.message,
+      reasoning: data.reasoning,
     };
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return null;
@@ -790,9 +883,8 @@ export async function auditCardVisuals(imageBase64: string, mimeType: string = "
     });
 
     const text = response.text || "";
-    // Clean JSON if it has markdown blocks
-    const cleanJson = text.replace(/\`\`\`json|\`\`\`/g, "").trim();
-    return JSON.parse(cleanJson);
+    const cleanJson = text.replace(/```json|```/g, "").trim();
+    return safeParseJson(cleanJson, VisualAuditResultSchema, 'visual_audit') as VisualAuditResult | null;
   } catch (error) {
     logger.error("Gemini Visual Audit Error:", error);
     showToast('error', 'Visual audit analysis failed. Please try a clearer image.', { dedupeKey: 'visual_audit' });
@@ -848,12 +940,9 @@ export async function getGradingPremiumAnalysis(card: CardInventory): Promise<Gr
       },
     });
 
-    const data = JSON.parse(response.text || "{}");
-    return {
-      ...data,
-      cardId: card.id,
-      updatedAt: new Date().toISOString()
-    };
+    const data = safeParseJson(response.text || "{}", GradingPremiumAnalysisSchema, 'grading_premium');
+    if (!data) return null;
+    return { ...data, cardId: card.id, updatedAt: new Date().toISOString() };
   } catch (error) {
     logger.error("Gemini Grading Premium Error:", error);
     return null;
@@ -910,8 +999,7 @@ export async function getLiveMacroSignals(): Promise<MacroSignal[]> {
       },
     });
 
-    const data = JSON.parse(response.text || "[]");
-    return data;
+    return safeParseJson(response.text || "[]", z.array(MacroSignalSchema), 'macro_signals') ?? [];
   } catch (error) {
     logger.error("Gemini Macro Signal Error:", error);
     return [];
