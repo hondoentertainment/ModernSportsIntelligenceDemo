@@ -455,6 +455,37 @@ export function verifyCert(certNumber: string, company: GradingCompany): Verific
   return result;
 }
 
+/**
+ * Async variant of verifyCert.  For PSA certs, calls the real PSA API via the
+ * `verify-psa-cert` Edge Function first; falls back to the local mock on any
+ * failure so the UI always gets a result.
+ */
+export async function verifyCertAsync(
+  certNumber: string,
+  company: GradingCompany,
+): Promise<VerificationResult | null> {
+  if (company === 'PSA') {
+    const { lookupPsaCert, psaLookupToVerificationResult } = await import('./psaCertService');
+    const { result, notFound, error } = await lookupPsaCert(certNumber);
+    if (result) {
+      const vr = psaLookupToVerificationResult(result);
+      const history = getVerificationHistory();
+      const exists = history.find((h) => h.certNumber === vr.certNumber && h.company === 'PSA');
+      if (!exists) {
+        history.unshift(vr);
+        saveToStorage('history', history);
+      }
+      return vr;
+    }
+    // If the cert was looked up successfully but not found in PSA's DB, surface that.
+    if (notFound) return null;
+    // On config/network error, fall through to mock lookup below.
+    if (error) console.warn('[slabVerificationService] PSA API error; using mock:', error);
+  }
+  // Non-PSA companies and PSA fallback — synchronous mock lookup.
+  return verifyCert(certNumber, company);
+}
+
 export function getCounterfeitAlerts(): CounterfeitAlert[] {
   const stored = loadFromStorage<CounterfeitAlert[]>('alerts', []);
   if (stored.length > 0) return stored;

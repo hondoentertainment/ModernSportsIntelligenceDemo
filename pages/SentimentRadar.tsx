@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import {
   MessageCircle, TrendingUp, TrendingDown, Minus,
-  Hash, AlertTriangle, Activity, Twitter, Globe,
+  Hash, AlertTriangle, Activity, X, Globe,
   ArrowUpRight,
 } from 'lucide-react';
 import {
@@ -50,7 +50,7 @@ const severityBadge = (sev: string) => {
 };
 
 const sourceIcon = (src: string) => {
-  if (src === 'twitter') return <Twitter size={12} className="text-sky-400" />;
+  if (src === 'twitter') return <X size={12} className="text-sky-400" />;
   if (src === 'reddit') return <ArrowUpRight size={12} className="text-orange-400" />;
   if (src === 'forums') return <Globe size={12} className="text-purple-400" />;
   return <Activity size={12} className="text-brand-lime" />;

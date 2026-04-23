@@ -31,6 +31,7 @@
     "test:e2e:deployed": "playwright test tests/e2e/deployed-api.spec.ts --project=chromium --workers=1",
     "audit:localstorage": "node scripts/audit-localstorage.mjs",
     "guardrail:pricing-truth": "node scripts/check-pricing-truth-guardrail.mjs",
+    "ci:bundle": "node scripts/ci-bundle-gate.cjs",
     "joe": "tsx scripts/orchestrator.ts",
     "joe:batch": "tsx scripts/batch-builder.ts",
     "joe:validate": "tsx scripts/feature-validator.ts",
@@ -48,15 +49,18 @@
     "@google/genai": "^1.46.0",
     "@stripe/stripe-js": "^8.11.0",
     "@supabase/supabase-js": "^2.99.3",
+    "@google/genai": "^1.49.0",
+    "@stripe/stripe-js": "^9.2.0",
+    "@supabase/supabase-js": "^2.103.0",
     "@tanstack/react-virtual": "^3.13.23",
     "dompurify": "^3.2.4",
     "jspdf": "^4.1.0",
-    "lucide-react": "0.577.0",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "react-router-dom": "^7.13.1",
-    "recharts": "3.8.0",
-    "stripe": "^20.4.1",
+    "lucide-react": "1.8.0",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
+    "react-router-dom": "^7.14.0",
+    "recharts": "3.8.1",
+    "stripe": "^22.0.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -69,21 +73,21 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.58.0",
-    "@typescript-eslint/parser": "^8.56.1",
+    "@typescript-eslint/parser": "^8.58.0",
     "@vitejs/plugin-react": "^6.0.1",
-    "@vitest/coverage-v8": "^4.1.0",
-    "@vitest/ui": "^4.0.18",
+    "@vitest/coverage-v8": "^4.1.2",
+    "@vitest/ui": "^4.1.2",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^29.0.1",
-    "playwright": "^1.58.2",
+    "playwright": "^1.59.1",
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",
     "vite": "^8.0.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.2"
   },
   "optionalDependencies": {
-    "@sentry/react": "^10.45.0"
+    "@sentry/react": "^10.48.0"
   }
 }

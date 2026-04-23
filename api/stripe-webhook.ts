@@ -48,7 +48,7 @@ export async function POST(request: Request): Promise<Response> {
 
   let event: Stripe.Event;
   const stripe = new Stripe(stripeKey || '', {
-    apiVersion: '2026-02-25.clover',
+    apiVersion: '2026-03-25.dahlia',
   });
   try {
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
