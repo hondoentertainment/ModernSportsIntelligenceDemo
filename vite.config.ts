@@ -100,9 +100,11 @@ export default defineConfig({
         'lib/utils/warRoomThesisAudit.ts',
         'lib/htmlEscape.ts',
       ],
-      // High coverage on whitelist lines/stmts/funcs; branches lag (~89%) due to
-      // defensive branches, import.meta / env splits, and optional chaining.
-      // Keep this strict but realistic for CI stability while incrementally raising.
+      // CI coverage gate (Wave M): thresholds below cause `npm run test:coverage` to
+      // exit non-zero and fail the CI job. Values apply only to the whitelisted `include`
+      // files above (all: false), which already have high coverage. Minimums enforced:
+      //   lines ≥ 60, functions ≥ 60, branches ≥ 50 (conservative floor for regression prevention).
+      // Current targets are stricter than the floor — do not lower them below the minimums.
       thresholds: {
         statements: 98.5,
         branches: 88,
