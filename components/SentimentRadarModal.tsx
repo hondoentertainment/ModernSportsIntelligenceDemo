@@ -5,7 +5,7 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
-  Twitter,
+  Bird,
   Globe,
   Hash,
   ArrowUpRight,
@@ -78,7 +78,7 @@ const severityBadge = (sev: string) => {
 };
 
 const sourceIcon = (src: string) => {
-  if (src === 'twitter') return <Twitter size={12} className="text-sky-400" />;
+  if (src === 'twitter') return <Bird size={12} className="text-sky-400" />;
   if (src === 'reddit') return <ArrowUpRight size={12} className="text-orange-400" />;
   if (src === 'forums') return <Globe size={12} className="text-purple-400" />;
   return <Activity size={12} className="text-brand-lime" />;
