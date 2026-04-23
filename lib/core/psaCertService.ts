@@ -10,8 +10,10 @@
  *   - PSA_API_KEY secret is not configured on the function (returns null)
  */
 
+import { z } from 'zod';
 import { supabase, isDemoMode } from '../supabase';
 import { logger } from '../logger';
+import { safeParseJson } from '../utils/safeParseJson';
 import type { GradingCompany, VerificationResult, VerificationStatus } from './slabVerificationService';
 
 export interface PsaLookupResult {
@@ -41,6 +43,24 @@ export interface PsaLookupResponse {
   error: string | null;
 }
 
+/** Zod schema for the raw PSA Edge Function payload. */
+const PsaEdgeFunctionSchema = z.object({
+  certNumber: z.string(),
+  cardName: z.string(),
+  player: z.string(),
+  year: z.number(),
+  set: z.string(),
+  grade: z.string(),
+  gradeDescription: z.string().optional().default(''),
+  populationCount: z.number().optional().default(0),
+  populationHigher: z.number().optional().default(0),
+  isDualCert: z.boolean().optional().default(false),
+  labelType: z.string().optional().default(''),
+  variety: z.string().optional().default(''),
+  verified: z.boolean(),
+  // Passthrough unknown fields so we can still read company/verificationStatus/source
+}).passthrough();
+
 /**
  * Look up a PSA cert number via the Edge Function.
  * Returns null fields on demo mode, missing configuration, or network failure.
@@ -52,7 +72,7 @@ export async function lookupPsaCert(certNumber: string): Promise<PsaLookupRespon
   }
 
   try {
-    const { data, error } = await supabase.functions.invoke<PsaLookupResult & { not_found?: boolean; error?: string }>(
+    const { data, error } = await supabase.functions.invoke<unknown>(
       'verify-psa-cert',
       { body: { certNumber } },
     );
@@ -66,15 +86,28 @@ export async function lookupPsaCert(certNumber: string): Promise<PsaLookupRespon
       return { result: null, notFound: false, error: 'Empty response from Edge Function' };
     }
 
-    if ('not_found' in data && data.not_found) {
+    // Handle sentinel flags before full schema validation
+    const raw = data as Record<string, unknown>;
+    if (raw['not_found'] === true) {
       return { result: null, notFound: true, error: null };
     }
-
-    if ('error' in data && data.error) {
-      return { result: null, notFound: false, error: String(data.error) };
+    if (typeof raw['error'] === 'string') {
+      return { result: null, notFound: false, error: raw['error'] };
     }
 
-    return { result: data as PsaLookupResult, notFound: false, error: null };
+    // Validate the successful result shape
+    const validated = safeParseJson(
+      JSON.stringify(data),
+      PsaEdgeFunctionSchema,
+      'psa_cert',
+    );
+
+    if (!validated) {
+      logger.warn('[psaCertService] Edge Function returned unexpected shape', data);
+      return { result: null, notFound: false, error: 'Unexpected response shape from PSA API' };
+    }
+
+    return { result: validated as PsaLookupResult, notFound: false, error: null };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     logger.warn('[psaCertService] Unexpected error:', msg);

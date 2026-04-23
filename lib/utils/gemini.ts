@@ -1,4 +1,5 @@
 import { Type } from '@google/genai';
+import { z } from 'zod';
 import { CardInventory, PricingAnalysis, TargetWatchlist, VisualAuditResult, MacroSignal, GradingPremiumAnalysis } from '../../types.ts';
 import { ebayApi } from './ebayApi.ts';
 import { showToast } from './toast.ts';
@@ -7,6 +8,7 @@ import { estimateGeminiCostUsd, recordModelUsage } from './telemetryService.ts';
 import { createGeminiClient } from './geminiClient.ts';
 import { logger } from '../logger';
 import { preferRealCompsWhenConfigured } from '../featureFlags';
+import { safeParseJson } from './safeParseJson';
 
 const ai = createGeminiClient();
 
@@ -85,6 +87,17 @@ const MOCK_PROSPECTS: Record<string, ProspectData[]> = {
     }
   ]
 };
+
+/** Zod schema for the JSON object Gemini returns from the card-valuation prompt. */
+const GeminiPricingResponseSchema = z.object({
+  estimatedValue: z.number(),
+  low: z.number(),
+  high: z.number(),
+  avg: z.number(),
+  confidence: z.number(),
+  salesCount: z.number(),
+  rationale: z.string(),
+});
 
 export async function getEbayCardPrice(card: CardInventory, _signal?: AbortSignal): Promise<PricingAnalysis | null> {
   // Try eBay API first when USE_REAL_EBAY is on and the adapter is configured
@@ -179,7 +192,8 @@ export async function getEbayCardPrice(card: CardInventory, _signal?: AbortSigna
     });
 
     const responseText = response.text || "{}";
-    const data = JSON.parse(responseText);
+    const data = safeParseJson(responseText, GeminiPricingResponseSchema, 'card_valuation');
+    if (!data) return null;
     const tokenEstimate = estimateTokens(prompt + responseText);
     recordModelUsage({
       provider: 'gemini',
@@ -300,7 +314,8 @@ export async function getWatchlistItemPrice(target: TargetWatchlist, _signal?: A
     });
 
     const responseText = response.text || "{}";
-    const data = JSON.parse(responseText);
+    const data = safeParseJson(responseText, GeminiPricingResponseSchema, 'watchlist_valuation');
+    if (!data) return null;
     const tokenEstimate = estimateTokens(prompt + responseText);
     recordModelUsage({
       provider: 'gemini',

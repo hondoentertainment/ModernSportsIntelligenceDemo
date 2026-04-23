@@ -189,7 +189,22 @@ describe('syncStore', () => {
       cw.mockRestore();
     });
 
-    it('only fills cache gaps during hydration', async () => {
+    it('Supabase data overwrites stale localStorage for keys not written since hydration', async () => {
+      // Populate localStorage directly (bypasses writtenSinceHydration tracking)
+      localStorage.setItem('stale-key', JSON.stringify('stale-local-value'));
+      const adapter = {
+        get: vi.fn().mockResolvedValue('fresh-supabase-value'),
+        set: vi.fn(),
+        remove: vi.fn(),
+        keys: vi.fn().mockResolvedValue(['stale-key']),
+      };
+      store.setAdapter(adapter);
+      await store.hydrate();
+      expect(store.get('stale-key', 'default')).toBe('fresh-supabase-value');
+    });
+
+    it('in-flight writes (via store.set) are protected from hydration overwrite', async () => {
+      // store.set() marks the key in writtenSinceHydration — hydration skips it
       store.set('key1', 'local-value');
       const adapter = {
         get: vi.fn().mockResolvedValue('adapter-value'),
@@ -200,6 +215,125 @@ describe('syncStore', () => {
       store.setAdapter(adapter);
       await store.hydrate();
       expect(store.get('key1', 'default')).toBe('local-value');
+    });
+
+    it('mirrors Supabase values back to localStorage after hydration', async () => {
+      const adapter = {
+        get: vi.fn().mockResolvedValue({ score: 42 }),
+        set: vi.fn(),
+        remove: vi.fn(),
+        keys: vi.fn().mockResolvedValue(['mirrored-key']),
+      };
+      store.setAdapter(adapter);
+      await store.hydrate();
+      expect(localStorage.getItem('mirrored-key')).toBe(JSON.stringify({ score: 42 }));
+    });
+
+    it('sets hydrated=true in getSyncStatus after hydration completes', async () => {
+      const adapter = {
+        get: vi.fn().mockResolvedValue(null),
+        set: vi.fn(),
+        remove: vi.fn(),
+        keys: vi.fn().mockResolvedValue([]),
+      };
+      store.setAdapter(adapter);
+      expect(store.getSyncStatus().hydrated).toBe(false);
+      await store.hydrate();
+      expect(store.getSyncStatus().hydrated).toBe(true);
+    });
+  });
+
+  describe('getSyncStatus', () => {
+    it('returns defaults before any activity', () => {
+      expect(store.getSyncStatus()).toEqual({ syncing: false, hydrated: false, lastError: null });
+    });
+
+    it('lastError is set on flush write failure', async () => {
+      const adapter = {
+        get: vi.fn(),
+        set: vi.fn().mockRejectedValue(new Error('connection refused')),
+        remove: vi.fn(),
+        keys: vi.fn().mockResolvedValue([]),
+      };
+      store.setAdapter(adapter);
+      store.set('fail-key', 'value');
+      await store.forceFlush();
+      expect(store.getSyncStatus().lastError).toBe('connection refused');
+    });
+
+    it('lastError is cleared on next successful flush', async () => {
+      // First cause a write error
+      const failAdapter = {
+        get: vi.fn(),
+        set: vi.fn().mockRejectedValue(new Error('down')),
+        remove: vi.fn(),
+        keys: vi.fn().mockResolvedValue([]),
+      };
+      store.setAdapter(failAdapter);
+      store.set('recover-key', 'v1');
+      await store.forceFlush();
+      expect(store.getSyncStatus().lastError).toBe('down');
+
+      // Now recover — key is still dirty, swap in a working adapter
+      const okAdapter = {
+        get: vi.fn(),
+        set: vi.fn().mockResolvedValue(undefined),
+        remove: vi.fn(),
+        keys: vi.fn().mockResolvedValue([]),
+      };
+      store.setAdapter(okAdapter);
+      store.set('recover-key', 'v2');
+      await store.forceFlush();
+      expect(store.getSyncStatus().lastError).toBeNull();
+    });
+  });
+
+  describe('onStatusChange', () => {
+    it('fires listener on hydration completion', async () => {
+      const listener = vi.fn();
+      const adapter = {
+        get: vi.fn().mockResolvedValue(null),
+        set: vi.fn(),
+        remove: vi.fn(),
+        keys: vi.fn().mockResolvedValue([]),
+      };
+      store.setAdapter(adapter);
+      const unsub = store.onStatusChange(listener);
+      await store.hydrate();
+      expect(listener).toHaveBeenCalled();
+      unsub();
+    });
+
+    it('does not fire after unsubscribe', async () => {
+      const listener = vi.fn();
+      const adapter = {
+        get: vi.fn().mockResolvedValue(null),
+        set: vi.fn(),
+        remove: vi.fn(),
+        keys: vi.fn().mockResolvedValue([]),
+      };
+      store.setAdapter(adapter);
+      const unsub = store.onStatusChange(listener);
+      unsub();
+      await store.hydrate();
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('fires listener during flush (syncing transitions)', async () => {
+      const listener = vi.fn();
+      const adapter = {
+        get: vi.fn(),
+        set: vi.fn().mockResolvedValue(undefined),
+        remove: vi.fn(),
+        keys: vi.fn().mockResolvedValue([]),
+      };
+      store.setAdapter(adapter);
+      const unsub = store.onStatusChange(listener);
+      store.set('notify-key', 'val');
+      await store.forceFlush();
+      // Listener should have been called at least twice (syncing=true, syncing=false)
+      expect(listener.mock.calls.length).toBeGreaterThanOrEqual(2);
+      unsub();
     });
   });
 
