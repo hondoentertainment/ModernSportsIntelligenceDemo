@@ -1,5 +1,6 @@
 // @ts-nocheck
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { usePolling } from '../lib/hooks/usePolling';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
 import { MultiAgentService } from '../lib/utils/MultiAgentService';
 import { AutonomousExecutionService } from '../lib/trading/AutonomousExecutionService';
@@ -28,7 +29,7 @@ const AnalystWarRoom: React.FC = () => {
     const [autoPilot, setAutoPilot] = useState(AutonomousExecutionService.getConfig().isActive);
     const [isExecuting, setIsExecuting] = useState(false);
 
-    const generateThesis = async () => {
+    const generateThesis = useCallback(async () => {
         setIsGenerating(true);
         try {
             const config = AutonomousExecutionService.getConfig();
@@ -47,25 +48,21 @@ const AnalystWarRoom: React.FC = () => {
         } finally {
             setIsGenerating(false);
         }
-    };
+    }, [inventory]);
 
     useEffect(() => {
         if (inventory.length > 0 && !thesis) {
             generateThesis();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [inventory]);
+    }, [inventory, thesis, generateThesis]);
 
     // Polling for autopilot status changes (simplified for demo)
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const current = AutonomousExecutionService.getConfig().isActive;
-            if (current !== autoPilot) {
-                setAutoPilot(current);
-            }
-        }, 2000);
-        return () => clearInterval(interval);
-    }, [autoPilot]);
+    usePolling(() => {
+        const current = AutonomousExecutionService.getConfig().isActive;
+        if (current !== autoPilot) {
+            setAutoPilot(current);
+        }
+    }, 2000);
 
     const handleExecute = async () => {
         setIsExecuting(true);

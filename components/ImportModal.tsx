@@ -904,8 +904,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
       // Direct import
       doImport(partials, source);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cards]);
+  }, [cards, doImport]);
 
   const handleMappingApplied = useCallback((mappedCards: Partial<CardInventory>[]) => {
     setPendingCards(mappedCards);
@@ -916,8 +915,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
     } else {
       doImport(mappedCards, pendingSource);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cards, pendingSource]);
+  }, [cards, pendingSource, doImport]);
 
   const doImport = useCallback((cardsToImport: Partial<CardInventory>[], source: ImportSource) => {
     setImporting(true);
