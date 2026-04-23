@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import {
   MessageCircle, TrendingUp, TrendingDown, Minus,
-  Hash, AlertTriangle, Activity, Globe,
+  Hash, AlertTriangle, Activity, X, Globe,
   ArrowUpRight,
 } from 'lucide-react';
 import {
