@@ -161,10 +161,124 @@ declare module 'zod' {
   export function undefined_(): ZodUndefined;
 
   export namespace z {
-    export { object, string, number, boolean, array, optional, nullable, union, literal, any, unknown };
+    export { object, string, number, boolean, array, optional, nullable, union, literal, any, unknown, record };
     export { ZodType, ZodTypeAny, ZodString, ZodNumber, ZodBoolean, ZodObject, ZodArray, ZodOptional, ZodNullable, ZodDefault, ZodUnion, ZodEnum, ZodLiteral, ZodRecord, ZodError, ZodIssue };
     export type infer<T extends ZodTypeAny> = T['_output'];
   }
+}
+
+/**
+ * Minimal ambient declaration for the `stripe` Node.js SDK.
+ * The installed package (node_modules/stripe) is missing its package.json and
+ * type declarations. This shim provides the subset used by api/stripe-webhook.ts
+ * so tsc can type-check without errors.
+ */
+declare module 'stripe' {
+  namespace Stripe {
+    interface StripeOptions {
+      apiVersion?: string;
+      [key: string]: unknown;
+    }
+
+    namespace Checkout {
+      interface Session {
+        id: string;
+        object: 'checkout.session';
+        mode: string | null;
+        customer: string | Stripe.Customer | null;
+        client_reference_id: string | null;
+        metadata: Record<string, string> | null;
+        subscription: string | Stripe.Subscription | null;
+        [key: string]: unknown;
+      }
+    }
+
+    interface Customer {
+      id: string;
+      object: 'customer';
+      [key: string]: unknown;
+    }
+
+    interface Subscription {
+      id: string;
+      object: 'subscription';
+      status: Subscription.Status;
+      customer: string | Customer | null;
+      metadata: Record<string, string> | null;
+      items: { data: SubscriptionItem[] };
+      start_date: number;
+      ended_at: number | null;
+      trial_end: number | null;
+      [key: string]: unknown;
+    }
+
+    namespace Subscription {
+      type Status =
+        | 'active'
+        | 'canceled'
+        | 'incomplete'
+        | 'incomplete_expired'
+        | 'past_due'
+        | 'paused'
+        | 'trialing'
+        | 'unpaid';
+    }
+
+    interface SubscriptionItem {
+      id: string;
+      price?: { id: string; [key: string]: unknown };
+      [key: string]: unknown;
+    }
+
+    interface Invoice {
+      id: string;
+      object: 'invoice';
+      customer: string | Customer | null;
+      parent?: InvoiceParent | null;
+      lines?: { data: InvoiceLineItem[] };
+      [key: string]: unknown;
+    }
+
+    interface InvoiceParent {
+      type: string;
+      subscription_details?: { subscription?: string | Subscription | null } | null;
+      [key: string]: unknown;
+    }
+
+    interface InvoiceLineItem {
+      subscription?: string | Subscription | null;
+      [key: string]: unknown;
+    }
+
+    interface Event {
+      id: string;
+      type: string;
+      data: {
+        object: Record<string, unknown>;
+      };
+      [key: string]: unknown;
+    }
+
+    interface Webhooks {
+      constructEvent(payload: string, sig: string, secret: string): Event;
+    }
+
+    interface SubscriptionRetrieveParams {
+      expand?: string[];
+    }
+
+    interface SubscriptionsResource {
+      retrieve(id: string, params?: SubscriptionRetrieveParams): Promise<Subscription>;
+    }
+  }
+
+  class Stripe {
+    constructor(apiKey: string, options?: Stripe.StripeOptions);
+    webhooks: Stripe.Webhooks;
+    subscriptions: Stripe.SubscriptionsResource;
+  }
+
+  export = Stripe;
 }
 
 interface ImportMetaEnv {

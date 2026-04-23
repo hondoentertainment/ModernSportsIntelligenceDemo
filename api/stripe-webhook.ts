@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Stripe webhook handler — verifies signature and processes events.
  * Deploy as Vercel serverless. Requires STRIPE_WEBHOOK_SECRET in env.
@@ -22,6 +21,11 @@ import {
   syncProfileFromSubscription,
   syncProfileOnSubscriptionDeleted,
 } from './lib/stripeProfileSync';
+import {
+  CheckoutSessionSchema,
+  SubscriptionSchema,
+  InvoiceSchema,
+} from './lib/stripeEventSchemas';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -72,21 +76,71 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     switch (event.type) {
-      case 'checkout.session.completed':
-        await syncProfileFromCheckoutSession(stripe, event.data.object as Stripe.Checkout.Session);
+      case 'checkout.session.completed': {
+        const parsed = CheckoutSessionSchema.safeParse(event.data.object);
+        if (!parsed.success) {
+          apiLogger.warn('checkout.session.completed payload failed schema validation', {
+            eventId: event.id,
+            issues: parsed.error.issues,
+          });
+          await releaseStripeWebhookEventClaim(event.id);
+          return Response.json({ received: false, error: 'invalid_payload' }, { status: 400 });
+        }
+        await syncProfileFromCheckoutSession(stripe, parsed.data as unknown as Stripe.Checkout.Session);
         break;
-      case 'customer.subscription.updated':
-        await syncProfileFromSubscription(event.data.object as Stripe.Subscription);
+      }
+      case 'customer.subscription.updated': {
+        const parsed = SubscriptionSchema.safeParse(event.data.object);
+        if (!parsed.success) {
+          apiLogger.warn('customer.subscription.updated payload failed schema validation', {
+            eventId: event.id,
+            issues: parsed.error.issues,
+          });
+          await releaseStripeWebhookEventClaim(event.id);
+          return Response.json({ received: false, error: 'invalid_payload' }, { status: 400 });
+        }
+        await syncProfileFromSubscription(parsed.data as unknown as Stripe.Subscription);
         break;
-      case 'customer.subscription.deleted':
-        await syncProfileOnSubscriptionDeleted(event.data.object as Stripe.Subscription);
+      }
+      case 'customer.subscription.deleted': {
+        const parsed = SubscriptionSchema.safeParse(event.data.object);
+        if (!parsed.success) {
+          apiLogger.warn('customer.subscription.deleted payload failed schema validation', {
+            eventId: event.id,
+            issues: parsed.error.issues,
+          });
+          await releaseStripeWebhookEventClaim(event.id);
+          return Response.json({ received: false, error: 'invalid_payload' }, { status: 400 });
+        }
+        await syncProfileOnSubscriptionDeleted(parsed.data as unknown as Stripe.Subscription);
         break;
-      case 'invoice.payment_succeeded':
-        await syncProfileFromInvoice(stripe, event.data.object as Stripe.Invoice);
+      }
+      case 'invoice.payment_succeeded': {
+        const parsed = InvoiceSchema.safeParse(event.data.object);
+        if (!parsed.success) {
+          apiLogger.warn('invoice.payment_succeeded payload failed schema validation', {
+            eventId: event.id,
+            issues: parsed.error.issues,
+          });
+          await releaseStripeWebhookEventClaim(event.id);
+          return Response.json({ received: false, error: 'invalid_payload' }, { status: 400 });
+        }
+        await syncProfileFromInvoice(stripe, parsed.data as unknown as Stripe.Invoice);
         break;
-      case 'invoice.payment_failed':
-        await syncProfileFromInvoice(stripe, event.data.object as Stripe.Invoice);
+      }
+      case 'invoice.payment_failed': {
+        const parsed = InvoiceSchema.safeParse(event.data.object);
+        if (!parsed.success) {
+          apiLogger.warn('invoice.payment_failed payload failed schema validation', {
+            eventId: event.id,
+            issues: parsed.error.issues,
+          });
+          await releaseStripeWebhookEventClaim(event.id);
+          return Response.json({ received: false, error: 'invalid_payload' }, { status: 400 });
+        }
+        await syncProfileFromInvoice(stripe, parsed.data as unknown as Stripe.Invoice);
         break;
+      }
       default:
         apiLogger.info('Unhandled event type', event.type);
         await releaseStripeWebhookEventClaim(event.id);
