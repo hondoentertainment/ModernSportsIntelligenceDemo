@@ -614,7 +614,7 @@ export const ComplianceCenterModal: React.FC<ComplianceCenterModalProps> = ({ is
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center" role="dialog" aria-modal="true" aria-label="Regulatory & Compliance Center">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 

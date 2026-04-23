@@ -77,7 +77,7 @@ export const CardAgingLabModal: React.FC<CardAgingLabModalProps> = ({ isOpen, on
   const scoreColor = getScoreColor(score);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300" role="dialog" aria-modal="true" aria-label="Card Aging Quick Check">
       <div className="w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="p-6 sm:p-8 border-b border-slate-700 flex items-center justify-between bg-brand-lime/5">

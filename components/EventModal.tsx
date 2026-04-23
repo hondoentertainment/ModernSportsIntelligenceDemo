@@ -1077,7 +1077,7 @@ export const EventModal: React.FC<EventModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300" role="dialog" aria-modal="true" aria-label="Event Planner">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">
