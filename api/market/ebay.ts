@@ -30,7 +30,7 @@ const ebaySearchParamsSchema = z.object({
 
 const ebayBodySchema = z.object({
   /** `verify` checks server credentials only — never returns an OAuth token to the client. */
-  action: z.enum(['verify', 'search', 'item']),
+  action: z.union([z.literal('verify'), z.literal('search'), z.literal('item')]),
   sandbox: z.boolean().optional(),
   params: ebaySearchParamsSchema.optional(),
   itemId: z.string().optional(),
