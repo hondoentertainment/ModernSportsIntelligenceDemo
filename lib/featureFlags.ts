@@ -48,9 +48,25 @@ function readEnvFlag(key: FeatureFlagEnvKey): boolean {
   return val === 'true' || val === '1';
 }
 
+/**
+ * Derive USE_REAL_EBAY:
+ *  1. Explicit VITE_FF_REAL_EBAY=true/1 always wins.
+ *  2. When VITE_EBAY_CLIENT_ID is set (credentials are present), default to real API.
+ *  3. Otherwise fall back to mock data.
+ */
+function resolveUseRealEbay(): boolean {
+  if (typeof import.meta === 'undefined') return false;
+  if (readEnvFlag('VITE_FF_REAL_EBAY')) return true;
+  // Auto-enable real eBay API when client credentials are configured.
+  const clientId = import.meta.env.VITE_EBAY_CLIENT_ID;
+  return Boolean(clientId && clientId.trim().length > 0);
+}
+
 function loadFlags(): FeatureFlags {
   return {
-    USE_REAL_EBAY: readEnvFlag('VITE_FF_REAL_EBAY'),
+    // Real eBay is the default when EBAY_CLIENT_ID is set; override with VITE_FF_REAL_EBAY=false
+    // by unsetting VITE_EBAY_CLIENT_ID or not providing it at all (mock data path).
+    USE_REAL_EBAY: resolveUseRealEbay(),
     USE_REAL_PSA: readEnvFlag('VITE_FF_REAL_PSA'),
     USE_REAL_BGS: readEnvFlag('VITE_FF_REAL_BGS'),
     USE_REAL_SPORTS: readEnvFlag('VITE_FF_REAL_SPORTS'),

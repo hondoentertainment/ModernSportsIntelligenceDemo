@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { z } from 'zod';
 import { apiLogger } from '../lib/logger';
 import { respondInternalError, setApiCorsHeaders } from '../lib/httpProduction';
@@ -12,6 +11,8 @@ import { isServerApiAuthConfigured, verifyServerApiAuth } from '../lib/verifySer
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 const SPORTS_CATEGORY_IDS = [213, 50132, 2737, 175690, 3034];
+
+// ─── Request schemas ──────────────────────────────────────────────────────────
 
 const ebaySearchParamsSchema = z.object({
   playerName: z.string().optional(),
@@ -35,6 +36,66 @@ const ebayBodySchema = z.object({
   itemId: z.string().optional(),
 }).strict();
 
+// ─── Browse API response schemas ──────────────────────────────────────────────
+
+/** Price amount as returned by eBay Browse API. */
+const ebayPriceSchema = z.object({
+  value: z.string(),
+  currency: z.string(),
+});
+
+/** A single item from the Browse API item_summary/search response. */
+export const ebayItemSummarySchema = z.object({
+  itemId: z.string().optional(),
+  title: z.string().optional(),
+  price: ebayPriceSchema.optional(),
+  condition: z.string().optional(),
+  conditionId: z.string().optional(),
+  itemCreationDate: z.string().optional(),
+  itemEndDate: z.string().optional(),
+  itemWebUrl: z.string().optional(),
+  image: z.object({ imageUrl: z.string() }).optional(),
+  seller: z.object({ username: z.string(), feedbackScore: z.number().optional() }).optional(),
+  categories: z.array(z.object({ categoryId: z.string(), categoryName: z.string() })).optional(),
+  shippingOptions: z.array(z.unknown()).optional(),
+  buyingOptions: z.array(z.string()).optional(),
+}).passthrough();
+
+/** Top-level shape of the Browse API /buy/browse/v1/item_summary/search response. */
+export const ebaySearchResponseSchema = z.object({
+  href: z.string().optional(),
+  total: z.number().optional(),
+  next: z.string().optional(),
+  prev: z.string().optional(),
+  limit: z.number().optional(),
+  offset: z.number().optional(),
+  itemSummaries: z.array(ebayItemSummarySchema).optional(),
+  warnings: z.array(z.unknown()).optional(),
+}).passthrough();
+
+/** Shape of the Browse API /buy/browse/v1/item/{itemId} response. */
+export const ebayItemDetailSchema = z.object({
+  itemId: z.string(),
+  title: z.string().optional(),
+  price: ebayPriceSchema.optional(),
+  condition: z.string().optional(),
+  conditionId: z.string().optional(),
+  description: z.string().optional(),
+  itemCreationDate: z.string().optional(),
+  itemEndDate: z.string().optional(),
+  itemWebUrl: z.string().optional(),
+  image: z.object({ imageUrl: z.string() }).optional(),
+  additionalImages: z.array(z.object({ imageUrl: z.string() })).optional(),
+  seller: z.object({ username: z.string(), feedbackScore: z.number().optional() }).optional(),
+  shippingOptions: z.array(z.unknown()).optional(),
+  buyingOptions: z.array(z.string()).optional(),
+}).passthrough();
+
+export type EbaySearchResponse = z.infer<typeof ebaySearchResponseSchema>;
+export type EbayItemDetail = z.infer<typeof ebayItemDetailSchema>;
+
+// ─── Handler types ────────────────────────────────────────────────────────────
+
 type ApiRequest = {
   method?: string;
   body?: unknown;
@@ -47,7 +108,9 @@ type ApiResponse = {
   status: (code: number) => { json: (body: object) => unknown; end?: () => void };
 };
 
-function getBaseUrl(sandbox: boolean) {
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getBaseUrl(sandbox: boolean): string {
   return sandbox ? 'https://api.sandbox.ebay.com' : 'https://api.ebay.com';
 }
 
@@ -73,7 +136,10 @@ async function getAccessToken(sandbox: boolean): Promise<string> {
     throw new Error(`Failed to get eBay access token: ${response.statusText}`);
   }
 
-  const payload = await response.json();
+  const payload = (await response.json()) as { access_token?: string };
+  if (!payload.access_token) {
+    throw new Error('eBay token response missing access_token');
+  }
   return payload.access_token;
 }
 
@@ -81,7 +147,7 @@ async function searchListings(
   token: string,
   sandbox: boolean,
   params: z.infer<typeof ebaySearchParamsSchema>
-) {
+): Promise<EbaySearchResponse | null> {
   let query = `${params.playerName ?? ''}`.trim();
   if (params.cardYear) query += ` ${params.cardYear}`;
   if (params.cardSet) query += ` ${params.cardSet}`;
@@ -124,10 +190,22 @@ async function searchListings(
     throw new Error(`eBay API search failed: ${response.statusText}`);
   }
 
-  return response.json();
+  const raw: unknown = await response.json();
+  const parsed = ebaySearchResponseSchema.safeParse(raw);
+  if (!parsed.success) {
+    apiLogger.warn('[eBay] Search response failed schema validation', {
+      issues: parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`),
+    });
+    return null;
+  }
+  return parsed.data;
 }
 
-async function getItem(token: string, sandbox: boolean, itemId: string) {
+async function getItem(
+  token: string,
+  sandbox: boolean,
+  itemId: string
+): Promise<EbayItemDetail | null> {
   const response = await fetch(`${getBaseUrl(sandbox)}/buy/browse/v1/item/${itemId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -139,10 +217,21 @@ async function getItem(token: string, sandbox: boolean, itemId: string) {
     throw new Error(`Failed to get item details: ${response.statusText}`);
   }
 
-  return response.json();
+  const raw: unknown = await response.json();
+  const parsed = ebayItemDetailSchema.safeParse(raw);
+  if (!parsed.success) {
+    apiLogger.warn('[eBay] Item detail response failed schema validation', {
+      itemId,
+      issues: parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`),
+    });
+    return null;
+  }
+  return parsed.data;
 }
 
-export default async function handler(req: ApiRequest, res: ApiResponse) {
+// ─── Handler ──────────────────────────────────────────────────────────────────
+
+export default async function handler(req: ApiRequest, res: ApiResponse): Promise<unknown> {
   setApiCorsHeaders(res, { allowMethods: ALLOWED_METHODS });
 
   if (req.method === 'OPTIONS') {
@@ -177,7 +266,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   const rawBody = req.body ?? {};
   const parseResult = ebayBodySchema.safeParse(rawBody);
   if (!parseResult.success) {
-    const message = parseResult.error.issues?.map(e => `${e.path.join('.')}: ${e.message}`).join('; ') ?? 'Invalid request body';
+    const message =
+      parseResult.error.issues?.map(e => `${e.path.join('.')}: ${e.message}`).join('; ') ??
+      'Invalid request body';
     return res.status(400).json({ error: message });
   }
   const body = parseResult.data;
@@ -195,7 +286,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       if (!body.params?.playerName) {
         return res.status(400).json({ error: 'Missing playerName for eBay search.' });
       }
-      const results = await searchListings(accessToken, sandbox, body.params!);
+      const results = await searchListings(accessToken, sandbox, body.params);
+      if (results === null) {
+        return res.status(502).json({ error: 'eBay search response was malformed.' });
+      }
       return res.status(200).json(results);
     }
 
@@ -204,6 +298,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         return res.status(400).json({ error: 'Missing itemId for eBay item lookup.' });
       }
       const item = await getItem(accessToken, sandbox, body.itemId);
+      if (item === null) {
+        return res.status(502).json({ error: 'eBay item response was malformed.' });
+      }
       return res.status(200).json(item);
     }
 
