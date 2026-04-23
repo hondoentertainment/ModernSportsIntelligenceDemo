@@ -8,7 +8,6 @@ import React, {
   useEffect,
   lazy,
 } from 'react';
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import {
   CreditCard,
   TrendingUp,
@@ -29,7 +28,6 @@ import {
   Camera,
   Share2,
   FileDown,
-  Terminal,
   BriefcaseBusiness
 } from 'lucide-react';
 

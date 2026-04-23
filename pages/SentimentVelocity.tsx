@@ -3,7 +3,7 @@ import {
   Activity, TrendingUp, TrendingDown, Minus, AlertTriangle,
   Zap, Clock, Target, BarChart3, ArrowUpRight, ArrowDownRight,
   ChevronRight, Radio, Waves, GitBranch, Eye, RefreshCw,
-  Twitter, Globe, Youtube, MessageSquare, Newspaper, X,
+  Globe, MessageSquare, Newspaper, X, Video,
 } from 'lucide-react';
 import {
   ComposedChart, Line, Bar, Area, XAxis, YAxis, CartesianGrid,
@@ -73,9 +73,9 @@ const inflectionIcon = (type: string) => {
 
 const sourceIcon = (name: string) => {
   switch (name) {
-    case 'twitter': return <Twitter size={14} className="text-sky-400" />;
+    case 'twitter': return <X size={14} className="text-sky-400" />;
     case 'reddit': return <ArrowUpRight size={14} className="text-orange-400" />;
-    case 'youtube': return <Youtube size={14} className="text-red-400" />;
+    case 'youtube': return <Video size={14} className="text-red-400" />;
     case 'forums': return <MessageSquare size={14} className="text-purple-400" />;
     case 'news': return <Newspaper size={14} className="text-emerald-400" />;
     default: return <Globe size={14} className="text-slate-400" />;
