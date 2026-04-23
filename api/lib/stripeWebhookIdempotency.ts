@@ -26,10 +26,6 @@ function serviceRoleKey(): string | undefined {
   return process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 }
 
-export function isStripeIdempotencyConfigured(): boolean {
-  return !!(supabaseRestBase() && serviceRoleKey());
-}
-
 function failClosedProd(): boolean {
   return (
     process.env.VERCEL_ENV === 'production' ||

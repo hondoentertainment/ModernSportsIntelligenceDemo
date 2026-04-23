@@ -40,7 +40,6 @@ export const CheckoutSessionSchema = z
   })
   .passthrough();
 
-export type CheckoutSessionPayload = z.infer<typeof CheckoutSessionSchema>;
 
 // ---------------------------------------------------------------------------
 // customer.subscription.updated / customer.subscription.deleted
@@ -75,7 +74,6 @@ export const SubscriptionSchema = z
   })
   .passthrough();
 
-export type SubscriptionPayload = z.infer<typeof SubscriptionSchema>;
 
 // ---------------------------------------------------------------------------
 // invoice.payment_succeeded / invoice.payment_failed
@@ -123,4 +121,3 @@ export const InvoiceSchema = z
   })
   .passthrough();
 
-export type InvoicePayload = z.infer<typeof InvoiceSchema>;

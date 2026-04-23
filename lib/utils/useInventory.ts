@@ -77,10 +77,12 @@ export function useInventory() {
     }, []);
 
     const addCard = useCallback((card: CardInventory) => {
+        logger.info('[Inventory] Card added', { id: card.id });
         setInventory(prev => [card, ...prev]);
     }, []);
 
     const deleteCard = useCallback((id: string) => {
+        logger.info('[Inventory] Card deleted', { id });
         setInventory(prev => prev.filter(c => c.id !== id));
     }, []);
 

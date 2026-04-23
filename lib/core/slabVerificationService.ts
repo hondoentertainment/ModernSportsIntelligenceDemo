@@ -1,6 +1,7 @@
 // @ts-nocheck
 // Slab Verification Scanner Service
 import { store } from '../dal/syncStore';
+import { logger } from '../logger';
 
 // ---- Types ----
 
@@ -448,6 +449,7 @@ export function verifyCert(certNumber: string, company: GradingCompany): Verific
   );
   if (!found) return null;
   const result: VerificationResult = { ...found, scanDate: new Date().toISOString().split('T')[0] };
+  if (result.verified) logger.info('[SlabVerification] Cert verified', { certNumber: formatted, company });
   const exists = history.find((h) => h.certNumber === formatted && h.company === company);
   if (!exists) {
     history.unshift(result);
@@ -470,6 +472,7 @@ export async function verifyCertAsync(
     const { result, notFound, error } = await lookupPsaCert(certNumber);
     if (result) {
       const vr = psaLookupToVerificationResult(result);
+      if (vr.verified) logger.info('[SlabVerification] Cert verified', { certNumber: vr.certNumber, company: 'PSA' });
       const history = getVerificationHistory();
       const exists = history.find((h) => h.certNumber === vr.certNumber && h.company === 'PSA');
       if (!exists) {

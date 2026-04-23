@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Sentry-ready integration: no top-level @sentry/react import.
  * When VITE_SENTRY_DSN is set, dynamically loads @sentry/react and initializes;
@@ -20,14 +19,18 @@ export function initSentry(): void {
   }
 
   import('@sentry/react')
-    .then((Sentry) => {
+    .then((Sentry: { init: (opts: object) => void; captureException?: (err: unknown) => string }) => {
       Sentry.init({
         dsn,
         environment: import.meta.env.MODE ?? 'development',
         tracesSampleRate: 0.1,
       });
       sentryReady = true;
-      sentryModule = Sentry;
+      sentryModule = {
+        captureException: (err: unknown) => {
+          Sentry.captureException?.(err);
+        },
+      };
     })
     .catch(() => {
       sentryReady = false;

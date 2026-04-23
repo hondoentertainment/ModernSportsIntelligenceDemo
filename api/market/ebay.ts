@@ -290,6 +290,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
       if (results === null) {
         return res.status(502).json({ error: 'eBay search response was malformed.' });
       }
+      apiLogger.info('[eBay] Search successful', { resultCount: results.itemSummaries?.length ?? 0 });
       return res.status(200).json(results);
     }
 

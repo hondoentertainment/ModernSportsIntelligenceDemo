@@ -86,6 +86,7 @@ export async function POST(request: Request): Promise<Response> {
           await releaseStripeWebhookEventClaim(event.id);
           return Response.json({ received: false, error: 'invalid_payload' }, { status: 400 });
         }
+        apiLogger.info('[Stripe] checkout.session.completed', { sessionId: parsed.data.id });
         await syncProfileFromCheckoutSession(stripe, parsed.data as unknown as Stripe.Checkout.Session);
         break;
       }
