@@ -32,6 +32,10 @@ export default defineConfig({
           if (id.includes('node_modules/recharts/') || id.includes('node_modules/d3-') || id.includes('node_modules/victory-vendor/')) {
             return 'recharts-vendor';
           }
+          // Gemini SDK — large and rarely changes; isolate for better cache hits
+          if (id.includes('node_modules/@google/genai')) {
+            return 'gemini';
+          }
           // Lib services: single chunk to avoid circular dependency (batch1 <-> batch2).
           // Pages remain lazy-loaded as separate chunks.
           if (id.includes('/lib/') && /\/lib\/(?:[^/]+\/)?[^/]+Service\.tsx?$/.test(id)) {

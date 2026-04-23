@@ -1,5 +1,4 @@
 // @ts-nocheck
-import jsPDF from 'jspdf';
 import { CardInventory } from '../../types';
 
 interface _PortfolioSummary {
@@ -16,10 +15,11 @@ interface _PortfolioSummary {
 /**
  * Generate a professional PDF report of the portfolio
  */
-export function generatePortfolioReport(
+export async function generatePortfolioReport(
     inventory: CardInventory[],
     userName: string = 'Collector'
-): void {
+): Promise<void> {
+    const { default: jsPDF } = await import('jspdf');
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 20;
@@ -168,10 +168,11 @@ export function generatePortfolioReport(
 /**
  * Generate a simplified Morning Briefing PDF
  */
-export function generateBriefingReport(
+export async function generateBriefingReport(
     inventory: CardInventory[],
     alerts: { title: string; description: string }[] = []
-): void {
+): Promise<void> {
+    const { default: jsPDF } = await import('jspdf');
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 20;

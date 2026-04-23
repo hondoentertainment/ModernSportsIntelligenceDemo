@@ -1,5 +1,4 @@
 // @ts-nocheck
-import jsPDF from 'jspdf';
 import { CardInventory } from '../../types';
 
 /**
@@ -7,11 +6,12 @@ import { CardInventory } from '../../types';
  * Includes timestamped FMV per card, total collection value,
  * condition details, and grading information.
  */
-export function generateInsuranceReport(
+export async function generateInsuranceReport(
   inventory: CardInventory[],
   ownerName: string = 'Collector',
   policyNumber: string = ''
-): void {
+): Promise<void> {
+  const { default: jsPDF } = await import('jspdf');
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
