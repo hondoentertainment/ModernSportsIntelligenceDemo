@@ -1,6 +1,39 @@
 /// <reference types="vite/client" />
 
 /**
+ * Minimal ambient declaration for @google/genai — the installed package
+ * ships only .mjs files without bundled .d.ts declarations, so TypeScript
+ * cannot resolve types automatically. This shim covers the subset used in
+ * api/ai/generate.ts.
+ */
+declare module '@google/genai' {
+  interface GenerateContentResponse {
+    text: string | undefined;
+  }
+
+  interface GenerateContentParams {
+    model: string;
+    contents: unknown;
+    config?: unknown;
+  }
+
+  interface ModelsResource {
+    generateContent(params: GenerateContentParams): Promise<GenerateContentResponse>;
+  }
+
+  interface GoogleGenAIOptions {
+    apiKey: string;
+  }
+
+  class GoogleGenAI {
+    constructor(options: GoogleGenAIOptions);
+    models: ModelsResource;
+  }
+
+  export { GoogleGenAI };
+}
+
+/**
  * Minimal ambient declaration for zod — the installed zod v4 package is
  * missing several .d.cts files (schemas.d.cts, etc.) which prevents TypeScript
  * from resolving `z.object`, `z.string`, etc. from the package exports.

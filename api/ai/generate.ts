@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
 import { respondInternalError, setApiCorsHeaders } from '../lib/httpProduction';
@@ -9,6 +8,7 @@ import {
   rateLimitDisabled,
 } from '../lib/rateLimit';
 import { isServerApiAuthConfigured, verifyServerApiAuth } from '../lib/verifyServerApiAuth';
+import { MAX_BODY_BYTES, sanitizeString } from '../lib/sanitize';
 
 const generateBodySchema = z.object({
   model: z.string().min(1),
@@ -64,18 +64,35 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     }
   }
 
+  // Body size guard: reject payloads that exceed MAX_BODY_BYTES before parsing.
+  const contentLength = req.headers?.['content-length'];
+  const contentLengthNum =
+    typeof contentLength === 'string' ? parseInt(contentLength, 10) : NaN;
+  if (!Number.isNaN(contentLengthNum) && contentLengthNum > MAX_BODY_BYTES) {
+    return res.status(413).json({ error: 'Request too large' });
+  }
+  if (typeof req.body === 'string' && Buffer.byteLength(req.body, 'utf8') > MAX_BODY_BYTES) {
+    return res.status(413).json({ error: 'Request too large' });
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: 'Gemini API key not configured on the server.' });
   }
 
-  const body = req.body ?? {};
-  const parsed = generateBodySchema.safeParse(body);
+  // Sanitize the model field before Zod parsing so log messages never reflect raw user input.
+  const rawBody = req.body != null && typeof req.body === 'object' ? req.body : {};
+  const sanitizedBody = {
+    ...(rawBody as Record<string, unknown>),
+    model: sanitizeString((rawBody as Record<string, unknown>)['model']),
+  };
+  const parsed = generateBodySchema.safeParse(sanitizedBody);
   if (!parsed.success) {
     const message = parsed.error.issues.map((e) => e.message).join('; ') || 'Invalid request body';
     return res.status(400).json({ error: message });
   }
   const { model, contents, config } = parsed.data;
+  // model is already sanitized above; contents/config are passed to Gemini as-is (validated by Zod).
 
   try {
     const client = new GoogleGenAI({ apiKey });

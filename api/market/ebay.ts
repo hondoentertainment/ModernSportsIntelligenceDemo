@@ -8,6 +8,7 @@ import {
   rateLimitDisabled,
 } from '../lib/rateLimit';
 import { isServerApiAuthConfigured, verifyServerApiAuth } from '../lib/verifyServerApiAuth';
+import { MAX_BODY_BYTES, sanitizeString } from '../lib/sanitize';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 const SPORTS_CATEGORY_IDS = [213, 50132, 2737, 175690, 3034];
@@ -263,7 +264,44 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
     }
   }
 
-  const rawBody = req.body ?? {};
+  // Body size guard: reject payloads that exceed MAX_BODY_BYTES before parsing.
+  const contentLength = req.headers?.['content-length'];
+  const contentLengthNum =
+    typeof contentLength === 'string' ? parseInt(contentLength, 10) : NaN;
+  if (!Number.isNaN(contentLengthNum) && contentLengthNum > MAX_BODY_BYTES) {
+    return res.status(413).json({ error: 'Request too large' });
+  }
+  if (typeof req.body === 'string' && Buffer.byteLength(req.body, 'utf8') > MAX_BODY_BYTES) {
+    return res.status(413).json({ error: 'Request too large' });
+  }
+
+  // Sanitize user-supplied string fields before Zod parsing.
+  const incoming = req.body != null && typeof req.body === 'object' ? (req.body as Record<string, unknown>) : {};
+  const incomingParams = incoming['params'] != null && typeof incoming['params'] === 'object'
+    ? (incoming['params'] as Record<string, unknown>)
+    : undefined;
+  const sanitizedBody = {
+    ...incoming,
+    ...(incomingParams !== undefined && {
+      params: {
+        ...incomingParams,
+        playerName: sanitizeString(incomingParams['playerName']),
+        cardYear: sanitizeString(incomingParams['cardYear']),
+        cardSet: sanitizeString(incomingParams['cardSet']),
+        cardNumber: sanitizeString(incomingParams['cardNumber']),
+        condition: sanitizeString(incomingParams['condition']),
+        sort: sanitizeString(incomingParams['sort']),
+        // maxPrice and limit/offset are numeric — leave as-is for Zod
+        maxPrice: incomingParams['maxPrice'],
+        limit: incomingParams['limit'],
+        offset: incomingParams['offset'],
+      },
+    }),
+    ...(incoming['itemId'] !== undefined && {
+      itemId: sanitizeString(incoming['itemId']),
+    }),
+  };
+  const rawBody = sanitizedBody;
   const parseResult = ebayBodySchema.safeParse(rawBody);
   if (!parseResult.success) {
     const message =
