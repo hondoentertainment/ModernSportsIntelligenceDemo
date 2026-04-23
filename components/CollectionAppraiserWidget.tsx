@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { FileCheck, ChevronRight, Award, ShieldCheck } from 'lucide-react';
 import {

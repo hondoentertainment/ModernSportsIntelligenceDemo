@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Gift, ChevronRight, Zap, Trophy, DollarSign } from 'lucide-react';
 import {

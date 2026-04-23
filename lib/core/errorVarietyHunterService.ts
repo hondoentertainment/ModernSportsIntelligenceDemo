@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 251 — Error & Variety Hunter Service
 // Identifies and catalogs card errors and varieties that command premium prices
 

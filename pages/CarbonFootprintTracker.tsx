@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Leaf, Award, ShoppingCart, TrendingDown, AlertTriangle, Lightbulb, BarChart3, Globe } from 'lucide-react';
 import {

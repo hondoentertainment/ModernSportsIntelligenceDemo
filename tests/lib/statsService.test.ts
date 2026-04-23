@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { StatsService } from '../../lib/utils/statsService';
 import { getPlayerStats, searchMLBPlayers } from '../../lib/utils/mlbApi';

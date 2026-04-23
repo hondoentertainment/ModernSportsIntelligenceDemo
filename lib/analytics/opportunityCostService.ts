@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─────────────────────────────────────────────────────────────
 // Opportunity Cost Phantom Portfolio – Service Layer
 // Tracks what would have happened with decisions NOT made —

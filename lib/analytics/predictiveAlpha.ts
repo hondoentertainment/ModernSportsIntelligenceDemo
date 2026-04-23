@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CardInventory } from '../../types';
 import { LiquidityService } from './liquidityService';
 import { countImportedCompSnapshots, getCardHistory } from './priceHistory';

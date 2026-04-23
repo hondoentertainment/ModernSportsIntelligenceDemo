@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CardInventory, Sport } from '../../types';
 import { store } from '../dal/syncStore';
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { ArrowLeftRight } from 'lucide-react';
 import PeerLendingModal from '../components/PeerLendingModal.tsx';

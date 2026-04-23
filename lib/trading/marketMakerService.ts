@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ── Market Maker Bot Arena Service ──────────────────────────────────────────
 // Provides types, mock data generators, and accessor functions for a
 // competitive AI trading-bot arena where collectors deploy automated

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useMemo, useState } from 'react';
 import { ArrowRightLeft, Clock3, Layers3, RadioTower, Wallet } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';

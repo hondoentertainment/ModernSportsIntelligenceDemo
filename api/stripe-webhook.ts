@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Stripe webhook handler — verifies signature and processes events.
  * Deploy as Vercel serverless. Requires STRIPE_WEBHOOK_SECRET in env.

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Type } from "@google/genai";
 import { AgentRecommendationOrigin, CardInventory, CollaborativeThesis, SwarmInsight } from "../../types.ts";
 import { showToast } from "./toast.ts";

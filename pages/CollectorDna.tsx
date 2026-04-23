@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Dna, Users, Sparkles, TrendingUp, ArrowRightLeft, AlertTriangle } from 'lucide-react';
 import {

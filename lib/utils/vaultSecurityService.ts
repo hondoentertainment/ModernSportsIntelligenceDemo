@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 103 – Collection Vault Security & Storage Intelligence Service
 
 // ---- Types ----

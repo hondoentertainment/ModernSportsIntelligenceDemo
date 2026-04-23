@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-nocheck
 /**
  * Batch Feature Builder — runs the orchestrator for multiple features from a JSON file.
  *

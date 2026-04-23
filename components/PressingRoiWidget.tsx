@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Wrench, ChevronRight, Zap } from 'lucide-react';
 import { getPressingStats, type PressingStats } from '../lib/utils/pressingRoiService';

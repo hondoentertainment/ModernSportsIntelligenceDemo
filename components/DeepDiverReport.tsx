@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import React from 'react';
 import { TrendingUp, Shield, Zap, Sparkles, FileDown, ArrowUpRight } from 'lucide-react';

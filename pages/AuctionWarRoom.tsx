@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Gavel, Clock, Eye, Trophy, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
 import {

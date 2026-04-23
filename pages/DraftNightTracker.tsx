@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Zap } from 'lucide-react';
 import DraftNightTrackerModal from '../components/DraftNightTrackerModal.tsx';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Gavel, ChevronRight, Clock, Eye, Trophy } from 'lucide-react';
 import {

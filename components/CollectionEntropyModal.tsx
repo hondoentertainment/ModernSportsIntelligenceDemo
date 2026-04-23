@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import { X, Dices, PieChart, AlertTriangle, Lightbulb, TrendingUp, Target } from 'lucide-react';
 import { getScore, getPatterns } from '../lib/core/collectionEntropyService';

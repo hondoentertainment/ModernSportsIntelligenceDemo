@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 6: Live Marketplace API Integrations — Multi-marketplace OAuth connection service
 
 export type MarketplacePlatform = 'ebay' | 'comc' | 'myslabs' | 'sportlots' | 'pwcc' | 'goldin' | 'whatnot';

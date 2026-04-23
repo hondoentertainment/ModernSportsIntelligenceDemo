@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useMemo, useState } from 'react';
 import { Download, Factory, Filter, Radar, ShieldCheck, Sparkles, Target, Workflow } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';

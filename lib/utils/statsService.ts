@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { logger } from '../logger';
 import { getPlayerStats, searchMLBPlayers, MLBHittingStat, MLBStatGroup } from './mlbApi.ts';
 

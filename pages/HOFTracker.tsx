@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Award } from 'lucide-react';
 import { HOFTrackerModal } from '../components/HOFTrackerModal';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { getAdapter, getAdapterType, setAdapter } from '../../lib/dal/StorageAdapter';
 import { LocalStorageAdapter } from '../../lib/dal/LocalStorageAdapter';

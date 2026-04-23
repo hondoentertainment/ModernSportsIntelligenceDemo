@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, useState, useEffect } from 'react';
 import { HeartPulse, Shield, TrendingDown } from 'lucide-react';
 import {

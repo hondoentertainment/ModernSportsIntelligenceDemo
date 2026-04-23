@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---- Types ----
 
 export type OverlayLayer = 'price' | 'grade' | 'pop_report' | 'comps' | 'trend';

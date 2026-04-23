@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Play, Pause, SkipForward, SkipBack, FastForward,

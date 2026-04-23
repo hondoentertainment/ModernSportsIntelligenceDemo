@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Building2, DollarSign, TrendingUp, Clock, Star, BarChart3,

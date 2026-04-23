@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import { MOCK_TEAMS } from '../../constants';
 

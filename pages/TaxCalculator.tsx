@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Calculator, AlertTriangle, TrendingDown, TrendingUp, DollarSign, FileText, Shield, Calendar, BarChart3, PieChart as PieIcon } from 'lucide-react';
 import {

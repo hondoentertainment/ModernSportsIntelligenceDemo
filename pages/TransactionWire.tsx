@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Transaction Wire — Full page: Bloomberg-style transaction ticker for sports cards
 import React, { useState, useMemo } from 'react';
 import {

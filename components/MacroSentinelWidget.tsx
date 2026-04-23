@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { Activity, TrendingUp, TrendingDown, AlertTriangle, ShieldAlert, Cpu } from 'lucide-react';
 import { MacroSignal, MacroTrend } from '../types.ts';

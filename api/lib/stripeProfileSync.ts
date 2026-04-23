@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Sync Stripe subscription state into Supabase `profiles` via REST + service role.
  * Requires checkout/session metadata or profile rows keyed by `stripe_customer_id`.

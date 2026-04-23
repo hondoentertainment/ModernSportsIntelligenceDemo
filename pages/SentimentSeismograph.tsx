@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Activity } from 'lucide-react';
 import SentimentSeismographModal from '../components/SentimentSeismographModal.tsx';

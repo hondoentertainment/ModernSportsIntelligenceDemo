@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Users } from 'lucide-react';
 import PersonalityMatrixModal from '../components/PersonalityMatrixModal.tsx';

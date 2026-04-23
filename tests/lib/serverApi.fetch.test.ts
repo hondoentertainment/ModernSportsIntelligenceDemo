@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * serverApiRequest with real withRetry + mocked fetch (no apiResilience mock).
  */

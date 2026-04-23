@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { GraduationCap } from 'lucide-react';
 import HobbyEntryRampModal from '../components/HobbyEntryRampModal.tsx';

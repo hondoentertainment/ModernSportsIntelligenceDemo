@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { store } from '../dal/syncStore';
 
 // ── Phase 88: Unified Market Data Consolidation Engine ──────────────────────

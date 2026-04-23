@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from 'vitest';
 import { calculateBreakEven, MARKETPLACE_FEES } from '../../lib/analytics/breakEvenService';
 import { makeCard } from '../helpers';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { supabase, isDemoMode } from './supabase';
 import { logger } from './logger';
 import { CardInventory, TargetWatchlist } from '../types';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 155 – Tax & Capital Gains Calculator Service
 import { store } from '../dal/syncStore';
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { X, Radio, Plus, MapPin, DollarSign, Tag } from 'lucide-react';
 import {

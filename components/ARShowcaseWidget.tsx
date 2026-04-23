@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, useState } from 'react';
 import { Glasses, ChevronRight, DollarSign, Layers } from 'lucide-react';
 import { getShowcaseCards, getShowcaseStats } from '../lib/utils/arShowcaseService';

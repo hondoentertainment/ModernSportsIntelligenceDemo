@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createClient, type User } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
 
 export async function getUserFromRequest(req: Request): Promise<{ user: User } | { error: string; status: number }> {

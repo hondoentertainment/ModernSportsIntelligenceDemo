@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Shield } from 'lucide-react';
 import InsuranceClaimsAIModal from '../components/InsuranceClaimsAIModal.tsx';

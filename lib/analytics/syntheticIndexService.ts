@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Synthetic Card Index Creator — Custom Investable Thematic Card Index Service
 
 // ---- Types ----

@@ -1,5 +1,172 @@
 /// <reference types="vite/client" />
 
+/**
+ * Minimal ambient declaration for zod — the installed zod v4 package is
+ * missing several .d.cts files (schemas.d.cts, etc.) which prevents TypeScript
+ * from resolving `z.object`, `z.string`, etc. from the package exports.
+ * This shim re-declares the parts of the API used in this codebase so tsc can
+ * type-check without errors while the package types remain broken.
+ */
+declare module 'zod' {
+  export type infer<T extends ZodTypeAny> = T['_output'];
+  export type output<T extends ZodTypeAny> = T['_output'];
+
+  export interface ZodTypeDef {
+    typeName: string;
+  }
+
+  export class ZodType<Output = unknown, Def extends ZodTypeDef = ZodTypeDef, Input = Output> {
+    readonly _output: Output;
+    readonly _input: Input;
+    readonly _def: Def;
+    parse(data: unknown): Output;
+    safeParse(data: unknown): { success: true; data: Output } | { success: false; error: ZodError };
+    optional(): ZodOptional<this>;
+    nullable(): ZodNullable<this>;
+    default(def: Output | (() => Output)): ZodDefault<this>;
+    passthrough(): this;
+    transform<NewOut>(transform: (arg: Output) => NewOut): ZodTransformer<this, NewOut>;
+    pipe<T extends ZodTypeAny>(target: T): ZodPipeline<this, T>;
+  }
+
+  export type ZodTypeAny = ZodType<unknown, ZodTypeDef, unknown>;
+
+  export class ZodString extends ZodType<string> {
+    optional(): ZodOptional<this>;
+    default(def: string | (() => string)): ZodDefault<this>;
+    min(min: number): this;
+    max(max: number): this;
+    email(): this;
+    url(): this;
+    uuid(): this;
+    regex(regex: RegExp): this;
+    trim(): this;
+    toLowerCase(): this;
+    toUpperCase(): this;
+  }
+
+  export class ZodNumber extends ZodType<number> {
+    optional(): ZodOptional<this>;
+    default(def: number | (() => number)): ZodDefault<this>;
+    min(min: number): this;
+    max(max: number): this;
+    int(): this;
+    positive(): this;
+    nonnegative(): this;
+  }
+
+  export class ZodBoolean extends ZodType<boolean> {
+    optional(): ZodOptional<this>;
+    default(def: boolean | (() => boolean)): ZodDefault<this>;
+  }
+
+  export class ZodNull extends ZodType<null> {}
+  export class ZodUndefined extends ZodType<undefined> {}
+  export class ZodAny extends ZodType<unknown> {}
+  export class ZodUnknown extends ZodType<unknown> {}
+
+  export type ZodRawShape = { [k: string]: ZodTypeAny };
+  export type ZodObjectDef<T extends ZodRawShape = ZodRawShape> = ZodTypeDef & { shape: () => T };
+
+  export type objectOutputType<Shape extends ZodRawShape> = {
+    [k in keyof Shape]: Shape[k]['_output'];
+  };
+
+  export class ZodObject<
+    T extends ZodRawShape,
+    UnknownKeys extends 'passthrough' | 'strict' | 'strip' = 'strip',
+    Catchall extends ZodTypeAny = ZodTypeAny,
+    Output = objectOutputType<T>,
+    Input = Output,
+  > extends ZodType<Output, ZodObjectDef<T>, Input> {
+    passthrough(): ZodObject<T, 'passthrough', Catchall, Output, Input>;
+    strict(): ZodObject<T, 'strict', Catchall, Output, Input>;
+    strip(): ZodObject<T, 'strip', Catchall, Output, Input>;
+    extend<Augmentation extends ZodRawShape>(augmentation: Augmentation): ZodObject<T & Augmentation>;
+    merge<Incoming extends ZodRawShape>(merging: ZodObject<Incoming>): ZodObject<T & Incoming>;
+    pick<Mask extends { [k in keyof T]?: true }>(mask: Mask): ZodObject<Pick<T, Extract<keyof T, keyof Mask>>>;
+    omit<Mask extends { [k in keyof T]?: true }>(mask: Mask): ZodObject<Omit<T, keyof Mask>>;
+    partial(): ZodObject<{ [k in keyof T]: ZodOptional<T[k]> }>;
+    required(): ZodObject<{ [k in keyof T]: ZodNonOptional<T[k]> }>;
+    shape: T;
+  }
+
+  export class ZodArray<T extends ZodTypeAny> extends ZodType<T['_output'][]> {
+    optional(): ZodOptional<this>;
+    min(min: number): this;
+    max(max: number): this;
+    nonempty(): this;
+  }
+
+  export class ZodOptional<T extends ZodTypeAny> extends ZodType<T['_output'] | undefined> {
+    unwrap(): T;
+  }
+
+  export class ZodNullable<T extends ZodTypeAny> extends ZodType<T['_output'] | null> {
+    unwrap(): T;
+  }
+
+  export class ZodDefault<T extends ZodTypeAny> extends ZodType<Exclude<T['_output'], undefined>> {
+    unwrap(): T;
+    removeDefault(): T;
+  }
+
+  export class ZodNonOptional<T extends ZodTypeAny> extends ZodType<Exclude<T['_output'], undefined>> {}
+
+  export class ZodUnion<T extends readonly [ZodTypeAny, ...ZodTypeAny[]]> extends ZodType<T[number]['_output']> {}
+
+  export class ZodEnum<T extends [string, ...string[]]> extends ZodType<T[number]> {
+    options: T;
+  }
+
+  export class ZodLiteral<T> extends ZodType<T> {
+    value: T;
+  }
+
+  export class ZodRecord<
+    Key extends ZodType<string | number | symbol> = ZodString,
+    Value extends ZodTypeAny = ZodTypeAny
+  > extends ZodType<Record<Key['_output'], Value['_output']>> {}
+
+  export class ZodTransformer<I extends ZodTypeAny, O> extends ZodType<O, ZodTypeDef, I['_input']> {}
+
+  export class ZodPipeline<A extends ZodTypeAny, B extends ZodTypeAny> extends ZodType<B['_output'], ZodTypeDef, A['_input']> {}
+
+  export class ZodError {
+    issues: ZodIssue[];
+    message: string;
+  }
+
+  export interface ZodIssue {
+    code: string;
+    message: string;
+    path: (string | number)[];
+  }
+
+  export function object<T extends ZodRawShape>(shape: T): ZodObject<T>;
+  export function string(): ZodString;
+  export function number(): ZodNumber;
+  export function boolean(): ZodBoolean;
+  export function array<T extends ZodTypeAny>(schema: T): ZodArray<T>;
+  export function optional<T extends ZodTypeAny>(schema: T): ZodOptional<T>;
+  export function nullable<T extends ZodTypeAny>(schema: T): ZodNullable<T>;
+  export function union<T extends readonly [ZodTypeAny, ...ZodTypeAny[]]>(types: T): ZodUnion<T>;
+  export function enum_<T extends [string, ...string[]]>(values: T): ZodEnum<T>;
+  export function literal<T extends string | number | boolean | null | undefined>(value: T): ZodLiteral<T>;
+  export function record<Key extends ZodType<string | number | symbol>, Value extends ZodTypeAny>(key: Key, value: Value): ZodRecord<Key, Value>;
+  export function record<Value extends ZodTypeAny>(value: Value): ZodRecord<ZodString, Value>;
+  export function any(): ZodAny;
+  export function unknown(): ZodUnknown;
+  export function null_(): ZodNull;
+  export function undefined_(): ZodUndefined;
+
+  export namespace z {
+    export { object, string, number, boolean, array, optional, nullable, union, literal, any, unknown };
+    export { ZodType, ZodTypeAny, ZodString, ZodNumber, ZodBoolean, ZodObject, ZodArray, ZodOptional, ZodNullable, ZodDefault, ZodUnion, ZodEnum, ZodLiteral, ZodRecord, ZodError, ZodIssue };
+    export type infer<T extends ZodTypeAny> = T['_output'];
+  }
+}
+
 interface ImportMetaEnv {
     readonly VITE_SUPABASE_URL: string;
     readonly VITE_SUPABASE_ANON_KEY: string;

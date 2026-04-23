@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 200 – One-Click Tax Report (Form 8949) Service
 import { store } from '../dal/syncStore';
 

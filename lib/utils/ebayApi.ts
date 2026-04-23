@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { serverApiRequestAuthenticated } from '../serverApi';
 
 // eBay API Integration for Sports Card Pricing

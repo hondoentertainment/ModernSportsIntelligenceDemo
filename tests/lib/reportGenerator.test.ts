@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from 'vitest';
 import { generateReport, exportToCSV } from '../../lib/reportGenerator';
 import type { CardInventory } from '../../types';

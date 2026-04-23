@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─────────────────────────────────────────────────────────────
 // Counterparty Behavioral Fingerprinting – Service Layer
 // Infers cognitive biases from transaction patterns

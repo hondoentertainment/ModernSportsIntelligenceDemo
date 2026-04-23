@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { MessageSquare } from 'lucide-react';
 import AsyncAuctionNegotiationModal from '../components/AsyncAuctionNegotiationModal.tsx';

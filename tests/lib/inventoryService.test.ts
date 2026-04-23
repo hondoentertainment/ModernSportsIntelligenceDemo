@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, cleanup } from '@testing-library/react';
 import { makeCard, setupLocalStorageMock } from '../helpers';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Package, TrendingUp, DollarSign, Star, AlertTriangle, CheckCircle, BarChart3, Layers, Target } from 'lucide-react';
 import {

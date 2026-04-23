@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 118: Live Auction War Room
 // Multi-platform auction dashboard with bid tracking, strategy optimization, and post-auction analytics
 

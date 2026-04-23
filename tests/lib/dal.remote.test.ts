@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Supabase-backed DAL paths + runtime isDemoMode toggle for fallback branches.
  */

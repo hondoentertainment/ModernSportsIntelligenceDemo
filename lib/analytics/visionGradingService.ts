@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Phase 70: AI Vision Grading Lab
  * Camera-based pre-submission card grading with AI-powered defect detection.

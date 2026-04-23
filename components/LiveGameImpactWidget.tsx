@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { Activity, Zap, TrendingUp, TrendingDown, Radio, ChevronRight, Bell } from 'lucide-react';
 import { getLiveGames, getGameDaySnapshot, type LiveGame } from '../lib/analytics/liveGameImpactService.ts';

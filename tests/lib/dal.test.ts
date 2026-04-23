@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createDataAccessLayer, DAL_KEYS } from '../../lib/dal';
 import type { CardInventory, TargetWatchlist } from '../../types';

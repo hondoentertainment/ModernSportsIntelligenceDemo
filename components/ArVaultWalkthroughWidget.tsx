@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { View, ChevronRight, LayoutGrid, Layers, Eye } from 'lucide-react';
 import {

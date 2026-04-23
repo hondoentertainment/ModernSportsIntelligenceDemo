@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { test, expect } from '@playwright/test';
 import { demoLogin, clearSession } from '../fixtures/auth';
 

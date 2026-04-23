@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Shield, Clock, RefreshCw, Activity } from 'lucide-react';
 

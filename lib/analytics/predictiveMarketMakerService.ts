@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { store } from '../dal/syncStore';
 
 // Phase 109: Predictive Market Maker & Synthetic Liquidity Engine

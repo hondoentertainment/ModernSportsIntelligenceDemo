@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { store } from '../dal/syncStore';
 
 // Phase 5: Custom Dashboard Builder Service

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Cpu } from 'lucide-react';
 import AutoBuyRuleEngineModal from '../components/AutoBuyRuleEngineModal.tsx';

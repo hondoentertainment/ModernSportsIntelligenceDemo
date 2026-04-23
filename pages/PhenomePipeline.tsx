@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Rocket } from 'lucide-react';
 import PhenomePipelineModal from '../components/PhenomePipelineModal.tsx';

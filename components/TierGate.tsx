@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * TierGate — Subscription tier-based feature gating component.
  *

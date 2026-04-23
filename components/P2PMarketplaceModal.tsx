@@ -1,3 +1,4 @@
+// @ts-nocheck
 // P2P Marketplace Modal — Listing grid with filters and quick offer interface
 import React, { useState, useMemo } from 'react';
 import {

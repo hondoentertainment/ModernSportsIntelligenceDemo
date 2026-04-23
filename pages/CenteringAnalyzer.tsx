@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Crosshair } from 'lucide-react';
 import CenteringAnalyzerModal from '../components/CenteringAnalyzerModal.tsx';

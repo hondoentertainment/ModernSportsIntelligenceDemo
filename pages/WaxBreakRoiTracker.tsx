@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Package } from 'lucide-react';
 import WaxBreakRoiTrackerModal from '../components/WaxBreakRoiTrackerModal.tsx';

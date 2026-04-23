@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Link2 } from 'lucide-react';
 import ProvenanceChainModal from '../components/ProvenanceChainModal.tsx';

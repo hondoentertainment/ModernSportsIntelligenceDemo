@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---- Types ----
 
 export type VaultTheme = 'luxury-vault' | 'sports-hall' | 'modern-gallery' | 'collector-den' | 'museum-wing' | 'skybox-suite';

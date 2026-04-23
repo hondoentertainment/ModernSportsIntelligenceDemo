@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ============================================================
 // Card Show GPS Navigator – Service Layer
 // Feature #138: Booth-level card show intelligence

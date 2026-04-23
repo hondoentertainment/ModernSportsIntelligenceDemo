@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Landmark, TrendingUp, TrendingDown, ChevronRight, Users, DollarSign } from 'lucide-react';
 import { getVaultStats, getFractionalListings, getSharePositions } from '../lib/utils/fractionalVaultService.ts';

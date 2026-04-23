@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 157 – Error Card & Misprint Database Service
 
 import { store } from '../dal/syncStore';

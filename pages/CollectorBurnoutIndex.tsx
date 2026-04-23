@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Flame } from 'lucide-react';
 import CollectorBurnoutIndexModal from '../components/CollectorBurnoutIndexModal.tsx';

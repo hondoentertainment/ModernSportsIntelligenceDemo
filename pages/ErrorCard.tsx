@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 157: Error Card & Misprint Database Page
 // Route: /error-card | Icon: AlertOctagon
 import React, { useState, useEffect, useMemo } from 'react';

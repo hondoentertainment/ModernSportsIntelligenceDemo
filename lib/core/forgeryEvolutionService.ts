@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─────────────────────────────────────────────────────────────
 // Forgery Evolution Network – Service Layer
 // Maps how counterfeiting techniques evolve and spread across

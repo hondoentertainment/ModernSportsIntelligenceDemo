@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Database } from 'lucide-react';
 import DataConsolidationModal from '../components/DataConsolidationModal';

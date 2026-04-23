@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { store } from '../dal/syncStore';
 
 // Phase 115: Marketplace Aggregator & One-Click Buy

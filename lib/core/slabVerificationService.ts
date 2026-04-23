@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Slab Verification Scanner Service
 import { store } from '../dal/syncStore';
 

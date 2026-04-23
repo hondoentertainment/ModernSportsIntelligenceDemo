@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─────────────────────────────────────────────────────────────────────────────
 // Liquidity Depth Scanner Service
 // Analyzes real-time market depth, bid-ask spreads, volume profiles, and

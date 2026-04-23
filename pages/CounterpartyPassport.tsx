@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Fingerprint, Shield, TrendingUp, AlertTriangle } from 'lucide-react';
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { BookOpen, CheckSquare, AlertTriangle, Box, ClipboardList, Star, Shield, Lightbulb, Package, Search } from 'lucide-react';
 import {

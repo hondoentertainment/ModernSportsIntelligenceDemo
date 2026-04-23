@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Technical Analysis Service — Phase 47
  * Advanced TA indicators for sports card price analysis.

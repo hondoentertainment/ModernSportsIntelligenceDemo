@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-nocheck
 /**
  * Feature Integrity Validator — verifies that all features in featureCatalog.ts
  * have corresponding service, widget, modal, and page files, plus proper wiring

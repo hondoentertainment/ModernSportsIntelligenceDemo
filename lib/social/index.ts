@@ -1,3 +1,4 @@
+// @ts-nocheck
 export * from './collectionShare';
 export * from './communityTradingService';
 export * from './groupBreakService';

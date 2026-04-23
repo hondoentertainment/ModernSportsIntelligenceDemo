@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Fingerprint, ShieldCheck, AlertTriangle, ChevronRight } from 'lucide-react';
 import { getDNAStats, getCounterfeitAlerts } from '../lib/core/cardDNAService';

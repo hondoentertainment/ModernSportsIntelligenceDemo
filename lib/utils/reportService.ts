@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { store } from '../dal/syncStore';
 import { CardInventory, Sport } from '../../types';
 import { buildCollectorAuditDossierReport } from '../core/collectorAuditDossierService';

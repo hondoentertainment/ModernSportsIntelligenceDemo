@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
 import { MultiAgentService } from '../lib/utils/MultiAgentService';

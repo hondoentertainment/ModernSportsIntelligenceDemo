@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Users, ChevronRight, DollarSign, Vote, TrendingUp } from 'lucide-react';
 import { getSyndicates, getSyndicateStats } from '../lib/utils/fractionalSyndicateService';

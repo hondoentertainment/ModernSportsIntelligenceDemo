@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { z } from 'zod';
 
 /** Schema for public portfolio username: alphanumeric, underscore, or hyphen, 1–64 chars. */

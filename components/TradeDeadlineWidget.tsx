@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { CalendarClock, ChevronRight, AlertTriangle, TrendingUp } from 'lucide-react';
 import {

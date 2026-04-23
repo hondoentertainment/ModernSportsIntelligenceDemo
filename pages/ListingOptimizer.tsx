@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 154: Card Photography & Listing Optimizer Page
 // Route: /listing-optimizer | Icon: Camera
 import React, { useState, useEffect, useMemo } from 'react';

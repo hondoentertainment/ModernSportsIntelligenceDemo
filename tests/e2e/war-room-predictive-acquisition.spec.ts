@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { readFile, unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';

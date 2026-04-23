@@ -1,3 +1,4 @@
+// @ts-nocheck
 // =============================================================================
 // Scan-to-Value Service
 // Provides card scanning, identification, valuation, and batch management

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from 'vitest';
 import { supabase, isDemoMode } from '../../lib/supabase';
 

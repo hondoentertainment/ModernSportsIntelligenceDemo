@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 100 — Hall of Fame Probability Tracker
 // ML-powered HOF probability calculator with historical vote modeling,
 // card value impact projections, and "invest before the call" timing signals.

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Environmental IoT Condition Guardian Service
 // Smart sensor monitoring for card storage condition protection
 

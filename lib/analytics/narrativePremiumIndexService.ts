@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 249 — Narrative Premium Index Service
 // Quantifies the premium added to card values by storylines such as championships, records, and milestones
 

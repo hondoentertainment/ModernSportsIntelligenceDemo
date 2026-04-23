@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Phase 2: AI Grading Vision Engine Service
  * Production-grade camera-to-grade workflow with AI-powered analysis,

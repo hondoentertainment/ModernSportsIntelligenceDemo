@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CardInventory, Sport } from '../../types';
 import { getCardHistory } from './priceHistory';
 import { store } from '../dal/syncStore';

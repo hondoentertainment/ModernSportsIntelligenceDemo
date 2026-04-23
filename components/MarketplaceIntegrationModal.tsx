@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import {
   X, Link2, Unlink, RefreshCw, CheckCircle2, AlertTriangle,

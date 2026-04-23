@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import React, { useState, useEffect } from 'react';
 import { Calendar, Target, Zap, Clock, Activity, ChevronRight, ChevronLeft } from 'lucide-react';

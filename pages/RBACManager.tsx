@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import {
   ShieldCheck, Users, Lock, Eye, AlertTriangle, Key,

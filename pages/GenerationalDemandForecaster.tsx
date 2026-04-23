@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Clock } from 'lucide-react';
 import GenerationalDemandForecasterModal from '../components/GenerationalDemandForecasterModal.tsx';

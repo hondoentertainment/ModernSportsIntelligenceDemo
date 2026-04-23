@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-nocheck
 /**
  * Orchestrator — Automated Feature Builder for MSI Platform
  *

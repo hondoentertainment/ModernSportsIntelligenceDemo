@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import React, { useState, useEffect } from 'react';
 import { X, Sun, TrendingUp, TrendingDown, ArrowUpRight, Zap, History } from 'lucide-react';

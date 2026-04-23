@@ -7,8 +7,30 @@ import React, {
   useRef,
   ReactNode,
 } from 'react';
-import { User, Session, AuthError } from '@supabase/supabase-js';
-import { supabase, isDemoMode } from '../lib/supabase';
+import { AuthUser as User, AuthSession as Session } from '@supabase/supabase-js';
+// AuthError is not exported by this version of supabase-js; define a compatible local type
+type AuthError = { message: string; status?: number; code?: string };
+import { supabase as _supabase, isDemoMode } from '../lib/supabase';
+
+/**
+ * Typed shim for supabase.auth — the @supabase/auth-js package ships without
+ * emitted .d.ts files in this installation, so SupabaseAuthClient's inherited
+ * AuthClient methods are invisible to tsc. Casting once here keeps the rest of
+ * the file strongly typed.
+ */
+interface SupabaseAuth {
+  refreshSession(): Promise<{ data: { session: Session | null; user: User | null }; error: AuthError | null }>;
+  getSession(): Promise<{ data: { session: Session | null }; error: AuthError | null }>;
+  onAuthStateChange(callback: (event: string, session: Session | null) => void): { data: { subscription: { unsubscribe(): void } } };
+  signInWithPassword(credentials: { email: string; password: string }): Promise<{ data: { user: User | null; session: Session | null }; error: AuthError | null }>;
+  signUp(credentials: { email: string; password: string; options?: { data?: Record<string, unknown> } }): Promise<{ data: { user: User | null; session: Session | null }; error: AuthError | null }>;
+  signInWithOAuth(params: { provider: string; options?: { redirectTo?: string } }): Promise<{ data: { url: string | null; provider: string }; error: AuthError | null }>;
+  signOut(): Promise<{ error: AuthError | null }>;
+  resetPasswordForEmail(email: string, options?: { redirectTo?: string }): Promise<{ data: Record<string, unknown>; error: AuthError | null }>;
+  updateUser(attributes: { password?: string; data?: Record<string, unknown> }): Promise<{ data: { user: User | null }; error: AuthError | null }>;
+}
+/** supabase client with auth typed via our local SupabaseAuth shim */
+const supabase = _supabase as unknown as Omit<typeof _supabase, 'auth'> & { auth: SupabaseAuth };
 import { logger } from '../lib/logger';
 import { store } from '../lib/dal/syncStore';
 
@@ -59,10 +81,10 @@ const SESSION_REFRESH_TIMEOUT_MS = 8000;
 async function refreshSessionWithTimeout(timeoutMs: number) {
     return new Promise<Awaited<ReturnType<typeof supabase.auth.refreshSession>>>((resolve, reject) => {
         const timer = setTimeout(() => reject(new Error('Session refresh timed out')), timeoutMs);
-        supabase.auth.refreshSession().then(result => {
+        supabase.auth.refreshSession().then((result: Awaited<ReturnType<typeof supabase.auth.refreshSession>>) => {
             clearTimeout(timer);
             resolve(result);
-        }).catch(err => {
+        }).catch((err: unknown) => {
             clearTimeout(timer);
             reject(err);
         });
@@ -139,7 +161,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         // Real client: end initial load on INITIAL_SESSION so user/session stay aligned (avoids
         // getSession finishing before the first auth callback and briefly showing signed-out UI).
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, currentSession: Session | null) => {
             if (mounted) {
                 setSession(currentSession);
                 setUser(currentSession?.user ?? null);

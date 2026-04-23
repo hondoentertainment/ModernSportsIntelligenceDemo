@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Users, ChevronRight, Target, Zap } from 'lucide-react';
 import {

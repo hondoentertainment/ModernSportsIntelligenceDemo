@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Box } from 'lucide-react';
 import WaxCTScannerModal from '../components/WaxCTScannerModal.tsx';

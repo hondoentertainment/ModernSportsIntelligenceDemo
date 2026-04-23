@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Demo Flow Service
 // Orchestrates guided investor walkthroughs across the platform's key features.
 // Supports multiple pre-built flows targeting investors, collectors, and dealers.

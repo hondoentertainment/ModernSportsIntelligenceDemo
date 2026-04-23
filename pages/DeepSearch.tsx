@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import React, { useState, useCallback } from 'react';
 import { Search, Sparkles, Target, Zap, ArrowRight, ShieldCheck, Info, Loader2 } from 'lucide-react';

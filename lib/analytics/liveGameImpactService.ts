@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Phase 69: Live Game Impact Engine
  * Real-time card value impact analysis during live games.

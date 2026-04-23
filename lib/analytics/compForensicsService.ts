@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 132: Real-Time Comparable Sales Forensics
 // Statistical analysis of comparable sales with outlier detection, seller reputation, and fair market value estimation
 

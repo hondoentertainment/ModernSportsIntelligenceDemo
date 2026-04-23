@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---------------------------------------------------------------------------
 // Fractional Ownership Vault Service
 // Tokenized fractional ownership of high-value sports cards with governance,

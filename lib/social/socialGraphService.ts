@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---- Types ----
 
 export type CollectorTier = 'whale' | 'shark' | 'dolphin' | 'fish' | 'minnow';

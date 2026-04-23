@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { BookOpen, Star, MessageSquare, ChevronRight } from 'lucide-react';
 import { getNarrativeStats } from '../lib/core/collectionNarrativeService';

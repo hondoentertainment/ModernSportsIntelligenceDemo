@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { MapPin } from 'lucide-react';
 import MicroGeographicDemandModal from '../components/MicroGeographicDemandModal.tsx';

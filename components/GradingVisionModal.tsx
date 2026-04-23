@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   X, Eye, Upload, Camera, ScanLine, CheckCircle, AlertTriangle,

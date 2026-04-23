@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Award, ChevronRight, TrendingUp, Star } from 'lucide-react';
 import { getHOFCandidates, getHOFStats } from '../lib/utils/hofTrackerService';

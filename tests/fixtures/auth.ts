@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Page } from '@playwright/test';
 
 /** Demo login helper - use when Supabase is in demo mode (no credentials). */

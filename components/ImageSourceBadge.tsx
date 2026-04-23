@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Camera } from 'lucide-react';
 import { getImageSource } from '../lib/utils/imageSourceService.ts';

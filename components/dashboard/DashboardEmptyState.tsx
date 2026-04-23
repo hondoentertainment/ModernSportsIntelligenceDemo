@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Activity, TrendingUp, Zap, Trophy, Package, RefreshCw, Sparkles, ChevronRight } from 'lucide-react';

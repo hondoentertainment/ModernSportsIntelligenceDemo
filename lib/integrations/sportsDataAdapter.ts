@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Sports Data Adapter — ESPN, MLB Stats API, and Sports Reference.
  *

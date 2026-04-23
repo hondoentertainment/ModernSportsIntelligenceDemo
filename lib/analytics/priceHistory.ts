@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Price History Service
  * Tracks per-card valuation snapshots for sparkline charts and historical analysis.

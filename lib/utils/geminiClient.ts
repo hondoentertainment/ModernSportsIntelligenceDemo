@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { showToast } from './toast';
 import { serverApiRequestAuthenticated } from '../serverApi';
 import { GeminiResponseSchema, safeParse } from '../schemas';

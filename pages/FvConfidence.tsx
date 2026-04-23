@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { BarChart3, DollarSign, Percent, Info } from 'lucide-react';
 

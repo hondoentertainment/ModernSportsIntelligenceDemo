@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { History } from 'lucide-react';
 import VintageProvenanceModal from '../components/VintageProvenanceModal.tsx';

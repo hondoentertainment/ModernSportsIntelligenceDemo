@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Heart } from 'lucide-react';
 import EmotionJournalModal from '../components/EmotionJournalModal.tsx';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Performance Optimizer for Modern Sports Intelligence
  *

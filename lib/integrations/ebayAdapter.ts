@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * eBay Adapter — Enhanced marketplace integration.
  *

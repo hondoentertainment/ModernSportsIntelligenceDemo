@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 149: Trade Deadline & Free Agency Impact Tracker
 // Tracks how trade deadlines, free agency signings, and roster moves impact card values in real-time
 

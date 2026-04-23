@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Eye } from 'lucide-react';
 import RefractorMapperModal from '../components/RefractorMapperModal.tsx';

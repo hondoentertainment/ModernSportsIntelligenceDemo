@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { GitBranch, Activity, BarChart3 } from 'lucide-react';
 

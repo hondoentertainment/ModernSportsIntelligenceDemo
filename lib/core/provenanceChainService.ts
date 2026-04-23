@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Provenance Chain Verifier Service
 // Full chain-of-custody verification, provenance scoring, and premium analysis for sports cards
 

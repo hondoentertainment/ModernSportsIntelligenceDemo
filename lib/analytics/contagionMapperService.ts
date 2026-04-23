@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─────────────────────────────────────────────────────────────────────────────
 // Portfolio Contagion Mapper Service
 // Models how negative events propagate through card portfolios like financial

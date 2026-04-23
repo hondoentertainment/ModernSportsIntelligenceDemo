@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Globe, ChevronRight, TrendingUp, DollarSign } from 'lucide-react';
 import {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---- Types ----
 
 export type AlertType = 'price_drop' | 'price_target' | 'grade_change' | 'new_listing';

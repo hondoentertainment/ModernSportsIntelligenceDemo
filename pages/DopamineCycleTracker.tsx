@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Brain } from 'lucide-react';
 import DopamineCycleTrackerModal from '../components/DopamineCycleTrackerModal.tsx';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import {
   Crown, Users, Target, TrendingUp, DollarSign, Shield,

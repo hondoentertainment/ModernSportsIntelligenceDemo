@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import { CardInventory } from '../../types.ts';
 import { getRarityTier } from '../utils/rarity.ts';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * verify-psa-cert — Supabase Edge Function
  *

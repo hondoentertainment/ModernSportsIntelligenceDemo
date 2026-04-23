@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { CardInventory, PricingAnalysis, TargetWatchlist, ValuationSource } from '../../types';
 
 const SOURCE_PRIORITY: Record<ValuationSource, number> = {

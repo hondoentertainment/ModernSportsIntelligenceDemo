@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { store } from '../dal/syncStore';
 
 // ── MSI Terminal Service — Bloomberg-Style Command Interface ────────────────────

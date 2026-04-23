@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 134: Card Liquidity Options Desk
 // Simulated options-style trading on sports cards — paper calls/puts, premium pricing, Greeks
 

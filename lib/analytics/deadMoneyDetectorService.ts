@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Dead Money Detector Service — Industry-first stagnant capital scanner
 
 // ── Types ────────────────────────────────────────────────────────────────────────

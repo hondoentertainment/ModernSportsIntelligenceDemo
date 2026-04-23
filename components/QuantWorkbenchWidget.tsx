@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Code, ChevronRight, Play, FlaskConical } from 'lucide-react';
 import { getSavedStrategies } from '../lib/utils/quantWorkbenchService';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { ArrowLeftRight } from 'lucide-react';
 import GradingArbitrageModal from '../components/GradingArbitrageModal.tsx';

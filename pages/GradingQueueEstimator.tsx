@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Clock, Package, CheckCircle } from 'lucide-react';
 

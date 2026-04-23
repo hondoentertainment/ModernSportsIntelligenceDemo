@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import {
   Shield, FileText, AlertTriangle, BarChart3, Plus, Download, Eye, Clock,

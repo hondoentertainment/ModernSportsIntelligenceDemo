@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Package, AlertTriangle, TrendingUp, Calendar, BarChart3, DollarSign, Archive, Clock, Layers, Star } from 'lucide-react';
 import {

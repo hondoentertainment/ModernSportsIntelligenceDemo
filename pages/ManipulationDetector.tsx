@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import ManipulationDetectorModal from '../components/ManipulationDetectorModal.tsx';

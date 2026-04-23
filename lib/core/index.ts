@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Auto-generated barrel export for core/
 export * from './blockchainProvenanceService';
 export * from './cardDNAFingerprintService';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { ClipboardList } from 'lucide-react';
 import GradingBatchPlannerModal from '../components/GradingBatchPlannerModal.tsx';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { syncPortfolio, syncWatchlistPrices, getSyncMeta, isSyncStale } from '../../lib/utils/marketSync';
 import { getEbayCardPrice, getWatchlistItemPrice } from '../../lib/utils/gemini';

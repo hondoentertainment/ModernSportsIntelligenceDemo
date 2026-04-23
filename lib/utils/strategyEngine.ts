@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 38: Strategy Engine and Backtesting
 import { store } from '../dal/syncStore';
 

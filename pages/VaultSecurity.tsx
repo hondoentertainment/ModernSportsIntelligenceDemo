@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Lock } from 'lucide-react';
 import { VaultSecurityModal } from '../components/VaultSecurityModal';

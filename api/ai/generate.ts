@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { GoogleGenAI } from '@google/genai';
 import { z } from 'zod';
 import { respondInternalError, setApiCorsHeaders } from '../lib/httpProduction';

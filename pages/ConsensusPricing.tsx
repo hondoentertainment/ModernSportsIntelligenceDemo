@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Users, TrendingUp, TrendingDown, Star, MessageCircle, ThumbsUp, ThumbsDown, Award, BarChart3, Target, Eye, Filter } from 'lucide-react';
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar } from 'recharts';

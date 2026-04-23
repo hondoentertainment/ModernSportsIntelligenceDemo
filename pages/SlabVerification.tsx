@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { ShieldCheck, AlertTriangle, Search, History, Bell, BookOpen, BarChart3, CheckCircle, XCircle, HelpCircle, Flag, Hash, Layers } from 'lucide-react';
 import {

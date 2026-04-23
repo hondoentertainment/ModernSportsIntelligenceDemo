@@ -136,6 +136,6 @@ export function psaLookupToVerificationResult(
     flags: [],
     populationCount: lookup.populationCount,
     labelType: lookup.labelType || lookup.gradeDescription,
-    scanDate: new Date().toISOString().split('T')[0],
+    scanDate: new Date().toISOString().split('T')[0] ?? '',
   };
 }

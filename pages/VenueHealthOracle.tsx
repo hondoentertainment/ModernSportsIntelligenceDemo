@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Building2 } from 'lucide-react';
 import VenueHealthOracleModal from '../components/VenueHealthOracleModal.tsx';

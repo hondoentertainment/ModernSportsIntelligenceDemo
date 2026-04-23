@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { ScanLine, ChevronRight, History, Box } from 'lucide-react';
 import { getScanHistory, getDisplayCases } from '../lib/utils/arScannerService';

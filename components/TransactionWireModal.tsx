@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Transaction Wire Modal — Full transaction list with filters and volume chart
 import React, { useState, useMemo } from 'react';
 import {

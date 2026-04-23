@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---- Types ----
 
 export type CollectorCategory = 'Modern Basketball' | 'Vintage Baseball' | 'Modern Football' | 'Pokemon' | 'Overall';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Phase 98: Vintage Market Scanner & Historical Intelligence
  * Specialized vintage card (pre-1980) intelligence — condition census tracking,

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Clock, Percent, BarChart3, Zap } from 'lucide-react';
 

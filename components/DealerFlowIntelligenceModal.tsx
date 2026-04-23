@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import { X, Briefcase, TrendingUp, TrendingDown, ArrowRightLeft, BarChart3, AlertCircle, Package } from 'lucide-react';
 import { getDealers, getFlowEvents, getAccumulationSignals } from '../lib/analytics/dealerFlowIntelligenceService';

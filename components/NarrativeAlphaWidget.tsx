@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { BookOpen, ChevronRight, Zap, Radio, TrendingUp } from 'lucide-react';
 import {

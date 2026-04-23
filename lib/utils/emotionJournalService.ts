@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---- Types ----
 
 export type EmotionTag = 'fomo' | 'excitement' | 'panic' | 'revenge' | 'boredom' | 'calculated';

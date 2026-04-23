@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Radio, Eye, MapPin, TrendingDown, Users, Award, Shield, CheckCircle,

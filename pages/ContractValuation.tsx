@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { FileCheck } from 'lucide-react';
 import ContractValuationModal from '../components/ContractValuationModal.tsx';

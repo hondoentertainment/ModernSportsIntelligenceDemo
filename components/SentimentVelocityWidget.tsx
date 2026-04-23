@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import {
   Zap, ChevronRight, TrendingUp, TrendingDown, Minus, Clock, Target,

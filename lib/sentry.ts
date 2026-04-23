@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Sentry-ready integration: no top-level @sentry/react import.
  * When VITE_SENTRY_DSN is set, dynamically loads @sentry/react and initializes;

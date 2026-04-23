@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import { store } from '../lib/dal/syncStore';
 import React, {

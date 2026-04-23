@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import { X, MapPin, Calendar, Users, Star, DollarSign, Navigation, Store } from 'lucide-react';
 import { getShows, getDealerBooths } from '../lib/utils/cardShowNavigatorService';

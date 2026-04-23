@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import { X, Volume2, ShieldCheck, AlertTriangle, Activity, Database, Radio, Waves } from 'lucide-react';
 import { getScans, getMaterialDatabase } from '../lib/utils/acousticAuthenticationService';

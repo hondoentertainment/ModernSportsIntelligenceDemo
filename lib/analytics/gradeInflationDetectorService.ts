@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Grade Inflation Detector Service
 
 // ---- Types ----

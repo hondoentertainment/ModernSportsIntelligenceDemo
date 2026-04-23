@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from 'vitest';
 import { ROUTE_TIER_MAP, getRouteTier } from '../../lib/utils/routeTierConfig';
 

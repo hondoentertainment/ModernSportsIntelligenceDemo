@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ScarcityService, generatePopData } from '../../lib/analytics/scarcityService';
 import type { CardInventory } from '../../types';

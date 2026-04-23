@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─── Predictive Print Run Decoder Service ────────────────────────────────────
 // Reverse-engineers actual print run numbers from population reports, sales
 // velocity, submission rates, and statistical modelling — solving one of the

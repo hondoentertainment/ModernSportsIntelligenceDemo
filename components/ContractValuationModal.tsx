@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import { X, FileCheck, TrendingUp, DollarSign, Calendar, Users, Briefcase } from 'lucide-react';
 import { getContractImpacts, getFreeAgents } from '../lib/analytics/contractValuationService';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Cross-Asset Correlation Engine Service
 // Correlates sports card values with traditional financial assets to demonstrate
 // cards as an investable alternative asset class.

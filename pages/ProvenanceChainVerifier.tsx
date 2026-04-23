@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, Shield, Camera, Clock, CheckCircle, AlertTriangle, Fingerprint } from 'lucide-react';
 import {

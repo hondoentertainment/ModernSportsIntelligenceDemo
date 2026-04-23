@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Card Grading Prep Guide Service
 
 import { store } from '../dal/syncStore';

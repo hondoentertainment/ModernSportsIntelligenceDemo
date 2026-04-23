@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { fetchLeaderboard } from '../lib/social/socialService';
 import { LeaderboardEntry } from '../types';

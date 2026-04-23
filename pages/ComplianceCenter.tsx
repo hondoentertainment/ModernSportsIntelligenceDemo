@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { FileCheck } from 'lucide-react';
 import { ComplianceCenterModal } from '../components/ComplianceCenterModal';

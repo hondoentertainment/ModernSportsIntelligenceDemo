@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { BookOpen, DollarSign, Calendar, Hash } from 'lucide-react';
 

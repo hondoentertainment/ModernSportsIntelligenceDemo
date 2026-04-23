@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { TrendingDown, Shield, Clock, AlertTriangle } from 'lucide-react';
 

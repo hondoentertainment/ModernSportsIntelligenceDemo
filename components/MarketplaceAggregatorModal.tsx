@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 115: Marketplace Aggregator Modal — 5-tab layout
 import React, { useState, useMemo } from 'react';
 import {

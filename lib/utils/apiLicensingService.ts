@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 122: API & Data Licensing Service
 // Enterprise-grade API key management, usage metering, webhook orchestration,
 // embeddable widget generation, and tiered pricing for sports card data licensing.

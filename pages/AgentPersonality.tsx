@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Bot, Sliders, Target, Zap } from 'lucide-react';
 

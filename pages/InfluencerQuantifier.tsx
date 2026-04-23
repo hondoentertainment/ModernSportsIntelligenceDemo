@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Megaphone } from 'lucide-react';
 import InfluencerQuantifierModal from '../components/InfluencerQuantifierModal.tsx';

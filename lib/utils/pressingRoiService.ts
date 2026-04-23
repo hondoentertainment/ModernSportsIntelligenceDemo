@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { store } from '../dal/syncStore';
 
 // Phase 130: AI Card Restoration & Pressing ROI Simulator

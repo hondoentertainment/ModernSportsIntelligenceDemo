@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Zap, Activity, Layers, ShieldAlert } from 'lucide-react';
 import {

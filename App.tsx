@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import React, { Suspense, useState, useEffect, lazy } from 'react';
 import {

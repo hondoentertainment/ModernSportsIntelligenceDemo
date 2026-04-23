@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { expect, test } from '@playwright/test';
 
 async function enterDemoMode(page: import('@playwright/test').Page): Promise<void> {

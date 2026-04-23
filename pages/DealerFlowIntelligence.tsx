@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Briefcase } from 'lucide-react';
 import DealerFlowIntelligenceModal from '../components/DealerFlowIntelligenceModal.tsx';

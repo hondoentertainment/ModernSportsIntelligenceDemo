@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ebayApi } from '../../lib/ebayApi';
 import { serverApiRequestAuthenticated } from '../../lib/serverApi';

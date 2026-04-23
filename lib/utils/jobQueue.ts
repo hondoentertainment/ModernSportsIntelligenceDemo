@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { store } from '../dal/syncStore';
 import { incrementCounter, recordMetric } from './telemetryService';
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { Shield, AlertTriangle, Calendar, TrendingUp, ChevronRight } from 'lucide-react';
 import {

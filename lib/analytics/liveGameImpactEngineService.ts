@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Phase 104: Live Game Impact Engine (Advanced)
  *

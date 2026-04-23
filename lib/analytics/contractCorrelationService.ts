@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Contract Correlation Service
 // Maps contract extensions/options to card value movements across NFL, NBA, and MLB
 

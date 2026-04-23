@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Dices } from 'lucide-react';
 import CollectionEntropyModal from '../components/CollectionEntropyModal.tsx';

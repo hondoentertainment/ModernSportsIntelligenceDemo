@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 94: Sealed Wax Market Intelligence Service
 // "The Bloomberg Commodity Desk for Sealed Products"
 

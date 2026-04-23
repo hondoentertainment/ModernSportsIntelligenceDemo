@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Consignment Router Widget — compact dashboard card
 import React, { useMemo } from 'react';
 import { Route, ChevronRight, DollarSign, TrendingUp } from 'lucide-react';

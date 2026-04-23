@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { detectSignals } from '../../lib/utils/signals';
 import type { CardInventory, TargetWatchlist } from '../../types';

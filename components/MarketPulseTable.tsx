@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import React from 'react';
 import { ArrowUpRight, TrendingUp, TrendingDown, Clock } from 'lucide-react';

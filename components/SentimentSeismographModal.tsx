@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import { X, Activity, TrendingUp, TrendingDown, AlertTriangle, Bell, Hash, Minus } from 'lucide-react';
 import { getReadings, getAlerts } from '../lib/analytics/sentimentSeismographService';

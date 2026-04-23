@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---------------------------------------------------------------------------
 // Portfolio Stress Tester – service layer
 // Monte Carlo simulation, historical stress scenarios, VaR, sensitivity

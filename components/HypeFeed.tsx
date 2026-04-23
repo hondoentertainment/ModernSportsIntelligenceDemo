@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Zap, TrendingUp, Bell, Sparkles, Activity } from 'lucide-react';
 

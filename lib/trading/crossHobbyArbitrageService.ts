@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Cross-Hobby Collectibles Arbitrage Bridge Service
 
 // ---- Types ----

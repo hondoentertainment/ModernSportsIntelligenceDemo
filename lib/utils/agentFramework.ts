@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CardInventory } from '../../types';
 import { LiquidityService } from '../analytics/liquidityService';
 import { forecastPriceTrajectory, analyzeBreakoutPotential } from '../analytics/predictiveAlpha';

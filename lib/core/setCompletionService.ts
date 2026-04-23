@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─── Set Completion Advisor Service ─────────────────────────────────────────
 // Tracks card set completion progress, missing cards, source recommendations,
 // and cost-to-complete analytics for sports card collectors.

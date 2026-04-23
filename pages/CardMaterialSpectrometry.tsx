@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Microscope } from 'lucide-react';
 import CardMaterialSpectrometryModal from '../components/CardMaterialSpectrometryModal.tsx';

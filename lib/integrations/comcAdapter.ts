@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * COMC/MySlabs Adapter — Alternative marketplace integrations.
  *

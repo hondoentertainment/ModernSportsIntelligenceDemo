@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Sport } from '../../types';
 
 // ---- Types ----

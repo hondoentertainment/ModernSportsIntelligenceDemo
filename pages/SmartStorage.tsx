@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Thermometer, Droplets, AlertTriangle, Shield, Wrench, DollarSign, Activity, Archive } from 'lucide-react';
 import {

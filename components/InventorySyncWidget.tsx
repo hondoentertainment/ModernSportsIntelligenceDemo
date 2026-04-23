@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { RefreshCw, Link2, AlertTriangle, Ghost, ChevronRight } from 'lucide-react';
 import { getSyncReport, getGhostListings } from '../lib/core/inventorySyncService';

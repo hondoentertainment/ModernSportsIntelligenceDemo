@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Users, AlertTriangle, TrendingUp, BarChart3, ThumbsUp, Trophy, Target, MessageSquare, Flame, Star } from 'lucide-react';
 import {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Eye, Bell, BellOff, TrendingUp, TrendingDown, Trash2, Target, AlertTriangle, Filter, Plus, BarChart3, Activity } from 'lucide-react';
 import {

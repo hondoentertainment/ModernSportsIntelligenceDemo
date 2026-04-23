@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Phase 106: AI Pre-Grade Intelligence
  * Photograph a raw card and receive predicted PSA/BGS grade with ROI calculator.

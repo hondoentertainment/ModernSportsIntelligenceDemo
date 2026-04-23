@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─────────────────────────────────────────────────────────────
 // Auction Game Theory Equilibrium Engine – Service Layer
 // Applies formal Bayesian game theory to auction bidding

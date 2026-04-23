@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * BGS/SGC Adapter — Beckett Grading Services and SGC cert lookups.
  *

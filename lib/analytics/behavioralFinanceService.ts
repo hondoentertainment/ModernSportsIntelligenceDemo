@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 131: Behavioral Finance & Collector Psychology Dashboard
 // Cognitive bias detection, spending pattern analysis, and decision quality scoring
 

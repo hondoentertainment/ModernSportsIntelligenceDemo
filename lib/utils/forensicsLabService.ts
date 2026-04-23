@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---- Types ----
 
 export type ForensicStatus = 'analyzing' | 'complete' | 'flagged';

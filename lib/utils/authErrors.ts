@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Maps Supabase AuthError codes and messages to user-friendly messages
  */

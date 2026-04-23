@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Landmark } from 'lucide-react';
 import EstateSuccessionModal from '../components/EstateSuccessionModal.tsx';

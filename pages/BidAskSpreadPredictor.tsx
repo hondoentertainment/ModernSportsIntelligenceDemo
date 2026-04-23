@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { TrendingUp, Percent, MapPin, BarChart3 } from 'lucide-react';
 

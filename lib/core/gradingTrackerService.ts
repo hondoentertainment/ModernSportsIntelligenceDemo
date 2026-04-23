@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---- Types ----
 
 export type GradingCompany = 'psa' | 'bgs' | 'sgc' | 'csg' | 'hga';

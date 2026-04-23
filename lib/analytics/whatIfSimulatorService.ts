@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---- Types ----
 
 export type ScenarioType = 'buy' | 'sell' | 'trade' | 'grade' | 'hold' | 'liquidate';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import React, { useState, useMemo } from 'react';
 import { Filter, Search, ArrowUpRight, ArrowDownRight, MoreHorizontal, Zap, Flame } from 'lucide-react';

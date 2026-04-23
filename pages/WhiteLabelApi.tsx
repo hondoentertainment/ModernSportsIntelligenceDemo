@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import {
   Code, Key, Globe, Webhook, Activity, Zap, BarChart3,

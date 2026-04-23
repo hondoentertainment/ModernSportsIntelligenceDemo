@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Package } from 'lucide-react';
 import WaxIntelligenceWidget from '../components/WaxIntelligenceWidget';

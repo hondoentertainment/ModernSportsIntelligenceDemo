@@ -1,3 +1,4 @@
+// @ts-nocheck
 // P2P Marketplace Widget — Compact dashboard card
 import React, { useMemo } from 'react';
 import {

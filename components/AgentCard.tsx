@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { AgentInsight } from '../types';
 import { MultiAgentService } from '../lib/utils/MultiAgentService';

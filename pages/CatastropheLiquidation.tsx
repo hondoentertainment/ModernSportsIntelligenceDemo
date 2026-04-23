@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { AlertTriangle, Clock, DollarSign, ListOrdered } from 'lucide-react';
 

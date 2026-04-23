@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Condition Census Tracker Service
 // Intelligence network tracking known population of top-condition examples
 

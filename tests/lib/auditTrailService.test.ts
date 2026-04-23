@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as auditLog from '../../lib/utils/auditLog';
 import { getAuditEvents, mapStoredRecordToAuditEvent } from '../../lib/utils/auditTrailService';

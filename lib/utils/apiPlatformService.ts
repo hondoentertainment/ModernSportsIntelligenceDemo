@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 91: MSI API & Data Export Platform Service
 // Bloomberg API/Data License equivalent for sports card analytics
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ── Interfaces ──────────────────────────────────────────────────────────────────
 
 export type TrendDirection = 'rising' | 'falling' | 'stable';

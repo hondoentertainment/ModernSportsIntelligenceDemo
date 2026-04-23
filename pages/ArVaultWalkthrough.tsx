@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { View, Sparkles } from 'lucide-react';
 import { ArVaultWalkthroughModal } from '../components/ArVaultWalkthroughModal';

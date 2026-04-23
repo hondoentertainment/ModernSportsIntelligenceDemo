@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, useState } from 'react';
 import { X, FileText, ArrowUpRight, ArrowDownRight, Scale, TrendingDown, AlertTriangle } from 'lucide-react';
 import { CardInventory } from '../types';

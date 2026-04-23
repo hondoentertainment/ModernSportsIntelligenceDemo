@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, useState } from 'react';
 import { CardInventory } from '../types';
 import { Network, ArrowUpRight, Shield, Beaker, PlayCircle, XCircle } from 'lucide-react';

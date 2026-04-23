@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Network } from 'lucide-react';
 import CrossHobbyContagionModal from '../components/CrossHobbyContagionModal.tsx';

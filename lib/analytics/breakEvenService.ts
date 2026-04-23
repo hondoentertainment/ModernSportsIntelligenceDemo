@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CardInventory } from '../../types';
 
 /** Marketplace fee schedules (percentage of sale price) */

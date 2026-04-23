@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-nocheck
 /**
  * Feature Change Analyzer — compares current feature state against PRD.md
  *

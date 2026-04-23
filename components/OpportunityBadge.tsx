@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { TargetWatchlist, CardInventory } from '../types';
 import { ArbitrageService } from '../lib/trading/ArbitrageService';

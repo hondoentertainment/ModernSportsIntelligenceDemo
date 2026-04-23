@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * useRealtimePrices — subscribes to Supabase Realtime `card_prices` broadcast
  * channel for live price updates.

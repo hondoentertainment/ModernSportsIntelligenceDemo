@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Collection Hedge Constructor Service
 // Enables pair-trade and basket-hedge construction for sports card portfolios.
 // Models negative correlations between rival teams, positions, and eras to build

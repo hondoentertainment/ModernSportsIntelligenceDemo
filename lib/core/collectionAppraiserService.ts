@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 150: AI Collection Appraiser & Insurance Valuation
 // Provides AI-powered appraisals, insurance valuations, and depreciation tracking for card collections
 

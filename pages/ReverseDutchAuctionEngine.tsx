@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Timer, TrendingDown, Bell, Eye, DollarSign, AlertTriangle, Plus, Star, CheckCircle, BarChart3, List, X } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';

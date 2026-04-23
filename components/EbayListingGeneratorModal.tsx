@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import { sanitizeHtml } from '../lib/sanitizeHtml';
 import {

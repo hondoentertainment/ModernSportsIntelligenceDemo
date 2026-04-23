@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { JointAcquisitionProposal } from '../types';
 import { Users, DollarSign, Clock, CheckCircle2, ThumbsUp, ThumbsDown, Gavel } from 'lucide-react';

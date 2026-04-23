@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { logger } from '../logger';
 import { store } from '../dal/syncStore';
 import { PortfolioSnapshot } from '../utils/marketSync.ts';

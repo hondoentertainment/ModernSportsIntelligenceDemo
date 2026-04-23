@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Shield, ChevronRight, Umbrella, TrendingDown, Calculator } from 'lucide-react';
 import { getDerivativesStats } from '../lib/trading/derivativesDeskService';

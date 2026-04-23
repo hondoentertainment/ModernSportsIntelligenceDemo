@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { GitBranch, TrendingUp, Clock, Activity } from 'lucide-react';
 

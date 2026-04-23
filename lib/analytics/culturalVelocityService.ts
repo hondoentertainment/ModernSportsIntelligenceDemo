@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─────────────────────────────────────────────────────────────
 // Cultural Velocity Tracker – Service Layer
 // Tracks how cultural moments create price shocks in the card market

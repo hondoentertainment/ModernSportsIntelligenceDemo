@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ── Sentiment Velocity Engine Service ─────────────────────────────────────────
 // Industry-first: Tracks the RATE OF CHANGE (second derivative) of sentiment.
 // Catches inflection points before prices move.

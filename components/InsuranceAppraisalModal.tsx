@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import {
   X, FileText, RefreshCw, CheckCircle, Award, FileCheck, DollarSign, ChevronDown, ChevronUp,

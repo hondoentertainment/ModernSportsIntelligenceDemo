@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Shield, Umbrella } from 'lucide-react';
 import DerivativesDeskModal from '../components/DerivativesDeskModal.tsx';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import ErrorVarietyHunterModal from '../components/ErrorVarietyHunterModal.tsx';

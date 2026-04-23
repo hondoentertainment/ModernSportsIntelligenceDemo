@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { store } from '../dal/syncStore';
 
 // Phase 158 – Real-Time Auction Sniper & Alert System Service

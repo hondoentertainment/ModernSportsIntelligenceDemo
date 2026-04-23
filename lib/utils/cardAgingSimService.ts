@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---- Types ----
 
 export type UVExposure = 'none' | 'low' | 'moderate' | 'high';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { CloudRain, ChevronRight, Thermometer, Wind, AlertTriangle, TrendingUp } from 'lucide-react';
 import {

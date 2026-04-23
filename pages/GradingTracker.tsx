@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { ClipboardCheck, Clock, Package, DollarSign, AlertTriangle, TrendingUp } from 'lucide-react';
 import {

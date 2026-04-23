@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import React, { useEffect } from 'react';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';

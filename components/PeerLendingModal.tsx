@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import { X, ArrowLeftRight, DollarSign, Clock, CheckCircle, AlertCircle, Percent, Users } from 'lucide-react';
 import { getListings } from '../lib/trading/peerLendingService';

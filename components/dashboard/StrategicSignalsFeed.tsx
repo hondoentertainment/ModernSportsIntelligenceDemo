@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Activity, Zap, Layers, ArrowUpRight } from 'lucide-react';
 

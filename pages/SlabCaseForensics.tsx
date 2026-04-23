@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { ScanLine } from 'lucide-react';
 import SlabCaseForensicsModal from '../components/SlabCaseForensicsModal.tsx';

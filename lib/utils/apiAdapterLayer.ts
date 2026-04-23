@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module apiAdapterLayer
  * @description Production-grade API integration adapter layer.

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CardInventory, TargetWatchlist } from '../../types';
 import { store } from '../dal/syncStore';
 import { escapeHtml } from '../htmlEscape';

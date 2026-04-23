@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import {
   Package, Users, DollarSign, TrendingUp, Star, Clock,

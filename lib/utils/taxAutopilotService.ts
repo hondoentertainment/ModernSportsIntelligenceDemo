@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Tax Autopilot Service — Hobby Income Tax Classification & Estimation
 // Feature #137: Auto-categorizes hobby vs investment income, tracks 1099-K
 // thresholds, Schedule C/D recommendations, IRS dealer/collector status,

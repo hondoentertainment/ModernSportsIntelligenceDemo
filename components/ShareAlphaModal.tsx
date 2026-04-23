@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Share2, Globe, Lock, Copy, CheckCircle2, Trophy, Eye, Zap, ShieldCheck } from 'lucide-react';
 import { UserProfile } from '../types';

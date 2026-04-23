@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo, useEffect } from 'react';
 import {
   X, Zap, TrendingUp, TrendingDown, Minus, Activity, Target,

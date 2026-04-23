@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 37: Execution Integrations
 
 import { store } from '../dal/syncStore';

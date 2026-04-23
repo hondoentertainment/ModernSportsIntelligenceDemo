@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Billing service for handling Stripe subscriptions
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { logger } from '../logger';

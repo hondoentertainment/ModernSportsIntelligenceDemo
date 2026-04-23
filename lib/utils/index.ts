@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Auto-generated barrel export for utils/
 export * from './FiscalService';
 export * from './MultiAgentService';

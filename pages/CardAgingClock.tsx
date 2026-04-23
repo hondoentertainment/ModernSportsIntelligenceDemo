@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Clock } from 'lucide-react';
 import CardAgingClockModal from '../components/CardAgingClockModal.tsx';

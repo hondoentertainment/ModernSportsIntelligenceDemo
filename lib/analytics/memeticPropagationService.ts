@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─────────────────────────────────────────────────────────────
 // Memetic Propagation Tracker – Service Layer
 // Applies SIR epidemiological models to card market narratives

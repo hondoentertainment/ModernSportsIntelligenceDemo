@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Calendar, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 

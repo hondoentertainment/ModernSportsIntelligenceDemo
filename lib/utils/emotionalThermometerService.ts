@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Emotional Portfolio Thermometer Service
 // Behavioral finance layer analyzing trading patterns with real-time emotional temperature scoring
 

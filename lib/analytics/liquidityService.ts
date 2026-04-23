@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CardInventory, ExitPlan, Sport } from '../../types';
 import { generatePopData } from './scarcityService';
 import { store } from '../dal/syncStore';

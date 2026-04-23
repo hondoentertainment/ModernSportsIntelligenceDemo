@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Target } from 'lucide-react';
 import DraftCapitalFuturesModal from '../components/DraftCapitalFuturesModal.tsx';

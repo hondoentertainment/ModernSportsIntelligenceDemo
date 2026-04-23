@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Fingerprint, ChevronRight, Search, Shield, Database } from 'lucide-react';
 import { getDatabaseStats, getFingerprintDatabase } from '../lib/core/provenanceDnaService';

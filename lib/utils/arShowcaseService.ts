@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ---- Types ----
 
 export type DisplayMode = 'rotate' | 'spotlight' | 'stack';

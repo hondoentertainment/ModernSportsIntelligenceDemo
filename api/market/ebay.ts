@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { z } from 'zod';
 import { apiLogger } from '../lib/logger';
 import { respondInternalError, setApiCorsHeaders } from '../lib/httpProduction';

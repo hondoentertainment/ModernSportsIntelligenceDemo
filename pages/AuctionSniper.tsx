@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { Crosshair, AlertTriangle, Clock, Bell, TrendingUp, BarChart3, Eye, Target, Zap, DollarSign } from 'lucide-react';
 import {

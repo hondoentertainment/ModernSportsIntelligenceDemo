@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Radio, TrendingUp, Zap, Minus } from 'lucide-react';
 

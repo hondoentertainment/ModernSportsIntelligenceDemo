@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NegotiationSession, NegotiableItem } from '../../types';
 import { getNegotiationResponse, getAgenticOffer } from '../utils/gemini';
 

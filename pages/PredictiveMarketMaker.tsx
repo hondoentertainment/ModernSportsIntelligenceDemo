@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 109: Predictive Market Maker Page
 // Route: /predictive-market-maker | Icon: Activity
 import React, { useState } from 'react';

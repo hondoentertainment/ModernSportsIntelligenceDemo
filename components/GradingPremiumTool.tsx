@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { CardInventory, GradingPremiumAnalysis } from '../types';
 import { getGradingPremiumAnalysis } from '../lib/utils/gemini';

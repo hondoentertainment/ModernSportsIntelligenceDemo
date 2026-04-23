@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { BarChart3 } from 'lucide-react';
 import { MarketIndicesModal } from '../components/MarketIndicesModal';

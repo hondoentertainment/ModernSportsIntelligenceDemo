@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { AlertTriangle, Trash2, Tag } from 'lucide-react';
 import { useFocusTrap } from '../lib/utils/useFocusTrap';

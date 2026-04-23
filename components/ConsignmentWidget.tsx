@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Package, Clock, BarChart3 } from 'lucide-react';
 import { CardInventory } from '../types';

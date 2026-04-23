@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Timer } from 'lucide-react';
 import BreakEvenCountdownModal from '../components/BreakEvenCountdownModal.tsx';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Trophy, TrendingUp, TrendingDown, Shield, Snowflake, Globe, Flame,

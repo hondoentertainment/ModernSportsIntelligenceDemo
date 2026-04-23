@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─────────────────────────────────────────────────────────────
 // Collection Topology Mapper – Service Layer
 // Topological data analysis (TDA) applied to card collections

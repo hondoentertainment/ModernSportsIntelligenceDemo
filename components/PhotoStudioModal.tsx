@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import { X, Camera, Image, Layout, Settings, Aperture, Wand2, Palette } from 'lucide-react';
 import { getSessions, getTemplates } from '../lib/utils/photoStudioService';

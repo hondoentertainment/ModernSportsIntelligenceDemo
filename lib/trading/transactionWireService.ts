@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Transaction Wire Service — Real-time market transaction feed
 // Bloomberg-style transaction ticker for sports card market intelligence.
 

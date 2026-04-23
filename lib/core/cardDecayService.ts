@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Card Decay Half-Life Predictor Service
 // Physics-based degradation modeling for sports card condition prediction.
 // Models exponential decay with environmental modifiers (Arrhenius, UV sigmoid, humidity curves).

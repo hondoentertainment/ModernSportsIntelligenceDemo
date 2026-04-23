@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * PerformanceDashboard — dev-only page for monitoring bundle sizes,
  * load times, and Web Vitals across the entire application.

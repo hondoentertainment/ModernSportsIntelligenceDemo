@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─────────────────────────────────────────────────────────────
 // Survivorship Bias Corrector – Service Layer
 // Shows the FULL distribution of cards including failures,

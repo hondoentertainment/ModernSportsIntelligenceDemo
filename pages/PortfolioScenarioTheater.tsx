@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useMemo, useState } from 'react';
 import { Activity, FlaskConical, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';

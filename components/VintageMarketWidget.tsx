@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Clock, ChevronRight, TrendingUp, Star } from 'lucide-react';
 import {

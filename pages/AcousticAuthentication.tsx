@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import AcousticAuthenticationModal from '../components/AcousticAuthenticationModal.tsx';

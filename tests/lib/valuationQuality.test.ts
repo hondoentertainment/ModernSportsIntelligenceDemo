@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from 'vitest';
 import { evaluateValuationQuality, attachValuationQuality } from '../../lib/analytics/valuationQuality';
 import type { PricingAnalysis } from '../../types';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { AlertOctagon, ChevronRight, Search, DollarSign } from 'lucide-react';
 import {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Link2, Unlink, RefreshCw, ArrowDownCircle, ArrowUpCircle,

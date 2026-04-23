@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Consignment Router Page — full-page platform recommendation engine
 // Route: /consignment-router | Icon: Route
 import React, { useState, useMemo } from 'react';

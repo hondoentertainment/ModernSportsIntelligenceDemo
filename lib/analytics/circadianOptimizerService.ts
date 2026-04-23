@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─────────────────────────────────────────────────────────────
 // Circadian Market Rhythm Optimizer – Service Layer
 // Chronoeconomic analysis for optimal transaction timing

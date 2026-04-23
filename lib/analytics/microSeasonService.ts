@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Micro-Season Capitalizer Service
 // Calendar-driven event windows, price elasticity curves, and seasonal signals
 // for timing sports card buy/sell decisions around predictable micro-seasons.

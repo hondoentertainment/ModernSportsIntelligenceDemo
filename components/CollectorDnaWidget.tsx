@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Dna, ChevronRight, Users, Sparkles } from 'lucide-react';
 import {

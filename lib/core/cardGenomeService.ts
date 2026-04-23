@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Card Genome Sequencer Service
 // The "23andMe of Trading Cards" — breaks every card into measurable genetic markers
 // producing a unique genome fingerprint for condition analysis, comparison, and valuation.

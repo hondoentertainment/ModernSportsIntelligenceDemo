@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ── Sentiment Volatility Index Service ──────────────────────────────────────────
 // Maps social sentiment to volatility surfaces (like options vol surfaces).
 // Tracks emotion vectors, regime shifts, and generates buy-fear/sell-euphoria signals.

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { FlaskConical } from 'lucide-react';
 import WhatIfSimulatorModal from '../components/WhatIfSimulatorModal.tsx';

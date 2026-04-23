@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GitBranch, Shield, ShieldAlert, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';

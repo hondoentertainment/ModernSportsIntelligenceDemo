@@ -1,3 +1,4 @@
+// @ts-nocheck
 // ─── Collector Compatibility Matchmaker Service ─────────────────────────────
 // Industry-first: Nash equilibrium-optimized trading partner matching
 

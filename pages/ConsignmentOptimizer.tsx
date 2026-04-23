@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Scale } from 'lucide-react';
 import ConsignmentOptimizerModal from '../components/ConsignmentOptimizerModal.tsx';

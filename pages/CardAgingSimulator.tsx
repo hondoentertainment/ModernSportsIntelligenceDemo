@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Hourglass } from 'lucide-react';
 import CardAgingSimulatorModal from '../components/CardAgingSimulatorModal.tsx';

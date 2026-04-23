@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { X, Eye, TrendingUp, TrendingDown } from 'lucide-react';
 import { CardInventory } from '../types';

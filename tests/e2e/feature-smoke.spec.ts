@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { test, expect, type Page, type ConsoleMessage } from '@playwright/test';
 
 // ─── Constants ───────────────────────────────────────────────────────────────

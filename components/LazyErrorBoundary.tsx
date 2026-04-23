@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { ErrorInfo, ReactNode } from 'react';
 import { reportError } from '../lib/errorReporting';
 

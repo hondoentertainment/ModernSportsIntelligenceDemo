@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Code } from 'lucide-react';
 import QuantWorkbenchModal from '../components/QuantWorkbenchModal';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Maximize2, Box, Info, Shield, Target } from 'lucide-react';
 

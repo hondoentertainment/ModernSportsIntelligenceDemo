@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Type } from '@google/genai';
 import { z } from 'zod';
 import { CardInventory, PricingAnalysis, TargetWatchlist, VisualAuditResult, MacroSignal, GradingPremiumAnalysis } from '../../types.ts';

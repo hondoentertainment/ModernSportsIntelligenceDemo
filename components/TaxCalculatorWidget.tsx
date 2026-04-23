@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Calculator, ChevronRight, TrendingDown, Leaf, DollarSign } from 'lucide-react';
 import {

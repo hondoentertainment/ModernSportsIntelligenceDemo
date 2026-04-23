@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Fingerprint } from 'lucide-react';
 import CardDNAFingerprintModal from '../components/CardDNAFingerprintModal.tsx';

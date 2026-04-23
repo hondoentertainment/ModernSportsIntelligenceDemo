@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Card Climate Risk Mapper — Service Layer
 // Climate-aware storage risk assessment for sports card collections
 

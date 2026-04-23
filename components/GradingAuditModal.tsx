@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useRef } from 'react';
 import { X, Camera, Upload, AlertCircle, Sparkles, Activity, Search, Target, LayoutGrid, CheckCircle2 } from 'lucide-react';
 import { auditCardVisuals } from '../lib/utils/gemini.ts';

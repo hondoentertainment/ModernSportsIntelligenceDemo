@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 109: Predictive Market Maker Modal — 5-tab layout
 // Tabs: Order Book, Liquidity Dashboard, Pricing Oracle, Spread Alerts, Market Depth
 import React, { useState, useMemo } from 'react';

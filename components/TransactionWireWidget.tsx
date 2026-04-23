@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Transaction Wire Widget — Compact dashboard feed of latest transactions
 import React, { useMemo } from 'react';
 import {

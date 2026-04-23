@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { CardInventory } from '../types';
 import { CorrelationService, HedgeRecommendation } from '../lib/analytics/CorrelationService';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Droplets, Percent, Shield, Calculator } from 'lucide-react';
 

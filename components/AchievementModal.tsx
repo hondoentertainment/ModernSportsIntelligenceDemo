@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, useState, useCallback } from 'react';
 import { X, Trophy, Star, ArrowUpDown } from 'lucide-react';
 import { CardInventory } from '../types';

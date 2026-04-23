@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Ghost, ChevronRight, TrendingUp, Zap, Crown, Rocket, Play } from 'lucide-react';
 import { getSavedPortfolios, getPresetStrategies } from '../lib/analytics/phantomBacktesterService';

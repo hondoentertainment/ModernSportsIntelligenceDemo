@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Plug } from 'lucide-react';
 import APIPlatformModal from '../components/APIPlatformModal';

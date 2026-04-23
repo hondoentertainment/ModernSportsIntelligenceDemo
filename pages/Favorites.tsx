@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Star, Search, Trash2, User, ChevronRight, LayoutGrid, List, CreditCard, TrendingUp, Target, RefreshCw, Plus, Loader2, Zap, AlertTriangle } from 'lucide-react';

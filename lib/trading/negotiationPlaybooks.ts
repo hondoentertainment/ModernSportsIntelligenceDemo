@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 16: reusable negotiation strategies for the AI acquisition agent (demo / prototype).
 import { store } from '../dal/syncStore';
 

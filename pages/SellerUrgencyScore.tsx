@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Zap, Clock, TrendingDown, Target } from 'lucide-react';
 

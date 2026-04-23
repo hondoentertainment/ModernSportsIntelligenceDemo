@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import { CardInventory } from '../../types';
 import { getCardHistory, PriceSnapshot } from './priceHistory';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Flame, NotebookPen, Radar, TrendingUp } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';

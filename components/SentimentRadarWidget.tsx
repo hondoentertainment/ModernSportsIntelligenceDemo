@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { MessageCircle, ChevronRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import {

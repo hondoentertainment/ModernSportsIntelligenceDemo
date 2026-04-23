@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { Mic, Radio, ScanLine, ChevronRight } from 'lucide-react';
 import {

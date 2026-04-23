@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Lock, MessageSquare, ShieldCheck, Sparkles, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';

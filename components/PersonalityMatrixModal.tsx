@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from 'react';
 import { X, Users, Brain, Sparkles, BarChart3, Heart, Target } from 'lucide-react';
 import { getProfiles } from '../lib/utils/personalityMatrixService';

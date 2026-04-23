@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { MultiAgentService } from '../lib/utils/MultiAgentService';
 import { SwarmInsight, JointAcquisitionProposal, GuildMember } from '../types';

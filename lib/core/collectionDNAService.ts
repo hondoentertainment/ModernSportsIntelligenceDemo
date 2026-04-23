@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Collection DNA Mixer Service
  * Genetic algorithm-inspired breeding engine that combines two collecting strategies

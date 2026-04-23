@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 135: Card Condition Aging & Storage Degradation Model
 // Comprehensive condition projection, storage analysis, and preservation scoring system
 

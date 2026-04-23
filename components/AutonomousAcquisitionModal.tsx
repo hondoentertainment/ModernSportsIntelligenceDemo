@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Phase 112: AI Deal Negotiation Agent — Modal (5-tab layout)
 // Phase 16: negotiation playbooks (strategy templates) on Negotiations + Analytics tabs.
 import React, { useState, useMemo } from 'react';

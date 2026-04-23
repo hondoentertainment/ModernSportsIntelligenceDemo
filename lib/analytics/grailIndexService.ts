@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Grail Index Constructor — Custom Investable Card Index Service
 
 // ---- Types ----

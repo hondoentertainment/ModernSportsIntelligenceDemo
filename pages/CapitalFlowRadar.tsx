@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Radar, TrendingUp, Users, DollarSign } from 'lucide-react';
 

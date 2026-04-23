@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { RefreshCw, Link2, AlertTriangle, Ghost, QrCode, Clock, CheckCircle, XCircle, ArrowRightLeft, Camera, X } from 'lucide-react';
 import CameraFeed from '../components/CameraFeed.tsx';

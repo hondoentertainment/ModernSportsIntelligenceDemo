@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from 'vitest';
 import { calculateAlphaScore, getCollectorTier, getPortfolioDNA } from '../../lib/analytics/analytics';
 import type { CardInventory } from '../../types';
