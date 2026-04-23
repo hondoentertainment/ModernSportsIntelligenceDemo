@@ -7,11 +7,21 @@ import ErrorBoundary from './components/ErrorBoundary.tsx';
 import { validateRuntimeConfig } from './lib/utils/runtimeConfig';
 import { logger } from './lib/logger';
 import { reportError } from './lib/errorReporting';
+import { store } from './lib/dal/syncStore';
 
 // Production: report unhandled promise rejections (same pipeline as ErrorBoundary)
 if (typeof window !== 'undefined') {
   window.addEventListener('unhandledrejection', (event) => {
     reportError(event.reason, { source: 'unhandledrejection' });
+  });
+
+  // Flush dirty DAL writes before the page closes so we don't lose the last
+  // 500 ms of data if the user closes the tab between writes.
+  // Note: async operations in beforeunload may not complete, but the attempt
+  // improves the chance of reaching Supabase. localStorage is already written
+  // synchronously by store.set(), so local data is never lost.
+  window.addEventListener('beforeunload', () => {
+    store.forceFlush().catch(() => {});
   });
 }
 

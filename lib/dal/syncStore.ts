@@ -34,6 +34,9 @@ class SyncedStore {
   /** Keys that are dirty and need DAL write-back */
   private dirty: Set<string> = new Set();
 
+  /** Keys written programmatically since the last hydration (protect in-flight writes). */
+  private writtenSinceHydration: Set<string> = new Set();
+
   /** Timer for batched DAL writes */
   private flushTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -45,6 +48,15 @@ class SyncedStore {
 
   /** Whether initial hydration from DAL is complete */
   private hydrated = false;
+
+  /** Count of keys currently pending a Supabase write */
+  private pendingWrites = 0;
+
+  /** Most recent DAL write error (null = no error since last success) */
+  private lastSyncError: string | null = null;
+
+  /** Listeners subscribed to sync-status changes */
+  private statusListeners: Set<() => void> = new Set();
 
   // ─── Public API (Synchronous) ──────────────────────────────────────
 
@@ -76,6 +88,7 @@ class SyncedStore {
    * Synchronous write. Updates cache immediately, DAL write is batched.
    */
   set<T>(key: string, value: T): void {
+    this.writtenSinceHydration.add(key);
     this.cache.set(key, value);
 
     // Also write to localStorage synchronously (fast path)
@@ -116,6 +129,30 @@ class SyncedStore {
     return localStorage.getItem(key) !== null;
   }
 
+  // ─── Sync Status ──────────────────────────────────────────────────
+
+  /** Returns a snapshot of the current sync state. */
+  getSyncStatus(): { syncing: boolean; hydrated: boolean; lastError: string | null } {
+    return {
+      syncing: this.pendingWrites > 0,
+      hydrated: this.hydrated,
+      lastError: this.lastSyncError,
+    };
+  }
+
+  /**
+   * Subscribe to sync-status changes. Returns an unsubscribe function.
+   * Fires whenever syncing, hydrated, or lastError changes.
+   */
+  onStatusChange(listener: () => void): () => void {
+    this.statusListeners.add(listener);
+    return () => this.statusListeners.delete(listener);
+  }
+
+  private notifyStatusListeners(): void {
+    for (const fn of this.statusListeners) fn();
+  }
+
   // ─── DAL Integration ──────────────────────────────────────────────
 
   /**
@@ -126,25 +163,43 @@ class SyncedStore {
   }
 
   /**
-   * Hydrate cache from DAL (called once after adapter is set).
-   * Reads all keys from the DAL and populates the cache.
-   * Existing cache values (from localStorage) take precedence during migration.
+   * Hydrate cache from the DAL (called once after adapter is set).
+   *
+   * The remote adapter (Supabase) is the canonical source of truth for
+   * authenticated users — its values overwrite any stale local data, except
+   * for keys that were explicitly written since this hydration started (those
+   * in-flight writes are already queued for a remote flush and must not be
+   * clobbered by older remote data).
    */
   async hydrate(): Promise<void> {
     if (!this.adapter || this.hydrated) return;
 
     try {
       const keys = await this.adapter.keys();
-      for (const key of keys) {
-        // Only fill gaps — don't overwrite localStorage data
-        if (!this.cache.has(key)) {
-          const value = await this.adapter.get(key);
+
+      // Parallel reads for speed — Supabase can handle fan-out for N ≤ 200 keys
+      await Promise.all(
+        keys.map(async (key) => {
+          // Skip keys the user wrote after we started hydrating — their pending
+          // flush already has the authoritative value.
+          if (this.writtenSinceHydration.has(key)) return;
+
+          const value = await this.adapter!.get(key);
           if (value !== null) {
             this.cache.set(key, value);
+            // Mirror back to localStorage so subsequent cold loads are instant
+            try {
+              localStorage.setItem(key, JSON.stringify(value));
+            } catch {
+              // Quota exceeded — non-fatal; Supabase remains the source of truth
+            }
           }
-        }
-      }
+        }),
+      );
+
       this.hydrated = true;
+      this.writtenSinceHydration.clear();
+      this.notifyStatusListeners();
       logger.info(`[SyncedStore] Hydrated ${keys.length} keys from DAL`);
     } catch (err) {
       logger.warn('[SyncedStore] Hydration failed, using localStorage cache', err);
@@ -165,22 +220,39 @@ class SyncedStore {
     const keys = Array.from(this.dirty);
     this.dirty.clear();
 
+    this.pendingWrites += keys.length;
+    this.notifyStatusListeners();
+
+    let errorEncountered = false;
     for (const key of keys) {
       const value = this.cache.get(key);
       if (value !== undefined) {
         try {
           await this.adapter.set(key, value);
+          this.lastSyncError = null;
         } catch (err) {
+          errorEncountered = true;
+          const msg = err instanceof Error ? err.message : String(err);
+          this.lastSyncError = msg;
           logger.warn(`[SyncedStore] DAL write failed for "${key}"`, err);
           // Re-mark as dirty for next flush
           this.dirty.add(key);
+        } finally {
+          this.pendingWrites = Math.max(0, this.pendingWrites - 1);
         }
+      } else {
+        this.pendingWrites = Math.max(0, this.pendingWrites - 1);
       }
     }
 
+    this.notifyStatusListeners();
+
     // If there are still dirty keys, schedule another flush
-    if (this.dirty.size > 0) {
+    if (this.dirty.size > 0 && !errorEncountered) {
       this.scheduleFlush();
+    } else if (errorEncountered) {
+      // Back off before retrying failed keys
+      setTimeout(() => this.scheduleFlush(), 5000);
     }
   }
 
@@ -202,6 +274,7 @@ class SyncedStore {
   clear(): void {
     this.cache.clear();
     this.dirty.clear();
+    this.writtenSinceHydration.clear();
     this.hydrated = false;
   }
 }
