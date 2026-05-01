@@ -1,6 +1,6 @@
 // P2P Marketplace — Full Page
 // Route: /p2p-marketplace | Icon: ShoppingCart
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import {
   ShoppingCart,
   Search,
@@ -23,6 +23,8 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
+  Wifi,
+  WifiOff,
 } from 'lucide-react';
 import {
   BarChart,
@@ -49,6 +51,7 @@ import {
   CardGrade,
   CardCondition,
 } from '../lib/trading/p2pMarketplaceService';
+import { supabase, isDemoMode } from '../lib/supabase';
 
 // ── Constants ───────────────────────────────────────────────────────────────────
 
@@ -429,6 +432,19 @@ const FilterSidebar: React.FC<{ filters: FilterState; onChange: (_f: FilterState
   );
 };
 
+// ── Realtime connection badge ────────────────────────────────────────────────────
+
+const RealtimeBadge: React.FC<{ connected: boolean }> = ({ connected }) => (
+  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider transition-all ${
+    connected
+      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+      : 'bg-slate-700/50 border-slate-600/50 text-slate-500'
+  }`}>
+    {connected ? <Wifi size={10} /> : <WifiOff size={10} />}
+    {connected ? 'Live' : 'Local'}
+  </div>
+);
+
 // ── Main Page ───────────────────────────────────────────────────────────────────
 
 const P2PMarketplace: React.FC = () => {
@@ -437,9 +453,38 @@ const P2PMarketplace: React.FC = () => {
   const [filters, setFilters] = useState<FilterState>({
     sport: '', minPrice: '', maxPrice: '', grade: '', condition: '', search: '',
   });
+  const [realtimeConnected, setRealtimeConnected] = useState(false);
+  const [listings, setListings] = useState<Listing[]>(() => getActiveListings());
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+
+  const refreshListings = useCallback(() => {
+    setListings(getActiveListings());
+  }, []);
+
+  // Subscribe to Supabase Realtime for live listing updates when not in demo mode.
+  useEffect(() => {
+    if (isDemoMode) return;
+
+    const channel = supabase
+      .channel('p2p_marketplace_listings')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'marketplace_listings' }, () => {
+        refreshListings();
+      })
+      .subscribe((status) => {
+        setRealtimeConnected(status === 'SUBSCRIBED');
+      });
+
+    channelRef.current = channel;
+
+    return () => {
+      channel.unsubscribe();
+      channelRef.current = null;
+      setRealtimeConnected(false);
+    };
+  }, [refreshListings]);
 
   const stats = useMemo(() => getMarketplaceStats(), []);
-  const allActive = useMemo(() => getActiveListings(), []);
+  const allActive = listings;
   const topSellers = useMemo(() => getTopSellers(), []);
   const myListings = useMemo(() => getMyListings(), []);
   const allOffers = useMemo(() => getOffers(), []);
@@ -483,8 +528,11 @@ const P2PMarketplace: React.FC = () => {
         <div className="p-2 rounded-xl bg-lime-500/20">
           <ShoppingCart size={24} className="text-lime-400" />
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-slate-100">P2P Marketplace</h1>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-2xl font-bold text-slate-100">P2P Marketplace</h1>
+            <RealtimeBadge connected={realtimeConnected} />
+          </div>
           <p className="text-sm text-slate-400">
             Peer-to-peer sports card trading with verified sellers, deal scoring, and instant offers
           </p>

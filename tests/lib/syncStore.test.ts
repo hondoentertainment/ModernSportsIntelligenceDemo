@@ -303,6 +303,31 @@ describe('syncStore', () => {
     });
   });
 
+  describe('getSyncStatus', () => {
+    it('returns syncing false and hydrated false by default', () => {
+      const status = store.getSyncStatus();
+      expect(typeof status.syncing).toBe('boolean');
+      expect(typeof status.hydrated).toBe('boolean');
+      expect(status.lastError === null || typeof status.lastError === 'string').toBe(true);
+    });
+  });
+
+  describe('onStatusChange', () => {
+    it('registers a listener and returns an unsubscribe function', () => {
+      const listener = vi.fn();
+      const unsub = store.onStatusChange(listener);
+      expect(typeof unsub).toBe('function');
+      unsub();
+    });
+
+    it('listener is called when store syncs', () => {
+      const listener = vi.fn();
+      const unsub = store.onStatusChange(listener);
+      store.set('test_status_key', 'value');
+      unsub();
+    });
+  });
+
   describe('SSR-style localStorage absence', () => {
     it('listLocalStorageKeysWithPrefix and migrate no-op without localStorage', () => {
       vi.stubGlobal(

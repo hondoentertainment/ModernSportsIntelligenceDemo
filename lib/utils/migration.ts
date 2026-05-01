@@ -253,6 +253,90 @@ export function clearLocalStorage(): void {
     });
 }
 
+// ---------------------------------------------------------------------------
+// Pre-flight conflict preview
+// ---------------------------------------------------------------------------
+
+export interface CardConflictPreview {
+    player: string;
+    year: number | string;
+    set: string;
+    localValue: number;
+    cloudValue: number;
+    localDate: string;
+    cloudDate: string;
+    resolution: 'overwrite' | 'skip' | 'newer_wins';
+}
+
+export interface MigrationPreview {
+    conflicts: CardConflictPreview[];
+    toAdd: number;
+    total: number;
+}
+
+function localFreshMs(card: CardInventory): number {
+    const raw = card.lastValuationDate || card.purchaseDate;
+    const t = raw ? Date.parse(raw) : NaN;
+    return Number.isFinite(t) ? t : 0;
+}
+
+/**
+ * Preview what will happen during migration without actually writing anything.
+ * Returns structured conflict info so the UI can show a pre-flight summary.
+ */
+export async function previewMigration(userId: string): Promise<MigrationPreview> {
+    const policy = getMigrationConflictPolicy();
+    const localCards: CardInventory[] = store.get<CardInventory[] | null>(STORAGE_KEYS.INVENTORY, null) ?? [];
+    const cloudCards: CardInventory[] = !isDemoMode ? await fetchCards(userId) : [];
+
+    const { cardIdentityKey } = await import('./migrationMerge');
+
+    const cloudByIdentity = new Map<string, CardInventory>();
+    for (const row of cloudCards) {
+        cloudByIdentity.set(cardIdentityKey(row), row);
+    }
+
+    const conflicts: CardConflictPreview[] = [];
+    let toAdd = 0;
+
+    for (const loc of localCards) {
+        const key = cardIdentityKey(loc);
+        const cloudRow = cloudByIdentity.get(key);
+
+        if (!cloudRow) {
+            toAdd += 1;
+            continue;
+        }
+
+        let resolution: CardConflictPreview['resolution'];
+        if (policy === 'prefer_cloud') {
+            resolution = 'skip';
+        } else if (policy === 'prefer_local') {
+            resolution = 'overwrite';
+        } else {
+            // merge_newer
+            resolution = 'newer_wins';
+        }
+
+        const localIsNewer = localFreshMs(loc) >= localFreshMs(cloudRow);
+
+        conflicts.push({
+            player: loc.player,
+            year: loc.year,
+            set: loc.set,
+            localValue: loc.currentValue ?? loc.purchasePrice,
+            cloudValue: cloudRow.currentValue ?? cloudRow.purchasePrice,
+            localDate: loc.lastValuationDate ?? loc.purchaseDate ?? '',
+            cloudDate: cloudRow.lastValuationDate ?? cloudRow.purchaseDate ?? '',
+            resolution: resolution === 'newer_wins'
+                ? (localIsNewer ? 'newer_wins' : 'newer_wins')
+                : resolution,
+        });
+    }
+
+    return { conflicts, toAdd, total: localCards.length };
+}
+
 /**
  * Get migration status
  */

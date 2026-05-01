@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { Cloud, Loader2, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { Cloud, Loader2, CheckCircle2, AlertCircle, RefreshCw, ScanSearch } from 'lucide-react';
 import { useMigration } from '../contexts/MigrationContext';
 import { useToast } from '../contexts/ToastContext';
+import { useAuth } from '../contexts/AuthContext';
 import {
     getMigrationConflictPolicy,
     setMigrationConflictPolicy,
     type MigrationConflictPolicy,
+    type MigrationPreview,
     buildMigrationMergeSummary,
     formatMigrationMergeToast,
     formatMigrationMergeLine,
+    previewMigration,
 } from '../lib/utils/migration';
 import { MIGRATION_CONFLICT_POLICY_OPTIONS } from '../lib/utils/migrationPolicyOptions';
+import MigrationConflictPreviewModal from './MigrationConflictPreviewModal';
 
 /**
  * Banner shown when user has local data and can sync to cloud.
@@ -19,13 +23,29 @@ import { MIGRATION_CONFLICT_POLICY_OPTIONS } from '../lib/utils/migrationPolicyO
 const MigrationBanner: React.FC = () => {
     const { isMigrating, migrationAvailable, triggerMigration, lastResult, lastMergeSummary } = useMigration();
     const { addToast } = useToast();
+    const { user } = useAuth();
     const [policy, setPolicy] = useState<MigrationConflictPolicy>(() => getMigrationConflictPolicy());
+    const [showPreview, setShowPreview] = useState(false);
+    const [previewData, setPreviewData] = useState<MigrationPreview | null>(null);
+    const [previewLoading, setPreviewLoading] = useState(false);
 
     if (!migrationAvailable && !isMigrating && !lastResult) return null;
 
     const handlePolicyChange = (value: MigrationConflictPolicy) => {
         setPolicy(value);
         setMigrationConflictPolicy(value);
+    };
+
+    const handlePreview = async () => {
+        if (!user) return;
+        setPreviewLoading(true);
+        setShowPreview(true);
+        try {
+            const p = await previewMigration(user.id);
+            setPreviewData(p);
+        } finally {
+            setPreviewLoading(false);
+        }
     };
 
     const handleSyncNow = async () => {
@@ -111,14 +131,35 @@ const MigrationBanner: React.FC = () => {
                 </div>
             </div>
             {migrationAvailable && !isMigrating && (
-                <button
-                    type="button"
-                    onClick={handleSyncNow}
-                    className="shrink-0 px-5 py-2.5 rounded-xl bg-brand-teal text-brand-charcoal font-black text-[10px] uppercase tracking-widest transition-all hover:bg-white hover:scale-105 active:scale-95 shadow-lg shadow-brand-teal/20 flex items-center justify-center gap-2 min-h-[44px]"
-                >
-                    <RefreshCw size={14} aria-hidden /> Bridge Now
-                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                    <button
+                        type="button"
+                        onClick={handlePreview}
+                        disabled={!user}
+                        className="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 font-black text-[10px] uppercase tracking-widest transition-all hover:bg-slate-700 hover:text-white hover:scale-105 active:scale-95 flex items-center justify-center gap-2 min-h-[44px] disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                        <ScanSearch size={13} aria-hidden /> Preview
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleSyncNow}
+                        className="px-5 py-2.5 rounded-xl bg-brand-teal text-brand-charcoal font-black text-[10px] uppercase tracking-widest transition-all hover:bg-white hover:scale-105 active:scale-95 shadow-lg shadow-brand-teal/20 flex items-center justify-center gap-2 min-h-[44px]"
+                    >
+                        <RefreshCw size={14} aria-hidden /> Bridge Now
+                    </button>
+                </div>
             )}
+            <MigrationConflictPreviewModal
+                isOpen={showPreview}
+                onClose={() => setShowPreview(false)}
+                preview={previewData}
+                policy={policy}
+                isLoading={previewLoading}
+                onProceed={() => {
+                    setShowPreview(false);
+                    void handleSyncNow();
+                }}
+            />
         </div>
     );
 };

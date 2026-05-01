@@ -48,9 +48,20 @@ function readEnvFlag(key: FeatureFlagEnvKey): boolean {
   return val === 'true' || val === '1';
 }
 
+function hasEbayCredentials(): boolean {
+  if (typeof import.meta === 'undefined') return false;
+  // Auto-enable real comps when eBay server credentials are present.
+  // Client-side env vars are not secret; this only signals the API route is configured.
+  return !!(
+    import.meta.env.VITE_EBAY_CONFIGURED === 'true' ||
+    import.meta.env.VITE_FF_REAL_EBAY === 'true' ||
+    import.meta.env.VITE_FF_REAL_EBAY === '1'
+  );
+}
+
 function loadFlags(): FeatureFlags {
   return {
-    USE_REAL_EBAY: readEnvFlag('VITE_FF_REAL_EBAY'),
+    USE_REAL_EBAY: readEnvFlag('VITE_FF_REAL_EBAY') || hasEbayCredentials(),
     USE_REAL_PSA: readEnvFlag('VITE_FF_REAL_PSA'),
     USE_REAL_BGS: readEnvFlag('VITE_FF_REAL_BGS'),
     USE_REAL_SPORTS: readEnvFlag('VITE_FF_REAL_SPORTS'),
@@ -93,10 +104,16 @@ export function isFeatureEnabled(flag: keyof FeatureFlags): boolean {
 }
 
 /**
- * When true, pricing flows may use live eBay comps (e.g. `getEbayCardPrice` when the eBay adapter is available).
- * When false, callers should skip real listing APIs and use demo/AI paths so UI matches the "Estimate" chip.
+ * When true, pricing flows may use live eBay comps.
+ * Auto-enabled when VITE_EBAY_CONFIGURED=true or VITE_FF_REAL_EBAY=true in the environment.
+ * When false, callers should use demo/AI paths so UI matches the "Estimate" chip.
  */
 export function preferRealCompsWhenConfigured(): boolean {
+  return isFeatureEnabled('USE_REAL_EBAY');
+}
+
+/** Returns true when eBay comps are available via auto-detection or explicit flag. */
+export function isEbayCompsAvailable(): boolean {
   return isFeatureEnabled('USE_REAL_EBAY');
 }
 
