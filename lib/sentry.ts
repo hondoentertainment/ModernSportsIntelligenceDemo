@@ -18,12 +18,23 @@ export function initSentry(): void {
     return;
   }
 
+  const envOverride = import.meta.env?.VITE_SENTRY_ENVIRONMENT;
+  const environment =
+    typeof envOverride === 'string' && envOverride.length > 0
+      ? envOverride
+      : (import.meta.env.MODE ?? 'development');
+
+  const rawRate = import.meta.env?.VITE_SENTRY_TRACES_SAMPLE_RATE;
+  const parsedRate = typeof rawRate === 'string' ? Number(rawRate) : NaN;
+  const tracesSampleRate =
+    Number.isFinite(parsedRate) && parsedRate >= 0 && parsedRate <= 1 ? parsedRate : 0.1;
+
   import('@sentry/react')
     .then((Sentry) => {
       Sentry.init({
         dsn,
-        environment: import.meta.env.MODE ?? 'development',
-        tracesSampleRate: 0.1,
+        environment,
+        tracesSampleRate,
       });
       sentryReady = true;
       sentryModule = Sentry;
