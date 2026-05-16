@@ -5,6 +5,7 @@ import ProductionConfigBanner from '../../components/ProductionConfigBanner';
 const envMock = vi.hoisted(() => ({
   schema: [] as string[],
   pairing: [] as string[],
+  telemetry: [] as string[],
   prod: true,
 }));
 
@@ -15,6 +16,7 @@ vi.mock('../../lib/utils/env', async (importOriginal) => {
     isClientProductionBuild: () => envMock.prod,
     getEnvSchemaFailureMessages: () => envMock.schema,
     getSupabaseEnvPairingIssues: () => envMock.pairing,
+    getProductionTelemetryIssues: () => envMock.telemetry,
   };
 });
 
@@ -23,6 +25,7 @@ describe('ProductionConfigBanner', () => {
     envMock.prod = true;
     envMock.schema = [];
     envMock.pairing = [];
+    envMock.telemetry = [];
   });
 
   it('renders alert when production build has configuration issues', () => {
@@ -50,5 +53,12 @@ describe('ProductionConfigBanner', () => {
   it('renders nothing when there are no issues in production', () => {
     const { container } = render(<ProductionConfigBanner />);
     expect(container.firstChild).toBeNull();
+  });
+
+  it('renders telemetry issues in production', () => {
+    envMock.telemetry = ['No error telemetry configured — set VITE_SENTRY_DSN or VITE_ERROR_REPORTING_URL.'];
+    render(<ProductionConfigBanner />);
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(screen.getByText(/No error telemetry configured/i)).toBeInTheDocument();
   });
 });

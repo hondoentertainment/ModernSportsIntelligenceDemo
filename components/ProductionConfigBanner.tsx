@@ -4,6 +4,7 @@ import {
   env,
   getEnvSchemaFailureMessages,
   getSupabaseEnvPairingIssues,
+  getProductionTelemetryIssues,
   isClientProductionBuild,
 } from '../lib/utils/env';
 
@@ -14,7 +15,8 @@ const ProductionConfigBanner: React.FC = () => {
   const prod = isClientProductionBuild();
   const schemaIssues = prod ? getEnvSchemaFailureMessages() : [];
   const pairing = prod ? getSupabaseEnvPairingIssues(env()) : [];
-  const all = [...schemaIssues, ...pairing];
+  const telemetry = prod ? getProductionTelemetryIssues(env()) : [];
+  const all = [...schemaIssues, ...pairing, ...telemetry];
   if (all.length === 0) return null;
 
   return (

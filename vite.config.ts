@@ -1,8 +1,32 @@
 import path from 'path';
 import react from '@vitejs/plugin-react';
+import { loadEnv } from 'vite';
 import { defineConfig } from 'vitest/config';
 
-export default defineConfig({
+/**
+ * Production telemetry gate. A real production build should ship with an error
+ * channel (Sentry DSN or the error-reporting beacon) so the app is observable.
+ * When VITE_REQUIRE_TELEMETRY is truthy this fails the build; otherwise it just
+ * warns. e2e builds and non-build commands (dev, vitest) are exempt.
+ */
+function assertTelemetryConfigured(command: string, mode: string): void {
+  if (command !== 'build' || mode !== 'production') return;
+  const env = loadEnv(mode, process.cwd(), '');
+  const hasTelemetry = !!(env.VITE_SENTRY_DSN?.trim() || env.VITE_ERROR_REPORTING_URL?.trim());
+  if (hasTelemetry) return;
+  const required = ['true', '1'].includes((env.VITE_REQUIRE_TELEMETRY ?? '').trim().toLowerCase());
+  const msg =
+    'No error telemetry configured for this production build — set VITE_SENTRY_DSN or VITE_ERROR_REPORTING_URL.';
+  if (required) {
+    throw new Error(`${msg} (VITE_REQUIRE_TELEMETRY is set, so this is a hard failure.)`);
+  }
+  // eslint-disable-next-line no-console
+  console.warn(`[vite] WARNING: ${msg} Set VITE_REQUIRE_TELEMETRY=true to enforce.`);
+}
+
+export default defineConfig(({ command, mode }) => {
+  assertTelemetryConfigured(command, mode);
+  return {
   server: {
     port: 3000,
     host: '0.0.0.0',
@@ -56,7 +80,6 @@ export default defineConfig({
       // 100% on the explicit whitelist below. Everything else is out of scope for this
       // gate (UI, feature-catalog services, API routes, etc.). See docs/COVERAGE_POLICY.md.
       // all: false — do not pull in untested project files (would drag the global % down).
-      // @ts-expect-error Vitest exposes `all`; older @vitest/coverage-v8 typings omit it
       all: false,
       include: [
         'constants.tsx',
@@ -126,4 +149,5 @@ export default defineConfig({
       ],
     },
   },
+  };
 });
