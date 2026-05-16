@@ -2,7 +2,7 @@
 
 ## Current state
 
-[Vercel `headers`](../vercel.json) send a **blocking** **`Content-Security-Policy`** plus matching `report-uri` / `report-to` directives. Violations POST to **[`api/csp-report.ts`](../api/csp-report.ts)**, which structured-logs them via `apiLogger.warn` so they appear next to other API logs.
+[Vercel `headers`](../vercel.json) send a **blocking** **`Content-Security-Policy`** with matching `report-uri` / `report-to` directives. Violations POST to **[`api/csp-report.ts`](../api/csp-report.ts)**, which structured-logs them via `apiLogger.warn` so they appear next to other API logs instead of failing silently.
 
 Headers also shipped alongside CSP:
 
@@ -32,17 +32,16 @@ Policy (summary):
 
 ## Outstanding hardening
 
-- **Remove `'unsafe-inline'` from `script-src`.** `index.html` still inlines a service-worker registration script and a small bootstrap. Either move the inline scripts to external files under `/public` (preferred) or compute SHA-256 hashes and add them to `script-src`. Until this is done the policy does not protect against most injection-based XSS.
-- **Drop `https:` wildcards in `connect-src` / `img-src`.** Replace with the explicit list of API and image origins (Supabase project URL, `wss://*.supabase.co`, eBay, MLB Stats, image CDNs). Use real traffic from `api/csp-report.ts` to identify the long tail.
-- **Move `cdn.tailwindcss.com` out of production.** It is convenient for the prototype but pulls a runtime JIT compiler from a third party. Switch to the Tailwind CLI / PostCSS pipeline for production builds and remove the host from `script-src`.
+1. **Remove `'unsafe-inline'` from `script-src`.** `index.html` still inlines a service-worker registration script and a small bootstrap. Either move the inline scripts to external files under `/public` (preferred) or compute SHA-256 hashes and add them to `script-src`. Until this is done the policy does not protect against most injection-based XSS.
+2. **Drop `https://cdn.tailwindcss.com` from `script-src`.** Switch to the Tailwind CLI / PostCSS pipeline for production builds and remove the host from `script-src`.
+3. **Narrow `connect-src` and `img-src`.** Replace the broad `https:` allowances with the explicit list of API and image origins (Supabase project URL, `wss://*.supabase.co`, Stripe, error beacon, Sentry, image CDNs) once they are known and stable.
 
-## When to adjust
+## Changing the policy safely
 
-Move the policy back to **Report-Only** temporarily if a directive change starts blocking real users (you will see `CSP violation` spikes in `apiLogger.warn` and a regression in feature usage). Steps:
-
-1. Rename the `Content-Security-Policy` header in `vercel.json` to `Content-Security-Policy-Report-Only`.
-2. Ship the broader directive in parallel and watch reports until the violation rate drops.
-3. Flip back to enforcing once stable.
+1. Make the change on a **preview deployment** first, with real auth and payments in test mode.
+2. Watch `/api/csp-report` log output (`apiLogger.warn 'CSP violation'`) for anything legitimate being blocked.
+3. Only widen a directive for an origin you positively identify; never restore a blanket wildcard to silence reports.
+4. Move the policy back to **Report-Only** temporarily if a directive change starts blocking real users: rename the `Content-Security-Policy` header in `vercel.json` to `Content-Security-Policy-Report-Only`, ship the broader directive in parallel, and flip back to enforcing once stable.
 
 ## Related docs
 

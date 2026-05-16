@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { validateEnv, env } from '../../lib/utils/env';
+import { validateEnv, env, getProductionTelemetryIssues } from '../../lib/utils/env';
 import { logger } from '../../lib/logger';
 
 vi.mock('../../lib/logger', () => ({
@@ -76,5 +76,71 @@ describe('lib/utils/env', () => {
     vi.resetModules();
     if (prev === undefined) delete process.env.VITEST_CAPTURE_ENV_SCHEMA;
     else process.env.VITEST_CAPTURE_ENV_SCHEMA = prev;
+  });
+
+  describe('getProductionTelemetryIssues', () => {
+    it('reports an issue when neither Sentry DSN nor beacon URL is set', () => {
+      const issues = getProductionTelemetryIssues({
+        VITE_SENTRY_DSN: '',
+        VITE_ERROR_REPORTING_URL: '',
+      });
+      expect(issues).toHaveLength(1);
+      expect(issues[0]).toMatch(/telemetry/i);
+    });
+
+    it('is clean when a Sentry DSN is configured', () => {
+      expect(
+        getProductionTelemetryIssues({
+          VITE_SENTRY_DSN: 'https://key@o0.ingest.sentry.io/0',
+          VITE_ERROR_REPORTING_URL: '',
+        }),
+      ).toEqual([]);
+    });
+
+    it('is clean when an error-reporting beacon URL is configured', () => {
+      expect(
+        getProductionTelemetryIssues({
+          VITE_SENTRY_DSN: '',
+          VITE_ERROR_REPORTING_URL: 'https://errors.example.com/ingest',
+        }),
+      ).toEqual([]);
+    });
+
+    it('treats whitespace-only values as unset', () => {
+      expect(
+        getProductionTelemetryIssues({
+          VITE_SENTRY_DSN: '   ',
+          VITE_ERROR_REPORTING_URL: '  ',
+        }),
+      ).toHaveLength(1);
+    });
+  });
+
+  it('logs a telemetry error (not just a warning) on a production build', async () => {
+    vi.resetModules();
+    vi.stubEnv('PROD', 'true');
+    const mod = await import('../../lib/utils/env');
+    const { logger: loggerFresh } = await import('../../lib/logger');
+    mod.validateEnv();
+    expect(loggerFresh.error).toHaveBeenCalledWith(
+      expect.stringMatching(/telemetry/i),
+    );
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it('emits no warnings when all recommended vars and telemetry are set', async () => {
+    vi.resetModules();
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://demo.supabase.co');
+    vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'anon-key');
+    vi.stubEnv('VITE_STRIPE_PUBLISHABLE_KEY', 'pk_test_123');
+    vi.stubEnv('VITE_SERVER_API_BASE_URL', 'https://api.example.com');
+    vi.stubEnv('VITE_SENTRY_DSN', 'https://key@o0.ingest.sentry.io/0');
+    const mod = await import('../../lib/utils/env');
+    const { logger: loggerFresh } = await import('../../lib/logger');
+    mod.validateEnv();
+    expect(loggerFresh.warn).not.toHaveBeenCalled();
+    vi.unstubAllEnvs();
+    vi.resetModules();
   });
 });

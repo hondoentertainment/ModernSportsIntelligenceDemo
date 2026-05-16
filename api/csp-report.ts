@@ -1,22 +1,26 @@
 /**
- * CSP violation sink. Browsers POST here when a directive blocks a resource
- * (configured via `report-uri` and the `report-to` group in vercel.json).
+ * CSP violation collector. The enforcing Content-Security-Policy in
+ * vercel.json points `report-uri` / `report-to` here so production
+ * violations are visible in server logs instead of failing silently.
  *
- * Both legacy `application/csp-report` and modern `application/reports+json`
- * payloads are accepted. The body is structured-logged so violations show up
- * in Vercel logs alongside other apiLogger output.
+ * Accepts both legacy `application/csp-report` bodies and the newer
+ * Reporting API `application/reports+json` batches. Always returns 204 —
+ * a report endpoint must never push errors back to the browser.
  */
-
 import { apiLogger } from './lib/logger';
 
 interface CspReportShape {
   'document-uri'?: string;
+  documentURL?: string;
   referrer?: string;
   'violated-directive'?: string;
+  violatedDirective?: string;
   'effective-directive'?: string;
+  effectiveDirective?: string;
   'original-policy'?: string;
   disposition?: string;
   'blocked-uri'?: string;
+  blockedURL?: string;
   'line-number'?: number;
   'column-number'?: number;
   'source-file'?: string;
@@ -43,6 +47,8 @@ type ResponseLike = {
   status: (n: number) => { end: () => unknown; json: (o: object) => unknown };
 };
 
+const MAX_LOGGED = 10;
+
 function header(req: RequestLike, name: string): string | undefined {
   const h = req.headers?.[name] ?? req.headers?.[name.toLowerCase()];
   return Array.isArray(h) ? h[0] : h;
@@ -50,9 +56,13 @@ function header(req: RequestLike, name: string): string | undefined {
 
 function summarize(report: CspReportShape, ua: string | undefined): Record<string, unknown> {
   return {
-    directive: report['effective-directive'] ?? report['violated-directive'],
-    blockedUri: report['blocked-uri'],
-    documentUri: report['document-uri'],
+    directive:
+      report['effective-directive'] ??
+      report.effectiveDirective ??
+      report['violated-directive'] ??
+      report.violatedDirective,
+    blockedUri: report['blocked-uri'] ?? report.blockedURL,
+    documentUri: report['document-uri'] ?? report.documentURL,
     sourceFile: report['source-file'],
     line: report['line-number'],
     column: report['column-number'],
@@ -61,33 +71,49 @@ function summarize(report: CspReportShape, ua: string | undefined): Record<strin
   };
 }
 
+function normalize(raw: unknown, ua: string | undefined): Array<Record<string, unknown>> {
+  if (!raw) return [];
+
+  if (Array.isArray(raw)) {
+    return raw
+      .filter((entry) => entry && (entry as Record<string, unknown>).type === 'csp-violation')
+      .map((entry) => {
+        const report = ((entry as ReportingApiEntry).body ?? {}) as CspReportShape;
+        return summarize(report, (entry as ReportingApiEntry).user_agent ?? ua);
+      });
+  }
+
+  if (typeof raw !== 'object') return [];
+
+  const wrapped = (raw as { 'csp-report'?: CspReportShape })['csp-report'];
+  const report = wrapped ?? (raw as CspReportShape);
+  return report ? [summarize(report, ua)] : [];
+}
+
 export default async function handler(req: RequestLike, res: ResponseLike) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).end();
   }
 
-  const ua = header(req, 'user-agent');
-  const body = req.body;
-
-  try {
-    if (Array.isArray(body)) {
-      // Reporting API: array of report entries.
-      for (const entry of body as ReportingApiEntry[]) {
-        if (entry?.type !== 'csp-violation' || !entry.body) continue;
-        apiLogger.warn('CSP violation', summarize(entry.body, entry.user_agent ?? ua));
-      }
-    } else if (body && typeof body === 'object') {
-      const wrapped = (body as { 'csp-report'?: CspReportShape })['csp-report'];
-      const report = wrapped ?? (body as CspReportShape);
-      if (report) {
-        apiLogger.warn('CSP violation', summarize(report, ua));
-      }
+  let parsed: unknown = req.body;
+  if (typeof parsed === 'string') {
+    try {
+      parsed = JSON.parse(parsed);
+    } catch {
+      parsed = null;
     }
-  } catch (err) {
-    apiLogger.error('Failed to parse CSP report', err);
   }
 
-  // Always 204 — the browser does not retry.
+  const ua = header(req, 'user-agent');
+  const violations = normalize(parsed, ua).slice(0, MAX_LOGGED);
+
+  if (violations.length > 0) {
+    for (const violation of violations) {
+      apiLogger.warn('CSP violation', violation);
+    }
+  }
+
+  res.setHeader('Cache-Control', 'no-store');
   return res.status(204).end();
 }

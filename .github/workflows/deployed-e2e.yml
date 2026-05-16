@@ -1,0 +1,77 @@
+name: Deployed E2E
+
+# Runs the Playwright deployed-API suite (tests/e2e/deployed-api.spec.ts)
+# against a real Vercel deployment that serves the /api/* serverless routes.
+#
+# Activation (one step): add repository secret PLAYWRIGHT_DEPLOYMENT_URL,
+# e.g. https://your-app.vercel.app — see docs/DEPLOY_ENV_CHECKLIST.md.
+# Without it the job no-ops cleanly so the workflow is safe to keep enabled.
+
+on:
+  # After CI/CD finishes on main (i.e. every merge to main).
+  workflow_run:
+    workflows: ['CI / CD']
+    types: [completed]
+    branches: [main]
+  # Ongoing monitoring so deployment regressions surface without a merge.
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deployed-e2e
+  cancel-in-progress: true
+
+jobs:
+  deployed-e2e:
+    name: E2E vs deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check deployment URL secret
+        id: gate
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_DEPLOYMENT_URL }}
+        run: |
+          if [ -z "$PLAYWRIGHT_BASE_URL" ]; then
+            echo "PLAYWRIGHT_DEPLOYMENT_URL secret not set — skipping deployed E2E."
+            echo "Set it (e.g. https://your-app.vercel.app) to enable. See docs/DEPLOY_ENV_CHECKLIST.md."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout code
+        if: steps.gate.outputs.enabled == 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: steps.gate.outputs.enabled == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: steps.gate.outputs.enabled == 'true'
+        run: npm ci
+
+      - name: Install Playwright browsers
+        if: steps.gate.outputs.enabled == 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Run deployed API checks
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_DEPLOYMENT_URL }}
+        run: npm run test:e2e:deployed
+
+      - name: Upload Playwright report
+        if: steps.gate.outputs.enabled == 'true' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-deployed
+          path: playwright-report/
+          retention-days: 7

@@ -131,9 +131,8 @@ const Dashboard: React.FC = () => {
   // Personalization State
   interface UserSettings { favoriteTeam?: string; primarySport?: string }
   const [userSettings, _setUserSettings] = useState<UserSettings | null>(() => {
-  const [userSettings, setUserSettings] = useState<any>(() => {
     try {
-      const saved = store.get<any>('msi_user_settings', null);
+      const saved = store.get<UserSettings | null>('msi_user_settings', null);
       return saved;
     } catch {
       return null;
@@ -207,7 +206,6 @@ const Dashboard: React.FC = () => {
   const chartData = useMemo(() => {
     return AggregationService.getAggregatedTrendData(inventory, 14); // 14 day view for dash
   }, [inventory]);
-  }, [inventory, syncMeta.lastSyncTime]);
 
   const recentCards = inventory.slice(-3).reverse();
 

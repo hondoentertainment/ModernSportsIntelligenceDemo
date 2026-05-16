@@ -470,11 +470,11 @@ const FractionalVault: React.FC = () => {
   // TAB: Dividends
   // ====================================================================
   const renderDividends = () => {
-    const sourceBreakdown = useMemo(() => {
+    const sourceBreakdown = (() => {
       const map: Record<string, number> = {};
       dividends.forEach((d) => { map[d.source] = (map[d.source] || 0) + d.totalAmount; });
       return Object.entries(map).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value: +value.toFixed(2) }));
-    }, []);
+    })();
 
     const totalDistributed = dividends.reduce((s, d) => s + d.totalAmount, 0);
 

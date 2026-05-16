@@ -25,6 +25,16 @@ const VenueHealthOracleModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const venues = useMemo(() => getVenues(), []);
   const comparisons = useMemo(() => getComparisons(), []);
 
+  const activeIssues = useMemo(() => {
+    return venues.flatMap(v =>
+      v.recentIssues.map(issue => ({ ...issue, venueName: v.name }))
+    );
+  }, [venues]);
+
+  const avgScore = useMemo(() => {
+    return Math.round(venues.reduce((sum, v) => sum + v.overallScore, 0) / venues.length);
+  }, [venues]);
+
   if (!isOpen) return null;
 
   const getScoreColor = (score: number) => {
@@ -67,16 +77,6 @@ const VenueHealthOracleModal: React.FC<Props> = ({ isOpen, onClose }) => {
     if (severity === 'major') return 'text-amber-400 bg-amber-500/15 border-amber-500/30';
     return 'text-blue-400 bg-blue-500/15 border-blue-500/30';
   };
-
-  const activeIssues = useMemo(() => {
-    return venues.flatMap(v =>
-      v.recentIssues.map(issue => ({ ...issue, venueName: v.name }))
-    );
-  }, [venues]);
-
-  const avgScore = useMemo(() => {
-    return Math.round(venues.reduce((sum, v) => sum + v.overallScore, 0) / venues.length);
-  }, [venues]);
 
   const tabs = [
     { id: 'scores', label: 'Venue Scores', icon: <Star size={16} /> },
