@@ -40,6 +40,7 @@
     "joe:health": "bash scripts/code-health.sh",
     "joe:bundle": "bash scripts/bundle-check.sh",
     "types:supabase": "npx supabase gen types typescript --linked > types/supabase.gen.ts",
+    "types:supabase:check": "npm run types:supabase && git diff --exit-code -- types/supabase.gen.ts",
     "supabase:functions:deploy": "npx supabase functions deploy create-checkout-session && npx supabase functions deploy create-billing-portal-session",
     "verify": "npm run typecheck && npm run typecheck:strict && npm run lint && npm run format:check && npm run test:coverage && npm run build"
   },
