@@ -5,6 +5,8 @@ import {
   isFeatureEnabled,
   setFeatureFlag,
   resetFeatureFlags,
+  preferRealCompsWhenConfigured,
+  getValuationSourceChip,
 } from '../../lib/featureFlags';
 import { logger } from '../../lib/logger';
 
@@ -97,6 +99,40 @@ describe('featureFlags', () => {
     resetFeatureFlags();
     initFeatureFlags();
     expect(logger.info).toHaveBeenCalledWith(expect.stringMatching(/\[FeatureFlags\] Active:.*USE_REAL_EBAY/s));
+  });
+
+  it('readEnvFlag treats "1" as enabled', () => {
+    vi.stubEnv('VITE_FF_REAL_PSA', '1');
+    resetFeatureFlags();
+    expect(isFeatureEnabled('USE_REAL_PSA')).toBe(true);
+  });
+
+  describe('preferRealCompsWhenConfigured', () => {
+    it('is false when USE_REAL_EBAY is off', () => {
+      setFeatureFlag('USE_REAL_EBAY', false);
+      expect(preferRealCompsWhenConfigured()).toBe(false);
+    });
+
+    it('is true when USE_REAL_EBAY is on', () => {
+      setFeatureFlag('USE_REAL_EBAY', true);
+      expect(preferRealCompsWhenConfigured()).toBe(true);
+    });
+  });
+
+  describe('getValuationSourceChip', () => {
+    it('returns the Estimate chip when USE_REAL_EBAY is off', () => {
+      setFeatureFlag('USE_REAL_EBAY', false);
+      const chip = getValuationSourceChip();
+      expect(chip.label).toBe('Estimate');
+      expect(chip.className).toContain('brand-muted');
+    });
+
+    it('returns the Live comps chip when USE_REAL_EBAY is on', () => {
+      setFeatureFlag('USE_REAL_EBAY', true);
+      const chip = getValuationSourceChip();
+      expect(chip.label).toBe('Live comps');
+      expect(chip.className).toContain('brand-teal');
+    });
   });
 
 });
