@@ -9,70 +9,91 @@
  */
 import { apiLogger } from './lib/logger';
 
-interface CspReportRequest {
-  method?: string;
-  body?: unknown;
-  headers?: Record<string, string | string[] | undefined>;
-}
-
-interface CspResponse {
-  setHeader: (k: string, v: string) => void;
-  status: (n: number) => { json: (o: object) => unknown; end: () => unknown };
-}
-
-interface CspViolation {
-  documentUri?: string;
-  blockedUri?: string;
+interface CspReportShape {
+  'document-uri'?: string;
+  documentURL?: string;
+  referrer?: string;
+  'violated-directive'?: string;
   violatedDirective?: string;
+  'effective-directive'?: string;
   effectiveDirective?: string;
+  'original-policy'?: string;
   disposition?: string;
+  'blocked-uri'?: string;
+  blockedURL?: string;
+  'line-number'?: number;
+  'column-number'?: number;
+  'source-file'?: string;
+  'status-code'?: number;
+  'script-sample'?: string;
 }
 
-// Cap how many violations we log per request so a misbehaving client
-// cannot flood logs.
+interface ReportingApiEntry {
+  type?: string;
+  age?: number;
+  url?: string;
+  user_agent?: string;
+  body?: CspReportShape & Record<string, unknown>;
+}
+
+type RequestLike = {
+  method?: string;
+  headers?: Record<string, string | string[] | undefined>;
+  body?: unknown;
+};
+
+type ResponseLike = {
+  setHeader: (k: string, v: string) => void;
+  status: (n: number) => { end: () => unknown; json: (o: object) => unknown };
+};
+
 const MAX_LOGGED = 10;
 
-function normalize(raw: unknown): CspViolation[] {
-  if (!raw || typeof raw !== 'object') return [];
+function header(req: RequestLike, name: string): string | undefined {
+  const h = req.headers?.[name] ?? req.headers?.[name.toLowerCase()];
+  return Array.isArray(h) ? h[0] : h;
+}
 
-  // Legacy format: { "csp-report": { "document-uri": ..., ... } }
-  const legacy = (raw as Record<string, unknown>)['csp-report'];
-  if (legacy && typeof legacy === 'object') {
-    const r = legacy as Record<string, unknown>;
-    return [
-      {
-        documentUri: String(r['document-uri'] ?? ''),
-        blockedUri: String(r['blocked-uri'] ?? ''),
-        violatedDirective: String(r['violated-directive'] ?? ''),
-        effectiveDirective: String(r['effective-directive'] ?? ''),
-        disposition: String(r['disposition'] ?? 'enforce'),
-      },
-    ];
-  }
+function summarize(report: CspReportShape, ua: string | undefined): Record<string, unknown> {
+  return {
+    directive:
+      report['effective-directive'] ??
+      report.effectiveDirective ??
+      report['violated-directive'] ??
+      report.violatedDirective,
+    blockedUri: report['blocked-uri'] ?? report.blockedURL,
+    documentUri: report['document-uri'] ?? report.documentURL,
+    sourceFile: report['source-file'],
+    line: report['line-number'],
+    column: report['column-number'],
+    disposition: report.disposition,
+    userAgent: ua,
+  };
+}
 
-  // Reporting API format: [ { type: 'csp-violation', body: {...} }, ... ]
+function normalize(raw: unknown, ua: string | undefined): Array<Record<string, unknown>> {
+  if (!raw) return [];
+
   if (Array.isArray(raw)) {
     return raw
       .filter((entry) => entry && (entry as Record<string, unknown>).type === 'csp-violation')
       .map((entry) => {
-        const body = ((entry as Record<string, unknown>).body ?? {}) as Record<string, unknown>;
-        return {
-          documentUri: String(body['documentURL'] ?? ''),
-          blockedUri: String(body['blockedURL'] ?? ''),
-          violatedDirective: String(body['effectiveDirective'] ?? ''),
-          effectiveDirective: String(body['effectiveDirective'] ?? ''),
-          disposition: String(body['disposition'] ?? 'enforce'),
-        };
+        const report = ((entry as ReportingApiEntry).body ?? {}) as CspReportShape;
+        return summarize(report, (entry as ReportingApiEntry).user_agent ?? ua);
       });
   }
 
-  return [];
+  if (typeof raw !== 'object') return [];
+
+  const wrapped = (raw as { 'csp-report'?: CspReportShape })['csp-report'];
+  const report = wrapped ?? (raw as CspReportShape);
+  return report ? [summarize(report, ua)] : [];
 }
 
-export default async function handler(req: CspReportRequest, res: CspResponse) {
+export default async function handler(req: RequestLike, res: ResponseLike) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).end();
   }
 
   let parsed: unknown = req.body;
@@ -84,12 +105,12 @@ export default async function handler(req: CspReportRequest, res: CspResponse) {
     }
   }
 
-  const violations = normalize(parsed).slice(0, MAX_LOGGED);
-  if (violations.length === 0) {
-    apiLogger.warn('CSP report received with no parseable violations');
-  } else {
-    for (const v of violations) {
-      apiLogger.warn('CSP violation', v);
+  const ua = header(req, 'user-agent');
+  const violations = normalize(parsed, ua).slice(0, MAX_LOGGED);
+
+  if (violations.length > 0) {
+    for (const violation of violations) {
+      apiLogger.warn('CSP violation', violation);
     }
   }
 

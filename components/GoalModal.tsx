@@ -824,7 +824,7 @@ const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, cards }) => {
         {/* Footer */}
         <div className="flex items-center justify-between px-6 py-3 border-t border-slate-800 shrink-0">
           <p className="text-[10px] text-slate-600">
-            Goals persist in localStorage &bull; Progress updates on each visit
+            Goals sync to your account &bull; Progress updates on each visit
           </p>
           <div className="flex items-center gap-2 text-[10px] text-slate-600">
             <Trophy size={10} />

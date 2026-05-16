@@ -41,11 +41,14 @@ Use this when promoting a build to **production** (Vercel + Supabase + Stripe + 
 
 ## GitHub (optional automation)
 
-| Item                        | Action                                                                                                                                |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `PLAYWRIGHT_DEPLOYMENT_URL` | Secret, e.g. `https://app.vercel.app`. Set it to enable [Deployed E2E](../.github/workflows/deployed-e2e.yml) — that is the only step |
-| `HEALTH_CHECK_URL`          | Secret base URL for [health ping workflow](../.github/workflows/health-ping.yml)                                                      |
-| `VITE_SENTRY_DSN`           | On Vercel for client errors                                                                                                           |
+| Item                             | Action                                                                                                         |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `ENABLE_DEPLOYED_E2E`            | Repo variable `true` to run Playwright against a deployment                                                    |
+| `PLAYWRIGHT_DEPLOYMENT_URL`      | Secret, e.g. `https://app.vercel.app`; set it to enable [Deployed E2E](../.github/workflows/deployed-e2e.yml) |
+| `HEALTH_CHECK_URL`               | Secret base URL for [health ping workflow](../.github/workflows/health-ping.yml)                              |
+| `VITE_SENTRY_DSN`                | On Vercel for client errors (see [MONITORING.md § Sentry setup](./MONITORING.md#sentry-setup-production))    |
+| `VITE_SENTRY_ENVIRONMENT`        | On Vercel, optional; defaults to build mode (`production` / `preview`)                                        |
+| `VITE_SENTRY_TRACES_SAMPLE_RATE` | On Vercel, optional `0`–`1`; defaults to `0.1`                                                                |
 
 ## Post-deploy smoke
 
