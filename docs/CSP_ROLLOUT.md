@@ -2,7 +2,7 @@
 
 ## Current state
 
-[Vercel `headers`](../vercel.json) send a **blocking** **`Content-Security-Policy`** (same directive set that previously shipped as Report-Only). Monitor real traffic for violations; if a third-party origin is blocked, extend `connect-src` / `script-src` / `frame-src` as needed, or temporarily restore Report-Only while fixing.
+[Vercel `headers`](../vercel.json) send a **blocking** **`Content-Security-Policy`** with violation reporting wired: the policy carries `report-uri /api/csp-report` plus `report-to csp-endpoint`, and a `Reporting-Endpoints` header maps `csp-endpoint` to [`/api/csp-report`](../api/csp-report.ts). That route logs each violation via `apiLogger.warn`, so an over-tight policy surfaces in server logs instead of failing silently. Monitor those logs after adding any new third-party script/origin; if something legitimate is blocked, extend `connect-src` / `script-src` / `frame-src` accordingly.
 
 Policy (summary):
 
@@ -17,21 +17,27 @@ Policy (summary):
 - **`frame-src`** — **`https://js.stripe.com`**, **`https://hooks.stripe.com`** (Stripe Elements / 3DS).
 - **`form-action`** — `'self'` + **`https://checkout.stripe.com`** (hosted Checkout redirects).
 
-## When to enforce blocking CSP
+## Hardening backlog
 
-Move to a **blocking** `Content-Security-Policy` header only after:
+The policy is already blocking; remaining tightening work, in priority order:
 
-1. **Violations are near-zero** in report-only mode (check browser devtools or a reporting endpoint `report-uri` / `report-to`).
-2. **Inline script reliance is reduced** — e.g. nonces or hashes for any required inline scripts, or none in production build.
-3. **`connect-src`** lists every API origin (Supabase HTTP + **WebSocket `wss:`** for Realtime, Stripe, Gemini proxy, eBay, error beacon, Sentry, etc.). Report-Only policy in `vercel.json` includes `wss:` alongside `https:` so violations surface early.
-4. **Staging verification** on a preview deployment with real auth and payments test mode.
+1. **Remove `'unsafe-inline'` from `script-src`** — adopt nonces or hashes for the
+   few required inline scripts (or eliminate them from the production build).
+   This is the largest remaining XSS gap.
+2. **Drop `https://cdn.tailwindcss.com`** from `script-src` once Tailwind is
+   built locally rather than loaded from the dev CDN.
+3. **Narrow `connect-src`** from the broad `https:` to an explicit allowlist of
+   API origins (Supabase HTTP + `wss:` Realtime, Stripe, Gemini proxy, eBay,
+   error beacon, Sentry) once they are all known and stable.
 
-## How to flip in `vercel.json`
+## Changing the policy safely
 
-1. Copy the current `Content-Security-Policy-Report-Only` value.
-2. Add a header key **`Content-Security-Policy`** with the same policy string (adjust `script-src` / `style-src` as you remove `'unsafe-inline'`).
-3. Keep **Report-Only** temporarily in parallel to compare violation reports, then remove Report-Only once stable.
-4. Do **not** commit a blocking CSP that has not been validated against production asset URLs (fonts, CDNs, analytics).
+1. Make the change on a **preview deployment** first, with real auth and
+   payments in test mode.
+2. Watch `/api/csp-report` log output (`apiLogger.warn 'CSP violation'`) for
+   anything legitimate being blocked.
+3. Only widen a directive for an origin you positively identify; never restore
+   a blanket wildcard to silence reports.
 
 ## Related docs
 
