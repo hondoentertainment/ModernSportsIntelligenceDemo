@@ -419,6 +419,25 @@ const CascadeViewerTab: React.FC<{
   events: ButterflyEvent[];
   onSelectEvent: (id: string) => void;
 }> = ({ event, events, onSelectEvent }) => {
+  const sortedCards = useMemo(
+    () => (event ? [...event.affectedCards].sort((a, b) => a.delay_hours - b.delay_hours) : []),
+    [event]
+  );
+
+  const waterfallData = useMemo(
+    () =>
+      event
+        ? event.chaosPath.map(p => ({
+            time: formatTimestamp(p.timestamp),
+            delta: p.marketDelta,
+            entropy: p.entropy,
+            lyapunov: p.lyapunovExponent,
+            desc: p.description,
+          }))
+        : [],
+    [event]
+  );
+
   if (!event) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-500">
@@ -426,23 +445,6 @@ const CascadeViewerTab: React.FC<{
       </div>
     );
   }
-
-  const sortedCards = useMemo(
-    () => [...event.affectedCards].sort((a, b) => a.delay_hours - b.delay_hours),
-    [event]
-  );
-
-  const waterfallData = useMemo(
-    () =>
-      event.chaosPath.map((p, i) => ({
-        time: formatTimestamp(p.timestamp),
-        delta: p.marketDelta,
-        entropy: p.entropy,
-        lyapunov: p.lyapunovExponent,
-        desc: p.description,
-      })),
-    [event]
-  );
 
   return (
     <div className="space-y-6">

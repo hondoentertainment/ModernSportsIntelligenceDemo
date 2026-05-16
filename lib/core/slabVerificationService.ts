@@ -566,7 +566,7 @@ export function getBatchVerification(certNumbers: string[]): (VerificationResult
 }
 
 export function formatCertNumber(cert: string): string {
-  return cert.replace(/[\s\-]/g, '');
+  return cert.replace(/[\s-]/g, '');
 }
 
 export function getStatusColor(status: VerificationStatus): string {

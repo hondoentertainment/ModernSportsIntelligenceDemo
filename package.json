@@ -12,8 +12,9 @@
     "build:e2e": "vite build --mode e2e",
     "build:size": "vite build && node scripts/bundle-size.cjs",
     "preview": "vite preview",
-    "lint": "eslint --rule \"no-unused-vars: off\" vite.config.ts playwright.config.ts \"api/**/*.ts\" components/Sidebar.tsx components/MobileNav.tsx components/CommandPalette.tsx components/FeatureSearch.tsx lib/featureCatalog.ts lib/productSurface.ts lib/serverApi.ts lib/geminiClient.ts lib/ebayApi.ts lib/useSupabaseInventory.ts lib/differentiatorData.ts lib/supabaseData.ts lib/runtimeConfig.ts pages/FeatureDirectory.tsx pages/DeepSearch.tsx pages/CounterpartyTrustGraph.tsx pages/PrivateDealRoomAgent.tsx tests/components/FeatureSearch.test.tsx tests/lib/featureCatalog.test.ts tests/lib/differentiatorData.test.ts tests/lib/fiveDifferentiatorService.test.ts tests/e2e/*.spec.ts",
-    "lint:fix": "eslint --rule \"no-unused-vars: off\" vite.config.ts playwright.config.ts \"api/**/*.ts\" components/Sidebar.tsx components/MobileNav.tsx components/CommandPalette.tsx components/FeatureSearch.tsx lib/featureCatalog.ts lib/productSurface.ts lib/serverApi.ts lib/geminiClient.ts lib/ebayApi.ts lib/useSupabaseInventory.ts lib/differentiatorData.ts lib/supabaseData.ts lib/runtimeConfig.ts pages/FeatureDirectory.tsx pages/DeepSearch.tsx pages/CounterpartyTrustGraph.tsx pages/PrivateDealRoomAgent.tsx tests/components/FeatureSearch.test.tsx tests/lib/featureCatalog.test.ts tests/lib/differentiatorData.test.ts tests/lib/fiveDifferentiatorService.test.ts tests/e2e/*.spec.ts --fix",
+    "lint": "eslint --rule \"no-unused-vars: off\" \"**/*.{ts,tsx}\"",
+    "lint:fix": "eslint --rule \"no-unused-vars: off\" \"**/*.{ts,tsx}\" --fix",
+    "lint:errors": "eslint --rule \"no-unused-vars: off\" --quiet \"**/*.{ts,tsx}\"",
     "format": "prettier --write \"docs/**/*.md\" \".github/workflows/*.yml\" \"*.json\"",
     "format:check": "prettier --check \"docs/**/*.md\" \".github/workflows/*.yml\" \"*.json\"",
     "test": "vitest run",
@@ -83,20 +84,6 @@
     "typescript": "~6.0.3",
     "vite": "^8.0.8",
     "vitest": "^4.1.4"
-    "@typescript-eslint/eslint-plugin": "^8.58.0",
-    "@typescript-eslint/parser": "^8.58.0",
-    "@vitejs/plugin-react": "^6.0.1",
-    "@vitest/coverage-v8": "^4.1.2",
-    "@vitest/ui": "^4.1.2",
-    "eslint": "^9.39.4",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "jsdom": "^29.0.1",
-    "playwright": "^1.59.1",
-    "prettier": "^3.8.1",
-    "typescript": "~6.0.2",
-    "vite": "^8.0.5",
-    "vitest": "^4.1.2"
   },
   "optionalDependencies": {
     "@sentry/react": "^10.48.0"

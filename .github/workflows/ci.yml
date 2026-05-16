@@ -50,6 +50,9 @@ jobs:
       - name: Pricing truth guardrail
         run: npm run guardrail:pricing-truth
 
+      - name: DAL gate (no localStorage bypass)
+        run: npm run audit:localstorage
+
       - name: Dependency audit (high severity)
         run: npm audit --audit-level=high
         continue-on-error: true
