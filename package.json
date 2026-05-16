@@ -31,6 +31,7 @@
     "test:e2e:pricing-truth": "playwright test tests/e2e/pricing-truth-coverage.spec.ts --project=chromium",
     "test:e2e:deployed": "playwright test tests/e2e/deployed-api.spec.ts --project=chromium --workers=1",
     "audit:localstorage": "node scripts/audit-localstorage.mjs",
+    "verify:rls": "node scripts/rls-verify.mjs",
     "guardrail:pricing-truth": "node scripts/check-pricing-truth-guardrail.mjs",
     "ci:bundle": "node scripts/ci-bundle-gate.cjs",
     "joe": "tsx scripts/orchestrator.ts",
