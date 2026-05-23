@@ -10,7 +10,7 @@ export type FeatureTier =
   | 'Bloomberg-Grade'
   | 'Advanced Intelligence';
 
-export type FeatureStatus = 'live' | 'beta' | 'coming-soon';
+export type FeatureStatus = 'live' | 'beta' | 'demo' | 'coming-soon';
 
 export interface Feature {
   id: string;

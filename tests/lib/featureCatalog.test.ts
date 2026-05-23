@@ -7,6 +7,7 @@ import {
   DISCOVERABLE_FEATURE_CATALOG,
   TIER_CONFIG,
 } from '../../lib/utils/featureCatalog';
+import { FEATURE_CATALOG_ROUTE_SUPPLEMENT } from '../../lib/utils/featureCatalogRouteSupplement';
 
 describe('featureCatalog', () => {
   describe('FEATURE_CATALOG', () => {
@@ -21,7 +22,7 @@ describe('featureCatalog', () => {
         expect(f.description).toBeTruthy();
         expect(f.tier).toBeTruthy();
         expect(f.category).toBeTruthy();
-        expect(['live', 'beta', 'coming-soon']).toContain(f.status);
+        expect(['live', 'beta', 'demo', 'coming-soon']).toContain(f.status);
         expect(f.icon).toBeTruthy();
         expect(f.phase).toBeGreaterThan(0);
         expect(f.keywords.length).toBeGreaterThan(0);
@@ -149,6 +150,36 @@ describe('featureCatalog', () => {
     it('only exposes a curated release surface', () => {
       expect(DISCOVERABLE_FEATURE_CATALOG.length).toBeGreaterThan(10);
       expect(DISCOVERABLE_FEATURE_CATALOG.length).toBeLessThan(FEATURE_CATALOG.length);
+    });
+
+    it('excludes beta and demo surfaces by default', () => {
+      expect(DISCOVERABLE_FEATURE_CATALOG.every(f => f.status === 'live')).toBe(true);
+    });
+
+    it('keeps known legal-sensitive fractional surfaces out of GA discovery', () => {
+      const discoverableIds = new Set(DISCOVERABLE_FEATURE_CATALOG.map(f => f.id));
+      expect(discoverableIds.has('fractional-vault')).toBe(false);
+      expect(discoverableIds.has('fractional-vault-v2')).toBe(false);
+    });
+
+    it('marks auto-supplemented demo-grade routes as demo unless explicitly release-ready', () => {
+      const allowedLiveDemoDescriptions = new Set([
+        '/settings',
+        '/signup',
+        '/forgot-password',
+        '/reset-password',
+      ]);
+
+      for (const feature of FEATURE_CATALOG_ROUTE_SUPPLEMENT) {
+        if (!feature.description.includes('Demo-grade surface')) continue;
+        expect(feature.status, `${feature.id} should not be live while described as demo-grade`).toBe('demo');
+      }
+
+      const liveSupplementPaths = FEATURE_CATALOG_ROUTE_SUPPLEMENT
+        .filter(feature => feature.status === 'live')
+        .map(feature => feature.path);
+
+      expect(liveSupplementPaths.every(path => path && allowedLiveDemoDescriptions.has(path))).toBe(true);
     });
   });
 

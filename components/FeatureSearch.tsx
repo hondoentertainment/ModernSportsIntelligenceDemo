@@ -137,7 +137,7 @@ const FeatureSearch: React.FC = () => {
                 onKeyDown={(e) => {
                   if (e.key === 'Escape') setIsOpen(false);
                 }}
-                placeholder={`Search ${DISCOVERABLE_FEATURE_CATALOG.length} verified features... (e.g. grading, live, tax, AI)`}
+                placeholder={`Search ${DISCOVERABLE_FEATURE_CATALOG.length} GA features... (e.g. grading, live, tax, AI)`}
                 className="flex-1 bg-transparent text-base md:text-sm text-white placeholder:text-slate-500 outline-none"
                 aria-label="Search features"
               />
@@ -157,7 +157,7 @@ const FeatureSearch: React.FC = () => {
             {/* Results count */}
             <div className="px-5 py-2 border-b border-slate-800/50">
               <p className="text-[9px] font-black text-brand-muted uppercase tracking-widest">
-                {query.trim() ? `${flatResults.length} result${flatResults.length !== 1 ? 's' : ''}` : 'Popular Features'}
+                {query.trim() ? `${flatResults.length} GA result${flatResults.length !== 1 ? 's' : ''}` : 'Popular GA Features'}
               </p>
             </div>
 
@@ -168,14 +168,14 @@ const FeatureSearch: React.FC = () => {
                   <p className="text-sm text-slate-400">No features match &quot;{query}&quot;</p>
                   <p className="text-xs text-brand-muted mt-2 max-w-md mx-auto">
                     Try a shorter keyword (e.g. <strong className="text-slate-400">grading</strong>,{' '}
-                    <strong className="text-slate-400">tax</strong>, <strong className="text-slate-400">AI</strong>) or open the full directory.
+                    <strong className="text-slate-400">tax</strong>, <strong className="text-slate-400">AI</strong>) or open the GA directory. Beta and demo surfaces are hidden unless enabled.
                   </p>
                   <button
                     type="button"
                     onClick={() => { setIsOpen(false); navigate('/features'); }}
                     className="mt-4 px-4 py-2 rounded-xl bg-brand-lime/15 text-brand-lime text-xs font-bold uppercase tracking-wider hover:bg-brand-lime/25"
                   >
-                    Browse all features
+                    Browse GA features
                   </button>
                 </div>
               )}
@@ -241,7 +241,7 @@ const FeatureSearch: React.FC = () => {
                 onClick={() => { setIsOpen(false); navigate('/features'); }}
                 className="text-brand-lime hover:underline font-bold uppercase tracking-wider"
               >
-                View All {DISCOVERABLE_FEATURE_CATALOG.length} Features →
+                View All {DISCOVERABLE_FEATURE_CATALOG.length} GA Features →
               </button>
             </div>
           </div>

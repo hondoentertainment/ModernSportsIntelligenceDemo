@@ -3,7 +3,7 @@
 **Purpose:** Single document to review **what exists in the product**, **what is production-grade vs demo/beta**, and **what remains open**.  
 **Sources:** `PRD.md` §4 & §14, `lib/utils/featureCatalog.ts`, `PRODUCTION_READINESS.md`, `plans/next-steps-recommendation.md`, `plans/roadmap-review-and-enhancements.md`, routing in `App.tsx`.
 
-**Last updated:** March 24, 2026
+**Last updated:** May 22, 2026
 
 ---
 
@@ -12,12 +12,13 @@
 | Tag | Meaning |
 |-----|--------|
 | **Shipped** | User-visible flow exists (page, modal, or shell in the SPA). |
-| **Live** | `featureCatalog` marks `status: 'live'` (treated as default product surface). |
+| **Live** | `featureCatalog` marks `status: 'live'` and the feature is eligible for default GA discovery. |
 | **Beta** | `featureCatalog` marks `status: 'beta'` — UX exists; needs live data, policy, or validation before “subscriber-grade.” |
+| **Demo** | `featureCatalog` marks `status: 'demo'` — routed or modeled surface exists but is hidden from GA discovery by default. |
 | **Cloud-backed** | Portfolio/targets can persist via DAL / Supabase when configured (not pure local-only). |
 | **Open** | Missing, stubbed, mock-heavy, or explicitly called out in PRD/plans as next work. |
 
-**Important:** The app has **180+ routed/named surfaces** in the PRD inventory; `FEATURE_CATALOG` currently lists **100** curated entries (88 **live**, 12 **beta**). Many additional pages exist as lazy routes without a separate catalog row — they still count as **Shipped (demo surface)**.
+**Important:** The app has **180+ routed/named surfaces** in the PRD inventory; `FEATURE_CATALOG` now separates default GA discovery from non-GA surfaces with `live`, `beta`, and `demo` statuses. Auto-supplemented route rows that say “Demo-grade surface” are `demo` unless explicitly promoted.
 
 ---
 
@@ -25,11 +26,11 @@
 
 | Dimension | State |
 |-----------|--------|
-| **Feature catalog (curated)** | 100 entries — **88 live**, **12 beta**, **0 coming-soon** |
-| **Routing** | 100+ lazy-loaded pages in `App.tsx` (full vertical: portfolio, trading, intelligence, frontier) |
+| **Feature catalog** | Core catalog + auto route supplement; `DISCOVERABLE_FEATURE_CATALOG` hides `beta` and `demo` by default |
+| **Routing** | 100+ lazy-loaded pages in `App.tsx` (full vertical: portfolio, trading, intelligence, frontier); many route supplements are explicitly `demo` |
 | **Data** | DAL + `useSupabaseInventory`; local → cloud **migration** with merge summaries in UI; consignment snapshot **embedded in card notes** for sync |
 | **Auth** | Supabase + demo mode; password reset; **ProtectedRoute** loading shell + session alignment on `INITIAL_SESSION` |
-| **Ops** | Vercel, GitHub Actions, health API, rate limits on serverless routes, optional Sentry, CSP Report-Only |
+| **Ops** | Vercel, GitHub Actions, health API, rate limits on serverless routes, optional Sentry, CSP rollout docs |
 | **Tests** | Vitest (lib/components), Playwright E2E (incl. collection add-asset); coverage policy documented |
 
 **Strategic gap (from roadmap review):** Largest remaining risk is **pricing truth** (AI + partial real comps vs pervasive verified sold data) and **financial/regulatory depth** (full tax-lot rigor, observability at scale).
@@ -63,13 +64,13 @@
 | **18 Predictive alpha** | Modals / engines (prototype) | Live injury/transaction feeds; comp regression layer |
 | **19 Multi-agent** | Workspace / thesis patterns | Explicit conflict UI; audit trail of agent reasoning |
 | **20 Liquidity intelligence** | Scores, badges, market depth modals | Exchange-grade depth where APIs allow |
-| **21 Cross-asset correlation** | **Beta** in catalog; hedging UI concepts | Live cross-asset data feeds |
+| **21 Cross-asset correlation** | Live catalog row with synthetic/seeded data disclosure; duplicate v2 row should stay aligned | Live cross-asset data feeds |
 | **22 Fiscal** | Tax-lot style tooling in product (**live** in catalog) | FIFO/LIFO/specific ID **regulatory completeness**; Schedule D-grade exports |
 | **23 Visual audit / grading** | Vision / prediction modals (**beta** elements) | Centering CV; production vision pipeline |
 | **24 Macro sentinel** | Signals / monitoring patterns | “Hobby health index” style composite (frontier) |
 | **25–31 Tools** | Break-even, insurance report, what-if, grading planner, eBay listing gen, wax ROI, etc. (mostly **live**) | Polish + data provenance labels everywhere |
-| **35 Consignment tracker** | Catalog still **beta**; **now includes inventory lifecycle + return flow** | Align catalog copy with Supabase persistence; partner APIs if any |
-| **38 Anomaly detection** | **Beta** | Live anomaly feeds |
+| **35 Consignment tracker** | Catalog is **live** with inventory lifecycle + return flow and Supabase-backed notes codec | Partner APIs if any |
+| **38 Anomaly detection** | Live with heuristic/model disclosure | Live anomaly feeds |
 
 ---
 
@@ -98,7 +99,7 @@
 
 ### Phase block E — Bloomberg-grade & catalog “extra” routes
 
-Large set of **live** routes in `featureCatalog` (e.g. War Room, Builder, Leaderboard, OCR, Liquidity Twin, Catalyst Market, Frontier Lab family, v5/v6 style pages: genome sequencer, injury oracle, forensics lab, …).  
+Large set of routed surfaces in `featureCatalog` (e.g. War Room, Builder, Leaderboard, OCR, Liquidity Twin, Catalyst Market, Frontier Lab family, v5/v6 style pages: genome sequencer, injury oracle, forensics lab, …). Route-supplement entries are marked `demo` by default when they are only shipped page shells or modeled demos.
 
 **Implemented:** Page shells, services, and demos.  
 **Open:** Per-feature graduation via `docs/BETA_FEATURE_EXIT_CRITERIA.md` and data backends.
@@ -153,22 +154,19 @@ These were proposed as **high-value additions**; overlap with existing tools is 
 
 ---
 
-## 7. `featureCatalog` — beta list (explicit)
+## 7. `featureCatalog` — non-GA list (explicit)
 
-These 12 entries are **beta** until exit criteria are met (data, policy, tests):
+These core catalog entries are **beta** until exit criteria are met (data, policy, tests):
 
-1. Agentic negotiation  
-2. Institutional liquidity pool  
-3. Predictive alpha engine  
-4. Multi-agent intelligence  
-5. Cross-asset correlation (moat row)  
-6. Visual audit simulation  
-7. Consignment tracker *(inventory sync recently added — revisit status in catalog when you formalize exit criteria)*  
-8. Market anomaly detection  
-9. Live game impact engine  
-10. AI vision grading lab  
-11. Fractional vault & copy-trading  
-12. Provenance chain & digital twin  
+1. Institutional liquidity pool
+2. Visual audit simulation
+3. Live game impact engine
+4. AI vision grading lab
+5. Fractional vault & copy-trading
+6. Fractional vault v2 / tokenized ownership
+7. Provenance chain & digital twin
+
+Auto-supplemented routes marked `demo` are shipped surfaces, not GA promises. Promote them only after the same persistence, data honesty, auth/tenancy, error-state, and test checks in `docs/BETA_FEATURE_EXIT_CRITERIA.md`.
 
 ---
 
@@ -176,14 +174,14 @@ These 12 entries are **beta** until exit criteria are met (data, policy, tests):
 
 1. **Quarterly:** Pick 5–10 **beta** features and either graduate them (data + tests + copy) or demote scope.  
 2. **Per release:** Update this doc’s “Last updated” and the **Open** columns for anything touched.  
-3. **Single source of tension:** Keep `featureCatalog.status` in sync with reality for the 100 curated IDs; use PRD §4 for the full 180+ inventory.
+3. **Single source of tension:** Keep `featureCatalog.status` in sync with reality across core rows and route supplements; use PRD §4 for the full 180+ inventory.
 
 ---
 
 ## References
 
 - `PRD.md` — full feature table & §14 roadmap  
-- `lib/utils/featureCatalog.ts` — curated 100-feature registry  
+- `lib/utils/featureCatalog.ts` — canonical registry plus route supplement  
 - `PRODUCTION_READINESS.md` — engineering/production phases  
 - `plans/next-steps-recommendation.md` — stabilization & intelligence priorities  
 - `plans/roadmap-review-and-enhancements.md` — gap analysis & net-new ideas  

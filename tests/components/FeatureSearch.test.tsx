@@ -37,7 +37,7 @@ describe('FeatureSearch', () => {
   it('shows popular features when query is empty', () => {
     render(<FeatureSearch />);
     fireEvent.click(screen.getByLabelText('Search features (Ctrl+K)'));
-    expect(screen.getByText('Popular Features')).toBeInTheDocument();
+    expect(screen.getByText('Popular GA Features')).toBeInTheDocument();
   });
 
   it('searches features by query', () => {
@@ -85,6 +85,6 @@ describe('FeatureSearch', () => {
   it('has view-all link for the current feature count', () => {
     render(<FeatureSearch />);
     fireEvent.click(screen.getByLabelText('Search features (Ctrl+K)'));
-    expect(screen.getByText(new RegExp(`View All ${DISCOVERABLE_FEATURE_CATALOG.length} Features`))).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(`View All ${DISCOVERABLE_FEATURE_CATALOG.length} GA Features`))).toBeInTheDocument();
   });
 });
