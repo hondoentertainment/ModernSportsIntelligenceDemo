@@ -7,7 +7,7 @@
  * Reporting API `application/reports+json` batches. Always returns 204 —
  * a report endpoint must never push errors back to the browser.
  */
-import { apiLogger } from './lib/logger';
+import { apiLogger } from './lib/logger.js';
 
 interface CspReportShape {
   'document-uri'?: string;

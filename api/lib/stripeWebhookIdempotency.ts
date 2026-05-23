@@ -8,7 +8,7 @@
  * @see docs/PAYMENT_SECURITY.md §(b)
  */
 
-import { apiLogger } from './logger';
+import { apiLogger } from './logger.js';
 
 const headers = (key: string) => ({
   apikey: key,

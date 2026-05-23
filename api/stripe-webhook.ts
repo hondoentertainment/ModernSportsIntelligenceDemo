@@ -10,17 +10,17 @@
  */
 
 import Stripe from 'stripe';
-import { apiLogger } from './lib/logger';
+import { apiLogger } from './lib/logger.js';
 import {
   claimStripeWebhookEvent,
   releaseStripeWebhookEventClaim,
-} from './lib/stripeWebhookIdempotency';
+} from './lib/stripeWebhookIdempotency.js';
 import {
   syncProfileFromCheckoutSession,
   syncProfileFromInvoice,
   syncProfileFromSubscription,
   syncProfileOnSubscriptionDeleted,
-} from './lib/stripeProfileSync';
+} from './lib/stripeProfileSync.js';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
