@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as auditLog from '../../lib/utils/auditLog';
-import { getAuditEvents, mapStoredRecordToAuditEvent } from '../../lib/utils/auditTrailService';
+import {
+  getAuditEvents,
+  mapStoredRecordToAuditEvent,
+  filterAuditEvents,
+  exportAuditEventsToCSV,
+  type AuditEvent,
+} from '../../lib/utils/auditTrailService';
 
 describe('auditTrailService', () => {
   beforeEach(() => {
@@ -83,6 +89,91 @@ describe('auditTrailService', () => {
       const recorded = getAuditEvents().filter((e) => e.source === 'recorded');
       expect(recorded).toHaveLength(1);
       expect(recorded[0].action).toBe('ok');
+    });
+
+    it('tags cloud rows with source=cloud and interleaves with recorded + sample', () => {
+      vi.spyOn(auditLog, 'getLocalAuditTrail').mockReturnValue([
+        { category: 'system', action: 'local.act', entity_type: 'unit', created_at: '2026-03-21T12:00:00.000Z' },
+      ]);
+      const cloudRows = [
+        { user_id: 'u-1', category: 'auth', action: 'login.ok', entity_type: 'session', created_at: '2026-03-22T00:00:00.000Z' },
+        { user_id: 'u-1', category: 'portfolio', action: 'card.added', entity_type: 'card', entity_id: 'c-9', created_at: '2026-03-22T01:00:00.000Z' },
+      ];
+      const list = getAuditEvents(cloudRows);
+      const cloud = list.filter((e) => e.source === 'cloud');
+      expect(cloud).toHaveLength(2);
+      expect(cloud[0].action).toBe('login.ok');
+      expect(list.some((e) => e.source === 'recorded')).toBe(true);
+      expect(list.some((e) => e.source === 'sample')).toBe(true);
+    });
+  });
+
+  describe('filterAuditEvents', () => {
+    const events: AuditEvent[] = [
+      { id: '1', timestamp: 't1', category: 'trading', severity: 'info',     actor: 'alice', action: 'trade.exec',  resource: 'Trade #1', details: 'Sold 5 cards', ipAddress: '-', sessionId: '-', result: 'success', metadata: {}, source: 'recorded' },
+      { id: '2', timestamp: 't2', category: 'auth',    severity: 'security', actor: 'bob',   action: 'login.fail',  resource: 'Login',    details: 'TOR exit',     ipAddress: '-', sessionId: '-', result: 'blocked', metadata: {}, source: 'cloud' },
+      { id: '3', timestamp: 't3', category: 'portfolio', severity: 'info',   actor: 'alice', action: 'nav.refresh', resource: 'NAV',      details: 'Refreshed',    ipAddress: '-', sessionId: '-', result: 'success', metadata: {}, source: 'sample' },
+    ];
+
+    it('returns input unchanged when no filters are set', () => {
+      expect(filterAuditEvents(events, {})).toHaveLength(3);
+    });
+
+    it('filters by single category', () => {
+      const out = filterAuditEvents(events, { categories: ['auth'] });
+      expect(out).toHaveLength(1);
+      expect(out[0].id).toBe('2');
+    });
+
+    it('filters by multiple severities (OR)', () => {
+      const out = filterAuditEvents(events, { severities: ['security', 'critical'] });
+      expect(out.map((e) => e.id)).toEqual(['2']);
+    });
+
+    it('filters by source', () => {
+      const out = filterAuditEvents(events, { sources: ['recorded', 'cloud'] });
+      expect(out.map((e) => e.id).sort()).toEqual(['1', '2']);
+    });
+
+    it('search matches across action, resource, details, actor (case-insensitive)', () => {
+      expect(filterAuditEvents(events, { search: 'TOR' }).map((e) => e.id)).toEqual(['2']);
+      expect(filterAuditEvents(events, { search: 'alice' }).map((e) => e.id).sort()).toEqual(['1', '3']);
+      expect(filterAuditEvents(events, { search: 'nav' }).map((e) => e.id)).toEqual(['3']);
+    });
+
+    it('combines filters with AND semantics', () => {
+      const out = filterAuditEvents(events, {
+        categories: ['trading', 'portfolio'],
+        sources: ['recorded'],
+        search: 'cards',
+      });
+      expect(out.map((e) => e.id)).toEqual(['1']);
+    });
+  });
+
+  describe('exportAuditEventsToCSV', () => {
+    const events: AuditEvent[] = [
+      { id: '1', timestamp: '2026-03-21 14:00:00', category: 'trading', severity: 'info', actor: 'alice', action: 'trade.exec', resource: 'Trade #1', details: 'Sold 5 cards, lot', ipAddress: '-', sessionId: '-', result: 'success', metadata: { amount: '$100' }, source: 'recorded' },
+    ];
+
+    it('emits the canonical header row', () => {
+      const csv = exportAuditEventsToCSV([]);
+      expect(csv.split('\r\n')[0]).toBe('timestamp,source,category,severity,actor,action,resource,result,details,metadata');
+    });
+
+    it('quotes fields containing commas and escapes embedded quotes', () => {
+      const csv = exportAuditEventsToCSV(events);
+      const lines = csv.split('\r\n');
+      expect(lines).toHaveLength(2);
+      // "Sold 5 cards, lot" must be wrapped in double-quotes because of the comma.
+      expect(lines[1]).toContain('"Sold 5 cards, lot"');
+      // metadata JSON is also quoted because it contains a comma/quote.
+      expect(lines[1]).toContain('"{""amount"":""$100""}"');
+    });
+
+    it('round-trips empty metadata as {}', () => {
+      const csv = exportAuditEventsToCSV([{ ...events[0], metadata: {} } as AuditEvent]);
+      expect(csv.split('\r\n')[1]).toContain(',{}');
     });
   });
 });

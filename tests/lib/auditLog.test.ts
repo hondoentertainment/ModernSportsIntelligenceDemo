@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { logAuditEvent, getLocalAuditTrail } from '../../lib/utils/auditLog';
+import {
+  logAuditEvent,
+  getLocalAuditTrail,
+  fetchCloudAuditEvents,
+} from '../../lib/utils/auditLog';
 import { supabase, isDemoMode } from '../../lib/supabase';
 import { store } from '../../lib/dal/syncStore';
 import { logger } from '../../lib/logger';
@@ -130,6 +134,64 @@ describe('auditLog', () => {
       vi.mocked(store.get).mockReturnValue([]);
       const trail = getLocalAuditTrail();
       expect(trail).toEqual([]);
+    });
+  });
+
+  describe('fetchCloudAuditEvents', () => {
+    function makeQueryChain(result: { data: unknown; error: unknown }) {
+      const builder: Record<string, any> = {};
+      builder.select = vi.fn().mockReturnValue(builder);
+      builder.eq = vi.fn().mockReturnValue(builder);
+      builder.order = vi.fn().mockReturnValue(builder);
+      builder.limit = vi.fn().mockReturnValue(builder);
+      builder.lt = vi.fn().mockReturnValue(builder);
+      // The final await on the builder resolves to the supabase result.
+      builder.then = (onFulfilled: (v: unknown) => unknown) => Promise.resolve(result).then(onFulfilled);
+      return builder;
+    }
+
+    it('returns [] for missing userId without hitting Supabase', async () => {
+      const rows = await fetchCloudAuditEvents('');
+      expect(rows).toEqual([]);
+      expect(supabase.from).not.toHaveBeenCalled();
+    });
+
+    it('queries Supabase scoped to the user and returns rows', async () => {
+      const data = [{ user_id: 'u1', category: 'auth', action: 'login.ok', entity_type: 'session', created_at: '2026-03-22T00:00:00.000Z' }];
+      const chain = makeQueryChain({ data, error: null });
+      vi.mocked(supabase.from).mockReturnValue(chain as any);
+
+      const rows = await fetchCloudAuditEvents('u1', { limit: 50 });
+      expect(supabase.from).toHaveBeenCalledWith('audit_events');
+      expect(chain.eq).toHaveBeenCalledWith('user_id', 'u1');
+      expect(chain.order).toHaveBeenCalledWith('created_at', { ascending: false });
+      expect(chain.limit).toHaveBeenCalledWith(50);
+      expect(rows).toEqual(data);
+    });
+
+    it('applies category and before filters when provided', async () => {
+      const chain = makeQueryChain({ data: [], error: null });
+      vi.mocked(supabase.from).mockReturnValue(chain as any);
+      await fetchCloudAuditEvents('u1', { category: 'portfolio', before: '2026-01-01T00:00:00.000Z' });
+      expect(chain.eq).toHaveBeenCalledWith('category', 'portfolio');
+      expect(chain.lt).toHaveBeenCalledWith('created_at', '2026-01-01T00:00:00.000Z');
+    });
+
+    it('caps the limit at 500 and floors at 1', async () => {
+      const chain = makeQueryChain({ data: [], error: null });
+      vi.mocked(supabase.from).mockReturnValue(chain as any);
+      await fetchCloudAuditEvents('u1', { limit: 9999 });
+      expect(chain.limit).toHaveBeenLastCalledWith(500);
+      await fetchCloudAuditEvents('u1', { limit: 0 });
+      expect(chain.limit).toHaveBeenLastCalledWith(1);
+    });
+
+    it('returns [] and logs when Supabase errors', async () => {
+      const chain = makeQueryChain({ data: null, error: { message: 'boom' } });
+      vi.mocked(supabase.from).mockReturnValue(chain as any);
+      const rows = await fetchCloudAuditEvents('u1');
+      expect(rows).toEqual([]);
+      expect(logger.error).toHaveBeenCalled();
     });
   });
 });

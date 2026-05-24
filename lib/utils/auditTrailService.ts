@@ -22,8 +22,24 @@ export interface AuditEvent {
   sessionId: string;
   result: 'success' | 'failure' | 'blocked';
   metadata: Record<string, string>;
-  /** Persisted via `logAuditEvent` / SyncedStore vs. illustrative demo rows */
-  source?: 'recorded' | 'sample';
+  /**
+   * Provenance of the row:
+   * - `recorded` — written locally via `logAuditEvent` during this session.
+   * - `cloud` — fetched from the Supabase `audit_events` table for the signed-in user.
+   * - `sample` — illustrative demo rows for empty states.
+   */
+  source?: 'recorded' | 'cloud' | 'sample';
+}
+
+export interface AuditEventFilters {
+  /** Case-insensitive substring match across action, resource, details, actor. */
+  search?: string;
+  /** Restrict to one or more categories. Empty/undefined = all. */
+  categories?: AuditCategory[];
+  /** Restrict to one or more severities. Empty/undefined = all. */
+  severities?: AuditSeverity[];
+  /** Restrict to one or more provenance sources. Empty/undefined = all. */
+  sources?: AuditEvent['source'][];
 }
 
 export interface ComplianceRule {
@@ -105,7 +121,11 @@ function formatDetails(meta: unknown, entityType: string, action: string): strin
 }
 
 /** Maps rows from `logAuditEvent` / `getLocalAuditTrail` into UI rows. */
-export function mapStoredRecordToAuditEvent(raw: unknown, index: number): AuditEvent | null {
+export function mapStoredRecordToAuditEvent(
+  raw: unknown,
+  index: number,
+  source: 'recorded' | 'cloud' = 'recorded'
+): AuditEvent | null {
   if (!raw || typeof raw !== 'object') return null;
   const r = raw as Record<string, unknown>;
   const action = typeof r.action === 'string' ? r.action : null;
@@ -121,10 +141,11 @@ export function mapStoredRecordToAuditEvent(raw: unknown, index: number): AuditE
 
   const entityId = typeof r.entity_id === 'string' ? r.entity_id : null;
   const userId = typeof r.user_id === 'string' ? r.user_id : null;
-  const actor = userId ? `user:${userId.slice(0, 8)}…` : 'local';
+  const actor = userId ? `user:${userId.slice(0, 8)}…` : source === 'cloud' ? 'cloud' : 'local';
 
+  const prefix = source === 'cloud' ? 'cld' : 'rec';
   return {
-    id: `rec-${index}-${created}-${action}`,
+    id: `${prefix}-${index}-${created}-${action}`,
     timestamp: formatTimestamp(created),
     category,
     severity,
@@ -136,7 +157,7 @@ export function mapStoredRecordToAuditEvent(raw: unknown, index: number): AuditE
     sessionId: '—',
     result: 'success',
     metadata: metadataToStrings(r.metadata),
-    source: 'recorded',
+    source,
   };
 }
 
@@ -155,11 +176,69 @@ function getSampleAuditEvents(): AuditEvent[] {
   ];
 }
 
-function getAuditEvents(): AuditEvent[] {
+function getAuditEvents(cloudRows: unknown[] = []): AuditEvent[] {
   const stored = getLocalAuditTrail()
-    .map((row, i) => mapStoredRecordToAuditEvent(row, i))
+    .map((row, i) => mapStoredRecordToAuditEvent(row, i, 'recorded'))
     .filter((e): e is AuditEvent => e !== null);
-  return [...stored, ...getSampleAuditEvents()];
+  const cloud = cloudRows
+    .map((row, i) => mapStoredRecordToAuditEvent(row, i, 'cloud'))
+    .filter((e): e is AuditEvent => e !== null);
+  return [...stored, ...cloud, ...getSampleAuditEvents()];
+}
+
+/** Apply UI filters in-memory. Returns a new array preserving input order. */
+export function filterAuditEvents(events: AuditEvent[], filters: AuditEventFilters): AuditEvent[] {
+  const q = filters.search?.trim().toLowerCase() ?? '';
+  const cats = filters.categories && filters.categories.length > 0 ? new Set(filters.categories) : null;
+  const sevs = filters.severities && filters.severities.length > 0 ? new Set(filters.severities) : null;
+  const srcs = filters.sources && filters.sources.length > 0 ? new Set(filters.sources) : null;
+
+  return events.filter((e) => {
+    if (cats && !cats.has(e.category)) return false;
+    if (sevs && !sevs.has(e.severity)) return false;
+    if (srcs && !srcs.has(e.source)) return false;
+    if (q) {
+      const hay = `${e.action} ${e.resource} ${e.details} ${e.actor}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+/** Build a CSV string from the given events. Fields are RFC 4180-quoted. */
+export function exportAuditEventsToCSV(events: AuditEvent[]): string {
+  const header = [
+    'timestamp',
+    'source',
+    'category',
+    'severity',
+    'actor',
+    'action',
+    'resource',
+    'result',
+    'details',
+    'metadata',
+  ];
+  const escape = (val: string | undefined): string => {
+    const s = val ?? '';
+    if (/[",\n\r]/.test(s)) {
+      return `"${s.replace(/"/g, '""')}"`;
+    }
+    return s;
+  };
+  const rows = events.map((e) => [
+    e.timestamp,
+    e.source ?? 'sample',
+    e.category,
+    e.severity,
+    e.actor,
+    e.action,
+    e.resource,
+    e.result,
+    e.details,
+    JSON.stringify(e.metadata ?? {}),
+  ].map(escape).join(','));
+  return [header.join(','), ...rows].join('\r\n');
 }
 
 function getComplianceRules(): ComplianceRule[] {

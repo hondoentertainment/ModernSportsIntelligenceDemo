@@ -3,7 +3,7 @@
 **Purpose:** Single document to review **what exists in the product**, **what is production-grade vs demo/beta**, and **what remains open**.  
 **Sources:** `PRD.md` §4 & §14, `lib/utils/featureCatalog.ts`, `PRODUCTION_READINESS.md`, `plans/next-steps-recommendation.md`, `plans/roadmap-review-and-enhancements.md`, routing in `App.tsx`.
 
-**Last updated:** May 22, 2026
+**Last updated:** May 24, 2026
 
 ---
 
@@ -148,7 +148,7 @@ These were proposed as **high-value additions**; overlap with existing tools is 
 | Tax-lot accounting (full) | **Open** (major regulatory lift) |
 | P2P marketplace | **Open** |
 | Negotiation analytics | **Open** |
-| Agent transparency / audit | **Open** |
+| Agent transparency / audit | **Partial** — user-scoped audit timeline with filters/search/CSV ships in `pages/AuditTrail.tsx` (recorded + Supabase cloud rows); per-agent reasoning surfacing still open |
 | Visual centering / grade probability | **Open** (vision roadmap) |
 | Hobby health index | **Open** |
 

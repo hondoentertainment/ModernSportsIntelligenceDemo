@@ -56,3 +56,48 @@ export async function logAuditEvent(input: AuditEventInput): Promise<void> {
 export function getLocalAuditTrail(): any[] {
     return getLocalAuditEvents();
 }
+
+export interface FetchCloudAuditOptions {
+    /** Max rows to return (defaults to 100, capped at 500). */
+    limit?: number;
+    /** Return rows strictly older than this ISO timestamp (for pagination). */
+    before?: string;
+    /** Optional category filter. */
+    category?: AuditCategory;
+}
+
+/**
+ * Fetch the signed-in user's audit events from Supabase. Returns `[]` in demo
+ * mode, when no `userId` is provided, or when the call fails (errors are
+ * logged but never thrown — the UI falls back to the local trail).
+ */
+export async function fetchCloudAuditEvents(
+    userId: string,
+    opts: FetchCloudAuditOptions = {}
+): Promise<any[]> {
+    if (!userId || isDemoMode) return [];
+
+    const limit = Math.min(Math.max(opts.limit ?? 100, 1), 500);
+
+    let query = supabase
+        .from('audit_events')
+        .select('user_id, category, action, entity_type, entity_id, metadata, created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+    if (opts.category) {
+        query = query.eq('category', opts.category);
+    }
+    if (opts.before) {
+        query = query.lt('created_at', opts.before);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+        logger.error('Failed to fetch cloud audit events:', error);
+        return [];
+    }
+    return Array.isArray(data) ? data : [];
+}
