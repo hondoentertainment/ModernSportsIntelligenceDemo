@@ -52,9 +52,14 @@ jobs:
           TOTAL_RAW=0
           TOTAL_GZIP=0
 
-          # Budget thresholds (in bytes)
-          INDEX_BUDGET=$((200 * 1024))  # 200 KB gzip for index/entry
-          CHUNK_BUDGET=$((50 * 1024))   # 50 KB gzip for any other chunk
+          # Budget thresholds (in bytes, gzip). These mirror the chunking
+          # strategy enforced by scripts/ci-bundle-gate.cjs — the index entry,
+          # the shared lib-services chunk, and vendor chunks each get their
+          # own budget because they are intentional shared bundles.
+          INDEX_BUDGET=$((200 * 1024))         # 200 KB gzip
+          LIB_SERVICES_BUDGET=$((1200 * 1024)) # 1.2 MB gzip (intentional shared services chunk)
+          VENDOR_BUDGET=$((200 * 1024))        # 200 KB gzip for *-vendor chunks
+          CHUNK_BUDGET=$((50 * 1024))          # 50 KB gzip for any other chunk
 
           while IFS= read -r file; do
             filename=$(basename "$file")
@@ -74,25 +79,24 @@ jobs:
             raw_kb=$(echo "scale=1; $raw_size / 1024" | bc)
             gz_kb=$(echo "scale=1; $gz_size / 1024" | bc)
 
-            # Determine budget
-            if echo "$filename" | grep -qE '^index'; then
-              budget_kb=$(echo "scale=1; $INDEX_BUDGET / 1024" | bc)
-              budget_label="${budget_kb} KB"
-              if [ "$gz_size" -gt "$INDEX_BUDGET" ]; then
-                status="OVER BUDGET"
-                BUDGET_EXCEEDED=true
-              else
-                status="OK"
-              fi
+            # Determine budget based on chunk role
+            if echo "$filename" | grep -qE '^index[.-]'; then
+              budget=$INDEX_BUDGET
+            elif echo "$filename" | grep -qE '^lib-services[.-]'; then
+              budget=$LIB_SERVICES_BUDGET
+            elif echo "$filename" | grep -qE '\-vendor[.-]'; then
+              budget=$VENDOR_BUDGET
             else
-              budget_kb=$(echo "scale=1; $CHUNK_BUDGET / 1024" | bc)
-              budget_label="${budget_kb} KB"
-              if [ "$gz_size" -gt "$CHUNK_BUDGET" ]; then
-                status="OVER BUDGET"
-                BUDGET_EXCEEDED=true
-              else
-                status="OK"
-              fi
+              budget=$CHUNK_BUDGET
+            fi
+
+            budget_kb=$(echo "scale=1; $budget / 1024" | bc)
+            budget_label="${budget_kb} KB"
+            if [ "$gz_size" -gt "$budget" ]; then
+              status="OVER BUDGET"
+              BUDGET_EXCEEDED=true
+            else
+              status="OK"
             fi
 
             echo "| \`${filename}\` | ${raw_kb} KB | ${gz_kb} KB | ${budget_label} | ${status} |" >> bundle-report.md
@@ -146,9 +150,11 @@ jobs:
             echo "" >> bundle-report.md
             echo "One or more chunks exceed the size budget. Please optimize before merging." >> bundle-report.md
             echo "" >> bundle-report.md
-            echo "**Budgets:**" >> bundle-report.md
-            echo "- \`index*.js\`: < 200 KB gzip" >> bundle-report.md
-            echo "- Any other chunk: < 50 KB gzip" >> bundle-report.md
+            echo "**Budgets (gzip):**" >> bundle-report.md
+            echo "- \`index*.js\`: < 200 KB" >> bundle-report.md
+            echo "- \`lib-services*.js\`: < 1200 KB (intentional shared services chunk)" >> bundle-report.md
+            echo "- \`*-vendor*.js\`: < 200 KB" >> bundle-report.md
+            echo "- Any other chunk: < 50 KB" >> bundle-report.md
             echo "BUDGET_EXCEEDED=true" >> "$GITHUB_ENV"
           else
             echo "### Result: ALL BUDGETS MET" >> bundle-report.md
