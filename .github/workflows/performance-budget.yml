@@ -28,158 +28,10 @@ jobs:
       - name: Build production bundle
         run: npm run build
 
-      - name: Measure bundle sizes
-        id: bundle
-        run: |
-          # Create gzipped versions of all JS/CSS assets
-          find dist/assets -type f \( -name '*.js' -o -name '*.css' \) | while read -r file; do
-            gzip -k -9 "$file"
-          done
-
-          echo "## Bundle Size Analysis" > bundle-report.md
-          echo "" >> bundle-report.md
-          echo "**PR:** #${{ github.event.pull_request.number }}" >> bundle-report.md
-          echo "**Commit:** \`${{ github.sha }}\`" >> bundle-report.md
-          echo "" >> bundle-report.md
-
-          # ── Per-chunk breakdown ──
-          echo "### Chunk Breakdown" >> bundle-report.md
-          echo "" >> bundle-report.md
-          echo "| Chunk | Raw Size | Gzip Size | Budget | Status |" >> bundle-report.md
-          echo "|-------|----------|-----------|--------|--------|" >> bundle-report.md
-
-          BUDGET_EXCEEDED=false
-          TOTAL_RAW=0
-          TOTAL_GZIP=0
-
-          # Budget thresholds (in bytes, gzip). These mirror the chunking
-          # strategy enforced by scripts/ci-bundle-gate.cjs — the index entry,
-          # the shared lib-services chunk, and vendor chunks each get their
-          # own budget because they are intentional shared bundles.
-          INDEX_BUDGET=$((200 * 1024))         # 200 KB gzip
-          LIB_SERVICES_BUDGET=$((1200 * 1024)) # 1.2 MB gzip (intentional shared services chunk)
-          VENDOR_BUDGET=$((200 * 1024))        # 200 KB gzip for *-vendor chunks
-          CHUNK_BUDGET=$((50 * 1024))          # 50 KB gzip for any other chunk
-
-          while IFS= read -r file; do
-            filename=$(basename "$file")
-            raw_size=$(stat --format=%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null)
-            gz_file="${file}.gz"
-
-            if [ -f "$gz_file" ]; then
-              gz_size=$(stat --format=%s "$gz_file" 2>/dev/null || stat -f%z "$gz_file" 2>/dev/null)
-            else
-              gz_size=$raw_size
-            fi
-
-            TOTAL_RAW=$((TOTAL_RAW + raw_size))
-            TOTAL_GZIP=$((TOTAL_GZIP + gz_size))
-
-            # Human-readable sizes
-            raw_kb=$(echo "scale=1; $raw_size / 1024" | bc)
-            gz_kb=$(echo "scale=1; $gz_size / 1024" | bc)
-
-            # Determine budget based on chunk role
-            if echo "$filename" | grep -qE '^index[.-]'; then
-              budget=$INDEX_BUDGET
-            elif echo "$filename" | grep -qE '^lib-services[.-]'; then
-              budget=$LIB_SERVICES_BUDGET
-            elif echo "$filename" | grep -qE '\-vendor[.-]'; then
-              budget=$VENDOR_BUDGET
-            else
-              budget=$CHUNK_BUDGET
-            fi
-
-            budget_kb=$(echo "scale=1; $budget / 1024" | bc)
-            budget_label="${budget_kb} KB"
-            if [ "$gz_size" -gt "$budget" ]; then
-              status="OVER BUDGET"
-              BUDGET_EXCEEDED=true
-            else
-              status="OK"
-            fi
-
-            echo "| \`${filename}\` | ${raw_kb} KB | ${gz_kb} KB | ${budget_label} | ${status} |" >> bundle-report.md
-          done < <(find dist/assets -type f -name '*.js' | sort)
-
-          echo "" >> bundle-report.md
-
-          # CSS files
-          echo "### CSS Assets" >> bundle-report.md
-          echo "" >> bundle-report.md
-          echo "| File | Raw Size | Gzip Size |" >> bundle-report.md
-          echo "|------|----------|-----------|" >> bundle-report.md
-
-          while IFS= read -r file; do
-            filename=$(basename "$file")
-            raw_size=$(stat --format=%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null)
-            gz_file="${file}.gz"
-            if [ -f "$gz_file" ]; then
-              gz_size=$(stat --format=%s "$gz_file" 2>/dev/null || stat -f%z "$gz_file" 2>/dev/null)
-            else
-              gz_size=$raw_size
-            fi
-            raw_kb=$(echo "scale=1; $raw_size / 1024" | bc)
-            gz_kb=$(echo "scale=1; $gz_size / 1024" | bc)
-            TOTAL_RAW=$((TOTAL_RAW + raw_size))
-            TOTAL_GZIP=$((TOTAL_GZIP + gz_size))
-            echo "| \`${filename}\` | ${raw_kb} KB | ${gz_kb} KB |" >> bundle-report.md
-          done < <(find dist/assets -type f -name '*.css' | sort)
-
-          echo "" >> bundle-report.md
-
-          # ── Totals ──
-          TOTAL_RAW_KB=$(echo "scale=1; $TOTAL_RAW / 1024" | bc)
-          TOTAL_GZIP_KB=$(echo "scale=1; $TOTAL_GZIP / 1024" | bc)
-          TOTAL_RAW_MB=$(echo "scale=2; $TOTAL_RAW / 1048576" | bc)
-          TOTAL_GZIP_MB=$(echo "scale=2; $TOTAL_GZIP / 1048576" | bc)
-
-          echo "### Totals" >> bundle-report.md
-          echo "" >> bundle-report.md
-          echo "| Metric | Value |" >> bundle-report.md
-          echo "|--------|-------|" >> bundle-report.md
-          echo "| Total raw | ${TOTAL_RAW_KB} KB (${TOTAL_RAW_MB} MB) |" >> bundle-report.md
-          echo "| Total gzip | ${TOTAL_GZIP_KB} KB (${TOTAL_GZIP_MB} MB) |" >> bundle-report.md
-          echo "| JS chunks | $(find dist/assets -name '*.js' | wc -l) |" >> bundle-report.md
-          echo "| CSS files | $(find dist/assets -name '*.css' | wc -l) |" >> bundle-report.md
-          echo "" >> bundle-report.md
-
-          # ── Budget verdict ──
-          if [ "$BUDGET_EXCEEDED" = true ]; then
-            echo "### Result: BUDGET EXCEEDED" >> bundle-report.md
-            echo "" >> bundle-report.md
-            echo "One or more chunks exceed the size budget. Please optimize before merging." >> bundle-report.md
-            echo "" >> bundle-report.md
-            echo "**Budgets (gzip):**" >> bundle-report.md
-            echo "- \`index*.js\`: < 200 KB" >> bundle-report.md
-            echo "- \`lib-services*.js\`: < 1200 KB (intentional shared services chunk)" >> bundle-report.md
-            echo "- \`*-vendor*.js\`: < 200 KB" >> bundle-report.md
-            echo "- Any other chunk: < 50 KB" >> bundle-report.md
-            echo "BUDGET_EXCEEDED=true" >> "$GITHUB_ENV"
-          else
-            echo "### Result: ALL BUDGETS MET" >> bundle-report.md
-            echo "" >> bundle-report.md
-            echo "All chunks are within the performance budget." >> bundle-report.md
-            echo "BUDGET_EXCEEDED=false" >> "$GITHUB_ENV"
-          fi
-
-          # Store total for trend tracking
-          echo "TOTAL_GZIP_KB=${TOTAL_GZIP_KB}" >> "$GITHUB_ENV"
-
-      - name: Store bundle size for trend tracking
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const totalGzipKb = process.env.TOTAL_GZIP_KB;
-            const sha = context.sha.substring(0, 7);
-            const date = new Date().toISOString().split('T')[0];
-
-            // Add trend data as a comment tag for historical tracking
-            const trendLine = `<!-- bundle-trend: ${date} ${sha} ${totalGzipKb}KB -->`;
-
-            core.info(`Bundle trend data: ${trendLine}`);
-            core.exportVariable('TREND_DATA', trendLine);
+      - name: Check bundle size budget (gzip)
+        id: gate
+        continue-on-error: true
+        run: node scripts/ci-bundle-gate.cjs --mode gzip --report bundle-report.md
 
       - name: Comment on PR
         uses: actions/github-script@v7
@@ -187,19 +39,16 @@ jobs:
           script: |
             const fs = require('fs');
             const report = fs.readFileSync('bundle-report.md', 'utf8');
-            const trendData = process.env.TREND_DATA || '';
+            const sha = context.sha.substring(0, 7);
+            const body = `${report}\n\n*Built from ${sha} — pull_request #${context.issue.number}*`;
 
-            const body = report + '\n\n' + trendData;
-
-            // Find existing bot comment
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-
             const botComment = comments.find(
-              (c) => c.user?.type === 'Bot' && c.body?.includes('Bundle Size Analysis')
+              (c) => c.user?.type === 'Bot' && c.body?.includes('Bundle Size Analysis'),
             );
 
             if (botComment) {
@@ -219,6 +68,7 @@ jobs:
             }
 
       - name: Upload bundle report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bundle-report
@@ -226,7 +76,7 @@ jobs:
           retention-days: 30
 
       - name: Fail if budget exceeded
-        if: env.BUDGET_EXCEEDED == 'true'
+        if: steps.gate.outcome == 'failure'
         run: |
           echo "::error::Bundle size budget exceeded! See the PR comment for details."
           exit 1
