@@ -34,3 +34,34 @@ Live routes such as `war-room`, `playbook-templates`, and `agent-thesis` remain 
 
 - Other `beta` IDs in `featureCatalog` still subject to [`BETA_FEATURE_EXIT_CRITERIA.md`](./BETA_FEATURE_EXIT_CRITERIA.md) before `live`.
 - Optional: CSV export for War Room audit package (plan noted JSON first).
+
+---
+
+# Beta wave 2 — safety pass for MVP launch (no promotions)
+
+Audit of the 7 remaining `status: 'beta'` IDs in [`lib/utils/featureCatalog.ts`](../lib/utils/featureCatalog.ts) against [`BETA_FEATURE_EXIT_CRITERIA.md`](./BETA_FEATURE_EXIT_CRITERIA.md). None passes the bar to promote to `live`. Per [`MVP_LAUNCH_SCOPE.md`](./MVP_LAUNCH_SCOPE.md), beta promotions are explicitly out of MVP scope. This pass instead removes the most exposed risks so the betas are safe to keep visible during launch.
+
+## Outcomes
+
+| ID                   | Reachable          | Action taken (this pass)                                                                                                                                       | Status after pass        |
+| -------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `live-impact`        | `/live-impact`     | Replaced misleading "real-time" copy with prototype label; added **Demo data** badge.                                                                          | beta, prod-safe disclosure |
+| `visual-audit`       | catalog `path: null` (modal-only) | Added "AI estimate — not an official grade" amber callout under the Predicted Grade panel in [`GradingAuditModal.tsx`](../components/GradingAuditModal.tsx). | beta, prod-safe disclosure |
+| `vision-grading`     | `/grading-vision-engine` (not in catalog `path`) | Header chip + persistent disclaimer banner stating the lab does not certify cards.                                                  | beta, prod-safe disclosure |
+| `liquidity-pool`     | catalog `path: null` (widget unmounted) | Added `initInstantBuyService(userId)` and per-user storage key (`msi_instant_buy_history__<userId>` / `__guest`) so two accounts on the same browser cannot read each other's history once the feature is surfaced. | beta, tenancy-safe |
+| `fractional-vault`   | `/fractional-vault` | Prototype copy + **Beta · Simulation only** chip + securities disclaimer banner ("not an offer or sale of a security ... live execution rails and regulatory review are prerequisites"). | beta, prod-safe disclosure |
+| `fractional-vault-v2`| catalog `path: '/fractional-vault'` (collided with v1) | Set catalog `path: null`; v2 was unreachable behind v1's route. Description updated to reflect "catalog-only" status. | beta, route collision removed |
+| `provenance-chain`   | `/provenance`       | Replaced "Blockchain-backed ownership history and authentication" header with honest prototype copy; added disclaimer that authenticity scores are mock and must not be relied on for buying/selling/authenticating. | beta, prod-safe disclosure |
+
+## What did **not** ship in this pass (wave 3 candidates)
+
+- **Persistence for `fractional-vault` and `provenance-chain`** — services are seeded in-memory; promoting requires Supabase-backed schemas and RLS for shares, dividends, governance votes, and provenance records.
+- **Tests** — `live-impact`, `vision-grading`, `provenance-chain`, and the fractional vault have no dedicated unit/E2E coverage.
+- **`liquidity-pool` simulated-pool disclosure** — `LiquidityPoolWidget` hardcodes a `$250K` pool capitalization without a "demo" label. Safe to defer until the widget is mounted.
+- **`fractional-vault` securities/legal review** — required before any real execution path lands; copy disclaimer is a stop-gap.
+- **`provenance-chain` chain/mock split in the modal** — header banner covers the page; per-tab/per-card labels inside the modal still need review.
+
+## Process notes
+
+- Wave 2 prioritized **misleading copy** and **tenancy** because both are visible in production today. Persistence and tests are tracked separately under wave 3 and `BETA_FEATURE_EXIT_CRITERIA.md`.
+- No `status` value changed in `featureCatalog.ts` for any wave-2 feature; all seven remain `beta`.

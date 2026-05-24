@@ -774,16 +774,31 @@ const FractionalVault: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl bg-purple-500/20">
-          <Landmark size={24} className="text-purple-400" />
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-purple-500/20">
+            <Landmark size={24} className="text-purple-400" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-100">Fractional Ownership Vault</h1>
+            <p className="text-sm text-slate-400">
+              Prototype: tokenized ownership concept with governance, dividends, and secondary-market trading rendered against simulated data.
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-slate-100">Fractional Ownership Vault</h1>
-          <p className="text-sm text-slate-400">
-            Tokenized fractional ownership of grail-tier cards with governance, dividends, and secondary market trading
-          </p>
-        </div>
+        <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 rounded-full">
+          Beta · Simulation only
+        </span>
+      </div>
+
+      {/* Simulation / securities disclaimer */}
+      <div className="flex items-start gap-2 px-4 py-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-200">
+        <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+        <p className="text-xs leading-snug">
+          All vault inventory, shares, dividends, governance votes, and secondary-market activity shown here are <strong>simulated</strong>.
+          Nothing on this page constitutes an offer or sale of a security, fund interest, or any other financial instrument.
+          Live execution rails and a regulatory review are prerequisites before any of this becomes real.
+        </p>
       </div>
 
       {/* Tabs */}
