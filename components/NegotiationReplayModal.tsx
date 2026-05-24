@@ -29,6 +29,18 @@ const NegotiationReplayModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const replays = useMemo(() => getReplays(), []);
   const patterns = useMemo(() => getPatterns(), []);
 
+  const totalSavings = useMemo(() => {
+    return replays
+      .filter(r => r.outcome === 'won')
+      .reduce((sum, r) => sum + (r.startPrice - r.finalPrice), 0);
+  }, [replays]);
+
+  const avgGrade = useMemo(() => {
+    const gradeMap: Record<string, number> = { 'A+': 98, 'A': 93, 'A-': 90, 'B+': 87, 'B': 83, 'B-': 80, 'C+': 77, 'C': 73, 'C-': 70, 'D+': 67, 'D': 63, 'F': 50 };
+    const total = replays.reduce((sum, r) => sum + (gradeMap[r.aiAnalysis.overallGrade] || 70), 0);
+    return replays.length === 0 ? 0 : Math.round(total / replays.length);
+  }, [replays]);
+
   if (!isOpen) return null;
 
   const getGradeColor = (grade: string) => {
@@ -85,18 +97,6 @@ const NegotiationReplayModal: React.FC<Props> = ({ isOpen, onClose }) => {
     };
     return map[type] || 'bg-slate-500/15 text-slate-400 border-slate-500/30';
   };
-
-  const totalSavings = useMemo(() => {
-    return replays
-      .filter(r => r.outcome === 'won')
-      .reduce((sum, r) => sum + (r.startPrice - r.finalPrice), 0);
-  }, [replays]);
-
-  const avgGrade = useMemo(() => {
-    const gradeMap: Record<string, number> = { 'A+': 98, 'A': 93, 'A-': 90, 'B+': 87, 'B': 83, 'B-': 80, 'C+': 77, 'C': 73, 'C-': 70, 'D+': 67, 'D': 63, 'F': 50 };
-    const total = replays.reduce((sum, r) => sum + (gradeMap[r.aiAnalysis.overallGrade] || 70), 0);
-    return Math.round(total / replays.length);
-  }, [replays]);
 
   const tabs = [
     { id: 'replays', label: 'Replay Library', icon: <PlayCircle size={16} /> },

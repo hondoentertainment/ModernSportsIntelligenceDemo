@@ -54,3 +54,26 @@ Phase 3 checklist for production-safe Stripe usage in MSI. See also PRODUCTION_R
 Subscription lifecycle (updates, cancellations, failed payments) is expected to be handled by the backend (e.g. Stripe webhooks → Edge Function or API route that updates `profiles`). Those handlers must verify webhook signatures as in (b).
 
 **Webhook → `profiles` (this repo):** [`api/stripe-webhook.ts`](../api/stripe-webhook.ts) calls [`api/lib/stripeProfileSync.ts`](../api/lib/stripeProfileSync.ts) when `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are set. It maps the subscription’s Stripe **price id** to `subscription_tier` using **`STRIPE_BASIC_PRICE_ID`**, **`STRIPE_PRO_PRICE_ID`**, and **`STRIPE_ALPHA_PRICE_ID`** (or the same values under `VITE_STRIPE_*` if duplicated on the server). **Checkout sessions** should set **`client_reference_id`** to the Supabase user UUID **or** `metadata.user_id` / `metadata.supabase_user_id` so the first purchase can target the correct row; otherwise the handler falls back to **`stripe_customer_id`** on `profiles` (must already match the Stripe customer).
+
+---
+
+## Stripe Tax
+
+As of v4.4 the checkout Edge Function (`supabase/functions/create-checkout-session/index.ts`) requests automatic tax calculation via `automatic_tax: { enabled: true }` plus `tax_id_collection: { enabled: true }` for B2B reverse-charge.
+
+### Operator setup (one-time, manual)
+
+1. Stripe Dashboard → **Tax** → **Settings** → enable Stripe Tax.
+2. Add your origin address (where you're physically located) under **Tax** → **Settings** → Origin address.
+3. Register for tax collection in each jurisdiction where you have nexus. Stripe surfaces nexus prompts automatically as you hit thresholds.
+4. Verify the tax preview in a Checkout test session before going live: use a test mode session with a US/EU address and confirm the tax line item appears.
+
+### What this does NOT do
+
+- Tax filing & remittance. Stripe Tax calculates and collects; **you** (or your accountant via Stripe Tax filings, where available) remit to each jurisdiction.
+- Invoice tax IDs are collected via `tax_id_collection` but verification is delegated to Stripe. For high-value B2B, manual review of submitted VAT IDs is still prudent.
+
+### Failure modes
+
+- **Origin not set** → session creation will succeed but tax line will be $0; verify in Stripe logs.
+- **Customer address missing** → `customer_update: { address: 'auto' }` should handle this, but very-old saved customers without an address may need a one-time backfill via the Dashboard.

@@ -195,7 +195,7 @@ export function calculateAuthScore(card: CardInventory): AuthScore {
   }
 
   // 4. Holder age alignment (0-100)
-  let holderAlignment = 85;
+  let holderAlignment: number;
   if (card.isGraded && card.gradingCompany) {
     // HGA founded ~2020, CSG ~2020-ish
     if (card.gradingCompany === 'HGA' && card.year < 2015) {
@@ -283,7 +283,7 @@ export function verifyCert(card: CardInventory): CertVerification {
   const totalPop = popAtGrade + popHigher + Math.round(seededRandom(seed, 45) * 2000);
 
   // Notes
-  let notes = '';
+  let notes: string;
   if (status === 'valid') {
     notes = 'Certificate verified against registry. Holder and label match expected standards.';
   } else if (status === 'invalid') {
@@ -427,7 +427,7 @@ export function getAuthAlerts(cards: CardInventory[]): AuthAlert[] {
       }
 
       const cardLabel = `${card.year} ${card.manufacturer} ${card.player} #${card.cardNumber}`;
-      let summary = '';
+      let summary: string;
       if (riskFactors.length > 0) {
         summary = riskFactors[0].description;
       } else if (score.overall < 60) {

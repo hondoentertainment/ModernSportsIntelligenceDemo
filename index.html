@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MSI | Modern Sports Intelligence</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -16,358 +15,44 @@
     <link rel="apple-touch-icon" href="/pwa-192x192.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            charcoal: 'oklch(0.15 0.01 240)',
-                            lime: 'oklch(0.88 0.20 127)',
-                            orange: 'oklch(0.75 0.18 45)',
-                            slate: 'oklch(0.20 0.01 240)',
-                            teal: 'oklch(0.75 0.15 180)',
-                            muted: 'oklch(0.35 0.01 240)',
-                            red: 'oklch(0.60 0.24 25)',
-                            green: 'oklch(0.70 0.15 140)'
-                        }
-                    }
-                }
-            }
-        };
-    </script>
-    <style>
-        :root {
-            --brand-charcoal: oklch(0.15 0.01 240);
-            --brand-lime: oklch(0.88 0.20 127);
-            --brand-orange: oklch(0.75 0.18 45);
-            --brand-slate: oklch(0.20 0.01 240);
-            --brand-teal: oklch(0.75 0.15 180);
-            scroll-behavior: smooth;
-        }
-
-        html,
-        body {
-            height: 100%;
-            scrollbar-gutter: stable;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--brand-charcoal);
-            color: #ffffff;
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* UX: Keyboard focus visible for accessibility; no focus ring for mouse-only */
-        :focus { outline: none; }
-        :focus-visible {
-            outline: 2px solid oklch(0.88 0.20 127);
-            outline-offset: 2px;
-        }
-
-        h1,
-        h2,
-        .font-bebas {
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: -0.5px;
-        }
-
-        .font-mono {
-            font-family: 'Fira Code', monospace;
-        }
-
-        /* Generic scrollbar for all scrollable containers */
-        * {
-            scrollbar-width: thin;
-            scrollbar-color: oklch(0.88 0.20 127 / 0.1) transparent;
-        }
-
-        /* Webkit specific scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: oklch(0.88 0.20 127 / 0.1);
-            border-radius: 20px;
-            border: 2px solid transparent;
-            background-clip: content-box;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: oklch(0.88 0.20 127 / 0.3);
-            background-clip: content-box;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: oklch(0.88 0.20 127 / 0.2);
-            border-radius: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .page-container {
-                padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
-            }
-        }
-
-        .mobile-nav-safe {
-            padding-bottom: env(safe-area-inset-bottom, 0px);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-
-            .reveal-section,
-            .animate-scan,
-            .animate-marquee,
-            .animate-scan-vertical,
-            .animate-slide-in-right,
-            .animate-pulse {
-                animation: none !important;
-            }
-        }
-
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        /* Section Reveal Animations */
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .reveal-section {
-            animation: slideInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        @keyframes scan {
-            0% {
-                transform: translateY(-100%);
-            }
-
-            100% {
-                transform: translateY(400%);
-            }
-        }
-
-        .animate-scan {
-            animation: scan 3s linear infinite;
-        }
-
-        /* Luminous Depth Styles */
-        .luminous-container {
-            --mouse-x: 50%;
-            --mouse-y: 50%;
-            --glow-color: oklch(0.88 0.20 127);
-            /* Default lime */
-        }
-
-        .luminous-card {
-            position: relative;
-            background: oklch(0.20 0.01 240 / 0.5);
-            backdrop-filter: blur(20px);
-            border: 1px solid oklch(1 0 0 / 0.05);
-            transition: border-color 0.3s ease, transform 0.3s ease;
-            overflow: hidden;
-        }
-
-        .luminous-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y),
-                    oklch(from var(--glow-color) l c h / 0.08),
-                    transparent 40%);
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .luminous-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 1px;
-            background: radial-gradient(400px circle at var(--mouse-x) var(--mouse-y),
-                    oklch(from var(--glow-color) l c h / 0.3),
-                    transparent 40%);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask-composite: exclude;
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .luminous-card:hover::after {
-            opacity: 1;
-        }
-
-        .ambient-glow {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            background: radial-gradient(circle at 50% -20%,
-                    oklch(from var(--glow-color) l c h / 0.1),
-                    transparent 70%);
-            transition: background 1s ease;
-        }
-
-        .glass-sidebar {
-            background: oklch(0.15 0.01 240 / 0.4);
-            backdrop-filter: blur(40px) saturate(1.5);
-            border-right: 1px solid oklch(1 0 0 / 0.03);
-        }
-
-        .glass-header {
-            background: oklch(0.15 0.01 240 / 0.3);
-            backdrop-filter: blur(40px) saturate(1.5);
-            border-bottom: 1px solid oklch(1 0 0 / 0.03);
-        }
-
-        /* Phase 28: 3D & AR Utilities */
-        .perspective-1500 {
-            perspective: 1500px;
-        }
-
-        .preserve-3d {
-            transform-style: preserve-3d;
-        }
-
-        .backface-hidden {
-            backface-visibility: hidden;
-        }
-
-        @keyframes scan-vertical {
-            0% {
-                transform: translateY(-100vh);
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-
-            100% {
-                transform: translateY(100vh);
-                opacity: 0;
-            }
-        }
-
-        .animate-scan-vertical {
-            animation: scan-vertical 4s linear infinite;
-        }
-
-        @keyframes marquee {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        .animate-marquee {
-            display: inline-flex;
-            animation: marquee 30s linear infinite;
-        }
-
-        .skewed-item {
-            transform: skewX(-15deg);
-        }
-
-        @keyframes slide-in-right {
-            from {
-                transform: translateX(20px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .animate-slide-in-right {
-            animation: slide-in-right 0.5s ease-out forwards;
-        }
-    </style>
 </head>
 
 <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('SW registered: ', registration);
-                        // Check for updates periodically
-                        setInterval(() => registration.update(), 60 * 60 * 1000);
-                        // Notify user when a new SW is waiting
-                        registration.addEventListener('updatefound', () => {
-                            const newWorker = registration.installing;
-                            if (newWorker) {
-                                newWorker.addEventListener('statechange', () => {
-                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                        // New version available — dispatch event for the app to handle
-                                        window.dispatchEvent(new CustomEvent('sw-update-available'));
-                                    }
-                                });
-                            }
+        if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1' && !location.hostname.startsWith('192.168.')) {
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(registration => {
+                            console.log('SW registered: ', registration);
+                            // Check for updates periodically
+                            setInterval(() => registration.update(), 60 * 60 * 1000);
+                            // Notify user when a new SW is waiting
+                            registration.addEventListener('updatefound', () => {
+                                const newWorker = registration.installing;
+                                if (newWorker) {
+                                    newWorker.addEventListener('statechange', () => {
+                                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                            // New version available — dispatch event for the app to handle
+                                            window.dispatchEvent(new CustomEvent('sw-update-available'));
+                                        }
+                                    });
+                                }
+                            });
+                        })
+                        .catch(registrationError => {
+                            console.log('SW registration failed: ', registrationError);
                         });
-                    })
-                    .catch(registrationError => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
-            // Listen for sync messages from SW
-            navigator.serviceWorker.addEventListener('message', (event) => {
-                if (event.data?.type === 'SYNC_AVAILABLE') {
-                    window.dispatchEvent(new CustomEvent('sw-sync-available'));
-                }
-            });
+                });
+                // Listen for sync messages from SW
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                    if (event.data?.type === 'SYNC_AVAILABLE') {
+                        window.dispatchEvent(new CustomEvent('sw-sync-available'));
+                    }
+                });
+            }
         }
     </script>
 </body>

@@ -1,3 +1,4 @@
+import './index.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { validateEnv } from './lib/utils/env';
@@ -7,6 +8,7 @@ import ErrorBoundary from './components/ErrorBoundary.tsx';
 import { validateRuntimeConfig } from './lib/utils/runtimeConfig';
 import { logger } from './lib/logger';
 import { reportError } from './lib/errorReporting';
+import { initWebVitals } from './lib/utils/webVitals';
 
 // Production: report unhandled promise rejections (same pipeline as ErrorBoundary)
 if (typeof window !== 'undefined') {
@@ -38,3 +40,5 @@ root.render(
     </ErrorBoundary>
   </React.StrictMode>
 );
+
+initWebVitals();

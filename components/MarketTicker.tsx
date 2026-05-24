@@ -2,31 +2,62 @@
 import React, { useMemo } from 'react';
 import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
 import { CardInventory } from '../types';
+import DataSourceBadge from './DataSourceBadge';
 
 interface MarketTickerProps {
     inventory: CardInventory[];
 }
 
+interface TickerItem {
+    id: string;
+    label: string;
+    price: number;
+    change: string;
+    isPositive: boolean | null;
+}
+
+function computeDelta(item: CardInventory): number | null {
+    const current = typeof item.currentValue === 'number' ? item.currentValue : null;
+    if (current === null) return null;
+    const basis = typeof item.purchasePrice === 'number' && item.purchasePrice > 0 ? item.purchasePrice : null;
+    if (basis === null) return null;
+    return ((current - basis) / basis) * 100;
+}
+
 const MarketTicker: React.FC<MarketTickerProps> = ({ inventory }) => {
-    const tickerItems = useMemo(() => {
-        // Select a mix of inventory and targets to show in ticker
+    const tickerItems = useMemo<TickerItem[]>(() => {
         const items = [...inventory].slice(0, 10);
-        return items.map(item => ({
-            id: item.id,
-            label: `${item.year} ${item.manufacturer} ${item.player}`,
-            price: item.currentValue || 0,
-            change: (Math.random() * 5 * (Math.random() > 0.5 ? 1 : -1)).toFixed(2),
-            isPositive: Math.random() > 0.4 // Lean positive for demo
-        }));
+        return items.map(item => {
+            const delta = computeDelta(item);
+            if (delta === null) {
+                return {
+                    id: item.id,
+                    label: `${item.year} ${item.manufacturer} ${item.player}`,
+                    price: item.currentValue || 0,
+                    change: '—',
+                    isPositive: null,
+                };
+            }
+            return {
+                id: item.id,
+                label: `${item.year} ${item.manufacturer} ${item.player}`,
+                price: item.currentValue || 0,
+                change: delta.toFixed(2),
+                isPositive: delta >= 0,
+            };
+        });
     }, [inventory]);
+
+    const allFallback = tickerItems.length === 0 || tickerItems.every(item => item.change === '—');
 
     return (
         <div className="w-full bg-brand-charcoal/80 backdrop-blur-md border-y border-slate-800 h-10 flex items-center overflow-hidden z-20 relative">
-            <div className="flex items-center px-4 border-r border-slate-800 h-full bg-brand-charcoal z-10">
+            <div className="flex items-center gap-2 px-4 border-r border-slate-800 h-full bg-brand-charcoal z-10">
                 <Activity size={14} className="text-brand-lime mr-2 animate-pulse" />
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white whitespace-nowrap">
                     Live Market Pulse
                 </span>
+                {allFallback && <DataSourceBadge variant="sample" size="xs" />}
             </div>
 
             <div className="flex flex-1 overflow-hidden pointer-events-none">
@@ -39,28 +70,20 @@ const MarketTicker: React.FC<MarketTickerProps> = ({ inventory }) => {
                             <span className="text-[10px] font-mono font-bold text-white">
                                 ${item.price.toLocaleString()}
                             </span>
-                            <div className={`flex items-center gap-1 text-[9px] font-black ${item.isPositive ? 'text-brand-green' : 'text-brand-red'}`}>
-                                {item.isPositive ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                                {item.isPositive ? '+' : ''}{item.change}%
-                            </div>
+                            {item.isPositive === null ? (
+                                <div className="flex items-center gap-1 text-[9px] font-black text-slate-500">
+                                    {item.change}
+                                </div>
+                            ) : (
+                                <div className={`flex items-center gap-1 text-[9px] font-black ${item.isPositive ? 'text-brand-green' : 'text-brand-red'}`}>
+                                    {item.isPositive ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                                    {item.isPositive ? '+' : ''}{item.change}%
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
             </div>
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-          animation: marquee 40s linear infinite;
-        }
-        .animate-marquee:hover {
-          animation-play-state: paused;
-        }
-      `}} />
         </div>
     );
 };

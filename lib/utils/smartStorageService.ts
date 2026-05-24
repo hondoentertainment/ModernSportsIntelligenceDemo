@@ -177,10 +177,10 @@ function generateSensorReadings(): SensorReading[] {
       const tempBase = zone.targetTemp;
       const humBase = zone.targetHumidity;
 
-      let tempVariance = 0;
-      let humVariance = 0;
-      let uvBase = 0;
-      let vibBase = 0;
+      let tempVariance: number;
+      let humVariance: number;
+      let uvBase: number;
+      let vibBase: number;
 
       if (zone.protectionLevel === 'vault') {
         tempVariance = (hourSeed % 5 - 2) * 0.3;
@@ -521,10 +521,10 @@ export function getStorageCosts(): StorageCost[] {
   if (cached) return cached;
 
   const costs: StorageCost[] = STORAGE_ZONES.map(zone => {
-    let monthlyRent = 0;
-    let electricityCost = 0;
+    let monthlyRent: number;
+    let electricityCost: number;
     const insuranceCost = Math.round(zone.totalValue * 0.001 / 12);
-    let maintenanceCost = 0;
+    let maintenanceCost: number;
 
     if (zone.protectionLevel === 'vault') {
       monthlyRent = zone.id === 'zone_006' ? 45 : 185;

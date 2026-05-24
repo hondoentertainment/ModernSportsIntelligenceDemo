@@ -776,7 +776,7 @@ export async function auditCardVisuals(imageBase64: string, mimeType: string = "
 
     const text = response.text || "";
     // Clean JSON if it has markdown blocks
-    const cleanJson = text.replace(/\`\`\`json|\`\`\`/g, "").trim();
+    const cleanJson = text.replace(/```json|```/g, "").trim();
     return JSON.parse(cleanJson);
   } catch (error) {
     logger.error("Gemini Visual Audit Error:", error);

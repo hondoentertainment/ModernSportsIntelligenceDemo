@@ -530,7 +530,7 @@ export function getDutchAuctionAlerts(): DutchAuctionAlert[] {
   }).map(a => {
     const discountFromFMV = ((a.fairMarketValue - a.currentPrice) / a.fairMarketValue) * 100;
     const remainingDecrements = a.maxDecrements - a.decrementCount;
-    let message = '';
+    let message: string;
     if (remainingDecrements <= 2) {
       message = `Only ${remainingDecrements} decrements left before floor — buy now or lose it!`;
     } else if (discountFromFMV >= 20) {

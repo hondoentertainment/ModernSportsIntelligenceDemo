@@ -352,7 +352,7 @@ function generateTransactions(): VaultTransaction[] {
       const vcIdx = counter % vaultIds.length;
       const vc = VAULT_CARDS[vcIdx];
       const typeRoll = counter % 10;
-      let type: TransactionType = 'buy';
+      let type: TransactionType;
       if (typeRoll < 5) type = 'buy';
       else if (typeRoll < 8) type = 'sell';
       else if (typeRoll === 8) type = 'dividend';

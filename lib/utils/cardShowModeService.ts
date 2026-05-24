@@ -474,8 +474,8 @@ export function getNegotiationAdvice(cardName: string, askingPrice: number): Neg
   const margin = fmv - askingPrice;
   const marginPercent = askingPrice > 0 ? (margin / askingPrice) * 100 : 0;
 
-  let riskLevel: 'low' | 'medium' | 'high' = 'low';
-  let advice = '';
+  let riskLevel: 'low' | 'medium' | 'high';
+  let advice: string;
   const talkingPoints: string[] = [];
 
   if (askingPrice <= maxBuy) {

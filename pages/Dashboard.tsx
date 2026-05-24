@@ -6,9 +6,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
-  lazy,
 } from 'react';
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import {
   CreditCard,
   TrendingUp,
@@ -29,7 +27,6 @@ import {
   Camera,
   Share2,
   FileDown,
-  Terminal,
   BriefcaseBusiness
 } from 'lucide-react';
 
@@ -132,11 +129,9 @@ const Dashboard: React.FC = () => {
 
   // Personalization State
   interface UserSettings { favoriteTeam?: string; primarySport?: string }
-  const [userSettings, _setUserSettings] = useState<UserSettings | null>(() => {
-  const [userSettings, setUserSettings] = useState<any>(() => {
+  const [userSettings] = useState<UserSettings | null>(() => {
     try {
-      const saved = store.get<any>('msi_user_settings', null);
-      return saved;
+      return store.get<UserSettings | null>('msi_user_settings', null);
     } catch {
       return null;
     }
@@ -209,7 +204,6 @@ const Dashboard: React.FC = () => {
   const chartData = useMemo(() => {
     return AggregationService.getAggregatedTrendData(inventory, 14); // 14 day view for dash
   }, [inventory]);
-  }, [inventory, syncMeta.lastSyncTime]);
 
   const recentCards = inventory.slice(-3).reverse();
 

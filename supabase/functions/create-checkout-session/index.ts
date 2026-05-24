@@ -100,10 +100,21 @@ Deno.serve(async (req) => {
       subscription_data: {
         metadata: { supabase_user_id: user.id, user_id: user.id },
       },
+      // Stripe Tax: auto-compute and remit sales tax / VAT / GST.
+      // Requires Stripe Tax to be enabled in the Dashboard (Tax → Settings).
+      // docs/PAYMENT_SECURITY.md § Stripe Tax for the operator setup checklist.
+      automatic_tax: { enabled: true },
+      tax_id_collection: { enabled: true },
     };
 
     if (customerId) {
       sessionParams.customer = customerId;
+      // customer_update is only valid (and required by Stripe Tax) when
+      // a `customer` is passed; for a fresh customer_email flow, Stripe
+      // saves the address collected during checkout automatically.
+      Object.assign(sessionParams, {
+        customer_update: { address: 'auto', shipping: 'auto' },
+      });
     } else if (user.email) {
       sessionParams.customer_email = user.email;
     }

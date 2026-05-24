@@ -24,16 +24,21 @@ import MarketTicker from './components/MarketTicker.tsx';
 import { useSupabaseInventory } from './lib/utils/useSupabaseInventory.ts';
 import LazyErrorBoundary from './components/LazyErrorBoundary.tsx';
 import { PageLoadingFallback } from './components/LazyLoadFallback.tsx';
-import GuidedTour from './components/GuidedTour.tsx';
-import InstitutionalWallHUD from './components/InstitutionalWallHUD.tsx';
-import GrailShowcase from './components/GrailShowcase.tsx';
-import DemoFlowWidget from './components/DemoFlowWidget.tsx';
 import DocumentTitleSync from './components/DocumentTitleSync.tsx';
+import CommandPalette from './components/CommandPalette.tsx';
 import { validateEnv } from './lib/utils/env';
 import { initDAL } from './lib/dal';
 
 // Validate environment on startup
 validateEnv();
+
+// ─── Lazy-loaded Modal-Class Shell Components ─────────────────────────
+// These only mount behind opened-state flags (or are render-once shells),
+// so keep them out of the initial bundle.
+const InstitutionalWallHUD = lazy(() => import('./components/InstitutionalWallHUD.tsx'));
+const GrailShowcase = lazy(() => import('./components/GrailShowcase.tsx'));
+const DemoFlowWidget = lazy(() => import('./components/DemoFlowWidget.tsx'));
+const GuidedTour = lazy(() => import('./components/GuidedTour.tsx'));
 
 // ─── Lazy-loaded Page Components ──────────────────────────────────────
 // Critical path: Dashboard loads first, everything else is code-split
@@ -459,9 +464,24 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
   const { inventory } = useSupabaseInventory();
   const [isWallHUDOpen, setIsWallHUDOpen] = useState(false);
   const [selectedGrail, setSelectedGrail] = useState<any>(null);
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
 
   // Expose a way to open grail via window for testing/demo
   (window as any).openGrail = (card: any) => setSelectedGrail(card);
+
+  // Global Cmd+K / Ctrl+K toggles the command palette. This is the single
+  // canonical shortcut surface — Header used to register its own listener
+  // and FeatureSearch had a third one; both were removed in PR-C.
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden bg-brand-charcoal text-slate-100 font-sans selection:bg-brand-lime/30 luminous-container">
@@ -483,27 +503,31 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
         <PwaUpdateBanner />
 
         {isWallHUDOpen && (
-          <InstitutionalWallHUD
-            onClose={() => setIsWallHUDOpen(false)}
-            inventoryCount={inventory.length}
-            totalMarketValue={`$${inventory.reduce((acc, curr) => acc + (parseFloat(curr.market_value?.replace(/[^0-9.]/g, '') || '0')), 0).toLocaleString()}`}
-          />
+          <Suspense fallback={null}>
+            <InstitutionalWallHUD
+              onClose={() => setIsWallHUDOpen(false)}
+              inventoryCount={inventory.length}
+              totalMarketValue={`$${inventory.reduce((acc, curr) => acc + (parseFloat(curr.market_value?.replace(/[^0-9.]/g, '') || '0')), 0).toLocaleString()}`}
+            />
+          </Suspense>
         )}
 
         {selectedGrail && (
-          <GrailShowcase
-            isOpen={!!selectedGrail}
-            onClose={() => setSelectedGrail(null)}
-            card={{
-              name: selectedGrail.name || selectedGrail.card_name || 'Grail Asset',
-              player: selectedGrail.player_name || 'Elite Athlete',
-              year: selectedGrail.year || '2024',
-              set: selectedGrail.set_name || 'Panini Prizm',
-              grade: selectedGrail.grade || 'PSA 10',
-              image: selectedGrail.image_url || 'https://images.unsplash.com/photo-1510133769062-80c1e26dcb6e?q=80&w=2070&auto=format&fit=crop',
-              marketValue: selectedGrail.market_value || '$12,500.00'
-            }}
-          />
+          <Suspense fallback={null}>
+            <GrailShowcase
+              isOpen={!!selectedGrail}
+              onClose={() => setSelectedGrail(null)}
+              card={{
+                name: selectedGrail.name || selectedGrail.card_name || 'Grail Asset',
+                player: selectedGrail.player_name || 'Elite Athlete',
+                year: selectedGrail.year || '2024',
+                set: selectedGrail.set_name || 'Panini Prizm',
+                grade: selectedGrail.grade || 'PSA 10',
+                image: selectedGrail.image_url || 'https://images.unsplash.com/photo-1510133769062-80c1e26dcb6e?q=80&w=2070&auto=format&fit=crop',
+                marketValue: selectedGrail.market_value || '$12,500.00'
+              }}
+            />
+          </Suspense>
         )}
 
         <main id="main-content" className="flex-1 p-4 md:p-8 page-container overflow-y-auto pb-24 md:pb-8" role="main">
@@ -867,8 +891,13 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
         {/* Mobile Navigation */}
         <MobileNav />
       </div>
-      <GuidedTour />
-      <DemoFlowWidget />
+      <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)} />
+      <Suspense fallback={null}>
+        <GuidedTour />
+      </Suspense>
+      <Suspense fallback={null}>
+        <DemoFlowWidget />
+      </Suspense>
     </div>
   );
 };

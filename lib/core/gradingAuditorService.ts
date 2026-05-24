@@ -546,7 +546,7 @@ export function getSubmissionRecommendation(cardValue: number, company?: Grading
     const projectedValue = Math.round(cardValue * bestMultiplier);
     const roi = Math.round(((projectedValue - cardValue - tierData.costPerCard) / (cardValue + tierData.costPerCard)) * 100);
 
-    let reasoning = '';
+    let reasoning: string;
     if (profile.company === 'psa') reasoning = 'Highest market acceptance and liquidity. Best for cards you plan to sell.';
     else if (profile.company === 'bgs') reasoning = 'Strictest grading with sub-grades. Pristine/Black Label commands top premium.';
     else if (profile.company === 'sgc') reasoning = 'Best value with fast turnaround. Strong vintage market acceptance.';

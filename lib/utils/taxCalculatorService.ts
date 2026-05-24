@@ -519,8 +519,8 @@ export function getTaxSummary(): TaxSummary {
 
 export function calculateEstimatedTax(gain: number, isLongTerm: boolean, taxableIncome: number): { taxRate: number; estimatedTax: number; bracket: string } {
   if (isLongTerm) {
-    let rate = 0;
-    let bracket = '0%';
+    let rate: number;
+    let bracket: string;
     if (taxableIncome > 518900) { rate = 20; bracket = '20%'; }
     else if (taxableIncome > 47025) { rate = 15; bracket = '15%'; }
     else { rate = 0; bracket = '0%'; }

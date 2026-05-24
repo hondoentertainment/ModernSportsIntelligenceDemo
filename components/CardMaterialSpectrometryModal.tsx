@@ -26,6 +26,8 @@ const CardMaterialSpectrometryModal: React.FC<Props> = ({ isOpen, onClose }) => 
 
   const scans = useMemo(() => getScans(), []);
   const database = useMemo(() => getDatabase(), []);
+  const authenticCount = useMemo(() => scans.filter(s => s.verdict === 'authentic').length, [scans]);
+  const flaggedCount = useMemo(() => scans.filter(s => s.verdict !== 'authentic').length, [scans]);
 
   if (!isOpen) return null;
 
@@ -65,9 +67,6 @@ const CardMaterialSpectrometryModal: React.FC<Props> = ({ isOpen, onClose }) => 
     };
     return map[type] || 'text-slate-400 bg-slate-500/15 border-slate-500/30';
   };
-
-  const authenticCount = useMemo(() => scans.filter(s => s.verdict === 'authentic').length, [scans]);
-  const flaggedCount = useMemo(() => scans.filter(s => s.verdict !== 'authentic').length, [scans]);
 
   const tabs = [
     { id: 'scans', label: 'Spectral Scans', icon: <Microscope size={16} /> },

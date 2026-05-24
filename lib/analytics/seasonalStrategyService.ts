@@ -278,12 +278,9 @@ export function getSeasonalWindows(): SeasonalWindow[] {
 
   // Determine which windows are active
   return windows.map(w => {
-    let isActive = false;
-    if (w.startMonth <= w.endMonth) {
-      isActive = currentMonth >= w.startMonth && currentMonth <= w.endMonth;
-    } else {
-      isActive = currentMonth >= w.startMonth || currentMonth <= w.endMonth;
-    }
+    const isActive = w.startMonth <= w.endMonth
+      ? currentMonth >= w.startMonth && currentMonth <= w.endMonth
+      : currentMonth >= w.startMonth || currentMonth <= w.endMonth;
     // Add slight variance to returns based on seed
     const variance = (seededRandom(seed + hashString(w.id)) - 0.5) * 6;
     return { ...w, isActive, historicalAvgReturn: Math.round((w.historicalAvgReturn + variance) * 10) / 10 };

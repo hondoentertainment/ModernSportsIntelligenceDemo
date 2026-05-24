@@ -68,8 +68,6 @@ export class NegotiationService {
         const spread = newSession.sellerAsk - offerAttributes.amount;
         const percentGap = spread / newSession.sellerAsk;
 
-        let nextAsk = newSession.sellerAsk;
-
         if (percentGap <= 0.05) {
             // Within 5%, accept
             newSession.status = 'accepted';
@@ -83,7 +81,7 @@ export class NegotiationService {
         } else if (percentGap > 0.4) {
             // User lowballed > 40%, reject or stiff counter
             // For simulation, let's just counter strictly
-            nextAsk = Math.floor(newSession.sellerAsk * 0.95); // seller barely moves
+            const nextAsk = Math.floor(newSession.sellerAsk * 0.95); // seller barely moves
             newSession.messages.push({
                 id: crypto.randomUUID(),
                 sender: 'seller',
@@ -96,7 +94,7 @@ export class NegotiationService {
         } else {
             // Standard counter: Meet halfway-ish
             const move = spread * (0.3 + Math.random() * 0.2); // Seller moves 30-50% of the gap
-            nextAsk = Math.floor(newSession.sellerAsk - move);
+            const nextAsk = Math.floor(newSession.sellerAsk - move);
 
             newSession.messages.push({
                 id: crypto.randomUUID(),

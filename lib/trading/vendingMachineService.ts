@@ -608,7 +608,7 @@ export function calculateExpectedValue(packId: string): { ev: number; price: num
   if (!pack) return { ev: 0, price: 0, evRatio: 0, recommendation: 'unknown' };
 
   const evRatio = odds.expectedValue / pack.price;
-  let recommendation = 'neutral';
+  let recommendation: string;
   if (evRatio >= 2.0) recommendation = 'strong_buy';
   else if (evRatio >= 1.3) recommendation = 'buy';
   else if (evRatio >= 0.8) recommendation = 'neutral';

@@ -28,7 +28,11 @@ import { OpportunityBadge } from '../OpportunityBadge';
 import Sparkline from '../Sparkline';
 import { LiquidityService } from '../../lib/analytics/liquidityService';
 import { getStaleValuationLabel, isThinLiquidityScore } from '../../lib/utils/valuationFreshness';
-import { getValuationSourceChipForCard } from '../../lib/utils/valuationProvenance';
+import {
+  getValuationSourceChipForCard,
+  valuationBadgeVariantForEntity,
+} from '../../lib/utils/valuationProvenance';
+import DataSourceBadge from '../DataSourceBadge';
 
 export interface CardGridItemProps {
   card: CardInventory;
@@ -95,6 +99,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
   const valuationChip = getValuationSourceChipForCard(card);
+  const valuationBadgeVariant = valuationBadgeVariantForEntity(card);
   const staleLabel = getStaleValuationLabel(card.lastValuationDate);
   const showThinMarket = isThinLiquidityScore(card.liquidityScore);
   const mutedChipClass =
@@ -247,6 +252,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
               <span className={`inline-flex min-h-[26px] items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider ${valuationChip.className}`}>
                 {valuationChip.label}
               </span>
+              <DataSourceBadge variant={valuationBadgeVariant} size="xs" className="ml-1" />
               {staleLabel && <span className={mutedChipClass}>{staleLabel}</span>}
               {showThinMarket && <span className={mutedChipClass}>Thin market</span>}
             </div>

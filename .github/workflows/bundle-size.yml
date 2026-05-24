@@ -1,0 +1,70 @@
+# Gzip bundle size budget gate.
+#
+# Strategy: the existing `scripts/bundle-size.cjs` was REPORT-ONLY (raw bytes).
+# We hardened it (additive) with a `--max=<bytes>` flag that, when set,
+# computes the gzipped JS payload, compares against the budget, and exits
+# non-zero with a per-chunk breakdown when over. The original report output
+# is preserved unchanged so `npm run build:size` behaves exactly as before.
+#
+# Budget is defined in `package.json` -> `scripts."size:check"` so it lives
+# next to the rest of the build config and shows up in package diffs.
+#
+# `--legacy-peer-deps` mirrors what other CI workflows use because eslint v10
+# conflicts with `eslint-plugin-react-hooks@7` peer ranges.
+#
+# TODO: the current budget (~2.96 MB gzipped) is set to measured-current * 1.05
+# because the app ships a very large `lib-services` chunk (~1.1 MB gzipped on
+# its own). Once that chunk is code-split / tree-shaken, ratchet `--max=` in
+# `scripts.size:check` downward in a follow-up PR (see docs/MONITORING.md).
+name: Bundle size
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  size:
+    name: Gzip bundle budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci --legacy-peer-deps
+
+      - name: Build (production)
+        run: npm run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+
+      - name: Check bundle size against budget
+        run: npm run size:check
+
+      - name: Upload bundle report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-report
+          path: dist/
+          retention-days: 7
+          if-no-files-found: warn

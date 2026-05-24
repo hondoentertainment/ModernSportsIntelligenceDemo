@@ -701,7 +701,7 @@ function buildSimulation(scenario: ContagionScenario): ContagionSimulation {
     const peakDay = scenario.peakContagionDay + affected.order * 2;
 
     for (let day = 0; day <= totalDays; day++) {
-      let impact = 0;
+      let impact: number;
       if (day < startDay) {
         impact = 0;
       } else if (day <= peakDay) {

@@ -1,0 +1,43 @@
+name: RLS Policy Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Daily at 04:00 UTC
+    - cron: '0 4 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rls_policy:
+    name: Verify Supabase RLS coverage
+    runs-on: ubuntu-latest
+    # Opt-in: set repository variable ENABLE_RLS_POLICY_CHECK=true and configure
+    # secret SUPABASE_DB_URL with the project's Postgres connection string.
+    if: vars.ENABLE_RLS_POLICY_CHECK == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install pg (ephemeral)
+        run: npm i --no-save pg
+
+      - name: Run RLS policy check
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          RLS_MIN_POLICIES: ${{ vars.RLS_MIN_POLICIES || '4' }}
+        run: node scripts/run-rls-checks.mjs

@@ -105,6 +105,12 @@ const FractionalVault: React.FC = () => {
     });
   }, [dividends]);
 
+  const dividendsSourceBreakdown = useMemo(() => {
+    const map: Record<string, number> = {};
+    dividends.forEach((d) => { map[d.source] = (map[d.source] || 0) + d.totalAmount; });
+    return Object.entries(map).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value: +value.toFixed(2) }));
+  }, [dividends]);
+
   const selectedVaultOrders = useMemo(() => {
     return orders.filter((o) => o.vaultCardId === selectedVaultId && o.status === 'open');
   }, [orders, selectedVaultId]);
@@ -470,12 +476,7 @@ const FractionalVault: React.FC = () => {
   // TAB: Dividends
   // ====================================================================
   const renderDividends = () => {
-    const sourceBreakdown = useMemo(() => {
-      const map: Record<string, number> = {};
-      dividends.forEach((d) => { map[d.source] = (map[d.source] || 0) + d.totalAmount; });
-      return Object.entries(map).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value: +value.toFixed(2) }));
-    }, []);
-
+    const sourceBreakdown = dividendsSourceBreakdown;
     const totalDistributed = dividends.reduce((s, d) => s + d.totalAmount, 0);
 
     return (

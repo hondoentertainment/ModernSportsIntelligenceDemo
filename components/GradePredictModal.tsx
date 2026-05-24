@@ -309,7 +309,8 @@ const BulkQueueTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
   const sortedCards = useMemo(() => {
     const sorted = [...batch.cards];
     sorted.sort((a, b) => {
-      let va = 0, vb = 0;
+      let va: number;
+      let vb: number;
       if (sortField === 'roi') { va = a.expectedROI; vb = b.expectedROI; }
       else if (sortField === 'profit') { va = a.expectedProfit; vb = b.expectedProfit; }
       else { va = a.confidence; vb = b.confidence; }
