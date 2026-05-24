@@ -1086,6 +1086,9 @@ const GradingVisionEngine: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 rounded-full">
+              Beta · AI estimate
+            </span>
             <button
               onClick={() => setShowHistory(!showHistory)}
               className="flex items-center gap-2 px-3 py-2 bg-slate-800 border border-slate-700 hover:border-slate-600 text-slate-300 text-sm rounded-lg transition-colors"
@@ -1094,6 +1097,15 @@ const GradingVisionEngine: React.FC = () => {
               History ({history.length})
             </button>
           </div>
+        </div>
+
+        {/* Estimate disclaimer — always visible */}
+        <div className="flex items-start gap-2 px-4 py-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-200">
+          <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+          <p className="text-xs leading-snug">
+            Grades, subgrades, and ROI projections shown here are <strong>AI-generated estimates</strong>, not official PSA, BGS, or SGC grades.
+            This lab does not certify cards or guarantee outcomes from any third-party grading service.
+          </p>
         </div>
 
         {/* Workflow Step Indicator */}

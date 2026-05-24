@@ -27,14 +27,19 @@ const LiveImpact: React.FC = () => {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-slate-100">Live Game Impact Engine</h1>
-            <p className="text-sm text-slate-400">Real-time card value shifts during live games — no competitor offers this</p>
+            <p className="text-sm text-slate-400">Prototype: simulated game events and value-shift scoring (no live sports feed connected).</p>
           </div>
         </div>
-        {liveGames.length > 0 && (
-          <span className="px-3 py-1.5 text-sm font-bold bg-red-500/20 text-red-300 rounded-full animate-pulse">
-            {liveGames.length} GAMES LIVE
+        <div className="flex items-center gap-2">
+          <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 rounded-full">
+            Demo data
           </span>
-        )}
+          {liveGames.length > 0 && (
+            <span className="px-3 py-1.5 text-sm font-bold bg-red-500/20 text-red-300 rounded-full animate-pulse">
+              {liveGames.length} GAMES LIVE
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Summary Cards */}

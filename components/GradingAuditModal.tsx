@@ -219,6 +219,12 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
                                             <p className="text-xl font-bold">{(result.confidenceScore * 100).toFixed(0)}%</p>
                                         </div>
                                     </div>
+                                    <div className="px-4 py-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-start gap-2 text-amber-200">
+                                        <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                                        <p className="text-[11px] leading-snug">
+                                            AI-generated estimate from a vision model. <strong>Not an official PSA, BGS, or SGC grade</strong> and not a substitute for third-party grading. Actual grading outcomes may differ.
+                                        </p>
+                                    </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         {[
