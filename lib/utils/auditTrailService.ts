@@ -205,6 +205,23 @@ export function filterAuditEvents(events: AuditEvent[], filters: AuditEventFilte
   });
 }
 
+/**
+ * Returns the earliest `created_at` ISO string across the given raw rows
+ * (used as the `before` cursor when paginating older audit events). Returns
+ * `undefined` if no row carries a usable string timestamp — in which case
+ * callers should disable the "load older" affordance.
+ */
+export function getOldestCreatedAt(rows: unknown[]): string | undefined {
+  let oldest: string | undefined;
+  for (const row of rows) {
+    if (!row || typeof row !== 'object') continue;
+    const ts = (row as { created_at?: unknown }).created_at;
+    if (typeof ts !== 'string' || ts.length === 0) continue;
+    if (oldest === undefined || ts < oldest) oldest = ts;
+  }
+  return oldest;
+}
+
 /** Build a CSV string from the given events. Fields are RFC 4180-quoted. */
 export function exportAuditEventsToCSV(events: AuditEvent[]): string {
   const header = [

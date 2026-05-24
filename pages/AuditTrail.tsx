@@ -14,6 +14,7 @@ import {
   getComplianceStatusColor,
   filterAuditEvents,
   exportAuditEventsToCSV,
+  getOldestCreatedAt,
   type AuditCategory,
   type AuditSeverity,
   type AuditEvent,
@@ -25,11 +26,15 @@ const ALL_CATEGORIES: AuditCategory[] = ['portfolio', 'trading', 'auth', 'admin'
 const ALL_SEVERITIES: AuditSeverity[] = ['info', 'warning', 'critical', 'security'];
 const ALL_SOURCES: NonNullable<AuditEvent['source']>[] = ['recorded', 'cloud', 'sample'];
 
+const CLOUD_PAGE_SIZE = 200;
+
 const AuditTrail: React.FC = () => {
   const { user } = useAuth();
   const [eventsRefresh, setEventsRefresh] = useState(0);
   const [cloudRows, setCloudRows] = useState<unknown[]>([]);
   const [cloudLoading, setCloudLoading] = useState(false);
+  const [cloudOlderLoading, setCloudOlderLoading] = useState(false);
+  const [cloudHasMore, setCloudHasMore] = useState(false);
 
   const reloadEvents = useCallback(() => setEventsRefresh((n) => n + 1), []);
 
@@ -39,18 +44,43 @@ const AuditTrail: React.FC = () => {
     let cancelled = false;
     if (!user?.id) {
       setCloudRows([]);
+      setCloudHasMore(false);
       return;
     }
     setCloudLoading(true);
-    fetchCloudAuditEvents(user.id, { limit: 200 })
+    fetchCloudAuditEvents(user.id, { limit: CLOUD_PAGE_SIZE })
       .then((rows) => {
-        if (!cancelled) setCloudRows(rows);
+        if (cancelled) return;
+        setCloudRows(rows);
+        setCloudHasMore(rows.length === CLOUD_PAGE_SIZE);
       })
       .finally(() => {
         if (!cancelled) setCloudLoading(false);
       });
     return () => { cancelled = true; };
   }, [user?.id, eventsRefresh]);
+
+  // Earliest `created_at` we've loaded — used as the cursor for "load older".
+  const oldestCloudTimestamp = useMemo(() => getOldestCreatedAt(cloudRows), [cloudRows]);
+
+  const loadOlderCloudEvents = useCallback(async () => {
+    if (!user?.id || !oldestCloudTimestamp || cloudOlderLoading) return;
+    setCloudOlderLoading(true);
+    try {
+      const older = await fetchCloudAuditEvents(user.id, {
+        limit: CLOUD_PAGE_SIZE,
+        before: oldestCloudTimestamp,
+      });
+      if (older.length === 0) {
+        setCloudHasMore(false);
+        return;
+      }
+      setCloudRows((prev) => [...prev, ...older]);
+      setCloudHasMore(older.length === CLOUD_PAGE_SIZE);
+    } finally {
+      setCloudOlderLoading(false);
+    }
+  }, [user?.id, oldestCloudTimestamp, cloudOlderLoading]);
 
   const events = useMemo(() => getAuditEvents(cloudRows), [eventsRefresh, cloudRows]);
   const recordedCount = useMemo(() => events.filter((e) => e.source === 'recorded').length, [events]);
@@ -291,6 +321,18 @@ const AuditTrail: React.FC = () => {
                 </div>
               </div>
             ))}
+            {user?.id && cloudHasMore && (
+              <div className="flex justify-center pt-2">
+                <button
+                  type="button"
+                  onClick={loadOlderCloudEvents}
+                  disabled={cloudOlderLoading}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {cloudOlderLoading ? 'Loading…' : 'Load older cloud events'}
+                </button>
+              </div>
+            )}
           </div>
         )}
 

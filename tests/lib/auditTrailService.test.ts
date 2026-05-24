@@ -5,6 +5,7 @@ import {
   mapStoredRecordToAuditEvent,
   filterAuditEvents,
   exportAuditEventsToCSV,
+  getOldestCreatedAt,
   type AuditEvent,
 } from '../../lib/utils/auditTrailService';
 
@@ -174,6 +175,44 @@ describe('auditTrailService', () => {
     it('round-trips empty metadata as {}', () => {
       const csv = exportAuditEventsToCSV([{ ...events[0], metadata: {} } as AuditEvent]);
       expect(csv.split('\r\n')[1]).toContain(',{}');
+    });
+  });
+
+  describe('getOldestCreatedAt', () => {
+    it('returns undefined for an empty set', () => {
+      expect(getOldestCreatedAt([])).toBeUndefined();
+    });
+
+    it('returns undefined when no row carries a usable string timestamp', () => {
+      expect(
+        getOldestCreatedAt([
+          null,
+          'not-an-object',
+          { created_at: 42 },
+          { created_at: '' },
+          { other: 'field' },
+        ]),
+      ).toBeUndefined();
+    });
+
+    it('returns the lexicographically smallest ISO string (= chronologically oldest)', () => {
+      const rows = [
+        { created_at: '2026-03-26T10:00:00.000Z' },
+        { created_at: '2026-03-20T00:00:00.000Z' },
+        { created_at: '2026-03-25T23:59:59.999Z' },
+      ];
+      expect(getOldestCreatedAt(rows)).toBe('2026-03-20T00:00:00.000Z');
+    });
+
+    it('ignores malformed rows but still finds the oldest valid one', () => {
+      const rows: unknown[] = [
+        { created_at: '2026-03-26T10:00:00.000Z' },
+        null,
+        { created_at: undefined },
+        { created_at: '2026-01-01T00:00:00.000Z' },
+        { created_at: 9999 },
+      ];
+      expect(getOldestCreatedAt(rows)).toBe('2026-01-01T00:00:00.000Z');
     });
   });
 });
