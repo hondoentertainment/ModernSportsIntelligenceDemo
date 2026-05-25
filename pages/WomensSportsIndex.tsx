@@ -14,7 +14,7 @@ import {
   getMarketCapByLeague,
   getSportConfig,
   formatCurrency,
-  type MarketIndex,
+  type InvestableIndex,
   type AthleteCard,
   type GrowthMetric,
   type EmergingMarket,
@@ -23,14 +23,28 @@ import {
   type LeagueProfile,
   type MarketComparison,
   type CollectorDemographic,
+  type WomensSport,
 } from '../lib/analytics/womensSportsIndexService.ts';
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,
 } from 'recharts';
 
+const SPORT_COLORS: Record<WomensSport, string> = {
+  wnba: '#f97316',
+  nwsl: '#10b981',
+  wta: '#a855f7',
+  lpga: '#ec4899',
+  olympics: '#eab308',
+  volleyball: '#06b6d4',
+  softball: '#ef4444',
+  hockey: '#3b82f6',
+};
+
+const DEMOGRAPHIC_COLORS = ['#f97316', '#10b981', '#a855f7', '#ec4899', '#eab308', '#06b6d4', '#ef4444', '#3b82f6'];
+
 const WomensSportsIndex: React.FC = () => {
-  const [indices, setIndices] = useState<MarketIndex[]>([]);
+  const [investableIndices, setInvestableIndices] = useState<InvestableIndex[]>([]);
   const [athletes, setAthletes] = useState<AthleteCard[]>([]);
   const [growthMetrics, setGrowthMetrics] = useState<GrowthMetric[]>([]);
   const [emergingMarkets, setEmergingMarkets] = useState<EmergingMarket[]>([]);
@@ -44,7 +58,7 @@ const WomensSportsIndex: React.FC = () => {
 
   useEffect(() => {
     try {
-      setIndices(getMarketIndices());
+      setInvestableIndices(getMarketIndices());
       setAthletes(getAthleteCards());
       setGrowthMetrics(getGrowthMetrics());
       setEmergingMarkets(getEmergingMarkets());
@@ -61,14 +75,21 @@ const WomensSportsIndex: React.FC = () => {
   }, []);
 
   const topPerformers = useMemo(() => getTopPerformers(15), []);
-  const marketCapData = useMemo(() => getMarketCapByLeague(), []);
+  const marketCapData = useMemo(() => {
+    const caps = getMarketCapByLeague();
+    return (Object.entries(caps) as [WomensSport, number][]).map(([sport, marketCap]) => ({
+      label: getSportConfig(sport).label,
+      marketCap,
+      color: SPORT_COLORS[sport],
+    }));
+  }, []);
 
-  const totalMarketCap = useMemo(() => indices.reduce((s, i) => s + i.marketCap, 0), [indices]);
+  const totalMarketCap = useMemo(() => leagueProfiles.reduce((s, lp) => s + lp.cardMarketCap, 0), [leagueProfiles]);
   const avgGrowth = useMemo(() => {
-    if (indices.length === 0) return 0;
-    return indices.reduce((s, i) => s + i.yoyGrowth, 0) / indices.length;
-  }, [indices]);
-  const totalListings = useMemo(() => indices.reduce((s, i) => s + i.totalListings, 0), [indices]);
+    if (leagueProfiles.length === 0) return 0;
+    return leagueProfiles.reduce((s, lp) => s + lp.growthRate, 0) / leagueProfiles.length;
+  }, [leagueProfiles]);
+  const totalListings = useMemo(() => comparisons.reduce((s, c) => s + c.activeListings, 0), [comparisons]);
   const buySignals = useMemo(() => signals.filter(s => s.type === 'buy').length, [signals]);
 
   // Index timeline data for LineChart
@@ -139,7 +160,7 @@ const WomensSportsIndex: React.FC = () => {
           </div>
         </div>
         <span className="px-3 py-1.5 text-sm font-bold rounded-full bg-emerald-500/20 text-emerald-300">
-          {indices.length} LEAGUES TRACKED
+          {leagueProfiles.length} LEAGUES TRACKED
         </span>
       </div>
 
@@ -167,45 +188,61 @@ const WomensSportsIndex: React.FC = () => {
         </div>
         <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
           <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Leagues</p>
-          <p className="text-3xl font-bold text-pink-400">{indices.length}</p>
+          <p className="text-3xl font-bold text-pink-400">{leagueProfiles.length}</p>
         </div>
       </div>
 
       {/* League Index Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {indices.map(idx => {
-          const sc = getSportConfig(idx.sport);
+        {leagueProfiles.map(lp => {
+          const sc = getSportConfig(lp.sport);
+          const trending = lp.growthRate >= 200 ? 'up' : lp.growthRate < 100 ? 'down' : 'stable';
           return (
-            <div key={idx.id} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-slate-600/50 transition-colors">
+            <div key={lp.id} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 hover:border-slate-600/50 transition-colors">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: idx.color }} />
-                  <span className={`text-sm font-bold ${sc.text}`}>{idx.sportLabel}</span>
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: SPORT_COLORS[lp.sport] }} />
+                  <span className={`text-sm font-bold ${sc.text}`}>{lp.leagueName}</span>
                 </div>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${idx.trending === 'up' ? 'bg-emerald-500/20 text-emerald-400' : idx.trending === 'down' ? 'bg-red-500/20 text-red-400' : 'bg-slate-500/20 text-slate-400'}`}>
-                  {idx.trending === 'up' ? 'BULLISH' : idx.trending === 'down' ? 'BEARISH' : 'STABLE'}
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${trending === 'up' ? 'bg-emerald-500/20 text-emerald-400' : trending === 'down' ? 'bg-red-500/20 text-red-400' : 'bg-slate-500/20 text-slate-400'}`}>
+                  {trending === 'up' ? 'BULLISH' : trending === 'down' ? 'BEARISH' : 'STABLE'}
                 </span>
               </div>
-              <p className="text-2xl font-bold text-white mb-1">{idx.indexValue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-white mb-1">{formatCurrency(lp.cardMarketCap)}</p>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xs text-emerald-400 font-bold flex items-center gap-0.5">
-                  <TrendingUp size={10} /> +{idx.changePercent.toFixed(1)}%
+                  <TrendingUp size={10} /> +{lp.growthRate.toFixed(0)}%
                 </span>
-                <span className="text-[10px] text-slate-500">30d</span>
+                <span className="text-[10px] text-slate-500">YoY</span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-center border-t border-slate-700/50 pt-3">
                 <div>
-                  <p className="text-[10px] text-slate-500">Market Cap</p>
-                  <p className="text-xs font-bold text-white">{formatCurrency(idx.marketCap)}</p>
+                  <p className="text-[10px] text-slate-500">Top Card</p>
+                  <p className="text-xs font-bold text-white truncate">{lp.topCard}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-slate-500">YoY Growth</p>
-                  <p className="text-xs font-bold text-emerald-400">+{idx.yoyGrowth}%</p>
+                  <p className="text-[10px] text-slate-500">Top Value</p>
+                  <p className="text-xs font-bold text-emerald-400">{formatCurrency(lp.topCardValue)}</p>
                 </div>
               </div>
             </div>
           );
         })}
+      </div>
+
+      {/* Investable Indices */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {investableIndices.map(idx => (
+          <div key={idx.id} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5">
+            <p className="text-sm font-bold text-white mb-1">{idx.name}</p>
+            <p className="text-2xl font-bold text-emerald-400 mb-2">{idx.currentValue.toLocaleString()}</p>
+            <p className="text-xs text-slate-400 mb-3">{idx.description}</p>
+            <div className="flex items-center justify-between text-[10px]">
+              <span className="text-slate-500">{idx.constituents} constituents</span>
+              <span className="text-brand-lime font-bold">+{idx.yearToDateReturn.toFixed(1)}% YTD</span>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Multi-League Index Timeline (LineChart) + Market Cap Growth (AreaChart) */}
@@ -299,22 +336,22 @@ const WomensSportsIndex: React.FC = () => {
                     <td className="py-2.5 px-3">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-white">{card.name}</span>
-                        {card.isRookie && <span className="text-[9px] px-1 py-0.5 bg-amber-500/20 text-amber-400 rounded font-bold">RC</span>}
-                        {card.graded && card.grade && <span className="text-[9px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded font-bold">{card.grade}</span>}
+                        {card.rookie && <span className="text-[9px] px-1 py-0.5 bg-amber-500/20 text-amber-400 rounded font-bold">RC</span>}
+                        {card.autograph && <span className="text-[9px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded font-bold">AUTO</span>}
                       </div>
                     </td>
                     <td className="py-2.5 px-3">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${sc.bg} ${sc.text}`}>{sc.label}</span>
                     </td>
-                    <td className="py-2.5 px-3 text-xs text-slate-400 max-w-[160px] truncate">{card.cardDescription}</td>
+                    <td className="py-2.5 px-3 text-xs text-slate-400 max-w-[160px] truncate">{card.year} {card.cardSet}</td>
                     <td className="py-2.5 px-3 text-right font-bold text-white">{formatCurrency(card.currentValue)}</td>
                     <td className="py-2.5 px-3 text-right">
-                      <span className={`font-bold ${card.changePercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {card.changePercent >= 0 ? '+' : ''}{card.changePercent.toFixed(1)}%
+                      <span className={`font-bold ${card.growthPercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                        {card.growthPercent >= 0 ? '+' : ''}{card.growthPercent.toFixed(1)}%
                       </span>
                     </td>
-                    <td className="py-2.5 px-3 text-right text-xs text-slate-400">{formatCurrency(card.allTimeHigh)}</td>
-                    <td className="py-2.5 px-3 text-right text-xs text-slate-400">{card.volume30d}</td>
+                    <td className="py-2.5 px-3 text-right text-xs text-slate-400">{formatCurrency(card.peakValue)}</td>
+                    <td className="py-2.5 px-3 text-right text-xs text-slate-400">{card.volume.toLocaleString()}</td>
                   </tr>
                 );
               })}
@@ -334,22 +371,24 @@ const WomensSportsIndex: React.FC = () => {
           <div className="space-y-3">
             {emergingMarkets.map(em => {
               const sc = getSportConfig(em.sport);
+              const opportunityScore = Math.min(100, Math.round(em.growthRate / 5));
               return (
                 <div key={em.id} className="p-4 bg-slate-900/50 border border-slate-700/30 rounded-xl">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${sc.bg} ${sc.text}`}>{em.sportLabel}</span>
-                      <span className="text-sm font-bold text-white">{em.region}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${sc.bg} ${sc.text}`}>{sc.label}</span>
+                      <span className="text-sm font-bold text-white">{em.name}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${em.riskLevel === 'low' ? 'bg-emerald-500/20 text-emerald-400' : em.riskLevel === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'}`}>
                         {em.riskLevel.toUpperCase()} RISK
                       </span>
-                      <span className="text-sm font-bold text-violet-400">{em.opportunityScore}/100</span>
+                      <span className="text-sm font-bold text-violet-400">{opportunityScore}/100</span>
                     </div>
                   </div>
-                  <p className="text-xs text-slate-400 mb-2">{em.catalyst}</p>
+                  <p className="text-xs text-slate-400 mb-2">{em.description}</p>
                   <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-slate-500">Region: <span className="text-white font-bold">{em.region}</span></span>
                     <span className="text-slate-500">Market Size: <span className="text-white font-bold">{formatCurrency(em.marketSize)}</span></span>
                     <span className="text-emerald-400 font-bold">+{em.growthRate}% YoY</span>
                   </div>
@@ -377,7 +416,9 @@ const WomensSportsIndex: React.FC = () => {
                 ? { bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', text: 'text-emerald-400', label: 'BUY' }
                 : sig.type === 'sell'
                 ? { bg: 'bg-red-500/10', border: 'border-red-500/20', text: 'text-red-400', label: 'SELL' }
-                : { bg: 'bg-amber-500/10', border: 'border-amber-500/20', text: 'text-amber-400', label: 'HOLD' };
+                : sig.type === 'hold'
+                ? { bg: 'bg-amber-500/10', border: 'border-amber-500/20', text: 'text-amber-400', label: 'HOLD' }
+                : { bg: 'bg-cyan-500/10', border: 'border-cyan-500/20', text: 'text-cyan-400', label: 'WATCH' };
               return (
                 <div key={sig.id} className={`p-4 rounded-xl border ${signalConfig.bg} ${signalConfig.border}`}>
                   <div className="flex items-center justify-between mb-2">
@@ -390,11 +431,11 @@ const WomensSportsIndex: React.FC = () => {
                       <span className="text-[10px] text-slate-400">{sig.confidence}% confidence</span>
                     </div>
                   </div>
-                  <p className="text-sm font-bold text-white mb-1">{sig.athlete} &mdash; {sig.card}</p>
-                  <p className="text-xs text-slate-400 mb-2">{sig.rationale}</p>
+                  <p className="text-sm font-bold text-white mb-1">{sig.athlete}</p>
+                  <p className="text-xs text-slate-400 mb-2">{sig.reason}</p>
                   <div className="flex items-center justify-between text-[10px]">
-                    <span className="text-slate-500">Current: <span className="text-white font-bold">{formatCurrency(sig.currentValue)}</span></span>
-                    <span className={`font-bold ${signalConfig.text}`}>Target: {formatCurrency(sig.targetValue)}</span>
+                    <span className="text-slate-500">Current: <span className="text-white font-bold">{formatCurrency(sig.currentPrice)}</span></span>
+                    <span className={`font-bold ${signalConfig.text}`}>Target: {formatCurrency(sig.priceTarget)}</span>
                     <span className="text-slate-500">{sig.timeframe}</span>
                   </div>
                 </div>
@@ -424,19 +465,19 @@ const WomensSportsIndex: React.FC = () => {
                 />
                 <Bar dataKey="percentage" name="Share" radius={[4, 4, 0, 0]}>
                   {demographics.map((d, idx) => (
-                    <Cell key={idx} fill={d.color} />
+                    <Cell key={idx} fill={DEMOGRAPHIC_COLORS[idx % DEMOGRAPHIC_COLORS.length]} />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
           <div className="mt-3 space-y-1.5">
-            {demographics.map(d => {
-              const sc = getSportConfig(d.topSport);
+            {demographics.map((d, idx) => {
+              const sc = getSportConfig(d.preferredSport);
               return (
                 <div key={d.id} className="flex items-center justify-between text-[10px]">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: DEMOGRAPHIC_COLORS[idx % DEMOGRAPHIC_COLORS.length] }} />
                     <span className="text-slate-400">{d.segment}</span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -462,20 +503,20 @@ const WomensSportsIndex: React.FC = () => {
               return (
                 <div key={gm.id} className="flex items-center justify-between p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex-shrink-0 ${sc.bg} ${sc.text}`}>{gm.sportLabel}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex-shrink-0 ${sc.bg} ${sc.text}`}>{sc.label}</span>
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-white truncate">{gm.metric}</p>
+                      <p className="text-sm font-bold text-white truncate">{gm.category}</p>
                       <p className="text-[10px] text-slate-500">{gm.period}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0 ml-2">
                     <div className="text-right">
                       <p className="text-sm font-bold text-white">
-                        {gm.unit === 'USD' ? formatCurrency(gm.currentValue) : gm.currentValue.toLocaleString()} {gm.unit !== 'USD' ? gm.unit : ''}
+                        {gm.currentValue >= 1_000_000 ? formatCurrency(gm.currentValue) : gm.currentValue.toLocaleString()}
                       </p>
                     </div>
-                    <span className={`text-xs font-bold px-2 py-1 rounded ${gm.changePercent >= 100 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                      +{gm.changePercent.toFixed(0)}%
+                    <span className={`text-xs font-bold px-2 py-1 rounded ${gm.growthPercent >= 100 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                      +{gm.growthPercent.toFixed(0)}%
                     </span>
                   </div>
                 </div>
@@ -497,8 +538,8 @@ const WomensSportsIndex: React.FC = () => {
             return (
               <div key={ms.id} className="flex items-start gap-4 p-4 bg-slate-900/50 border border-slate-700/30 rounded-xl">
                 <div className="flex flex-col items-center flex-shrink-0">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold ${ms.impactScore >= 90 ? 'bg-emerald-500/20 text-emerald-400' : ms.impactScore >= 80 ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-500/20 text-slate-400'}`}>
-                    {ms.impactScore}
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold ${ms.marketImpact >= 300 ? 'bg-emerald-500/20 text-emerald-400' : ms.marketImpact >= 150 ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-500/20 text-slate-400'}`}>
+                    {ms.marketImpact}
                   </div>
                   <span className="text-[9px] text-slate-600 mt-1">impact</span>
                 </div>
@@ -511,8 +552,8 @@ const WomensSportsIndex: React.FC = () => {
                   <p className="text-xs text-slate-400">{ms.description}</p>
                 </div>
                 <div className="flex-shrink-0 text-right">
-                  <p className="text-sm font-bold text-emerald-400">+{ms.priceImpact}%</p>
-                  <p className="text-[10px] text-slate-500">price impact</p>
+                  <p className="text-sm font-bold text-emerald-400">+{ms.marketImpact}%</p>
+                  <p className="text-[10px] text-slate-500">market impact</p>
                 </div>
               </div>
             );
@@ -530,27 +571,28 @@ const WomensSportsIndex: React.FC = () => {
           {comparisons.map(mc => (
             <div key={mc.id} className="p-4 bg-slate-900/50 border border-slate-700/30 rounded-xl">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-bold text-white">{mc.sport}</span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${mc.gapTrend === 'narrowing' ? 'bg-emerald-500/20 text-emerald-400' : mc.gapTrend === 'widening' ? 'bg-red-500/20 text-red-400' : 'bg-slate-500/20 text-slate-400'}`}>
-                  {mc.gapTrend === 'narrowing' ? 'GAP CLOSING' : mc.gapTrend === 'widening' ? 'GAP WIDENING' : 'STABLE'}
+                <span className="text-sm font-bold text-white">{mc.sportLabel}</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/20 text-emerald-400">
+                  +{mc.yearOverYearGrowth}% YoY
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-3 mb-3">
                 <div>
-                  <p className="text-[10px] text-slate-500 mb-0.5">{mc.athleteWomens}</p>
-                  <p className="text-lg font-bold text-emerald-400">{formatCurrency(mc.womensValue)}</p>
+                  <p className="text-[10px] text-slate-500 mb-0.5">Avg Card Value</p>
+                  <p className="text-lg font-bold text-emerald-400">{formatCurrency(mc.avgCardValue)}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-slate-500 mb-0.5">{mc.athleteMens}</p>
-                  <p className="text-lg font-bold text-blue-400">{formatCurrency(mc.mensValue)}</p>
+                  <p className="text-[10px] text-slate-500 mb-0.5">Market Cap</p>
+                  <p className="text-lg font-bold text-blue-400">{formatCurrency(mc.totalMarketCap)}</p>
                 </div>
               </div>
               <div className="flex items-center justify-between text-[10px] border-t border-slate-700/50 pt-2">
-                <span className="text-slate-500">Value Gap: <span className="text-white font-bold">{mc.valueGap.toFixed(1)}%</span></span>
-                <span className={`font-bold flex items-center gap-0.5 ${mc.gapChangePercent < 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {mc.gapChangePercent < 0 ? <TrendingDown size={10} /> : <TrendingUp size={10} />}
-                  {Math.abs(mc.gapChangePercent).toFixed(1)}%
-                </span>
+                <span className="text-slate-500">Top Athlete: <span className="text-white font-bold">{mc.topAthlete}</span></span>
+                <span className="text-emerald-400 font-bold">{formatCurrency(mc.topAthleteValue)}</span>
+              </div>
+              <div className="flex items-center justify-between text-[10px] mt-1">
+                <span className="text-slate-500">{mc.activeListings.toLocaleString()} active listings</span>
+                <span className="text-slate-500">{mc.avgDaysToSell}d avg to sell</span>
               </div>
             </div>
           ))}
@@ -569,8 +611,8 @@ const WomensSportsIndex: React.FC = () => {
             return (
               <div key={lp.id} className="p-4 rounded-xl border bg-slate-900/50 border-slate-700/30 hover:border-slate-600/50 transition-colors">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: lp.color }} />
-                  <span className={`text-sm font-bold ${sc.text}`}>{lp.sportLabel}</span>
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: SPORT_COLORS[lp.sport] }} />
+                  <span className={`text-sm font-bold ${sc.text}`}>{lp.leagueName}</span>
                 </div>
                 <div className="space-y-2 text-[10px]">
                   <div className="flex justify-between">
@@ -579,27 +621,27 @@ const WomensSportsIndex: React.FC = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Teams</span>
-                    <span className="text-white font-bold">{lp.teams}</span>
+                    <span className="text-white font-bold">{lp.teams || 'N/A'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Avg Attendance</span>
-                    <span className="text-white font-bold">{lp.avgAttendance.toLocaleString()}</span>
+                    <span className="text-white font-bold">{lp.avgAttendance > 0 ? lp.avgAttendance.toLocaleString() : 'N/A'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">TV Deal</span>
-                    <span className="text-white font-bold truncate ml-2">{lp.tvDeal}</span>
+                    <span className="text-white font-bold truncate ml-2">{lp.tvDeal > 0 ? formatCurrency(lp.tvDeal) : 'N/A'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Card Market</span>
-                    <span className="text-emerald-400 font-bold">{formatCurrency(lp.cardMarketSize)}</span>
+                    <span className="text-emerald-400 font-bold">{formatCurrency(lp.cardMarketCap)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Media Growth</span>
-                    <span className="text-brand-lime font-bold">+{lp.mediaGrowth}%</span>
+                    <span className="text-slate-500">Growth</span>
+                    <span className="text-brand-lime font-bold">+{lp.growthRate}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Top Player</span>
-                    <span className="text-amber-400 font-bold truncate ml-2">{lp.topPlayer}</span>
+                    <span className="text-slate-500">Top Card</span>
+                    <span className="text-amber-400 font-bold truncate ml-2">{lp.topCard}</span>
                   </div>
                 </div>
               </div>

@@ -77,9 +77,13 @@ import StrategyMap from '../components/StrategyMap.tsx';
 import ArbitrageSwarmDashboard from '../components/ArbitrageSwarmDashboard.tsx';
 import DashboardFeatureWidgets from '../components/DashboardFeatureWidgets.tsx';
 import PricingTruthHealthPanel from '../components/PricingTruthHealthPanel.tsx';
+import { useAuth } from '../contexts/AuthContext';
+import { fetchPublicProfile } from '../lib/social/socialService';
+import type { UserProfile } from '../types';
 
 
 const Dashboard: React.FC = () => {
+  const { user } = useAuth();
   // Shared inventory state
   const {
     inventory,
@@ -115,6 +119,7 @@ const Dashboard: React.FC = () => {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [showBriefing, setShowBriefing] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isScanOpen, setIsScanOpen] = useState(false);
   const [isNegotiationOpen, setIsNegotiationOpen] = useState(false);
   const [negotiationTarget, setNegotiationTarget] = useState<any>(null);
@@ -123,6 +128,34 @@ const Dashboard: React.FC = () => {
   // Identity Metrics
   const alphaScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
   const tier = useMemo(() => getCollectorTier(alphaScore), [alphaScore]);
+
+  useEffect(() => {
+    if (!user?.email) return;
+    const username = user.email.split('@')[0];
+    fetchPublicProfile(username).then((profile) => {
+      if (profile) setUserProfile(profile);
+    });
+  }, [user]);
+
+  const shareProfile = useMemo((): UserProfile | null => {
+    const username = user?.email?.split('@')[0] ?? userProfile?.username;
+    if (!username) return null;
+
+    const roi = syncMeta.totalValue > 0 ? ((syncMeta.totalValue - 12000) / 12000) * 100 : 0;
+    return {
+      id: userProfile?.id ?? user?.id ?? 'local-user',
+      username,
+      displayName: userProfile?.displayName,
+      bio: userProfile?.bio,
+      avatarUrl: userProfile?.avatarUrl,
+      isPublic: userProfile?.isPublic ?? false,
+      joinedAt: userProfile?.joinedAt ?? new Date().toISOString(),
+      alphaScore,
+      portfolioValue: syncMeta.totalValue,
+      roi,
+      tier: tier.title,
+    };
+  }, [user, userProfile, alphaScore, syncMeta.totalValue, tier.title]);
   const dnaData = useMemo(() => getPortfolioDNA(inventory), [inventory]);
   const signals = useMemo(() => detectSignals(targets, inventory), [targets, inventory]);
   const [marketSentiment, setMarketSentiment] = useState('Analyzing portfolio alpha signals...');
@@ -275,7 +308,32 @@ const Dashboard: React.FC = () => {
         </section>
       )}
 
-      {inventory.length === 0 ? (
+      {loading && inventory.length === 0 ? (
+        /* Initial fetch in flight — show a skeleton instead of the
+           "Deploy your first asset" empty-state CTA so authenticated
+           users with existing cards don't see a misleading empty UI. */
+        <div
+          className="min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden py-12"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <span className="sr-only">Loading your portfolio…</span>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-lime/5 blur-[100px] rounded-full animate-pulse pointer-events-none"></div>
+          <div className="relative z-10 w-full max-w-4xl space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="md:col-span-2 lg:col-span-2 h-64 rounded-[2.5rem] bg-brand-slate/40 border border-slate-800 animate-pulse" />
+              <div className="h-64 rounded-[2.5rem] bg-brand-slate/40 border border-slate-800 animate-pulse" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="h-28 rounded-2xl bg-brand-slate/40 border border-slate-800 animate-pulse" />
+              <div className="h-28 rounded-2xl bg-brand-slate/40 border border-slate-800 animate-pulse" />
+              <div className="h-28 rounded-2xl bg-brand-slate/40 border border-slate-800 animate-pulse" />
+            </div>
+            <p className="text-center text-[10px] font-black text-brand-muted/60 uppercase tracking-[0.6em] animate-pulse">Synchronizing portfolio…</p>
+          </div>
+        </div>
+      ) : inventory.length === 0 ? (
         /* Compact HUD Initialization State */
         <div className="min-h-[70vh] flex flex-col items-center justify-center relative overflow-hidden py-12">
           {/* Background Decorative Elements */}
@@ -1155,13 +1213,16 @@ const Dashboard: React.FC = () => {
         inventory={inventory}
       />
 
-      <ShareAlphaModal
-        isOpen={isShareOpen}
-        onClose={() => setIsShareOpen(false)}
-        alphaScore={alphaScore}
-        roi={syncMeta.totalValue > 0 ? ((syncMeta.totalValue - 12000) / 12000) * 100 : 0}
-        portfolioName="My Alpha HUD"
-      />
+      {shareProfile && (
+        <ShareAlphaModal
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+          profile={shareProfile}
+          onToggleVisibility={(isPublic) => {
+            setUserProfile((prev) => (prev ? { ...prev, isPublic } : { ...shareProfile, isPublic }));
+          }}
+        />
+      )}
 
       <OCRIngestionModal
         isOpen={isScanOpen}

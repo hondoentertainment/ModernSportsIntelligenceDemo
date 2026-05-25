@@ -5,6 +5,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
@@ -461,6 +462,7 @@ const DALInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) =
 // ─── App Layout ───────────────────────────────────────────────────────
 
 const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>> }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
+  const location = useLocation();
   const { inventory } = useSupabaseInventory();
   const [isWallHUDOpen, setIsWallHUDOpen] = useState(false);
   const [selectedGrail, setSelectedGrail] = useState<any>(null);
@@ -532,7 +534,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
 
         <main id="main-content" className="flex-1 p-4 md:p-8 page-container overflow-y-auto pb-24 md:pb-8" role="main">
           <AutoTierGate>
-          <LazyErrorBoundary>
+          <LazyErrorBoundary key={location.pathname}>
             <Suspense fallback={<PageLoadingFallback />}>
               <Routes>
                 <Route path="/" element={<Dashboard />} />

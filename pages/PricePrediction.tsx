@@ -26,7 +26,26 @@ import {
   type PriceHistory,
   type ComparableSale,
   type PredictionFactor,
+  type PredictionTimeframe,
+  type ConfidenceLevel,
 } from '../lib/analytics/pricePredictionService';
+
+const PREDICTION_TIMEFRAMES: PredictionTimeframe[] = ['7d', '30d', '60d', '90d', '180d', '1y'];
+
+const confidenceScore = (level: ConfidenceLevel): number => {
+  switch (level) {
+    case 'very_low': return 20;
+    case 'low': return 40;
+    case 'moderate': return 60;
+    case 'high': return 80;
+    case 'very_high': return 95;
+  }
+};
+
+const cardLabel = (cardName: string): string => {
+  const parts = cardName.split(' ');
+  return parts.slice(-3).join(' ') || cardName;
+};
 import {
   LineChart,
   Line,
@@ -46,9 +65,9 @@ const PricePrediction: React.FC = () => {
   const [predictions, setPredictions] = useState<PricePredictionType[]>([]);
   const [topUp, setTopUp] = useState<PricePredictionType[]>([]);
   const [topDown, setTopDown] = useState<PricePredictionType[]>([]);
-  const [selectedCard, setSelectedCard] = useState<string>('card_001');
+  const [selectedCard, setSelectedCard] = useState<string>('');
   const [fairOffers, setFairOffers] = useState<FairOffer[]>([]);
-  const [accuracy, setAccuracy] = useState<ModelAccuracy[]>([]);
+  const [accuracy, setAccuracy] = useState<ModelAccuracy | null>(null);
   const [history, setHistory] = useState<PriceHistory[]>([]);
   const [comparables, setComparables] = useState<ComparableSale[]>([]);
   const [factors, setFactors] = useState<PredictionFactor[]>([]);
@@ -59,9 +78,13 @@ const PricePrediction: React.FC = () => {
     try {
       const allPredictions = getPricePredictions();
       setPredictions(allPredictions);
-      setTopUp(getTopMovers('up', 5));
-      setTopDown(getTopMovers('down', 5));
+      const movers = getTopMovers();
+      setTopUp(movers.gainers.slice(0, 5));
+      setTopDown(movers.losers.slice(0, 5));
       setAccuracy(getModelAccuracy());
+      if (allPredictions.length > 0) {
+        setSelectedCard(allPredictions[0].id);
+      }
       setLoading(false);
     } catch {
       setError('Failed to load Price Prediction data');
@@ -76,8 +99,8 @@ const PricePrediction: React.FC = () => {
       const offer = generateFairOffer(selectedCard);
       if (offer) offers.push(offer);
       setFairOffers(offers);
-      setHistory(getPriceHistory(selectedCard, 90));
-      setComparables(getComparableSales(selectedCard, 8));
+      setHistory(getPriceHistory(selectedCard));
+      setComparables(getComparableSales(selectedCard));
       setFactors(getPredictionFactors(selectedCard));
     } catch {
       // ignore
@@ -85,17 +108,17 @@ const PricePrediction: React.FC = () => {
   }, [selectedCard]);
 
   const selectedPrediction = useMemo(() => {
-    return predictions.find(p => p.cardId === selectedCard) || null;
+    return predictions.find(p => p.id === selectedCard) || null;
   }, [predictions, selectedCard]);
 
   const scatterData = useMemo(() => {
     return predictions.map(p => {
-      const pred30 = p.predictions.find(pr => pr.timeframe === '30d');
+      const pred30 = p.predictions['30d'];
       return {
-        name: p.player,
-        predicted: pred30?.predictedPrice || p.currentPrice,
+        name: cardLabel(p.cardName),
+        predicted: pred30?.price || p.currentPrice,
         actual: p.currentPrice,
-        confidence: pred30?.confidenceScore || 0,
+        confidence: confidenceScore(p.confidence),
       };
     });
   }, [predictions]);
@@ -103,9 +126,9 @@ const PricePrediction: React.FC = () => {
   const weeklyMoversData = useMemo(() => {
     return predictions
       .map(p => {
-        const pred7 = p.predictions.find(pr => pr.timeframe === '7d');
+        const pred7 = p.predictions['7d'];
         return {
-          player: p.player.split(' ').pop() || p.player,
+          player: cardLabel(p.cardName),
           change: pred7?.changePercent || 0,
           price: p.currentPrice,
         };
@@ -122,11 +145,13 @@ const PricePrediction: React.FC = () => {
       price: h.price,
       predicted: null as number | null,
     }));
-    selectedPrediction.predictions.forEach(pred => {
+    PREDICTION_TIMEFRAMES.forEach(timeframe => {
+      const pred = selectedPrediction.predictions[timeframe];
+      if (!pred) return;
       combined.push({
-        date: pred.timeframe,
+        date: timeframe,
         price: null as unknown as number,
-        predicted: pred.predictedPrice,
+        predicted: pred.price,
       });
     });
     return combined;
@@ -134,14 +159,25 @@ const PricePrediction: React.FC = () => {
 
   const summaryStats = useMemo(() => {
     const avgConfidence = predictions.length > 0
-      ? Math.round(predictions.reduce((s, p) => s + (p.predictions.find(pr => pr.timeframe === '30d')?.confidenceScore || 0), 0) / predictions.length)
+      ? Math.round(predictions.reduce((s, p) => s + confidenceScore(p.confidence), 0) / predictions.length)
       : 0;
-    const upCount = predictions.filter(p => p.direction === 'up').length;
-    const downCount = predictions.filter(p => p.direction === 'down').length;
-    const stableCount = predictions.filter(p => p.direction === 'stable').length;
+    const upCount = predictions.filter(p => p.trending === 'up').length;
+    const downCount = predictions.filter(p => p.trending === 'down').length;
+    const stableCount = predictions.filter(p => p.trending === 'stable').length;
     const totalValue = predictions.reduce((s, p) => s + p.currentPrice, 0);
     return { avgConfidence, upCount, downCount, stableCount, totalValue, total: predictions.length };
   }, [predictions]);
+
+  const accuracyRows = useMemo(() => {
+    if (!accuracy) return [];
+    return [
+      { timeframe: '30d', accuracy: accuracy.thirtyDay },
+      { timeframe: '60d', accuracy: accuracy.sixtyDay },
+      { timeframe: '90d', accuracy: accuracy.ninetyDay },
+      { timeframe: '180d', accuracy: accuracy.oneEighty },
+      { timeframe: '1y', accuracy: accuracy.oneYear },
+    ];
+  }, [accuracy]);
 
   if (loading) {
     return (
@@ -214,16 +250,17 @@ const PricePrediction: React.FC = () => {
           </h2>
           <div className="space-y-3">
             {topUp.map(p => {
-              const pred30 = p.predictions.find(pr => pr.timeframe === '30d');
+              const pred30 = p.predictions['30d'];
+              const score = confidenceScore(p.confidence);
               return (
                 <div
                   key={p.id}
-                  className={`bg-slate-900/50 border rounded-xl p-3 cursor-pointer transition-colors ${selectedCard === p.cardId ? 'border-emerald-500/50' : 'border-slate-700/30 hover:border-slate-600/50'}`}
-                  onClick={() => setSelectedCard(p.cardId)}
+                  className={`bg-slate-900/50 border rounded-xl p-3 cursor-pointer transition-colors ${selectedCard === p.id ? 'border-emerald-500/50' : 'border-slate-700/30 hover:border-slate-600/50'}`}
+                  onClick={() => setSelectedCard(p.id)}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-bold text-white truncate max-w-[240px]">{p.player}</p>
+                      <p className="text-sm font-bold text-white truncate max-w-[240px]">{cardLabel(p.cardName)}</p>
                       <p className="text-[10px] text-slate-500">{p.sport} &bull; {formatCurrency(p.currentPrice)}</p>
                     </div>
                     <div className="text-right">
@@ -232,7 +269,7 @@ const PricePrediction: React.FC = () => {
                     </div>
                   </div>
                   <div className="mt-2 w-full bg-slate-700/30 rounded-full h-1.5">
-                    <div className="bg-emerald-500 rounded-full h-1.5" style={{ width: `${pred30?.confidenceScore || 0}%` }} />
+                    <div className="bg-emerald-500 rounded-full h-1.5" style={{ width: `${score}%` }} />
                   </div>
                 </div>
               );
@@ -248,16 +285,17 @@ const PricePrediction: React.FC = () => {
           </h2>
           <div className="space-y-3">
             {topDown.map(p => {
-              const pred30 = p.predictions.find(pr => pr.timeframe === '30d');
+              const pred30 = p.predictions['30d'];
+              const score = confidenceScore(p.confidence);
               return (
                 <div
                   key={p.id}
-                  className={`bg-slate-900/50 border rounded-xl p-3 cursor-pointer transition-colors ${selectedCard === p.cardId ? 'border-red-500/50' : 'border-slate-700/30 hover:border-slate-600/50'}`}
-                  onClick={() => setSelectedCard(p.cardId)}
+                  className={`bg-slate-900/50 border rounded-xl p-3 cursor-pointer transition-colors ${selectedCard === p.id ? 'border-red-500/50' : 'border-slate-700/30 hover:border-slate-600/50'}`}
+                  onClick={() => setSelectedCard(p.id)}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-bold text-white truncate max-w-[240px]">{p.player}</p>
+                      <p className="text-sm font-bold text-white truncate max-w-[240px]">{cardLabel(p.cardName)}</p>
                       <p className="text-[10px] text-slate-500">{p.sport} &bull; {formatCurrency(p.currentPrice)}</p>
                     </div>
                     <div className="text-right">
@@ -266,7 +304,7 @@ const PricePrediction: React.FC = () => {
                     </div>
                   </div>
                   <div className="mt-2 w-full bg-slate-700/30 rounded-full h-1.5">
-                    <div className="bg-red-500 rounded-full h-1.5" style={{ width: `${pred30?.confidenceScore || 0}%` }} />
+                    <div className="bg-red-500 rounded-full h-1.5" style={{ width: `${score}%` }} />
                   </div>
                 </div>
               );
@@ -280,7 +318,7 @@ const PricePrediction: React.FC = () => {
         <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
           <h2 className="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
             <Target size={18} className="text-blue-400" />
-            Prediction Details &mdash; {selectedPrediction.player}
+            Prediction Details &mdash; {selectedPrediction.cardName}
           </h2>
           <div className="mb-2">
             <select
@@ -289,29 +327,32 @@ const PricePrediction: React.FC = () => {
               className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500"
             >
               {predictions.map(p => (
-                <option key={p.cardId} value={p.cardId}>{p.cardName}</option>
+                <option key={p.id} value={p.id}>{p.cardName}</option>
               ))}
             </select>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mt-4">
-            {selectedPrediction.predictions.map(pred => {
-              const confCfg = getConfidenceConfig(pred.confidence);
+            {PREDICTION_TIMEFRAMES.map(timeframe => {
+              const pred = selectedPrediction.predictions[timeframe];
+              if (!pred) return null;
+              const confCfg = getConfidenceConfig(selectedPrediction.confidence);
+              const score = confidenceScore(selectedPrediction.confidence);
               return (
-                <div key={pred.timeframe} className={`bg-slate-900/50 border rounded-xl p-3 ${confCfg.border}`}>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">{pred.timeframe}</p>
-                  <p className="text-lg font-bold text-white">{formatCurrency(pred.predictedPrice)}</p>
+                <div key={timeframe} className={`bg-slate-900/50 border rounded-xl p-3 ${confCfg.border}`}>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">{timeframe}</p>
+                  <p className="text-lg font-bold text-white">{formatCurrency(pred.price)}</p>
                   <p className={`text-xs font-bold ${pred.changePercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {formatPercent(pred.changePercent)}
                   </p>
                   <div className="mt-2">
                     <div className="flex items-center justify-between mb-0.5">
                       <span className={`text-[9px] ${confCfg.text}`}>{confCfg.label}</span>
-                      <span className="text-[9px] text-slate-500">{pred.confidenceScore}%</span>
+                      <span className="text-[9px] text-slate-500">{score}%</span>
                     </div>
                     <div className="w-full bg-slate-700/30 rounded-full h-1">
                       <div
-                        className={`rounded-full h-1 ${pred.confidenceScore >= 80 ? 'bg-emerald-500' : pred.confidenceScore >= 60 ? 'bg-blue-500' : pred.confidenceScore >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
-                        style={{ width: `${pred.confidenceScore}%` }}
+                        className={`rounded-full h-1 ${score >= 80 ? 'bg-emerald-500' : score >= 60 ? 'bg-blue-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
+                        style={{ width: `${score}%` }}
                       />
                     </div>
                   </div>
@@ -353,7 +394,7 @@ const PricePrediction: React.FC = () => {
             {fairOffers.map(offer => {
               const confCfg = getConfidenceConfig(offer.confidence);
               return (
-                <React.Fragment key={offer.cardId}>
+                <React.Fragment key={offer.id}>
                   {/* Buy Range */}
                   <div className="bg-slate-900/50 border border-emerald-500/20 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-3">
@@ -361,43 +402,29 @@ const PricePrediction: React.FC = () => {
                       <span className={`text-[10px] px-2 py-0.5 rounded-full ${confCfg.bg} ${confCfg.text}`}>{confCfg.label}</span>
                     </div>
                     <div className="text-center mb-3">
-                      <p className="text-2xl font-bold text-emerald-400">{formatCurrency(offer.fairBuyPrice)}</p>
+                      <p className="text-2xl font-bold text-emerald-400">{formatCurrency(offer.buyFair)}</p>
                       <p className="text-[10px] text-slate-500">Fair Buy Price</p>
                     </div>
                     <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-                      <span>{formatCurrency(offer.buyRange.low)}</span>
+                      <span>{formatCurrency(offer.buyLow)}</span>
                       <span>Range</span>
-                      <span>{formatCurrency(offer.buyRange.high)}</span>
-                    </div>
-                    <div className="w-full bg-slate-700/30 rounded-full h-2 relative">
-                      <div className="bg-emerald-500/40 rounded-full h-2" style={{ width: '100%' }} />
-                      <div
-                        className="absolute top-0 h-2 w-1 bg-emerald-400 rounded-full"
-                        style={{ left: `${((offer.fairBuyPrice - offer.buyRange.low) / (offer.buyRange.high - offer.buyRange.low)) * 100}%` }}
-                      />
+                      <span>{formatCurrency(offer.buyFair)}</span>
                     </div>
                   </div>
                   {/* Sell Range */}
                   <div className="bg-slate-900/50 border border-blue-500/20 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-bold text-blue-400">Sell Range</span>
-                      <span className="text-[10px] text-slate-500">{offer.evidenceCount} evidence points</span>
+                      <span className="text-[10px] text-slate-500">{formatCurrency(offer.currentPrice)} current</span>
                     </div>
                     <div className="text-center mb-3">
-                      <p className="text-2xl font-bold text-blue-400">{formatCurrency(offer.fairSellPrice)}</p>
+                      <p className="text-2xl font-bold text-blue-400">{formatCurrency(offer.sellFair)}</p>
                       <p className="text-[10px] text-slate-500">Fair Sell Price</p>
                     </div>
                     <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
-                      <span>{formatCurrency(offer.sellRange.low)}</span>
+                      <span>{formatCurrency(offer.sellFair)}</span>
                       <span>Range</span>
-                      <span>{formatCurrency(offer.sellRange.high)}</span>
-                    </div>
-                    <div className="w-full bg-slate-700/30 rounded-full h-2 relative">
-                      <div className="bg-blue-500/40 rounded-full h-2" style={{ width: '100%' }} />
-                      <div
-                        className="absolute top-0 h-2 w-1 bg-blue-400 rounded-full"
-                        style={{ left: `${((offer.fairSellPrice - offer.sellRange.low) / (offer.sellRange.high - offer.sellRange.low)) * 100}%` }}
-                      />
+                      <span>{formatCurrency(offer.sellHigh)}</span>
                     </div>
                     <p className="text-[10px] text-slate-500 mt-3 italic">{offer.reasoning}</p>
                   </div>
@@ -419,38 +446,27 @@ const PricePrediction: React.FC = () => {
             <thead>
               <tr className="text-slate-500 border-b border-slate-700/50">
                 <th className="text-left py-2 pr-2">Timeframe</th>
-                <th className="text-right py-2 px-2">Within 5%</th>
-                <th className="text-right py-2 px-2">Within 10%</th>
-                <th className="text-right py-2 px-2">Within 20%</th>
-                <th className="text-right py-2 px-2">Mean Error</th>
-                <th className="text-right py-2 pl-2">Predictions</th>
+                <th className="text-right py-2 px-2">Accuracy</th>
               </tr>
             </thead>
             <tbody>
-              {accuracy.map(a => (
+              {accuracyRows.map(a => (
                 <tr key={a.timeframe} className="border-b border-slate-700/30">
                   <td className="py-2 pr-2 text-slate-300 font-bold uppercase">{a.timeframe}</td>
                   <td className="py-2 px-2 text-right">
-                    <span className={`font-bold ${a.within5Percent >= 70 ? 'text-emerald-400' : a.within5Percent >= 50 ? 'text-amber-400' : 'text-red-400'}`}>
-                      {a.within5Percent}%
+                    <span className={`font-bold ${a.accuracy >= 80 ? 'text-emerald-400' : a.accuracy >= 65 ? 'text-amber-400' : 'text-red-400'}`}>
+                      {a.accuracy}%
                     </span>
                   </td>
-                  <td className="py-2 px-2 text-right">
-                    <span className={`font-bold ${a.within10Percent >= 80 ? 'text-emerald-400' : a.within10Percent >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
-                      {a.within10Percent}%
-                    </span>
-                  </td>
-                  <td className="py-2 px-2 text-right">
-                    <span className={`font-bold ${a.within20Percent >= 85 ? 'text-emerald-400' : a.within20Percent >= 70 ? 'text-amber-400' : 'text-red-400'}`}>
-                      {a.within20Percent}%
-                    </span>
-                  </td>
-                  <td className="py-2 px-2 text-right text-slate-400">{a.meanError}%</td>
-                  <td className="py-2 pl-2 text-right text-slate-400">{a.totalPredictions.toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {accuracy && (
+            <p className="text-[10px] text-slate-500 mt-3">
+              {accuracy.totalPredictions.toLocaleString()} predictions calibrated through {new Date(accuracy.lastCalibrated).toLocaleDateString()}
+            </p>
+          )}
         </div>
       </div>
 
@@ -458,7 +474,7 @@ const PricePrediction: React.FC = () => {
       <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
         <h2 className="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
           <Search size={18} className="text-purple-400" />
-          Comparable Sales {selectedPrediction ? `\u2014 ${selectedPrediction.player}` : ''}
+          Comparable Sales {selectedPrediction ? `\u2014 ${cardLabel(selectedPrediction.cardName)}` : ''}
         </h2>
         {comparables.length > 0 ? (
           <div className="overflow-x-auto">
@@ -469,8 +485,7 @@ const PricePrediction: React.FC = () => {
                   <th className="text-left py-2 px-2">Grade</th>
                   <th className="text-right py-2 px-2">Price</th>
                   <th className="text-left py-2 px-2">Platform</th>
-                  <th className="text-left py-2 px-2">Type</th>
-                  <th className="text-right py-2 pl-2">Days Ago</th>
+                  <th className="text-left py-2 pl-2">Notes</th>
                 </tr>
               </thead>
               <tbody>
@@ -480,10 +495,7 @@ const PricePrediction: React.FC = () => {
                     <td className="py-2 px-2 text-slate-400">{sale.grade}</td>
                     <td className="py-2 px-2 text-right text-emerald-400 font-bold">${sale.price.toLocaleString()}</td>
                     <td className="py-2 px-2 text-slate-400">{sale.platform}</td>
-                    <td className="py-2 px-2">
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/50 text-slate-300">{sale.saleType}</span>
-                    </td>
-                    <td className="py-2 pl-2 text-right text-slate-500">{sale.daysAgo}d</td>
+                    <td className="py-2 pl-2 text-slate-500">{sale.notes || '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -498,35 +510,35 @@ const PricePrediction: React.FC = () => {
       <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
         <h2 className="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
           <Activity size={18} className="text-blue-400" />
-          Prediction Factors {selectedPrediction ? `\u2014 ${selectedPrediction.player}` : ''}
+          Prediction Factors {selectedPrediction ? `\u2014 ${cardLabel(selectedPrediction.cardName)}` : ''}
         </h2>
         <div className="space-y-3">
-          {factors.map((factor, idx) => (
-            <div key={idx} className="bg-slate-900/50 border border-slate-700/30 rounded-xl p-3">
+          {factors.map((factor) => (
+            <div key={factor.id} className="bg-slate-900/50 border border-slate-700/30 rounded-xl p-3">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-white">{factor.name}</span>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                    factor.impact === 'positive' ? 'bg-emerald-500/20 text-emerald-400' :
-                    factor.impact === 'negative' ? 'bg-red-500/20 text-red-400' :
+                    factor.direction === 'positive' ? 'bg-emerald-500/20 text-emerald-400' :
+                    factor.direction === 'negative' ? 'bg-red-500/20 text-red-400' :
                     'bg-slate-700/50 text-slate-400'
-                  }`}>{factor.impact}</span>
+                  }`}>{factor.direction}</span>
                 </div>
-                <span className="text-xs text-slate-500">Weight: {factor.weight}%</span>
+                <span className="text-xs text-slate-500">Weight: {Math.round(factor.weight * 100)}%</span>
               </div>
               <p className="text-[10px] text-slate-500 mb-2">{factor.description}</p>
               <div className="flex items-center gap-2">
                 <div className="flex-1 bg-slate-700/30 rounded-full h-2">
                   <div
                     className={`rounded-full h-2 ${
-                      factor.impact === 'positive' ? 'bg-emerald-500' :
-                      factor.impact === 'negative' ? 'bg-red-500' :
+                      factor.direction === 'positive' ? 'bg-emerald-500' :
+                      factor.direction === 'negative' ? 'bg-red-500' :
                       'bg-slate-500'
                     }`}
-                    style={{ width: `${factor.score}%` }}
+                    style={{ width: `${Math.min(100, Math.abs(factor.impact) * 8)}%` }}
                   />
                 </div>
-                <span className="text-xs text-slate-400 w-8 text-right">{factor.score}</span>
+                <span className="text-xs text-slate-400 w-8 text-right">{factor.impact > 0 ? '+' : ''}{factor.impact}</span>
               </div>
             </div>
           ))}

@@ -12,15 +12,16 @@ interface Props {
 
 const ShareAlphaModal: React.FC<Props> = ({ isOpen, onClose, profile, onToggleVisibility }) => {
     const [copied, setCopied] = useState(false);
-    const shareUrl = generateShareLink(profile.username);
 
-    const handleCopy = () => {
+    const handleCopy = (shareUrl: string) => {
         navigator.clipboard.writeText(shareUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
 
-    if (!isOpen) return null;
+    if (!isOpen || !profile?.username) return null;
+
+    const shareUrl = generateShareLink(profile.username);
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -83,7 +84,7 @@ const ShareAlphaModal: React.FC<Props> = ({ isOpen, onClose, profile, onToggleVi
                                     {shareUrl}
                                 </div>
                                 <button
-                                    onClick={handleCopy}
+                                    onClick={() => handleCopy(shareUrl)}
                                     className="px-6 bg-brand-lime text-brand-charcoal font-black rounded-2xl hover:scale-105 transition-all shadow-lg active:scale-95"
                                 >
                                     {copied ? <CheckCircle2 size={20} /> : <Copy size={20} />}

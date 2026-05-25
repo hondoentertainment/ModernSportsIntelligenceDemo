@@ -19,13 +19,17 @@ const Login: React.FC = () => {
         setError('');
         setLoading(true);
 
-        const { error } = await signIn(email, password);
-
-        if (error) {
-            setError(getFriendlyAuthMessage(error));
+        try {
+            const { error } = await signIn(email, password);
+            if (error) {
+                setError(getFriendlyAuthMessage(error));
+            } else {
+                navigate('/');
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Sign-in failed. Please try again.');
+        } finally {
             setLoading(false);
-        } else {
-            navigate('/');
         }
     };
 
