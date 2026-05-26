@@ -150,6 +150,14 @@ describe('featureCatalog', () => {
       expect(DISCOVERABLE_FEATURE_CATALOG.length).toBeGreaterThan(10);
       expect(DISCOVERABLE_FEATURE_CATALOG.length).toBeLessThan(FEATURE_CATALOG.length);
     });
+
+    it('excludes beta and demo surfaces by default', () => {
+      const discoverableIds = new Set(DISCOVERABLE_FEATURE_CATALOG.map((f) => f.id));
+      expect(discoverableIds.has('fractional-vault')).toBe(false);
+      expect(discoverableIds.has('provenance-chain')).toBe(false);
+      expect(discoverableIds.has('vision-grading')).toBe(false);
+      expect(discoverableIds.has('liquidity-pool')).toBe(false);
+    });
   });
 
   describe('v5.2 Frontier feature ids', () => {

@@ -23,6 +23,13 @@ Implements the contract in **[docs/SUPABASE_EDGE_FUNCTIONS.md](../../docs/SUPABA
 ```bash
 supabase functions deploy create-checkout-session
 supabase functions deploy create-billing-portal-session
+supabase functions deploy verify-psa-cert
+```
+
+Or run the repo orchestrator (migrations + all functions):
+
+```bash
+npm run deploy:infra
 ```
 
 ## Local serve

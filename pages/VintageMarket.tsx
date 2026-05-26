@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import {
   getEraIndices,
-  getVintageCards,
+  getVintageMarketCards,
   getEraPerformanceHistory,
   getEraMarketCaps,
   getNotableSets,
@@ -23,7 +23,7 @@ import {
   formatCurrency,
   formatConditionGrade,
   type EraIndex,
-  type VintageCard,
+  type VintageMarketCard,
   type EraPerformancePoint,
   type EraMarketCap,
   type NotableSet,
@@ -47,7 +47,7 @@ import {
 
 const VintageMarket: React.FC = () => {
   const [eraIndices, setEraIndices] = useState<EraIndex[]>([]);
-  const [vintageCards, setVintageCards] = useState<VintageCard[]>([]);
+  const [vintageCards, setVintageCards] = useState<VintageMarketCard[]>([]);
   const [performanceHistory, setPerformanceHistory] = useState<EraPerformancePoint[]>([]);
   const [eraMarketCaps, setEraMarketCaps] = useState<EraMarketCap[]>([]);
   const [notableSets, setNotableSets] = useState<NotableSet[]>([]);
@@ -62,7 +62,7 @@ const VintageMarket: React.FC = () => {
   useEffect(() => {
     try {
       setEraIndices(getEraIndices());
-      setVintageCards(getVintageCards());
+      setVintageCards(getVintageMarketCards());
       setPerformanceHistory(getEraPerformanceHistory());
       setEraMarketCaps(getEraMarketCaps());
       setNotableSets(getNotableSets());

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Radio, TrendingUp, TrendingDown, Zap } from 'lucide-react';
+import BetaFeatureBanner from '../components/BetaFeatureBanner';
 import { getLiveGames, getGameDaySnapshot, getLiveImpactAlerts, type LiveGame } from '../lib/analytics/liveGameImpactService.ts';
 import LiveGameImpactModal from '../components/LiveGameImpactModal.tsx';
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
@@ -20,6 +21,11 @@ const LiveImpact: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <BetaFeatureBanner
+        featureName="Live Game Impact Engine"
+        dataSourceLabel="Simulated replay scores and demo event feed (not live broadcast data)"
+        disclaimer="Latency and price-impact estimates are illustrative only."
+      />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-xl bg-red-500/20 animate-pulse">

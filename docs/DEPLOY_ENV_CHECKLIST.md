@@ -54,6 +54,11 @@ Use this when promoting a build to **production** (Vercel + Supabase + Stripe + 
 2. Signed-in checkout (test mode) → Stripe → webhook → `profiles` tier (if configured)
 3. `PLAYWRIGHT_BASE_URL=<url> npm run test:e2e:deployed`
 4. Run SQL in [scripts/rls-verify-queries.sql](../scripts/rls-verify-queries.sql) in Supabase SQL Editor
+5. `npm run deploy:infra:dry` — verify checklist; `npm run deploy:infra` when Supabase CLI is linked
+
+## GitHub Actions (optional)
+
+See [GITHUB_PRODUCTION_SECRETS.md](./GITHUB_PRODUCTION_SECRETS.md) for `ENABLE_DEPLOYED_E2E`, `PLAYWRIGHT_DEPLOYMENT_URL`, and `HEALTH_CHECK_URL`.
 
 ## References
 

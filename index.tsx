@@ -2,6 +2,7 @@ import './index.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { validateEnv } from './lib/utils/env';
+import { initFeatureFlags } from './lib/featureFlags';
 import { initSentry } from './lib/sentry';
 import App from './App.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
@@ -25,6 +26,7 @@ if (!configValidation.ok) {
 }
 
 validateEnv();
+initFeatureFlags();
 initSentry();
 
 const rootElement = document.getElementById('root');

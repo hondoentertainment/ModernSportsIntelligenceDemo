@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import BetaFeatureBanner from '../components/BetaFeatureBanner';
 import {
   Landmark, TrendingUp, TrendingDown, Users, Vote, DollarSign,
   BarChart3, ShieldCheck, Gavel, ArrowUpRight, ArrowDownRight,
@@ -774,6 +775,11 @@ const FractionalVault: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <BetaFeatureBanner
+        featureName="Fractional Vault & Copy-Trading"
+        dataSourceLabel="Simulated vault shares and governance (no securities offering or live execution)"
+        disclaimer="Fractional ownership shown here is a product demo only — not an investment product."
+      />
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-2.5 rounded-xl bg-purple-500/20">

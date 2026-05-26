@@ -57,4 +57,16 @@ test.describe('Deployed API (Vercel)', () => {
       code: expect.stringMatching(/api_auth_required|api_auth_misconfigured/),
     });
   });
+
+  test('POST /api/grading/psa/cert without auth returns 401 or 503', async ({ request }) => {
+    const res = await request.post('/api/grading/psa/cert', {
+      data: { certNumber: '12345678' },
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.status() === 404) {
+      test.skip(true, '/api/grading/psa/cert not available on this host.');
+      return;
+    }
+    expect([401, 503]).toContain(res.status());
+  });
 });

@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Package, AlertTriangle, TrendingUp, Calendar, BarChart3, DollarSign, Archive, Clock, Layers, Star } from 'lucide-react';
 import {
-  getSealedProducts,
+  getPortfolioProducts,
   getPriceTrends,
   getRipVsHoldAnalysis,
   getRoiByProductType,
-  getUpcomingReleases,
+  getUpcomingReleasesForPage,
   getVintageShowcase,
-  getSupplyEstimates,
+  getSupplyEstimatesForPage,
   getBreakEvenAnalysis,
   getProductTypeDistribution,
   formatCurrency,
-  type SealedProduct,
+  type PortfolioSealedProduct,
   type PriceTrend,
   type RipVsHold,
   type RoiByType,
@@ -26,7 +26,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 const CHART_COLORS = ['#8b5cf6', '#60a5fa', '#f87171', '#34d399', '#fbbf24', '#a78bfa', '#22d3ee', '#fb923c'];
 
 const SealedProductPage: React.FC = () => {
-  const [products, setProducts] = useState<SealedProduct[]>([]);
+  const [products, setProducts] = useState<PortfolioSealedProduct[]>([]);
   const [priceTrends, setPriceTrends] = useState<PriceTrend[]>([]);
   const [ripVsHold, setRipVsHold] = useState<RipVsHold[]>([]);
   const [roiByType, setRoiByType] = useState<RoiByType[]>([]);
@@ -40,13 +40,13 @@ const SealedProductPage: React.FC = () => {
 
   useEffect(() => {
     try {
-      setProducts(getSealedProducts());
+      setProducts(getPortfolioProducts());
       setPriceTrends(getPriceTrends());
       setRipVsHold(getRipVsHoldAnalysis());
       setRoiByType(getRoiByProductType());
-      setReleases(getUpcomingReleases());
+      setReleases(getUpcomingReleasesForPage());
       setVintage(getVintageShowcase());
-      setSupply(getSupplyEstimates());
+      setSupply(getSupplyEstimatesForPage());
       setBreakEven(getBreakEvenAnalysis());
       setDistribution(getProductTypeDistribution());
       setLoading(false);

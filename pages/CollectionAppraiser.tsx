@@ -17,7 +17,7 @@ import {
   getCardAppraisals,
   getValueDistribution,
   getDepreciationRates,
-  getInsuranceCoverage,
+  getInsurancePlans,
   getRiskFactors,
   getAppraisalCertificates,
   getSummaryStats,
@@ -74,7 +74,7 @@ const CollectionAppraiser: React.FC = () => {
       setAppraisals(getCardAppraisals());
       setDistribution(getValueDistribution());
       setDepreciation(getDepreciationRates());
-      setInsurance(getInsuranceCoverage());
+      setInsurance(getInsurancePlans());
       setRisks(getRiskFactors());
       setCertificates(getAppraisalCertificates());
       setSummary(getSummaryStats());

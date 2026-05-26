@@ -660,6 +660,56 @@ export function getProductTypeDistribution(): ProductTypeDistribution[] {
   return Object.entries(counts).map(([type, count]) => ({ type, count }));
 }
 
+export interface PortfolioSealedProduct extends SealedProduct {
+  purchasePrice: number;
+  currentValue: number;
+  roi: number;
+  quantity: number;
+  condition: string;
+}
+
+export function getPortfolioProducts(): PortfolioSealedProduct[] {
+  return getSealedProducts().map((product) => ({
+    ...product,
+    purchasePrice: product.releasePrice,
+    currentValue: product.currentPrice,
+    roi: product.priceChange1y,
+    quantity: 1,
+    condition: 'Sealed',
+  }));
+}
+
+export interface PageSupplyEstimate {
+  productName: string;
+  supplyLevel: 'scarce' | 'limited' | 'healthy';
+  estimatedSupply: number;
+  originalPrint: number;
+}
+
+export function getSupplyEstimatesForPage(): PageSupplyEstimate[] {
+  return getSupplyEstimates().map((estimate) => ({
+    productName: estimate.productName,
+    supplyLevel: estimate.scarcityRating.includes('scarce') || estimate.scarcityRating.includes('rare')
+      ? 'scarce'
+      : estimate.scarcityRating === 'moderate'
+        ? 'limited'
+        : 'healthy',
+    estimatedSupply: estimate.estimatedRemaining,
+    originalPrint: estimate.estimatedTotal,
+  }));
+}
+
+export function getUpcomingReleasesForPage(): UpcomingRelease[] {
+  return getUpcomingReleases().map((release) => ({
+    name: release.name,
+    sport: release.sport,
+    manufacturer: release.brand,
+    releaseDate: release.releaseDate,
+    hobbyBoxPrice: release.estimatedHobbyPrice,
+    hypeLevel: release.hypeLevel === 'extreme' ? 10 : release.hypeLevel === 'high' ? 8 : release.hypeLevel === 'medium' ? 6 : 4,
+  }));
+}
+
 // ---- Widget API Functions ----
 
 export function getRoiMetrics(): { totalValue: number; avgRoi: number; bestRoi: number } {

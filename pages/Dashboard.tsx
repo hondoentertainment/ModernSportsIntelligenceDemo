@@ -6,6 +6,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
+  lazy,
 } from 'react';
 import {
   CreditCard,
@@ -77,9 +78,25 @@ import StrategyMap from '../components/StrategyMap.tsx';
 import ArbitrageSwarmDashboard from '../components/ArbitrageSwarmDashboard.tsx';
 import DashboardFeatureWidgets from '../components/DashboardFeatureWidgets.tsx';
 import PricingTruthHealthPanel from '../components/PricingTruthHealthPanel.tsx';
+import LazyErrorBoundary from '../components/LazyErrorBoundary.tsx';
+import { WidgetLoadingFallback } from '../components/LazyLoadFallback.tsx';
 import { useAuth } from '../contexts/AuthContext';
 import { fetchPublicProfile } from '../lib/social/socialService';
 import type { UserProfile } from '../types';
+
+const BreakoutRadar = lazy(() => import('../components/BreakoutRadar.tsx'));
+const AgentInsightsPanel = lazy(() => import('../components/AgentInsightsPanel.tsx'));
+const LiquidityHeatmap = lazy(() => import('../components/LiquidityHeatmap.tsx'));
+const LiquidityPoolWidget = lazy(() => import('../components/LiquidityPoolWidget.tsx'));
+const TaxSummaryWidget = lazy(() => import('../components/TaxSummaryWidget.tsx'));
+const GradeAuditWidget = lazy(() => import('../components/GradeAuditWidget.tsx'));
+const RebalanceWidget = lazy(() => import('../components/RebalanceWidget.tsx'));
+const AuctionSniperWidget = lazy(() => import('../components/AuctionSniperWidget.tsx'));
+const PriceHistoryWidget = lazy(() => import('../components/PriceHistoryWidget.tsx'));
+const ConsignmentWidget = lazy(() => import('../components/ConsignmentWidget.tsx'));
+const AchievementWidget = lazy(() => import('../components/AchievementWidget.tsx'));
+const AnomalyWidget = lazy(() => import('../components/AnomalyWidget.tsx'));
+const RecentlyIngested = lazy(() => import('../components/dashboard/RecentlyIngested.tsx'));
 
 
 const Dashboard: React.FC = () => {
