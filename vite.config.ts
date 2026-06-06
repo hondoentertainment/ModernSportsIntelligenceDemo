@@ -48,7 +48,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
-    exclude: ['**/node_modules/**', '**/e2e/**', '**/*.spec.ts', '**/.claude/**'],
+    exclude: ['**/node_modules/**', '**/e2e/**', '**/*.spec.ts', '**/.claude/**', '**/ModernSportsIntelligenceDemo/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov', 'json-summary'],

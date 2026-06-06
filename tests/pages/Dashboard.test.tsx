@@ -61,6 +61,17 @@ const populatedInventory = [
 ];
 
 // ─── Hook mocks ──────────────────────────────────────────────────────
+vi.mock('../../contexts/AuthContext', () => ({
+    useAuth: () => ({
+        user: { id: 'test-user', email: 'test@example.com' },
+        session: null,
+        loading: false,
+        signIn: vi.fn(),
+        signOut: vi.fn(),
+        signUp: vi.fn(),
+    }),
+}));
+
 vi.mock('../../lib/utils/useSupabaseInventory.ts', () => ({
     useSupabaseInventory: () => ({
         inventory: mockState.inventory,
@@ -145,9 +156,7 @@ vi.mock('../../lib/utils/statsService.ts', () => ({
 // We render `null` for widgets whose internal effects would otherwise
 // reach for the network, exercise recharts measurement, or pull in the
 // undefined lazy widgets that the populated branch of Dashboard.tsx
-// still references (those sit inside LazyErrorBoundary in the file and
-// are stubbed at the boundary level via the LazyErrorBoundary mock
-// below).
+// references inside LazyErrorBoundary + Suspense — stubbed below.
 vi.mock('../../components/HypeFeed.tsx', () => ({ default: () => null }));
 vi.mock('../../components/MarketPulseTable.tsx', () => ({ default: () => null }));
 vi.mock('../../components/DeepDiverReport.tsx', () => ({ default: () => null }));
@@ -170,45 +179,35 @@ vi.mock('../../components/MorningBriefingModal.tsx', () => ({ default: () => nul
 vi.mock('../../components/ShareAlphaModal.tsx', () => ({ default: () => null }));
 vi.mock('../../components/ReportModal.tsx', () => ({ default: () => null }));
 
+vi.mock('../../components/LazyErrorBoundary.tsx', () => ({
+    default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+vi.mock('../../components/LazyLoadFallback.tsx', () => ({
+    WidgetLoadingFallback: () => null,
+}));
+vi.mock('../../components/BreakoutRadar.tsx', () => ({ default: () => null }));
+vi.mock('../../components/AgentInsightsPanel.tsx', () => ({ default: () => null }));
+vi.mock('../../components/LiquidityHeatmap.tsx', () => ({ default: () => null }));
+vi.mock('../../components/LiquidityPoolWidget.tsx', () => ({ default: () => null }));
+vi.mock('../../components/TaxSummaryWidget.tsx', () => ({ default: () => null }));
+vi.mock('../../components/GradeAuditWidget.tsx', () => ({ default: () => null }));
+vi.mock('../../components/RebalanceWidget.tsx', () => ({ default: () => null }));
+vi.mock('../../components/AuctionSniperWidget.tsx', () => ({ default: () => null }));
+vi.mock('../../components/PriceHistoryWidget.tsx', () => ({ default: () => null }));
+vi.mock('../../components/ConsignmentWidget.tsx', () => ({ default: () => null }));
+vi.mock('../../components/AchievementWidget.tsx', () => ({ default: () => null }));
+vi.mock('../../components/AnomalyWidget.tsx', () => ({ default: () => null }));
+vi.mock('../../components/dashboard/RecentlyIngested.tsx', () => ({ default: () => null }));
+
 async function loadDashboard() {
     const mod = await import('../../pages/Dashboard.tsx');
     return mod.default;
 }
 
-// The current working copy of pages/Dashboard.tsx has a dangling
-// below-the-fold section (~13 `<LazyErrorBoundary><Suspense
-// fallback={<WidgetLoadingFallback />}>` blocks referencing imports
-// that were lost in a prior merge). The dashboard renders fine in the
-// browser because globalThis lookups succeed for those identifiers in
-// non-module contexts; in jsdom we make the same identifiers resolvable
-// by attaching no-op components to globalThis. This keeps the test a
-// pure regression guard for the hero region without re-doing PR-0's
-// cleanup inside the test.
-const DANGLING_GLOBALS = [
-    'LazyErrorBoundary',
-    'WidgetLoadingFallback',
-    'BreakoutRadar',
-    'AgentInsightsPanel',
-    'LiquidityHeatmap',
-    'LiquidityPoolWidget',
-    'TaxSummaryWidget',
-    'GradeAuditWidget',
-    'RebalanceWidget',
-    'AuctionSniperWidget',
-    'PriceHistoryWidget',
-    'ConsignmentWidget',
-    'AchievementWidget',
-    'AnomalyWidget',
-    'RecentlyIngested',
-] as const;
-
 describe('Dashboard (regression guard)', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         cleanup();
-        for (const name of DANGLING_GLOBALS) {
-            (globalThis as Record<string, unknown>)[name] = () => null;
-        }
     });
 
     it('renders the empty-state HUD when inventory is empty', { timeout: 30_000 }, async () => {
