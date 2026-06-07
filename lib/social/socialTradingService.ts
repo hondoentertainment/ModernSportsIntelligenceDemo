@@ -368,7 +368,7 @@ export function getLeaderboard(): LeaderboardEntry[] {
     }));
 }
 
-export function getTopTraders(limit: number = 10): TraderProfile[] {
+export function getTopTraderProfiles(limit: number = 10): TraderProfile[] {
   const traders = getTraderProfiles();
   return [...traders].sort((a, b) => b.reputation - a.reputation).slice(0, limit);
 }
@@ -490,7 +490,7 @@ export function getPickResultsByTrader(traderId: string): PickResult[] {
   return results.filter(r => r.traderId === traderId);
 }
 
-export function getStreakRecords(): StreakRecord[] {
+export function loadStreakRecords(): StreakRecord[] {
   const cached = loadData<StreakRecord[]>('streak_records');
   if (cached) return cached;
   saveData('streak_records', MOCK_STREAKS);
@@ -498,7 +498,7 @@ export function getStreakRecords(): StreakRecord[] {
 }
 
 export function getActiveStreaks(): StreakRecord[] {
-  const streaks = getStreakRecords();
+  const streaks = loadStreakRecords();
   return streaks.filter(s => s.active);
 }
 
@@ -638,4 +638,32 @@ export function getTradingStats(): { communityProfit: number; accuracy: number }
     communityProfit: summary.totalCommunityProfit,
     accuracy: summary.avgWinRate,
   };
+}
+
+export function getTopTraders(): TopTrader[] {
+  return getTopTraderProfiles().map((trader) => ({
+    id: trader.id,
+    username: trader.username,
+    verified: trader.verified,
+    totalPicks: trader.totalPicks,
+    winRate: trader.winRate,
+    avgReturn: trader.avgReturn,
+    totalProfit: Math.round(trader.avgReturn * trader.totalPicks * 45),
+    followers: trader.followers,
+    currentStreak: trader.streak,
+    reputationScore: trader.reputation,
+  }));
+}
+
+export interface PageStreakRecord extends StreakRecord {
+  type: 'win' | 'loss';
+  profitDuring: number;
+}
+
+export function getStreakRecords(): PageStreakRecord[] {
+  return loadStreakRecords().map((record) => ({
+    ...record,
+    type: record.streakType === 'winning' ? 'win' : 'loss',
+    profitDuring: record.totalReturn,
+  }));
 }

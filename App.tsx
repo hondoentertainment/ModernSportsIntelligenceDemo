@@ -1,10 +1,11 @@
 
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect, lazy } from 'react';
 import {
   HashRouter as Router,
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
@@ -24,77 +25,429 @@ import MarketTicker from './components/MarketTicker.tsx';
 import { useSupabaseInventory } from './lib/utils/useSupabaseInventory.ts';
 import LazyErrorBoundary from './components/LazyErrorBoundary.tsx';
 import { PageLoadingFallback } from './components/LazyLoadFallback.tsx';
-import GuidedTour from './components/GuidedTour.tsx';
-import InstitutionalWallHUD from './components/InstitutionalWallHUD.tsx';
-import GrailShowcase from './components/GrailShowcase.tsx';
-import DemoFlowWidget from './components/DemoFlowWidget.tsx';
 import DocumentTitleSync from './components/DocumentTitleSync.tsx';
+import CommandPalette from './components/CommandPalette.tsx';
 import { validateEnv } from './lib/utils/env';
 import { initDAL } from './lib/dal';
-// ─── Lazy-loaded Page Components ──────────────────────────────────────
-// All React.lazy() page declarations live in routes/lazyRoutes.ts so this
-// file stays focused on layout and route wiring.
-import {
-  Dashboard, Collection, Favorites, Profile, DeepSearch, PortfolioAudit,
-  MLBStats, ProspectTrends, Players, PlayerDetail, Teams, Games,
-  Trends, Compare, PortfolioBuilder, Billing, Leaderboard, Alerts,
-  AnalystWarRoom, GuildDashboard, FeatureDirectory, CollectionNarrative, LiquidityTwin, CatalystMarket,
-  CounterpartyTrustGraph, PortfolioScenarioTheater, PrivateDealRoomAgent, CollectorAuditDossier, PortfolioCopilot, MarketplaceAggregator,
-  SubscriptionBox, CollectorDna, AuctionWarRoom, GradingTracker, DealerDashboard, FundManager,
-  ApiLicensing, CardShowModePage, ArScanner, HypeRadar, NonSportsExpansion, InjuryIntel,
-  CarbonScore, VaultArbitrage, PressingRoi, BehavioralFinance, CompForensics, TournamentArena,
-  InfluencerImpact, ConditionAging, AuthTraining, InventorySync, RookieClassIndex, VendingMachine,
-  WomensSportsIndex, GradingAuditor, SmartStorage, PrintRunIntelligence, YouthOnboarding, LiveBreakHub,
-  PricePrediction, InternationalArbitrage, BlockchainProvenance, TradeDeadline, CollectionAppraiser, SetRegistry,
-  VintageMarket, SocialTrading, ListingOptimizer, TaxCalculator, SealedProduct, ErrorCard,
-  AuctionSniper, RealTimePriceEngine, AiCardScanner, CrossPlatformArbitrage, PredictivePriceEngine, TaxReport,
-  GradePredictionPage, SmartNotifications, ConsensusPricing, LiveBreakRoi, PortfolioBenchmark, Watchlist,
-  InsuranceVault, BreakEvenCalculator, CommunityTrading, SetCompletionPage, PortfolioNarrator, VintageAllocation,
-  GradingTurnaround, MarketReplay, ScanToValue, HobbyIncome, CardShowPlanner, RipFlipSim,
-  SocialFeed, SlabVerification, PortfolioStressTest, ConsignmentMarket, GradingPrep, ParallelUniverse,
-  AchievementSystem, SentimentVelocity, NFLHub, NBAHub, NHLHub, SoccerHub,
-  GradingVisionEngine, NotificationCenter, DashboardBuilder, MarketplaceIntegrations, InsuranceAppraisal, OfflineManager,
-  ProvenanceDna, EmotionalThermometer, CardWeather, DeadMoneyDetector, MicroArbitrageSwarm, GenerationalWealth,
-  CardAgingLab, PhantomBacktester, CollectorMatchmaker, CardGenomeSequencer, InjuryOracle, CrossAssetCorrelation,
-  CollectorSocialGraph, RestorationSimulator, MarketMakerArena, FractionalVault, PortfolioStressTester, RookiePipelineScanner,
-  ForensicsLab, CardDecayPredictor, NarrativeArcEngine, LiquidityDepthScanner, ContagionMapper, GrailIndexConstructor,
-  PrintRunDecoder, TemporalArbitrageRadar, CollectionDNAMixer, CardYieldFarming, ChaosTheorySimulator, SentimentVolatilityIndex,
-  MicroSeasonCapitalizer, CollectionHedgeConstructor, GenerationalWealthPlanner, CardClimateRiskMapper, RuleChangeImpactModeler, NostalgiaPredictor,
-  SyntheticCardIndex, ProvenanceChainVerifier, MarketRegimeDetector, OptionsDesk, ConditionCensus, BreakEvenVelocity,
-  TaxAutopilot, CardShowGps, ContractCorrelation, BankruptcyShield, NegotiationCoach, MultiGenCompare,
-  PortfolioDnaRebalancer, InjuryShockwave, ArVaultWalkthrough, HofProbability, MarketMicrostructure, IotConditionGuardian,
-  FractionalSyndicate, VoiceCardShow, NarrativeAlpha, CounterfactualValue, BiometricTradingGuard, DopamineCycleTracker,
-  HobbyLiquidityCrisis, MemoryIndex, PopForecaster, DraftCapitalFutures, ShadowInventory, EmotionJournal,
-  EstateSuccession, RefractorMapper, CenteringAnalyzer, RegulatoryComplianceRadar, AcousticAuthentication, DealerFlowIntelligence,
-  PsychographicDemand, MicroGeographicDemand, CrossHobbyContagion, VenueHealthOracle, NegotiationReplay, CardMaterialSpectrometry,
-  GenerationalDemandForecaster, SlabCaseForensics, PriceWhisperer, CardLoanCollateral, GradingArbitrage, ConsignmentOptimizer,
-  CardAgingClock, SentimentSeismograph, ContractValuation, CollectionEntropy, CardShowNavigator, InfluencerQuantifier,
-  WaxCTScanner, ManipulationDetector, InsuranceClaimsAI, RecessionPlaybook, PersonalityMatrix, PhotoStudio,
-  PeerLending, DraftNightTracker, VintageProvenance, AuctionEquilibrium, MemeticPropagation, CircadianOptimizer,
-  CulturalVelocity, CounterpartyFingerprint, CollectionTopology, SurvivorshipBias, ForgeryEvolution, DecisionFatigue,
-  OpportunityCostPhantom, SharedWatchlists, GroupBreaks, ClubManagement, CollectiveGrading, SharedDashboards,
-  RBACTeams, WhiteLabelApi, DealerInventory, FundReporting, AuditTrail, CollaborativeSetRegistry,
-  CardShowSquad, GroupBuyCoop, DraftNightWarRoom, MentorshipExchange, DisputeArbitration, GroupInsurance,
-  CrowdPricing, GroupVault, SwapMeet, AgentOutcomeMemory, MarketTruthLedger, CounterpartyPassport,
-  ThesisBacktester, LiquidityHorizon, FvConfidence, RegulatoryAlerts, AgentDelegationAudit, CapitalFlowRadar,
-  SyntheticIndexBuilder, CatastropheLiquidation, PortfolioImmunization, IdentityGraph, NarrativeLifecycle, AgentPersonality,
-  BidAskSpreadPredictor, WashSaleHorizon, SellerUrgencyScore, PortfolioBetaIndex, GradingQueueEstimator, ReputationDecayTracker,
-  EventImpactAttribution, LiquidityReserveCalculator, CrossSportMomentum, AgentConfidenceHistory, WhatIfSimulator, GradingBatchPlanner,
-  EbayListingGenerator, WaxBreakRoiTracker, RegretMinimizationEngine, MentalHealthSafeguards, GradeInflationDetector, SubscriptionBoxOptimizer,
-  ReverseDutchAuctionEngine, CarbonFootprintTracker, BidderPsychologyProfiler, ProductAnnouncementRadar, CollectorSuccessionProtocol, CrossHobbyArbitrageBridge,
-  LiveGameImpactEngine, PreGradeIntelligence, CopyTrading, PredictiveMarketMaker, InfluenceGraph, CrossHobbyPortfolio,
-  AutonomousAcquisition, DraftWarRoom, APIPlatform, ComplianceCenter, PhaseOperations, DataConsolidation,
-  MSITerminal, VaultSecurity, DealRoom, DerivativesDesk, ConsignmentRouter, P2PMarketplace,
-  TransactionWire, LiveBreaks, CardDNA, CollectionGenome, ErrorCardIntel, HOFTracker,
-  MarketIndices, PlayerTrajectory, PortfolioAttribution, ProvenanceChain, ProvenanceChainIntelligence, QuantWorkbench,
-  ResearchReports, SentimentRadar, WaxIntelligence, WeatherImpact, EstatePlanning, Rebalancer,
-  ARShowcase, FrontierLab, LiveImpact, Inventory, DemoFlowPage, Login,
-  Signup, ForgotPassword, ResetPassword, PublicPortfolio,
-} from './routes/lazyRoutes';
 
 // Validate environment on startup
 validateEnv();
 
+// ─── Lazy-loaded Modal-Class Shell Components ─────────────────────────
+// These only mount behind opened-state flags (or are render-once shells),
+// so keep them out of the initial bundle.
+const InstitutionalWallHUD = lazy(() => import('./components/InstitutionalWallHUD.tsx'));
+const GrailShowcase = lazy(() => import('./components/GrailShowcase.tsx'));
+const DemoFlowWidget = lazy(() => import('./components/DemoFlowWidget.tsx'));
+const GuidedTour = lazy(() => import('./components/GuidedTour.tsx'));
+
+// ─── Lazy-loaded Page Components ──────────────────────────────────────
+// Critical path: Dashboard loads first, everything else is code-split
+
+// Core pages (most frequently accessed)
+const Dashboard = lazy(() => import('./pages/Dashboard.tsx'));
+const Collection = lazy(() => import('./pages/Collection.tsx'));
+const Favorites = lazy(() => import('./pages/Favorites.tsx'));
+const Profile = lazy(() => import('./pages/Profile.tsx'));
+
+// Search & analysis pages
+const DeepSearch = lazy(() => import('./pages/DeepSearch.tsx'));
+const PortfolioAudit = lazy(() => import('./pages/PortfolioAudit.tsx'));
+const MLBStats = lazy(() => import('./pages/MLBStats.tsx'));
+const ProspectTrends = lazy(() => import('./pages/ProspectTrends.tsx'));
+
+// Player & team pages
+const Players = lazy(() => import('./pages/Players.tsx'));
+const PlayerDetail = lazy(() => import('./pages/PlayerDetail.tsx'));
+const Teams = lazy(() => import('./pages/Teams.tsx'));
+const Games = lazy(() => import('./pages/Games.tsx'));
+const Trends = lazy(() => import('./pages/Trends.tsx'));
+const Compare = lazy(() => import('./pages/Compare.tsx'));
+
+// Portfolio & financial pages
+const PortfolioBuilder = lazy(() => import('./pages/PortfolioBuilder.tsx'));
+const Billing = lazy(() => import('./pages/Billing.tsx'));
+const Leaderboard = lazy(() => import('./pages/Leaderboard.tsx'));
+
+// Alerts & tools
+const Alerts = lazy(() => import('./pages/Alerts.tsx'));
+const AnalystWarRoom = lazy(() => import('./components/AnalystWarRoom.tsx'));
+const GuildDashboard = lazy(() => import('./pages/GuildDashboard.tsx'));
+
+// Feature discovery and release-ready advanced features
+const FeatureDirectory = lazy(() => import('./pages/FeatureDirectory.tsx'));
+const CollectionNarrative = lazy(() => import('./pages/CollectionNarrative.tsx'));
+const LiquidityTwin = lazy(() => import('./pages/LiquidityTwin.tsx'));
+const CatalystMarket = lazy(() => import('./pages/CatalystMarket.tsx'));
+const CounterpartyTrustGraph = lazy(() => import('./pages/CounterpartyTrustGraph.tsx'));
+const PortfolioScenarioTheater = lazy(() => import('./pages/PortfolioScenarioTheater.tsx'));
+const PrivateDealRoomAgent = lazy(() => import('./pages/PrivateDealRoomAgent.tsx'));
+const CollectorAuditDossier = lazy(() => import('./pages/CollectorAuditDossier.tsx'));
+
+// Phases 114-128: Next-gen features
+const PortfolioCopilot = lazy(() => import('./pages/PortfolioCopilot.tsx'));
+const MarketplaceAggregator = lazy(() => import('./pages/MarketplaceAggregator.tsx'));
+const SubscriptionBox = lazy(() => import('./pages/SubscriptionBox.tsx'));
+const CollectorDna = lazy(() => import('./pages/CollectorDna.tsx'));
+const AuctionWarRoom = lazy(() => import('./pages/AuctionWarRoom.tsx'));
+const GradingTracker = lazy(() => import('./pages/GradingTracker.tsx'));
+const DealerDashboard = lazy(() => import('./pages/DealerDashboard.tsx'));
+const FundManager = lazy(() => import('./pages/FundManager.tsx'));
+const ApiLicensing = lazy(() => import('./pages/ApiLicensing.tsx'));
+const CardShowModePage = lazy(() => import('./pages/CardShowModePage.tsx'));
+const ArScanner = lazy(() => import('./pages/ArScanner.tsx'));
+const HypeRadar = lazy(() => import('./pages/HypeRadar.tsx'));
+const NonSportsExpansion = lazy(() => import('./pages/NonSportsExpansion.tsx'));
+const InjuryIntel = lazy(() => import('./pages/InjuryIntel.tsx'));
+const CarbonScore = lazy(() => import('./pages/CarbonScore.tsx'));
+
+// Phases 129-138: Competitive differentiators
+const VaultArbitrage = lazy(() => import('./pages/VaultArbitrage.tsx'));
+const PressingRoi = lazy(() => import('./pages/PressingRoi.tsx'));
+const BehavioralFinance = lazy(() => import('./pages/BehavioralFinance.tsx'));
+const CompForensics = lazy(() => import('./pages/CompForensics.tsx'));
+const TournamentArena = lazy(() => import('./pages/TournamentArena.tsx'));
+const InfluencerImpact = lazy(() => import('./pages/InfluencerImpact.tsx'));
+const ConditionAging = lazy(() => import('./pages/ConditionAging.tsx'));
+const AuthTraining = lazy(() => import('./pages/AuthTraining.tsx'));
+const InventorySync = lazy(() => import('./pages/InventorySync.tsx'));
+const RookieClassIndex = lazy(() => import('./pages/RookieClassIndex.tsx'));
+
+// Phases 139-148: Production-grade expansion
+const VendingMachine = lazy(() => import('./pages/VendingMachine.tsx'));
+const WomensSportsIndex = lazy(() => import('./pages/WomensSportsIndex.tsx'));
+const GradingAuditor = lazy(() => import('./pages/GradingAuditor.tsx'));
+const SmartStorage = lazy(() => import('./pages/SmartStorage.tsx'));
+const PrintRunIntelligence = lazy(() => import('./pages/PrintRunIntelligence.tsx'));
+const YouthOnboarding = lazy(() => import('./pages/YouthOnboarding.tsx'));
+const LiveBreakHub = lazy(() => import('./pages/LiveBreakHub.tsx'));
+const PricePrediction = lazy(() => import('./pages/PricePrediction.tsx'));
+const InternationalArbitrage = lazy(() => import('./pages/InternationalArbitrage.tsx'));
+const BlockchainProvenance = lazy(() => import('./pages/BlockchainProvenance.tsx'));
+
+// Phases 149-158: Advanced platform features
+const TradeDeadline = lazy(() => import('./pages/TradeDeadline.tsx'));
+const CollectionAppraiser = lazy(() => import('./pages/CollectionAppraiser.tsx'));
+const SetRegistry = lazy(() => import('./pages/SetRegistry.tsx'));
+const VintageMarket = lazy(() => import('./pages/VintageMarket.tsx'));
+const SocialTrading = lazy(() => import('./pages/SocialTrading.tsx'));
+const ListingOptimizer = lazy(() => import('./pages/ListingOptimizer.tsx'));
+const TaxCalculator = lazy(() => import('./pages/TaxCalculator.tsx'));
+const SealedProduct = lazy(() => import('./pages/SealedProduct.tsx'));
+const ErrorCard = lazy(() => import('./pages/ErrorCard.tsx'));
+const AuctionSniper = lazy(() => import('./pages/AuctionSniper.tsx'));
+
+// Phases 159-168: Competitive Feature Suite
+const RealTimePriceEngine = lazy(() => import('./pages/RealTimePriceEngine.tsx'));
+const AiCardScanner = lazy(() => import('./pages/AiCardScanner.tsx'));
+const CrossPlatformArbitrage = lazy(() => import('./pages/CrossPlatformArbitrage.tsx'));
+const PredictivePriceEngine = lazy(() => import('./pages/PredictivePriceEngine.tsx'));
+const TaxReport = lazy(() => import('./pages/TaxReport.tsx'));
+const GradePredictionPage = lazy(() => import('./pages/GradePrediction.tsx'));
+const SmartNotifications = lazy(() => import('./pages/SmartNotifications.tsx'));
+const ConsensusPricing = lazy(() => import('./pages/ConsensusPricing.tsx'));
+const LiveBreakRoi = lazy(() => import('./pages/LiveBreakRoi.tsx'));
+const PortfolioBenchmark = lazy(() => import('./pages/PortfolioBenchmark.tsx'));
+
+// Phases 169-178: Next-gen platform features
+const Watchlist = lazy(() => import('./pages/Watchlist.tsx'));
+const InsuranceVault = lazy(() => import('./pages/InsuranceVault.tsx'));
+const BreakEvenCalculator = lazy(() => import('./pages/BreakEvenCalculator.tsx'));
+const CommunityTrading = lazy(() => import('./pages/CommunityTrading.tsx'));
+const SetCompletionPage = lazy(() => import('./pages/SetCompletion.tsx'));
+const PortfolioNarrator = lazy(() => import('./pages/PortfolioNarrator.tsx'));
+const VintageAllocation = lazy(() => import('./pages/VintageAllocation.tsx'));
+const GradingTurnaround = lazy(() => import('./pages/GradingTurnaround.tsx'));
+const MarketReplay = lazy(() => import('./pages/MarketReplay.tsx'));
+const ScanToValue = lazy(() => import('./pages/ScanToValue.tsx'));
+
+// Phases 179-188: Engagement & monetization features
+const HobbyIncome = lazy(() => import('./pages/HobbyIncome.tsx'));
+const CardShowPlanner = lazy(() => import('./pages/CardShowPlanner.tsx'));
+const RipFlipSim = lazy(() => import('./pages/RipFlipSim.tsx'));
+const SocialFeed = lazy(() => import('./pages/SocialFeed.tsx'));
+const SlabVerification = lazy(() => import('./pages/SlabVerification.tsx'));
+const PortfolioStressTest = lazy(() => import('./pages/PortfolioStressTest.tsx'));
+const ConsignmentMarket = lazy(() => import('./pages/ConsignmentMarket.tsx'));
+const GradingPrep = lazy(() => import('./pages/GradingPrep.tsx'));
+const ParallelUniverse = lazy(() => import('./pages/ParallelUniverse.tsx'));
+const AchievementSystem = lazy(() => import('./pages/AchievementSystem.tsx'));
+const SentimentVelocity = lazy(() => import('./pages/SentimentVelocity.tsx'));
+
+// v4.0: Multi-Sport League Hubs
+const NFLHub = lazy(() => import('./pages/NFLHub.tsx'));
+const NBAHub = lazy(() => import('./pages/NBAHub.tsx'));
+const NHLHub = lazy(() => import('./pages/NHLHub.tsx'));
+const SoccerHub = lazy(() => import('./pages/SoccerHub.tsx'));
+
+// v4.0: Multi-Sport & Infrastructure
+const GradingVisionEngine = lazy(() => import('./pages/GradingVisionEngine.tsx'));
+const NotificationCenter = lazy(() => import('./pages/NotificationCenter.tsx'));
+const DashboardBuilder = lazy(() => import('./pages/DashboardBuilder.tsx'));
+const MarketplaceIntegrations = lazy(() => import('./pages/MarketplaceIntegrations.tsx'));
+const InsuranceAppraisal = lazy(() => import('./pages/InsuranceAppraisal.tsx'));
+const OfflineManager = lazy(() => import('./pages/OfflineManager.tsx'));
+
+// v4.0: Industry-First Features
+const ProvenanceDna = lazy(() => import('./pages/ProvenanceDna.tsx'));
+const EmotionalThermometer = lazy(() => import('./pages/EmotionalThermometer.tsx'));
+const CardWeather = lazy(() => import('./pages/CardWeather.tsx'));
+const DeadMoneyDetector = lazy(() => import('./pages/DeadMoneyDetector.tsx'));
+const MicroArbitrageSwarm = lazy(() => import('./pages/MicroArbitrageSwarm.tsx'));
+const GenerationalWealth = lazy(() => import('./pages/GenerationalWealth.tsx'));
+const CardAgingLab = lazy(() => import('./pages/CardAgingLab.tsx'));
+const PhantomBacktester = lazy(() => import('./pages/PhantomBacktester.tsx'));
+const CollectorMatchmaker = lazy(() => import('./pages/CollectorMatchmaker.tsx'));
+
+// v5.0: Next-Gen Investment Intelligence (Batch 1)
+const CardGenomeSequencer = lazy(() => import('./pages/CardGenomeSequencer.tsx'));
+const InjuryOracle = lazy(() => import('./pages/InjuryOracle.tsx'));
+const CrossAssetCorrelation = lazy(() => import('./pages/CrossAssetCorrelation.tsx'));
+const CollectorSocialGraph = lazy(() => import('./pages/CollectorSocialGraph.tsx'));
+const RestorationSimulator = lazy(() => import('./pages/RestorationSimulator.tsx'));
+const MarketMakerArena = lazy(() => import('./pages/MarketMakerArena.tsx'));
+const FractionalVault = lazy(() => import('./pages/FractionalVault.tsx'));
+const PortfolioStressTester = lazy(() => import('./pages/PortfolioStressTester.tsx'));
+const RookiePipelineScanner = lazy(() => import('./pages/RookiePipelineScanner.tsx'));
+const ForensicsLab = lazy(() => import('./pages/ForensicsLab.tsx'));
+
+// v5.0: Next-Gen Investment Intelligence (Batch 2)
+const CardDecayPredictor = lazy(() => import('./pages/CardDecayPredictor.tsx'));
+const NarrativeArcEngine = lazy(() => import('./pages/NarrativeArcEngine.tsx'));
+const LiquidityDepthScanner = lazy(() => import('./pages/LiquidityDepthScanner.tsx'));
+const ContagionMapper = lazy(() => import('./pages/ContagionMapper.tsx'));
+const GrailIndexConstructor = lazy(() => import('./pages/GrailIndexConstructor.tsx'));
+const PrintRunDecoder = lazy(() => import('./pages/PrintRunDecoder.tsx'));
+const TemporalArbitrageRadar = lazy(() => import('./pages/TemporalArbitrageRadar.tsx'));
+const CollectionDNAMixer = lazy(() => import('./pages/CollectionDNAMixer.tsx'));
+const CardYieldFarming = lazy(() => import('./pages/CardYieldFarming.tsx'));
+const ChaosTheorySimulator = lazy(() => import('./pages/ChaosTheorySimulator.tsx'));
+
+// v5.1: Beyond-Competition Intelligence (Batch 3)
+const SentimentVolatilityIndex = lazy(() => import('./pages/SentimentVolatilityIndex.tsx'));
+const MicroSeasonCapitalizer = lazy(() => import('./pages/MicroSeasonCapitalizer.tsx'));
+const CollectionHedgeConstructor = lazy(() => import('./pages/CollectionHedgeConstructor.tsx'));
+const GenerationalWealthPlanner = lazy(() => import('./pages/GenerationalWealthPlanner.tsx'));
+const CardClimateRiskMapper = lazy(() => import('./pages/CardClimateRiskMapper.tsx'));
+const RuleChangeImpactModeler = lazy(() => import('./pages/RuleChangeImpactModeler.tsx'));
+const NostalgiaPredictor = lazy(() => import('./pages/NostalgiaPredictor.tsx'));
+const SyntheticCardIndex = lazy(() => import('./pages/SyntheticCardIndex.tsx'));
+const ProvenanceChainVerifier = lazy(() => import('./pages/ProvenanceChainVerifier.tsx'));
+const MarketRegimeDetector = lazy(() => import('./pages/MarketRegimeDetector.tsx'));
+
+// v5.0: Industry-First Features — Round 3 (Phases 134-143)
+const OptionsDesk = lazy(() => import('./pages/OptionsDesk.tsx'));
+const ConditionCensus = lazy(() => import('./pages/ConditionCensus.tsx'));
+const BreakEvenVelocity = lazy(() => import('./pages/BreakEvenVelocity.tsx'));
+const TaxAutopilot = lazy(() => import('./pages/TaxAutopilot.tsx'));
+const CardShowGps = lazy(() => import('./pages/CardShowGps.tsx'));
+const ContractCorrelation = lazy(() => import('./pages/ContractCorrelation.tsx'));
+const BankruptcyShield = lazy(() => import('./pages/BankruptcyShield.tsx'));
+const NegotiationCoach = lazy(() => import('./pages/NegotiationCoach.tsx'));
+const MultiGenCompare = lazy(() => import('./pages/MultiGenCompare.tsx'));
+const PortfolioDnaRebalancer = lazy(() => import('./pages/PortfolioDnaRebalancer.tsx'));
+
+// v6.0: Industry-Absent Innovation Suite (10 features)
+const InjuryShockwave = lazy(() => import('./pages/InjuryShockwave.tsx'));
+const ArVaultWalkthrough = lazy(() => import('./pages/ArVaultWalkthrough.tsx'));
+const HofProbability = lazy(() => import('./pages/HofProbability.tsx'));
+const MarketMicrostructure = lazy(() => import('./pages/MarketMicrostructure.tsx'));
+const IotConditionGuardian = lazy(() => import('./pages/IotConditionGuardian.tsx'));
+const FractionalSyndicate = lazy(() => import('./pages/FractionalSyndicate.tsx'));
+const VoiceCardShow = lazy(() => import('./pages/VoiceCardShow.tsx'));
+const NarrativeAlpha = lazy(() => import('./pages/NarrativeAlpha.tsx'));
+const CounterfactualValue = lazy(() => import('./pages/CounterfactualValue.tsx'));
+const BiometricTradingGuard = lazy(() => import('./pages/BiometricTradingGuard.tsx'));
+
+// v6.1: Industry-Absent Innovation — Round 2
+const DopamineCycleTracker = lazy(() => import('./pages/DopamineCycleTracker.tsx'));
+const HobbyLiquidityCrisis = lazy(() => import('./pages/HobbyLiquidityCrisis.tsx'));
+const MemoryIndex = lazy(() => import('./pages/MemoryIndex.tsx'));
+const PopForecaster = lazy(() => import('./pages/PopForecaster.tsx'));
+const DraftCapitalFutures = lazy(() => import('./pages/DraftCapitalFutures.tsx'));
+const ShadowInventory = lazy(() => import('./pages/ShadowInventory.tsx'));
+const EmotionJournal = lazy(() => import('./pages/EmotionJournal.tsx'));
+const EstateSuccession = lazy(() => import('./pages/EstateSuccession.tsx'));
+const RefractorMapper = lazy(() => import('./pages/RefractorMapper.tsx'));
+const CenteringAnalyzer = lazy(() => import('./pages/CenteringAnalyzer.tsx'));
+
+// v7.0: Industry-Absent Innovation — Round 3 (Phases 224-233)
+const RegulatoryComplianceRadar = lazy(() => import('./pages/RegulatoryComplianceRadar.tsx'));
+const AcousticAuthentication = lazy(() => import('./pages/AcousticAuthentication.tsx'));
+const DealerFlowIntelligence = lazy(() => import('./pages/DealerFlowIntelligence.tsx'));
+const PsychographicDemand = lazy(() => import('./pages/PsychographicDemand.tsx'));
+const MicroGeographicDemand = lazy(() => import('./pages/MicroGeographicDemand.tsx'));
+const CrossHobbyContagion = lazy(() => import('./pages/CrossHobbyContagion.tsx'));
+const VenueHealthOracle = lazy(() => import('./pages/VenueHealthOracle.tsx'));
+const NegotiationReplay = lazy(() => import('./pages/NegotiationReplay.tsx'));
+const CardMaterialSpectrometry = lazy(() => import('./pages/CardMaterialSpectrometry.tsx'));
+const GenerationalDemandForecaster = lazy(() => import('./pages/GenerationalDemandForecaster.tsx'));
+
+// v7.1: Industry-Absent Innovation — Round 4 (Phases 234-253)
+const SlabCaseForensics = lazy(() => import('./pages/SlabCaseForensics.tsx'));
+const PriceWhisperer = lazy(() => import('./pages/PriceWhisperer.tsx'));
+const CardLoanCollateral = lazy(() => import('./pages/CardLoanCollateral.tsx'));
+const GradingArbitrage = lazy(() => import('./pages/GradingArbitrage.tsx'));
+const ConsignmentOptimizer = lazy(() => import('./pages/ConsignmentOptimizer.tsx'));
+const CardAgingClock = lazy(() => import('./pages/CardAgingClock.tsx'));
+const SentimentSeismograph = lazy(() => import('./pages/SentimentSeismograph.tsx'));
+const ContractValuation = lazy(() => import('./pages/ContractValuation.tsx'));
+const CollectionEntropy = lazy(() => import('./pages/CollectionEntropy.tsx'));
+const CardShowNavigator = lazy(() => import('./pages/CardShowNavigator.tsx'));
+const InfluencerQuantifier = lazy(() => import('./pages/InfluencerQuantifier.tsx'));
+const WaxCTScanner = lazy(() => import('./pages/WaxCTScanner.tsx'));
+const ManipulationDetector = lazy(() => import('./pages/ManipulationDetector.tsx'));
+const InsuranceClaimsAI = lazy(() => import('./pages/InsuranceClaimsAI.tsx'));
+const RecessionPlaybook = lazy(() => import('./pages/RecessionPlaybook.tsx'));
+const PersonalityMatrix = lazy(() => import('./pages/PersonalityMatrix.tsx'));
+const PhotoStudio = lazy(() => import('./pages/PhotoStudio.tsx'));
+const PeerLending = lazy(() => import('./pages/PeerLending.tsx'));
+const DraftNightTracker = lazy(() => import('./pages/DraftNightTracker.tsx'));
+const VintageProvenance = lazy(() => import('./pages/VintageProvenance.tsx'));
+
+// v8.0: Industry-Absent Innovation — Frontier Phase (Phases 254-263)
+const AuctionEquilibrium = lazy(() => import('./pages/AuctionEquilibrium.tsx'));
+const MemeticPropagation = lazy(() => import('./pages/MemeticPropagation.tsx'));
+const CircadianOptimizer = lazy(() => import('./pages/CircadianOptimizer.tsx'));
+const CulturalVelocity = lazy(() => import('./pages/CulturalVelocity.tsx'));
+const CounterpartyFingerprint = lazy(() => import('./pages/CounterpartyFingerprint.tsx'));
+const CollectionTopology = lazy(() => import('./pages/CollectionTopology.tsx'));
+const SurvivorshipBias = lazy(() => import('./pages/SurvivorshipBias.tsx'));
+const ForgeryEvolution = lazy(() => import('./pages/ForgeryEvolution.tsx'));
+const DecisionFatigue = lazy(() => import('./pages/DecisionFatigue.tsx'));
+const OpportunityCostPhantom = lazy(() => import('./pages/OpportunityCostPhantom.tsx'));
+
+// v9.0: Industry Phases — Group & Enterprise Scale (Phases 264-273)
+const SharedWatchlists = lazy(() => import('./pages/SharedWatchlists.tsx'));
+const GroupBreaks = lazy(() => import('./pages/GroupBreaks.tsx'));
+const ClubManagement = lazy(() => import('./pages/ClubManagement.tsx'));
+const CollectiveGrading = lazy(() => import('./pages/CollectiveGrading.tsx'));
+const SharedDashboards = lazy(() => import('./pages/SharedDashboards.tsx'));
+const RBACTeams = lazy(() => import('./pages/RBACTeams.tsx'));
+const WhiteLabelApi = lazy(() => import('./pages/WhiteLabelApi.tsx'));
+const DealerInventory = lazy(() => import('./pages/DealerInventory.tsx'));
+const FundReporting = lazy(() => import('./pages/FundReporting.tsx'));
+const AuditTrail = lazy(() => import('./pages/AuditTrail.tsx'));
+
+// v10.0: Group Scale Phase 2 — Community Infrastructure (Phases 274-283)
+const CollaborativeSetRegistry = lazy(() => import('./pages/CollaborativeSetRegistry.tsx'));
+const CardShowSquad = lazy(() => import('./pages/CardShowSquad.tsx'));
+const GroupBuyCoop = lazy(() => import('./pages/GroupBuyCoop.tsx'));
+const DraftNightWarRoom = lazy(() => import('./pages/DraftNightWarRoom.tsx'));
+const MentorshipExchange = lazy(() => import('./pages/MentorshipExchange.tsx'));
+const DisputeArbitration = lazy(() => import('./pages/DisputeArbitration.tsx'));
+const GroupInsurance = lazy(() => import('./pages/GroupInsurance.tsx'));
+const CrowdPricing = lazy(() => import('./pages/CrowdPricing.tsx'));
+const GroupVault = lazy(() => import('./pages/GroupVault.tsx'));
+const SwapMeet = lazy(() => import('./pages/SwapMeet.tsx'));
+// v5.1+: PRD 4.11 — Next set of features not in the industry (Frontier)
+const AgentOutcomeMemory = lazy(() => import('./pages/AgentOutcomeMemory.tsx'));
+const MarketTruthLedger = lazy(() => import('./pages/MarketTruthLedger.tsx'));
+const CounterpartyPassport = lazy(() => import('./pages/CounterpartyPassport.tsx'));
+const ThesisBacktester = lazy(() => import('./pages/ThesisBacktester.tsx'));
+const LiquidityHorizon = lazy(() => import('./pages/LiquidityHorizon.tsx'));
+const FvConfidence = lazy(() => import('./pages/FvConfidence.tsx'));
+const RegulatoryAlerts = lazy(() => import('./pages/RegulatoryAlerts.tsx'));
+const AgentDelegationAudit = lazy(() => import('./pages/AgentDelegationAudit.tsx'));
+const CapitalFlowRadar = lazy(() => import('./pages/CapitalFlowRadar.tsx'));
+const SyntheticIndexBuilder = lazy(() => import('./pages/SyntheticIndexBuilder.tsx'));
+const CatastropheLiquidation = lazy(() => import('./pages/CatastropheLiquidation.tsx'));
+const PortfolioImmunization = lazy(() => import('./pages/PortfolioImmunization.tsx'));
+const IdentityGraph = lazy(() => import('./pages/IdentityGraph.tsx'));
+const NarrativeLifecycle = lazy(() => import('./pages/NarrativeLifecycle.tsx'));
+const AgentPersonality = lazy(() => import('./pages/AgentPersonality.tsx'));
+
+// v5.2: Next 10 industry-absent features (PRD 4.12)
+const BidAskSpreadPredictor = lazy(() => import('./pages/BidAskSpreadPredictor.tsx'));
+const WashSaleHorizon = lazy(() => import('./pages/WashSaleHorizon.tsx'));
+const SellerUrgencyScore = lazy(() => import('./pages/SellerUrgencyScore.tsx'));
+const PortfolioBetaIndex = lazy(() => import('./pages/PortfolioBetaIndex.tsx'));
+const GradingQueueEstimator = lazy(() => import('./pages/GradingQueueEstimator.tsx'));
+const ReputationDecayTracker = lazy(() => import('./pages/ReputationDecayTracker.tsx'));
+const EventImpactAttribution = lazy(() => import('./pages/EventImpactAttribution.tsx'));
+const LiquidityReserveCalculator = lazy(() => import('./pages/LiquidityReserveCalculator.tsx'));
+const CrossSportMomentum = lazy(() => import('./pages/CrossSportMomentum.tsx'));
+const AgentConfidenceHistory = lazy(() => import('./pages/AgentConfidenceHistory.tsx'));
+
+// Formerly coming-soon features — now live
+const WhatIfSimulator = lazy(() => import('./pages/WhatIfSimulator.tsx'));
+const GradingBatchPlanner = lazy(() => import('./pages/GradingBatchPlanner.tsx'));
+const EbayListingGenerator = lazy(() => import('./pages/EbayListingGenerator.tsx'));
+const WaxBreakRoiTracker = lazy(() => import('./pages/WaxBreakRoiTracker.tsx'));
+
+// Industry-first new features (v11)
+const RegretMinimizationEngine = lazy(() => import('./pages/RegretMinimizationEngine.tsx'));
+const MentalHealthSafeguards = lazy(() => import('./pages/MentalHealthSafeguards.tsx'));
+const GradeInflationDetector = lazy(() => import('./pages/GradeInflationDetector.tsx'));
+const SubscriptionBoxOptimizer = lazy(() => import('./pages/SubscriptionBoxOptimizer.tsx'));
+const ReverseDutchAuctionEngine = lazy(() => import('./pages/ReverseDutchAuctionEngine.tsx'));
+const CarbonFootprintTracker = lazy(() => import('./pages/CarbonFootprintTracker.tsx'));
+const BidderPsychologyProfiler = lazy(() => import('./pages/BidderPsychologyProfiler.tsx'));
+const ProductAnnouncementRadar = lazy(() => import('./pages/ProductAnnouncementRadar.tsx'));
+const CollectorSuccessionProtocol = lazy(() => import('./pages/CollectorSuccessionProtocol.tsx'));
+const CrossHobbyArbitrageBridge = lazy(() => import('./pages/CrossHobbyArbitrageBridge.tsx'));
+
+// Previously unrouted pages — Advanced Trading & Analysis
+const LiveGameImpactEngine = lazy(() => import('./pages/LiveGameImpactEngine.tsx'));
+const PreGradeIntelligence = lazy(() => import('./pages/PreGradeIntelligence.tsx'));
+const CopyTrading = lazy(() => import('./pages/CopyTrading.tsx'));
+const PredictiveMarketMaker = lazy(() => import('./pages/PredictiveMarketMaker.tsx'));
+const InfluenceGraph = lazy(() => import('./pages/InfluenceGraph.tsx'));
+const CrossHobbyPortfolio = lazy(() => import('./pages/CrossHobbyPortfolio.tsx'));
+const AutonomousAcquisition = lazy(() => import('./pages/AutonomousAcquisition.tsx'));
+const DraftWarRoom = lazy(() => import('./pages/DraftWarRoom.tsx'));
+
+// Previously unrouted pages — Institutional & Operations
+const APIPlatform = lazy(() => import('./pages/APIPlatform.tsx'));
+const ComplianceCenter = lazy(() => import('./pages/ComplianceCenter.tsx'));
+const PhaseOperations = lazy(() => import('./pages/PhaseOperations.tsx'));
+const DataConsolidation = lazy(() => import('./pages/DataConsolidation.tsx'));
+const MSITerminal = lazy(() => import('./pages/MSITerminal.tsx'));
+const VaultSecurity = lazy(() => import('./pages/VaultSecurity.tsx'));
+
+// Previously unrouted pages — Trading & Marketplace
+const DealRoom = lazy(() => import('./pages/DealRoom.tsx'));
+const DerivativesDesk = lazy(() => import('./pages/DerivativesDesk.tsx'));
+const ConsignmentRouter = lazy(() => import('./pages/ConsignmentRouter.tsx'));
+const P2PMarketplace = lazy(() => import('./pages/P2PMarketplace.tsx'));
+const TransactionWire = lazy(() => import('./pages/TransactionWire.tsx'));
+const LiveBreaks = lazy(() => import('./pages/LiveBreaks.tsx'));
+
+// Previously unrouted pages — Analytics & Intelligence
+const CardDNA = lazy(() => import('./pages/CardDNA.tsx'));
+const CollectionGenome = lazy(() => import('./pages/CollectionGenome.tsx'));
+const ErrorCardIntel = lazy(() => import('./pages/ErrorCardIntel.tsx'));
+const HOFTracker = lazy(() => import('./pages/HOFTracker.tsx'));
+const MarketIndices = lazy(() => import('./pages/MarketIndices.tsx'));
+const PlayerTrajectory = lazy(() => import('./pages/PlayerTrajectory.tsx'));
+const PortfolioAttribution = lazy(() => import('./pages/PortfolioAttribution.tsx'));
+const ProvenanceChain = lazy(() => import('./pages/ProvenanceChain.tsx'));
+const ProvenanceChainIntelligence = lazy(() => import('./pages/ProvenanceChainIntelligence.tsx'));
+const QuantWorkbench = lazy(() => import('./pages/QuantWorkbench.tsx'));
+const ResearchReports = lazy(() => import('./pages/ResearchReports.tsx'));
+const SentimentRadar = lazy(() => import('./pages/SentimentRadar.tsx'));
+const WaxIntelligence = lazy(() => import('./pages/WaxIntelligence.tsx'));
+const WeatherImpact = lazy(() => import('./pages/WeatherImpact.tsx'));
+
+// Previously unrouted pages — Portfolio & Financial
+const EstatePlanning = lazy(() => import('./pages/EstatePlanning.tsx'));
+const Rebalancer = lazy(() => import('./pages/Rebalancer.tsx'));
+
+// Previously unrouted pages — Showcase & Labs
+const ARShowcase = lazy(() => import('./pages/ARShowcase.tsx'));
+const FrontierLab = lazy(() => import('./pages/FrontierLab.tsx'));
+const LiveImpact = lazy(() => import('./pages/LiveImpact.tsx'));
+const Inventory = lazy(() => import('./pages/Inventory.tsx'));
+
+// Interactive Demo Flow
+const DemoFlowPage = lazy(() => import('./pages/DemoFlow.tsx'));
+
+// Auth pages (public routes, also lazy since not needed after login)
+const Login = lazy(() => import('./pages/Login.tsx'));
+const Signup = lazy(() => import('./pages/Signup.tsx'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword.tsx'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword.tsx'));
+const PublicPortfolio = lazy(() => import('./pages/PublicPortfolio.tsx'));
 
 // ─── DAL Initializer ─────────────────────────────────────────────────
 // Initializes the Data Access Layer when auth state is known.
@@ -109,12 +462,28 @@ const DALInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) =
 // ─── App Layout ───────────────────────────────────────────────────────
 
 const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>> }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
+  const location = useLocation();
   const { inventory } = useSupabaseInventory();
   const [isWallHUDOpen, setIsWallHUDOpen] = useState(false);
   const [selectedGrail, setSelectedGrail] = useState<any>(null);
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
 
   // Expose a way to open grail via window for testing/demo
   (window as any).openGrail = (card: any) => setSelectedGrail(card);
+
+  // Global Cmd+K / Ctrl+K toggles the command palette. This is the single
+  // canonical shortcut surface — Header used to register its own listener
+  // and FeatureSearch had a third one; both were removed in PR-C.
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden bg-brand-charcoal text-slate-100 font-sans selection:bg-brand-lime/30 luminous-container">
@@ -136,32 +505,36 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
         <PwaUpdateBanner />
 
         {isWallHUDOpen && (
-          <InstitutionalWallHUD
-            onClose={() => setIsWallHUDOpen(false)}
-            inventoryCount={inventory.length}
-            totalMarketValue={`$${inventory.reduce((acc, curr) => acc + (parseFloat(curr.market_value?.replace(/[^0-9.]/g, '') || '0')), 0).toLocaleString()}`}
-          />
+          <Suspense fallback={null}>
+            <InstitutionalWallHUD
+              onClose={() => setIsWallHUDOpen(false)}
+              inventoryCount={inventory.length}
+              totalMarketValue={`$${inventory.reduce((acc, curr) => acc + (parseFloat(curr.market_value?.replace(/[^0-9.]/g, '') || '0')), 0).toLocaleString()}`}
+            />
+          </Suspense>
         )}
 
         {selectedGrail && (
-          <GrailShowcase
-            isOpen={!!selectedGrail}
-            onClose={() => setSelectedGrail(null)}
-            card={{
-              name: selectedGrail.name || selectedGrail.card_name || 'Grail Asset',
-              player: selectedGrail.player_name || 'Elite Athlete',
-              year: selectedGrail.year || '2024',
-              set: selectedGrail.set_name || 'Panini Prizm',
-              grade: selectedGrail.grade || 'PSA 10',
-              image: selectedGrail.image_url || 'https://images.unsplash.com/photo-1510133769062-80c1e26dcb6e?q=80&w=2070&auto=format&fit=crop',
-              marketValue: selectedGrail.market_value || '$12,500.00'
-            }}
-          />
+          <Suspense fallback={null}>
+            <GrailShowcase
+              isOpen={!!selectedGrail}
+              onClose={() => setSelectedGrail(null)}
+              card={{
+                name: selectedGrail.name || selectedGrail.card_name || 'Grail Asset',
+                player: selectedGrail.player_name || 'Elite Athlete',
+                year: selectedGrail.year || '2024',
+                set: selectedGrail.set_name || 'Panini Prizm',
+                grade: selectedGrail.grade || 'PSA 10',
+                image: selectedGrail.image_url || 'https://images.unsplash.com/photo-1510133769062-80c1e26dcb6e?q=80&w=2070&auto=format&fit=crop',
+                marketValue: selectedGrail.market_value || '$12,500.00'
+              }}
+            />
+          </Suspense>
         )}
 
         <main id="main-content" className="flex-1 p-4 md:p-8 page-container overflow-y-auto pb-24 md:pb-8" role="main">
           <AutoTierGate>
-          <LazyErrorBoundary>
+          <LazyErrorBoundary key={location.pathname}>
             <Suspense fallback={<PageLoadingFallback />}>
               <Routes>
                 <Route path="/" element={<Dashboard />} />
@@ -520,8 +893,13 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
         {/* Mobile Navigation */}
         <MobileNav />
       </div>
-      <GuidedTour />
-      <DemoFlowWidget />
+      <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)} />
+      <Suspense fallback={null}>
+        <GuidedTour />
+      </Suspense>
+      <Suspense fallback={null}>
+        <DemoFlowWidget />
+      </Suspense>
     </div>
   );
 };

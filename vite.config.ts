@@ -20,7 +20,7 @@ function assertTelemetryConfigured(command: string, mode: string): void {
   if (required) {
     throw new Error(`${msg} (VITE_REQUIRE_TELEMETRY is set, so this is a hard failure.)`);
   }
-  // eslint-disable-next-line no-console
+   
   console.warn(`[vite] WARNING: ${msg} Set VITE_REQUIRE_TELEMETRY=true to enforce.`);
 }
 
@@ -72,7 +72,7 @@ export default defineConfig(({ command, mode }) => {
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
-    exclude: ['**/node_modules/**', '**/e2e/**', '**/*.spec.ts', '**/.claude/**'],
+    exclude: ['**/node_modules/**', '**/e2e/**', '**/*.spec.ts', '**/.claude/**', '**/ModernSportsIntelligenceDemo/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov', 'json-summary'],

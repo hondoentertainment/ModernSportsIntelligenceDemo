@@ -586,7 +586,7 @@ export function detectDuplicates(
       const matchScore = factors > 0 ? Math.round((score / factors) * 100) : 0;
 
       if (matchScore >= 70) {
-        let action: DuplicateMatch['action'] = 'skip';
+        let action: DuplicateMatch['action'];
         if (matchScore >= 90) {
           action = 'skip';
         } else if (matchScore >= 80) {

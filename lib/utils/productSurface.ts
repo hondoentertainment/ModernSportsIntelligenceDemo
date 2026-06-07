@@ -286,4 +286,11 @@ export const COMMAND_ROUTES = [
     path: '/audit-dossier',
     keywords: ['audit', 'dossier', 'insurance', 'tax'],
   },
+  {
+    id: 'nav-audit-trail',
+    label: 'Go to Audit Trail',
+    description: 'Compliance log, recorded events, and retention policies',
+    path: '/audit-trail',
+    keywords: ['audit', 'compliance', 'trail', 'log', 'security', 'recorded'],
+  },
 ] as const;

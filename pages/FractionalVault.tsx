@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import BetaFeatureBanner from '../components/BetaFeatureBanner';
 import {
   Landmark, TrendingUp, TrendingDown, Users, Vote, DollarSign,
   BarChart3, ShieldCheck, Gavel, ArrowUpRight, ArrowDownRight,
@@ -103,6 +104,12 @@ const FractionalVault: React.FC = () => {
       const dt = new Date(d.distributionDate);
       return { date: `${dt.getMonth() + 1}/${dt.getDate()}`, amount: d.totalAmount, cumulative: +cumulative.toFixed(2), source: d.source };
     });
+  }, [dividends]);
+
+  const dividendsSourceBreakdown = useMemo(() => {
+    const map: Record<string, number> = {};
+    dividends.forEach((d) => { map[d.source] = (map[d.source] || 0) + d.totalAmount; });
+    return Object.entries(map).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value: +value.toFixed(2) }));
   }, [dividends]);
 
   const selectedVaultOrders = useMemo(() => {
@@ -470,12 +477,7 @@ const FractionalVault: React.FC = () => {
   // TAB: Dividends
   // ====================================================================
   const renderDividends = () => {
-    const sourceBreakdown = (() => {
-      const map: Record<string, number> = {};
-      dividends.forEach((d) => { map[d.source] = (map[d.source] || 0) + d.totalAmount; });
-      return Object.entries(map).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value: +value.toFixed(2) }));
-    })();
-
+    const sourceBreakdown = dividendsSourceBreakdown;
     const totalDistributed = dividends.reduce((s, d) => s + d.totalAmount, 0);
 
     return (
@@ -773,6 +775,11 @@ const FractionalVault: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <BetaFeatureBanner
+        featureName="Fractional Vault & Copy-Trading"
+        dataSourceLabel="Simulated vault shares and governance (no securities offering or live execution)"
+        disclaimer="Fractional ownership shown here is a product demo only — not an investment product."
+      />
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="p-2.5 rounded-xl bg-purple-500/20">

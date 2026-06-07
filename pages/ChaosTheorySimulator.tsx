@@ -427,7 +427,7 @@ const CascadeViewerTab: React.FC<{
   const waterfallData = useMemo(
     () =>
       event
-        ? event.chaosPath.map(p => ({
+        ? event.chaosPath.map((p) => ({
             time: formatTimestamp(p.timestamp),
             delta: p.marketDelta,
             entropy: p.entropy,

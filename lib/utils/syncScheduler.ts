@@ -149,7 +149,7 @@ export function getTimeUntilNextSync(): {
 
     const due = minutesLeft === 0;
 
-    let timeLeft: string | null = null;
+    let timeLeft: string;
     if (minutesLeft < 60) {
         timeLeft = `${minutesLeft} min`;
     } else if (minutesLeft < 1440) {

@@ -94,8 +94,8 @@ function scoutAnalysis(card: CardInventory): AgentAnalysis {
   const breakout = analyzeBreakoutPotential(card);
   const isProspect = card.league === 'MiLB' || card.year >= 2022;
 
-  let verdict: AgentAnalysis['verdict'] = 'hold';
-  let confidence = 50;
+  let verdict: AgentAnalysis['verdict'];
+  let confidence: number;
   const keyPoints: string[] = [];
   const dataPoints: AgentAnalysis['dataPoints'] = [];
 
@@ -159,8 +159,8 @@ function marketAnalysis(card: CardInventory): AgentAnalysis {
   const costBasis = card.purchasePrice || 0;
   const roi = costBasis > 0 ? ((currentVal - costBasis) / costBasis) * 100 : 0;
 
-  let verdict: AgentAnalysis['verdict'] = 'hold';
-  let confidence = 55;
+  let verdict: AgentAnalysis['verdict'];
+  let confidence: number;
   const keyPoints: string[] = [];
   const dataPoints: AgentAnalysis['dataPoints'] = [];
 
@@ -315,8 +315,8 @@ function negotiatorAnalysis(card: CardInventory): AgentAnalysis {
   const trajectory = forecastPriceTrajectory(card);
   const liquidityScore = LiquidityService.calculateLiquidityScore(card);
 
-  let verdict: AgentAnalysis['verdict'] = 'hold';
-  let confidence = 55;
+  let verdict: AgentAnalysis['verdict'];
+  let confidence: number;
   const keyPoints: string[] = [];
   const dataPoints: AgentAnalysis['dataPoints'] = [];
 

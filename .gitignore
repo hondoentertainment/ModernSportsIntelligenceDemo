@@ -27,6 +27,10 @@ playwright-report/
 test-results/
 test_output.txt
 *.lcov
+smoke-all-tabs-report.json
+
+# Local duplicate workspace copy
+ModernSportsIntelligenceDemo/
 
 # Editor directories and files
 .vscode/*

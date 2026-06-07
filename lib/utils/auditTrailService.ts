@@ -4,6 +4,7 @@
  */
 
 import { getLocalAuditTrail } from './auditLog';
+import { fetchRemoteAuditEvents } from './auditTrailRemote';
 
 export type AuditCategory = 'portfolio' | 'trading' | 'auth' | 'admin' | 'finance' | 'api' | 'compliance' | 'data';
 export type AuditSeverity = 'info' | 'warning' | 'critical' | 'security';
@@ -162,6 +163,13 @@ function getAuditEvents(): AuditEvent[] {
   return [...stored, ...getSampleAuditEvents()];
 }
 
+async function getRemoteAuditEvents(userId: string | undefined | null): Promise<AuditEvent[]> {
+  const rows = await fetchRemoteAuditEvents(userId);
+  return rows
+    .map((row, i) => mapStoredRecordToAuditEvent(row, i))
+    .filter((e): e is AuditEvent => e !== null);
+}
+
 function getComplianceRules(): ComplianceRule[] {
   return [
     { id: 'cr-1', name: 'AML/KYC Verification', description: 'All counterparties must pass identity verification before transactions over $3,000', category: 'Financial Crime', status: 'compliant', lastChecked: '2026-03-17', violationCount: 0, autoEnforced: true },
@@ -242,6 +250,7 @@ function getComplianceStatusColor(status: ComplianceStatus): string {
 
 export {
   getAuditEvents,
+  getRemoteAuditEvents,
   getComplianceRules,
   getComplianceReports,
   getRetentionPolicies,

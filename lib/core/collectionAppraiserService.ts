@@ -1373,6 +1373,32 @@ export function getInsuranceCoverage(coverageType?: InsuranceCoverage['coverageT
   return data.insurance;
 }
 
+export interface InsurancePlanView {
+  id: string;
+  provider: string;
+  recommended: boolean;
+  annualPremium: number;
+  planName: string;
+  coverageAmount: number;
+  deductible: number;
+  rating: number;
+  features: string[];
+}
+
+export function getInsurancePlans(): InsurancePlanView[] {
+  return getInsuranceCoverage().map((plan) => ({
+    id: plan.id,
+    provider: plan.provider,
+    recommended: plan.recommended,
+    annualPremium: plan.premium,
+    planName: plan.description,
+    coverageAmount: plan.coverageLimit,
+    deductible: plan.deductible,
+    rating: plan.rating,
+    features: plan.coveredPerils,
+  }));
+}
+
 export function getComparableValues(cardName?: string): ComparableValue[] {
   const data = ensureData();
   if (cardName) return data.comparables.filter(c => c.cardName.toLowerCase().includes(cardName.toLowerCase()));

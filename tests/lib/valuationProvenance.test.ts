@@ -8,6 +8,8 @@ import {
   sortByVerifiableRefreshPriority,
   getValuationSourceChipForCard,
   getValuationSourceChipForTarget,
+  valuationSourceToBadgeVariant,
+  valuationBadgeVariantForEntity,
 } from '../../lib/utils/valuationProvenance';
 
 function makeCard(overrides: Partial<CardInventory> = {}): CardInventory {
@@ -246,5 +248,84 @@ describe('valuationProvenance', () => {
     expect(sorted[0].id).toBe('stale-gemini');
     expect(sorted[1].id).toBe('fresh-gemini');
     expect(sorted[2].id).toBe('fresh-ebay');
+  });
+});
+
+describe('valuationSourceToBadgeVariant', () => {
+  const NOW = Date.parse('2026-03-27T00:00:00.000Z');
+
+  it('returns "live" for fresh ebay-api valuations', () => {
+    expect(
+      valuationSourceToBadgeVariant('ebay-api', '2026-03-26T20:00:00.000Z', NOW),
+    ).toBe('live');
+  });
+
+  it('returns "stale" for ebay-api valuations older than 7 days', () => {
+    expect(
+      valuationSourceToBadgeVariant('ebay-api', '2026-03-19T00:00:00.000Z', NOW),
+    ).toBe('stale');
+  });
+
+  it('returns "live" for fresh historical-comps valuations', () => {
+    expect(
+      valuationSourceToBadgeVariant(
+        'historical-comps',
+        '2026-03-26T12:00:00.000Z',
+        NOW,
+      ),
+    ).toBe('live');
+  });
+
+  it('returns "sample" for gemini regardless of timestamp freshness', () => {
+    expect(
+      valuationSourceToBadgeVariant('gemini', '2026-03-26T12:00:00.000Z', NOW),
+    ).toBe('sample');
+    expect(
+      valuationSourceToBadgeVariant('gemini', '2025-01-01T00:00:00.000Z', NOW),
+    ).toBe('sample');
+    expect(valuationSourceToBadgeVariant('gemini', undefined, NOW)).toBe('sample');
+  });
+
+  it('returns "mock" for undefined or fallback sources', () => {
+    expect(valuationSourceToBadgeVariant(undefined, undefined, NOW)).toBe('mock');
+    expect(
+      valuationSourceToBadgeVariant('fallback', '2026-03-26T20:00:00.000Z', NOW),
+    ).toBe('mock');
+  });
+
+  it('returns "stale" for verifiable sources with missing or invalid timestamp', () => {
+    expect(valuationSourceToBadgeVariant('ebay-api', undefined, NOW)).toBe('stale');
+    expect(valuationSourceToBadgeVariant('ebay-api', 'not-a-date', NOW)).toBe(
+      'stale',
+    );
+    expect(
+      valuationSourceToBadgeVariant('historical-comps', undefined, NOW),
+    ).toBe('stale');
+  });
+});
+
+describe('valuationBadgeVariantForEntity', () => {
+  const NOW = Date.parse('2026-03-27T00:00:00.000Z');
+
+  it('falls back to lastValuationDate when valuationTimestamp is missing', () => {
+    expect(
+      valuationBadgeVariantForEntity(
+        {
+          valuationSource: 'ebay-api',
+          lastValuationDate: '2026-03-26T20:00:00.000Z',
+        },
+        NOW,
+      ),
+    ).toBe('live');
+
+    expect(
+      valuationBadgeVariantForEntity(
+        {
+          valuationSource: 'ebay-api',
+          lastValuationDate: '2026-03-10T00:00:00.000Z',
+        },
+        NOW,
+      ),
+    ).toBe('stale');
   });
 });

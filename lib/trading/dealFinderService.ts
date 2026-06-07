@@ -1,5 +1,8 @@
 import { CardInventory, Sport } from '../../types';
 import { store } from '../dal/syncStore';
+import { isFeatureEnabled } from '../featureFlags';
+import { ebayAdapter } from '../integrations/ebayAdapter';
+import { logger } from '../logger';
 
 // ---- Types ----
 
@@ -435,4 +438,71 @@ export function getDealSummary(deals: Deal[], arbitrage: ArbitrageOpportunity[])
     arbitrageCount: arbitrage.length,
     totalArbitrageProfit: Math.round(arbitrage.reduce((s, a) => s + a.netProfit, 0) * 100) / 100,
   };
+}
+
+function ebayListingToMarketplaceListing(
+  card: CardInventory,
+  item: { price: number; title: string; itemId: string; condition: string; date?: string },
+): MarketplaceListing {
+  const fairValue = card.currentValue ?? card.purchasePrice ?? item.price;
+  return {
+    id: `ebay_${item.itemId}`,
+    cardId: card.id,
+    player: card.player,
+    cardDescription: item.title,
+    sport: card.sport,
+    platform: 'eBay',
+    listPrice: item.price,
+    fairValue,
+    condition: item.condition,
+    isGraded: card.isGraded,
+    grade: card.grade,
+    sellerRating: 92,
+    listingAge: item.date
+      ? Math.max(0, Math.floor((Date.now() - new Date(item.date).getTime()) / 86400000))
+      : 0,
+    imageUrl: card.image,
+  };
+}
+
+/**
+ * Fetch listings: live eBay when USE_REAL_EBAY, else seeded mock listings.
+ */
+export async function fetchListings(cards: CardInventory[]): Promise<MarketplaceListing[]> {
+  const mockListings = generateListings(cards);
+
+  if (!isFeatureEnabled('USE_REAL_EBAY') || cards.length === 0) {
+    return mockListings;
+  }
+
+  const liveListings: MarketplaceListing[] = [];
+  const sample = cards.slice(0, 5);
+
+  for (const card of sample) {
+    try {
+      const market = await ebayAdapter.getMarketData({
+        playerName: card.player,
+        cardYear: card.year ? String(card.year) : undefined,
+        cardSet: card.set,
+        cardNumber: card.cardNumber,
+        grade: card.isGraded ? card.grade : undefined,
+        soldOnly: false,
+        limit: 8,
+      });
+
+      for (const sale of market.recentSales.slice(0, 5)) {
+        liveListings.push(ebayListingToMarketplaceListing(card, sale));
+      }
+    } catch (err) {
+      logger.warn('[dealFinder] eBay listing fetch failed for card', card.id, err);
+    }
+  }
+
+  if (liveListings.length === 0) {
+    return mockListings;
+  }
+
+  const liveIds = new Set(liveListings.map((l) => l.id));
+  const filler = mockListings.filter((l) => !liveIds.has(l.id)).slice(0, Math.max(0, 30 - liveListings.length));
+  return [...liveListings, ...filler];
 }

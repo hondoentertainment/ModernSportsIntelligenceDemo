@@ -1,4 +1,5 @@
 import type { CardInventory, PricingAnalysis, TargetWatchlist, ValuationSource } from '../../types';
+import type { DataSourceVariant } from '../../components/DataSourceBadge';
 
 const SOURCE_PRIORITY: Record<ValuationSource, number> = {
   'ebay-api': 3,
@@ -207,4 +208,47 @@ export function getValuationSourceChipForTarget(target: Pick<TargetWatchlist, 'v
 } {
   const source = target.valuationSource || ((target.salesData?.length || 0) >= 3 ? 'historical-comps' : 'fallback');
   return getValuationSourceChipForSource(source);
+}
+
+/**
+ * Maps a `ValuationSource` plus freshness signal to a `DataSourceVariant`
+ * understood by the shared `<DataSourceBadge />` component.
+ *
+ * - verifiable + fresh   -> 'live'
+ * - verifiable + stale   -> 'stale'
+ * - gemini               -> 'sample'   (AI estimate; not a verifiable source)
+ * - fallback / unknown   -> 'mock'
+ */
+export function valuationSourceToBadgeVariant(
+  source: ValuationSource | undefined,
+  timestamp: string | undefined,
+  nowMs: number = Date.now(),
+): DataSourceVariant {
+  const inferred: ValuationSource = source ?? 'fallback';
+  if (inferred === 'ebay-api' || inferred === 'historical-comps') {
+    const ts = timestamp ? Date.parse(timestamp) : NaN;
+    if (Number.isNaN(ts)) return 'stale';
+    return nowMs - ts >= STALE_AFTER_MS ? 'stale' : 'live';
+  }
+  if (inferred === 'gemini') return 'sample';
+  return 'mock';
+}
+
+/**
+ * Convenience wrapper for cards/targets that carry both `valuationSource`
+ * and `valuationTimestamp`/`lastValuationDate`.
+ */
+export function valuationBadgeVariantForEntity(
+  entity: {
+    valuationSource?: ValuationSource;
+    valuationTimestamp?: string;
+    lastValuationDate?: string;
+  },
+  nowMs: number = Date.now(),
+): DataSourceVariant {
+  return valuationSourceToBadgeVariant(
+    entity.valuationSource,
+    entity.valuationTimestamp ?? entity.lastValuationDate,
+    nowMs,
+  );
 }

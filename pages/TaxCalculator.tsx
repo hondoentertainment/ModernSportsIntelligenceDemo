@@ -4,14 +4,13 @@ import {
   getTransactionHistory,
   getCapitalGainsSummary,
   getMonthlyGains,
-  getTaxBrackets,
-  getHarvestingOpportunities,
-  getWashSaleAlerts,
+  getTaxBracketsForPage,
+  getWashSaleAlertsForPage,
   getDeductibleExpenses,
   getForm8949Preview,
   getShortLongSplit,
   formatCurrency,
-  type Transaction,
+  type TaxTransactionRow,
   type CapitalGainsSummary,
   type MonthlyGain,
   type TaxBracket,
@@ -26,7 +25,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 const CHART_COLORS = ['#f97316', '#60a5fa', '#f87171', '#34d399', '#a78bfa', '#fbbf24', '#22d3ee', '#fb923c'];
 
 const TaxCalculator: React.FC = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<TaxTransactionRow[]>([]);
   const [summary, setSummary] = useState<CapitalGainsSummary | null>(null);
   const [monthlyGains, setMonthlyGains] = useState<MonthlyGain[]>([]);
   const [brackets, setBrackets] = useState<TaxBracket[]>([]);
@@ -43,9 +42,9 @@ const TaxCalculator: React.FC = () => {
       setTransactions(getTransactionHistory());
       setSummary(getCapitalGainsSummary());
       setMonthlyGains(getMonthlyGains());
-      setBrackets(getTaxBrackets());
+      setBrackets(getTaxBracketsForPage());
       setHarvesting(getHarvestingOpportunities());
-      setWashAlerts(getWashSaleAlerts());
+      setWashAlerts(getWashSaleAlertsForPage());
       setExpenses(getDeductibleExpenses());
       setForm8949(getForm8949Preview());
       setShortLong(getShortLongSplit());

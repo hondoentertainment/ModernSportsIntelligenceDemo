@@ -78,7 +78,7 @@ const BlockchainProvenance: React.FC = () => {
       ? Math.round(passports.reduce((s, p) => s + p.authenticityScore, 0) / passports.length)
       : 0;
     const totalVerifications = verifications.length;
-    const verified = verifications.filter(v => v.status === 'verified').length;
+    const verified = verifications.filter(v => v.result === 'verified').length;
     const totalTwins = digitalTwins.length;
     const totalContracts = smartContracts.length;
     return { totalPassports, avgAuthenticity, totalVerifications, verified, totalTwins, totalContracts };
@@ -250,7 +250,7 @@ const BlockchainProvenance: React.FC = () => {
                           evt.eventType === 'sale' ? 'bg-amber-500/20 text-amber-400' :
                           evt.eventType === 'verify' ? 'bg-cyan-500/20 text-cyan-400' :
                           'bg-slate-700/50 text-slate-400'
-                        }`}>{evt.eventType.toUpperCase()}</span>
+                        }`}>{(evt.eventType ?? 'event').toUpperCase()}</span>
                         <span className="text-xs font-bold text-white">{evt.description}</span>
                       </div>
                       <span className="text-[10px] text-slate-500">{evt.date}</span>
@@ -499,17 +499,17 @@ const BlockchainProvenance: React.FC = () => {
         <div className="space-y-3 max-h-60 overflow-y-auto">
           {verifications.map((v, idx) => (
             <div key={idx} className={`bg-slate-900/50 border rounded-xl p-3 ${
-              v.status === 'verified' ? 'border-emerald-500/20' :
-              v.status === 'failed' ? 'border-red-500/20' :
+              v.result === 'verified' ? 'border-emerald-500/20' :
+              v.result === 'failed' ? 'border-red-500/20' :
               'border-amber-500/20'
             }`}>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-bold text-white">{v.cardName || v.passportId}</span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                  v.status === 'verified' ? 'bg-emerald-500/20 text-emerald-400' :
-                  v.status === 'failed' ? 'bg-red-500/20 text-red-400' :
+                  v.result === 'verified' ? 'bg-emerald-500/20 text-emerald-400' :
+                  v.result === 'failed' ? 'bg-red-500/20 text-red-400' :
                   'bg-amber-500/20 text-amber-400'
-                }`}>{v.status.toUpperCase()}</span>
+                }`}>{(v.result ?? 'pending').toUpperCase()}</span>
               </div>
               <div className="flex items-center gap-3 text-[10px] text-slate-500">
                 <span>Score: <span className="text-slate-300 font-bold">{v.score}%</span></span>

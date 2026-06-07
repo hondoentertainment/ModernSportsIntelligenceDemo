@@ -291,9 +291,9 @@ export function classifyIRSStatus(): IRSClassification {
   const maxTotal = factors.reduce((sum, f) => sum + f.maxScore, 0);
   const confidence = Math.round((totalScore / maxTotal) * 100);
 
-  let status: IRSClassification['status'] = 'collector';
-  let riskLevel: IRSClassification['riskLevel'] = 'low';
-  let recommendation = '';
+  let status: IRSClassification['status'];
+  let riskLevel: IRSClassification['riskLevel'];
+  let recommendation: string;
 
   if (confidence >= 80) {
     status = 'dealer';

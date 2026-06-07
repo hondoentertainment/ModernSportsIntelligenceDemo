@@ -24,7 +24,31 @@ const createMockClient = (): SupabaseClient => {
         updateUser: () => Promise.resolve({ data: { user: null }, error: null }),
         refreshSession: () => Promise.resolve({ data: { session: null, user: null }, error: null }),
     };
-    return { auth: mockAuth } as unknown as SupabaseClient;
+
+    const createQueryBuilder = () => {
+        const builder: Record<string, unknown> = {};
+        const chain = () => builder;
+        builder.select = chain;
+        builder.insert = chain;
+        builder.update = chain;
+        builder.delete = chain;
+        builder.eq = chain;
+        builder.neq = chain;
+        builder.order = chain;
+        builder.limit = chain;
+        builder.single = () => Promise.resolve({ data: null, error: { message: 'Demo mode' } });
+        builder.maybeSingle = () => Promise.resolve({ data: null, error: null });
+        builder.then = (
+            onFulfilled?: ((value: { data: unknown[]; error: null }) => unknown) | null,
+            onRejected?: ((reason: unknown) => unknown) | null,
+        ) => Promise.resolve({ data: [], error: null }).then(onFulfilled, onRejected);
+        return builder;
+    };
+
+    return {
+        auth: mockAuth,
+        from: () => createQueryBuilder(),
+    } as unknown as SupabaseClient;
 };
 
 export const supabase: SupabaseClient = isDemoMode

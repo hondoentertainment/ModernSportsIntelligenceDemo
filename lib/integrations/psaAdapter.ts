@@ -5,7 +5,7 @@
  * the PSA API. Otherwise returns realistic mock data for development.
  */
 
-import { serverApiRequest } from '../serverApi';
+import { serverApiRequest, serverApiRequestAuthenticated } from '../serverApi';
 import { isFeatureEnabled } from '../featureFlags';
 import { withRetry } from '../apiResilience';
 import { apiCache, CACHE_TTL } from '../apiCache';
@@ -96,7 +96,7 @@ function mockPopReport(player: string, year: string, set: string): PopReportResu
 
 async function realCertLookup(certNumber: string): Promise<CertLookupResult> {
   return withRetry(
-    () => serverApiRequest<CertLookupResult>('/api/grading/psa/cert', {
+    () => serverApiRequestAuthenticated<CertLookupResult>('/api/grading/psa/cert', {
       method: 'POST',
       body: JSON.stringify({ certNumber }),
     }),

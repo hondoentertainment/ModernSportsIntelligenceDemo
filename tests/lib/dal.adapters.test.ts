@@ -155,7 +155,7 @@ describe('LocalStorageAdapter', () => {
 /** Build a chainable Supabase query mock that resolves to `result`. */
 function makeQueryMock(result: unknown = { error: null }) {
   const resolved = Promise.resolve(result);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const chain: Record<string, any> = {
     select: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),

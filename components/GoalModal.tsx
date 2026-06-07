@@ -736,7 +736,7 @@ const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, cards }) => {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const goals = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+     
     refreshKey; // dependency trigger
     return refreshGoals(cards);
   }, [cards, refreshKey]);

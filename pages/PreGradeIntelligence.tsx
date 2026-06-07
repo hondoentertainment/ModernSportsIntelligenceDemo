@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useRef,
 } from 'react';
+import BetaFeatureBanner from '../components/BetaFeatureBanner';
 import {
   ScanLine,
   Camera,
@@ -161,6 +162,11 @@ const PreGradeIntelligence: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <BetaFeatureBanner
+        featureName="Visual Audit Simulation"
+        dataSourceLabel="Simulated pre-grade scoring and ROI overlays"
+        disclaimer="Grade probabilities are estimates — not an official grader report."
+      />
       {/* Page Header */}
       <div className="flex items-center gap-3">
         <div className="p-3 rounded-xl bg-orange-500/10">

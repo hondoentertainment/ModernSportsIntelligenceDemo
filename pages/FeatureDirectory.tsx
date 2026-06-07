@@ -10,6 +10,7 @@ import {
   Feature,
   FeatureTier,
 } from '../lib/utils/featureCatalog';
+import { isBetaSurfacesEnabled } from '../lib/productionLaunch';
 
 /** Functional area groupings for organized browsing */
 const FUNCTIONAL_AREAS: { id: string; label: string; icon: string; color: string; bgColor: string; borderColor: string; description: string; categoryMatch: string[]; keywordMatch: string[] }[] = [
@@ -224,6 +225,17 @@ const FeatureDirectory: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {!isBetaSurfacesEnabled() ? (
+        <div
+          role="status"
+          className="rounded-xl border border-brand-teal/30 bg-brand-teal/10 px-4 py-3 text-sm text-slate-200"
+          data-testid="mvp-launch-notice"
+        >
+          <span className="font-semibold text-brand-lime">Subscriber beta</span>
+          {' '}— discovery shows production-ready features only. Beta surfaces (fractional vault, provenance chain, vision grading, liquidity pool) are hidden unless{' '}
+          <code className="text-xs text-brand-teal">VITE_FF_ENABLE_BETA_SURFACES=1</code> is set.
+        </div>
+      ) : null}
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

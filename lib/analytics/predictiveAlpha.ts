@@ -81,14 +81,14 @@ function computeConfidenceAndBreakdown(params: {
 
   const historyDepthScore = Math.min(100, historyLen * 10);
   const liquidityQualityScore = Math.max(0, Math.min(100, liquidityScore));
-  let scarcityQualityScore = 35;
+  let scarcityQualityScore: number;
   if (popCount === 1) scarcityQualityScore = 95;
   else if (popCount < 10) scarcityQualityScore = 78;
   else if (popCount < 50) scarcityQualityScore = 62;
   else if (popCount < 200) scarcityQualityScore = 48;
   else scarcityQualityScore = 28;
 
-  let volatilityAdjustment = 0;
+  let volatilityAdjustment: number;
   if (volatility === 'low') volatilityAdjustment = 10;
   else if (volatility === 'medium') volatilityAdjustment = 3;
   else volatilityAdjustment = -12;
@@ -410,7 +410,7 @@ export function analyzeBreakoutPotential(card: CardInventory): BreakoutAnalysis 
   });
 
   // Factor 4: Grade Quality
-  let gradeScore = 40;
+  let gradeScore: number;
   if (card.isGraded) {
     if (card.grade === '10' || card.grade === 'Gem Mint') gradeScore = 90;
     else if (card.grade === '9.5') gradeScore = 80;

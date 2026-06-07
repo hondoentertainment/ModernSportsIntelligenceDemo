@@ -11,26 +11,35 @@
     "build": "vite build",
     "build:e2e": "vite build --mode e2e",
     "build:size": "vite build && node scripts/bundle-size.cjs",
+    "size:check": "node scripts/bundle-size.cjs --max=3030000",
     "preview": "vite preview",
-    "lint": "eslint --rule \"no-unused-vars: off\" \"**/*.{ts,tsx}\"",
-    "lint:fix": "eslint --rule \"no-unused-vars: off\" \"**/*.{ts,tsx}\" --fix",
-    "lint:errors": "eslint --rule \"no-unused-vars: off\" --quiet \"**/*.{ts,tsx}\"",
+    "prepare": "husky",
+    "lint": "eslint --rule \"no-unused-vars: off\" vite.config.ts playwright.config.ts \"api/**/*.ts\" \"components/**/*.{ts,tsx}\" \"pages/**/*.{ts,tsx}\" \"lib/**/*.{ts,tsx}\" \"contexts/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"features/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\" App.tsx index.tsx constants.tsx",
+    "lint:fix": "eslint --rule \"no-unused-vars: off\" vite.config.ts playwright.config.ts \"api/**/*.ts\" \"components/**/*.{ts,tsx}\" \"pages/**/*.{ts,tsx}\" \"lib/**/*.{ts,tsx}\" \"contexts/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"features/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\" App.tsx index.tsx constants.tsx --fix",
+    "lint:errors": "eslint --rule \"no-unused-vars: off\" --quiet vite.config.ts playwright.config.ts \"api/**/*.ts\" \"components/**/*.{ts,tsx}\" \"pages/**/*.{ts,tsx}\" \"lib/**/*.{ts,tsx}\" \"contexts/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"features/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\" App.tsx index.tsx constants.tsx",
     "format": "prettier --write \"docs/**/*.md\" \".github/workflows/*.yml\" \"*.json\"",
     "format:check": "prettier --check \"docs/**/*.md\" \".github/workflows/*.yml\" \"*.json\"",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "test:rls": "node scripts/run-rls-checks.mjs",
     "audit:high": "npm audit --audit-level=high",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit -p tsconfig.release.json",
-    "typecheck:strict": "tsc --noEmit -p tsconfig.strict.json",
+    "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit -p tsconfig.release.json",
+    "typecheck:strict": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit -p tsconfig.strict.json",
     "test:e2e": "playwright test",
-    "test:e2e:smoke": "playwright test tests/e2e/auth.spec.ts tests/e2e/dashboard.spec.ts tests/e2e/release-smoke.spec.ts tests/e2e/billing-checkout.spec.ts --project=chromium --workers=2",
+    "test:e2e:smoke": "playwright test tests/e2e/auth.spec.ts tests/e2e/dashboard.spec.ts tests/e2e/release-smoke.spec.ts tests/e2e/billing-checkout.spec.ts tests/e2e/command-palette.spec.ts tests/e2e/header-bell.spec.ts tests/e2e/visual-regression.spec.ts tests/e2e/audit-trail.spec.ts --project=chromium --workers=2",
+    "test:a11y": "playwright test tests/e2e/a11y.spec.ts",
+    "test:visual": "playwright test tests/e2e/visual-regression.spec.ts --project=chromium",
+    "test:visual:update": "playwright test tests/e2e/visual-regression.spec.ts --project=chromium --update-snapshots",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:desktop": "playwright test --project=chromium",
     "test:e2e:mobile": "playwright test --project=Mobile Chrome",
     "test:e2e:pricing-truth": "playwright test tests/e2e/pricing-truth-coverage.spec.ts --project=chromium",
     "test:e2e:deployed": "playwright test tests/e2e/deployed-api.spec.ts --project=chromium --workers=1",
+    "test:smoke:routes": "node scripts/smoke-all-tabs.cjs",
     "audit:localstorage": "node scripts/audit-localstorage.mjs",
+    "deploy:infra": "node scripts/deploy-production.mjs",
+    "deploy:infra:dry": "node scripts/deploy-production.mjs --dry-run",
     "verify:rls": "node scripts/rls-verify.mjs",
     "guardrail:pricing-truth": "node scripts/check-pricing-truth-guardrail.mjs",
     "ci:bundle": "node scripts/ci-bundle-gate.cjs",
@@ -42,8 +51,9 @@
     "joe:bundle": "bash scripts/bundle-check.sh",
     "types:supabase": "npx supabase gen types typescript --linked > types/supabase.gen.ts",
     "types:supabase:check": "npm run types:supabase && git diff --exit-code -- types/supabase.gen.ts",
-    "supabase:functions:deploy": "npx supabase functions deploy create-checkout-session && npx supabase functions deploy create-billing-portal-session",
-    "verify": "npm run typecheck && npm run typecheck:strict && npm run lint && npm run format:check && npm run test:coverage && npm run build"
+    "supabase:functions:deploy": "npx supabase functions deploy create-checkout-session && npx supabase functions deploy create-billing-portal-session && npx supabase functions deploy verify-psa-cert",
+    "verify": "cross-env NODE_OPTIONS=--max-old-space-size=8192 npm run typecheck && npm run typecheck:strict && npm run lint && npm run format:check && npm run test:coverage && npm run build",
+    "verify:ci": "npm run typecheck && npm run lint && npm run test"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -62,9 +72,11 @@
     "react-router-dom": "^7.14.0",
     "recharts": "3.8.1",
     "stripe": "^22.0.1",
+    "web-vitals": "^5.2.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.3",
     "@eslint/js": "^9.39.4",
     "@playwright/test": "^1.59.1",
     "@testing-library/dom": "^10.4.1",
@@ -79,12 +91,18 @@
     "@vitejs/plugin-react": "^6.0.1",
     "@vitest/coverage-v8": "^4.1.4",
     "@vitest/ui": "^4.1.4",
+    "autoprefixer": "^10.5.0",
+    "cross-env": "^10.1.0",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "husky": "^9.1.7",
     "jsdom": "^29.0.2",
+    "lint-staged": "^17.0.5",
     "playwright": "^1.59.1",
+    "postcss": "^8.5.15",
     "prettier": "^3.8.3",
+    "tailwindcss": "^3.4.19",
     "tsx": "^4.22.3",
     "typescript": "~6.0.3",
     "vite": "^8.0.8",
@@ -92,5 +110,13 @@
   },
   "optionalDependencies": {
     "@sentry/react": "^10.48.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --rule \"no-unused-vars: off\" --fix"
+    ],
+    "*.{json,yml,yaml,md}": [
+      "prettier --write"
+    ]
   }
 }

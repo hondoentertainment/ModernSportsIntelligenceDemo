@@ -36,13 +36,16 @@ const ProspectTrends: React.FC = () => {
   const fetchTrends = async (leagueOverride?: string) => {
     setIsLoading(true);
     const leagueToFetch = leagueOverride || activeLeague;
-    const data = await getRealTimeLeagueTrends(leagueToFetch);
-    if (data && data.length > 0) {
-      setProspects(data.map((d, i) => ({ ...d, id: d.name.replace(/\s+/g, '-').toLowerCase() + '-' + i, league: d.league as MiLBProspect['league'] })));
-      store.set(`cardx_trends_${leagueToFetch}`, data);
-      store.set(`cardx_trends_last_updated_${leagueToFetch}`, new Date().toISOString());
+    try {
+      const data = await getRealTimeLeagueTrends(leagueToFetch);
+      if (data && data.length > 0) {
+        setProspects(data.map((d, i) => ({ ...d, id: d.name.replace(/\s+/g, '-').toLowerCase() + '-' + i, league: d.league as MiLBProspect['league'] })));
+        store.set(`cardx_trends_${leagueToFetch}`, data);
+        store.set(`cardx_trends_last_updated_${leagueToFetch}`, new Date().toISOString());
+      }
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {

@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, ChevronDown, User, LogOut, Settings, Terminal, Zap, Shield, Sparkles, Maximize2 } from 'lucide-react';
+import { Search, Bell, ChevronDown, User, LogOut, Settings, Zap, Maximize2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useDALSyncStatus } from '../lib/dal/useDALSyncStatus';
-import FeatureSearch from './FeatureSearch';
+import { useAlerts } from '../lib/utils/useAlerts';
+import { useShortcutGlyph } from '../lib/utils/useShortcutGlyph';
 import SwarmFeed from './SwarmFeed';
 
 interface HeaderProps {
@@ -17,25 +18,14 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const { user, signOut, isDemoMode } = useAuth();
   const { syncing, hydrated, lastError } = useDALSyncStatus();
+  const { unreadCount } = useAlerts();
+  const glyph = useShortcutGlyph();
   const syncLabel = syncing ? 'saving' : !hydrated ? 'loading' : lastError ? 'error' : 'synced';
   const syncDotClass = syncing || !hydrated ? 'bg-brand-blue animate-bounce' : lastError ? 'bg-red-500' : 'bg-brand-lime animate-pulse';
   const syncTextClass = syncing || !hydrated ? 'text-brand-blue' : lastError ? 'text-red-400' : 'text-brand-lime';
   const navigate = useNavigate();
   const userMenuButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Keyboard Shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        document.getElementById('omni-search')?.focus();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  // Close user dropdown on Escape; return focus to trigger (Interaction + A11y)
   useEffect(() => {
     if (!showDropdown) return;
     const handleEsc = (e: KeyboardEvent) => {
@@ -48,31 +38,6 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
     return () => window.removeEventListener('keydown', handleEsc);
   }, [showDropdown]);
 
-  const isCommand = searchQuery.startsWith('/');
-
-  const runCommand = (command: string) => {
-    switch (command) {
-      case '/scan':
-        navigate('/');
-        break;
-      case '/compare':
-        navigate('/compare');
-        break;
-      case '/war-room':
-        navigate('/war-room');
-        break;
-      case '/buy':
-        navigate('/deep-search');
-        break;
-      case '/guilds':
-        navigate('/guilds');
-        break;
-      default:
-        break;
-    }
-    setSearchQuery('');
-  };
-
   const handleLogout = async () => {
     await signOut();
     navigate('/login');
@@ -81,79 +46,38 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
   const displayName = user?.user_metadata?.username || user?.email?.split('@')[0] || 'Collector';
   const displayEmail = user?.email || 'demo@sportsintel.io';
 
+  const hasUnread = unreadCount > 0;
+  const badgeText = unreadCount > 9 ? '9+' : String(unreadCount);
+  const bellAriaLabel = hasUnread ? `Notifications (${unreadCount} unread)` : 'Notifications';
+
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 md:px-8 glass-header border-b border-slate-800/50">
       <div className="flex-1 max-w-xl">
         <div className="relative group">
           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            {isCommand ? (
-              <Terminal className="text-brand-lime animate-pulse" size={16} />
-            ) : (
-              <Search className="text-brand-muted group-focus-within:text-brand-lime transition-colors" size={18} />
-            )}
+            <Search className="text-brand-muted group-focus-within:text-brand-lime transition-colors" size={18} />
           </div>
           <input
             id="omni-search"
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && isCommand) {
-                e.preventDefault();
-                runCommand(searchQuery.trim());
-              }
-            }}
-            placeholder={isCommand ? "Enter terminal command (e.g. /scan, /buy, /compare)..." : "MSI Intel: Search card populations, market caps, or trajectories..."}
-            aria-label="Search cards, commands, and market data"
-            className={`w-full bg-brand-slate border rounded-full py-2.5 pl-10 pr-4 text-base md:text-sm focus:outline-none focus:ring-1 transition-all placeholder:text-slate-500 font-medium ${isCommand ? 'border-brand-lime/50 ring-brand-lime/20 text-brand-lime font-mono' : 'border-slate-800 focus:ring-brand-lime'}`}
+            placeholder="Search cards, players, sets..."
+            aria-label="Search cards, players, and sets"
+            className="w-full bg-brand-slate border border-slate-800 rounded-full py-2.5 pl-10 pr-4 text-base md:text-sm focus:outline-none focus:ring-1 focus:ring-brand-lime transition-all placeholder:text-slate-500 font-medium"
           />
           <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-            {!isCommand && (
-              <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border border-slate-700 bg-slate-900 px-1.5 font-mono text-[10px] font-medium text-slate-500 opacity-100">
-                <span className="text-xs">⌘</span>K
-              </kbd>
-            )}
-            {isCommand && (
-              <div className="px-2 py-0.5 rounded bg-brand-lime/10 border border-brand-lime/30 text-[9px] font-black text-brand-lime uppercase tracking-widest animate-pulse">
-                Terminal Active
-              </div>
-            )}
+            <kbd
+              className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border border-slate-700 bg-slate-900 px-1.5 font-mono text-[10px] font-medium text-slate-500 opacity-100"
+              aria-label={`Open command palette with ${glyph.combo('K')}`}
+            >
+              {glyph.combo('K')}
+            </kbd>
           </div>
-
-          {/* Command Dropdown Hint */}
-          {searchQuery === '/' && (
-            <div className="absolute top-full mt-2 w-full bg-brand-charcoal border border-slate-700 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-              <div className="p-2 border-b border-slate-700">
-                <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest px-3 py-1">Available Commands</p>
-              </div>
-              <div className="p-2 space-y-1">
-                {[
-                  { cmd: '/scan', desc: 'Launch AI Alpha Scan', icon: <Sparkles size={14} /> },
-                  { cmd: '/compare', desc: 'Compare multi-asset NAV', icon: <Zap size={14} /> },
-                  { cmd: '/war-room', desc: 'Enter Analyst War Room', icon: <Shield size={14} /> },
-                  { cmd: '/buy', desc: 'Search marketplace for targets', icon: <Search size={14} /> },
-                ].map(c => (
-                  <button
-                    key={c.cmd}
-                    onClick={() => runCommand(c.cmd)}
-                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-300 transition-colors group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="text-brand-lime opacity-60 group-hover:opacity-100">{c.icon}</div>
-                      <span className="text-xs font-mono font-bold text-brand-lime">{c.cmd}</span>
-                    </div>
-                    <span className="text-[10px] text-slate-500 font-medium">{c.desc}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
       <div className="flex items-center gap-3 md:gap-5 ml-4">
-        <FeatureSearch />
-
         <button
           type="button"
           onClick={() => setIsSwarmOpen(true)}
@@ -177,12 +101,21 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
 
         <button
           type="button"
-          aria-label="Notifications"
-          title="Notifications"
+          onClick={() => navigate('/alerts')}
+          aria-label={bellAriaLabel}
+          title={bellAriaLabel}
+          data-testid="header-bell"
           className="p-2 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center text-brand-muted hover:text-brand-lime hover:bg-brand-slate rounded-full transition-all relative"
         >
           <Bell size={20} />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-brand-red rounded-full" aria-hidden="true"></span>
+          {hasUnread && (
+            <span
+              className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-brand-red text-white text-[9px] font-black flex items-center justify-center rounded-full px-1 shadow-lg"
+              aria-hidden="true"
+            >
+              {badgeText}
+            </span>
+          )}
         </button>
 
         <div
@@ -205,7 +138,6 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
 
         <div className="h-6 w-px bg-slate-800 hidden md:block"></div>
 
-        {/* User Dropdown */}
         <div className="relative">
           <button
             ref={userMenuButtonRef}
@@ -229,7 +161,6 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
             <ChevronDown size={14} className={`text-brand-muted group-hover:text-white transition-all ${showDropdown ? 'rotate-180' : ''}`} />
           </button>
 
-          {/* Dropdown Menu */}
           {showDropdown && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setShowDropdown(false)} />
@@ -269,4 +200,3 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
 };
 
 export default Header;
-

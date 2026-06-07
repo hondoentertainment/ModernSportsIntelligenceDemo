@@ -51,6 +51,12 @@ interface AuthProviderProps {
 const SESSION_REFRESH_INTERVAL = 4 * 60 * 1000;
 // Maximum time to wait for a session refresh before giving up
 const SESSION_REFRESH_TIMEOUT_MS = 8000;
+// Hard ceiling on initial auth resolution. If neither onAuthStateChange's
+// INITIAL_SESSION event nor getSession() has resolved within this window,
+// we drop the loading shell so the user can sign in or use the app instead
+// of staring at an indefinite "Secure Uplink…" screen on slow networks or
+// upstream Supabase outages.
+const INITIAL_AUTH_TIMEOUT_MS = 6000;
 
 /**
  * Wraps supabase.auth.refreshSession() with a hard timeout so a slow or
@@ -139,6 +145,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         // Real client: end initial load on INITIAL_SESSION so user/session stay aligned (avoids
         // getSession finishing before the first auth callback and briefly showing signed-out UI).
+        let initialLoadResolved = false;
+        const resolveInitialLoad = () => {
+            if (!mounted || initialLoadResolved) return;
+            initialLoadResolved = true;
+            setLoading(false);
+        };
+
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
             if (mounted) {
                 setSession(currentSession);
@@ -146,7 +159,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
                 if (event === 'INITIAL_SESSION') {
                     if (currentSession) startSessionRefreshTimer();
-                    setLoading(false);
+                    resolveInitialLoad();
                 }
 
                 switch (event) {
@@ -160,12 +173,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     case 'SIGNED_IN':
                         setRecoveryMode(false);
                         startSessionRefreshTimer();
+                        resolveInitialLoad();
                         break;
                     case 'SIGNED_OUT':
                         setRecoveryMode(false);
                         stopSessionRefreshTimer();
                         setUserTier('free');
                         store.remove(LS_USER_PROFILE);
+                        resolveInitialLoad();
                         break;
                     case 'USER_UPDATED':
                         setRecoveryMode(false);
@@ -174,8 +189,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             }
         });
 
+        // Belt-and-braces: seed initial state via getSession() in case the
+        // INITIAL_SESSION event never fires (slow network, blocked websocket,
+        // misconfigured anon key). Whichever resolves first wins.
+        supabase.auth.getSession()
+            .then(({ data, error }) => {
+                if (!mounted) return;
+                if (error) {
+                    logger.warn('[Auth] getSession error during init:', error.message);
+                } else if (data.session) {
+                    setSession(data.session);
+                    setUser(data.session.user);
+                    startSessionRefreshTimer();
+                }
+                resolveInitialLoad();
+            })
+            .catch((e) => {
+                logger.warn('[Auth] getSession threw during init:', e);
+                if (mounted) resolveInitialLoad();
+            });
+
+        // Hard ceiling so a hung Supabase init can never trap users on the
+        // loading shell. Falls through to the unauthenticated UI on timeout.
+        const failsafeTimer = setTimeout(() => {
+            if (mounted && !initialLoadResolved) {
+                logger.warn(`[Auth] Initial auth resolution exceeded ${INITIAL_AUTH_TIMEOUT_MS}ms; releasing loading state.`);
+                resolveInitialLoad();
+            }
+        }, INITIAL_AUTH_TIMEOUT_MS);
+
         return () => {
             mounted = false;
+            clearTimeout(failsafeTimer);
             subscription.unsubscribe();
             stopSessionRefreshTimer();
         };

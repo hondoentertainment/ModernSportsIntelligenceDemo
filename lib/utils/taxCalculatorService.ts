@@ -519,8 +519,8 @@ export function getTaxSummary(): TaxSummary {
 
 export function calculateEstimatedTax(gain: number, isLongTerm: boolean, taxableIncome: number): { taxRate: number; estimatedTax: number; bracket: string } {
   if (isLongTerm) {
-    let rate = 0;
-    let bracket = '0%';
+    let rate: number;
+    let bracket: string;
     if (taxableIncome > 518900) { rate = 20; bracket = '20%'; }
     else if (taxableIncome > 47025) { rate = 15; bracket = '15%'; }
     else { rate = 0; bracket = '0%'; }
@@ -832,8 +832,21 @@ export interface CapitalGainsSummary {
   taxesOwed: number;
   shortTermGains: number;
   longTermGains: number;
+  totalGains: number;
   harvestingSavings: number;
   effectiveTaxRate: number;
+}
+
+export interface TaxTransactionRow {
+  id: string;
+  cardName: string;
+  buyDate: string;
+  sellDate: string;
+  buyPrice: number;
+  sellPrice: number;
+  gainLoss: number;
+  term: 'short' | 'long';
+  platform: string;
 }
 
 export interface MonthlyGain {
@@ -850,8 +863,18 @@ export interface ShortLongSplit {
   amount: number;
 }
 
-export function getTransactionHistory(): Transaction[] {
-  return getTransactions();
+export function getTransactionHistory(): TaxTransactionRow[] {
+  return getCapitalGains().map((gain) => ({
+    id: gain.id,
+    cardName: gain.cardName,
+    buyDate: gain.buyDate,
+    sellDate: gain.sellDate,
+    buyPrice: gain.costBasis,
+    sellPrice: gain.saleProceeds,
+    gainLoss: gain.adjustedGain,
+    term: gain.isLongTerm ? 'long' : 'short',
+    platform: 'Marketplace',
+  }));
 }
 
 export function getCapitalGainsSummary(): CapitalGainsSummary {
@@ -868,6 +891,7 @@ export function getCapitalGainsSummary(): CapitalGainsSummary {
     taxesOwed: Math.round(stGains * 0.22 + ltGains * 0.15),
     shortTermGains: Math.round(stGains),
     longTermGains: Math.round(ltGains),
+    totalGains: Math.round(totalGain),
     harvestingSavings: Math.round(harvestingSavings),
     effectiveTaxRate: rate,
   };
@@ -884,11 +908,43 @@ export function getMonthlyGains(): MonthlyGain[] {
 }
 
 export function getHarvestingOpportunities(): HarvestingOpportunity[] {
-  return getHarvestOpportunities();
+  return getHarvestOpportunities().map((opportunity) => ({
+    ...opportunity,
+    potentialSavings: opportunity.potentialTaxSavings,
+    urgency: opportunity.priority,
+  }));
 }
 
-export function getForm8949Preview(): Form8949Entry[] {
-  return getForm8949Entries();
+export function getWashSaleAlertsForPage(): Array<WashSaleAlert & { description: string; severity: 'high' | 'medium' | 'low' }> {
+  return getWashSaleAlerts().map((alert) => ({
+    ...alert,
+    description: `Repurchased within ${alert.daysBetween} days of the loss sale`,
+    severity: alert.daysBetween <= 15 ? 'high' as const : alert.daysBetween <= 30 ? 'medium' as const : 'low' as const,
+  }));
+}
+
+export function getForm8949Preview(): Array<Form8949Entry & { gainLoss: number }> {
+  return getForm8949Entries().map((entry) => ({
+    ...entry,
+    gainLoss: entry.gainOrLoss,
+  }));
+}
+
+export interface PageTaxBracket extends TaxBracket {
+  incomeRange: string;
+  isCurrentBracket: boolean;
+  shortTermRate: number;
+  longTermRate: number;
+}
+
+export function getTaxBracketsForPage(): PageTaxBracket[] {
+  return getTaxBrackets().map((bracket, index) => ({
+    ...bracket,
+    incomeRange: `$${bracket.minIncome.toLocaleString()} – ${bracket.maxIncome >= 999999999 ? '∞' : `$${bracket.maxIncome.toLocaleString()}`}`,
+    isCurrentBracket: index === 2,
+    shortTermRate: Math.min(37, bracket.rate + 7),
+    longTermRate: Math.max(0, bracket.rate - 7),
+  }));
 }
 
 export function getShortLongSplit(): ShortLongSplit[] {

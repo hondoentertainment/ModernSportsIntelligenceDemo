@@ -376,7 +376,7 @@ export async function compareGenomes(id1: string, id2: string): Promise<GenomePa
   const geneticDistance = Math.round((distanceSum / card1.genes.length) * 10) / 10;
   const compatibilityScore = Math.max(0, Math.round(100 - geneticDistance * 2));
 
-  let recommendation = '';
+  let recommendation: string;
   if (geneticDistance < 8) recommendation = 'Near-identical twins. Excellent pair for a matched graded set.';
   else if (geneticDistance < 15) recommendation = 'Strong genetic similarity. These cards share dominant condition traits.';
   else if (geneticDistance < 25) recommendation = 'Moderate divergence. Different condition stories but comparable overall quality.';

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link2 } from 'lucide-react';
+import BetaFeatureBanner from '../components/BetaFeatureBanner';
 import ProvenanceChainModal from '../components/ProvenanceChainModal.tsx';
 
 const ProvenanceChain: React.FC = () => {
@@ -7,6 +8,11 @@ const ProvenanceChain: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <BetaFeatureBanner
+        featureName="Provenance Chain & Digital Twin"
+        dataSourceLabel="Prototype registry entries (not third-party blockchain verification)"
+        disclaimer="Chain events and verification badges are illustrative demo data."
+      />
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-xl bg-cyan-500/20">
           <Link2 size={24} className="text-cyan-400" />

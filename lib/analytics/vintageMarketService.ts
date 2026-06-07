@@ -463,13 +463,27 @@ export function getConditionCensus(cardId: string): ConditionCensus | null {
 
 export interface EraIndex {
   id: string;
+  name: string;
   era: string;
+  dateRange: string;
   indexValue: number;
-  change1yr: number;
-  change5yr: number;
-  totalCards: number;
-  avgGrade: number;
-  trend: 'up' | 'down' | 'stable';
+  changePercent: number;
+  cardsInIndex: number;
+  avgCardValue: number;
+  volume30d: number;
+  volatility: number;
+}
+
+export interface VintageMarketCard {
+  playerName: string;
+  year: number;
+  setName: string;
+  condition: string;
+  rawPrice: number;
+  adjustedPrice: number;
+  populationCount: number;
+  priceChange: number;
+  era: string;
 }
 
 export interface EraPerformancePoint {
@@ -483,6 +497,8 @@ export interface EraPerformancePoint {
 
 export interface EraMarketCap {
   era: string;
+  totalMarketCap: number;
+  avgCardValue: number;
   marketCap: number;
   share: number;
   color: string;
@@ -496,10 +512,17 @@ export interface NotableSet {
   totalCards: number;
   keyCard: string;
   setValue: number;
+  keyCardValue: number;
   trend: string;
 }
 
 export interface PopulationEntry {
+  era: string;
+  totalGraded: number;
+  highGradeCount: number;
+  midGradeCount: number;
+  lowGradeCount: number;
+  authenticOnlyCount: number;
   grade: string;
   count: number;
   percentage: number;
@@ -507,8 +530,15 @@ export interface PopulationEntry {
 
 export interface AuctionRecord {
   id: string;
-  card: string;
+  cardName: string;
+  year: number;
   grade: string;
+  auctionHouse: string;
+  saleDate: string;
+  salePrice: number;
+  estimatedValue: number;
+  premiumPercent: number;
+  card: string;
   price: number;
   date: string;
   house: string;
@@ -517,34 +547,67 @@ export interface AuctionRecord {
 
 export interface SignificanceRating {
   id: string;
-  card: string;
+  cardName: string;
+  year: number;
+  setName: string;
   era: string;
   historicalScore: number;
   culturalScore: number;
+  culturalImpact: number;
   rarityScore: number;
+  demandIndex: number;
   overallRating: number;
+  overallScore: number;
+  card: string;
 }
 
 export interface VintageMarketSummary {
+  totalEras: number;
+  totalCardsTracked: number;
   totalMarketValue: number;
-  totalCards: number;
-  avgAppreciation1yr: number;
-  avgAppreciation5yr: number;
-  topPerformingEra: string;
-  mostActiveEra: string;
+  avgYoYGrowth: number;
+  highestRecordSale: number;
+  notableSetsCount: number;
 }
+
+const ERA_DATE_RANGES: Record<string, string> = {
+  'Pre-War (1900-1941)': '1900–1941',
+  'Post-War (1946-1959)': '1946–1959',
+  'Golden Age (1960-1965)': '1960–1965',
+  'Silver Age (1966-1974)': '1966–1974',
+  'Bronze Age (1975-1979)': '1975–1979',
+};
 
 export function getEraIndices(): EraIndex[] {
   const trends = getVintageMarketTrends();
-  return trends.map((t, i) => ({
-    id: `ei-${i + 1}`,
-    era: t.era,
-    indexValue: 1000 + t.avgReturn5yr * 10,
-    change1yr: t.avgReturn1yr,
-    change5yr: t.avgReturn5yr,
-    totalCards: 200 + i * 50,
-    avgGrade: 5.5 + i * 0.4,
-    trend: t.trend === 'appreciating' ? 'up' as const : t.trend === 'softening' ? 'down' as const : 'stable' as const,
+  return trends.map((t, i) => {
+    const indexValue = Math.round(1000 + t.avgReturn5yr * 10);
+    return {
+      id: `ei-${i + 1}`,
+      name: t.era,
+      era: t.era.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      dateRange: ERA_DATE_RANGES[t.era] ?? t.era,
+      indexValue,
+      changePercent: t.avgReturn1yr,
+      cardsInIndex: 200 + i * 50,
+      avgCardValue: Math.round(indexValue * 2.4),
+      volume30d: Math.round(450000 + i * 125000),
+      volatility: Math.round(8 + i * 1.6),
+    };
+  });
+}
+
+export function getVintageMarketCards(): VintageMarketCard[] {
+  return getVintageCards().map((card) => ({
+    playerName: card.player,
+    year: card.year,
+    setName: card.set,
+    condition: card.conditionCensus.highestKnown,
+    rawPrice: Math.round(card.currentValue * 0.85),
+    adjustedPrice: card.currentValue,
+    populationCount: card.conditionCensus.totalGraded,
+    priceChange: card.appreciation5yr,
+    era: card.era.replace(/_/g, '-'),
   }));
 }
 
@@ -562,11 +625,11 @@ export function getEraPerformanceHistory(): EraPerformancePoint[] {
 
 export function getEraMarketCaps(): EraMarketCap[] {
   return [
-    { era: 'Pre-War', marketCap: 18500000, share: 35, color: '#f59e0b' },
-    { era: 'Post-War', marketCap: 12200000, share: 23, color: '#3b82f6' },
-    { era: 'Golden Age', marketCap: 9800000, share: 18, color: '#10b981' },
-    { era: 'Silver Age', marketCap: 8100000, share: 15, color: '#8b5cf6' },
-    { era: 'Bronze Age', marketCap: 4700000, share: 9, color: '#ef4444' },
+    { era: 'Pre-War', totalMarketCap: 18500000, avgCardValue: 5200, marketCap: 18500000, share: 35, color: '#f59e0b' },
+    { era: 'Post-War', totalMarketCap: 12200000, avgCardValue: 3800, marketCap: 12200000, share: 23, color: '#3b82f6' },
+    { era: 'Golden Age', totalMarketCap: 9800000, avgCardValue: 2900, marketCap: 9800000, share: 18, color: '#10b981' },
+    { era: 'Silver Age', totalMarketCap: 8100000, avgCardValue: 2100, marketCap: 8100000, share: 15, color: '#8b5cf6' },
+    { era: 'Bronze Age', totalMarketCap: 4700000, avgCardValue: 1500, marketCap: 4700000, share: 9, color: '#ef4444' },
   ];
 }
 
@@ -576,64 +639,101 @@ export function getNotableSets(): NotableSet[] {
     id: s.id,
     name: s.name,
     era: s.name.includes('T206') ? 'Pre-War' : s.name.includes('1933') ? 'Pre-War' : 'Post-War',
-    year: parseInt(s.name.match(/\d{4}/)?.[0] || '1952'),
+    year: parseInt(s.name.match(/\d{4}/)?.[0] || '1952', 10),
     totalCards: s.totalCards,
     keyCard: s.description.split('—')[0].trim(),
     setValue: s.value,
+    keyCardValue: Math.round(s.value * 0.35),
     trend: 'appreciating',
   }));
 }
 
 export function getPopulationData(): PopulationEntry[] {
-  const grades = ['PSA 10', 'PSA 9', 'PSA 8', 'PSA 7', 'PSA 6', 'PSA 5', 'PSA 4', 'PSA 3', 'PSA 2', 'PSA 1'];
-  const counts = [5, 25, 80, 180, 350, 520, 780, 1100, 1400, 1800];
-  const total = counts.reduce((a, b) => a + b, 0);
-  return grades.map((grade, i) => ({
-    grade,
-    count: counts[i],
-    percentage: Math.round((counts[i] / total) * 100 * 10) / 10,
-  }));
+  const eras = ['Pre-War', 'Post-War', 'Golden Age', 'Silver Age', 'Bronze Age'];
+  return eras.map((era, i) => {
+    const totalGraded = 5200 - i * 750;
+    const highGradeCount = Math.round(totalGraded * 0.08);
+    const midGradeCount = Math.round(totalGraded * 0.22);
+    const lowGradeCount = Math.round(totalGraded * 0.45);
+    const authenticOnlyCount = Math.max(0, totalGraded - highGradeCount - midGradeCount - lowGradeCount);
+    return {
+      era,
+      totalGraded,
+      highGradeCount,
+      midGradeCount,
+      lowGradeCount,
+      authenticOnlyCount,
+      grade: 'All',
+      count: totalGraded,
+      percentage: Math.round(100 - i * 12),
+    };
+  });
 }
 
 export function getAuctionRecords(): AuctionRecord[] {
   const cards = getVintageCards();
-  return cards.slice(0, 8).map((c, i) => ({
-    id: `ar-${i + 1}`,
-    card: `${c.year} ${c.set} ${c.player}`,
-    grade: c.conditionCensus.highestKnown,
-    price: c.currentValue * (0.8 + Math.random() * 0.4),
-    date: `2024-${String(i + 1).padStart(2, '0')}-15`,
-    house: ['Heritage', 'Goldin', 'REA', 'PWCC', 'Sotheby\'s'][i % 5],
-    era: c.era.replace('_', ' '),
-  }));
+  return cards.slice(0, 8).map((c, i) => {
+    const salePrice = Math.round(c.currentValue * (0.8 + (i % 3) * 0.1));
+    const estimatedValue = Math.round(c.currentValue * 0.92);
+    const cardLabel = `${c.year} ${c.set} ${c.player}`;
+    return {
+      id: `ar-${i + 1}`,
+      cardName: cardLabel,
+      year: c.year,
+      grade: c.conditionCensus.highestKnown,
+      auctionHouse: ['Heritage', 'Goldin', 'REA', 'PWCC', 'Sotheby\'s'][i % 5],
+      saleDate: `2024-${String(i + 1).padStart(2, '0')}-15`,
+      salePrice,
+      estimatedValue,
+      premiumPercent: Math.round(((salePrice - estimatedValue) / estimatedValue) * 100),
+      card: cardLabel,
+      price: salePrice,
+      date: `2024-${String(i + 1).padStart(2, '0')}-15`,
+      house: ['Heritage', 'Goldin', 'REA', 'PWCC', 'Sotheby\'s'][i % 5],
+      era: c.era.replace('_', ' '),
+    };
+  });
 }
 
 export function getHistoricalSignificanceRatings(): SignificanceRating[] {
   const cards = getVintageCards();
-  return cards.map((c, i) => ({
-    id: `sr-${i + 1}`,
-    card: `${c.year} ${c.set} ${c.player}`,
-    era: c.era.replace('_', ' '),
-    historicalScore: c.historicalSignificance,
-    culturalScore: Math.min(100, c.historicalSignificance + Math.floor(Math.random() * 10) - 5),
-    rarityScore: Math.round(100 - (c.conditionCensus.totalGraded / 60)),
-    overallRating: Math.round((c.historicalSignificance * 0.4 + (100 - c.conditionCensus.totalGraded / 60) * 0.3 + c.historicalSignificance * 0.3)),
-  }));
+  return cards.map((c, i) => {
+    const overallScore = Math.round((c.historicalSignificance * 0.4 + (100 - c.conditionCensus.totalGraded / 60) * 0.3 + c.historicalSignificance * 0.3));
+    const culturalImpact = Math.min(100, c.historicalSignificance + Math.floor((i % 5) * 2) - 4);
+    const rarityScore = Math.round(100 - (c.conditionCensus.totalGraded / 60));
+    const cardLabel = `${c.year} ${c.set} ${c.player}`;
+    return {
+      id: `sr-${i + 1}`,
+      cardName: cardLabel,
+      year: c.year,
+      setName: c.set,
+      era: c.era.replace('_', ' '),
+      historicalScore: c.historicalSignificance,
+      culturalScore: culturalImpact,
+      culturalImpact,
+      rarityScore,
+      demandIndex: Math.min(100, overallScore + 5),
+      overallRating: overallScore,
+      overallScore,
+      card: cardLabel,
+    };
+  });
 }
 
 export function getVintageMarketSummary(): VintageMarketSummary {
   const cards = getVintageCards();
   const trends = getVintageMarketTrends();
+  const sets = getRegistrySets();
   const totalValue = cards.reduce((sum, c) => sum + c.currentValue, 0);
-  const avg1yr = Math.round(trends.reduce((s, t) => s + t.avgReturn1yr, 0) / trends.length * 10) / 10;
-  const avg5yr = Math.round(trends.reduce((s, t) => s + t.avgReturn5yr, 0) / trends.length * 10) / 10;
+  const avgYoYGrowth = Math.round(trends.reduce((s, t) => s + t.avgReturn1yr, 0) / trends.length * 10) / 10;
+  const highestRecordSale = cards.reduce((max, card) => Math.max(max, card.currentValue), 0);
   return {
+    totalEras: trends.length,
+    totalCardsTracked: cards.length,
     totalMarketValue: totalValue,
-    totalCards: cards.length,
-    avgAppreciation1yr: avg1yr,
-    avgAppreciation5yr: avg5yr,
-    topPerformingEra: 'Pre-War (1900-1941)',
-    mostActiveEra: 'Silver Age (1966-1974)',
+    avgYoYGrowth,
+    highestRecordSale,
+    notableSetsCount: sets.length,
   };
 }
 
