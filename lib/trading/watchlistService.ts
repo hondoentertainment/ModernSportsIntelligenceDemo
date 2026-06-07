@@ -569,6 +569,134 @@ export function getAlertColor(type: AlertType): string {
   }
 }
 
+export interface WatchlistPriceCheckResult {
+  item: WatchlistItem;
+  /** New price returned by eBay (null if lookup failed). */
+  newPrice: number | null;
+  triggered: boolean;
+  message: string;
+}
+
+/**
+ * Checks eBay for current prices on all alert-enabled watchlist items and fires
+ * browser notifications + updates alert state for any that have crossed their
+ * threshold.
+ *
+ * Requires the eBay API to be configured (EBAY_CLIENT_ID / EBAY_CLIENT_SECRET).
+ * Falls back gracefully when the API is unavailable.
+ *
+ * @returns Array of check results; only items with alertEnabled are included.
+ */
+export async function checkWatchlistPriceAlerts(): Promise<WatchlistPriceCheckResult[]> {
+  const items = loadItems();
+  const alertItems = items.filter((i) => i.alertEnabled);
+  if (alertItems.length === 0) return [];
+
+  // Dynamic import to avoid including eBay/gemini code in the initial bundle
+  let getEbayCardPrice: ((card: { player: string; year: number; set: string }) => Promise<{ estimatedValue?: number } | null>) | null = null;
+  try {
+    const mod = await import('../utils/gemini.ts' as string);
+    getEbayCardPrice = mod.getEbayCardPrice as typeof getEbayCardPrice;
+  } catch {
+    // eBay module unavailable (e.g. tests or demo mode) — skip API calls
+  }
+
+  const results: WatchlistPriceCheckResult[] = [];
+  const now = new Date().toISOString();
+
+  for (const item of alertItems) {
+    let newPrice: number | null = null;
+    let triggered = false;
+    let message = '';
+
+    if (getEbayCardPrice) {
+      try {
+        const analysis = await getEbayCardPrice({
+          player: item.player,
+          year: item.year,
+          set: item.set,
+        } as Parameters<typeof getEbayCardPrice>[0]);
+        if (analysis?.estimatedValue && analysis.estimatedValue > 0) {
+          newPrice = analysis.estimatedValue;
+        }
+      } catch {
+        // Ignore per-item failures — continue with next
+      }
+    }
+
+    if (newPrice !== null) {
+      switch (item.alertType) {
+        case 'price_drop':
+          if (newPrice <= item.targetPrice) {
+            triggered = true;
+            message = `${item.player} dropped to ${formatCurrency(newPrice)} (target: ${formatCurrency(item.targetPrice)})`;
+          }
+          break;
+        case 'price_target':
+          if (newPrice >= item.targetPrice) {
+            triggered = true;
+            message = `${item.player} reached ${formatCurrency(newPrice)} (target: ${formatCurrency(item.targetPrice)})`;
+          }
+          break;
+        case 'new_listing':
+          // Treat any refreshed price as a "new listing" signal
+          triggered = true;
+          message = `New ${item.player} listing found at ${formatCurrency(newPrice)}`;
+          break;
+        default:
+          break;
+      }
+    }
+
+    // Persist updated price and alert trigger into store
+    const updatedItem: WatchlistItem = {
+      ...item,
+      currentPrice: newPrice ?? item.currentPrice,
+    };
+    const allItems = loadItems();
+    const idx = allItems.findIndex((i) => i.id === item.id);
+    if (idx !== -1) {
+      allItems[idx] = updatedItem;
+      saveItems(allItems);
+    }
+
+    if (triggered) {
+      // Persist alert trigger
+      const alerts = loadAlerts();
+      const existing = alerts.find((a) => a.watchlistItemId === item.id && a.type === item.alertType);
+      if (existing) {
+        existing.triggered = true;
+        existing.triggeredAt = now;
+        existing.message = message;
+      } else {
+        alerts.push({
+          id: `alert-${Date.now()}-${item.id}`,
+          watchlistItemId: item.id,
+          type: item.alertType,
+          threshold: item.targetPrice,
+          triggered: true,
+          triggeredAt: now,
+          message,
+        });
+      }
+      saveAlerts(alerts);
+
+      // Browser notification (requires prior Notification.requestPermission)
+      if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification('MSI Price Alert', { body: message, icon: '/favicon.ico' });
+        } catch {
+          // Notification API may be unavailable in some contexts
+        }
+      }
+    }
+
+    results.push({ item: updatedItem, newPrice, triggered, message });
+  }
+
+  return results;
+}
+
 import { store } from '../dal/syncStore';
 export function getSportIcon(sport: string): string {
   switch (sport) {

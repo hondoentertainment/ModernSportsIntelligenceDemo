@@ -21,7 +21,7 @@ describe('featureCatalog', () => {
         expect(f.description).toBeTruthy();
         expect(f.tier).toBeTruthy();
         expect(f.category).toBeTruthy();
-        expect(['live', 'beta', 'coming-soon']).toContain(f.status);
+        expect(['live', 'beta', 'coming-soon', 'demo']).toContain(f.status);
         expect(f.icon).toBeTruthy();
         expect(f.phase).toBeGreaterThan(0);
         expect(f.keywords.length).toBeGreaterThan(0);

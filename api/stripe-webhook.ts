@@ -10,17 +10,17 @@
  */
 
 import Stripe from 'stripe';
-import { apiLogger } from './lib/logger';
+import { apiLogger } from './lib/logger.js';
 import {
   claimStripeWebhookEvent,
   releaseStripeWebhookEventClaim,
-} from './lib/stripeWebhookIdempotency';
+} from './lib/stripeWebhookIdempotency.js';
 import {
   syncProfileFromCheckoutSession,
   syncProfileFromInvoice,
   syncProfileFromSubscription,
   syncProfileOnSubscriptionDeleted,
-} from './lib/stripeProfileSync';
+} from './lib/stripeProfileSync.js';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -48,7 +48,7 @@ export async function POST(request: Request): Promise<Response> {
 
   let event: Stripe.Event;
   const stripe = new Stripe(stripeKey || '', {
-    apiVersion: '2026-02-25.clover',
+    apiVersion: '2026-05-27.dahlia',
   });
   try {
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);

@@ -48,6 +48,24 @@ const envSchema = z.object({
     .string()
     .optional()
     .default(''),
+
+  // Telemetry — at least one channel should be configured in production so
+  // errors are observable rather than silent. See getProductionTelemetryIssues.
+  VITE_SENTRY_DSN: z
+    .string()
+    .optional()
+    .default(''),
+  VITE_ERROR_REPORTING_URL: z
+    .union([z.string().url(), z.literal('')])
+    .optional()
+    .default(''),
+  // Set 'true' on real production deploys to make missing telemetry a hard
+  // build failure (see vite.config.ts). Unset/false: missing telemetry is
+  // surfaced in the ProductionConfigBanner but does not block the build.
+  VITE_REQUIRE_TELEMETRY: z
+    .string()
+    .optional()
+    .default(''),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
@@ -78,6 +96,25 @@ export function getSupabaseEnvPairingIssues(cfg: Pick<EnvConfig, 'VITE_SUPABASE_
 /** True for production Vite builds (shell UI checks; mockable in tests). */
 export function isClientProductionBuild(): boolean {
   return typeof import.meta !== 'undefined' && !!import.meta.env?.PROD;
+}
+
+/**
+ * Production telemetry check: at least one error channel (Sentry DSN or the
+ * error-reporting beacon URL) should be configured so a production app is not
+ * running blind. Returns a one-item issue list when neither is set; the
+ * ProductionConfigBanner renders it and vite.config.ts can fail the build on it.
+ */
+export function getProductionTelemetryIssues(
+  cfg: Pick<EnvConfig, 'VITE_SENTRY_DSN' | 'VITE_ERROR_REPORTING_URL'>,
+): string[] {
+  const sentry = (cfg.VITE_SENTRY_DSN ?? '').trim();
+  const beacon = (cfg.VITE_ERROR_REPORTING_URL ?? '').trim();
+  if (!sentry && !beacon) {
+    return [
+      'No error telemetry configured — set VITE_SENTRY_DSN or VITE_ERROR_REPORTING_URL so production errors are observable.',
+    ];
+  }
+  return [];
 }
 
 /**
@@ -138,6 +175,15 @@ export function validateEnv(): EnvConfig {
   }
   if (!_validated.VITE_SERVER_API_BASE_URL) {
     warnings.push('VITE_SERVER_API_BASE_URL not set — AI features may be unavailable');
+  }
+
+  const telemetryIssues = getProductionTelemetryIssues(_validated);
+  if (telemetryIssues.length > 0) {
+    if (isClientProductionBuild()) {
+      logger.error(`[Env] ${telemetryIssues.join(' ')}`);
+    } else {
+      warnings.push(...telemetryIssues);
+    }
   }
 
   if (warnings.length > 0) {

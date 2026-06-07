@@ -12,24 +12,17 @@ Implements the contract in **[docs/SUPABASE_EDGE_FUNCTIONS.md](../../docs/SUPABA
 
 ## Secrets (Dashboard → Edge Functions → Secrets, or CLI)
 
-| Secret | Purpose |
-|--------|---------|
+| Secret              | Purpose                      |
+| ------------------- | ---------------------------- |
 | `STRIPE_SECRET_KEY` | Stripe secret (test or live) |
-| `SUPABASE_URL` | Usually injected by Supabase |
-| `SUPABASE_ANON_KEY` | Usually injected |
+| `SUPABASE_URL`      | Usually injected by Supabase |
+| `SUPABASE_ANON_KEY` | Usually injected             |
 
 ## Deploy
 
 ```bash
 supabase functions deploy create-checkout-session
 supabase functions deploy create-billing-portal-session
-supabase functions deploy verify-psa-cert
-```
-
-Or run the repo orchestrator (migrations + all functions):
-
-```bash
-npm run deploy:infra
 ```
 
 ## Local serve

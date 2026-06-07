@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, ChevronDown, User, LogOut, Settings, Zap, Maximize2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import { useDALSyncStatus } from '../lib/dal/useDALSyncStatus';
 import { useAlerts } from '../lib/utils/useAlerts';
 import { useShortcutGlyph } from '../lib/utils/useShortcutGlyph';
 import SwarmFeed from './SwarmFeed';
@@ -17,13 +17,15 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
   const [isSwarmOpen, setIsSwarmOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { user, signOut, isDemoMode } = useAuth();
-  const { syncStatus, lastSyncError } = useSupabaseInventory();
+  const { syncing, hydrated, lastError } = useDALSyncStatus();
   const { unreadCount } = useAlerts();
   const glyph = useShortcutGlyph();
+  const syncLabel = syncing ? 'saving' : !hydrated ? 'loading' : lastError ? 'error' : 'synced';
+  const syncDotClass = syncing || !hydrated ? 'bg-brand-blue animate-bounce' : lastError ? 'bg-red-500' : 'bg-brand-lime animate-pulse';
+  const syncTextClass = syncing || !hydrated ? 'text-brand-blue' : lastError ? 'text-red-400' : 'text-brand-lime';
   const navigate = useNavigate();
   const userMenuButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Close user dropdown on Escape; return focus to trigger (Interaction + A11y)
   useEffect(() => {
     if (!showDropdown) return;
     const handleEsc = (e: KeyboardEvent) => {
@@ -119,16 +121,16 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
         <div
           role="status"
           aria-live="polite"
-          aria-label={syncStatus === 'synced' ? 'Cloud sync active' : syncStatus === 'migrating' ? 'Migrating data' : 'Local storage mode'}
+          aria-label={syncLabel === 'synced' ? 'Cloud sync active' : syncLabel === 'saving' ? 'Saving data' : syncLabel === 'loading' ? 'Loading data' : `Sync error: ${lastError}`}
           className="flex items-center gap-2 px-3 py-1.5 bg-brand-charcoal border border-slate-800 rounded-full group cursor-help transition-all hover:bg-brand-slate"
-          title={syncStatus === 'synced' ? 'Cloud Sync Active' : syncStatus === 'migrating' ? 'Migrating Data...' : 'Local Storage Mode'}
+          title={syncLabel === 'synced' ? 'Cloud Sync Active' : syncLabel === 'saving' ? 'Saving...' : syncLabel === 'loading' ? 'Loading...' : lastError ?? 'Sync Error'}
         >
-          <div className={`w-1.5 h-1.5 rounded-full ${syncStatus === 'synced' ? 'bg-brand-lime animate-pulse' : syncStatus === 'migrating' ? 'bg-brand-blue animate-bounce' : 'bg-slate-600'}`}></div>
-          <span className={`text-[9px] font-black uppercase tracking-[0.15em] ${syncStatus === 'synced' ? 'text-brand-lime' : syncStatus === 'migrating' ? 'text-brand-blue' : 'text-slate-500'}`}>
-            {syncStatus}
+          <div className={`w-1.5 h-1.5 rounded-full ${syncDotClass}`}></div>
+          <span className={`text-[9px] font-black uppercase tracking-[0.15em] ${syncTextClass}`}>
+            {syncLabel}
           </span>
-          {lastSyncError && (
-            <div className="w-4 h-4 rounded-full bg-red-500/20 flex items-center justify-center" title={lastSyncError}>
+          {lastError && (
+            <div className="w-4 h-4 rounded-full bg-red-500/20 flex items-center justify-center" title={lastError}>
               <span className="text-[8px] text-red-500 font-bold">!</span>
             </div>
           )}
@@ -136,7 +138,6 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
 
         <div className="h-6 w-px bg-slate-800 hidden md:block"></div>
 
-        {/* User Dropdown */}
         <div className="relative">
           <button
             ref={userMenuButtonRef}
@@ -160,7 +161,6 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
             <ChevronDown size={14} className={`text-brand-muted group-hover:text-white transition-all ${showDropdown ? 'rotate-180' : ''}`} />
           </button>
 
-          {/* Dropdown Menu */}
           {showDropdown && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setShowDropdown(false)} />
@@ -200,4 +200,3 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
 };
 
 export default Header;
-

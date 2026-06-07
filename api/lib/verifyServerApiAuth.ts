@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { apiLogger } from './logger';
+import { apiLogger } from './logger.js';
 
 type ApiRequest = {
   method?: string;

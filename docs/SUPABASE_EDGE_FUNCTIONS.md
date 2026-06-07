@@ -1,6 +1,10 @@
 # Supabase Edge Functions (billing & Stripe)
 
-This repository calls Supabase Edge Functions from the client (`lib/utils/billingService.ts` via `supabase.functions.invoke`). Function **source** may live in the Supabase project, not in this repo. Treat this document as the **production contract** those functions should implement.
+The app invokes Edge Functions from **`lib/utils/billingService.ts`** via `supabase.functions.invoke`.
+
+**Implementations in this repo:** [`supabase/functions/create-checkout-session/`](../supabase/functions/create-checkout-session/index.ts) and [`supabase/functions/create-billing-portal-session/`](../supabase/functions/create-billing-portal-session/index.ts). Deploy with the Supabase CLI — see **[supabase/functions/README.md](../supabase/functions/README.md)**.
+
+This document remains the **contract** for behavior and security.
 
 ## `create-checkout-session`
 

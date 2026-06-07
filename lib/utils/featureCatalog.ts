@@ -153,7 +153,7 @@ const FEATURE_CATALOG_CORE: Feature[] = [
   { id: 'collector-social-graph', name: 'Collector Social Graph', description: 'Network analysis mapping collector influence, herd behavior, and trend adoption.', tier: 'Industry-First', category: 'Social', status: 'live', path: '/collector-social-graph', icon: 'Network', phase: 162, keywords: ['social graph', 'network', 'influence', 'herd', 'trend', 'collector'] },
   { id: 'restoration-simulator', name: 'Restoration Simulator', description: 'AI card restoration/regrading simulation with ROI analysis.', tier: 'Differentiated', category: 'Tools', status: 'live', path: '/restoration-simulator', icon: 'Wrench', phase: 163, keywords: ['restoration', 'regrade', 'simulation', 'roi', 'condition'] },
   { id: 'market-maker-arena', name: 'Market Maker Arena', description: 'Competing AI trading bot strategies with live P&L and order books.', tier: 'Industry-First', category: 'Trading', status: 'live', path: '/market-maker-arena', icon: 'Swords', phase: 164, keywords: ['market maker', 'bot', 'trading', 'pnl', 'order book', 'arena'] },
-  { id: 'fractional-vault-v2', name: 'Fractional Vault', description: 'Tokenized fractional ownership of high-value cards with governance.', tier: 'Industry-First', category: 'Trading', status: 'live', path: '/fractional-vault', icon: 'Landmark', phase: 165, keywords: ['fractional', 'vault', 'tokenized', 'ownership', 'governance', 'shares'] },
+  { id: 'fractional-vault-v2', name: 'Fractional Vault', description: 'Tokenized fractional ownership concept with governance modeling; beta until legal, securities, and execution rails are complete.', tier: 'Industry-First', category: 'Trading', status: 'beta', path: '/fractional-vault', icon: 'Landmark', phase: 165, keywords: ['fractional', 'vault', 'tokenized', 'ownership', 'governance', 'shares'] },
   { id: 'portfolio-stress-tester', name: 'Portfolio Stress Tester', description: 'Monte Carlo simulation and VaR analysis for card portfolios.', tier: 'Differentiated', category: 'Analytics', status: 'live', path: '/portfolio-stress-tester', icon: 'FlaskConical', phase: 166, keywords: ['stress test', 'monte carlo', 'var', 'simulation', 'risk'] },
   { id: 'rookie-pipeline-scanner', name: 'Rookie Pipeline Scanner', description: 'Pre-draft prospect scouting with projected card values.', tier: 'Advanced Intelligence', category: 'Data', status: 'live', path: '/rookie-pipeline-scanner', icon: 'Binoculars', phase: 167, keywords: ['rookie', 'pipeline', 'prospect', 'draft', 'scouting', 'projected'] },
   { id: 'forensics-lab', name: 'Forensics Lab', description: '10-layer forensic authentication and counterfeit detection.', tier: 'Industry-First', category: 'Security', status: 'live', path: '/forensics-lab', icon: 'Microscope', phase: 168, keywords: ['forensics', 'authentication', 'counterfeit', 'detection', 'layers'] },
@@ -314,10 +314,15 @@ const betaSurfaceEnabled =
   typeof import.meta !== 'undefined' &&
   (import.meta.env.VITE_FF_ENABLE_BETA_SURFACES === 'true' ||
     import.meta.env.VITE_FF_ENABLE_BETA_SURFACES === '1');
+const demoSurfaceEnabled =
+  typeof import.meta !== 'undefined' &&
+  (import.meta.env.VITE_FF_ENABLE_DEMO_SURFACES === 'true' ||
+    import.meta.env.VITE_FF_ENABLE_DEMO_SURFACES === '1');
 
 function isDiscoverable(feature: Feature): boolean {
   if (!searchableFeatureIds.has(feature.id)) return false;
   if (!betaSurfaceEnabled && feature.status === 'beta') return false;
+  if (!demoSurfaceEnabled && feature.status === 'demo') return false;
   return true;
 }
 

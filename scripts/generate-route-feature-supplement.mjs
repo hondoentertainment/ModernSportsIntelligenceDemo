@@ -60,13 +60,16 @@ const lines = missing.map((p) => {
   }
   usedIds.add(id);
   const name = humanName(p);
-  const desc = `Routed workspace: ${name}. Demo-grade surface; see tier for production expectations.`;
   phase += 1;
-  const status = /oracle|autonomous|quant|phantom|ai-|ar-vault|memetic|forgery|counterfactual|biometric/i.test(
+  const status = /settings|signup|forgot-password|reset-password/i.test(
     p,
   )
-    ? 'beta'
-    : 'live';
+    ? 'live'
+    : 'demo';
+  const desc =
+    status === 'live'
+      ? `Routed workspace: ${name}. Release-ready account surface.`
+      : `Routed workspace: ${name}. Demo-grade surface; see tier for production expectations.`;
   const row = {
     id,
     name,

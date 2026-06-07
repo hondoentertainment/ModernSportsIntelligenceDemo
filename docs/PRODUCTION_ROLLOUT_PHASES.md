@@ -13,11 +13,11 @@ Ordered checklist to take the full app from demo-grade to production-grade. Comp
 
 ## Phase B — Billing & API trust boundaries
 
-| Step | Action                                                                                                       | Reference                                                                                                |
-| ---- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| B1   | Edge Functions: derive `userId` from verified JWT only; forward `Idempotency-Key` to Stripe                  | [SUPABASE_EDGE_FUNCTIONS.md](./SUPABASE_EDGE_FUNCTIONS.md), [PAYMENT_SECURITY.md](./PAYMENT_SECURITY.md) |
-| B2   | Vercel env: `STRIPE_*`, `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_WEBHOOK_SECRET`, price ID mapping               | `.env.example`                                                                                           |
-| B3   | Browser → `/api/ai`, `/api/market`: `ALLOWED_ORIGIN` on custom domain; never `MSI_API_AUTH_DISABLED` in prod | [MONITORING.md](./MONITORING.md)                                                                         |
+| Step | Action                                                                                                        | Reference                                                                                                                                                                 |
+| ---- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B1   | Deploy Edge Functions from `supabase/functions/`; JWT is source of truth; forward `Idempotency-Key` to Stripe | [supabase/functions/README.md](../supabase/functions/README.md), [SUPABASE_EDGE_FUNCTIONS.md](./SUPABASE_EDGE_FUNCTIONS.md), [PAYMENT_SECURITY.md](./PAYMENT_SECURITY.md) |
+| B2   | Vercel env: `STRIPE_*`, `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_WEBHOOK_SECRET`, price ID mapping                | `.env.example`                                                                                                                                                            |
+| B3   | Browser → `/api/ai`, `/api/market`: `ALLOWED_ORIGIN` on custom domain; never `MSI_API_AUTH_DISABLED` in prod  | [MONITORING.md](./MONITORING.md)                                                                                                                                          |
 
 ## Phase C — Security & CSP
 
@@ -41,7 +41,7 @@ Ordered checklist to take the full app from demo-grade to production-grade. Comp
 | ---- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | E1   | `PLAYWRIGHT_BASE_URL=https://<your-prod-or-preview>.vercel.app npm run test:e2e:deployed`                                          |
 | E2   | `npm run build && npx vite preview --port 4173` then `SMOKE_BASE_URL=http://127.0.0.1:4173 npm run test:smoke:routes` (223 routes) |
-| E3   | Set secret `PLAYWRIGHT_DEPLOYMENT_URL` — `.github/workflows/deployed-e2e.yml` runs after CI on `main`                              |
+| E3   | Set secret `PLAYWRIGHT_DEPLOYMENT_URL` — `.github/workflows/deployed-e2e.yml` runs after CI on `main` + daily                      |
 
 ## Phase F — Performance & UX
 

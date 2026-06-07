@@ -4,6 +4,7 @@ import { LocalStorageAdapter } from '../../lib/dal/LocalStorageAdapter';
 import { SupabaseStorageAdapter } from '../../lib/dal/SupabaseStorageAdapter';
 import { initDAL } from '../../lib/dal/index';
 import { store } from '../../lib/dal/syncStore';
+import { supabase } from '../../lib/supabase';
 
 const storage: Record<string, string> = {};
 const ls = {
@@ -151,6 +152,24 @@ describe('LocalStorageAdapter', () => {
   });
 });
 
+/** Build a chainable Supabase query mock that resolves to `result`. */
+function makeQueryMock(result: unknown = { error: null }) {
+  const resolved = Promise.resolve(result);
+   
+  const chain: Record<string, any> = {
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    delete: vi.fn().mockReturnThis(),
+    upsert: vi.fn().mockResolvedValue(result),
+    maybeSingle: vi.fn().mockResolvedValue(result),
+    // Make chain itself awaitable (for delete/eq chains)
+    then: resolved.then.bind(resolved),
+    catch: resolved.catch.bind(resolved),
+    finally: resolved.finally.bind(resolved),
+  };
+  return chain;
+}
+
 describe('SupabaseStorageAdapter', () => {
   beforeEach(() => {
     vi.stubGlobal('localStorage', ls);
@@ -168,10 +187,89 @@ describe('SupabaseStorageAdapter', () => {
     expect(a).toBeDefined();
   });
 
-  it('get falls back to local cache', async () => {
+  it('get falls back to local cache when userId is null', async () => {
     const a = new SupabaseStorageAdapter(null);
     await a.set('k', 1);
     expect(await a.get('k')).toBe(1);
+  });
+
+  it('set calls upsert with userId when authenticated', async () => {
+    const chain = makeQueryMock({ error: null });
+    vi.mocked(supabase.from).mockReturnValue(chain);
+
+    const a = new SupabaseStorageAdapter('user-1');
+    await a.set('my_key', { score: 99 });
+
+    expect(chain.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({ user_id: 'user-1', key: 'my_key', value: { score: 99 } }),
+      expect.objectContaining({ onConflict: 'user_id,key' }),
+    );
+  });
+
+  it('set logs warning on upsert error but does not throw', async () => {
+    const chain = makeQueryMock({ error: { message: 'constraint violation' } });
+    vi.mocked(supabase.from).mockReturnValue(chain);
+    const { logger } = await import('../../lib/logger');
+
+    const a = new SupabaseStorageAdapter('user-1');
+    await expect(a.set('k', 1)).resolves.toBeUndefined();
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.stringContaining('Write error'),
+      expect.any(String),
+    );
+  });
+
+  it('remove calls delete with userId and key when authenticated', async () => {
+    const chain = makeQueryMock({ error: null });
+    vi.mocked(supabase.from).mockReturnValue(chain);
+
+    const a = new SupabaseStorageAdapter('user-2');
+    await a.remove('old_key');
+
+    expect(chain.delete).toHaveBeenCalled();
+    expect(chain.eq).toHaveBeenCalledWith('user_id', 'user-2');
+    expect(chain.eq).toHaveBeenCalledWith('key', 'old_key');
+  });
+
+  it('keys returns rows from Supabase when authenticated', async () => {
+    const chain = makeQueryMock({ data: [{ key: 'alpha' }, { key: 'beta' }], error: null });
+    vi.mocked(supabase.from).mockReturnValue(chain);
+
+    const a = new SupabaseStorageAdapter('user-3');
+    const keys = await a.keys();
+
+    expect(keys.sort()).toEqual(['alpha', 'beta']);
+  });
+
+  it('keys falls back to local cache on Supabase error', async () => {
+    const chain = makeQueryMock({ data: null, error: { message: 'network down' } });
+    vi.mocked(supabase.from).mockReturnValue(chain);
+    ls.setItem('msi_cache_local_key', '"val"');
+
+    const a = new SupabaseStorageAdapter('user-3');
+    const keys = await a.keys();
+    expect(keys).toContain('local_key');
+  });
+
+  it('get returns value from Supabase when authenticated', async () => {
+    const chain = makeQueryMock({ data: { value: { score: 77 } }, error: null });
+    vi.mocked(supabase.from).mockReturnValue(chain);
+
+    const a = new SupabaseStorageAdapter('user-4');
+    const result = await a.get<{ score: number }>('some_key');
+
+    expect(result).toEqual({ score: 77 });
+  });
+
+  it('get falls back to local cache on Supabase network error', async () => {
+    const chain = makeQueryMock();
+    chain.maybeSingle = vi.fn().mockRejectedValue(new Error('Network failure'));
+    vi.mocked(supabase.from).mockReturnValue(chain);
+    ls.setItem('msi_cache_fallback_key', JSON.stringify({ cached: true }));
+
+    const a = new SupabaseStorageAdapter('user-4');
+    const result = await a.get<{ cached: boolean }>('fallback_key');
+    expect(result).toEqual({ cached: true });
   });
 });
 

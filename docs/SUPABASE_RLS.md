@@ -35,7 +35,15 @@ Reference DDL and full policy text live in **[`supabase-schema.sql`](../supabase
 6. **`00005_valuation_source_checks.sql`** — `valuation_source` CHECK constraints (schema only; not RLS).
 7. **`00006_price_history_market_events_stripe.sql`** — `price_history` (if missing), `market_events`, `stripe_processed_events` + RLS.
 
-## Verify RLS in the dashboard
+## Verify RLS
+
+### Automated (anon smoke test)
+
+`npm run verify:rls` ([`scripts/rls-verify.mjs`](../scripts/rls-verify.mjs)) connects with the **anon** key and **no** auth session, then reads each strictly tenant-scoped table (`user_data`, `targets`, `price_history`, `market_events`, `audit_events`, `stripe_processed_events`). Every read must return **zero rows** — a non-empty result is a cross-tenant leak and exits non-zero.
+
+The [`rls-verify` workflow](../.github/workflows/rls-verify.yml) runs it on migration/schema changes, daily, and on demand. **Activation:** add repository secrets `SUPABASE_URL` and `SUPABASE_ANON_KEY`; without them the job no-ops.
+
+### In the dashboard
 
 **Authentication → Policies**: confirm each table shows RLS enabled and expected policies.
 

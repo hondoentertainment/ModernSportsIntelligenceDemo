@@ -41,12 +41,14 @@ Use this when promoting a build to **production** (Vercel + Supabase + Stripe + 
 
 ## GitHub (optional automation)
 
-| Item                        | Action                                                                           |
-| --------------------------- | -------------------------------------------------------------------------------- |
-| `ENABLE_DEPLOYED_E2E`       | Repo variable `true` to run Playwright against a deployment                      |
-| `PLAYWRIGHT_DEPLOYMENT_URL` | Secret, e.g. `https://app.vercel.app`                                            |
-| `HEALTH_CHECK_URL`          | Secret base URL for [health ping workflow](../.github/workflows/health-ping.yml) |
-| `VITE_SENTRY_DSN`           | On Vercel for client errors                                                      |
+| Item                             | Action                                                                                                        |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `ENABLE_DEPLOYED_E2E`            | Repo variable `true` to run Playwright against a deployment                                                   |
+| `PLAYWRIGHT_DEPLOYMENT_URL`      | Secret, e.g. `https://app.vercel.app`; set it to enable [Deployed E2E](../.github/workflows/deployed-e2e.yml) |
+| `HEALTH_CHECK_URL`               | Secret base URL for [health ping workflow](../.github/workflows/health-ping.yml)                              |
+| `VITE_SENTRY_DSN`                | On Vercel for client errors (see [MONITORING.md § Sentry setup](./MONITORING.md#sentry-setup-production))     |
+| `VITE_SENTRY_ENVIRONMENT`        | On Vercel, optional; defaults to build mode (`production` / `preview`)                                        |
+| `VITE_SENTRY_TRACES_SAMPLE_RATE` | On Vercel, optional `0`–`1`; defaults to `0.1`                                                                |
 
 ## Post-deploy smoke
 
@@ -54,11 +56,6 @@ Use this when promoting a build to **production** (Vercel + Supabase + Stripe + 
 2. Signed-in checkout (test mode) → Stripe → webhook → `profiles` tier (if configured)
 3. `PLAYWRIGHT_BASE_URL=<url> npm run test:e2e:deployed`
 4. Run SQL in [scripts/rls-verify-queries.sql](../scripts/rls-verify-queries.sql) in Supabase SQL Editor
-5. `npm run deploy:infra:dry` — verify checklist; `npm run deploy:infra` when Supabase CLI is linked
-
-## GitHub Actions (optional)
-
-See [GITHUB_PRODUCTION_SECRETS.md](./GITHUB_PRODUCTION_SECRETS.md) for `ENABLE_DEPLOYED_E2E`, `PLAYWRIGHT_DEPLOYMENT_URL`, and `HEALTH_CHECK_URL`.
 
 ## References
 

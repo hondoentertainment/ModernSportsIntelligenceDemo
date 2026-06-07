@@ -42,7 +42,11 @@ export const supabase = createClient<Database>(
 
 ## CI
 
-Optional: add a CI step that runs `npm run types:supabase` and fails if `git diff --exit-code types/supabase.gen.ts` is non-empty (requires `SUPABASE_ACCESS_TOKEN` secret and project ref).
+The [`supabase-types` workflow](../.github/workflows/supabase-types.yml) regenerates `types/supabase.gen.ts` from the live schema and fails on drift. It runs on PRs/pushes that touch `supabase/**`, weekly, and on demand.
+
+**Activation:** add repository secrets `SUPABASE_ACCESS_TOKEN` (from the [Supabase account tokens page](https://supabase.com/dashboard/account/tokens)) and `SUPABASE_PROJECT_ID` (project ref). Without them the job no-ops cleanly.
+
+Locally, `npm run types:supabase:check` regenerates and fails if the committed file is stale.
 
 ## See also
 

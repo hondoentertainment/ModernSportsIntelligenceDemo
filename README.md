@@ -10,6 +10,7 @@
 ## Production rollout
 
 - **Phased checklist:** [docs/PRODUCTION_ROLLOUT_PHASES.md](docs/PRODUCTION_ROLLOUT_PHASES.md) (data, billing, security, observability, E2E against Vercel).
+- **Env & deploy:** [docs/DEPLOY_ENV_CHECKLIST.md](docs/DEPLOY_ENV_CHECKLIST.md) · **Edge Functions:** [supabase/functions/README.md](supabase/functions/README.md)
 - **Ops:** [docs/OPS_RUNBOOK.md](docs/OPS_RUNBOOK.md) · **Monitoring:** [docs/MONITORING.md](docs/MONITORING.md)
 
 # Run and deploy your AI Studio app

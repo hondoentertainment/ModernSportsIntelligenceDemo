@@ -195,6 +195,7 @@ const FeatureDirectory: React.FC = () => {
             <span className={`w-2 h-2 rounded-full ${
               feature.status === 'live' ? 'bg-brand-lime' :
               feature.status === 'beta' ? 'bg-amber-400' :
+              feature.status === 'demo' ? 'bg-blue-400' :
               'bg-slate-600'
             }`} />
             <span className="text-[8px] font-black uppercase tracking-wider text-brand-muted">
@@ -245,8 +246,9 @@ const FeatureDirectory: React.FC = () => {
             <h1 className="font-bebas text-3xl md:text-4xl tracking-wider text-white">Feature Directory</h1>
           </div>
           <p className="text-sm text-brand-muted">
-            All <span className="text-brand-lime font-bold">{DISCOVERABLE_FEATURE_CATALOG.length}</span> verified platform features across{' '}
+            All <span className="text-brand-lime font-bold">{DISCOVERABLE_FEATURE_CATALOG.length}</span> GA platform features across{' '}
             <span className="text-brand-lime font-bold">{FUNCTIONAL_AREAS.length}</span> functional areas.
+            <span className="ml-2 text-slate-400">Beta and demo surfaces are hidden unless enabled.</span>
             {hasActiveFilters && (
               <span className="ml-2 text-slate-400">
                 Showing {filtered.length} result{filtered.length !== 1 ? 's' : ''}.
@@ -308,7 +310,7 @@ const FeatureDirectory: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search features by name, description, or keyword..."
+            placeholder="Search GA features by name, description, or keyword..."
             className="w-full bg-brand-slate border border-slate-800 rounded-xl py-2.5 pl-10 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-brand-lime placeholder:text-slate-500 text-white"
             aria-label="Search features"
           />
@@ -438,7 +440,7 @@ const FeatureDirectory: React.FC = () => {
       <div className="border-t border-slate-800 pt-6 pb-4">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="bg-brand-slate rounded-xl p-4 border border-slate-800">
-            <p className="text-[9px] font-black uppercase tracking-widest text-brand-muted mb-1">Total Features</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-brand-muted mb-1">GA Features</p>
             <p className="text-2xl font-bebas tracking-wider text-brand-lime">{DISCOVERABLE_FEATURE_CATALOG.length}</p>
           </div>
           <div className="bg-brand-slate rounded-xl p-4 border border-slate-800">
@@ -450,7 +452,7 @@ const FeatureDirectory: React.FC = () => {
             <p className="text-2xl font-bebas tracking-wider text-white">{categories.length}</p>
           </div>
           <div className="bg-brand-slate rounded-xl p-4 border border-slate-800">
-            <p className="text-[9px] font-black uppercase tracking-widest text-brand-muted mb-1">Live Features</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-brand-muted mb-1">Live GA</p>
             <p className="text-2xl font-bebas tracking-wider text-brand-lime">
               {DISCOVERABLE_FEATURE_CATALOG.filter(f => f.status === 'live').length}
             </p>

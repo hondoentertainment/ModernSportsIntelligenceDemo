@@ -1,13 +1,12 @@
 import { z } from 'zod';
-import { apiLogger } from '../lib/logger';
-import { respondInternalError, setApiCorsHeaders } from '../lib/httpProduction';
+import { respondInternalError, setApiCorsHeaders } from '../lib/httpProduction.js';
 import {
   checkRateLimit,
   clientKeyFromRequest,
   envRateLimitMax,
   rateLimitDisabled,
-} from '../lib/rateLimit';
-import { isServerApiAuthConfigured, verifyServerApiAuth } from '../lib/verifyServerApiAuth';
+} from '../lib/rateLimit.js';
+import { isServerApiAuthConfigured, verifyServerApiAuth } from '../lib/verifyServerApiAuth.js';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 const SPORTS_CATEGORY_IDS = [213, 50132, 2737, 175690, 3034];

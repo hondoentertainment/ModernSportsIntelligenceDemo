@@ -57,111 +57,46 @@ When `GET /api/health` returns non-200 or timeouts:
 3. **If using a load balancer or proxy** — Ensure the `/api/health` path is allowed and not blocked or rewritten.
 4. **Consider alerting** — Alert when the health endpoint fails 3 times in a row (e.g. via your uptime checker) to reduce noise from transient blips.
 
+## Sentry setup (production)
+
+The code path is already wired ([`lib/sentry.ts`](../lib/sentry.ts), `initSentry()` in [`index.tsx`](../index.tsx), `reportError → captureException` in [`lib/errorReporting.ts`](../lib/errorReporting.ts)). Activate it in production with these steps:
+
+1. **Create a Sentry project** of platform "React" and copy the **DSN** (looks like `https://<key>@oXXX.ingest.sentry.io/<projectId>`).
+2. **Add env vars in Vercel** → Settings → Environment Variables → Production (and Preview if you want preview deploys reported separately):
+   - `VITE_SENTRY_DSN=<DSN>` (required to activate Sentry).
+   - `VITE_SENTRY_ENVIRONMENT=production` (optional; defaults to `import.meta.env.MODE`).
+   - `VITE_SENTRY_TRACES_SAMPLE_RATE=0.1` (optional; performance traces, leave unset for errors only).
+3. **Confirm the dependency.** `@sentry/react` is listed under `optionalDependencies` in [`package.json`](../package.json) so installs without a DSN do not pay for the SDK weight. Vercel installs optional deps by default; if you self-host with `npm ci --omit=optional`, drop that flag for production builds.
+4. **Redeploy.** A successful build with the DSN set will produce a Sentry-instrumented bundle; without the DSN `initSentry()` returns early and no SDK is loaded.
+5. **Verify.** From the deployed app, run `window.dispatchEvent(new ErrorEvent('error', { error: new Error('sentry smoke test') }))` in the console (or trigger a deliberate exception in a non-prod feature flag). The event should appear in the Sentry **Issues** view within ~30s.
+6. **PII / data-scrubbing.** The default Sentry SDK forwards stack traces and breadcrumbs but not the request body. Review [Sentry's PII docs](https://docs.sentry.io/platforms/javascript/data-management/sensitive-data/) before enabling **Send Default PII** — keep it off unless legal has signed off, since the app handles billing and user portfolios.
+7. **Alerting.** Configure Sentry alerts for: new issue, regression on a resolved issue, error spike (`> 50/hr`), and any error in the `Stripe` or `Auth` files (route by file path or release tag).
+
+CSP already permits Sentry under the wildcard `connect-src https:`; if you tighten that wildcard later (see [CSP_ROLLOUT.md](./CSP_ROLLOUT.md)), explicitly allow `https://*.ingest.sentry.io` and `https://*.sentry.io`.
+
+## Uptime monitoring setup
+
+`GET /api/health` is the single endpoint to monitor. It is cache-busted (`Cache-Control: no-store`) and serves from Vercel's serverless runtime, so a failing probe means the deployment itself is unreachable.
+
+Recommended configuration (Better Uptime, Checkly, UptimeRobot, Pingdom, or Vercel Monitoring):
+
+| Field             | Value                                                                       |
+| ----------------- | --------------------------------------------------------------------------- |
+| URL               | `https://<your-domain>/api/health`                                          |
+| Method            | `HEAD` preferred (cheaper); `GET` works and lets you assert response body.  |
+| Interval          | 1–3 minutes for primary monitor; 5 minutes for paid-tier savings.           |
+| Regions           | At least 3 (US-East, US-West, EU-West) to avoid single-region false alarms. |
+| Timeout           | 10 s.                                                                       |
+| Failure threshold | 3 consecutive failures before paging (filters transient blips).             |
+| Status assertion  | HTTP 200 and (for GET) JSON body matches `"ok":true`.                       |
+| Notify            | PagerDuty / Slack / email rotation per on-call.                             |
+
+Optional second probe — assert the API plane is healthy end-to-end:
+
+- **Synthetic check:** `POST /api/csp-report` with `{"csp-report":{"effective-directive":"script-src","blocked-uri":"https://probe.example"}}` — expect `204` and a `CSP violation` log line. Alerting off this catches regressions where the route is removed but `/api/health` still works.
+- **Deployed E2E (`npm run test:e2e:deployed`):** Set `ENABLE_DEPLOYED_E2E=true` and `PLAYWRIGHT_DEPLOYMENT_URL` in CI to run the post-deploy E2E suite against the live URL.
+
 ## Next steps
 
-- Set `VITE_SENTRY_DSN` and/or `VITE_ERROR_REPORTING_URL` in production for client error tracking (Sentry wiring is already in code; DSN activates it).
-- Configure uptime monitoring to hit `https://<your-domain>/api/health` every 1–5 minutes.
 - Use coverage and build artifacts from CI for trend and regression visibility; raise `vite.config.ts` coverage thresholds as the whitelist improves (see [COVERAGE_POLICY.md](./COVERAGE_POLICY.md)).
-
-## CodeQL & dependency audit
-
-Two automated security scans run on every PR + push to `main`:
-
-- **CodeQL** (`.github/workflows/codeql.yml`) — GitHub's native SAST for `javascript-typescript` using the `security-and-quality` query pack. Also runs weekly on Monday 06:00 UTC so newly disclosed vulns are caught against an unchanged codebase. Findings appear under **Security → Code scanning** in the GitHub UI.
-- **`npm audit --audit-level=high`** (in `.github/workflows/ci.yml` → `ci` job) — **blocking** as of v4.4. Use `npm audit fix` or pin the affected dependency to address. If a transitive vuln has no fix yet, document the exception in `plans/incidents/` and add a temporary `package.json` override.
-
-Local equivalents:
-
-```bash
-npm run audit:high   # same gate as CI
-```
-
-## Lighthouse CI
-
-`.github/workflows/lighthouse.yml` runs on every PR + push to `main` (also `workflow_dispatch`). It builds `dist/`, serves it as static, and runs Lighthouse 3× against the SPA root + `#/login` deep-link (Dashboard is the SPA index route at `/`, so the secondary URL audits a distinct public view).
-
-Reports are uploaded to Google's free temporary public storage and the URL is posted as a PR comment. **Links expire after a few days** — capture the report if you want a permanent record.
-
-### Budgets (`.lighthouserc.json`)
-
-- **A11y ≥ 0.90 → blocking**. We invested in axe + color-contrast; regressions break a real promise.
-- **CLS ≤ 0.10 → blocking**. Layout shift regressions are user-visible bugs.
-- Performance / best-practices / SEO → warn-only at first. Tighten over time.
-
-### Tightening the budget
-
-When a PR consistently exceeds a `warn` threshold, promote it to `error` so it starts blocking. The reverse is also fine — if a budget catches noise more than regressions, demote it.
-
-### Running locally
-
-```bash
-npm run build
-npx lhci autorun
-```
-
-(Requires the `@lhci/cli` to be on the PATH — `npx` will fetch on first run.)
-
-## Real-user Web Vitals (RUM)
-
-`lib/utils/webVitals.ts` wraps the [`web-vitals`](https://github.com/GoogleChrome/web-vitals) library and reports CLS, INP, LCP, FCP, TTFB to a beacon endpoint on every page load.
-
-### Pipeline
-
-1. `index.tsx` calls `initWebVitals()` once after the React root mounts.
-2. Each Core Web Vital fires its handler when the metric becomes final (e.g. LCP on visibility-change).
-3. Each event is sampled (default **25% in production, 100% in dev**, override via `VITE_RUM_SAMPLE_RATE=0-1`).
-4. Surviving events are POSTed via `navigator.sendBeacon` to `VITE_RUM_BEACON_URL` (default `/api/telemetry/web-vitals`), with a `fetch keepalive` fallback if the browser doesn't support sendBeacon or rejected the payload.
-
-### Server endpoint
-
-The beacon URL `/api/telemetry/web-vitals` does NOT exist yet — RUM events will 404 silently until it's implemented. The recommended shape:
-
-```ts
-// api/telemetry/web-vitals.ts
-export default function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') return res.status(405).end();
-  // parse body, forward to Sentry / Datadog / your warehouse here.
-  res.status(204).end();
-}
-```
-
-Until that handler exists, the metrics are still computed in the browser but silently dropped on the server.
-
-### Why 25% sampling
-
-A 100% sample rate on a high-traffic SPA pushes beacons in the tens of thousands per day. 25% gives a statistically clean signal at a quarter of the cost. Drop to 5–10% if you scale to millions of pageviews.
-
-### Local override
-
-To see every metric while developing:
-
-```bash
-VITE_RUM_SAMPLE_RATE=1 npm run dev
-```
-
-## Bundle size budget
-
-`.github/workflows/bundle-size.yml` runs on every PR + push to `main` (also `workflow_dispatch`). It builds `dist/`, sums gzipped JS, and **blocks the PR** if the total exceeds the budget defined in `package.json → scripts.size:check` (currently **3,030,000** bytes ≈ **2,959 KB** ≈ **2.89 MB** gzipped — see TODO note in the workflow about tightening once `lib-services` is code-split).
-
-The budget was set at measured-current (~2,881 KB gzipped at v4.3.0) × 1.05, rounded up to the nearest 10 KB. This is **deliberately a regression gate, not an aspirational target** — the `lib-services` chunk alone is ~1.1 MB gzipped and needs structural work before the budget can drop meaningfully.
-
-### Tightening the budget
-
-When the gap between the measured size and the budget grows, ratchet the budget down — open a one-line PR that lowers the `--max=` flag in `scripts.size:check`. The expected long-term floor (after `lib-services` is properly code-split and `recharts` lazy-loaded) is closer to ~600–800 KB gzipped.
-
-### Diagnosing a regression
-
-The Action uploads the full `dist/` as an artifact for 7 days. To investigate:
-
-1. Download `bundle-report` from the failed workflow run.
-2. Run `npx source-map-explorer dist/assets/*.js` locally to attribute size to source modules.
-3. Common offenders: a new icon library import, a heavy date/i18n lib, a duplicated copy of React via npm peer issues, a non-tree-shakeable `lucide-react` star-import.
-
-### Running locally
-
-```bash
-npm run build && npm run size:check
-```
-
-Exits `0` under budget, `1` over budget with a top-10 chunk breakdown by gzipped size.
-
+- After 1–2 weeks of `apiLogger.warn('CSP violation', ...)` data, tighten `connect-src` and `img-src` from `https:` wildcards to explicit origins ([CSP_ROLLOUT.md §Outstanding hardening](./CSP_ROLLOUT.md#outstanding-hardening)).

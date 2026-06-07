@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ShieldCheck, AlertTriangle, Search, History, Bell, BookOpen, BarChart3, CheckCircle, XCircle, HelpCircle, Flag, Hash, Layers } from 'lucide-react';
 import {
   getVerificationHistory,
-  verifyCert,
+  verifyCertAsync,
   getCounterfeitAlerts,
   reportCounterfeit,
   getVerificationStats,
@@ -80,9 +80,9 @@ const SlabVerification: React.FC = () => {
     ].filter((d) => d.value > 0);
   }, [stats]);
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     if (!certInput.trim()) return;
-    const result = verifyCert(certInput.trim(), selectedCompany);
+    const result = await verifyCertAsync(certInput.trim(), selectedCompany);
     if (result) {
       setVerifyResult(result);
       setVerifyNotFound(false);

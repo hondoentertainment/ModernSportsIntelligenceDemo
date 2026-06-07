@@ -1,4 +1,4 @@
-import { apiLogger } from './logger';
+import { apiLogger } from './logger.js';
 
 type ApiResponse = {
   setHeader: (name: string, value: string) => void;

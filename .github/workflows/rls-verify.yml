@@ -1,0 +1,71 @@
+name: RLS verification
+
+# Connects to Supabase with the ANON key and no auth session, then asserts
+# that strictly tenant-scoped tables (user_data, targets, price_history,
+# market_events, audit_events, stripe_processed_events) return zero rows.
+# A non-empty result is a cross-tenant data leak. See scripts/rls-verify.mjs
+# and docs/SUPABASE_RLS.md.
+#
+# Activation: add repository secrets SUPABASE_URL and SUPABASE_ANON_KEY.
+# Without them the job no-ops cleanly.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase-schema.sql'
+      - 'scripts/rls-verify.mjs'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase-schema.sql'
+      - 'scripts/rls-verify.mjs'
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rls-verify:
+    name: Anon cross-tenant denial
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Supabase credentials
+        id: gate
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "SUPABASE_URL / SUPABASE_ANON_KEY not set — skipping RLS verification."
+            echo "See docs/SUPABASE_RLS.md to enable."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout code
+        if: steps.gate.outputs.enabled == 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: steps.gate.outputs.enabled == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: steps.gate.outputs.enabled == 'true'
+        run: npm ci
+
+      - name: Run anon RLS smoke test
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: npm run verify:rls
