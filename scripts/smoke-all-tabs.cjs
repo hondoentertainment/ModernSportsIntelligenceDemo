@@ -18,10 +18,14 @@ const ROUTE_TIMEOUT_MS = Number(process.env.SMOKE_ROUTE_TIMEOUT_MS || 15000);
 const ONLY = process.env.SMOKE_ONLY ? process.env.SMOKE_ONLY.split(',').map(s => s.trim()) : null;
 
 function extractNavRoutes() {
-    const src = fs.readFileSync(path.join(__dirname, '..', 'constants.tsx'), 'utf8');
-    // Match NAV_ITEMS array
+    const navPath = path.join(__dirname, '..', 'constants', 'navItems.tsx');
+    const legacyPath = path.join(__dirname, '..', 'constants.tsx');
+    const src = fs.existsSync(navPath)
+        ? fs.readFileSync(navPath, 'utf8')
+        : fs.readFileSync(legacyPath, 'utf8');
+    // Match NAV_ITEMS array (inline or re-exported source file)
     const start = src.indexOf('export const NAV_ITEMS');
-    if (start === -1) throw new Error('NAV_ITEMS not found in constants.tsx');
+    if (start === -1) throw new Error('NAV_ITEMS not found in nav config');
     const end = src.indexOf('];', start);
     const block = src.slice(start, end + 2);
     // Use [\s\S] (any char incl. newline) so JSX icon nodes between props don't trip us up.
