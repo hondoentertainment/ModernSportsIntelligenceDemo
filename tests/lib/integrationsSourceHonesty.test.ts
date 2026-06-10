@@ -20,7 +20,7 @@ describe('ebayAdapter source honesty', () => {
   });
 
   it('labels live-failure fallback with source: mock and a degradedReason', async () => {
-    vi.stubEnv('VITE_FF_USE_REAL_EBAY', 'true');
+    vi.stubEnv('VITE_FF_REAL_EBAY', 'true');
     vi.doMock('../../lib/utils/ebayApi', () => ({
       ebayApi: {
         getMarketValue: vi.fn().mockRejectedValue(new Error('eBay 503')),

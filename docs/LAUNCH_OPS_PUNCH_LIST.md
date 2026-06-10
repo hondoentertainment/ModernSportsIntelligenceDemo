@@ -39,8 +39,8 @@ Point any uptime service (UptimeRobot, Checkly, Vercel checks) at `GET /api/heal
 
 Server-side env (Vercel), never `VITE_*`:
 
-- eBay: `EBAY_CLIENT_ID` / `EBAY_CLIENT_SECRET`, then set `VITE_FF_USE_REAL_EBAY=true`
-- PSA: `PSA_API_KEY` (consumed by `api/grading/psa/cert.ts`), then `VITE_FF_USE_REAL_PSA=true`
+- eBay: `EBAY_CLIENT_ID` / `EBAY_CLIENT_SECRET`, then set `VITE_FF_REAL_EBAY=true`
+- PSA: `PSA_API_KEY` (consumed by `api/grading/psa/cert.ts`), then `VITE_FF_REAL_PSA=true`
 
 The adapters now tag every response `source: 'live' | 'mock'` with a `degradedReason` on live failures — UI surfaces can trust the label.
 
