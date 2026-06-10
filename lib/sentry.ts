@@ -8,6 +8,18 @@
 let sentryReady = false;
 let sentryModule: { captureException: (error: unknown) => void } | null = null;
 
+/** Dev-only: surface missing production error channels at bootstrap. */
+function warnMissingTelemetryInDev(): void {
+  if (typeof import.meta === 'undefined' || import.meta.env?.PROD) return;
+  const dsn = (import.meta.env?.VITE_SENTRY_DSN ?? '').trim();
+  const beacon = (import.meta.env?.VITE_ERROR_REPORTING_URL ?? '').trim();
+  if (!dsn && !beacon) {
+    console.warn(
+      '[sentry] No VITE_SENTRY_DSN or VITE_ERROR_REPORTING_URL — production builds will not report errors. See docs/MONITORING.md.',
+    );
+  }
+}
+
 /**
  * Initialize Sentry when VITE_SENTRY_DSN is set. Call once at app bootstrap.
  * If @sentry/react is not installed, the dynamic import fails and we stay no-op.
@@ -15,6 +27,7 @@ let sentryModule: { captureException: (error: unknown) => void } | null = null;
 export function initSentry(): void {
   const dsn = import.meta.env?.VITE_SENTRY_DSN;
   if (!dsn || typeof dsn !== 'string') {
+    warnMissingTelemetryInDev();
     return;
   }
 

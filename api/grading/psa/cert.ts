@@ -6,7 +6,12 @@
 import { z } from 'zod';
 import { apiLogger } from '../../lib/logger.js';
 import { respondInternalError, setApiCorsHeaders } from '../../lib/httpProduction.js';
-import { isServerApiAuthConfigured, verifyServerApiAuth } from '../../lib/verifyServerApiAuth.js';
+import {
+  API_AUTH_REQUIRED_CODE,
+  isServerApiAuthConfigured,
+  respondApiAuthMisconfigured,
+  verifyServerApiAuth,
+} from '../../lib/verifyServerApiAuth.js';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 
@@ -114,12 +119,12 @@ export default async function handler(req: ApiRequest, res: ApiResponse): Promis
     }
 
     if (!isServerApiAuthConfigured()) {
-      return res.status(503).json({ error: 'API auth not configured', code: 'api_auth_misconfigured' });
+      return respondApiAuthMisconfigured(res);
     }
 
     const authorized = await verifyServerApiAuth(req);
     if (!authorized) {
-      return res.status(401).json({ error: 'Unauthorized', code: 'api_auth_required' });
+      return res.status(401).json({ error: 'Unauthorized', code: API_AUTH_REQUIRED_CODE });
     }
 
     const parsed = bodySchema.safeParse(req.body);

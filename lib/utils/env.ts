@@ -117,6 +117,66 @@ export function getProductionTelemetryIssues(
   return [];
 }
 
+/** True when client Supabase env is unset (demo / offline mode). */
+export function isClientDemoMode(
+  cfg: Pick<EnvConfig, 'VITE_SUPABASE_URL' | 'VITE_SUPABASE_ANON_KEY'>,
+): boolean {
+  const url = (cfg.VITE_SUPABASE_URL ?? '').trim();
+  const key = (cfg.VITE_SUPABASE_ANON_KEY ?? '').trim();
+  return !url && !key;
+}
+
+export type HealthConfigPayload = {
+  config?: {
+    serverApiAuth?: boolean;
+    authDisabledInProd?: boolean;
+  };
+};
+
+/**
+ * Production server-auth check (uses GET /api/health config when available).
+ * Skipped in demo mode so local builds without Supabase stay unaffected.
+ */
+export function getProductionServerAuthIssues(
+  cfg: Pick<EnvConfig, 'VITE_SUPABASE_URL' | 'VITE_SUPABASE_ANON_KEY'>,
+  health: HealthConfigPayload | null | undefined,
+): string[] {
+  if (!isClientProductionBuild()) return [];
+  if (isClientDemoMode(cfg)) return [];
+  if (!health?.config) return [];
+
+  const issues: string[] = [];
+  if (health.config.authDisabledInProd) {
+    issues.push(
+      'MSI_API_AUTH_DISABLED is set on production — remove it in the Vercel dashboard immediately. Protected API routes are blocked.',
+    );
+  }
+  if (health.config.serverApiAuth === false) {
+    issues.push(
+      'Server API auth is not configured on Vercel. Set SUPABASE_URL and SUPABASE_ANON_KEY (same values as VITE_*), plus ALLOWED_ORIGIN for your production domain. Protected routes (/api/ai, /api/market/ebay, /api/grading/psa/cert) return 503 until fixed. Run npm run check:prod-env or see docs/DEPLOY_ENV_CHECKLIST.md.',
+    );
+  }
+  return issues;
+}
+
+/** Actionable admin steps when server API auth is misconfigured in production. */
+export function getProductionServerAuthAdminHints(
+  issues: string[],
+): string[] {
+  if (issues.length === 0) return [];
+  const hints: string[] = [
+    'Vercel → Project → Settings → Environment Variables → Production',
+    'vercel env add SUPABASE_URL production',
+    'vercel env add SUPABASE_ANON_KEY production',
+    'vercel env add ALLOWED_ORIGIN production  # canonical site URL for CORS',
+    'npm run check:prod-env -- --from-vercel',
+  ];
+  if (issues.some((i) => i.includes('MSI_API_AUTH_DISABLED'))) {
+    hints.unshift('vercel env rm MSI_API_AUTH_DISABLED production  # never set in prod');
+  }
+  return hints;
+}
+
 /**
  * Validate and return the environment configuration.
  * Logs warnings for missing optional keys and errors for malformed values.

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Star, Search, Trash2, User, ChevronRight, LayoutGrid, List, CreditCard, TrendingUp, Target, RefreshCw, Plus, Loader2, Zap, AlertTriangle } from 'lucide-react';
+import { Star, Search, Trash2, User, ChevronRight, LayoutGrid, List, CreditCard, TrendingUp, Target, RefreshCw, Plus, Loader2, Zap } from 'lucide-react';
 import { searchMLBPlayers } from '../lib/utils/mlbApi.ts';
 import { useFavorites } from '../lib/utils/useFavorites.ts';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
@@ -14,6 +14,7 @@ import { store } from '../lib/dal/syncStore';
 import { computeFreshVerifiableCoverage, FRESH_VERIFIABLE_COVERAGE_TARGET_PCT } from '../lib/utils/valuationProvenance';
 import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAlerts';
 import { showToast } from '../lib/utils/toast';
+import ValuationCoverageBanner from '../components/ValuationCoverageBanner';
 
 const Favorites: React.FC = () => {
   // MLB Player favorites (existing)
@@ -251,17 +252,13 @@ const Favorites: React.FC = () => {
           {activeTab === 'targets' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {hasTargetCoverageGap && (
-                <div className="col-span-full rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-amber-100">
-                  <div className="flex items-start gap-2">
-                    <AlertTriangle size={16} className="mt-0.5 shrink-0 text-amber-300" />
-                    <div>
-                      <p className="text-sm font-semibold">Watchlist pricing coverage below SLA.</p>
-                      <p className="mt-1 text-xs text-amber-200/90">
-                        Fresh verifiable targets: {targetCoverage.coveragePct}% ({targetCoverage.covered}/{targetCoverage.total}). Sync prices to refresh comp-backed valuations.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <ValuationCoverageBanner
+                  scope="watchlist"
+                  coveragePct={targetCoverage.coveragePct}
+                  covered={targetCoverage.covered}
+                  total={targetCoverage.total}
+                  className="col-span-full"
+                />
               )}
               {activeTargets.length > 0 ? activeTargets.map((target) => (
                 <WatchlistPriceCard

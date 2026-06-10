@@ -38,12 +38,66 @@ function supabaseAnonKeyForAuth(): string | undefined {
   );
 }
 
+export const API_AUTH_MISCONFIGURED_CODE = 'api_auth_misconfigured' as const;
+export const API_AUTH_DISABLED_IN_PROD_CODE = 'api_auth_disabled_in_production' as const;
+export const API_AUTH_REQUIRED_CODE = 'api_auth_required' as const;
+
+/** JSON body for 503 when MSI_API_AUTH_DISABLED is set on a production deployment. */
+export function apiAuthDisabledInProdBody(): {
+  error: string;
+  code: typeof API_AUTH_DISABLED_IN_PROD_CODE;
+  hint: string;
+} {
+  return {
+    error: 'Server API authentication is disabled in production.',
+    code: API_AUTH_DISABLED_IN_PROD_CODE,
+    hint:
+      'Remove MSI_API_AUTH_DISABLED from Vercel production environment variables immediately. Protected routes stay blocked until it is removed. See docs/DEPLOY_ENV_CHECKLIST.md.',
+  };
+}
+
+/** JSON body for 503 when protected routes cannot validate auth (missing server env). */
+export function apiAuthMisconfiguredBody(): {
+  error: string;
+  code: typeof API_AUTH_MISCONFIGURED_CODE;
+  hint: string;
+} {
+  return {
+    error: 'Server API authentication is not configured.',
+    code: API_AUTH_MISCONFIGURED_CODE,
+    hint:
+      'On Vercel set SUPABASE_URL and SUPABASE_ANON_KEY (same values as VITE_*), plus ALLOWED_ORIGIN for your production domain. See docs/DEPLOY_ENV_CHECKLIST.md or run npm run check:prod-env.',
+  };
+}
+
+type ApiResponse = {
+  status: (code: number) => { json: (body: object) => unknown };
+};
+
+export function respondApiAuthMisconfigured(res: ApiResponse): unknown {
+  if (isServerApiAuthDisabledInProduction()) {
+    return res.status(503).json(apiAuthDisabledInProdBody());
+  }
+  return res.status(503).json(apiAuthMisconfiguredBody());
+}
+
 export function isServerApiAuthConfigured(): boolean {
-  if (isServerApiAuthDisabled()) return true;
+  if (isServerApiAuthDisabled()) {
+    return !isProdLike();
+  }
   if (process.env.MSI_SERVER_API_SECRET?.trim()) return true;
   const url = supabaseUrlForAuth();
   const anon = supabaseAnonKeyForAuth();
   return !!(url && anon);
+}
+
+/** Health / ops: whether protected routes can authenticate requests in this deployment. */
+export function isServerApiAuthOperational(): boolean {
+  return isServerApiAuthConfigured();
+}
+
+export function isServerApiAuthDisabledInProduction(): boolean {
+  return isServerApiAuthDisabled() && isProdLike();
 }
 
 const isProdLike =

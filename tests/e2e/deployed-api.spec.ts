@@ -38,7 +38,9 @@ test.describe('Deployed API (Vercel)', () => {
     expect([401, 503]).toContain(res.status());
     const body = await res.json().catch(() => ({}));
     expect(body).toMatchObject({
-      code: expect.stringMatching(/api_auth_required|api_auth_misconfigured/),
+      code: expect.stringMatching(
+        /api_auth_required|api_auth_misconfigured|api_auth_disabled_in_production/,
+      ),
     });
   });
 
@@ -54,7 +56,9 @@ test.describe('Deployed API (Vercel)', () => {
     expect([401, 503]).toContain(res.status());
     const body = await res.json().catch(() => ({}));
     expect(body).toMatchObject({
-      code: expect.stringMatching(/api_auth_required|api_auth_misconfigured/),
+      code: expect.stringMatching(
+        /api_auth_required|api_auth_misconfigured|api_auth_disabled_in_production/,
+      ),
     });
   });
 
@@ -68,5 +72,11 @@ test.describe('Deployed API (Vercel)', () => {
       return;
     }
     expect([401, 503]).toContain(res.status());
+    const body = await res.json().catch(() => ({}));
+    expect(body).toMatchObject({
+      code: expect.stringMatching(
+        /api_auth_required|api_auth_misconfigured|api_auth_disabled_in_production/,
+      ),
+    });
   });
 });

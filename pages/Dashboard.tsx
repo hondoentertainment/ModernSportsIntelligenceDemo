@@ -70,14 +70,19 @@ import MarketPulseTable from '../components/MarketPulseTable.tsx';
 import DeepDiverReport from '../components/DeepDiverReport.tsx';
 import { CorrelationTerminal } from '../components/CorrelationTerminal.tsx';
 import { HedgeAdvisor } from '../components/HedgeAdvisor.tsx';
-import MacroSentinelWidget from '../components/MacroSentinelWidget.tsx';
 import { ArbitrageTerminal } from '../components/ArbitrageTerminal.tsx';
-import WarRoomWidget from '../components/WarRoomWidget.tsx';
 import FiscalHealthWidget from '../components/FiscalHealthWidget.tsx';
+import MacroSentinelWidget from '../components/MacroSentinelWidget.tsx';
 import StrategyMap from '../components/StrategyMap.tsx';
-import ArbitrageSwarmDashboard from '../components/ArbitrageSwarmDashboard.tsx';
-import DashboardFeatureWidgets from '../components/DashboardFeatureWidgets.tsx';
 import PricingTruthHealthPanel from '../components/PricingTruthHealthPanel.tsx';
+import PricingProvenanceNotice from '../components/PricingProvenanceNotice.tsx';
+import ValuationCoverageBanner from '../components/ValuationCoverageBanner.tsx';
+import {
+  computeFreshVerifiableCoverage,
+  FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
+} from '../lib/utils/valuationProvenance.ts';
+import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAlerts.ts';
+import { showToast } from '../lib/utils/toast.ts';
 import LazyErrorBoundary from '../components/LazyErrorBoundary.tsx';
 import { WidgetLoadingFallback } from '../components/LazyLoadFallback.tsx';
 import { useAuth } from '../contexts/AuthContext';
@@ -97,10 +102,13 @@ const ConsignmentWidget = lazy(() => import('../components/ConsignmentWidget.tsx
 const AchievementWidget = lazy(() => import('../components/AchievementWidget.tsx'));
 const AnomalyWidget = lazy(() => import('../components/AnomalyWidget.tsx'));
 const RecentlyIngested = lazy(() => import('../components/dashboard/RecentlyIngested.tsx'));
+const DashboardFeatureWidgets = lazy(() => import('../components/DashboardFeatureWidgets.tsx'));
+const ArbitrageSwarmDashboard = lazy(() => import('../components/ArbitrageSwarmDashboard.tsx'));
+const WarRoomWidget = lazy(() => import('../components/WarRoomWidget.tsx'));
 
 
 const Dashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user, isDemoMode } = useAuth();
   // Shared inventory state
   const {
     inventory,
@@ -257,6 +265,40 @@ const Dashboard: React.FC = () => {
 
   const recentCards = inventory.slice(-3).reverse();
 
+  const freshVerifiedCoverage = useMemo(
+    () => computeFreshVerifiableCoverage(inventory.filter(card => card.status !== 'sold')),
+    [inventory],
+  );
+  const hasCoverageGap =
+    freshVerifiedCoverage.total > 0 &&
+    freshVerifiedCoverage.coveragePct < FRESH_VERIFIABLE_COVERAGE_TARGET_PCT;
+
+  useEffect(() => {
+    const transition = trackCoverageHealthTransition(
+      'inventory',
+      freshVerifiedCoverage.coveragePct,
+      freshVerifiedCoverage.total,
+      FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
+    );
+
+    if (transition.event === 'degraded') {
+      showToast(
+        'warning',
+        `Pricing truth degraded: ${freshVerifiedCoverage.coveragePct}% fresh verifiable coverage in inventory.`,
+        { dedupeKey: 'coverage_inventory_degraded' },
+      );
+      return;
+    }
+
+    if (transition.event === 'recovered') {
+      showToast(
+        'success',
+        `Pricing truth recovered: inventory coverage returned to ${freshVerifiedCoverage.coveragePct}%.`,
+        { dedupeKey: 'coverage_inventory_recovered' },
+      );
+    }
+  }, [freshVerifiedCoverage.coveragePct, freshVerifiedCoverage.total]);
+
   const _sportData = useMemo(() => {
     const counts: Record<string, number> = {};
     inventory.forEach(card => {
@@ -323,6 +365,15 @@ const Dashboard: React.FC = () => {
           </div>
           <p className="mt-2 text-amber-200/90">{lastSyncError}</p>
         </section>
+      )}
+
+      {isDemoMode && (
+        <PricingProvenanceNotice
+          title="Demo portfolio — NAV uses sample and AI-estimated pricing"
+          detail="Dashboard totals may mix seeded demo values with Gemini estimates, not verified sold comps. Sync with a production account for live eBay-backed valuations."
+          badgeVariant="mock"
+          badgeLabel="Demo data"
+        />
       )}
 
       {loading && inventory.length === 0 ? (
@@ -422,6 +473,33 @@ const Dashboard: React.FC = () => {
         </div>
       ) : (
         <div className={isTerminalMode ? 'grid grid-cols-12 gap-4' : 'space-y-12'}>
+          {hasCoverageGap && (
+            <ValuationCoverageBanner
+              scope="inventory"
+              coveragePct={freshVerifiedCoverage.coveragePct}
+              covered={freshVerifiedCoverage.covered}
+              total={freshVerifiedCoverage.total}
+              className={isTerminalMode ? 'col-span-12' : undefined}
+              actions={
+                <>
+                  <button
+                    type="button"
+                    onClick={handleSync}
+                    disabled={isSyncing}
+                    className="rounded-xl border border-amber-400/40 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-amber-100 hover:bg-amber-400/10 disabled:opacity-60"
+                  >
+                    {isSyncing ? 'Syncing…' : 'Sync Portfolio Pricing'}
+                  </button>
+                  <Link
+                    to="/collection"
+                    className="rounded-xl border border-amber-400/40 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-amber-100 hover:bg-amber-400/10"
+                  >
+                    Open Collection
+                  </Link>
+                </>
+              }
+            />
+          )}
           {/* Hero Financial Summary */}
           <div className={isTerminalMode ? 'col-span-12 grid grid-cols-1 md:grid-cols-4 gap-4' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}>
             {/* Main NAV Mega-Widget */}
@@ -644,7 +722,11 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Intelligence Signals - Feature Metric Widgets */}
-          <DashboardFeatureWidgets />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              <DashboardFeatureWidgets />
+            </Suspense>
+          </LazyErrorBoundary>
           <PricingTruthHealthPanel inventory={inventory} />
 
           {/* Strategic Signals Feed */}
@@ -732,7 +814,11 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
             <div className="xl:col-span-2">
-              <WarRoomWidget />
+              <LazyErrorBoundary compact>
+                <Suspense fallback={<WidgetLoadingFallback />}>
+                  <WarRoomWidget />
+                </Suspense>
+              </LazyErrorBoundary>
             </div>
           </div>
 
@@ -754,7 +840,11 @@ const Dashboard: React.FC = () => {
               <ArbitrageTerminal inventory={inventory} targets={targets} />
             </div>
             <div className="xl:col-span-2">
-              <ArbitrageSwarmDashboard />
+              <LazyErrorBoundary compact>
+                <Suspense fallback={<WidgetLoadingFallback />}>
+                  <ArbitrageSwarmDashboard />
+                </Suspense>
+              </LazyErrorBoundary>
             </div>
 
           </div>

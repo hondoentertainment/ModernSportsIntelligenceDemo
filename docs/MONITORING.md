@@ -15,10 +15,12 @@ For a broader checklist (deploy, RLS audit, env vars, CSP), see **[OPS_RUNBOOK.m
 - **Sentry (optional):** `initSentry()` runs at bootstrap in [`index.tsx`](../index.tsx). When `VITE_SENTRY_DSN` is set and `@sentry/react` is installed (**optionalDependency** in `package.json`), the SDK loads dynamically and `reportError` forwards to `captureException` via [`lib/sentry.ts`](../lib/sentry.ts). No DSN → no-op.
 - **Wired:** `ErrorBoundary` and `LazyErrorBoundary` call `reportError` on `componentDidCatch`. **Unhandled promise rejections** are also reported: `window.addEventListener('unhandledrejection', ...)` in `index.tsx` calls `reportError(event.reason)` so escaped rejections are captured.
 - **Production:** Set `VITE_SENTRY_DSN` and/or `VITE_ERROR_REPORTING_URL` in the Vercel (or host) environment; never commit secrets.
+- **Local dev / build:** Missing telemetry is surfaced via dev-only `console.warn` in [`lib/sentry.ts`](../lib/sentry.ts) and [`vite.config.ts`](../vite.config.ts) (local `npm run build` only), plus [`lib/utils/env.ts`](../lib/utils/env.ts) `validateEnv()` warnings. Set `VITE_REQUIRE_TELEMETRY=true` to fail production builds when neither channel is configured.
 
 ## CI
 
-- **Build & test:** CI runs typecheck, lint, format, unit tests with coverage, `npm audit --audit-level=high` (non-blocking), build, and E2E smoke (auth, dashboard, release).
+- **Build & test:** CI runs typecheck, lint, format, unit tests with coverage, `npm audit --audit-level=high` (blocking), build, and E2E smoke (auth, dashboard, release).
+- **Deployed E2E (optional, blocking):** When repository variable `ENABLE_DEPLOYED_E2E` is `true`, job `e2e_deployed` in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs `npm run test:e2e:deployed` against secret `PLAYWRIGHT_DEPLOYMENT_URL` (same pattern as [`.github/workflows/deployed-e2e.yml`](../.github/workflows/deployed-e2e.yml)). Without the secret the job no-ops cleanly. See [GITHUB_PRODUCTION_SECRETS.md](./GITHUB_PRODUCTION_SECRETS.md).
 - **Health in CI:** The E2E spec `api-health.spec.ts` skips when `/api/health` is not available (e.g. Vite preview). To assert health in CI, run E2E against a deployed URL (`PLAYWRIGHT_BASE_URL` set to the Vercel deployment).
 
 ## API (server-side) logging

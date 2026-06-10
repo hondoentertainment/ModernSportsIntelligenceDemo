@@ -116,6 +116,71 @@ describe('lib/utils/env', () => {
     });
   });
 
+  describe('getProductionServerAuthIssues', () => {
+    it('returns empty in demo mode', async () => {
+      const mod = await import('../../lib/utils/env');
+      expect(
+        mod.getProductionServerAuthIssues(
+          { VITE_SUPABASE_URL: '', VITE_SUPABASE_ANON_KEY: '' },
+          { config: { serverApiAuth: false } },
+        ),
+      ).toEqual([]);
+    });
+
+    it('reports missing server auth when health config says so', async () => {
+      const mod = await import('../../lib/utils/env');
+      vi.stubEnv('PROD', 'true');
+      const issues = mod.getProductionServerAuthIssues(
+        {
+          VITE_SUPABASE_URL: 'https://demo.supabase.co',
+          VITE_SUPABASE_ANON_KEY: 'anon',
+        },
+        { config: { serverApiAuth: false } },
+      );
+      expect(issues).toHaveLength(1);
+      expect(issues[0]).toMatch(/SUPABASE_URL/);
+      vi.unstubAllEnvs();
+    });
+
+    it('reports auth disabled in production', async () => {
+      const mod = await import('../../lib/utils/env');
+      vi.stubEnv('PROD', 'true');
+      const issues = mod.getProductionServerAuthIssues(
+        {
+          VITE_SUPABASE_URL: 'https://demo.supabase.co',
+          VITE_SUPABASE_ANON_KEY: 'anon',
+        },
+        { config: { serverApiAuth: false, authDisabledInProd: true } },
+      );
+      expect(issues.some((i) => i.includes('MSI_API_AUTH_DISABLED'))).toBe(true);
+      vi.unstubAllEnvs();
+    });
+  });
+
+  describe('getProductionServerAuthAdminHints', () => {
+    it('returns empty when there are no server auth issues', async () => {
+      const mod = await import('../../lib/utils/env');
+      expect(mod.getProductionServerAuthAdminHints([])).toEqual([]);
+    });
+
+    it('returns Vercel CLI steps when server auth is misconfigured', async () => {
+      const mod = await import('../../lib/utils/env');
+      const hints = mod.getProductionServerAuthAdminHints([
+        'Server API auth is not configured on Vercel.',
+      ]);
+      expect(hints.some((h) => h.includes('vercel env add SUPABASE_URL'))).toBe(true);
+      expect(hints.some((h) => h.includes('check:prod-env'))).toBe(true);
+    });
+
+    it('prepends remove-auth-disabled hint when MSI_API_AUTH_DISABLED is set', async () => {
+      const mod = await import('../../lib/utils/env');
+      const hints = mod.getProductionServerAuthAdminHints([
+        'MSI_API_AUTH_DISABLED is set on production — remove it.',
+      ]);
+      expect(hints[0]).toMatch(/vercel env rm MSI_API_AUTH_DISABLED/);
+    });
+  });
+
   it('logs a telemetry error (not just a warning) on a production build', async () => {
     vi.resetModules();
     vi.stubEnv('PROD', 'true');

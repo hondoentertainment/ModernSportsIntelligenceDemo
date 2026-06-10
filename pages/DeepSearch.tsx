@@ -1,6 +1,8 @@
 
 import React, { useState, useCallback } from 'react';
 import { Search, Sparkles, Target, Zap, ArrowRight, ShieldCheck, Info, Loader2 } from 'lucide-react';
+import PricingProvenanceNotice from '../components/PricingProvenanceNotice.tsx';
+import DataSourceBadge from '../components/DataSourceBadge.tsx';
 import { findSimilarCards, type SimilarCardResult } from '../lib/utils/gemini.ts';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import { useToast } from '../contexts/ToastContext.tsx';
@@ -61,6 +63,13 @@ const DeepSearch: React.FC = () => {
                     <p className="text-brand-muted max-w-2xl font-medium">AI-driven card similarity and semantic search. Search by vibe, era, or trajectory.</p>
                 </div>
             </div>
+
+            <PricingProvenanceNotice
+                title="Deep search uses AI-derived pricing estimates"
+                detail="Estimated NAV values are Gemini model outputs, not verified sold comps. Confirm pricing in Collection or Market Pulse before trading decisions."
+                badgeVariant="sample"
+                badgeLabel="AI estimate"
+            />
 
             {/* Search HUD */}
             <div className="max-w-4xl mx-auto space-y-6">
@@ -159,9 +168,10 @@ const DeepSearch: React.FC = () => {
                                                 <h3 className="text-2xl font-bold text-white leading-none">{result.name}</h3>
                                                 <p className="text-sm text-brand-muted font-medium">{result.team}</p>
                                             </div>
-                                            <div className="text-right">
+                                            <div className="text-right space-y-1">
                                                 <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Est. NAV</p>
                                                 <p className="text-xl font-mono font-black text-white">${result.estimatedValue.toLocaleString()}</p>
+                                                <DataSourceBadge variant="sample" size="xs" label="AI estimate" />
                                             </div>
                                         </div>
 

@@ -6,7 +6,12 @@ import {
   envRateLimitMax,
   rateLimitDisabled,
 } from '../lib/rateLimit.js';
-import { isServerApiAuthConfigured, verifyServerApiAuth } from '../lib/verifyServerApiAuth.js';
+import {
+  API_AUTH_REQUIRED_CODE,
+  isServerApiAuthConfigured,
+  respondApiAuthMisconfigured,
+  verifyServerApiAuth,
+} from '../lib/verifyServerApiAuth.js';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 const SPORTS_CATEGORY_IDS = [213, 50132, 2737, 175690, 3034];
@@ -154,13 +159,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   if (!isServerApiAuthConfigured()) {
-    return res.status(503).json({
-      error: 'Server API authentication is not configured.',
-      code: 'api_auth_misconfigured',
-    });
+    return respondApiAuthMisconfigured(res);
   }
   if (!(await verifyServerApiAuth(req))) {
-    return res.status(401).json({ error: 'Unauthorized', code: 'api_auth_required' });
+    return res.status(401).json({ error: 'Unauthorized', code: API_AUTH_REQUIRED_CODE });
   }
 
   if (!rateLimitDisabled()) {

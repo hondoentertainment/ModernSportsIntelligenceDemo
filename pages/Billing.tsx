@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { CreditCard, Check, Zap, ChevronRight, Loader2 } from 'lucide-react';
+import PricingProvenanceNotice from '../components/PricingProvenanceNotice';
 import { useAuth } from '../contexts/AuthContext';
 import {
   getUserSubscription,
@@ -100,6 +101,11 @@ const Billing: React.FC = () => {
   const tierConfig = SUBSCRIPTION_TIERS[currentTier];
   const aiLimit = tierConfig?.limits.aiValuations ?? 10;
   const aiUsed = subscription?.ai_valuations_used ?? 0;
+  const aiQuotaDegraded = useMemo(() => {
+    if (aiLimit === -1) return false;
+    if (aiLimit <= 0) return true;
+    return aiUsed >= aiLimit || aiUsed / aiLimit >= 0.9;
+  }, [aiLimit, aiUsed]);
 
   if (!user) {
     return (
@@ -147,6 +153,24 @@ const Billing: React.FC = () => {
         >
           {message.text}
         </div>
+      )}
+
+      {isDemoMode && (
+        <PricingProvenanceNotice
+          title="Demo billing — pricing quotas are simulated"
+          detail="Plan limits and AI valuation usage shown here are illustrative. Upgrade flows and live comp-backed pricing require a signed-in production account."
+          badgeVariant="mock"
+          badgeLabel="Demo data"
+        />
+      )}
+
+      {!isDemoMode && aiQuotaDegraded && (
+        <PricingProvenanceNotice
+          title="AI valuation quota is near or at limit"
+          detail={`${aiUsed} of ${aiLimit === -1 ? 'unlimited' : aiLimit} AI valuations used this month. New pricing may fall back to estimates until quota resets or you upgrade.`}
+          badgeVariant="stale"
+          badgeLabel="Partial coverage"
+        />
       )}
 
       {/* Current plan & usage */}

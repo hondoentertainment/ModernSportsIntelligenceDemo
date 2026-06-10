@@ -61,3 +61,6 @@ Thumbs.db
 
 # Lighthouse CI local run output
 .lighthouseci/
+
+# Supabase CLI temp (link attempts)
+supabase/.temp/

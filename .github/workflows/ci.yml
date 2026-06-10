@@ -237,6 +237,58 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
+  e2e_deployed:
+    name: Deployed E2E (blocking)
+    if: vars.ENABLE_DEPLOYED_E2E == 'true'
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check deployment URL secret
+        id: gate
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_DEPLOYMENT_URL }}
+        run: |
+          if [ -z "$PLAYWRIGHT_BASE_URL" ]; then
+            echo "PLAYWRIGHT_DEPLOYMENT_URL secret not set — skipping deployed E2E."
+            echo "Set it (e.g. https://your-app.vercel.app) to enable. See docs/GITHUB_PRODUCTION_SECRETS.md."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout code
+        if: steps.gate.outputs.enabled == 'true'
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        if: steps.gate.outputs.enabled == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        if: steps.gate.outputs.enabled == 'true'
+        run: npm ci
+
+      - name: Install Playwright browsers
+        if: steps.gate.outputs.enabled == 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Run deployed API checks
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ secrets.PLAYWRIGHT_DEPLOYMENT_URL }}
+        run: npm run test:e2e:deployed
+
+      - name: Upload Playwright report
+        if: steps.gate.outputs.enabled == 'true' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-deployed-ci
+          path: playwright-report/
+          retention-days: 7
+
   deploy:
     name: Deploy to GitHub Pages
     needs: [ci, e2e_smoke, route_smoke, a11y]

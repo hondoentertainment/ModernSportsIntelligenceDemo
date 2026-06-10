@@ -42,6 +42,7 @@
     "deploy:infra:dry": "node scripts/deploy-production.mjs --dry-run",
     "verify:rls": "node scripts/rls-verify.mjs",
     "guardrail:pricing-truth": "node scripts/check-pricing-truth-guardrail.mjs",
+    "check:prod-env": "node scripts/check-production-env.mjs",
     "ci:bundle": "node scripts/ci-bundle-gate.cjs",
     "joe": "tsx scripts/orchestrator.ts",
     "joe:batch": "tsx scripts/batch-builder.ts",

@@ -302,9 +302,22 @@ export function getStorageStats(): OfflineStorageStats {
   let newest: number | null = null;
 
   // Full-origin estimate (includes keys outside MSI/syncStore).
+  // User-owned MSI/cardx keys are read via syncStore when possible.
   if (typeof localStorage !== 'undefined') {
     for (const key of listLocalStorageKeysWithPrefix('')) {
-      const val = localStorage.getItem(key) || '';
+      let val = '';
+      if (key.startsWith('msi_') || key.startsWith('cardx_')) {
+        try {
+          if (store.has(key)) {
+            val = JSON.stringify(store.get(key, null));
+          }
+        } catch {
+          val = '';
+        }
+      }
+      if (!val) {
+        val = localStorage.getItem(key) || '';
+      }
       usedBytes += key.length * 2 + val.length * 2;
     }
   }

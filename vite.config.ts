@@ -20,8 +20,10 @@ function assertTelemetryConfigured(command: string, mode: string): void {
   if (required) {
     throw new Error(`${msg} (VITE_REQUIRE_TELEMETRY is set, so this is a hard failure.)`);
   }
-   
-  console.warn(`[vite] WARNING: ${msg} Set VITE_REQUIRE_TELEMETRY=true to enforce.`);
+  // Dev-only: warn on local production builds; CI already surfaces this via env validation.
+  if (!process.env.CI) {
+    console.warn(`[vite] WARNING: ${msg} Set VITE_REQUIRE_TELEMETRY=true to enforce.`);
+  }
 }
 
 export default defineConfig(({ command, mode }) => {

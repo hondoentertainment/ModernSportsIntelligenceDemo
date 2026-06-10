@@ -18,6 +18,7 @@ import { CardInventory, TargetWatchlist } from '../types';
 import { isDemoMode } from './supabase';
 import * as supabaseData from './supabaseData';
 import { logger } from './logger';
+import { store } from './dal/syncStore';
 
 export const DAL_KEYS = {
   INVENTORY: 'cardx_inventory',
@@ -46,18 +47,17 @@ export interface IDataAccessLayer {
 
 function readLocal<T>(key: string): T | null {
   try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    return JSON.parse(raw) as T;
+    if (!store.has(key)) return null;
+    return store.get<T | null>(key, null);
   } catch (e) {
-    logger.warn(`[DAL] Failed to parse ${key}`, e);
+    logger.warn(`[DAL] Failed to read ${key}`, e);
     return null;
   }
 }
 
 function writeLocal(key: string, value: unknown): void {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    store.set(key, value);
   } catch (e) {
     logger.warn(`[DAL] Failed to write ${key}`, e);
   }
@@ -65,7 +65,7 @@ function writeLocal(key: string, value: unknown): void {
 
 function removeLocal(key: string): void {
   try {
-    localStorage.removeItem(key);
+    store.remove(key);
   } catch (e) {
     logger.warn(`[DAL] Failed to remove ${key}`, e);
   }

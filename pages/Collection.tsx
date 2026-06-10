@@ -19,7 +19,6 @@ import {
   Star,
   Share2,
   BriefcaseBusiness,
-  AlertTriangle,
 } from 'lucide-react';
 import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
 import { Link } from 'react-router-dom';
@@ -58,6 +57,8 @@ import {
 } from '../lib/utils/valuationProvenance';
 import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAlerts';
 import { showToast } from '../lib/utils/toast';
+import ValuationCoverageBanner from '../components/ValuationCoverageBanner';
+import PricingProvenanceNotice from '../components/PricingProvenanceNotice';
 
 type SortField = 'player' | 'value' | 'purchasePrice' | 'date' | 'roi' | 'league';
 type SortDir = 'asc' | 'desc';
@@ -142,7 +143,7 @@ const Collection: React.FC = () => {
   const [premiumCard, setPremiumCard] = useState<CardInventory | null>(null);
   const [consignmentCard, setConsignmentCard] = useState<CardInventory | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, isDemoMode } = useAuth();
   const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
@@ -381,19 +382,22 @@ const Collection: React.FC = () => {
           <p className="mt-2 text-amber-200/90">{lastSyncError}</p>
         </section>
       )}
+      {isDemoMode && (
+        <PricingProvenanceNotice
+          title="Demo repository — asset pricing is partially simulated"
+          detail="Seeded demo cards may lack comp-backed valuations until you refresh verifiable pricing or connect a production account."
+          badgeVariant="mock"
+          badgeLabel="Demo data"
+        />
+      )}
       {hasCoverageGap && (
-        <section className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-sm text-amber-100">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-2">
-              <AlertTriangle size={16} className="mt-0.5 shrink-0 text-amber-300" />
-              <div>
-                <p className="font-semibold">Pricing truth coverage is below SLA.</p>
-                <p className="mt-1 text-amber-200/90">
-                  Fresh verifiable valuations are at {freshVerifiedCoverage.coveragePct}% ({freshVerifiedCoverage.covered}/{freshVerifiedCoverage.total} active assets). Target is {FRESH_VERIFIABLE_COVERAGE_TARGET_PCT}%.
-                </p>
-              </div>
-            </div>
-            <div className="shrink-0 flex items-center gap-2">
+        <ValuationCoverageBanner
+          scope="inventory"
+          coveragePct={freshVerifiedCoverage.coveragePct}
+          covered={freshVerifiedCoverage.covered}
+          total={freshVerifiedCoverage.total}
+          actions={
+            <>
               <button
                 type="button"
                 onClick={handleRefreshVerifiablePricing}
@@ -408,9 +412,9 @@ const Collection: React.FC = () => {
               >
                 Sync Watchlist
               </Link>
-            </div>
-          </div>
-        </section>
+            </>
+          }
+        />
       )}
 
       {/* Header Section */}

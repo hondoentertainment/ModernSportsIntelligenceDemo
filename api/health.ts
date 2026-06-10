@@ -4,10 +4,19 @@
  * Future: if this route accepts query params, validate them with Zod (e.g. z.object({}).strict()).
  */
 
+import {
+  isServerApiAuthDisabledInProduction,
+  isServerApiAuthOperational,
+} from './lib/verifyServerApiAuth.js';
+
 export interface HealthResponse {
   ok: boolean;
   service: string;
   timestamp: string;
+  config?: {
+    serverApiAuth: boolean;
+    authDisabledInProd?: boolean;
+  };
 }
 
 export default async function handler(req: { method?: string }, res: { setHeader: (k: string, v: string) => void; status: (n: number) => { json: (o: object) => unknown }; end?: () => void }) {
@@ -21,6 +30,10 @@ export default async function handler(req: { method?: string }, res: { setHeader
     ok: true,
     service: 'msi',
     timestamp: new Date().toISOString(),
+    config: {
+      serverApiAuth: isServerApiAuthOperational(),
+      ...(isServerApiAuthDisabledInProduction() ? { authDisabledInProd: true } : {}),
+    },
   };
   return res.status(200).json(body);
 }
