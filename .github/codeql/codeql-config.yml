@@ -1,0 +1,14 @@
+# CodeQL configuration — referenced by .github/workflows/codeql.yml.
+# Keep the suite identical to the workflow default (security-and-quality).
+name: 'msi-codeql-config'
+
+queries:
+  - uses: security-and-quality
+
+# Code-generation templates with {{PLACEHOLDER}} mustache-style tokens — the
+# orchestrator (scripts/orchestrator.ts) replaces these before writing the
+# generated file. The raw template isn't valid TSX so the JavaScript
+# extractor logs 150+ parse warnings on every run; skip it to keep the
+# diagnostic surface clean.
+paths-ignore:
+  - 'scripts/templates'
