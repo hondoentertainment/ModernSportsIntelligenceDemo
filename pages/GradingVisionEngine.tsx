@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import BetaFeatureBanner from '../components/BetaFeatureBanner';
 import {
   Camera, Upload, ScanLine, Eye, Shield, DollarSign, BarChart3, History,
   ChevronRight, AlertTriangle, CheckCircle, XCircle, Zap, Target,
@@ -1072,6 +1073,11 @@ const GradingVisionEngine: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        <BetaFeatureBanner
+          featureName="AI Vision Grading Lab"
+          dataSourceLabel="Computer-vision estimates only (not PSA/BGS/SGC certification)"
+          disclaimer="Upload images are analyzed locally/in-app; grades are probability estimates."
+        />
         {/* Page Header */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -1086,9 +1092,6 @@ const GradingVisionEngine: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 rounded-full">
-              Beta · AI estimate
-            </span>
             <button
               onClick={() => setShowHistory(!showHistory)}
               className="flex items-center gap-2 px-3 py-2 bg-slate-800 border border-slate-700 hover:border-slate-600 text-slate-300 text-sm rounded-lg transition-colors"
@@ -1097,15 +1100,6 @@ const GradingVisionEngine: React.FC = () => {
               History ({history.length})
             </button>
           </div>
-        </div>
-
-        {/* Estimate disclaimer — always visible */}
-        <div className="flex items-start gap-2 px-4 py-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-200">
-          <AlertTriangle size={14} className="mt-0.5 shrink-0" />
-          <p className="text-xs leading-snug">
-            Grades, subgrades, and ROI projections shown here are <strong>AI-generated estimates</strong>, not official PSA, BGS, or SGC grades.
-            This lab does not certify cards or guarantee outcomes from any third-party grading service.
-          </p>
         </div>
 
         {/* Workflow Step Indicator */}

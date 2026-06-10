@@ -93,3 +93,19 @@ The current codebase does not use Supabase Storage in TypeScript. If you add buc
 - [`docs/OPS_RUNBOOK.md`](./OPS_RUNBOOK.md) — deploy checklist including RLS
 - [`docs/SUPABASE_TYPES.md`](./SUPABASE_TYPES.md) — generated types
 - [`PRODUCTION_READINESS.md`](../PRODUCTION_READINESS.md) — Phase 1.2 Auth/RLS
+
+## Automated verification
+
+Two layers exist on top of the manual SQL in [`scripts/rls-verify-queries.sql`](../scripts/rls-verify-queries.sql):
+
+1. **Local CLI**: `npm run test:rls` (powered by `scripts/run-rls-checks.mjs`).
+   - Requires `SUPABASE_DB_URL` (full Postgres connection string from Supabase project settings → Database → Connection string).
+   - Requires the optional `pg` dev dep: `npm i -D pg`.
+   - Without those, the script exits `0` with a `[rls-check] SKIP` message so it stays CI-safe.
+
+2. **GitHub Actions** ([`.github/workflows/rls-policy.yml`](../.github/workflows/rls-policy.yml)): runs daily on schedule and on demand via `workflow_dispatch` when the repo variable `ENABLE_RLS_POLICY_CHECK=true` is set and the secret `SUPABASE_DB_URL` is configured.
+
+Both layers enforce:
+
+- Zero tables in the `public` schema with `relrowsecurity=false`.
+- At least `RLS_MIN_POLICIES` (default `4`) row-level policies present across `public.*`.

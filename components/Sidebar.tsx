@@ -1,20 +1,40 @@
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import { NAV_ITEMS } from '../constants.tsx';
 import { PRIMARY_NAV_IDS } from '../lib/utils/productSurface';
 import { useAlerts } from '../lib/utils/useAlerts.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import { calculateAlphaScore } from '../lib/analytics/analytics.ts';
 
 interface SidebarProps {
   isOpen: boolean;
   toggle: () => void;
 }
 
+interface HealthBucket {
+  label: string;
+  bar: string;
+  text: string;
+}
+
+function getHealthBucket(score: number): HealthBucket {
+  if (score >= 80) return { label: 'Strong', bar: 'bg-brand-lime', text: 'text-brand-lime' };
+  if (score >= 60) return { label: 'Good', bar: 'bg-brand-lime', text: 'text-brand-lime' };
+  if (score >= 40) return { label: 'Watch', bar: 'bg-amber-400', text: 'text-amber-400' };
+  return { label: 'At Risk', bar: 'bg-brand-red', text: 'text-brand-red' };
+}
+
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
   const location = useLocation();
   const { unreadCount } = useAlerts();
+  const { inventory } = useSupabaseInventory();
   const primaryNavItems = NAV_ITEMS.filter(item => PRIMARY_NAV_IDS.includes(item.id as typeof PRIMARY_NAV_IDS[number]));
+
+  const healthScore = useMemo(() => calculateAlphaScore(inventory), [inventory]);
+  const healthBucket = useMemo(() => getHealthBucket(healthScore), [healthScore]);
+  const showHealthPanel = inventory.length > 0;
 
   return (
     <>
@@ -72,18 +92,23 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
           })}
         </nav>
 
-        <div className="p-6">
-          <div className={`p-5 rounded-2xl bg-brand-slate border border-slate-800 transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 overflow-hidden'}`}>
-            <p className="text-[10px] text-brand-muted font-black uppercase mb-3 tracking-widest">Portfolio Health</p>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold">Good</span>
-              <span className="text-brand-lime text-xs font-bold">78%</span>
-            </div>
-            <div className="h-1 bg-brand-charcoal rounded-full overflow-hidden">
-              <div className="h-full bg-brand-lime w-[78%]"></div>
+        {showHealthPanel && (
+          <div className="p-6">
+            <div className={`p-5 rounded-2xl bg-brand-slate border border-slate-800 transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 overflow-hidden'}`}>
+              <p className="text-[10px] text-brand-muted font-black uppercase mb-3 tracking-widest">Portfolio Health</p>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-bold">{healthBucket.label}</span>
+                <span className={`${healthBucket.text} text-xs font-bold`}>{healthScore}%</span>
+              </div>
+              <div className="h-1 bg-brand-charcoal rounded-full overflow-hidden">
+                <div
+                  className={`h-full ${healthBucket.bar}`}
+                  style={{ width: `${healthScore}%` }}
+                ></div>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </aside>
     </>
   );

@@ -32,7 +32,9 @@ const VenueHealthOracleModal: React.FC<Props> = ({ isOpen, onClose }) => {
   }, [venues]);
 
   const avgScore = useMemo(() => {
-    return Math.round(venues.reduce((sum, v) => sum + v.overallScore, 0) / venues.length);
+    return venues.length === 0
+      ? 0
+      : Math.round(venues.reduce((sum, v) => sum + v.overallScore, 0) / venues.length);
   }, [venues]);
 
   if (!isOpen) return null;

@@ -427,17 +427,23 @@ export function getNFTLinks(passportId?: string): NFTLink[] {
   return passportId ? links.filter(l => l.passportId === passportId) : links;
 }
 
-export function getNetworkStats(): { network: BlockchainNetwork; transactions: number; avgSpeed: string; avgCost: number; passports: number }[] {
+export function getNetworkStats(): { network: BlockchainNetwork; transactions: number; avgSpeed: string; avgCost: number; passports: number; verifications: number }[] {
   const passports = getCardPassports();
   const txs = getTransactionHistory();
+  const verifications = getRecentVerifications();
+  const totalPassports = passports.length || 1;
   const networks: BlockchainNetwork[] = ['ethereum', 'polygon', 'solana', 'cardano', 'immutable_x', 'flow'];
-  return networks.map(n => ({
-    network: n,
-    transactions: txs.filter(t => t.network === n).length,
-    avgSpeed: n === 'ethereum' ? '12s' : n === 'polygon' ? '2s' : n === 'solana' ? '0.4s' : n === 'cardano' ? '20s' : n === 'immutable_x' ? '1s' : '2.5s',
-    avgCost: n === 'ethereum' ? 25.50 : n === 'polygon' ? 0.08 : n === 'solana' ? 0.002 : n === 'cardano' ? 0.20 : n === 'immutable_x' ? 0 : 0.01,
-    passports: passports.filter(p => p.network === n).length,
-  }));
+  return networks.map(n => {
+    const networkPassports = passports.filter(p => p.network === n).length;
+    return {
+      network: n,
+      transactions: txs.filter(t => t.network === n).length,
+      avgSpeed: n === 'ethereum' ? '12s' : n === 'polygon' ? '2s' : n === 'solana' ? '0.4s' : n === 'cardano' ? '20s' : n === 'immutable_x' ? '1s' : '2.5s',
+      avgCost: n === 'ethereum' ? 25.50 : n === 'polygon' ? 0.08 : n === 'solana' ? 0.002 : n === 'cardano' ? 0.20 : n === 'immutable_x' ? 0 : 0.01,
+      passports: networkPassports,
+      verifications: Math.round(verifications.length * (networkPassports / totalPassports)),
+    };
+  });
 }
 
 export function getRecentVerifications(limit?: number): VerificationResult[] {

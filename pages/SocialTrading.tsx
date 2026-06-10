@@ -234,7 +234,7 @@ const SocialTrading: React.FC = () => {
                       pick.type === 'sell' ? 'bg-red-500/20 text-red-400' :
                       'bg-amber-500/20 text-amber-400'
                     }`}>
-                      {pick.type.toUpperCase()}
+                      {(pick.category ?? 'hold').toUpperCase()}
                     </span>
                   </div>
                   <span className="text-[10px] text-slate-500">{formatTimeAgo(pick.timestamp)}</span>
@@ -443,7 +443,7 @@ const SocialTrading: React.FC = () => {
                   item.consensus === 'bearish' ? 'bg-red-500/20 text-red-400' :
                   'bg-amber-500/20 text-amber-400'
                 }`}>
-                  {item.consensus.toUpperCase()}
+                  {(item.consensus ?? 'neutral').toUpperCase()}
                 </span>
               </div>
               <div className="space-y-1 text-[10px] text-slate-500">

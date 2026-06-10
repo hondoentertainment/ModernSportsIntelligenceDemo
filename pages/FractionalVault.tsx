@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import BetaFeatureBanner from '../components/BetaFeatureBanner';
 import {
   Landmark, TrendingUp, TrendingDown, Users, Vote, DollarSign,
   BarChart3, ShieldCheck, Gavel, ArrowUpRight, ArrowDownRight,
-  Clock, CheckCircle, XCircle, AlertTriangle, Layers, PieChart as PieIcon,
+  Clock, CheckCircle, XCircle, Layers, PieChart as PieIcon,
   ExternalLink, Lock, Unlock, Activity, Award,
 } from 'lucide-react';
 import {
@@ -103,6 +104,12 @@ const FractionalVault: React.FC = () => {
       const dt = new Date(d.distributionDate);
       return { date: `${dt.getMonth() + 1}/${dt.getDate()}`, amount: d.totalAmount, cumulative: +cumulative.toFixed(2), source: d.source };
     });
+  }, [dividends]);
+
+  const dividendsSourceBreakdown = useMemo(() => {
+    const map: Record<string, number> = {};
+    dividends.forEach((d) => { map[d.source] = (map[d.source] || 0) + d.totalAmount; });
+    return Object.entries(map).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value: +value.toFixed(2) }));
   }, [dividends]);
 
   const selectedVaultOrders = useMemo(() => {
@@ -470,12 +477,7 @@ const FractionalVault: React.FC = () => {
   // TAB: Dividends
   // ====================================================================
   const renderDividends = () => {
-    const sourceBreakdown = (() => {
-      const map: Record<string, number> = {};
-      dividends.forEach((d) => { map[d.source] = (map[d.source] || 0) + d.totalAmount; });
-      return Object.entries(map).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value: +value.toFixed(2) }));
-    })();
-
+    const sourceBreakdown = dividendsSourceBreakdown;
     const totalDistributed = dividends.reduce((s, d) => s + d.totalAmount, 0);
 
     return (
@@ -773,32 +775,22 @@ const FractionalVault: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <BetaFeatureBanner
+        featureName="Fractional Vault & Copy-Trading"
+        dataSourceLabel="Simulated vault shares and governance (no securities offering or live execution)"
+        disclaimer="Fractional ownership shown here is a product demo only — not an investment product."
+      />
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-purple-500/20">
-            <Landmark size={24} className="text-purple-400" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-slate-100">Fractional Ownership Vault</h1>
-            <p className="text-sm text-slate-400">
-              Prototype: tokenized ownership concept with governance, dividends, and secondary-market trading rendered against simulated data.
-            </p>
-          </div>
+      <div className="flex items-center gap-3">
+        <div className="p-2.5 rounded-xl bg-purple-500/20">
+          <Landmark size={24} className="text-purple-400" />
         </div>
-        <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30 rounded-full">
-          Beta · Simulation only
-        </span>
-      </div>
-
-      {/* Simulation / securities disclaimer */}
-      <div className="flex items-start gap-2 px-4 py-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-200">
-        <AlertTriangle size={14} className="mt-0.5 shrink-0" />
-        <p className="text-xs leading-snug">
-          All vault inventory, shares, dividends, governance votes, and secondary-market activity shown here are <strong>simulated</strong>.
-          Nothing on this page constitutes an offer or sale of a security, fund interest, or any other financial instrument.
-          Live execution rails and a regulatory review are prerequisites before any of this becomes real.
-        </p>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-100">Fractional Ownership Vault</h1>
+          <p className="text-sm text-slate-400">
+            Prototype: tokenized ownership concept with governance, dividends, and secondary-market trading rendered against simulated data.
+          </p>
+        </div>
       </div>
 
       {/* Tabs */}

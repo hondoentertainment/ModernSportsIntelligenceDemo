@@ -37,10 +37,11 @@ Ordered checklist to take the full app from demo-grade to production-grade. Comp
 
 ## Phase E — Testing against real deployments
 
-| Step | Action                                                                                                                              |
-| ---- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| E1   | `PLAYWRIGHT_BASE_URL=https://<your-prod-or-preview>.vercel.app npm run test:e2e:deployed`                                           |
-| E2   | Set repo secret `PLAYWRIGHT_DEPLOYMENT_URL` — enables `.github/workflows/deployed-e2e.yml` (runs after every merge to main + daily) |
+| Step | Action                                                                                                                             |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| E1   | `PLAYWRIGHT_BASE_URL=https://<your-prod-or-preview>.vercel.app npm run test:e2e:deployed`                                          |
+| E2   | `npm run build && npx vite preview --port 4173` then `SMOKE_BASE_URL=http://127.0.0.1:4173 npm run test:smoke:routes` (223 routes) |
+| E3   | Set secret `PLAYWRIGHT_DEPLOYMENT_URL` — `.github/workflows/deployed-e2e.yml` runs after CI on `main` + daily                      |
 
 ## Phase F — Performance & UX
 

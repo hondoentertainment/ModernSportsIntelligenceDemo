@@ -5,6 +5,9 @@
  */
 
 import { CardInventory } from '../../types';
+import { isFeatureEnabled } from '../featureFlags';
+import { ebayAdapter } from '../integrations/ebayAdapter';
+import { logger } from '../logger';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -450,4 +453,62 @@ export function getSupportResistance(data: PriceDataPoint[]): SupportResistance 
     support: Math.round(sorted[supportIdx] * 100) / 100,
     resistance: Math.round(sorted[resistIdx] * 100) / 100,
   };
+}
+
+/**
+ * Build price history from eBay completed sales when USE_REAL_EBAY is enabled.
+ */
+function priceHistoryFromEbaySales(
+  card: CardInventory,
+  range: ChartTimeRange,
+  sales: Array<{ price: number; date: string }>,
+): PriceDataPoint[] {
+  const cutoffDays = daysForRange(range);
+  const cutoff = Date.now() - cutoffDays * 86400000;
+
+  const filtered = sales
+    .filter((s) => new Date(s.date).getTime() >= cutoff)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  if (filtered.length === 0) return [];
+
+  return filtered.map((sale) => ({
+    date: sale.date.split('T')[0],
+    price: sale.price,
+    volume: 1,
+    high: sale.price,
+    low: sale.price,
+    source: 'market' as const,
+  }));
+}
+
+/**
+ * Primary entry: real eBay comps when flagged, otherwise deterministic simulation.
+ */
+export async function getPriceHistory(
+  card: CardInventory,
+  range: ChartTimeRange,
+): Promise<PriceDataPoint[]> {
+  if (isFeatureEnabled('USE_REAL_EBAY')) {
+    try {
+      const market = await ebayAdapter.getMarketData({
+        playerName: card.player,
+        cardYear: card.year ? String(card.year) : undefined,
+        cardSet: card.set,
+        cardNumber: card.cardNumber,
+        grade: card.isGraded ? card.grade : undefined,
+        soldOnly: true,
+        daysBack: daysForRange(range),
+      });
+
+      const fromSales = priceHistoryFromEbaySales(card, range, market.recentSales);
+      if (fromSales.length >= 3) {
+        return fromSales;
+      }
+    } catch (err) {
+      logger.warn('[priceChart] Real eBay comps unavailable, using simulated history', err);
+    }
+  }
+
+  return generatePriceHistory(card, range);
 }

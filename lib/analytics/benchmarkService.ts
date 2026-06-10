@@ -572,7 +572,7 @@ export function evaluateChallengeProgress(
 
   // Compute progress for each challenge based on inventory analysis
   const progressResults: ChallengeProgress[] = challenges.map(challenge => {
-    let current = 0;
+    let current: number;
 
     // Match challenge by title to determine how to evaluate
     if (challenge.title === 'Profit Taker') {

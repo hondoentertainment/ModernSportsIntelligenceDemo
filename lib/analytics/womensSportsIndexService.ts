@@ -186,6 +186,7 @@ export function getSportConfig(sport: WomensSport): { label: string; text: strin
     case 'volleyball': return { label: 'Volleyball', text: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' };
     case 'softball': return { label: 'Softball', text: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' };
     case 'hockey': return { label: 'Hockey', text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' };
+    default: return { label: sport, text: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/30' };
   }
 }
 

@@ -384,7 +384,7 @@ export function generateForensicReport(cardId: string): ForensicReport {
   if (outliers.some(o => o.outlier_reason === 'shill_bid')) riskFactors.push('Shill bidding detected on this card. Exercise caution with auction prices.');
   if (analysis.trend_direction === 'down') riskFactors.push(`Declining trend: ${Math.abs(analysis.trend_percent)}% decrease in recent comps`);
 
-  let recommendation = '';
+  let recommendation: string;
   if (analysis.fmv_confidence >= 90) {
     recommendation = `Strong confidence in FMV of ${formatCurrency(analysis.fair_market_value)}. Buy below ${formatCurrency(analysis.confidence_interval[0])} for value. Sell above ${formatCurrency(analysis.confidence_interval[1])} for premium.`;
   } else if (analysis.fmv_confidence >= 75) {

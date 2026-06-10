@@ -1,5 +1,5 @@
 import { CardInventory, Sport } from '../../types';
-import { supabase } from '../supabase';
+import { supabase, isDemoMode } from '../supabase';
 import { store } from '../dal/syncStore';
 
 // ---- Types ----
@@ -747,6 +747,10 @@ const MOCK_USERS: UserProfile[] = [
 ];
 
 export async function fetchPublicProfile(username: string): Promise<UserProfile | null> {
+  if (isDemoMode) {
+    return MOCK_USERS.find((profile) => profile.username === username) ?? MOCK_USERS[0] ?? null;
+  }
+
   const { data, error } = await supabase
         .from('public_profiles_public')
         .select('*')
@@ -771,6 +775,14 @@ export async function fetchPublicProfile(username: string): Promise<UserProfile 
 }
 
 export async function fetchPublicInventory(userId: string): Promise<CardInventory[]> {
+    if (isDemoMode) {
+        return MOCK_CARDS.slice(0, 12).map((card, index) => ({
+            ...card,
+            id: `${userId}-demo-${index}`,
+            status: 'active' as const,
+        }));
+    }
+
     const { data, error } = await supabase
         .from('public_cards_public')
         .select('*')
@@ -812,6 +824,17 @@ export async function fetchPublicInventory(userId: string): Promise<CardInventor
 }
 
 export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
+    if (isDemoMode) {
+        return [...MOCK_USERS]
+            .sort((a, b) => b.alphaScore - a.alphaScore)
+            .map((user, index) => ({
+                rank: index + 1,
+                user,
+                alphaScore: user.alphaScore,
+                change24h: 0,
+            }));
+    }
+
     const { data, error } = await supabase
         .from('profiles')
         .select('*')

@@ -1,10 +1,11 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   ScrollText, Shield, AlertTriangle, CheckCircle, XCircle,
   Lock, FileText, Database, RefreshCw,
 } from 'lucide-react';
 import {
   getAuditEvents,
+  getRemoteAuditEvents,
   getComplianceRules,
   getComplianceReports,
   getRetentionPolicies,
@@ -12,14 +13,35 @@ import {
   getSeverityColor,
   getCategoryColor,
   getComplianceStatusColor,
+  type AuditEvent,
 } from '../lib/utils/auditTrailService';
+import { useAuth } from '../contexts/AuthContext';
 
 const AuditTrail: React.FC = () => {
+  const { user } = useAuth();
   const [eventsRefresh, setEventsRefresh] = useState(0);
   const reloadEvents = useCallback(() => setEventsRefresh((n) => n + 1), []);
 
-  const events = useMemo(() => getAuditEvents(), [eventsRefresh]);
+  const [events, setEvents] = useState<AuditEvent[]>(() => getAuditEvents());
   const recordedCount = useMemo(() => events.filter((e) => e.source === 'recorded').length, [events]);
+
+  useEffect(() => {
+    let ignore = false;
+    async function load() {
+      const local = getAuditEvents();
+      if (!user?.id) {
+        if (!ignore) setEvents(local);
+        return;
+      }
+      const remote = await getRemoteAuditEvents(user.id);
+      if (!ignore) setEvents([...remote, ...local]);
+    }
+    void load();
+    return () => {
+      ignore = true;
+    };
+  }, [user?.id, eventsRefresh]);
+
   const rules = useMemo(() => getComplianceRules(), []);
   const compReports = useMemo(() => getComplianceReports(), []);
   const retention = useMemo(() => getRetentionPolicies(), []);
@@ -42,7 +64,10 @@ const AuditTrail: React.FC = () => {
               </p>
               <p className="text-slate-500 text-xs mt-1">
                 {recordedCount > 0 ? (
-                  <>{recordedCount} recorded event{recordedCount === 1 ? '' : 's'} · </>
+                  <>
+                    {recordedCount} {user?.id ? 'Remote event' : 'recorded event'}
+                    {recordedCount === 1 ? '' : 's'} ·{' '}
+                  </>
                 ) : (
                   <>No recorded events yet — use the app to generate audit entries · </>
                 )}

@@ -1,0 +1,37 @@
+import { describe, it, expect } from 'vitest';
+import {
+  getBetaFeatureExitStatuses,
+  getBetaFeaturesReadyForLive,
+  getBetaFeatureExitStatus,
+} from '../../lib/betaFeatureExit';
+
+describe('betaFeatureExit', () => {
+  it('tracks all six beta catalog features', () => {
+    expect(getBetaFeatureExitStatuses()).toHaveLength(6);
+  });
+
+  it('requires every gate before readyForLive', () => {
+    for (const feature of getBetaFeatureExitStatuses()) {
+      const allPass = Object.values(feature.gates).every(Boolean);
+      expect(feature.readyForLive).toBe(allPass);
+      if (!allPass) {
+        expect(feature.blockers.length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('visual-audit and live-impact meet exit criteria with demo labeling', () => {
+    expect(getBetaFeatureExitStatus('visual-audit')?.readyForLive).toBe(true);
+    expect(getBetaFeatureExitStatus('live-impact')?.readyForLive).toBe(true);
+  });
+
+  it('liquidity-pool remains blocked without a shipped surface', () => {
+    expect(getBetaFeatureExitStatus('liquidity-pool')?.readyForLive).toBe(false);
+  });
+
+  it('getBetaFeaturesReadyForLive returns promotable subset', () => {
+    const ready = getBetaFeaturesReadyForLive();
+    expect(ready.map((f) => f.id)).toContain('visual-audit');
+    expect(ready.map((f) => f.id)).toContain('live-impact');
+  });
+});

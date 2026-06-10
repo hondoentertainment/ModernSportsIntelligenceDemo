@@ -1439,7 +1439,7 @@ export function getConsensusSummary(): ConsensusSummary {
   const sentimentScores = prices.map(p => p.sentimentScore);
   const avgSentiment = sentimentScores.reduce((s, v) => s + v, 0) / sentimentScores.length;
 
-  let trendingSentiment: SentimentLevel = 'neutral';
+  let trendingSentiment: SentimentLevel;
   if (avgSentiment >= 75) trendingSentiment = 'very_bullish';
   else if (avgSentiment >= 60) trendingSentiment = 'bullish';
   else if (avgSentiment >= 40) trendingSentiment = 'neutral';

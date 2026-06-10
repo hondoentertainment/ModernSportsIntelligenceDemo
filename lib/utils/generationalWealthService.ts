@@ -927,7 +927,7 @@ export function compareStructures(trustAId: string, trustBId: string): TrustComp
   if (trustA.assetProtection && !trustB.assetProtection) protectionDiff = `${trustA.name} offers superior asset protection`;
   else if (!trustA.assetProtection && trustB.assetProtection) protectionDiff = `${trustB.name} offers superior asset protection`;
 
-  let recommendation = '';
+  let recommendation: string;
   if (taxSavingsDiff > 50000) recommendation = `${trustB.name} saves significantly more in taxes, despite higher costs.`;
   else if (taxSavingsDiff < -50000) recommendation = `${trustA.name} saves significantly more in taxes.`;
   else recommendation = `Both structures offer comparable tax benefits. Choose based on control preference and asset protection needs.`;

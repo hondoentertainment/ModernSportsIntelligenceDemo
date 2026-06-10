@@ -41,21 +41,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Format check
-        run: npm run format:check
-
-      - name: Run tests with coverage
+      - name: Test (with coverage)
         run: npm run test:coverage
-
-      - name: Pricing truth guardrail
-        run: npm run guardrail:pricing-truth
-
-      - name: DAL gate (no localStorage bypass)
-        run: npm run audit:localstorage
-
-      - name: Dependency audit (high severity)
-        run: npm audit --audit-level=high
-        continue-on-error: true
 
       - name: Upload coverage report
         if: always()
@@ -64,6 +51,18 @@ jobs:
           name: coverage-report
           path: coverage/
           retention-days: 14
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Pricing truth guardrail
+        run: npm run guardrail:pricing-truth
+
+      - name: DAL gate (no localStorage bypass)
+        run: npm run audit:localstorage
+
+      - name: Dependency audit (high severity, blocking)
+        run: npm audit --audit-level=high
 
       - name: Build
         run: npm run build
@@ -112,13 +111,130 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
-  # Deployed E2E (tests against a real Vercel deployment) runs in its own
-  # workflow — .github/workflows/deployed-e2e.yml — after every merge to
-  # main, on a daily schedule, and on demand.
+  route_smoke:
+    name: All Routes Smoke
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Start preview server
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 &
+          echo $! > preview.pid
+          for i in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:4173/ > /dev/null; then
+              echo "Preview ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Preview failed to start"
+          exit 1
+
+      - name: Smoke all catalog routes
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:4173
+        run: npm run test:smoke:routes
+
+      - name: Upload route smoke report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-all-tabs-report
+          path: smoke-all-tabs-report.json
+          retention-days: 7
+
+      - name: Stop preview server
+        if: always()
+        run: kill $(cat preview.pid) 2>/dev/null || true
+
+  a11y:
+    name: Accessibility (axe smoke)
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run accessibility smoke tests
+        run: npm run test:a11y
+
+      - name: Upload Playwright report (a11y)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-a11y
+          path: playwright-report/
+          retention-days: 7
+
+  visual:
+    name: Visual Regression (non-blocking)
+    needs: ci
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run visual regression tests
+        run: npm run test:visual
+
+      - name: Upload Playwright report (visual)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-visual
+          path: playwright-report/
+          retention-days: 7
 
   deploy:
     name: Deploy to GitHub Pages
-    needs: [ci, e2e_smoke]
+    needs: [ci, e2e_smoke, route_smoke, a11y]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ENABLE_GITHUB_PAGES == 'true'
     runs-on: ubuntu-latest
     steps:

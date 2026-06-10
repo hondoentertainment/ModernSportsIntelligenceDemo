@@ -32,7 +32,6 @@ interface PsaCertResponse {
     Variety: string;
     TotalPopulation: number;
     TotalPopulationHigher: number;
-    // Extended fields present in some certs
     LabelType?: string;
   };
 }
@@ -80,7 +79,6 @@ Deno.serve(async (req) => {
   }
 
   const certNumber = normalizeCertNumber(rawCert);
-
   const psaUrl = `${PSA_API_BASE}/cert/GetByCertNumber/${certNumber}`;
 
   let psaRes: Response;
@@ -128,7 +126,6 @@ Deno.serve(async (req) => {
 
   const cert = data.PSACert;
 
-  // Normalise the PSA response into our VerificationResult shape
   const result = {
     certNumber,
     company: 'PSA',

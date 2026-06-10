@@ -513,7 +513,6 @@ export function runBacktest(strategyId: string, cardId: string, params?: { [key:
     if (buyTrade && lastPrice > buyTrade.price) wins++;
     totalTrades++;
     cash += lastPrice * holdings;
-    holdings = 0;
   }
 
   const finalValue = cash;

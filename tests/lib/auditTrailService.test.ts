@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as auditLog from '../../lib/utils/auditLog';
-import { getAuditEvents, mapStoredRecordToAuditEvent } from '../../lib/utils/auditTrailService';
+import * as auditTrailRemote from '../../lib/utils/auditTrailRemote';
+import {
+  getAuditEvents,
+  getRemoteAuditEvents,
+  mapStoredRecordToAuditEvent,
+} from '../../lib/utils/auditTrailService';
 
 describe('auditTrailService', () => {
   beforeEach(() => {
@@ -83,6 +88,33 @@ describe('auditTrailService', () => {
       const recorded = getAuditEvents().filter((e) => e.source === 'recorded');
       expect(recorded).toHaveLength(1);
       expect(recorded[0].action).toBe('ok');
+    });
+  });
+
+  describe('getRemoteAuditEvents', () => {
+    it('maps rows returned by fetchRemoteAuditEvents and tags them as recorded', async () => {
+      vi.spyOn(auditTrailRemote, 'fetchRemoteAuditEvents').mockResolvedValue([
+        {
+          user_id: 'user-1',
+          category: 'portfolio',
+          action: 'remote.fetch',
+          entity_type: 'card',
+          entity_id: 'c9',
+          metadata: { source: 'supabase' },
+          created_at: '2026-03-22T09:00:00.000Z',
+        },
+      ]);
+
+      const result = await getRemoteAuditEvents('user-1');
+      expect(result).toHaveLength(1);
+      expect(result[0].source).toBe('recorded');
+      expect(result[0].action).toBe('remote.fetch');
+    });
+
+    it('returns [] when fetchRemoteAuditEvents returns []', async () => {
+      vi.spyOn(auditTrailRemote, 'fetchRemoteAuditEvents').mockResolvedValue([]);
+      const result = await getRemoteAuditEvents(null);
+      expect(result).toEqual([]);
     });
   });
 });

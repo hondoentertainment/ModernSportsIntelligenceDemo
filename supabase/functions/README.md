@@ -12,11 +12,11 @@ Implements the contract in **[docs/SUPABASE_EDGE_FUNCTIONS.md](../../docs/SUPABA
 
 ## Secrets (Dashboard → Edge Functions → Secrets, or CLI)
 
-| Secret | Purpose |
-|--------|---------|
+| Secret              | Purpose                      |
+| ------------------- | ---------------------------- |
 | `STRIPE_SECRET_KEY` | Stripe secret (test or live) |
-| `SUPABASE_URL` | Usually injected by Supabase |
-| `SUPABASE_ANON_KEY` | Usually injected |
+| `SUPABASE_URL`      | Usually injected by Supabase |
+| `SUPABASE_ANON_KEY` | Usually injected             |
 
 ## Deploy
 
