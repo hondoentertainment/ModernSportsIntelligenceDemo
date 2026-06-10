@@ -90,4 +90,26 @@ describe('provenanceChainService — user-registered card persistence', () => {
     await _provenanceHydrationForTests();
     expect(getMyRegisteredCards().some((t) => t.playerName === 'Legacy')).toBe(true);
   });
+
+  it('drops a stale hydration if init is called again before it completes', async () => {
+    // Seed sealed data for user-a so its hydration is async (has a real
+    // unseal await inside hydrateFromSealed).
+    initProvenanceService('user-a');
+    await _provenanceHydrationForTests();
+    registerCard({ ...SAMPLE_INPUT, playerName: 'A only' }, []);
+    await waitForSeal('msi_provenance_registered_v1__user-a');
+
+    // Now simulate a fast user switch: kick off A's hydration, then
+    // immediately initialize user-b before A's await resolves.
+    initProvenanceService('user-a');
+    const aHydration = _provenanceHydrationForTests();
+    initProvenanceService('user-b');
+    await aHydration;
+    await _provenanceHydrationForTests();
+
+    // user-b's cache must not contain A's 'A only' entry — the stale
+    // hydration from A's generation must not stomp on B's cleared cache.
+    const bView = getMyRegisteredCards();
+    expect(bView.some((t) => t.playerName === 'A only')).toBe(false);
+  });
 });

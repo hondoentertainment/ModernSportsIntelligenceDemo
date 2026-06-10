@@ -29,11 +29,19 @@ const REGISTRY_KEY_BASE = 'msi_provenance_registered_v1';
 let _currentUserId: string | null = null;
 let _persistedCache: DigitalTwin[] = [];
 let _hydration: Promise<void> | null = null;
+// Monotonic generation counter — incremented on every init. Async tasks
+// (hydration unseal, write-back seal) capture their generation at start and
+// drop their results if the value changed under them, which signals
+// initProvenanceService was called again (e.g. user switch). Without this,
+// a slow unseal for user A can land after the cache has been cleared for
+// user B and leak A's registered cards into B's session.
+let _generation = 0;
 
 export function initProvenanceService(userId: string | null): void {
+  _generation += 1;
   _currentUserId = userId;
   _persistedCache = [];
-  _hydration = hydrateFromSealed();
+  _hydration = hydrateFromSealed(_generation);
 }
 
 /** Test/SSR hook — await this to know the in-memory cache is populated. */
@@ -47,29 +55,33 @@ function registryKey(): string {
     : `${REGISTRY_KEY_BASE}__guest`;
 }
 
-async function hydrateFromSealed(): Promise<void> {
+async function hydrateFromSealed(generation: number): Promise<void> {
   const raw = store.get<unknown>(registryKey(), null);
   if (raw == null) {
-    _persistedCache = [];
+    if (generation === _generation) _persistedCache = [];
     return;
   }
   // Migrate any pre-seal plaintext entries (from before this commit landed)
   // by re-sealing them next write. They round-trip through the cache here.
   if (Array.isArray(raw)) {
-    _persistedCache = raw as DigitalTwin[];
+    if (generation === _generation) _persistedCache = raw as DigitalTwin[];
     return;
   }
   if (sealedStorage.isSealed(raw)) {
     try {
       const decrypted = await sealedStorage.unseal<DigitalTwin[]>(raw);
+      // Re-check the generation AFTER the await — a user switch during the
+      // unseal would have bumped it; in that case we drop the result rather
+      // than leaking the previous user's data into the new session.
+      if (generation !== _generation) return;
       _persistedCache = decrypted ?? [];
     } catch (err) {
       logger.warn('[provenanceChain] sealed cache unseal failed', err);
-      _persistedCache = [];
+      if (generation === _generation) _persistedCache = [];
     }
     return;
   }
-  _persistedCache = [];
+  if (generation === _generation) _persistedCache = [];
 }
 
 function getPersistedRegisteredCards(): DigitalTwin[] {
@@ -80,11 +92,16 @@ function persistRegisteredCard(twin: DigitalTwin): void {
   _persistedCache = [twin, ..._persistedCache];
   const snapshot = _persistedCache;
   const key = registryKey();
+  const generation = _generation;
   // Fire-and-forget. A failed seal leaves the cache populated for this
-  // session; next reload will skip the unsealable value.
+  // session; next reload will skip the unsealable value. A user switch
+  // during the seal drops the write so we never persist user A's data
+  // under user B's key.
   sealedStorage
     .seal(snapshot)
-    .then((token) => store.set(key, token))
+    .then((token) => {
+      if (generation === _generation) store.set(key, token);
+    })
     .catch((err) => logger.warn('[provenanceChain] seal failed; entry kept in memory only', err));
 }
 
