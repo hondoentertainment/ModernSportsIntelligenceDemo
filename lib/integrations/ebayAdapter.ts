@@ -31,6 +31,10 @@ export interface EbayMarketData {
     isSold: boolean;
   }>;
   lastUpdated: string;
+  /** Where the numbers came from. Mock data must never be presented as live comps. */
+  source: 'live' | 'mock';
+  /** Set when the live API was requested but failed and mock data was substituted. */
+  degradedReason?: string;
 }
 
 export interface EbaySearchParams {
@@ -45,9 +49,25 @@ export interface EbaySearchParams {
   limit?: number;
 }
 
+/**
+ * Price trend from sale history: percent change between the average of the
+ * older half and the newer half of sales, sorted by date. Returns 0 when
+ * there are fewer than 4 sales (not enough signal to split).
+ */
+export function computeTrendPercent(sales: Array<{ price: number; date: string }>): number {
+  if (sales.length < 4) return 0;
+  const sorted = [...sales].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const mid = Math.floor(sorted.length / 2);
+  const avg = (xs: Array<{ price: number }>) => xs.reduce((s, x) => s + x.price, 0) / xs.length;
+  const older = avg(sorted.slice(0, mid));
+  const newer = avg(sorted.slice(mid));
+  if (older <= 0) return 0;
+  return Math.round(((newer - older) / older) * 100 * 100) / 100;
+}
+
 // ─── Mock Data ────────────────────────────────────────────────────
 
-function generateMockMarketData(params: EbaySearchParams): EbayMarketData {
+function generateMockMarketData(params: EbaySearchParams, degradedReason?: string): EbayMarketData {
   // Generate realistic mock data based on input
   const hash = (params.playerName + (params.cardYear || '')).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   const basePrice = 10 + (hash % 500);
@@ -74,6 +94,8 @@ function generateMockMarketData(params: EbaySearchParams): EbayMarketData {
     trendPercent: Math.round((Math.random() - 0.4) * 20 * 100) / 100,
     recentSales: sales,
     lastUpdated: new Date().toISOString(),
+    source: 'mock',
+    ...(degradedReason ? { degradedReason } : {}),
   };
 }
 
@@ -96,23 +118,28 @@ export const ebayAdapter = {
             daysBack: params.daysBack,
           });
 
+          const recentSales = result.recentSales.map(s => ({
+            ...s,
+            isSold: true,
+          }));
           return {
             averagePrice: result.averagePrice,
             medianPrice: result.medianPrice,
             lowPrice: result.priceRange.min,
             highPrice: result.priceRange.max,
             totalListings: result.totalListings,
-            soldListings: result.recentSales.length,
-            trendPercent: 0, // TODO: calculate from historical data
-            recentSales: result.recentSales.map(s => ({
-              ...s,
-              isSold: true,
-            })),
+            soldListings: recentSales.length,
+            trendPercent: computeTrendPercent(recentSales),
+            recentSales,
             lastUpdated: new Date().toISOString(),
+            source: 'live' as const,
           };
         } catch (err) {
           logger.warn('[eBay] Real API failed, falling back to mock', err);
-          return generateMockMarketData(params);
+          return generateMockMarketData(
+            params,
+            `Live eBay request failed: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
 

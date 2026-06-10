@@ -13,7 +13,15 @@ import { logger } from '../logger';
 
 export interface CertLookupResult {
   certNumber: string;
+  /**
+   * True only when PSA's records confirm the cert. With `source: 'mock'` this
+   * is simulated and must never be shown as real PSA verification.
+   */
   verified: boolean;
+  /** Where the result came from. Mock results must be labeled in the UI. */
+  source: 'live' | 'mock';
+  /** Set when the live API was requested but failed and mock data was substituted. */
+  degradedReason?: string;
   year?: string;
   brand?: string;
   set?: string;
@@ -42,11 +50,15 @@ export interface PopReportResult {
   grades: PopEntry[];
   totalGraded: number;
   lastUpdated: string;
+  /** Where the report came from. Mock results must be labeled in the UI. */
+  source: 'live' | 'mock';
+  /** Set when the live API was requested but failed and mock data was substituted. */
+  degradedReason?: string;
 }
 
 // ─── Mock Data ────────────────────────────────────────────────────
 
-function mockCertLookup(certNumber: string): CertLookupResult {
+function mockCertLookup(certNumber: string, degradedReason?: string): CertLookupResult {
   // Generate deterministic mock based on cert number
   const hash = certNumber.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
   const grades = ['10', '9.5', '9', '8.5', '8', '7.5', '7', '6'];
@@ -65,10 +77,12 @@ function mockCertLookup(certNumber: string): CertLookupResult {
     grade: grades[hash % grades.length],
     labelType: hash % 3 === 0 ? 'Gem Mint' : 'Standard',
     lookupDate: new Date().toISOString(),
+    source: 'mock',
+    ...(degradedReason ? { degradedReason } : {}),
   };
 }
 
-function mockPopReport(player: string, year: string, set: string): PopReportResult {
+function mockPopReport(player: string, year: string, set: string, degradedReason?: string): PopReportResult {
   return {
     year,
     brand: 'Topps',
@@ -89,6 +103,8 @@ function mockPopReport(player: string, year: string, set: string): PopReportResu
     ],
     totalGraded: 3812,
     lastUpdated: new Date().toISOString(),
+    source: 'mock',
+    ...(degradedReason ? { degradedReason } : {}),
   };
 }
 
@@ -124,10 +140,14 @@ export const psaAdapter = {
     return apiCache.getOrFetch(cacheKey, async () => {
       if (isFeatureEnabled('USE_REAL_PSA')) {
         try {
-          return await realCertLookup(certNumber);
+          const result = await realCertLookup(certNumber);
+          return { ...result, source: 'live' as const };
         } catch (err) {
           logger.warn('[PSA] Real API failed, falling back to mock', err);
-          return mockCertLookup(certNumber);
+          return mockCertLookup(
+            certNumber,
+            `Live PSA request failed: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
       return mockCertLookup(certNumber);
@@ -141,10 +161,14 @@ export const psaAdapter = {
     return apiCache.getOrFetch(cacheKey, async () => {
       if (isFeatureEnabled('USE_REAL_PSA')) {
         try {
-          return await realPopReport(player, year, set);
+          const result = await realPopReport(player, year, set);
+          return { ...result, source: 'live' as const };
         } catch (err) {
           logger.warn('[PSA] Pop report API failed, falling back to mock', err);
-          return mockPopReport(player, year, set);
+          return mockPopReport(
+            player, year, set,
+            `Live PSA request failed: ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
       }
       return mockPopReport(player, year, set);
