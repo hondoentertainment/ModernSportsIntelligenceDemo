@@ -4,9 +4,9 @@
  */
 
 import { z } from 'zod';
-import { apiLogger } from '../../lib/logger';
-import { respondInternalError, setApiCorsHeaders } from '../../lib/httpProduction';
-import { isServerApiAuthConfigured, verifyServerApiAuth } from '../../lib/verifyServerApiAuth';
+import { apiLogger } from '../../lib/logger.js';
+import { respondInternalError, setApiCorsHeaders } from '../../lib/httpProduction.js';
+import { isServerApiAuthConfigured, verifyServerApiAuth } from '../../lib/verifyServerApiAuth.js';
 
 const ALLOWED_METHODS = 'POST, OPTIONS';
 
@@ -102,34 +102,34 @@ async function lookupPsaCert(certNumber: string): Promise<object> {
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse): Promise<unknown> {
-  setApiCorsHeaders(res, { allowMethods: ALLOWED_METHODS });
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).json({});
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  if (!isServerApiAuthConfigured()) {
-    return res.status(503).json({ error: 'API auth not configured', code: 'api_auth_misconfigured' });
-  }
-
-  const authorized = await verifyServerApiAuth(req);
-  if (!authorized) {
-    return res.status(401).json({ error: 'Unauthorized', code: 'api_auth_required' });
-  }
-
-  const parsed = bodySchema.safeParse(req.body);
-  if (!parsed.success) {
-    return res.status(400).json({
-      error: 'Invalid request body',
-      issues: parsed.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message })),
-    });
-  }
-
   try {
+    setApiCorsHeaders(res, { allowMethods: ALLOWED_METHODS });
+
+    if (req.method === 'OPTIONS') {
+      return res.status(200).json({});
+    }
+
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    if (!isServerApiAuthConfigured()) {
+      return res.status(503).json({ error: 'API auth not configured', code: 'api_auth_misconfigured' });
+    }
+
+    const authorized = await verifyServerApiAuth(req);
+    if (!authorized) {
+      return res.status(401).json({ error: 'Unauthorized', code: 'api_auth_required' });
+    }
+
+    const parsed = bodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({
+        error: 'Invalid request body',
+        issues: parsed.error.issues.map((i) => ({ path: i.path.join('.'), message: i.message })),
+      });
+    }
+
     const result = await lookupPsaCert(parsed.data.certNumber);
     if ('code' in result && result.code === 'psa_not_configured') {
       return res.status(503).json(result);

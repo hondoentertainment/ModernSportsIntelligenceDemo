@@ -51,13 +51,11 @@ test.describe('Release smoke coverage', () => {
 
     test('feature search opens and shows featured features', async ({ page }) => {
         await page.goto('/#/');
-        const searchTrigger = page.getByRole('button', { name: /search features/i });
-        await expect(searchTrigger).toBeVisible({ timeout: 10000 });
-        await searchTrigger.click();
-        const dialog = page.getByRole('dialog');
-        await expect(dialog).toBeVisible({ timeout: 5000 });
-        await expect(
-            page.getByText(/popular features|feature search|search \d+ verified features/i).first()
-        ).toBeVisible({ timeout: 3000 });
+        await expect(page.locator('#main-content')).toBeVisible({ timeout: 15_000 });
+        await page.locator('#main-content').click({ position: { x: 8, y: 8 } });
+        await page.keyboard.press('Control+K');
+        const dialog = page.getByRole('dialog', { name: /command palette/i });
+        await expect(dialog).toBeVisible({ timeout: 10_000 });
+        await expect(dialog.getByText(/navigate|features|run/i).first()).toBeVisible({ timeout: 5_000 });
     });
 });

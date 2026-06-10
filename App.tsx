@@ -532,7 +532,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
           </Suspense>
         )}
 
-        <main id="main-content" className="flex-1 p-4 md:p-8 page-container overflow-y-auto pb-24 md:pb-8" role="main">
+        <main id="main-content" tabIndex={-1} className="flex-1 p-4 md:p-8 page-container overflow-y-auto pb-24 md:pb-8" role="main">
           <AutoTierGate>
           <LazyErrorBoundary key={location.pathname}>
             <Suspense fallback={<PageLoadingFallback />}>

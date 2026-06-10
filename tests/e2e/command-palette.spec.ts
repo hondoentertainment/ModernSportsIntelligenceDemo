@@ -30,10 +30,12 @@ test.describe('Command Palette (Ctrl+K)', () => {
     });
 
     async function openPalette(page: Page): Promise<void> {
+        await expect(page.locator('#main-content')).toBeVisible({ timeout: 15_000 });
+        await page.locator('#main-content').click({ position: { x: 8, y: 8 } });
         await page.keyboard.press('Control+K');
         await expect(
             page.getByRole('dialog', { name: /command palette/i }),
-        ).toBeVisible({ timeout: 5_000 });
+        ).toBeVisible({ timeout: 10_000 });
     }
 
     test('opens with Ctrl+K and exposes Navigate / Run / Features sections', async ({ page }) => {

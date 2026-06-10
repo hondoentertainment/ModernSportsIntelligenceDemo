@@ -15,6 +15,8 @@ export async function enterDemoMode(page: Page): Promise<void> {
     await page.evaluate(() => {
         localStorage.clear();
         sessionStorage.clear();
+        // Skip GuidedTour overlay (z-[250]) which intercepts clicks in E2E.
+        localStorage.setItem('msi-guided-tour-completed', JSON.stringify('true'));
     });
     await page.reload();
     await page.goto('/#/login');

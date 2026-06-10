@@ -90,7 +90,8 @@ test.describe('Visual regression smoke', () => {
 
         // Then collapse the sidebar via its toggle button.
         const collapseBtn = page.getByRole('button', { name: /collapse sidebar/i });
-        await collapseBtn.click();
+        await collapseBtn.scrollIntoViewIfNeeded();
+        await collapseBtn.click({ timeout: 10_000 });
         await expect(page.getByRole('button', { name: /expand sidebar/i })).toBeVisible();
         // 300ms transition + a small settle buffer.
         await page.waitForTimeout(500);

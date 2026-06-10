@@ -64,11 +64,11 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search cards, players, sets..."
             aria-label="Search cards, players, and sets"
-            className="w-full bg-brand-slate border border-slate-800 rounded-full py-2.5 pl-10 pr-4 text-base md:text-sm focus:outline-none focus:ring-1 focus:ring-brand-lime transition-all placeholder:text-slate-500 font-medium"
+            className="w-full bg-brand-slate border border-slate-800 rounded-full py-2.5 pl-10 pr-4 text-base md:text-sm focus:outline-none focus:ring-1 focus:ring-brand-lime transition-all placeholder:text-brand-muted font-medium"
           />
           <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
             <kbd
-              className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border border-slate-700 bg-slate-900 px-1.5 font-mono text-[10px] font-medium text-slate-500 opacity-100"
+              className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded border border-slate-700 bg-slate-900 px-1.5 font-mono text-[10px] font-medium text-brand-muted opacity-100"
               aria-label={`Open command palette with ${glyph.combo('K')}`}
             >
               {glyph.combo('K')}

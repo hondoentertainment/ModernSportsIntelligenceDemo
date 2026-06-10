@@ -105,15 +105,17 @@ const SwarmFeed: React.FC<SwarmFeedProps> = ({ isOpen, onClose }) => {
                         </div>
                     </div>
                     <button
+                        type="button"
                         onClick={onClose}
                         className="p-2 hover:bg-slate-800 rounded-full text-brand-muted hover:text-white transition-colors"
+                        aria-label="Close swarm feed"
                     >
                         <X size={20} />
                     </button>
                 </div>
 
                 {/* Feed Items */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar" tabIndex={0} role="region" aria-label="Swarm analyst messages">
                     {messages.map((msg, i) => (
                         <div
                             key={msg.id}
@@ -127,7 +129,7 @@ const SwarmFeed: React.FC<SwarmFeedProps> = ({ isOpen, onClose }) => {
                                     </div>
                                     <span className="text-[10px] font-black text-white uppercase tracking-widest">{msg.agentName}</span>
                                 </div>
-                                <span className="text-[9px] font-bold text-slate-500 uppercase">{msg.timestamp}</span>
+                                <span className="text-[9px] font-bold text-brand-muted uppercase">{msg.timestamp}</span>
                             </div>
 
                             <p className="text-xs text-slate-300 leading-relaxed font-medium">

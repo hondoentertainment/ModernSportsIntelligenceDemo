@@ -44,9 +44,11 @@ const WarRoomWidget: React.FC = () => {
                         </div>
                     </div>
                     <button
+                        type="button"
                         onClick={(e) => { e.preventDefault(); generateThesis(); }}
                         disabled={isGenerating || inventory.length === 0}
                         className="p-2 hover:bg-slate-800 rounded-lg text-brand-muted hover:text-brand-lime transition-all disabled:opacity-50"
+                        aria-label={isGenerating ? 'Refreshing analyst thesis' : 'Refresh analyst thesis'}
                     >
                         <RefreshCw size={14} className={isGenerating ? 'animate-spin' : ''} />
                     </button>

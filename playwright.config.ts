@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
     testDir: './tests/e2e',
+    snapshotPathTemplate: '{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}-{projectName}{ext}',
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
@@ -22,7 +23,7 @@ export default defineConfig({
         : {
               command: 'npm run build:e2e && npm run preview',
               url: 'http://localhost:4173',
-              reuseExistingServer: false,
+              reuseExistingServer: !process.env.CI,
               timeout: 120_000,
           },
 });

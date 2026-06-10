@@ -8,7 +8,7 @@
     --brand-orange: oklch(0.75 0.18 45);
     --brand-slate: oklch(0.20 0.01 240);
     --brand-teal: oklch(0.75 0.15 180);
-    --brand-muted: oklch(0.72 0.02 240);
+    --brand-muted: oklch(0.80 0.02 240);
     scroll-behavior: smooth;
 }
 
@@ -296,4 +296,19 @@ h2,
 
 .animate-slide-in-right {
     animation: slide-in-right 0.5s ease-out forwards;
+}
+
+/* WCAG AA on charcoal — wins over duplicate Tailwind slate utilities in production CSS. */
+@layer utilities {
+    .text-slate-500 {
+        color: oklch(0.78 0.02 240);
+    }
+
+    .text-slate-600 {
+        color: oklch(0.74 0.02 240);
+    }
+
+    .placeholder\:text-slate-500::placeholder {
+        color: oklch(0.78 0.02 240);
+    }
 }
