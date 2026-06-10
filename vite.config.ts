@@ -56,10 +56,27 @@ export default defineConfig(({ command, mode }) => {
           if (id.includes('node_modules/recharts/') || id.includes('node_modules/d3-') || id.includes('node_modules/victory-vendor/')) {
             return 'recharts-vendor';
           }
-          // Lib services: single chunk to avoid circular dependency (batch1 <-> batch2).
-          // Pages remain lazy-loaded as separate chunks.
-          if (id.includes('/lib/') && /\/lib\/(?:[^/]+\/)?[^/]+Service\.tsx?$/.test(id)) {
-            return 'lib-services';
+          // Lib services: split by domain so a route only pulls the domains it
+          // imports instead of one ~4.3 MB monolith. Bridge files that are
+          // imported across domains are pinned to their consumer's chunk to
+          // keep the chunk graph acyclic:
+          //   trading -> utils only via quantWorkbenchService (no deps of its own)
+          //   core    -> utils only via reportService/taxLotService (reportService's
+          //              sole service dep, collectorAuditDossierService, is in core)
+          // Remaining cross-domain edges form a DAG: utils -> {analytics, trading},
+          // core -> {analytics, trading}, trading -> analytics.
+          const serviceMatch = id.match(/\/lib\/(?:([^/]+)\/)?([^/]+Service)\.tsx?$/);
+          if (serviceMatch && id.includes('/lib/')) {
+            const [, domain, file] = serviceMatch;
+            if (file === 'quantWorkbenchService') return 'lib-trading';
+            if (file === 'reportService' || file === 'taxLotService') return 'lib-core';
+            switch (domain) {
+              case 'analytics': return 'lib-analytics';
+              case 'trading': return 'lib-trading';
+              case 'core': return 'lib-core';
+              case 'social': return 'lib-social';
+              default: return 'lib-utils'; // lib/utils plus root-level re-export shims
+            }
           }
         }
       }
