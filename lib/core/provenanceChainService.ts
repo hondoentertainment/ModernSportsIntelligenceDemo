@@ -2,29 +2,90 @@
 // Full chain-of-custody verification, provenance scoring, and premium analysis for sports cards
 
 import { store } from '../dal/syncStore';
+import { sealedStorage } from '../dal/sealedStorage';
+import { logger } from '../logger';
 
-// Per-user storage key — prevents two accounts on the same browser from
-// seeing each other's registered cards once the feature is wired into
-// production. initProvenanceService(userId) is called by
-// SyncSchedulerInitializer next to initInstantBuyService / initPriceHistory.
+/**
+ * Persistence layer for user-registered DigitalTwins.
+ *
+ * The form a user fills in `RegisterTab` can include `certNumber` and
+ * personally entered card metadata. Per CodeQL's
+ * `js/clear-text-storage-of-sensitive-information` heuristic, persisting that
+ * struct verbatim to localStorage trips a sensitive-storage alert (the
+ * heuristic flags any `cert*` field). We seal the payload via WebCrypto
+ * AES-GCM (`lib/dal/sealedStorage`) and keep a synchronous in-memory cache so
+ * `getMyRegisteredCards()` callers don't change shape.
+ *
+ * Lifecycle:
+ *   - `initProvenanceService(userId)` rotates the active key + clears cache
+ *     + kicks off async hydration of the cache from sealed storage.
+ *   - `registerCard()` writes through the cache immediately, schedules a
+ *     fire-and-forget seal-and-persist.
+ *   - `getMyRegisteredCards()` returns the cache. If hydration is still
+ *     racing, only seeded mocks show until the first await completes.
+ */
+
 const REGISTRY_KEY_BASE = 'msi_provenance_registered_v1';
 let _currentUserId: string | null = null;
+let _persistedCache: DigitalTwin[] = [];
+let _hydration: Promise<void> | null = null;
+
 export function initProvenanceService(userId: string | null): void {
   _currentUserId = userId;
+  _persistedCache = [];
+  _hydration = hydrateFromSealed();
 }
+
+/** Test/SSR hook — await this to know the in-memory cache is populated. */
+export function _provenanceHydrationForTests(): Promise<void> {
+  return _hydration ?? Promise.resolve();
+}
+
 function registryKey(): string {
   return _currentUserId
     ? `${REGISTRY_KEY_BASE}__${_currentUserId}`
     : `${REGISTRY_KEY_BASE}__guest`;
 }
 
+async function hydrateFromSealed(): Promise<void> {
+  const raw = store.get<unknown>(registryKey(), null);
+  if (raw == null) {
+    _persistedCache = [];
+    return;
+  }
+  // Migrate any pre-seal plaintext entries (from before this commit landed)
+  // by re-sealing them next write. They round-trip through the cache here.
+  if (Array.isArray(raw)) {
+    _persistedCache = raw as DigitalTwin[];
+    return;
+  }
+  if (sealedStorage.isSealed(raw)) {
+    try {
+      const decrypted = await sealedStorage.unseal<DigitalTwin[]>(raw);
+      _persistedCache = decrypted ?? [];
+    } catch (err) {
+      logger.warn('[provenanceChain] sealed cache unseal failed', err);
+      _persistedCache = [];
+    }
+    return;
+  }
+  _persistedCache = [];
+}
+
 function getPersistedRegisteredCards(): DigitalTwin[] {
-  return store.get<DigitalTwin[]>(registryKey(), []);
+  return _persistedCache;
 }
 
 function persistRegisteredCard(twin: DigitalTwin): void {
-  const existing = getPersistedRegisteredCards();
-  store.set(registryKey(), [twin, ...existing]);
+  _persistedCache = [twin, ..._persistedCache];
+  const snapshot = _persistedCache;
+  const key = registryKey();
+  // Fire-and-forget. A failed seal leaves the cache populated for this
+  // session; next reload will skip the unsealable value.
+  sealedStorage
+    .seal(snapshot)
+    .then((token) => store.set(key, token))
+    .catch((err) => logger.warn('[provenanceChain] seal failed; entry kept in memory only', err));
 }
 
 // ── Types ────────────────────────────────────────────────────────────────────
