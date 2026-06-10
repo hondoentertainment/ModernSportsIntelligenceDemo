@@ -31,7 +31,7 @@ export async function assertNoA11yViolations(page: Page, route: string): Promise
             help: v.help,
             nodes: v.nodes.length,
         }));
-        // eslint-disable-next-line no-console
+         
         console.error(`[a11y] ${route} violations:`, JSON.stringify(summary, null, 2));
     }
 

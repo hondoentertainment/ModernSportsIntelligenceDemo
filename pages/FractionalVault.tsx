@@ -3,7 +3,7 @@ import BetaFeatureBanner from '../components/BetaFeatureBanner';
 import {
   Landmark, TrendingUp, TrendingDown, Users, Vote, DollarSign,
   BarChart3, ShieldCheck, Gavel, ArrowUpRight, ArrowDownRight,
-  Clock, CheckCircle, XCircle, AlertTriangle, Layers, PieChart as PieIcon,
+  Clock, CheckCircle, XCircle, Layers, PieChart as PieIcon,
   ExternalLink, Lock, Unlock, Activity, Award,
 } from 'lucide-react';
 import {
@@ -788,7 +788,7 @@ const FractionalVault: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-slate-100">Fractional Ownership Vault</h1>
           <p className="text-sm text-slate-400">
-            Tokenized fractional ownership of grail-tier cards with governance, dividends, and secondary market trading
+            Prototype: tokenized ownership concept with governance, dividends, and secondary-market trading rendered against simulated data.
           </p>
         </div>
       </div>

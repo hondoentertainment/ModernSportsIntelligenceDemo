@@ -39,7 +39,20 @@ export interface LiquidityPoolStats {
 const PLATFORM_FEE_RATE = 0.02;   // 2% MSI processing fee
 const SPEED_BONUS_RATE = 0.02;    // 2% extra if accepted within 5 min
 const QUOTE_VALIDITY_MINUTES = 15;
-const STORAGE_KEY = 'msi_instant_buy_history';
+const STORAGE_KEY_BASE = 'msi_instant_buy_history';
+
+// Per-user storage key prevents two accounts on the same browser from
+// seeing each other's instant-buy history before DAL hydration completes.
+let _currentUserId: string | null = null;
+
+/** Set the active user; call from auth/init wiring before exposing this feature. */
+export function initInstantBuyService(userId: string | null): void {
+  _currentUserId = userId;
+}
+
+function storageKey(): string {
+  return _currentUserId ? `${STORAGE_KEY_BASE}__${_currentUserId}` : `${STORAGE_KEY_BASE}__guest`;
+}
 
 /**
  * Get the house discount tier for a given liquidity score.
@@ -108,14 +121,14 @@ export function recordInstantBuy(quote: InstantBuyQuote, acceptedWithinSpeedWind
       ? Math.round((quote.netPayout + quote.speedBonus) * 100) / 100
       : quote.netPayout,
   });
-  store.set(STORAGE_KEY, history);
+  store.set(storageKey(), history);
 }
 
 /**
  * Get instant buy transaction history.
  */
 export function getInstantBuyHistory(): Array<InstantBuyQuote & { acceptedAt: string; speedBonusApplied: boolean; finalPayout: number }> {
-  return store.get<Array<InstantBuyQuote & { acceptedAt: string; speedBonusApplied: boolean; finalPayout: number }>>(STORAGE_KEY, []);
+  return store.get<Array<InstantBuyQuote & { acceptedAt: string; speedBonusApplied: boolean; finalPayout: number }>>(storageKey(), []);
 }
 
 /**

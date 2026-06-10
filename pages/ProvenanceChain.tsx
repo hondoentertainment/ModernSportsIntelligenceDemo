@@ -11,7 +11,7 @@ const ProvenanceChain: React.FC = () => {
       <BetaFeatureBanner
         featureName="Provenance Chain & Digital Twin"
         dataSourceLabel="Prototype registry entries (not third-party blockchain verification)"
-        disclaimer="Chain events and verification badges are illustrative demo data."
+        disclaimer="Authenticity scores and ownership history are illustrative demo data — do not rely on them when buying, selling, or authenticating a card."
       />
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-xl bg-cyan-500/20">
@@ -19,7 +19,7 @@ const ProvenanceChain: React.FC = () => {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-slate-100">Provenance Chain & Digital Twins</h1>
-          <p className="text-sm text-slate-400">Blockchain-backed ownership history and authentication — no competitor offers this</p>
+          <p className="text-sm text-slate-400">Prototype registry and verification workflow rendered against simulated ownership data — no live chain is connected.</p>
         </div>
       </div>
       <ProvenanceChainModal isOpen={showModal} onClose={() => setShowModal(false)} />
