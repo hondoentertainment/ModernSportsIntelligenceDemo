@@ -65,6 +65,11 @@ jobs:
         run: npm audit --audit-level=high
 
       - name: Build
+        # Labs flag on so downstream route/a11y/visual smoke jobs exercise the
+        # full surface. Production (Vercel) builds without the flag and hides
+        # Labs routes per docs/MVP_LAUNCH_SCOPE.md.
+        env:
+          VITE_FF_ENABLE_BETA_SURFACES: '1'
         run: npm run build
 
       - name: Bundle size gate

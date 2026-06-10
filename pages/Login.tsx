@@ -82,7 +82,7 @@ const Login: React.FC = () => {
                                 <Zap className="w-5 h-5 text-brand-lime" />
                             </div>
                             <div>
-                                <h3 className="text-white font-medium mb-1">Real-Time Valuations</h3>
+                                <h2 className="text-white font-medium mb-1 text-base">Real-Time Valuations</h2>
                                 <p className="text-slate-500 text-sm">Track your portfolio with live market data</p>
                             </div>
                         </div>
@@ -91,7 +91,7 @@ const Login: React.FC = () => {
                                 <Shield className="w-5 h-5 text-brand-teal" />
                             </div>
                             <div>
-                                <h3 className="text-white font-medium mb-1">Cloud Sync</h3>
+                                <h2 className="text-white font-medium mb-1 text-base">Cloud Sync</h2>
                                 <p className="text-slate-500 text-sm">Access your collection from any device</p>
                             </div>
                         </div>
@@ -179,7 +179,8 @@ const Login: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center min-w-[44px] min-h-[44px] text-slate-500 hover:text-slate-300 transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>

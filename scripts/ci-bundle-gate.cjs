@@ -3,10 +3,13 @@
  * Run after `vite build`; exits 1 if any chunk exceeds its budget.
  *
  * Budgets (raw, uncompressed):
- *   index chunk  : 4 MB
- *   lib services : 4.25 MB (intentional shared service chunk)
- *   any other JS : 1.5 MB
- *   total JS     : 12 MB
+ *   index chunk   : 4 MB
+ *   lib-analytics : 2 MB    (largest service domain)
+ *   lib-utils     : 1.75 MB (shared service domain)
+ *   any other JS  : 1.5 MB
+ *   total JS      : 12 MB
+ * Ratchet these DOWN as services migrate or get tree-shaken; never up
+ * without a documented reason.
  */
 'use strict';
 
@@ -14,9 +17,14 @@ const fs = require('fs');
 const path = require('path');
 
 const INDEX_BUDGET_BYTES = 4 * 1024 * 1024; // 4 MB
-const LIB_SERVICES_BUDGET_BYTES = 4.25 * 1024 * 1024; // 4.25 MB
 const CHUNK_BUDGET_BYTES = 1.5 * 1024 * 1024; // 1.5 MB
 const TOTAL_BUDGET_BYTES = 12 * 1024 * 1024; // 12 MB
+
+/** Named chunks with budgets above the generic per-chunk budget. */
+const NAMED_CHUNK_BUDGETS = [
+  { pattern: /^lib-analytics[.-]/, bytes: 2 * 1024 * 1024 },
+  { pattern: /^lib-utils[.-]/, bytes: 1.75 * 1024 * 1024 },
+];
 
 const distAssets = path.join(process.cwd(), 'dist', 'assets');
 
@@ -38,7 +46,11 @@ if (jsFiles.length === 0) {
 }
 
 function logicalChunkName(name) {
-  return name.replace(/-[A-Za-z0-9_-]{8,}\.js$/, '.js');
+  // Vite/rolldown content hashes are exactly 8 base64url chars. The class
+  // includes '-', so an open-ended {8,} quantifier would swallow multi-word
+  // chunk names (lib-analytics-<hash> and lib-utils-<hash> would both
+  // collapse to "lib.js" and the gate would silently skip all but one).
+  return name.replace(/-[A-Za-z0-9_-]{8}\.js$/, '.js');
 }
 
 const latestByLogicalName = new Map();
@@ -68,12 +80,8 @@ console.log(`${'-'.repeat(48)} ${'-'.repeat(9)} ${'-'.repeat(9)} ------`);
 
 for (const { name, size } of budgetedFiles) {
   const isIndex = /^index[.-]/.test(name);
-  const isLibServices = /^lib-services[.-]/.test(name);
-  const budget = isIndex
-    ? INDEX_BUDGET_BYTES
-    : isLibServices
-      ? LIB_SERVICES_BUDGET_BYTES
-      : CHUNK_BUDGET_BYTES;
+  const named = NAMED_CHUNK_BUDGETS.find((b) => b.pattern.test(name));
+  const budget = isIndex ? INDEX_BUDGET_BYTES : named ? named.bytes : CHUNK_BUDGET_BYTES;
   const ok = size <= budget;
   if (!ok) exceeded = true;
   const label = ok ? 'OK' : 'OVER BUDGET ⚠️';
