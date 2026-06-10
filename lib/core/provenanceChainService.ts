@@ -1,6 +1,32 @@
 // Provenance Chain Verifier Service
 // Full chain-of-custody verification, provenance scoring, and premium analysis for sports cards
 
+import { store } from '../dal/syncStore';
+
+// Per-user storage key — prevents two accounts on the same browser from
+// seeing each other's registered cards once the feature is wired into
+// production. initProvenanceService(userId) is called by
+// SyncSchedulerInitializer next to initInstantBuyService / initPriceHistory.
+const REGISTRY_KEY_BASE = 'msi_provenance_registered_v1';
+let _currentUserId: string | null = null;
+export function initProvenanceService(userId: string | null): void {
+  _currentUserId = userId;
+}
+function registryKey(): string {
+  return _currentUserId
+    ? `${REGISTRY_KEY_BASE}__${_currentUserId}`
+    : `${REGISTRY_KEY_BASE}__guest`;
+}
+
+function getPersistedRegisteredCards(): DigitalTwin[] {
+  return store.get<DigitalTwin[]>(registryKey(), []);
+}
+
+function persistRegisteredCard(twin: DigitalTwin): void {
+  const existing = getPersistedRegisteredCards();
+  store.set(registryKey(), [twin, ...existing]);
+}
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export type ChainEventType = 'mint' | 'sale' | 'grade' | 'transfer' | 'auction' | 'insurance-appraisal' | 'exhibition';
@@ -802,7 +828,12 @@ const _LEGACY_SIGHTINGS: CrossPlatformSighting[] = [
 ];
 
 export function getMyRegisteredCards(): DigitalTwin[] {
-  return _LEGACY_TWINS.filter(t => t.owner === 'You');
+  // Seeded demo entries owned by the current user, plus anything the user has
+  // registered themselves via registerCard() (persisted via DAL with
+  // per-user scoping). The seeded data is still labeled as simulation in the
+  // page banner.
+  const seeded = _LEGACY_TWINS.filter(t => t.owner === 'You');
+  return [...getPersistedRegisteredCards(), ...seeded];
 }
 
 export function getRegistryStats(): RegistryStats {
@@ -860,8 +891,36 @@ export function verifyBeforePurchase(_listingUrl: string): VerificationResult {
 }
 
 export function registerCard(
-  _cardData: { playerName: string; cardDescription: string; year: number; manufacturer: string; setName: string; cardNumber: string; grade?: string; gradingCompany?: string; certNumber?: string; currentValue?: number },
+  cardData: { playerName: string; cardDescription: string; year: number; manufacturer: string; setName: string; cardNumber: string; grade?: string; gradingCompany?: string; certNumber?: string; currentValue?: number },
   _images: File[] | string[],
 ): DigitalTwin {
-  return _LEGACY_TWINS[0];
+  const now = new Date().toISOString();
+  const id = `twin-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+  const twin: DigitalTwin = {
+    id,
+    cardId: id,
+    playerName: cardData.playerName,
+    cardDescription: cardData.cardDescription,
+    year: cardData.year,
+    manufacturer: cardData.manufacturer,
+    setName: cardData.setName,
+    cardNumber: cardData.cardNumber,
+    grade: cardData.grade,
+    gradingCompany: cardData.gradingCompany,
+    certNumber: cardData.certNumber,
+    fingerprint: _genFingerprint(),
+    provenanceTimeline: [],
+    ownershipHistory: [],
+    // Authenticity is the simulated baseline — the page banner already labels
+    // this as prototype data; users should not treat the score as a real grade.
+    authenticityScore: 75,
+    currentValue: cardData.currentValue ?? 0,
+    registeredAt: now,
+    lastVerified: now,
+    status: 'pending',
+    imageUrl: '',
+    owner: 'You',
+  };
+  persistRegisteredCard(twin);
+  return twin;
 }
