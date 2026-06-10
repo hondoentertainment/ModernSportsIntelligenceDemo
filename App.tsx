@@ -29,6 +29,12 @@ import DocumentTitleSync from './components/DocumentTitleSync.tsx';
 import CommandPalette from './components/CommandPalette.tsx';
 import { validateEnv } from './lib/utils/env';
 import { initDAL } from './lib/dal';
+import { isBetaSurfacesEnabled } from './lib/productionLaunch';
+
+// Labs routes (everything outside the curated product surface) only mount when
+// the beta-surfaces flag is on. Dev builds keep them on for convenience; see
+// docs/MVP_LAUNCH_SCOPE.md for the launch boundary.
+const labsEnabled = isBetaSurfacesEnabled() || import.meta.env.DEV;
 
 // Validate environment on startup
 validateEnv();
@@ -564,6 +570,12 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/private-deal-room-agent" element={<PrivateDealRoomAgent />} />
                 <Route path="/catalyst-market" element={<CatalystMarket />} />
                 <Route path="/collection-narrative" element={<CollectionNarrative />} />
+                <Route path="/frontier-lab" element={<FrontierLab />} />
+                {/* Labs surface — the long tail ships only when VITE_FF_ENABLE_BETA_SURFACES
+                    is set (see lib/productionLaunch.ts and docs/MVP_LAUNCH_SCOPE.md).
+                    Production hides these routes; unknown paths fall through to the
+                    catch-all below. */}
+                {labsEnabled && (<>
                 <Route path="/portfolio-copilot" element={<PortfolioCopilot />} />
                 <Route path="/marketplace-aggregator" element={<MarketplaceAggregator />} />
                 <Route path="/subscription-box" element={<SubscriptionBox />} />
@@ -761,7 +773,6 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/rebalancer" element={<Rebalancer />} />
                 {/* Showcase & Labs — Previously Unrouted */}
                 <Route path="/ar-showcase" element={<ARShowcase />} />
-                <Route path="/frontier-lab" element={<FrontierLab />} />
                 <Route path="/live-impact" element={<LiveImpact />} />
                 <Route path="/inventory" element={<Inventory />} />
                 {/* v6.1: Industry-Absent Innovation — Round 2 */}
@@ -881,6 +892,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/product-announcement-radar" element={<ProductAnnouncementRadar />} />
                 <Route path="/collector-succession-protocol" element={<CollectorSuccessionProtocol />} />
                 <Route path="/cross-hobby-arbitrage-bridge" element={<CrossHobbyArbitrageBridge />} />
+                </>)}
                 {/* Interactive Demo Flow */}
                 <Route path="/demo-flow" element={<DemoFlowPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
