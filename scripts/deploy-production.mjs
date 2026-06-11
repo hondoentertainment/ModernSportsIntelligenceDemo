@@ -138,4 +138,18 @@ if (!migrationsOnly) {
   console.log('  Events: checkout.session.completed, customer.subscription.*, invoice.*');
 }
 
-console.log('\n✓ deploy-production complete. Set Vercel env vars and run post-deploy smoke tests.\n');
+console.log('\n── Production env validation ──');
+const checkScript = resolve(__dirname, 'check-production-env.mjs');
+const checkResult = spawnSync(
+  'node',
+  [checkScript, '--from-vercel'],
+  { cwd: ROOT, stdio: 'inherit', shell: process.platform === 'win32' },
+);
+if (checkResult.status !== 0) {
+  console.error('\n✗ Production env validation failed.');
+  console.error('  Sync Supabase → Vercel: npm run sync:vercel-env');
+  console.error('  Docs: docs/DEPLOY_ENV_CHECKLIST.md\n');
+  process.exit(checkResult.status ?? 1);
+}
+
+console.log('\n✓ deploy-production complete. Run post-deploy smoke tests.\n');

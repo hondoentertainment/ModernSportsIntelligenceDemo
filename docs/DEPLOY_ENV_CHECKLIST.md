@@ -50,6 +50,23 @@ Use this when promoting a build to **production** (Vercel + Supabase + Stripe + 
 | `VITE_SENTRY_ENVIRONMENT`        | On Vercel, optional; defaults to build mode (`production` / `preview`)                                                               |
 | `VITE_SENTRY_TRACES_SAMPLE_RATE` | On Vercel, optional `0`–`1`; defaults to `0.1`                                                                                       |
 
+## Supabase unpause + Vercel env sync
+
+If the linked Supabase project is **paused** (free-tier inactivity), restore it before migrations or env sync:
+
+1. Open [Supabase Dashboard](https://supabase.com/dashboard) → select the project → **Restore project**
+2. Wait until the project is active (API + database healthy)
+3. From repo root (after `supabase link`):
+
+```bash
+npm run sync:vercel-env
+# optional preview targets: npm run sync:vercel-env -- --preview
+```
+
+`sync:vercel-env` reads the linked project ref from `supabase/.temp/project-ref` (or `supabase status --output json`), fetches anon credentials via `supabase projects api-keys`, and prints `vercel env add` commands for `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `ALLOWED_ORIGIN`. In CI, secret values are **not** printed — run interactively locally or paste from **Settings → API** in the dashboard.
+
+If the project is still paused, the script exits with the dashboard URL to unpause.
+
 ## Pre-deploy validation
 
 From a linked Vercel project, pull production env and validate:
@@ -59,6 +76,8 @@ npm run check:prod-env -- --from-vercel
 # or: vercel env pull .env.production.local --environment=production
 #     npm run check:prod-env
 ```
+
+`npm run deploy:infra` runs this check automatically at the end (non–dry-run) after Supabase migrations/functions.
 
 Use `--strict` to fail on warnings (e.g. missing `ALLOWED_ORIGIN`, `MSI_API_AUTH_DISABLED`).
 

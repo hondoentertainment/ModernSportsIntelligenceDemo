@@ -3,18 +3,39 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: 'weekly'
+      day: 'monday'
     open-pull-requests-limit: 5
     groups:
       dev-dependencies:
-        dependency-type: "development"
+        dependency-type: 'development'
+        update-types:
+          - 'minor'
+          - 'patch'
       production-dependencies:
-        dependency-type: "production"
+        dependency-type: 'production'
+        update-types:
+          - 'minor'
+          - 'patch'
+    ignore:
+      # v2 requires API migration across geminiClient + /api/ai routes
+      - dependency-name: '@google/genai'
+        update-types: ['version-update:semver-major']
+      # Pinned for bundle budget; 1.17.x blows gzip gate on CI
+      - dependency-name: 'lucide-react'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
+      # v4 needs @tailwindcss/postcss + config migration
+      - dependency-name: 'tailwindcss'
+        update-types: ['version-update:semver-major']
+      # Keep aligned with eslint ^10 flat config; @eslint/js v10 peer drift
+      - dependency-name: '@eslint/js'
+        update-types: ['version-update:semver-major']
     commit-message:
-      prefix: "chore(deps)"
+      prefix: 'chore(deps)'
     labels:
-      - "dependencies"
+      - 'dependencies'
