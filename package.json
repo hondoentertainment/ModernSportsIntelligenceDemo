@@ -112,7 +112,7 @@
     "vitest": "^4.1.4"
   },
   "optionalDependencies": {
-    "@sentry/react": "^10.48.0"
+    "@sentry/react": "^10.57.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
