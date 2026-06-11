@@ -11,6 +11,7 @@ import {
     isMarketEventsInitialized,
 } from '../lib/analytics/marketEventsService.ts';
 import { initInstantBuyService } from '../lib/trading/instantBuyService.ts';
+import { initProvenanceService } from '../lib/core/provenanceChainService.ts';
 import { isDemoMode } from '../lib/supabase.ts';
 import { showToast } from '../lib/utils/toast.ts';
 import { logger } from '../lib/logger';
@@ -29,15 +30,18 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
         if (user?.id && !isMarketEventsInitialized()) {
             initMarketEvents(user.id);
         }
-        // Scope instant-buy history per user so two accounts on the same
-        // browser cannot read each other's transactions.
+        // Scope instant-buy history and user-registered provenance entries
+        // per user so two accounts on the same browser cannot read each
+        // other's data.
         initInstantBuyService(user?.id ?? null);
+        initProvenanceService(user?.id ?? null);
 
         return () => {
             // Tear down on unmount (sign-out causes ProtectedRoute to unmount this)
             teardownPriceHistory();
             teardownMarketEvents();
             initInstantBuyService(null);
+            initProvenanceService(null);
         };
     }, [user?.id]);
 

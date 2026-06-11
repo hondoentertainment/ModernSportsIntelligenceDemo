@@ -157,9 +157,14 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     if (!user?.email) return;
     const username = user.email.split('@')[0];
-    fetchPublicProfile(username).then((profile) => {
-      if (profile) setUserProfile(profile);
-    });
+    fetchPublicProfile(username)
+      .then((profile) => {
+        if (profile) setUserProfile(profile);
+      })
+      .catch(() => {
+        // Public-profile lookup is optional decoration; swallow so the
+        // dashboard renders without it. ErrorBoundary handles fatals.
+      });
   }, [user]);
 
   const shareProfile = useMemo((): UserProfile | null => {
@@ -198,7 +203,12 @@ const Dashboard: React.FC = () => {
   // Fetch Sentiment
   useEffect(() => {
     if (inventory.length > 0) {
-      generatePortfolioSentiment(inventory).then(setMarketSentiment);
+      generatePortfolioSentiment(inventory)
+        .then(setMarketSentiment)
+        .catch(() => {
+          // Sentiment is decorative; preserve the previous value rather
+          // than blanking the panel on a Gemini failure.
+        });
     }
   }, [inventory]);
 
@@ -1203,7 +1213,12 @@ const Dashboard: React.FC = () => {
                 inventory={inventory}
                 onListingClick={(listing) => {
                   setAuctionListing(listing);
-                  getAnalyzeListing().then(fn => setAuctionAnalysis(fn(listing)));
+                  getAnalyzeListing()
+                    .then(fn => setAuctionAnalysis(fn(listing)))
+                    .catch(() => {
+                      // Lazy listing analyzer is optional; widget shows the
+                      // empty state until the user retries.
+                    });
                   setIsAuctionSniperOpen(true);
                 }}
               />
@@ -1292,7 +1307,7 @@ const Dashboard: React.FC = () => {
                       </div>
                       <p className="text-[10px] text-brand-muted font-black uppercase tracking-widest mb-3 truncate">{card.year} {card.manufacturer} {card.set}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-mono font-black text-slate-100">${card.purchasePrice.toLocaleString()}</span>
+                        <span className="text-sm font-mono font-black text-slate-100">${(card.purchasePrice ?? 0).toLocaleString()}</span>
                         <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-tighter ${card.isGraded ? 'bg-brand-lime/10 text-brand-lime border border-brand-lime/20' : 'bg-slate-800 text-brand-muted'}`}>
                           {card.isGraded ? `${card.gradingCompany} ${card.grade}` : 'Raw'}
                         </span>

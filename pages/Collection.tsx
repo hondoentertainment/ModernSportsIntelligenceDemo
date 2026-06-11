@@ -150,9 +150,13 @@ const Collection: React.FC = () => {
     if (user?.email) {
       // For demo, we use the user's email prefix as username
       const username = user.email.split('@')[0];
-      fetchPublicProfile(username).then(profile => {
-        if (profile) setUserProfile(profile);
-      });
+      fetchPublicProfile(username)
+        .then(profile => {
+          if (profile) setUserProfile(profile);
+        })
+        .catch(() => {
+          // Optional decoration — swallow so Collection still renders.
+        });
     }
   }, [user]);
 
@@ -707,7 +711,7 @@ const Collection: React.FC = () => {
                         <td className="px-8 py-4">
                           <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">{card.year} {card.manufacturer}</span>
                         </td>
-                        <td className="px-8 py-4 text-right font-mono text-sm">${card.purchasePrice.toLocaleString()}</td>
+                        <td className="px-8 py-4 text-right font-mono text-sm">${(card.purchasePrice ?? 0).toLocaleString()}</td>
                         <td className="px-8 py-4 text-right">
                           <p className="font-mono text-sm text-brand-lime">${card.currentValue?.toLocaleString() || '—'}</p>
                           <div className="mt-2 flex justify-end gap-1.5">
@@ -841,7 +845,7 @@ const Collection: React.FC = () => {
                       <div className="bg-brand-charcoal/40 border border-slate-800/50 rounded-xl p-4">
                         <p className="text-[9px] font-black text-brand-muted uppercase tracking-widest mb-1">Target Price</p>
                         <p className="text-2xl font-mono font-bold text-brand-lime">
-                          ${target.targetPrice.toLocaleString()}
+                          ${(target.targetPrice ?? 0).toLocaleString()}
                         </p>
                       </div>
 

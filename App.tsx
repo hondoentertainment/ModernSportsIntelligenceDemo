@@ -571,6 +571,12 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/catalyst-market" element={<CatalystMarket />} />
                 <Route path="/collection-narrative" element={<CollectionNarrative />} />
                 <Route path="/frontier-lab" element={<FrontierLab />} />
+                {/* /audit-dossier is reachable from Dashboard, Collection, and
+                    the command palette via productSurface — keep it always-on
+                    so production users don't hit a silent redirect to "/". */}
+                <Route path="/audit-dossier" element={<CollectorAuditDossier />} />
+                {/* Same rationale for /audit-trail: command palette / nav surface it. */}
+                <Route path="/audit-trail" element={<AuditTrail />} />
                 {/* Labs surface — the long tail ships only when VITE_FF_ENABLE_BETA_SURFACES
                     is set (see lib/productionLaunch.ts and docs/MVP_LAUNCH_SCOPE.md).
                     Production hides these routes; unknown paths fall through to the
@@ -621,7 +627,6 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/sealed-product" element={<SealedProduct />} />
                 <Route path="/error-card" element={<ErrorCard />} />
                 <Route path="/auction-sniper" element={<AuctionSniper />} />
-                <Route path="/audit-dossier" element={<CollectorAuditDossier />} />
                 <Route path="/real-time-price-engine" element={<RealTimePriceEngine />} />
                 <Route path="/ai-card-scanner" element={<AiCardScanner />} />
                 <Route path="/cross-platform-arbitrage" element={<CrossPlatformArbitrage />} />
@@ -838,7 +843,6 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/white-label-api" element={<WhiteLabelApi />} />
                 <Route path="/dealer-inventory" element={<DealerInventory />} />
                 <Route path="/fund-reporting" element={<FundReporting />} />
-                <Route path="/audit-trail" element={<AuditTrail />} />
                 <Route path="/collaborative-set-registry" element={<CollaborativeSetRegistry />} />
                 <Route path="/card-show-squad" element={<CardShowSquad />} />
                 <Route path="/group-buy-coop" element={<GroupBuyCoop />} />

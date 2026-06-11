@@ -1,238 +1,75 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Generated 2026-03-18 · Based on full codebase analysis of v4.0+ (commit c66fd62)
+> Generated 2026-06-10 · Reflects the state of `main` after the World-Class Pass 1 PRs (#57 wave-2 beta safety + #67 bundle split / a11y / Labs / adapter truth).
 
----
+## Current state in one paragraph
 
-## Current State Summary
+MSI is past the “impressive prototype” bar and into a launchable MVP. The DAL is enforced (0 `localStorage` violators), auth + RLS are wired, billing webhook + idempotency are in place, CSP + Sentry + error beacon are required in production builds, and CI gates are dense (typecheck/strict, lint, format, 92/80 coverage, pricing-truth, smoke E2E, deployed-E2E, bundle gate, axe smoke, route smoke across all 223 routes, CodeQL, visual regression, Lighthouse). The product surface is now focused: the curated MVP routes ship by default and the ~300 Labs routes only mount when `VITE_FF_ENABLE_BETA_SURFACES=1`. eBay/PSA adapters label every response `source: 'live' \| 'mock'`. The lib-services monolith (1.16 MB gz) is split into five domain chunks.
 
-MSI is an impressive **prototype/demo** with 344 pages, 395 components, and 404 service files covering 180+ features for the sports card collectibles market. Real integrations exist for **Gemini AI**, **Stripe billing**, and **MLB Stats API**. However, the platform relies heavily on **localStorage** (479 references) and **mock data** (82+ services), making it unsuitable for production use today.
+The remaining gap to “world-class” is **not** more engineering surface — it’s **executing the launch playbook** with real credentials, **finishing the wave-3 beta items** for the seven features still labeled `beta`, and **deepening two integrations** (eBay sold comps and PSA cert) so the brand promise of pricing truth is backed by real data, not mocks.
 
-**Production Readiness: ~5-10%** — Great demo, not yet ready for real users or real money.
+## Priority 0 — Owner-held launch actions
 
----
+See [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md). Every item is a one-shot configuration that engineering cannot do without credentials. They unblock the staged rollout in [`docs/ROLLBACK_AND_STABILIZATION.md`](docs/ROLLBACK_AND_STABILIZATION.md).
 
-## Priority 0 — Fix Build (Do First)
+1. Run `npm run verify:rls` against Supabase with real free/basic/pro/alpha test users.
+2. Set `VITE_SENTRY_DSN` + `VITE_REQUIRE_TELEMETRY=true` in Vercel.
+3. Set repo secret `PLAYWRIGHT_DEPLOYMENT_URL` and repo variable `ENABLE_DEPLOYED_E2E=true` to activate the deployed-E2E workflow.
+4. Point uptime monitoring at `GET /api/health`.
+5. When ready to leave mock mode: `EBAY_CLIENT_ID/SECRET` + `VITE_FF_REAL_EBAY=true`, then `PSA_API_KEY` + `VITE_FF_REAL_PSA=true`.
+6. Run the Stripe lifecycle smoke (subscribe → upgrade → downgrade → cancel → failed-payment) in test mode against the production deployment.
+7. Verify `/api/me/export` returns the user’s data and `/api/me/delete` purges + revokes session on a throwaway account.
 
-| # | Task | Why | Effort |
-|---|------|-----|--------|
-| 1 | **Fix syntax error in `pages/Dashboard.tsx:880`** | Build is currently broken — "Unterminated regular expression" error blocks all compilation | 1 hour |
-| 2 | **Resolve TypeScript type definition warnings** | `@testing-library/jest-dom`, `node`, `vitest/globals` type defs missing in tsconfig | 1 hour |
+## Priority 1 — Wave-3 beta exits (engineering)
 
----
+Status of the 7 `status: 'beta'` IDs in [`lib/utils/featureCatalog.ts`](lib/utils/featureCatalog.ts) — wave-2 cleared all misleading copy and tenancy issues (see [`docs/BETA_EXIT_READINESS_PASS.md`](docs/BETA_EXIT_READINESS_PASS.md)). Wave-3 promotes them to `live` once persistence and tests land.
 
-## Priority 1 — Foundation (Weeks 1-3)
+| ID                    | Wave-3 work to promote                                                                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `liquidity-pool`      | Surface the widget on the Dashboard, write a unit test for `recordInstantBuy` round-tripping through the per-user key.                                  |
+| `visual-audit`        | Modal-only feature; needs E2E covering upload → result; consider client-side image storage opt-in.                                                      |
+| `live-impact`         | Either wire a real sports-feed adapter behind a flag or commit to demo-only with a doc note; either way, add a snapshot test for `getLiveImpactAlerts`. |
+| `vision-grading`      | Same image-handling decision as `visual-audit`; explicit PSA/BGS comparison must remain labeled.                                                        |
+| `fractional-vault`    | Service is pure catalog read — promote when legal/securities review approves the "Simulation only" disclosure; no engineering blocker.                  |
+| `provenance-chain`    | `registerCard()` now persists via the DAL with per-user scoping (this PR). Promote when an E2E covers register → reload → entry survives.               |
+| `fractional-vault-v2` | Catalog-only since the route collision was resolved; remove from catalog or merge with v1.                                                              |
 
-These items unblock everything else. Without them, no feature can be considered production-ready.
+## Priority 2 — Real-data integration depth
 
-### 1.1 Data Access Layer (DAL)
+The brand is “pricing truth.” Two integrations move the needle most:
 
-**Problem:** 479 localStorage references across 106 files. All user data is ephemeral, device-locked, and unrecoverable.
+- **eBay sold comps:** `lib/integrations/ebayAdapter.ts` now tags `source` and computes `trendPercent` from real history when live. Next: pagination beyond the first page, store the last successful comp set per `(player, year, set, grade)` so degraded fallback shows the last-known-good response with a stale-data label instead of jumping to mock.
+- **PSA cert verification:** Adapter is ready. Surface the verified label on every card that has a `certNumber` using the existing `DataSourceBadge` component.
 
-**Action:**
-- Create `lib/dal/` module with a `StorageAdapter` interface
-- Implement `LocalStorageAdapter` (preserves current behavior) and `SupabaseAdapter`
-- Add a feature flag to toggle between adapters per-feature
-- Migrate services incrementally, starting with `inventoryService.ts` and `portfolioService.ts`
+## Priority 3 — Onboarding & first-five-minutes
 
-**Files to start with:**
-- `lib/inventoryService.ts` → most critical (card data)
-- `lib/portfolioService.ts` → portfolio values
-- `lib/watchlistService.ts` → user preferences
+The funnel that defines "world-class" is: arrive → scan a card → see a real value with provenance → save. Audit it as a single flow:
 
-### 1.2 Authentication & Authorization
+- Dashboard empty state for a brand-new user: one primary CTA ("Scan your first card") instead of widget grid.
+- Demo Flow currently sits behind `/demo-flow` and a widget — promote it into the empty-collection state.
+- After first card add, queue a non-blocking "We're fetching live pricing for this card" toast pointing at `DataSourceBadge`.
 
-**Problem:** Supabase auth is scaffolded (`contexts/AuthContext.tsx`) but not enforced. No route guards on 112+ pages. Tier-based access (Free/Basic/Pro/Alpha) defined but not gated.
+## Priority 4 — Sustained dev experience
 
-**Action:**
-- Wire `AuthContext` into `App.tsx` route definitions
-- Create `<ProtectedRoute>` wrapper component
-- Add tier-based feature gates using Stripe subscription status
-- Implement session refresh and expiry handling
+- Add a `npm run perf:audit` script that runs `vite build && node scripts/ci-bundle-gate.cjs` and prints a one-line summary, so engineers see when their PR moves a chunk.
+- Tighten coverage gates incrementally — every PR that crosses a service file should add it to the explicit whitelist in `vite.config.ts`.
+- Schedule a quarterly catalog sweep — features that have been `beta` for 90+ days either go `live` or get hidden.
 
-### 1.3 Environment & Secrets Validation
+## What NOT to do next
 
-**Problem:** `.env.example` exists but no runtime validation. Risk of API key leaks.
+1. **Don’t add Labs features.** 330 routes is more than enough.
+2. **Don’t chase the lighthouse score below 0.95.** Diminishing returns versus shipping the wave-3 items.
+3. **Don’t restructure directories.** The DAL and chunk graph are settled; rearranging now would just churn the import map.
+4. **Don’t expose Labs routes in production** until the wave-3 work for a given beta lands — the Labs gate is now the only enforcer.
 
-**Action:**
-- Add a `lib/env.ts` module using Zod to validate all required env vars at startup
-- Fail fast with clear error messages for missing keys
-- Ensure Gemini, Stripe, and Supabase keys are never exposed client-side
+## Key references
 
----
-
-## Priority 2 — Reliability (Weeks 3-6)
-
-### 2.1 Error Handling & Resilience
-
-- Add a global `<ErrorBoundary>` in `App.tsx` (currently missing)
-- Implement retry logic with exponential backoff for all API calls
-- Add request timeouts and circuit breakers for external APIs
-- Integrate Sentry (or similar) for production error tracking
-
-### 2.2 Test Coverage
-
-**Current:** ~10% coverage (91 test files for 800+ source files)
-**Target:** 80% for critical paths
-
-**Priority test targets:**
-1. `lib/billingService.ts` — payment flows (untested, high risk)
-2. `lib/inventoryService.ts` — core data management
-3. `lib/portfolioService.ts` — portfolio calculations
-4. `components/AuthContext.tsx` — authentication flows
-5. E2E: checkout flow, login/signup, card CRUD operations
-
-### 2.3 Input Validation
-
-- Add Zod schemas for all external API responses (Gemini, eBay, MLB)
-- Validate user inputs at form boundaries
-- Sanitize any user-generated content rendered in the UI
-
----
-
-## Priority 3 — Real Data Integration (Weeks 6-12)
-
-Per `API_MIGRATION_PLAN.md`, migrate from mock data to real APIs:
-
-### Phase 1: API Client Infrastructure (Weeks 6-7)
-- Build unified API client with auth, retry, caching
-- Implement feature flag system for gradual rollout
-- Add response type validation with Zod
-
-### Phase 2: External API Adapters (Weeks 7-10)
-| API | Status | Priority | Notes |
-|-----|--------|----------|-------|
-| eBay Browse/Finding API | Stub only | High | Core marketplace data |
-| PSA Cert Verification | Not started | High | Card authentication |
-| BGS/SGC Grading APIs | Not started | Medium | Multi-grader support |
-| ESPN/Sports Reference | Not started | Medium | Extended player stats |
-| COMC/MySlabs | Not started | Low | Alternative marketplaces |
-
-### Phase 3: Service Migration (Weeks 10-16)
-- Migrate 82 mock-data services one at a time
-- Each migration: add real API call → validate against mock → feature flag → release
-- Start with highest-value services: pricing, inventory, grading
-
-### Phase 4: Real-Time Data (Weeks 16-20)
-- WebSocket subscriptions for live auction data
-- Real-time price ticker updates
-- Push notifications for watchlist alerts
-
----
-
-## Priority 4 — Code Quality & Architecture (Ongoing)
-
-### 4.1 Directory Restructuring
-
-**Problem:** 404 flat files in `lib/`, 395 flat files in `components/`. No domain grouping.
-
-**Recommended structure:**
-```
-lib/
-  core/           # inventoryService, portfolioService, types
-  analytics/      # all analytics services
-  trading/        # trading, negotiation, marketplace
-  social/         # social, messaging, sharing
-  integrations/   # ebay, psa, mlb, gemini adapters
-  dal/            # data access layer
-
-components/
-  layout/         # Sidebar, Header, Footer
-  dashboard/      # Dashboard widgets
-  cards/          # Card display, editing, grading
-  trading/        # Trade, negotiate, marketplace UI
-  analytics/      # Charts, reports, visualizations
-  shared/         # Buttons, modals, form elements
-```
-
-### 4.2 Bundle Optimization
-
-- Current: 259+ components loaded via lazy imports (good)
-- Add bundle size budget enforcement in CI (workflow exists but not gated)
-- Audit Recharts usage — largest vendor chunk
-- Consider dynamic imports for PDF generation (jsPDF)
-
-### 4.3 Type Safety
-
-- Eliminate remaining `any` types
-- Add strict TypeScript mode fully (`noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`)
-- Generate types from Supabase schema automatically
-
----
-
-## Priority 5 — Production Infrastructure (Weeks 12-16)
-
-### 5.1 Database Operations
-- Convert `supabase-schema.sql` into versioned migrations
-- Add database backup strategy
-- Create indexes based on expected query patterns
-- Set up connection pooling
-
-### 5.2 Monitoring & Observability
-- Error tracking: Sentry
-- Structured logging: replace `console.log` with structured logger (partially done)
-- Uptime monitoring: health check endpoint
-- Business metrics: portfolio values, active users, feature usage
-
-### 5.3 Security Audit
-- Stripe webhook signature verification
-- CORS policy review
-- CSP headers configuration
-- Rate limiting on API routes
-- Dependency vulnerability scanning (workflow exists)
-
----
-
-## Quick Wins (Can Do Anytime)
-
-These deliver visible value with minimal effort:
-
-| Task | Effort | Impact |
-|------|--------|--------|
-| Fix Dashboard.tsx build error | 1 hour | Unblocks everything |
-| Add `<ErrorBoundary>` to App.tsx | 2 hours | Prevents white-screen crashes |
-| Add env var validation at startup | 2 hours | Prevents runtime key errors |
-| Wire auth into 5 most-used routes | 4 hours | Basic access control |
-| Add Zod validation to Gemini responses | 3 hours | Prevents AI response crashes |
-| Set up Sentry free tier | 2 hours | Visibility into production errors |
-| Add loading skeletons to Dashboard | 3 hours | Better perceived performance |
-
----
-
-## Recommended 90-Day Roadmap
-
-```
-Week 1-2:   Fix build + DAL foundation + auth wiring + env validation
-Week 3-4:   Error boundaries + Sentry + test coverage for billing/auth
-Week 5-6:   eBay API integration + PSA cert lookup + input validation
-Week 7-8:   Directory restructure + bundle optimization + type safety
-Week 9-10:  Service migration (top 20 services from mock → real)
-Week 11-12: Real-time data + WebSocket infrastructure + monitoring
-Week 13:    Security audit + production deployment checklist
-```
-
----
-
-## What NOT to Do Next
-
-1. **Don't add more features** — 344 pages is more than enough surface area. Focus on depth over breadth.
-2. **Don't start blockchain/IoT integration** — The foundation (auth, data persistence, error handling) must come first.
-3. **Don't optimize performance prematurely** — Fix correctness first (real data, real auth, real error handling).
-4. **Don't restructure directories yet** — Wait until the DAL and auth are solid; restructuring is easier with good test coverage.
-
----
-
-## Key Files Reference
-
-| Purpose | File |
-|---------|------|
-| Product roadmap | `PRD.md` |
-| Production checklist | `PRODUCTION_READINESS.md` |
-| API migration plan | `API_MIGRATION_PLAN.md` |
-| Feature generation | `ORCHESTRATION.md` |
-| Database schema | `supabase-schema.sql` |
-| Build config | `vite.config.ts` |
-| App router | `App.tsx` |
-| Type definitions | `types.ts` |
-| Feature catalog | `lib/featureCatalog.ts` |
-| CI/CD | `.github/workflows/ci.yml` |
+| Purpose                | File                                                                     |
+| ---------------------- | ------------------------------------------------------------------------ |
+| Owner-held launch ops  | `docs/LAUNCH_OPS_PUNCH_LIST.md`                                          |
+| Beta status / criteria | `docs/BETA_FEATURE_EXIT_CRITERIA.md`, `docs/BETA_EXIT_READINESS_PASS.md` |
+| MVP launch scope       | `docs/MVP_LAUNCH_SCOPE.md`                                               |
+| Production rollout     | `docs/PRODUCTION_ROLLOUT_PHASES.md`                                      |
+| Rollback runbook       | `docs/ROLLBACK_AND_STABILIZATION.md`                                     |
+| Coverage policy        | `docs/COVERAGE_POLICY.md`                                                |
+| Labs boundary          | `lib/productionLaunch.ts`                                                |

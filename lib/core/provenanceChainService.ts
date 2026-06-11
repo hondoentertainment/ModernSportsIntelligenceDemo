@@ -1,6 +1,110 @@
 // Provenance Chain Verifier Service
 // Full chain-of-custody verification, provenance scoring, and premium analysis for sports cards
 
+import { store } from '../dal/syncStore';
+import { sealedStorage } from '../dal/sealedStorage';
+import { logger } from '../logger';
+
+/**
+ * Persistence layer for user-registered DigitalTwins.
+ *
+ * The form a user fills in `RegisterTab` can include `certNumber` and
+ * personally entered card metadata. Per CodeQL's
+ * `js/clear-text-storage-of-sensitive-information` heuristic, persisting that
+ * struct verbatim to localStorage trips a sensitive-storage alert (the
+ * heuristic flags any `cert*` field). We seal the payload via WebCrypto
+ * AES-GCM (`lib/dal/sealedStorage`) and keep a synchronous in-memory cache so
+ * `getMyRegisteredCards()` callers don't change shape.
+ *
+ * Lifecycle:
+ *   - `initProvenanceService(userId)` rotates the active key + clears cache
+ *     + kicks off async hydration of the cache from sealed storage.
+ *   - `registerCard()` writes through the cache immediately, schedules a
+ *     fire-and-forget seal-and-persist.
+ *   - `getMyRegisteredCards()` returns the cache. If hydration is still
+ *     racing, only seeded mocks show until the first await completes.
+ */
+
+const REGISTRY_KEY_BASE = 'msi_provenance_registered_v1';
+let _currentUserId: string | null = null;
+let _persistedCache: DigitalTwin[] = [];
+let _hydration: Promise<void> | null = null;
+// Monotonic generation counter — incremented on every init. Async tasks
+// (hydration unseal, write-back seal) capture their generation at start and
+// drop their results if the value changed under them, which signals
+// initProvenanceService was called again (e.g. user switch). Without this,
+// a slow unseal for user A can land after the cache has been cleared for
+// user B and leak A's registered cards into B's session.
+let _generation = 0;
+
+export function initProvenanceService(userId: string | null): void {
+  _generation += 1;
+  _currentUserId = userId;
+  _persistedCache = [];
+  _hydration = hydrateFromSealed(_generation);
+}
+
+/** Test/SSR hook — await this to know the in-memory cache is populated. */
+export function _provenanceHydrationForTests(): Promise<void> {
+  return _hydration ?? Promise.resolve();
+}
+
+function registryKey(): string {
+  return _currentUserId
+    ? `${REGISTRY_KEY_BASE}__${_currentUserId}`
+    : `${REGISTRY_KEY_BASE}__guest`;
+}
+
+async function hydrateFromSealed(generation: number): Promise<void> {
+  const raw = store.get<unknown>(registryKey(), null);
+  if (raw == null) {
+    if (generation === _generation) _persistedCache = [];
+    return;
+  }
+  // Migrate any pre-seal plaintext entries (from before this commit landed)
+  // by re-sealing them next write. They round-trip through the cache here.
+  if (Array.isArray(raw)) {
+    if (generation === _generation) _persistedCache = raw as DigitalTwin[];
+    return;
+  }
+  if (sealedStorage.isSealed(raw)) {
+    try {
+      const decrypted = await sealedStorage.unseal<DigitalTwin[]>(raw);
+      // Re-check the generation AFTER the await — a user switch during the
+      // unseal would have bumped it; in that case we drop the result rather
+      // than leaking the previous user's data into the new session.
+      if (generation !== _generation) return;
+      _persistedCache = decrypted ?? [];
+    } catch (err) {
+      logger.warn('[provenanceChain] sealed cache unseal failed', err);
+      if (generation === _generation) _persistedCache = [];
+    }
+    return;
+  }
+  if (generation === _generation) _persistedCache = [];
+}
+
+function getPersistedRegisteredCards(): DigitalTwin[] {
+  return _persistedCache;
+}
+
+function persistRegisteredCard(twin: DigitalTwin): void {
+  _persistedCache = [twin, ..._persistedCache];
+  const snapshot = _persistedCache;
+  const key = registryKey();
+  const generation = _generation;
+  // Fire-and-forget. A failed seal leaves the cache populated for this
+  // session; next reload will skip the unsealable value. A user switch
+  // during the seal drops the write so we never persist user A's data
+  // under user B's key.
+  sealedStorage
+    .seal(snapshot)
+    .then((token) => {
+      if (generation === _generation) store.set(key, token);
+    })
+    .catch((err) => logger.warn('[provenanceChain] seal failed; entry kept in memory only', err));
+}
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export type ChainEventType = 'mint' | 'sale' | 'grade' | 'transfer' | 'auction' | 'insurance-appraisal' | 'exhibition';
@@ -802,7 +906,12 @@ const _LEGACY_SIGHTINGS: CrossPlatformSighting[] = [
 ];
 
 export function getMyRegisteredCards(): DigitalTwin[] {
-  return _LEGACY_TWINS.filter(t => t.owner === 'You');
+  // Seeded demo entries owned by the current user, plus anything the user has
+  // registered themselves via registerCard() (persisted via DAL with
+  // per-user scoping). The seeded data is still labeled as simulation in the
+  // page banner.
+  const seeded = _LEGACY_TWINS.filter(t => t.owner === 'You');
+  return [...getPersistedRegisteredCards(), ...seeded];
 }
 
 export function getRegistryStats(): RegistryStats {
@@ -860,8 +969,36 @@ export function verifyBeforePurchase(_listingUrl: string): VerificationResult {
 }
 
 export function registerCard(
-  _cardData: { playerName: string; cardDescription: string; year: number; manufacturer: string; setName: string; cardNumber: string; grade?: string; gradingCompany?: string; certNumber?: string; currentValue?: number },
+  cardData: { playerName: string; cardDescription: string; year: number; manufacturer: string; setName: string; cardNumber: string; grade?: string; gradingCompany?: string; certNumber?: string; currentValue?: number },
   _images: File[] | string[],
 ): DigitalTwin {
-  return _LEGACY_TWINS[0];
+  const now = new Date().toISOString();
+  const id = `twin-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+  const twin: DigitalTwin = {
+    id,
+    cardId: id,
+    playerName: cardData.playerName,
+    cardDescription: cardData.cardDescription,
+    year: cardData.year,
+    manufacturer: cardData.manufacturer,
+    setName: cardData.setName,
+    cardNumber: cardData.cardNumber,
+    grade: cardData.grade,
+    gradingCompany: cardData.gradingCompany,
+    certNumber: cardData.certNumber,
+    fingerprint: _genFingerprint(),
+    provenanceTimeline: [],
+    ownershipHistory: [],
+    // Authenticity is the simulated baseline — the page banner already labels
+    // this as prototype data; users should not treat the score as a real grade.
+    authenticityScore: 75,
+    currentValue: cardData.currentValue ?? 0,
+    registeredAt: now,
+    lastVerified: now,
+    status: 'pending',
+    imageUrl: '',
+    owner: 'You',
+  };
+  persistRegisteredCard(twin);
+  return twin;
 }

@@ -39,7 +39,9 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: javascript-typescript
-          queries: security-and-quality
+          # security-and-quality suite + paths-ignore for codegen templates
+          # whose {{PLACEHOLDER}} tokens aren't valid TSX (see config file).
+          config-file: ./.github/codeql/codeql-config.yml
 
       # No build step — CodeQL's autobuilder is unnecessary for pure JS/TS.
 
