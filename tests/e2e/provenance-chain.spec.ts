@@ -20,6 +20,9 @@ test.describe('Provenance Chain registry persistence (/provenance)', () => {
     test.skip(({ browserName }) => browserName !== 'chromium', 'Desktop chromium smoke');
 
     test('registered card survives a full page reload', async ({ page }) => {
+        // Demo login → register → sealed write → reload → hydrate is a long
+        // flow; the 30s default budget is too tight on cold preview servers.
+        test.setTimeout(90_000);
         await enterDemoMode(page);
         await page.goto('/#/provenance');
 
@@ -43,7 +46,7 @@ test.describe('Provenance Chain registry persistence (/provenance)', () => {
             { timeout: 10_000 },
         );
 
-        await page.reload();
+        await page.reload({ waitUntil: 'domcontentloaded' });
         await expect(
             page.getByRole('heading', { name: /card dna & provenance chain/i }),
         ).toBeVisible({ timeout: 15_000 });

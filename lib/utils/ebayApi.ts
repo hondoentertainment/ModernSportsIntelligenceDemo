@@ -171,7 +171,7 @@ export const ebayApi = {
       averagePrice: Math.round(averagePrice * 100) / 100,
       medianPrice,
       priceRange,
-      totalListings: Math.max(reportedTotal, prices.length),
+      totalListings: prices.length,
       recentSales: sales.slice(0, 10) // Return top 10 recent sales
     };
   },

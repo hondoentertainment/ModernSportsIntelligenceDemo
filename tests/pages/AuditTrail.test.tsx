@@ -20,7 +20,7 @@ import { MemoryRouter } from 'react-router-dom';
 const mockState = vi.hoisted(() => ({
   auth: { user: null as null | { id: string; email: string } },
   localEvents: [] as Array<Record<string, unknown>>,
-  remoteEvents: [] as Array<Record<string, unknown>>,
+  remoteRows: [] as Array<Record<string, unknown>>,
 }));
 
 const sampleLocal = [
@@ -41,21 +41,17 @@ const sampleLocal = [
   },
 ];
 
-const sampleRecorded = [
+// Raw Supabase row — the page maps these through
+// mapStoredRecordToAuditEvent(row, i, 'cloud') itself.
+const sampleRemoteRow = [
   {
-    id: 'r-1',
-    timestamp: '2026-05-21 09:00:00',
+    user_id: 'abc12345-def',
     category: 'portfolio',
-    severity: 'info',
-    actor: 'user:abc123…',
     action: 'inventory.updated',
-    resource: 'card · c1',
-    details: 'count: 3',
-    ipAddress: '—',
-    sessionId: '—',
-    result: 'success',
+    entity_type: 'card',
+    entity_id: 'c1',
     metadata: { count: '3' },
-    source: 'recorded',
+    created_at: '2026-05-21T09:00:00.000Z',
   },
 ];
 
@@ -64,9 +60,15 @@ vi.mock('../../contexts/AuthContext', () => ({
   useAuth: () => mockState.auth,
 }));
 
-vi.mock('../../lib/utils/auditTrailService', () => ({
+vi.mock('../../lib/utils/auditTrailRemote', () => ({
+  fetchRemoteAuditEvents: vi.fn(async () => mockState.remoteRows),
+}));
+
+vi.mock('../../lib/utils/auditTrailService', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../lib/utils/auditTrailService')>();
+  return {
+  ...actual,
   getAuditEvents: () => mockState.localEvents,
-  getRemoteAuditEvents: vi.fn(async () => mockState.remoteEvents),
   getComplianceRules: () => [
     {
       id: 'cr-1',
@@ -115,11 +117,12 @@ vi.mock('../../lib/utils/auditTrailService', () => ({
   getSeverityColor: () => 'text-blue-400 bg-blue-500/10',
   getCategoryColor: () => 'text-emerald-400',
   getComplianceStatusColor: () => 'text-green-400 bg-green-500/10',
-}));
+  };
+});
 
 // Import the page after the mocks so the mocked modules win.
 import AuditTrail from '../../pages/AuditTrail';
-import * as auditTrailService from '../../lib/utils/auditTrailService';
+import * as auditTrailRemote from '../../lib/utils/auditTrailRemote';
 
 function renderPage() {
   return render(
@@ -139,7 +142,7 @@ describe('AuditTrail page', () => {
     cleanup();
     mockState.auth.user = null;
     mockState.localEvents = sampleLocal;
-    mockState.remoteEvents = [];
+    mockState.remoteRows = [];
   });
 
   it('renders the page heading and the five stat tiles', () => {
@@ -170,14 +173,14 @@ describe('AuditTrail page', () => {
     });
 
     expect(
-      vi.mocked(auditTrailService.getRemoteAuditEvents),
+      vi.mocked(auditTrailRemote.fetchRemoteAuditEvents),
     ).not.toHaveBeenCalled();
   });
 
   it('with an authed user, fetches remote events and merges them in front of local rows', async () => {
     mockState.auth.user = { id: 'user-1', email: 'user@example.com' };
     mockState.localEvents = sampleLocal;
-    mockState.remoteEvents = sampleRecorded;
+    mockState.remoteRows = sampleRemoteRow;
 
     renderPage();
 
@@ -186,30 +189,32 @@ describe('AuditTrail page', () => {
     });
 
     expect(screen.getByText('sample row')).toBeInTheDocument();
+    // Cloud rows get their own provenance badge.
+    expect(screen.getByText('Cloud')).toBeInTheDocument();
     expect(
-      vi.mocked(auditTrailService.getRemoteAuditEvents),
-    ).toHaveBeenCalledWith('user-1');
+      vi.mocked(auditTrailRemote.fetchRemoteAuditEvents),
+    ).toHaveBeenCalledWith('user-1', { limit: 200 });
   });
 
   it('refresh button bumps eventsRefresh and re-fetches when authed', async () => {
     mockState.auth.user = { id: 'user-1', email: 'user@example.com' };
     mockState.localEvents = sampleLocal;
-    mockState.remoteEvents = sampleRecorded;
+    mockState.remoteRows = sampleRemoteRow;
 
     const user = userEvent.setup();
     renderPage();
 
     await waitFor(() => {
       expect(
-        vi.mocked(auditTrailService.getRemoteAuditEvents),
+        vi.mocked(auditTrailRemote.fetchRemoteAuditEvents),
       ).toHaveBeenCalledTimes(1);
     });
 
-    await user.click(screen.getByRole('button', { name: /refresh/i }));
+    await user.click(screen.getByRole('button', { name: /^refresh$/i }));
 
     await waitFor(() => {
       expect(
-        vi.mocked(auditTrailService.getRemoteAuditEvents).mock.calls.length,
+        vi.mocked(auditTrailRemote.fetchRemoteAuditEvents).mock.calls.length,
       ).toBeGreaterThanOrEqual(2);
     });
   });
