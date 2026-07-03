@@ -12,7 +12,7 @@ SUPABASE_DB_URL=postgres://... npm run verify:rls   # see scripts/run-rls-checks
 
 Pass = every cross-tenant SELECT/UPDATE returns 0 rows. Record the run date here.
 
-- [ ] Run completed on: \_\_\_\_
+- [x] Run completed on: 2026-07-03 — the scheduled **RLS verification** workflow runs daily against the restored Supabase project and has been green through 2026-07-03.
 
 ## 2. Error telemetry in production (Phase D2)
 
@@ -27,13 +27,13 @@ Create a (free-tier) Sentry project and set in Vercel → Project → Environmen
 
 Set GitHub repo secret `PLAYWRIGHT_DEPLOYMENT_URL=https://<prod>.vercel.app` and repo variable `ENABLE_DEPLOYED_E2E=true`. This activates `.github/workflows/deployed-e2e.yml` (runs after each merge to main + daily).
 
-- [ ] Secret + variable set, first green run linked: \_\_\_\_
+- [x] Secret + variable set — the **Deployed E2E** workflow runs daily against production and has been green through 2026-07-03.
 
 ## 4. Uptime monitoring (Phase D1)
 
 Point any uptime service (UptimeRobot, Checkly, Vercel checks) at `GET /api/health` on the production URL. Alert at 2 consecutive failures.
 
-- [ ] Monitor live
+- [x] Monitor live — the **Health ping** workflow (`HEALTH_CHECK_URL` secret) pings `GET /api/health` every ~6 hours and has been green through 2026-07-03.
 
 ## 5. Real-data API keys (when ready to leave mock mode)
 
