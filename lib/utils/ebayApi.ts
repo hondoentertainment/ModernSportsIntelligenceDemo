@@ -80,6 +80,8 @@ export const ebayApi = {
     cardNumber?: string;
     grading?: string;
     daysBack?: number;
+    /** Pages of 100 to aggregate (Browse API offset pagination). Default 3. */
+    maxPages?: number;
   }): Promise<{
     averagePrice: number;
     medianPrice: number;
@@ -94,13 +96,27 @@ export const ebayApi = {
     }>;
   }> {
     // Browse API returns active listings; `soldOnly` is reserved for future sold-comp feeds.
-    const searchResults = await this.searchSportsCards({
-      ...params,
-      limit: 100,
-      sort: 'price',
-    });
+    const PAGE_SIZE = 100;
+    const maxPages = Math.max(1, params.maxPages ?? 3);
+    const { maxPages: _mp, ...searchParams } = params;
 
-    if (!searchResults.itemSummaries || searchResults.itemSummaries.length === 0) {
+    const itemSummaries: EbayItemSummary[] = [];
+    let reportedTotal = 0;
+    for (let page = 0; page < maxPages; page++) {
+      const results = await this.searchSportsCards({
+        ...searchParams,
+        limit: PAGE_SIZE,
+        offset: page * PAGE_SIZE,
+        sort: 'price',
+      });
+      const pageItems = results.itemSummaries ?? [];
+      itemSummaries.push(...pageItems);
+      reportedTotal = results.total ?? itemSummaries.length;
+      // Stop when the API is exhausted: short page or no more beyond this offset.
+      if (pageItems.length < PAGE_SIZE || itemSummaries.length >= reportedTotal) break;
+    }
+
+    if (itemSummaries.length === 0) {
       return {
         averagePrice: 0,
         medianPrice: 0,
@@ -114,7 +130,7 @@ export const ebayApi = {
     const prices: number[] = [];
     const sales: Array<{ price: number; date: string; condition: string; title: string; itemId: string }> = [];
 
-    searchResults.itemSummaries.forEach((item: EbayItemSummary) => {
+    itemSummaries.forEach((item: EbayItemSummary) => {
       if (item.price && item.price.value) {
         const price = parseFloat(item.price.value);
         prices.push(price);
@@ -155,7 +171,7 @@ export const ebayApi = {
       averagePrice: Math.round(averagePrice * 100) / 100,
       medianPrice,
       priceRange,
-      totalListings: prices.length,
+      totalListings: Math.max(reportedTotal, prices.length),
       recentSales: sales.slice(0, 10) // Return top 10 recent sales
     };
   },

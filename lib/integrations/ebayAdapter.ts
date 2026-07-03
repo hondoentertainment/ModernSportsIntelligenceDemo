@@ -12,6 +12,7 @@
 import { ebayApi } from '../utils/ebayApi';
 import { isFeatureEnabled } from '../featureFlags';
 import { apiCache, CACHE_TTL } from '../apiCache';
+import { store } from '../dal/syncStore';
 import { logger } from '../logger';
 
 export interface EbayMarketData {
@@ -31,9 +32,13 @@ export interface EbayMarketData {
     isSold: boolean;
   }>;
   lastUpdated: string;
-  /** Where the numbers came from. Mock data must never be presented as live comps. */
-  source: 'live' | 'mock';
-  /** Set when the live API was requested but failed and mock data was substituted. */
+  /**
+   * Where the numbers came from. Mock data must never be presented as live
+   * comps; `stale` is a real comp set from an earlier successful live call,
+   * served because the live API is currently failing.
+   */
+  source: 'live' | 'mock' | 'stale';
+  /** Set when the live API was requested but failed and a fallback was substituted. */
   degradedReason?: string;
 }
 
@@ -63,6 +68,39 @@ export function computeTrendPercent(sales: Array<{ price: number; date: string }
   const newer = avg(sorted.slice(mid));
   if (older <= 0) return 0;
   return Math.round(((newer - older) / older) * 100 * 100) / 100;
+}
+
+// ─── Last-known-good comps ────────────────────────────────────────
+//
+// Every successful live comp set is persisted per (player, year, set, grade)
+// via the DAL. When a later live call fails, the degraded fallback serves the
+// last-known-good set labeled `source: 'stale'` instead of jumping straight
+// to mock numbers.
+
+const LKG_KEY_BASE = 'msi_ebay_lkg_comps_v1';
+
+function lkgKey(params: EbaySearchParams): string {
+  return `${LKG_KEY_BASE}:${[
+    params.playerName,
+    params.cardYear ?? '',
+    params.cardSet ?? '',
+    params.grade ?? '',
+  ]
+    .join('|')
+    .toLowerCase()}`;
+}
+
+function saveLastKnownGood(params: EbaySearchParams, data: EbayMarketData): void {
+  try {
+    store.set(lkgKey(params), data);
+  } catch (err) {
+    logger.warn('[eBay] failed to persist last-known-good comps', err);
+  }
+}
+
+function getLastKnownGood(params: EbaySearchParams): EbayMarketData | null {
+  const cached = store.get<EbayMarketData | null>(lkgKey(params), null);
+  return cached && cached.source === 'live' ? cached : null;
 }
 
 // ─── Mock Data ────────────────────────────────────────────────────
@@ -122,7 +160,7 @@ export const ebayAdapter = {
             ...s,
             isSold: true,
           }));
-          return {
+          const liveData: EbayMarketData = {
             averagePrice: result.averagePrice,
             medianPrice: result.medianPrice,
             lowPrice: result.priceRange.min,
@@ -134,12 +172,17 @@ export const ebayAdapter = {
             lastUpdated: new Date().toISOString(),
             source: 'live' as const,
           };
+          saveLastKnownGood(params, liveData);
+          return liveData;
         } catch (err) {
+          const degradedReason = `Live eBay request failed: ${err instanceof Error ? err.message : String(err)}`;
+          const lastKnownGood = getLastKnownGood(params);
+          if (lastKnownGood) {
+            logger.warn('[eBay] Real API failed, serving last-known-good comps', err);
+            return { ...lastKnownGood, source: 'stale' as const, degradedReason };
+          }
           logger.warn('[eBay] Real API failed, falling back to mock', err);
-          return generateMockMarketData(
-            params,
-            `Live eBay request failed: ${err instanceof Error ? err.message : String(err)}`,
-          );
+          return generateMockMarketData(params, degradedReason);
         }
       }
 

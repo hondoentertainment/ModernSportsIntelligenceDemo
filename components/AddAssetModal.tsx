@@ -40,6 +40,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
     const [isGraded, setIsGraded] = useState(false);
     const [gradingCompany, setGradingCompany] = useState('PSA');
     const [grade, setGrade] = useState('10');
+    const [certNumber, setCertNumber] = useState('');
     const [isAutographed, setIsAutographed] = useState(false);
     const [purchasePrice, setPurchasePrice] = useState('');
     const [purchaseDate, setPurchaseDate] = useState(new Date().toISOString().split('T')[0]);
@@ -61,6 +62,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             setIsGraded(editCard.isGraded);
             setGradingCompany(editCard.gradingCompany || 'PSA');
             setGrade(editCard.grade || '10');
+            setCertNumber(editCard.certNumber || '');
             setIsAutographed(editCard.isAutographed);
             setPurchasePrice(editCard.purchasePrice.toString());
             setPurchaseDate(editCard.purchaseDate || new Date().toISOString().split('T')[0]);
@@ -80,6 +82,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             setIsGraded(initialData.isGraded || false);
             setGradingCompany(initialData.gradingCompany || 'PSA');
             setGrade(initialData.grade || '10');
+            setCertNumber(initialData.certNumber || '');
             setIsAutographed(initialData.isAutographed || false);
             setPurchasePrice('');
             setPurchaseDate(new Date().toISOString().split('T')[0]);
@@ -102,6 +105,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             setIsGraded(false);
             setGradingCompany('PSA');
             setGrade('10');
+            setCertNumber('');
             setIsAutographed(false);
             setPurchasePrice('');
             setPurchaseDate(new Date().toISOString().split('T')[0]);
@@ -133,6 +137,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             isGraded,
             gradingCompany: isGraded ? gradingCompany : undefined,
             grade: isGraded ? grade : undefined,
+            certNumber: isGraded && certNumber.trim() ? certNumber.trim() : undefined,
             isAutographed,
             purchasePrice: parseFloat(purchasePrice) || 0,
             purchaseDate,
@@ -325,6 +330,16 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                         value={grade}
                                         onChange={(e) => setGrade(e.target.value)}
                                         placeholder="e.g. 10"
+                                        className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-3 px-4 text-sm font-medium text-white focus:outline-none focus:border-brand-lime/30"
+                                    />
+                                </div>
+                                <div className="col-span-2 space-y-2">
+                                    <label className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Cert Number <span className="normal-case font-medium text-slate-500">(optional — enables PSA verification)</span></label>
+                                    <input
+                                        type="text"
+                                        value={certNumber}
+                                        onChange={(e) => setCertNumber(e.target.value)}
+                                        placeholder="e.g. 45892341"
                                         className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-3 px-4 text-sm font-medium text-white focus:outline-none focus:border-brand-lime/30"
                                     />
                                 </div>
