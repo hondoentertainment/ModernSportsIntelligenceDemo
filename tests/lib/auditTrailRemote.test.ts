@@ -111,4 +111,40 @@ describe('fetchRemoteAuditEvents', () => {
     expect(result).toEqual([]);
     expect(logger.error).toHaveBeenCalledWith('fetchRemoteAuditEvents threw:', expect.any(Error));
   });
+
+  describe('pagination options', () => {
+    // Chainable AND awaitable builder — `before`/`category` are chained after
+    // `.limit()`, so the final query object must be thenable.
+    function buildChainableBuilder(result: { data: unknown; error: unknown }) {
+      const builder: Record<string, ReturnType<typeof vi.fn>> & {
+        then?: (_onFulfilled: (_v: unknown) => unknown) => Promise<unknown>;
+      } = {} as never;
+      builder.select = vi.fn().mockReturnValue(builder);
+      builder.eq = vi.fn().mockReturnValue(builder);
+      builder.order = vi.fn().mockReturnValue(builder);
+      builder.limit = vi.fn().mockReturnValue(builder);
+      builder.lt = vi.fn().mockReturnValue(builder);
+      builder.then = (onFulfilled: (_v: unknown) => unknown) => Promise.resolve(result).then(onFulfilled);
+      return builder;
+    }
+
+    it('applies before and category filters when provided', async () => {
+      const qb = buildChainableBuilder({ data: [], error: null });
+      (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
+
+      await fetchRemoteAuditEvents('user-1', { category: 'portfolio', before: '2026-01-01T00:00:00.000Z' });
+      expect(qb.eq).toHaveBeenCalledWith('category', 'portfolio');
+      expect(qb.lt).toHaveBeenCalledWith('created_at', '2026-01-01T00:00:00.000Z');
+    });
+
+    it('caps the limit at 500 and floors at 1', async () => {
+      const qb = buildChainableBuilder({ data: [], error: null });
+      (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
+
+      await fetchRemoteAuditEvents('user-1', { limit: 9999 });
+      expect(qb.limit).toHaveBeenLastCalledWith(500);
+      await fetchRemoteAuditEvents('user-1', { limit: 0 });
+      expect(qb.limit).toHaveBeenLastCalledWith(1);
+    });
+  });
 });

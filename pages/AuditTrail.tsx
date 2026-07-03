@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   ScrollText, Shield, AlertTriangle, CheckCircle, XCircle,
-  Lock, FileText, Database, RefreshCw,
+  Lock, FileText, Database, RefreshCw, Download, Search, X,
 } from 'lucide-react';
 import {
   getAuditEvents,
-  getRemoteAuditEvents,
   getComplianceRules,
   getComplianceReports,
   getRetentionPolicies,
@@ -13,40 +12,140 @@ import {
   getSeverityColor,
   getCategoryColor,
   getComplianceStatusColor,
+  mapStoredRecordToAuditEvent,
+  filterAuditEvents,
+  exportAuditEventsToCSV,
+  getOldestCreatedAt,
+  type AuditCategory,
+  type AuditSeverity,
   type AuditEvent,
 } from '../lib/utils/auditTrailService';
+import { fetchRemoteAuditEvents, type RemoteAuditRow } from '../lib/utils/auditTrailRemote';
 import { useAuth } from '../contexts/AuthContext';
+
+const ALL_CATEGORIES: AuditCategory[] = ['portfolio', 'trading', 'auth', 'admin', 'finance', 'api', 'compliance', 'data'];
+const ALL_SEVERITIES: AuditSeverity[] = ['info', 'warning', 'critical', 'security'];
+const ALL_SOURCES: NonNullable<AuditEvent['source']>[] = ['recorded', 'cloud', 'sample'];
+
+const CLOUD_PAGE_SIZE = 200;
 
 const AuditTrail: React.FC = () => {
   const { user } = useAuth();
   const [eventsRefresh, setEventsRefresh] = useState(0);
   const reloadEvents = useCallback(() => setEventsRefresh((n) => n + 1), []);
 
-  const [events, setEvents] = useState<AuditEvent[]>(() => getAuditEvents());
-  const recordedCount = useMemo(() => events.filter((e) => e.source === 'recorded').length, [events]);
+  // Raw Supabase rows are kept (not just mapped UI rows) so the ISO
+  // `created_at` of the oldest loaded row can drive the `before` cursor.
+  const [cloudRows, setCloudRows] = useState<RemoteAuditRow[]>([]);
+  const [cloudLoading, setCloudLoading] = useState(false);
+  const [cloudOlderLoading, setCloudOlderLoading] = useState(false);
+  const [cloudHasMore, setCloudHasMore] = useState(false);
 
+  // Load the signed-in user's audit_events from Supabase. Failures are
+  // swallowed by fetchRemoteAuditEvents (returns []), so the local trail
+  // always renders.
   useEffect(() => {
-    let ignore = false;
-    async function load() {
-      const local = getAuditEvents();
-      if (!user?.id) {
-        if (!ignore) setEvents(local);
-        return;
-      }
-      const remote = await getRemoteAuditEvents(user.id);
-      if (!ignore) setEvents([...remote, ...local]);
+    let cancelled = false;
+    if (!user?.id) {
+      setCloudRows([]);
+      setCloudHasMore(false);
+      return;
     }
-    void load();
-    return () => {
-      ignore = true;
-    };
+    setCloudLoading(true);
+    fetchRemoteAuditEvents(user.id, { limit: CLOUD_PAGE_SIZE })
+      .then((rows) => {
+        if (cancelled) return;
+        setCloudRows(rows);
+        setCloudHasMore(rows.length === CLOUD_PAGE_SIZE);
+      })
+      .finally(() => {
+        if (!cancelled) setCloudLoading(false);
+      });
+    return () => { cancelled = true; };
   }, [user?.id, eventsRefresh]);
 
+  // Earliest `created_at` we've loaded — the cursor for "load older".
+  const oldestCloudTimestamp = useMemo(() => getOldestCreatedAt(cloudRows), [cloudRows]);
+
+  const loadOlderCloudEvents = useCallback(async () => {
+    if (!user?.id || !oldestCloudTimestamp || cloudOlderLoading) return;
+    setCloudOlderLoading(true);
+    try {
+      const older = await fetchRemoteAuditEvents(user.id, {
+        limit: CLOUD_PAGE_SIZE,
+        before: oldestCloudTimestamp,
+      });
+      if (older.length === 0) {
+        setCloudHasMore(false);
+        return;
+      }
+      setCloudRows((prev) => [...prev, ...older]);
+      setCloudHasMore(older.length === CLOUD_PAGE_SIZE);
+    } finally {
+      setCloudOlderLoading(false);
+    }
+  }, [user?.id, oldestCloudTimestamp, cloudOlderLoading]);
+
+  const events = useMemo(() => {
+    const cloud = cloudRows
+      .map((row, i) => mapStoredRecordToAuditEvent(row, i, 'cloud'))
+      .filter((e): e is AuditEvent => e !== null);
+    // eventsRefresh re-reads the local trail from storage on demand.
+    void eventsRefresh;
+    const local = getAuditEvents();
+    return [...cloud, ...local];
+  }, [cloudRows, eventsRefresh]);
+
+  const recordedCount = useMemo(() => events.filter((e) => e.source === 'recorded').length, [events]);
+  const cloudCount = useMemo(() => events.filter((e) => e.source === 'cloud').length, [events]);
   const rules = useMemo(() => getComplianceRules(), []);
   const compReports = useMemo(() => getComplianceReports(), []);
   const retention = useMemo(() => getRetentionPolicies(), []);
   const stats = useMemo(() => getAuditTrailStats(), []);
   const [activeTab, setActiveTab] = useState<'events' | 'compliance' | 'retention'>('events');
+
+  const [search, setSearch] = useState('');
+  const [catFilter, setCatFilter] = useState<Set<AuditCategory>>(new Set());
+  const [sevFilter, setSevFilter] = useState<Set<AuditSeverity>>(new Set());
+  const [srcFilter, setSrcFilter] = useState<Set<NonNullable<AuditEvent['source']>>>(new Set());
+
+  const filteredEvents = useMemo(
+    () => filterAuditEvents(events, {
+      search,
+      categories: Array.from(catFilter),
+      severities: Array.from(sevFilter),
+      sources: Array.from(srcFilter),
+    }),
+    [events, search, catFilter, sevFilter, srcFilter]
+  );
+
+  const toggleSetItem = <T,>(set: Set<T>, setter: (_s: Set<T>) => void, item: T) => {
+    const next = new Set(set);
+    if (next.has(item)) next.delete(item); else next.add(item);
+    setter(next);
+  };
+
+  const clearFilters = useCallback(() => {
+    setSearch('');
+    setCatFilter(new Set());
+    setSevFilter(new Set());
+    setSrcFilter(new Set());
+  }, []);
+
+  const hasActiveFilters = search.length > 0 || catFilter.size > 0 || sevFilter.size > 0 || srcFilter.size > 0;
+
+  const downloadCsv = useCallback(() => {
+    const csv = exportAuditEventsToCSV(filteredEvents);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `msi-audit-events-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [filteredEvents]);
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -65,12 +164,18 @@ const AuditTrail: React.FC = () => {
               <p className="text-slate-500 text-xs mt-1">
                 {recordedCount > 0 ? (
                   <>
-                    {recordedCount} {user?.id ? 'Remote event' : 'recorded event'}
-                    {recordedCount === 1 ? '' : 's'} ·{' '}
+                    {recordedCount} recorded event{recordedCount === 1 ? '' : 's'} ·{' '}
                   </>
                 ) : (
                   <>No recorded events yet — use the app to generate audit entries · </>
                 )}
+                {cloudLoading ? (
+                  <>loading cloud events… · </>
+                ) : cloudCount > 0 ? (
+                  <>{cloudCount} cloud event{cloudCount === 1 ? '' : 's'} for your account · </>
+                ) : user?.id ? (
+                  <>no cloud events for your account yet · </>
+                ) : null}
                 refresh to pull the latest from storage
               </p>
             </div>
@@ -115,8 +220,73 @@ const AuditTrail: React.FC = () => {
         </div>
 
         {activeTab === 'events' && (
+          <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 space-y-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="relative flex-1 min-w-[200px]">
+                <Search size={14} aria-hidden className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search action, resource, actor, details…"
+                  aria-label="Search audit events"
+                  className="w-full bg-slate-800/60 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500/60"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={downloadCsv}
+                disabled={filteredEvents.length === 0}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide bg-violet-500/20 text-violet-300 border border-violet-500/40 hover:bg-violet-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <Download size={14} aria-hidden />
+                Export CSV
+              </button>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 border border-slate-700 hover:bg-slate-800 transition-colors"
+                >
+                  <X size={12} aria-hidden />
+                  Clear filters
+                </button>
+              )}
+            </div>
+
+            <FilterChipGroup
+              label="Category"
+              items={ALL_CATEGORIES}
+              selected={catFilter}
+              onToggle={(item) => toggleSetItem(catFilter, setCatFilter, item)}
+            />
+            <FilterChipGroup
+              label="Severity"
+              items={ALL_SEVERITIES}
+              selected={sevFilter}
+              onToggle={(item) => toggleSetItem(sevFilter, setSevFilter, item)}
+            />
+            <FilterChipGroup
+              label="Source"
+              items={ALL_SOURCES}
+              selected={srcFilter}
+              onToggle={(item) => toggleSetItem(srcFilter, setSrcFilter, item)}
+            />
+
+            <p className="text-[10px] text-slate-500 uppercase tracking-wide">
+              {filteredEvents.length} of {events.length} event{events.length === 1 ? '' : 's'}
+            </p>
+          </div>
+        )}
+
+        {activeTab === 'events' && (
           <div className="space-y-2">
-            {events.map(e => (
+            {filteredEvents.length === 0 && (
+              <div className="bg-slate-900 rounded-xl border border-slate-800 p-8 text-center text-slate-500 text-xs">
+                No events match the current filters.
+              </div>
+            )}
+            {filteredEvents.map(e => (
               <div key={e.id} className={`bg-slate-900 rounded-xl border p-4 ${
                 e.severity === 'security' || e.severity === 'critical' ? 'border-red-500/30' :
                 e.severity === 'warning' ? 'border-amber-500/30' : 'border-slate-800'
@@ -134,6 +304,11 @@ const AuditTrail: React.FC = () => {
                         {e.source === 'recorded' && (
                           <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30">
                             Recorded
+                          </span>
+                        )}
+                        {e.source === 'cloud' && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-sky-400 bg-sky-500/10 border border-sky-500/30">
+                            Cloud
                           </span>
                         )}
                         {e.source === 'sample' && (
@@ -161,6 +336,18 @@ const AuditTrail: React.FC = () => {
                 </div>
               </div>
             ))}
+            {user?.id && cloudHasMore && (
+              <div className="flex justify-center pt-2">
+                <button
+                  type="button"
+                  onClick={loadOlderCloudEvents}
+                  disabled={cloudOlderLoading}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {cloudOlderLoading ? 'Loading…' : 'Load older cloud events'}
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -243,5 +430,43 @@ const AuditTrail: React.FC = () => {
     </div>
   );
 };
+
+function FilterChipGroup<T extends string>({
+  label,
+  items,
+  selected,
+  onToggle,
+}: {
+  label: string;
+  items: readonly T[];
+  selected: Set<T>;
+  onToggle: (_item: T) => void;
+}): React.ReactElement {
+  return (
+    <div className="flex items-center gap-2 flex-wrap">
+      <span className="text-[10px] uppercase tracking-wide text-slate-500 font-bold w-20 flex-shrink-0">
+        {label}
+      </span>
+      {items.map((item) => {
+        const isOn = selected.has(item);
+        return (
+          <button
+            key={item}
+            type="button"
+            onClick={() => onToggle(item)}
+            aria-pressed={isOn}
+            className={`px-2 py-1 rounded-md text-[10px] font-semibold capitalize border transition-colors ${
+              isOn
+                ? 'bg-violet-500/20 text-violet-200 border-violet-500/50'
+                : 'bg-slate-800/50 text-slate-400 border-slate-700 hover:text-white hover:border-slate-600'
+            }`}
+          >
+            {item}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export default AuditTrail;
