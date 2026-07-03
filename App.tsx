@@ -577,6 +577,9 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/audit-dossier" element={<CollectorAuditDossier />} />
                 {/* Same rationale for /audit-trail: command palette / nav surface it. */}
                 <Route path="/audit-trail" element={<AuditTrail />} />
+                {/* provenance-chain exited beta (wave-3: DAL persistence + reload E2E),
+                    so its route ships in production like the rest of the live catalog. */}
+                <Route path="/provenance" element={<ProvenanceChain />} />
                 {/* Labs surface — the long tail ships only when VITE_FF_ENABLE_BETA_SURFACES
                     is set (see lib/productionLaunch.ts and docs/MVP_LAUNCH_SCOPE.md).
                     Production hides these routes; unknown paths fall through to the
@@ -766,7 +769,6 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/market-indices" element={<MarketIndices />} />
                 <Route path="/player-trajectory" element={<PlayerTrajectory />} />
                 <Route path="/portfolio-attribution" element={<PortfolioAttribution />} />
-                <Route path="/provenance" element={<ProvenanceChain />} />
                 <Route path="/provenance-intelligence" element={<ProvenanceChainIntelligence />} />
                 <Route path="/quant-workbench" element={<QuantWorkbench />} />
                 <Route path="/research-reports" element={<ResearchReports />} />

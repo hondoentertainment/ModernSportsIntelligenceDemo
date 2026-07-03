@@ -23,11 +23,14 @@ const BETA_FEATURES: Omit<BetaFeatureExitStatus, 'readyForLive' | 'blockers'>[] 
     id: 'liquidity-pool',
     name: 'Institutional Liquidity Pool',
     gates: {
-      persistence: false,
+      // Wave-3: recordInstantBuy() persists per-user via the DAL with
+      // round-trip tests, the Dashboard widget ships with a "Simulated
+      // Pool" label, and empty inventory hides the widget entirely.
+      persistence: true,
       data_honesty: true,
       auth_tenancy: true,
-      errors: false,
-      tests: false,
+      errors: true,
+      tests: true,
     },
   },
   {
@@ -82,7 +85,7 @@ const BETA_FEATURES: Omit<BetaFeatureExitStatus, 'readyForLive' | 'blockers'>[] 
       data_honesty: true,
       auth_tenancy: true,
       errors: true,
-      tests: false,
+      tests: true,
     },
   },
 ];

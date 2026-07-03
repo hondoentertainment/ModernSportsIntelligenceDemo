@@ -42,9 +42,14 @@ const LiquidityPoolWidget: React.FC<LiquidityPoolWidgetProps> = ({ inventory, on
             <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">MSI House • Instant Liquidation</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-charcoal border border-slate-800 rounded-full">
-          <div className="w-2 h-2 bg-brand-lime rounded-full animate-pulse" />
-          <span className="text-[9px] font-black text-white uppercase tracking-widest">Pool Active</span>
+        <div className="flex items-center gap-2">
+          <span className="px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-full text-[9px] font-black text-amber-300 uppercase tracking-widest">
+            Simulated Pool
+          </span>
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-brand-charcoal border border-slate-800 rounded-full">
+            <div className="w-2 h-2 bg-brand-lime rounded-full animate-pulse" />
+            <span className="text-[9px] font-black text-white uppercase tracking-widest">Pool Active</span>
+          </div>
         </div>
       </div>
 

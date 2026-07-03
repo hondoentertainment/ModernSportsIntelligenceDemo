@@ -106,7 +106,6 @@ export const SEARCHABLE_FEATURE_IDS = [
   'collector-social-graph',
   'restoration-simulator',
   'market-maker-arena',
-  'fractional-vault-v2',
   'portfolio-stress-tester',
   'rookie-pipeline-scanner',
   'forensics-lab',
