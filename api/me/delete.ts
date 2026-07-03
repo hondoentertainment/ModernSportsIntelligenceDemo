@@ -36,7 +36,7 @@ const CONFIRMATION_PHRASE = 'DELETE MY ACCOUNT';
 const ALLOWED_METHODS = 'POST, OPTIONS';
 const RATE_LIMIT_MAX = 2;
 const RATE_LIMIT_WINDOW_MS = 60_000;
-const STRIPE_API_VERSION = '2026-05-27.dahlia' as const;
+const STRIPE_API_VERSION = '2026-06-24.dahlia' as const;
 
 const bodySchema = z.object({
   confirm: z.literal(CONFIRMATION_PHRASE),
