@@ -225,7 +225,9 @@ describe('Dashboard (regression guard)', () => {
         // two spans, so a partial regex is more resilient than an exact match.
         expect(screen.getByText(/system/i)).toBeInTheDocument();
         expect(screen.getByText(/initialization/i)).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: /deploy first asset/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /scan your first card/i })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /add manually/i })).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /interactive demo tour/i })).toBeInTheDocument();
     });
 
     it('renders the populated hero when inventory is non-empty', { timeout: 30_000 }, async () => {
