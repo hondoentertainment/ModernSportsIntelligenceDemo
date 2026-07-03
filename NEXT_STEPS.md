@@ -1,72 +1,81 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Generated 2026-06-10 · Reflects the state of `main` after the World-Class Pass 1 PRs (#57 wave-2 beta safety + #67 bundle split / a11y / Labs / adapter truth).
+> Refreshed 2026-07-03 · Reflects `main` at `17effb4` (real-auth E2E + Vercel env sync, after PR #68 wave-3 persistence). Previous edition: 2026-06-10.
 
 ## Current state in one paragraph
 
-MSI is past the “impressive prototype” bar and into a launchable MVP. The DAL is enforced (0 `localStorage` violators), auth + RLS are wired, billing webhook + idempotency are in place, CSP + Sentry + error beacon are required in production builds, and CI gates are dense (typecheck/strict, lint, format, 92/80 coverage, pricing-truth, smoke E2E, deployed-E2E, bundle gate, axe smoke, route smoke across all 223 routes, CodeQL, visual regression, Lighthouse). The product surface is now focused: the curated MVP routes ship by default and the ~300 Labs routes only mount when `VITE_FF_ENABLE_BETA_SURFACES=1`. eBay/PSA adapters label every response `source: 'live' \| 'mock'`. The lib-services monolith (1.16 MB gz) is split into five domain chunks.
+MSI is deployed and being watched: since 2026-06-10 the scheduled production workflows have run green daily — **Deployed E2E**, **RLS verification**, and the **health ping** all pass against the live deployment — which means the Supabase project is restored, `PLAYWRIGHT_DEPLOYMENT_URL`/`ENABLE_DEPLOYED_E2E` are configured, and uptime monitoring is live. Two of the seven beta features (`visual-audit`, `live-impact`) were promoted to `live`, leaving **five** in beta. Wave-3 persistence for `provenance-chain` (DAL-backed, per-user, AES-GCM sealed) and the `recordInstantBuy` round-trip unit tests landed in #68. What has *not* happened since June 10: any new commit to `main`. The gap now is not hardening — it's that momentum stalled with a small queue of open PRs, three unchecked owner actions, and five betas that each need one specific thing to exit.
 
-The remaining gap to “world-class” is **not** more engineering surface — it’s **executing the launch playbook** with real credentials, **finishing the wave-3 beta items** for the seven features still labeled `beta`, and **deepening two integrations** (eBay sold comps and PSA cert) so the brand promise of pricing truth is backed by real data, not mocks.
+## Priority 0 — Clear the open-PR queue (½ day)
 
-## Priority 0 — Owner-held launch actions
+`main` has been idle for three weeks while four PRs sit open. Merge or close them before starting new work:
 
-See [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md). Every item is a one-shot configuration that engineering cannot do without credentials. They unblock the staged rollout in [`docs/ROLLBACK_AND_STABILIZATION.md`](docs/ROLLBACK_AND_STABILIZATION.md).
+| PR  | What it is                                                            | Recommended action                                                                                                       |
+| --- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| #74 | Dependabot: 7 production dependency bumps (2026-06-29)               | Rebase, let CI run, merge. The deployed-E2E gate is active, so a bad bump gets caught.                                    |
+| #75 | Dependabot: 15 dev dependency bumps (2026-06-29)                     | Same — merge after #74 is green.                                                                                          |
+| #59 | `ci: fix and consolidate bundle size budgets` (2026-06-11)           | Review against current `scripts/ci-bundle-gate.cjs`; merge if still applicable, close if #68/#67 superseded it.           |
+| #58 | Draft: Phase 31 audit viewer roadmap (2026-05-24)                    | Stale — the audit-dossier/audit-trail fixes landed separately in `4a5f17d`. Salvage anything unique, then close.          |
 
-1. Run `npm run verify:rls` against Supabase with real free/basic/pro/alpha test users.
-2. Set `VITE_SENTRY_DSN` + `VITE_REQUIRE_TELEMETRY=true` in Vercel.
-3. Set repo secret `PLAYWRIGHT_DEPLOYMENT_URL` and repo variable `ENABLE_DEPLOYED_E2E=true` to activate the deployed-E2E workflow.
-4. Point uptime monitoring at `GET /api/health`.
-5. When ready to leave mock mode: `EBAY_CLIENT_ID/SECRET` + `VITE_FF_REAL_EBAY=true`, then `PSA_API_KEY` + `VITE_FF_REAL_PSA=true`.
-6. Run the Stripe lifecycle smoke (subscribe → upgrade → downgrade → cancel → failed-payment) in test mode against the production deployment.
-7. Verify `/api/me/export` returns the user’s data and `/api/me/delete` purges + revokes session on a throwaway account.
+## Priority 1 — Finish the launch punch list (owner-held)
 
-## Priority 1 — Wave-3 beta exits (engineering)
+[`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md) still shows every box unchecked, but the green scheduled workflows prove items 1, 3, and 4 (RLS verification, deployed E2E, uptime) are effectively done — **check them off with dates** so the doc reflects reality. That leaves three genuinely open:
 
-Status of the 7 `status: 'beta'` IDs in [`lib/utils/featureCatalog.ts`](lib/utils/featureCatalog.ts) — wave-2 cleared all misleading copy and tenancy issues (see [`docs/BETA_EXIT_READINESS_PASS.md`](docs/BETA_EXIT_READINESS_PASS.md)). Wave-3 promotes them to `live` once persistence and tests land.
+1. **Sentry** — set `VITE_SENTRY_DSN` + `VITE_REQUIRE_TELEMETRY=true` in Vercel and confirm a test error arrives (punch-list item 2).
+2. **Stripe lifecycle smoke** — subscribe → upgrade → downgrade → cancel → failed-payment in test mode against production; verify webhook deliveries are all 2xx and tier updates (item 6).
+3. **GDPR endpoints** — verify `/api/me/export` and `/api/me/delete` on a throwaway account (item 7).
 
-| ID                    | Wave-3 work to promote                                                                                                                                  |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `liquidity-pool`      | Surface the widget on the Dashboard, write a unit test for `recordInstantBuy` round-tripping through the per-user key.                                  |
-| `visual-audit`        | Modal-only feature; needs E2E covering upload → result; consider client-side image storage opt-in.                                                      |
-| `live-impact`         | Either wire a real sports-feed adapter behind a flag or commit to demo-only with a doc note; either way, add a snapshot test for `getLiveImpactAlerts`. |
-| `vision-grading`      | Same image-handling decision as `visual-audit`; explicit PSA/BGS comparison must remain labeled.                                                        |
-| `fractional-vault`    | Service is pure catalog read — promote when legal/securities review approves the "Simulation only" disclosure; no engineering blocker.                  |
-| `provenance-chain`    | `registerCard()` now persists via the DAL with per-user scoping (this PR). Promote when an E2E covers register → reload → entry survives.               |
-| `fractional-vault-v2` | Catalog-only since the route collision was resolved; remove from catalog or merge with v1.                                                              |
+Item 5 (eBay/PSA real keys) is the gate for Priority 3 below — do it when starting that work, not before.
 
-## Priority 2 — Real-data integration depth
+## Priority 2 — Exit the five remaining betas
 
-The brand is “pricing truth.” Two integrations move the needle most:
+`lib/utils/featureCatalog.ts` still has 5 `status: 'beta'` entries. Each has exactly one remaining blocker:
 
-- **eBay sold comps:** `lib/integrations/ebayAdapter.ts` now tags `source` and computes `trendPercent` from real history when live. Next: pagination beyond the first page, store the last successful comp set per `(player, year, set, grade)` so degraded fallback shows the last-known-good response with a stale-data label instead of jumping to mock.
-- **PSA cert verification:** Adapter is ready. Surface the verified label on every card that has a `certNumber` using the existing `DataSourceBadge` component.
+| ID                    | Persistence/tests | Remaining blocker to promote                                                                                              |
+| --------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `provenance-chain`    | ✅ landed in #68   | One Playwright E2E: register a card → reload → entry survives. Everything else (DAL, per-user scoping, sealed storage) is done. |
+| `liquidity-pool`      | ✅ landed in #68   | Surface the widget on the Dashboard (it currently has `path: null`).                                                        |
+| `vision-grading`      | n/a               | Decide client-side image handling (same decision as the now-live `visual-audit` made) and keep the "estimates only" label.  |
+| `fractional-vault`    | n/a (pure catalog read) | Legal/securities sign-off on the "Simulation only" disclosure. No engineering work.                                    |
+| `fractional-vault-v2` | n/a               | Catalog hygiene: merge into v1 or delete the entry. It is catalog-only (`path: null`) and duplicates v1.                     |
 
-## Priority 3 — Onboarding & first-five-minutes
+Cheapest wins first: `fractional-vault-v2` (delete/merge, minutes), then `provenance-chain` (one E2E), then `liquidity-pool` (one widget mount). That takes the beta count from 5 to 2 in roughly a day of work.
 
-The funnel that defines "world-class" is: arrive → scan a card → see a real value with provenance → save. Audit it as a single flow:
+## Priority 3 — Turn on real data (eBay, then PSA)
 
-- Dashboard empty state for a brand-new user: one primary CTA ("Scan your first card") instead of widget grid.
-- Demo Flow currently sits behind `/demo-flow` and a widget — promote it into the empty-collection state.
-- After first card add, queue a non-blocking "We're fetching live pricing for this card" toast pointing at `DataSourceBadge`.
+The brand is "pricing truth" and the adapters are ready — every response is tagged `source: 'live' | 'mock'` with `degradedReason`. The deployed environment is stable enough now to flip the flags:
 
-## Priority 4 — Sustained dev experience
+1. Set `EBAY_CLIENT_ID`/`EBAY_CLIENT_SECRET` + `VITE_FF_REAL_EBAY=true`; watch the daily deployed-E2E and pricing-truth gates for a few days.
+2. Then `PSA_API_KEY` + `VITE_FF_REAL_PSA=true`, and surface the verified label on every card with a `certNumber` via the existing `DataSourceBadge`.
+3. Engineering depth once live: eBay comp pagination beyond page 1, and caching the last successful comp set per `(player, year, set, grade)` so degraded fallback shows last-known-good with a stale label instead of jumping to mock.
 
-- Add a `npm run perf:audit` script that runs `vite build && node scripts/ci-bundle-gate.cjs` and prints a one-line summary, so engineers see when their PR moves a chunk.
+## Priority 4 — Onboarding & first-five-minutes
+
+Unchanged from the last edition, and it becomes the top product priority once real data is on: arrive → scan a card → see a real value with provenance → save.
+
+- Dashboard empty state for a brand-new user: one primary CTA ("Scan your first card") instead of the widget grid.
+- Promote the Demo Flow (currently behind `/demo-flow`) into the empty-collection state.
+- After first card add, a non-blocking "We're fetching live pricing" toast pointing at `DataSourceBadge`.
+
+## Sustained dev experience (background, not blocking)
+
+- Dependabot is now grouped (prod/dev) — keep merging the grouped PRs promptly so they don't pile up like #74/#75 did.
 - Tighten coverage gates incrementally — every PR that crosses a service file should add it to the explicit whitelist in `vite.config.ts`.
-- Schedule a quarterly catalog sweep — features that have been `beta` for 90+ days either go `live` or get hidden.
+- Quarterly catalog sweep: features `beta` for 90+ days either go `live` or get hidden. First sweep due ~2026-09.
 
 ## What NOT to do next
 
-1. **Don’t add Labs features.** 330 routes is more than enough.
-2. **Don’t chase the lighthouse score below 0.95.** Diminishing returns versus shipping the wave-3 items.
-3. **Don’t restructure directories.** The DAL and chunk graph are settled; rearranging now would just churn the import map.
-4. **Don’t expose Labs routes in production** until the wave-3 work for a given beta lands — the Labs gate is now the only enforcer.
+1. **Don't add Labs features.** The surface is settled; the work is exits, not entries.
+2. **Don't restructure directories.** The DAL and chunk graph are stable; churn buys nothing.
+3. **Don't flip both real-data flags at once.** eBay first, observe, then PSA — the degraded-fallback paths get their first production exercise.
+4. **Don't let `main` idle behind open PRs again.** The deployed-E2E gate exists precisely so merging is cheap.
 
 ## Key references
 
 | Purpose                | File                                                                     |
 | ---------------------- | ------------------------------------------------------------------------ |
 | Owner-held launch ops  | `docs/LAUNCH_OPS_PUNCH_LIST.md`                                          |
+| Env sync after Supabase unpause | `docs/DEPLOY_ENV_CHECKLIST.md` (§ Supabase unpause + Vercel env sync) |
 | Beta status / criteria | `docs/BETA_FEATURE_EXIT_CRITERIA.md`, `docs/BETA_EXIT_READINESS_PASS.md` |
 | MVP launch scope       | `docs/MVP_LAUNCH_SCOPE.md`                                               |
 | Production rollout     | `docs/PRODUCTION_ROLLOUT_PHASES.md`                                      |
