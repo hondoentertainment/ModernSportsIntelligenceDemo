@@ -155,6 +155,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
           )}
           {card.certNumber && (
             <CertVerifiedBadge
+              key={card.certNumber}
               certNumber={card.certNumber}
               gradingCompany={card.gradingCompany}
               className="shadow-2xl"

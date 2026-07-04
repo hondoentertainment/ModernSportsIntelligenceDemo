@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS cards (
   is_graded BOOLEAN DEFAULT FALSE,
   grading_company TEXT,
   grade TEXT,
+  cert_number TEXT,
   purchase_price NUMERIC,
   purchase_date DATE,
   current_value NUMERIC,

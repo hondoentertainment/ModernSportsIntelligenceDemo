@@ -17,6 +17,7 @@ type DbCardRow = {
     condition: string;
     is_graded: boolean;
     grading_company?: CardInventory['gradingCompany'];
+    cert_number?: string | null;
     grade?: string;
     purchase_price: number;
     purchase_date: string;
@@ -97,6 +98,7 @@ function dbToCard(row: DbCardRow): CardInventory {
         condition: row.condition,
         isGraded: row.is_graded,
         gradingCompany: row.grading_company,
+        certNumber: row.cert_number ?? undefined,
         grade: row.grade,
         purchasePrice: row.purchase_price,
         purchaseDate: row.purchase_date,
@@ -161,6 +163,8 @@ function cardToDb(card: CardInventory, userId: string): DbCardRow & { user_id: s
         is_graded: card.isGraded,
         grading_company: card.gradingCompany,
         grade: card.grade,
+        // null (not undefined) so clearing the cert in the UI clears the row.
+        cert_number: card.certNumber ?? null,
         purchase_price: card.purchasePrice,
         purchase_date: card.purchaseDate,
         current_value: card.currentValue,

@@ -53,6 +53,31 @@ describe('ebayApi.getMarketValue pagination', () => {
     search.mockRestore();
   });
 
+  it('keeps earlier pages when a later page fails mid-walk', async () => {
+    const { ebayApi } = await import('../../lib/utils/ebayApi');
+    const search = vi
+      .spyOn(ebayApi, 'searchSportsCards')
+      .mockResolvedValueOnce({ itemSummaries: makeItems(100, 0, 100), total: 250 })
+      .mockRejectedValueOnce(new Error('eBay 503 on page 2'));
+
+    const result = await ebayApi.getMarketValue({ playerName: 'Mike Trout' });
+
+    expect(search).toHaveBeenCalledTimes(2);
+    expect(result.totalListings).toBe(100);
+    expect(result.averagePrice).toBe(100);
+    search.mockRestore();
+  });
+
+  it('propagates a first-page failure so callers can fall back', async () => {
+    const { ebayApi } = await import('../../lib/utils/ebayApi');
+    const search = vi
+      .spyOn(ebayApi, 'searchSportsCards')
+      .mockRejectedValue(new Error('eBay 503'));
+
+    await expect(ebayApi.getMarketValue({ playerName: 'Aaron Judge' })).rejects.toThrow('eBay 503');
+    search.mockRestore();
+  });
+
   it('respects the maxPages cap even when more results are reported', async () => {
     const { ebayApi } = await import('../../lib/utils/ebayApi');
     const search = vi

@@ -103,12 +103,21 @@ export const ebayApi = {
     const itemSummaries: EbayItemSummary[] = [];
     let reportedTotal = 0;
     for (let page = 0; page < maxPages; page++) {
-      const results = await this.searchSportsCards({
-        ...searchParams,
-        limit: PAGE_SIZE,
-        offset: page * PAGE_SIZE,
-        sort: 'price',
-      });
+      let results: EbaySearchResponse;
+      try {
+        results = await this.searchSportsCards({
+          ...searchParams,
+          limit: PAGE_SIZE,
+          offset: page * PAGE_SIZE,
+          sort: 'price',
+        });
+      } catch (err) {
+        // First page failing means no data at all — let the caller's
+        // degraded-fallback handle it. A later page failing should not
+        // discard the comps already collected; aggregate what we have.
+        if (page === 0) throw err;
+        break;
+      }
       const pageItems = results.itemSummaries ?? [];
       itemSummaries.push(...pageItems);
       reportedTotal = results.total ?? itemSummaries.length;

@@ -15,16 +15,16 @@ whenever a key is suspected leaked (incident).
 
 Every secret used by a deployed environment, including:
 
-| Secret                                         | Where it lives               | Where it's used                                               |
-| ---------------------------------------------- | ---------------------------- | ------------------------------------------------------------- |
-| `SUPABASE_SERVICE_ROLE_KEY`                    | Vercel env, Supabase project | Edge Functions, server jobs                                   |
-| `SUPABASE_ANON_KEY` / `VITE_SUPABASE_ANON_KEY` | Vercel env                   | Browser client (public — rotate only on suspected misuse)     |
-| `STRIPE_SECRET_KEY`                            | Vercel env                   | `api/stripe-webhook.ts`, Edge billing functions               |
-| `STRIPE_WEBHOOK_SECRET`                        | Vercel env                   | `api/stripe-webhook.ts` signature verification                |
-| `EBAY_CLIENT_ID` / `EBAY_CLIENT_SECRET`        | Vercel env                   | `api/market/ebay.ts` OAuth client-credentials                 |
-| `GEMINI_API_KEY`                               | Vercel env                   | `api/ai/generate.ts` (server-side; never exposed to browser)  |
-| `VITE_SENTRY_DSN`                              | Vercel env                   | `lib/sentry.ts` (public DSN — rotate only on suspected abuse) |
-| `VITE_ERROR_REPORTING_URL`                     | Vercel env                   | `lib/errorReporting.ts` beacon                                |
+| Secret                                         | Where it lives                                                             | Where it's used                                               |
+| ---------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `SUPABASE_SERVICE_ROLE_KEY`                    | Vercel env, Supabase project                                               | Edge Functions, server jobs                                   |
+| `SUPABASE_ANON_KEY` / `VITE_SUPABASE_ANON_KEY` | Vercel env                                                                 | Browser client (public — rotate only on suspected misuse)     |
+| `STRIPE_SECRET_KEY`                            | Vercel env **and** Supabase Edge Function secrets (`supabase secrets set`) | `api/stripe-webhook.ts`, Edge billing functions               |
+| `STRIPE_WEBHOOK_SECRET`                        | Vercel env                                                                 | `api/stripe-webhook.ts` signature verification                |
+| `EBAY_CLIENT_ID` / `EBAY_CLIENT_SECRET`        | Vercel env                                                                 | `api/market/ebay.ts` OAuth client-credentials                 |
+| `GEMINI_API_KEY`                               | Vercel env                                                                 | `api/ai/generate.ts` (server-side; never exposed to browser)  |
+| `VITE_SENTRY_DSN`                              | Vercel env                                                                 | `lib/sentry.ts` (public DSN — rotate only on suspected abuse) |
+| `VITE_ERROR_REPORTING_URL`                     | Vercel env                                                                 | `lib/errorReporting.ts` beacon                                |
 
 Anything that ships to the browser (anything with the `VITE_` prefix) is public
 by design — rotation matters but treat it as a misuse-driven event, not a
@@ -62,8 +62,12 @@ For each provider in the table above:
 5. Smoke-test the affected surface (Stripe checkout, eBay verify, Gemini ai
    route, audit_events insert) with the deployed Playwright run
    (`npm run test:e2e:deployed`).
-6. Revoke the **old** key in the provider's dashboard.
-7. Record fingerprint, rotation time, and smoke-test result in the drill log.
+6. If the secret also lives in Supabase Edge Function secrets (see the
+   table — e.g. `STRIPE_SECRET_KEY`), update it there too before revoking:
+   `supabase secrets set STRIPE_SECRET_KEY=<new>` and redeploy the billing
+   functions (`npm run supabase:functions:deploy`).
+7. Revoke the **old** key in the provider's dashboard.
+8. Record fingerprint, rotation time, and smoke-test result in the drill log.
 
 ### 3. Post-flight (15 min)
 
@@ -92,10 +96,15 @@ billing, unexpected API usage).
 
 ### 15-60 min — Rotate
 
-- [ ] Follow Drill step 2 above for the affected key only.
-- [ ] If the leaked key was a Supabase service role: also rotate
-      `auth.jwt_secret` and force-sign-out all sessions
-      (`supabase.auth.admin.signOut(everywhere=true)` via service role).
+- [ ] Follow Drill step 2 above for the affected key only (including the
+      Supabase Edge Function secret store where applicable).
+- [ ] If the leaked key was a Supabase service role: also rotate the
+      project's JWT secret (Dashboard → Settings → API → "JWT Settings" →
+      rotate). Rotating it immediately invalidates every outstanding access
+      token; there is no service-role "sign out everyone" API call. Refresh
+      tokens for high-risk accounts can additionally be revoked per-user via
+      the GoTrue Admin API (`POST /admin/users/<id>/logout`) or by forcing a
+      password reset.
 - [ ] If the leaked key was a Stripe key: review Stripe Dashboard activity
       since the suspected exposure timestamp; refund or dispute any
       unauthorized charges before they settle.
@@ -106,7 +115,7 @@ billing, unexpected API usage).
 
 - [ ] Audit git history for the leaked value:
       `     git log -p -S '<last-4-chars>' --all
-    `
+  `
       Rewrite history and force-push only with explicit owner approval; prefer
       a public revocation note in the README.
 - [ ] Audit `audit_events`, `stripe_processed_events`, and Sentry for any

@@ -72,10 +72,10 @@ export function computeTrendPercent(sales: Array<{ price: number; date: string }
 
 // ─── Last-known-good comps ────────────────────────────────────────
 //
-// Every successful live comp set is persisted per (player, year, set, grade)
-// via the DAL. When a later live call fails, the degraded fallback serves the
-// last-known-good set labeled `source: 'stale'` instead of jumping straight
-// to mock numbers.
+// Every successful live comp set is persisted per
+// (player, year, set, cardNumber, grade, soldOnly) via the DAL. When a later
+// live call fails, the degraded fallback serves the last-known-good set
+// labeled `source: 'stale'` instead of jumping straight to mock numbers.
 
 const LKG_KEY_BASE = 'msi_ebay_lkg_comps_v1';
 
@@ -84,7 +84,9 @@ function lkgKey(params: EbaySearchParams): string {
     params.playerName,
     params.cardYear ?? '',
     params.cardSet ?? '',
+    params.cardNumber ?? '',
     params.grade ?? '',
+    String(params.soldOnly ?? true),
   ]
     .join('|')
     .toLowerCase()}`;

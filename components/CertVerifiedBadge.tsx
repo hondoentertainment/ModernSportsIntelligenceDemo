@@ -29,6 +29,10 @@ const CertVerifiedBadge: React.FC<CertVerifiedBadgeProps> = ({
     const isPsa = !gradingCompany || gradingCompany === 'PSA';
 
     useEffect(() => {
+        // Drop the previous cert's result so a changed/cleared cert never
+        // keeps showing a stale "PSA Verified" badge while (or instead of)
+        // the new lookup.
+        setResult(null);
         if (!isPsa || !certNumber) return;
         let cancelled = false;
         psaAdapter
