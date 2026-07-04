@@ -33,6 +33,10 @@ describe('betaFeatureExit', () => {
     expect(getBetaFeatureExitStatus('provenance-chain')?.readyForLive).toBe(true);
   });
 
+  it('vision-grading meets exit criteria with analysis-contract coverage', () => {
+    expect(getBetaFeatureExitStatus('vision-grading')?.readyForLive).toBe(true);
+  });
+
   it('getBetaFeaturesReadyForLive returns promotable subset', () => {
     const ready = getBetaFeaturesReadyForLive();
     expect(ready.map((f) => f.id)).toContain('visual-audit');

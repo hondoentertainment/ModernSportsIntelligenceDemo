@@ -59,11 +59,14 @@ const BETA_FEATURES: Omit<BetaFeatureExitStatus, 'readyForLive' | 'blockers'>[] 
     id: 'vision-grading',
     name: 'AI Vision Grading Lab',
     gates: {
+      // Wave-3: unit coverage pins the analysis contract and the
+      // image-handling decision (in-session only, never persisted — same
+      // decision visual-audit shipped with).
       persistence: true,
       data_honesty: true,
       auth_tenancy: true,
       errors: true,
-      tests: false,
+      tests: true,
     },
   },
   {

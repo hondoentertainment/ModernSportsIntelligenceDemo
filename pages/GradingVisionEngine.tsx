@@ -53,6 +53,10 @@ const GradingVisionEngine: React.FC = () => {
     setTiers(getSubmissionTiers());
   }, []);
 
+  // Image-handling decision (beta exit): the upload is read into memory,
+  // handed to the simulated analyzer, and discarded — never persisted to the
+  // DAL, localStorage, or any server. Only a 100-char preview stub survives
+  // in the result object for this session.
   const handleFileUpload = useCallback((file: File) => {
     if (!file.type.startsWith('image/')) return;
 
