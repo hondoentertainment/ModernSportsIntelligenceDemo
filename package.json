@@ -37,6 +37,7 @@
     "test:e2e:pricing-truth": "playwright test tests/e2e/pricing-truth-coverage.spec.ts --project=chromium",
     "test:e2e:deployed": "playwright test tests/e2e/deployed-api.spec.ts --project=chromium --workers=1",
     "test:e2e:real-auth": "cross-env PLAYWRIGHT_REAL_AUTH=1 playwright test tests/e2e/real-auth-smoke.spec.ts --project=chromium --workers=1",
+    "test:e2e:gdpr": "playwright test tests/e2e/gdpr-endpoints.spec.ts --project=chromium --workers=1",
     "test:smoke:routes": "node scripts/smoke-all-tabs.cjs",
     "audit:localstorage": "node scripts/audit-localstorage.mjs",
     "deploy:infra": "node scripts/deploy-production.mjs",

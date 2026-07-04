@@ -5,6 +5,8 @@ import {
   calculateGradingROI,
   estimateSubmissionCost,
   getSubmissionTiers,
+  getGradingHistory,
+  getCameraCalibrationGuide,
 } from '../../lib/core/gradingVisionEngineService';
 
 /**
@@ -171,5 +173,29 @@ describe('submission costs', () => {
       expect(t.cost).toBeGreaterThan(0);
       expect(t.turnaroundDays).toBeGreaterThan(0);
     }
+  });
+});
+
+describe('history and calibration surfaces', () => {
+  it('getGradingHistory returns well-formed sample entries', () => {
+    const history = getGradingHistory();
+    expect(history.length).toBeGreaterThan(0);
+    for (const entry of history) {
+      expect(entry.predictedGrade).toBeGreaterThanOrEqual(1);
+      expect(entry.predictedGrade).toBeLessThanOrEqual(10);
+      expect(entry.confidence).toBeGreaterThanOrEqual(0);
+      expect(entry.confidence).toBeLessThanOrEqual(100);
+      expect(entry.gradedValue).toBeGreaterThan(0);
+    }
+  });
+
+  it('getCameraCalibrationGuide returns ordered steps and full settings', () => {
+    const guide = getCameraCalibrationGuide();
+    expect(guide.steps.length).toBeGreaterThan(0);
+    guide.steps.forEach((step, i) => expect(step.step).toBe(i + 1));
+    for (const key of ['lighting', 'distance', 'angle', 'background', 'resolution'] as const) {
+      expect(guide.recommendedSettings[key]).toBeTruthy();
+    }
+    expect(guide.tips.length).toBeGreaterThan(0);
   });
 });

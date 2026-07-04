@@ -145,3 +145,80 @@ describe('ebayAdapter last-known-good fallback', () => {
     vi.doUnmock('../../lib/utils/ebayApi');
   });
 });
+
+// ─── searchListings / getStatus / isLive ───────────────────────────
+
+describe('ebayAdapter search and status surface', () => {
+  beforeEach(async () => {
+    vi.resetModules();
+    vi.unstubAllEnvs();
+    localStorage.clear();
+    const { resetFeatureFlags } = await import('../../lib/featureFlags');
+    resetFeatureFlags();
+    const { apiCache } = await import('../../lib/apiCache');
+    apiCache.clear();
+  });
+
+  it('searchListings returns empty mock results when the live flag is off', async () => {
+    const { ebayAdapter } = await import('../../lib/integrations/ebayAdapter');
+    const result = await ebayAdapter.searchListings({ playerName: 'Mike Trout' });
+    expect(result).toEqual({ itemSummaries: [], total: 0 });
+  });
+
+  it('searchListings passes through live results and swallows live errors', async () => {
+    vi.stubEnv('VITE_FF_REAL_EBAY', 'true');
+    const live = { itemSummaries: [{ itemId: 'v1|1|0', title: 'Card' }], total: 1 };
+    const searchSportsCards = vi.fn().mockResolvedValueOnce(live).mockRejectedValue(new Error('503'));
+    vi.doMock('../../lib/utils/ebayApi', () => ({
+      ebayApi: { searchSportsCards, getMarketValue: vi.fn(), testConnection: vi.fn() },
+    }));
+    const { resetFeatureFlags, isFeatureEnabled } = await import('../../lib/featureFlags');
+    resetFeatureFlags();
+    const { ebayAdapter } = await import('../../lib/integrations/ebayAdapter');
+
+    const first = await ebayAdapter.searchListings({ playerName: 'Aaron Judge' });
+    if (isFeatureEnabled('USE_REAL_EBAY')) {
+      expect(first).toEqual(live);
+      const { apiCache } = await import('../../lib/apiCache');
+      apiCache.clear();
+      const second = await ebayAdapter.searchListings({ playerName: 'Aaron Judge' });
+      expect(second).toEqual({ itemSummaries: [], total: 0 });
+    } else {
+      expect(first).toEqual({ itemSummaries: [], total: 0 });
+    }
+    vi.doUnmock('../../lib/utils/ebayApi');
+  });
+
+  it('getStatus reports mock mode when the live flag is off, and isLive follows the flag', async () => {
+    const { ebayAdapter } = await import('../../lib/integrations/ebayAdapter');
+    const status = await ebayAdapter.getStatus();
+    expect(status.live).toBe(false);
+    expect(status.message).toContain('USE_REAL_EBAY=false');
+    expect(ebayAdapter.isLive()).toBe(false);
+  });
+
+  it('getStatus surfaces the live connection check when the flag is on', async () => {
+    vi.stubEnv('VITE_FF_REAL_EBAY', 'true');
+    const testConnection = vi
+      .fn()
+      .mockResolvedValueOnce('eBay API connection successful')
+      .mockResolvedValueOnce('eBay API connection failed: 401')
+      .mockRejectedValueOnce(new Error('network down'));
+    vi.doMock('../../lib/utils/ebayApi', () => ({
+      ebayApi: { testConnection, searchSportsCards: vi.fn(), getMarketValue: vi.fn() },
+    }));
+    const { resetFeatureFlags, isFeatureEnabled } = await import('../../lib/featureFlags');
+    resetFeatureFlags();
+    const { ebayAdapter } = await import('../../lib/integrations/ebayAdapter');
+
+    if (isFeatureEnabled('USE_REAL_EBAY')) {
+      expect((await ebayAdapter.getStatus()).live).toBe(true);
+      expect((await ebayAdapter.getStatus()).live).toBe(false);
+      const errored = await ebayAdapter.getStatus();
+      expect(errored.live).toBe(false);
+      expect(errored.message).toContain('Connection failed');
+      expect(ebayAdapter.isLive()).toBe(true);
+    }
+    vi.doUnmock('../../lib/utils/ebayApi');
+  });
+});

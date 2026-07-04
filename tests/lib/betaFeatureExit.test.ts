@@ -37,6 +37,10 @@ describe('betaFeatureExit', () => {
     expect(getBetaFeatureExitStatus('vision-grading')?.readyForLive).toBe(true);
   });
 
+  it('returns undefined for an unknown feature id', () => {
+    expect(getBetaFeatureExitStatus('not-a-feature')).toBeUndefined();
+  });
+
   it('getBetaFeaturesReadyForLive returns promotable subset', () => {
     const ready = getBetaFeaturesReadyForLive();
     expect(ready.map((f) => f.id)).toContain('visual-audit');
