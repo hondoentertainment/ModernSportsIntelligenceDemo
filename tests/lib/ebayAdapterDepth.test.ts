@@ -53,6 +53,23 @@ describe('ebayApi.getMarketValue pagination', () => {
     search.mockRestore();
   });
 
+  it('keeps walking full pages when the API omits total', async () => {
+    const { ebayApi } = await import('../../lib/utils/ebayApi');
+    const search = vi
+      .spyOn(ebayApi, 'searchSportsCards')
+      .mockResolvedValueOnce({ itemSummaries: makeItems(100, 0, 100) })
+      .mockResolvedValueOnce({ itemSummaries: makeItems(100, 100, 110) })
+      .mockResolvedValueOnce({ itemSummaries: makeItems(20, 200, 120) });
+
+    const result = await ebayApi.getMarketValue({ playerName: 'Mike Trout' });
+
+    // Without a reported total, a full page must not be mistaken for
+    // exhaustion — the walk continues until a short page or maxPages.
+    expect(search).toHaveBeenCalledTimes(3);
+    expect(result.totalListings).toBe(220);
+    search.mockRestore();
+  });
+
   it('keeps earlier pages when a later page fails mid-walk', async () => {
     const { ebayApi } = await import('../../lib/utils/ebayApi');
     const search = vi

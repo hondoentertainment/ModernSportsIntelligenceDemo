@@ -137,7 +137,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
             isGraded,
             gradingCompany: isGraded ? gradingCompany : undefined,
             grade: isGraded ? grade : undefined,
-            certNumber: isGraded && certNumber.trim() ? certNumber.trim() : undefined,
+            certNumber: isGraded ? certNumber.trim() : '',
             isAutographed,
             purchasePrice: parseFloat(purchasePrice) || 0,
             purchaseDate,

@@ -163,8 +163,13 @@ function cardToDb(card: CardInventory, userId: string): DbCardRow & { user_id: s
         is_graded: card.isGraded,
         grading_company: card.gradingCompany,
         grade: card.grade,
-        // null (not undefined) so clearing the cert in the UI clears the row.
-        cert_number: card.certNumber ?? null,
+        // Only touch cert_number when the card object carries the property:
+        // legacy snapshots without it must not NULL-out a value already in
+        // the cloud during bulk sync. An explicit empty string means "the
+        // user cleared it" and writes NULL.
+        ...(card.certNumber === undefined
+            ? {}
+            : { cert_number: card.certNumber.trim() === '' ? null : card.certNumber.trim() }),
         purchase_price: card.purchasePrice,
         purchase_date: card.purchaseDate,
         current_value: card.currentValue,

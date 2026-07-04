@@ -101,7 +101,6 @@ export const ebayApi = {
     const { maxPages: _mp, ...searchParams } = params;
 
     const itemSummaries: EbayItemSummary[] = [];
-    let reportedTotal = 0;
     for (let page = 0; page < maxPages; page++) {
       let results: EbaySearchResponse;
       try {
@@ -120,9 +119,11 @@ export const ebayApi = {
       }
       const pageItems = results.itemSummaries ?? [];
       itemSummaries.push(...pageItems);
-      reportedTotal = results.total ?? itemSummaries.length;
-      // Stop when the API is exhausted: short page or no more beyond this offset.
-      if (pageItems.length < PAGE_SIZE || itemSummaries.length >= reportedTotal) break;
+      // Stop when the API is exhausted: a short page always means the end;
+      // the reported total only gates when the API actually sent one —
+      // otherwise a full page keeps the walk going up to maxPages.
+      if (pageItems.length < PAGE_SIZE) break;
+      if (results.total != null && itemSummaries.length >= results.total) break;
     }
 
     if (itemSummaries.length === 0) {
