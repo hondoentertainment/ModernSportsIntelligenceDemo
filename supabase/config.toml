@@ -11,3 +11,6 @@ verify_jwt = true
 
 [functions.create-billing-portal-session]
 verify_jwt = true
+
+[functions.admin-audit-events]
+verify_jwt = true

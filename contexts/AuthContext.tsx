@@ -31,6 +31,13 @@ interface AuthContextType {
     clearRecoveryMode: () => void;
     demoLogin: () => void;
     userTier: 'free' | 'basic' | 'pro' | 'alpha';
+    /**
+     * Trust-boundary role for Phase 31 operator surfaces (audit-trail admin
+     * viewer, etc.). Sourced from `profiles.role`; falls back to `member` for
+     * every unauthenticated / unloaded / demo session so callers can render
+     * an unconditional "member" UI without null checks.
+     */
+    operatorRole: 'member' | 'support' | 'admin';
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -81,6 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [recoveryMode, setRecoveryMode] = useState(false);
     const [userTier, setUserTier] = useState<'free' | 'basic' | 'pro' | 'alpha'>('free');
+    const [operatorRole, setOperatorRole] = useState<'member' | 'support' | 'admin'>('member');
     const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     // Proactive session refresh to prevent token expiry
@@ -108,6 +116,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             clearInterval(refreshTimerRef.current);
             refreshTimerRef.current = null;
         }
+    }, []);
+
+    /**
+     * Reset every profile-derived piece of state to its safe default. Called
+     * from every path that leaves the "authenticated as this user" state
+     * (sign-out, profile fetch failure, unknown values, demo login). Keeps
+     * future profile-derived fields (tier, role, feature flags…) from being
+     * forgotten at some exit sites.
+     */
+    const resetProfileState = useCallback((tier: 'free' | 'basic' | 'pro' | 'alpha' = 'free') => {
+        setUserTier(tier);
+        setOperatorRole('member');
     }, []);
 
     useEffect(() => {
@@ -178,7 +198,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     case 'SIGNED_OUT':
                         setRecoveryMode(false);
                         stopSessionRefreshTimer();
-                        setUserTier('free');
+                        resetProfileState('free');
                         store.remove(LS_USER_PROFILE);
                         resolveInitialLoad();
                         break;
@@ -224,7 +244,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             subscription.unsubscribe();
             stopSessionRefreshTimer();
         };
-    }, [startSessionRefreshTimer, stopSessionRefreshTimer]);
+    }, [startSessionRefreshTimer, stopSessionRefreshTimer, resetProfileState]);
 
     const signIn = async (email: string, password: string) => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -304,30 +324,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const fetchUserProfile = useCallback(async () => {
         if (isDemoMode) {
-            setUserTier('alpha');
+            resetProfileState('alpha');
             return;
         }
         if (!user) return;
         try {
             const { data, error } = await supabase
                 .from('profiles')
-                .select('subscription_tier, subscription_status, ai_valuations_used, card_tracking_limit, billing_cycle_start')
+                .select('subscription_tier, subscription_status, ai_valuations_used, card_tracking_limit, billing_cycle_start, role')
                 .eq('id', user.id)
                 .single();
             if (error) {
                 logger.warn('Failed to fetch user profile:', error.message);
-                setUserTier('free');
+                resetProfileState('free');
                 return;
             }
             const validTiers: Array<'free' | 'basic' | 'pro' | 'alpha'> = ['free', 'basic', 'pro', 'alpha'];
             const tier = validTiers.includes(data.subscription_tier) ? data.subscription_tier : 'free';
             setUserTier(tier);
+            const validRoles: Array<'member' | 'support' | 'admin'> = ['member', 'support', 'admin'];
+            const rawRole = (data as { role?: unknown }).role;
+            setOperatorRole(
+                typeof rawRole === 'string' && validRoles.includes(rawRole as typeof validRoles[number])
+                    ? (rawRole as 'member' | 'support' | 'admin')
+                    : 'member',
+            );
             store.set(LS_USER_PROFILE, data);
         } catch (e) {
             logger.warn('Error fetching user profile:', e);
-            setUserTier('free');
+            resetProfileState('free');
         }
-    }, [user]);
+    }, [user, resetProfileState]);
 
     useEffect(() => {
         if (!user) return;
@@ -339,7 +366,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const demoLogin = () => {
         store.set(LS_DEMO_SESSION, true);
         setUser({ id: 'demo-user', email: 'demo@sportsintel.io' } as User);
-        setUserTier('alpha');
+        resetProfileState('alpha');
     };
 
     return (
@@ -358,7 +385,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             refreshSession,
             clearRecoveryMode,
             demoLogin,
-            userTier
+            userTier,
+            operatorRole,
         }}>
             {children}
         </AuthContext.Provider>

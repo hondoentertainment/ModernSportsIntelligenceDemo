@@ -67,6 +67,10 @@ vi.mock('../../contexts/AuthContext', () => ({
 vi.mock('../../lib/utils/auditTrailService', () => ({
   getAuditEvents: () => mockState.localEvents,
   getRemoteAuditEvents: vi.fn(async () => mockState.remoteEvents),
+  // Passthrough helpers so the page's filter chip / CSV export code paths
+  // still resolve without pulling in the real Supabase-backed module.
+  filterAuditEvents: (events: unknown[]) => events,
+  exportAuditEventsToCSV: () => '',
   getComplianceRules: () => [
     {
       id: 'cr-1',
@@ -188,7 +192,7 @@ describe('AuditTrail page', () => {
     expect(screen.getByText('sample row')).toBeInTheDocument();
     expect(
       vi.mocked(auditTrailService.getRemoteAuditEvents),
-    ).toHaveBeenCalledWith('user-1');
+    ).toHaveBeenCalledWith('user-1', expect.objectContaining({ limit: expect.any(Number) }));
   });
 
   it('refresh button bumps eventsRefresh and re-fetches when authed', async () => {
