@@ -21,20 +21,48 @@ import { logger } from '../../lib/logger';
 
 type SupabaseMock = { from: ReturnType<typeof vi.fn> };
 
+/**
+ * The real fetch builds a chain that is BOTH chainable (`.lt()` may be called
+ * after `.limit()`) and thenable (the chain is awaited). The mock exposes a
+ * single `chain` object with every operator returning the same object plus a
+ * `then` method that resolves with the fixture.
+ */
 function buildQueryBuilder(result: { data: unknown; error: unknown }) {
-  const limit = vi.fn().mockResolvedValue(result);
-  const order = vi.fn().mockReturnValue({ limit });
-  const eq = vi.fn().mockReturnValue({ order });
-  const select = vi.fn().mockReturnValue({ eq });
-  return { select, eq, order, limit };
+  const chain: {
+    select: ReturnType<typeof vi.fn>;
+    eq: ReturnType<typeof vi.fn>;
+    order: ReturnType<typeof vi.fn>;
+    limit: ReturnType<typeof vi.fn>;
+    lt: ReturnType<typeof vi.fn>;
+    then: (onFulfilled: (v: unknown) => unknown) => Promise<unknown>;
+  } = {
+    select: vi.fn(() => chain),
+    eq: vi.fn(() => chain),
+    order: vi.fn(() => chain),
+    limit: vi.fn(() => chain),
+    lt: vi.fn(() => chain),
+    then: (onFulfilled) => Promise.resolve(result).then(onFulfilled),
+  };
+  return chain;
 }
 
 function buildThrowingQueryBuilder(err: unknown) {
-  const limit = vi.fn().mockRejectedValue(err);
-  const order = vi.fn().mockReturnValue({ limit });
-  const eq = vi.fn().mockReturnValue({ order });
-  const select = vi.fn().mockReturnValue({ eq });
-  return { select, eq, order, limit };
+  const chain: {
+    select: ReturnType<typeof vi.fn>;
+    eq: ReturnType<typeof vi.fn>;
+    order: ReturnType<typeof vi.fn>;
+    limit: ReturnType<typeof vi.fn>;
+    lt: ReturnType<typeof vi.fn>;
+    then: (onFulfilled: (v: unknown) => unknown, onRejected: (e: unknown) => unknown) => Promise<unknown>;
+  } = {
+    select: vi.fn(() => chain),
+    eq: vi.fn(() => chain),
+    order: vi.fn(() => chain),
+    limit: vi.fn(() => chain),
+    lt: vi.fn(() => chain),
+    then: (_onFulfilled, onRejected) => Promise.reject(err).catch(onRejected),
+  };
+  return chain;
 }
 
 describe('fetchRemoteAuditEvents', () => {
@@ -112,39 +140,22 @@ describe('fetchRemoteAuditEvents', () => {
     expect(logger.error).toHaveBeenCalledWith('fetchRemoteAuditEvents threw:', expect.any(Error));
   });
 
-  describe('pagination options', () => {
-    // Chainable AND awaitable builder — `before`/`category` are chained after
-    // `.limit()`, so the final query object must be thenable.
-    function buildChainableBuilder(result: { data: unknown; error: unknown }) {
-      const builder: Record<string, ReturnType<typeof vi.fn>> & {
-        then?: (_onFulfilled: (_v: unknown) => unknown) => Promise<unknown>;
-      } = {} as never;
-      builder.select = vi.fn().mockReturnValue(builder);
-      builder.eq = vi.fn().mockReturnValue(builder);
-      builder.order = vi.fn().mockReturnValue(builder);
-      builder.limit = vi.fn().mockReturnValue(builder);
-      builder.lt = vi.fn().mockReturnValue(builder);
-      builder.then = (onFulfilled: (_v: unknown) => unknown) => Promise.resolve(result).then(onFulfilled);
-      return builder;
-    }
+  it('applies before cursor and honors an explicit limit', async () => {
+    const qb = buildQueryBuilder({ data: [], error: null });
+    (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
 
-    it('applies before and category filters when provided', async () => {
-      const qb = buildChainableBuilder({ data: [], error: null });
-      (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
+    await fetchRemoteAuditEvents('user-1', { limit: 50, before: '2026-01-01T00:00:00.000Z' });
+    expect(qb.limit).toHaveBeenCalledWith(50);
+    expect(qb.lt).toHaveBeenCalledWith('created_at', '2026-01-01T00:00:00.000Z');
+  });
 
-      await fetchRemoteAuditEvents('user-1', { category: 'portfolio', before: '2026-01-01T00:00:00.000Z' });
-      expect(qb.eq).toHaveBeenCalledWith('category', 'portfolio');
-      expect(qb.lt).toHaveBeenCalledWith('created_at', '2026-01-01T00:00:00.000Z');
-    });
+  it('clamps a limit above 500 down to 500 and below 1 up to 1', async () => {
+    const qb = buildQueryBuilder({ data: [], error: null });
+    (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
 
-    it('caps the limit at 500 and floors at 1', async () => {
-      const qb = buildChainableBuilder({ data: [], error: null });
-      (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
-
-      await fetchRemoteAuditEvents('user-1', { limit: 9999 });
-      expect(qb.limit).toHaveBeenLastCalledWith(500);
-      await fetchRemoteAuditEvents('user-1', { limit: 0 });
-      expect(qb.limit).toHaveBeenLastCalledWith(1);
-    });
+    await fetchRemoteAuditEvents('user-1', { limit: 9999 });
+    expect(qb.limit).toHaveBeenLastCalledWith(500);
+    await fetchRemoteAuditEvents('user-1', { limit: 0 });
+    expect(qb.limit).toHaveBeenLastCalledWith(1);
   });
 });

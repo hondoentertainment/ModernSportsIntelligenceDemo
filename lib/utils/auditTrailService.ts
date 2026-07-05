@@ -13,6 +13,12 @@ export type ComplianceStatus = 'compliant' | 'review-needed' | 'violation' | 're
 export interface AuditEvent {
   id: string;
   timestamp: string;
+  /**
+   * Raw ISO string from `audit_events.created_at` (preserved for pagination
+   * cursors so we don't have to round-trip the display-formatted `timestamp`
+   * through the browser's local timezone). Undefined for sample rows.
+   */
+  isoTimestamp?: string;
   category: AuditCategory;
   severity: AuditSeverity;
   actor: string;
@@ -144,9 +150,11 @@ export function mapStoredRecordToAuditEvent(
   const userId = typeof r.user_id === 'string' ? r.user_id : null;
   const actor = userId ? `user:${userId.slice(0, 8)}…` : source === 'cloud' ? 'cloud' : 'local';
 
+  const prefix = source === 'cloud' ? 'cld' : 'rec';
   return {
-    id: `${source === 'cloud' ? 'cld' : 'rec'}-${index}-${created}-${action}`,
+    id: `${prefix}-${index}-${created}-${action}`,
     timestamp: formatTimestamp(created),
+    isoTimestamp: created,
     category,
     severity,
     actor,
@@ -213,16 +221,15 @@ export function filterAuditEvents(events: AuditEvent[], filters: AuditEventFilte
 }
 
 /**
- * Returns the earliest `created_at` ISO string across the given raw rows
- * (used as the `before` cursor when paginating older audit events). Returns
- * `undefined` if no row carries a usable string timestamp — in which case
- * callers should disable the "load older" affordance.
+ * Earliest `created_at` ISO string across the given raw rows (used as the
+ * `before` cursor when paginating older audit events). Returns undefined if no
+ * row carries a usable string timestamp — callers should hide "load older".
  */
-export function getOldestCreatedAt(rows: Array<{ created_at?: unknown } | null | undefined>): string | undefined {
+export function getOldestCreatedAt(rows: unknown[]): string | undefined {
   let oldest: string | undefined;
   for (const row of rows) {
     if (!row || typeof row !== 'object') continue;
-    const ts = row.created_at;
+    const ts = (row as { created_at?: unknown }).created_at;
     if (typeof ts !== 'string' || ts.length === 0) continue;
     if (oldest === undefined || ts < oldest) oldest = ts;
   }
@@ -232,35 +239,16 @@ export function getOldestCreatedAt(rows: Array<{ created_at?: unknown } | null |
 /** Build a CSV string from the given events. Fields are RFC 4180-quoted. */
 export function exportAuditEventsToCSV(events: AuditEvent[]): string {
   const header = [
-    'timestamp',
-    'source',
-    'category',
-    'severity',
-    'actor',
-    'action',
-    'resource',
-    'result',
-    'details',
-    'metadata',
+    'timestamp', 'source', 'category', 'severity', 'actor', 'action',
+    'resource', 'result', 'details', 'metadata',
   ];
   const escape = (val: string | undefined): string => {
     const s = val ?? '';
-    if (/[",\n\r]/.test(s)) {
-      return `"${s.replace(/"/g, '""')}"`;
-    }
-    return s;
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   const rows = events.map((e) => [
-    e.timestamp,
-    e.source ?? 'sample',
-    e.category,
-    e.severity,
-    e.actor,
-    e.action,
-    e.resource,
-    e.result,
-    e.details,
-    JSON.stringify(e.metadata ?? {}),
+    e.timestamp, e.source ?? 'sample', e.category, e.severity, e.actor, e.action,
+    e.resource, e.result, e.details, JSON.stringify(e.metadata ?? {}),
   ].map(escape).join(','));
   return [header.join(','), ...rows].join('\r\n');
 }

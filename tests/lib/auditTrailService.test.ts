@@ -126,6 +126,106 @@ describe('auditTrailService', () => {
       const result = await getRemoteAuditEvents(null);
       expect(result).toEqual([]);
     });
+
+    it('forwards pagination options to fetchRemoteAuditEvents', async () => {
+      const spy = vi
+        .spyOn(auditTrailRemote, 'fetchRemoteAuditEvents')
+        .mockResolvedValue([]);
+      await getRemoteAuditEvents('user-1', { limit: 25, before: '2026-01-01T00:00:00.000Z' });
+      expect(spy).toHaveBeenCalledWith('user-1', { limit: 25, before: '2026-01-01T00:00:00.000Z' });
+    });
+  });
+
+  describe('filterAuditEvents', () => {
+    const events: AuditEvent[] = [
+      { id: '1', timestamp: 't1', category: 'trading',   severity: 'info',     actor: 'alice', action: 'trade.exec',  resource: 'Trade #1', details: 'Sold 5 cards', ipAddress: '-', sessionId: '-', result: 'success', metadata: {}, source: 'recorded' },
+      { id: '2', timestamp: 't2', category: 'auth',      severity: 'security', actor: 'bob',   action: 'login.fail',  resource: 'Login',    details: 'TOR exit',     ipAddress: '-', sessionId: '-', result: 'blocked', metadata: {}, source: 'cloud' },
+      { id: '3', timestamp: 't3', category: 'portfolio', severity: 'info',     actor: 'alice', action: 'nav.refresh', resource: 'NAV',      details: 'Refreshed',    ipAddress: '-', sessionId: '-', result: 'success', metadata: {}, source: 'sample' },
+    ];
+
+    it('returns input unchanged when no filters are set', () => {
+      expect(filterAuditEvents(events, {})).toHaveLength(3);
+    });
+
+    it('filters by single category', () => {
+      expect(filterAuditEvents(events, { categories: ['auth'] }).map((e) => e.id)).toEqual(['2']);
+    });
+
+    it('filters by multiple severities (OR within, AND across dimensions)', () => {
+      expect(filterAuditEvents(events, { severities: ['security', 'critical'] }).map((e) => e.id)).toEqual(['2']);
+    });
+
+    it('filters by source', () => {
+      expect(filterAuditEvents(events, { sources: ['recorded', 'cloud'] }).map((e) => e.id).sort()).toEqual(['1', '2']);
+    });
+
+    it('search matches action, resource, details, actor (case-insensitive)', () => {
+      expect(filterAuditEvents(events, { search: 'TOR' }).map((e) => e.id)).toEqual(['2']);
+      expect(filterAuditEvents(events, { search: 'alice' }).map((e) => e.id).sort()).toEqual(['1', '3']);
+      expect(filterAuditEvents(events, { search: 'nav' }).map((e) => e.id)).toEqual(['3']);
+    });
+
+    it('combines filters with AND semantics', () => {
+      const out = filterAuditEvents(events, {
+        categories: ['trading', 'portfolio'],
+        sources: ['recorded'],
+        search: 'cards',
+      });
+      expect(out.map((e) => e.id)).toEqual(['1']);
+    });
+  });
+
+  describe('exportAuditEventsToCSV', () => {
+    const events: AuditEvent[] = [
+      { id: '1', timestamp: '2026-03-21 14:00:00', category: 'trading', severity: 'info', actor: 'alice', action: 'trade.exec', resource: 'Trade #1', details: 'Sold 5 cards, lot', ipAddress: '-', sessionId: '-', result: 'success', metadata: { amount: '$100' }, source: 'recorded' },
+    ];
+
+    it('emits the canonical header row', () => {
+      const csv = exportAuditEventsToCSV([]);
+      expect(csv.split('\r\n')[0]).toBe('timestamp,source,category,severity,actor,action,resource,result,details,metadata');
+    });
+
+    it('quotes fields containing commas and escapes embedded quotes', () => {
+      const csv = exportAuditEventsToCSV(events);
+      const lines = csv.split('\r\n');
+      expect(lines).toHaveLength(2);
+      expect(lines[1]).toContain('"Sold 5 cards, lot"');
+      expect(lines[1]).toContain('"{""amount"":""$100""}"');
+    });
+
+    it('round-trips empty metadata as {}', () => {
+      const csv = exportAuditEventsToCSV([{ ...events[0], metadata: {} } as AuditEvent]);
+      expect(csv.split('\r\n')[1]).toContain(',{}');
+    });
+  });
+
+  describe('getOldestCreatedAt', () => {
+    it('returns undefined for empty and unusable input', () => {
+      expect(getOldestCreatedAt([])).toBeUndefined();
+      expect(getOldestCreatedAt([null, 'x', { created_at: 42 }, { other: 'y' }, { created_at: '' }])).toBeUndefined();
+    });
+
+    it('returns the lexicographically smallest ISO string (= chronologically oldest)', () => {
+      expect(
+        getOldestCreatedAt([
+          { created_at: '2026-03-26T10:00:00.000Z' },
+          { created_at: '2026-03-20T00:00:00.000Z' },
+          { created_at: '2026-03-25T23:59:59.999Z' },
+        ]),
+      ).toBe('2026-03-20T00:00:00.000Z');
+    });
+
+    it('ignores malformed rows but still finds the oldest valid one', () => {
+      expect(
+        getOldestCreatedAt([
+          { created_at: '2026-03-26T10:00:00.000Z' },
+          null,
+          { created_at: undefined },
+          { created_at: '2026-01-01T00:00:00.000Z' },
+          { created_at: 9999 },
+        ]),
+      ).toBe('2026-01-01T00:00:00.000Z');
+    });
   });
 
   describe('filterAuditEvents', () => {

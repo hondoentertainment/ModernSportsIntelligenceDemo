@@ -10,6 +10,7 @@ import {
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import { AutoTierGate } from './components/TieredRoute';
 import GlobalErrorBoundary from './components/GlobalErrorBoundary.tsx';
 import Sidebar from './components/Sidebar.tsx';
@@ -334,6 +335,7 @@ const WhiteLabelApi = lazy(() => import('./pages/WhiteLabelApi.tsx'));
 const DealerInventory = lazy(() => import('./pages/DealerInventory.tsx'));
 const FundReporting = lazy(() => import('./pages/FundReporting.tsx'));
 const AuditTrail = lazy(() => import('./pages/AuditTrail.tsx'));
+const AdminAuditTrail = lazy(() => import('./pages/AdminAuditTrail.tsx'));
 
 // v10.0: Group Scale Phase 2 — Community Infrastructure (Phases 274-283)
 const CollaborativeSetRegistry = lazy(() => import('./pages/CollaborativeSetRegistry.tsx'));
@@ -577,6 +579,17 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/audit-dossier" element={<CollectorAuditDossier />} />
                 {/* Same rationale for /audit-trail: command palette / nav surface it. */}
                 <Route path="/audit-trail" element={<AuditTrail />} />
+                {/* Operator-only cross-user audit viewer. The <AdminRoute /> gate
+                    render-blocks on operatorRole; the actual cross-user read is
+                    enforced server-side by supabase/functions/admin-audit-events. */}
+                <Route
+                    path="/audit-trail/admin"
+                    element={
+                        <AdminRoute>
+                            <AdminAuditTrail />
+                        </AdminRoute>
+                    }
+                />
                 {/* provenance-chain exited beta (wave-3: DAL persistence + reload E2E),
                     so its route ships in production like the rest of the live catalog. */}
                 <Route path="/provenance" element={<ProvenanceChain />} />
