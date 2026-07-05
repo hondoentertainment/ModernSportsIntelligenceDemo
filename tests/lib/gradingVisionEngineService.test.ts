@@ -58,7 +58,12 @@ describe('analyzeCardImage', () => {
     const weighted =
       result.subgrades.reduce((s, sg) => s + sg.score * sg.weight, 0) /
       result.subgrades.reduce((s, sg) => s + sg.weight, 0);
-    expect(result.overallScore).toBeCloseTo(weighted, 1);
+    // overallScore is the weighted mean rounded to one decimal, so the max
+    // deviation from the raw mean is one half-step (0.05). `toBeCloseTo(_, 1)`
+    // uses exactly that boundary and floating-point representation can nudge a
+    // legitimate 0.05 gap to 0.05000000000000071, tripping the assertion at
+    // random. Assert the rounding granularity explicitly with an epsilon.
+    expect(Math.abs(result.overallScore - weighted)).toBeLessThanOrEqual(0.05 + 1e-9);
   });
 
   it('predicts a grade for each of PSA, BGS, and SGC with sane ranges', async () => {
