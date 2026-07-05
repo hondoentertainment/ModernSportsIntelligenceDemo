@@ -47,7 +47,7 @@
     "check:prod-env": "node scripts/check-production-env.mjs",
     "sync:vercel-env": "node scripts/sync-vercel-supabase-env.mjs",
     "ci:bundle": "node scripts/ci-bundle-gate.cjs",
-    "perf:audit": "npm run build --silent && npm run ci:bundle --silent | grep -E '^(Total:|✅|❌|OVER BUDGET)'",
+    "perf:audit": "npm run build --silent && bash -c 'set -o pipefail; npm run ci:bundle --silent | grep -E \"^(Total:|✅|❌|OVER BUDGET)\"'",
     "joe": "tsx scripts/orchestrator.ts",
     "joe:batch": "tsx scripts/batch-builder.ts",
     "joe:validate": "tsx scripts/feature-validator.ts",

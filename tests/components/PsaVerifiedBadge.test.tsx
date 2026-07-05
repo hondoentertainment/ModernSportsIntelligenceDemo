@@ -17,7 +17,19 @@ describe('PsaVerifiedBadge', () => {
   });
 
   it('renders nothing when no cert number is provided', () => {
-    const { container } = render(<PsaVerifiedBadge certNumber={undefined} />);
+    const { container } = render(<PsaVerifiedBadge certNumber={undefined} gradingCompany="PSA" />);
+    expect(container).toBeEmptyDOMElement();
+    expect(verifyCert).not.toHaveBeenCalled();
+  });
+
+  it('renders nothing and skips the lookup for a non-PSA grader (BGS/SGC cert must not be labeled PSA verified)', () => {
+    const { container } = render(<PsaVerifiedBadge certNumber="12345678" gradingCompany="BGS" />);
+    expect(container).toBeEmptyDOMElement();
+    expect(verifyCert).not.toHaveBeenCalled();
+  });
+
+  it('renders nothing when the grader is unknown (never guesses PSA on an unlabeled cert)', () => {
+    const { container } = render(<PsaVerifiedBadge certNumber="12345678" />);
     expect(container).toBeEmptyDOMElement();
     expect(verifyCert).not.toHaveBeenCalled();
   });
@@ -29,7 +41,7 @@ describe('PsaVerifiedBadge', () => {
       source: 'live',
       lookupDate: new Date().toISOString(),
     });
-    render(<PsaVerifiedBadge certNumber="12345678" />);
+    render(<PsaVerifiedBadge certNumber="12345678" gradingCompany="PSA" />);
     await waitFor(() => {
       expect(screen.getByLabelText(/PSA verified/i)).toBeInTheDocument();
     });
@@ -44,7 +56,7 @@ describe('PsaVerifiedBadge', () => {
       source: 'mock',
       lookupDate: new Date().toISOString(),
     });
-    render(<PsaVerifiedBadge certNumber="12345678" />);
+    render(<PsaVerifiedBadge certNumber="12345678" gradingCompany="PSA" />);
     await waitFor(() => {
       expect(screen.getByLabelText(/PSA verified \(demo\)/i)).toBeInTheDocument();
     });
@@ -57,7 +69,7 @@ describe('PsaVerifiedBadge', () => {
       source: 'live',
       lookupDate: new Date().toISOString(),
     });
-    render(<PsaVerifiedBadge certNumber="bogus" />);
+    render(<PsaVerifiedBadge certNumber="bogus" gradingCompany="PSA" />);
     await waitFor(() => {
       expect(screen.getByLabelText(/Cert unverified/i)).toBeInTheDocument();
     });
@@ -65,7 +77,7 @@ describe('PsaVerifiedBadge', () => {
 
   it('surfaces a "Cert unverified" badge when verify rejects (never claims a false confirmation)', async () => {
     verifyCert.mockRejectedValue(new Error('psa 500'));
-    render(<PsaVerifiedBadge certNumber="12345678" />);
+    render(<PsaVerifiedBadge certNumber="12345678" gradingCompany="PSA" />);
     await waitFor(() => {
       expect(screen.getByLabelText(/Cert unverified/i)).toBeInTheDocument();
     });

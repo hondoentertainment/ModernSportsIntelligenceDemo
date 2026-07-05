@@ -161,7 +161,7 @@ const RegistryTab: React.FC<{ cards: DigitalTwin[]; onSelectCard: (_id: string) 
                   <span className="flex items-center gap-1">
                     <Hash size={9} /> {card.certNumber}
                   </span>
-                  <PsaVerifiedBadge certNumber={card.certNumber} />
+                  <PsaVerifiedBadge certNumber={card.certNumber} gradingCompany={card.gradingCompany} />
                   <span className="flex items-center gap-1">
                     <Clock size={9} /> {card.ownershipHistory.length} owners
                   </span>

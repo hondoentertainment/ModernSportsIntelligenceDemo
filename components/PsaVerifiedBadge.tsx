@@ -4,6 +4,13 @@ import DataSourceBadge from './DataSourceBadge';
 
 interface PsaVerifiedBadgeProps {
   certNumber: string | undefined;
+  /**
+   * The card's grading company. PSA verification only applies to PSA slabs,
+   * so the badge renders nothing for any other (or unknown) grader — the mock
+   * adapter returns `verified: true` for any input, so running it on a BGS/SGC
+   * cert would falsely label it "PSA verified". Gate at the source.
+   */
+  gradingCompany?: string;
   size?: 'xs' | 'sm';
   className?: string;
 }
@@ -18,7 +25,7 @@ type Status =
 /**
  * Renders a `DataSourceBadge` reflecting a PSA cert-verification lookup.
  *
- * - `certNumber` empty → renders nothing.
+ * - Non-PSA grader (or `certNumber` empty) → renders nothing.
  * - Verification in flight → sample badge ("Verifying…").
  * - Verified via live PSA API → live badge ("PSA verified").
  * - Verified via mock adapter (USE_REAL_PSA off) → mock badge
@@ -31,13 +38,15 @@ type Status =
  */
 const PsaVerifiedBadge: React.FC<PsaVerifiedBadgeProps> = ({
   certNumber,
+  gradingCompany,
   size = 'xs',
   className,
 }) => {
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
+  const isPsaSlab = gradingCompany === 'PSA';
 
   useEffect(() => {
-    if (!certNumber) {
+    if (!certNumber || !isPsaSlab) {
       setStatus({ kind: 'idle' });
       return;
     }
@@ -59,9 +68,9 @@ const PsaVerifiedBadge: React.FC<PsaVerifiedBadgeProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [certNumber]);
+  }, [certNumber, isPsaSlab]);
 
-  if (!certNumber || status.kind === 'idle') return null;
+  if (!certNumber || !isPsaSlab || status.kind === 'idle') return null;
 
   if (status.kind === 'loading') {
     return <DataSourceBadge variant="sample" size={size} label="Verifying…" className={className} />;
