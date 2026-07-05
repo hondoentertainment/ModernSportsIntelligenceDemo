@@ -87,7 +87,11 @@ Deno.serve(async (req) => {
   let body: RequestBody = {};
   try {
     const raw = await req.text();
-    body = raw ? JSON.parse(raw) : {};
+    const parsed = raw ? JSON.parse(raw) : {};
+    // `JSON.parse('null')` returns null, and `JSON.parse('42')` returns 42;
+    // both would explode on the `.limit` read below. Fall back to {} for any
+    // non-object payload so the response stays a 200/400, not a 500.
+    body = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
   } catch {
     return json(400, { error: 'Invalid JSON body' });
   }

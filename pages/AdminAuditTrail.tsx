@@ -3,9 +3,21 @@ import { ShieldAlert, RefreshCw, User as UserIcon, AlertTriangle } from 'lucide-
 import {
   mapStoredRecordToAuditEvent,
   exportAuditEventsToCSV,
-  type AuditCategory,
   type AuditEvent,
 } from '../lib/utils/auditTrailService';
+
+/**
+ * Vocabulary that `audit_events.category` actually stores server-side. The
+ * UI `AuditCategory` union (portfolio | trading | auth | admin | finance |
+ * api | compliance | data) is the DISPLAY vocabulary produced by
+ * `mapLogCategoryToTrail`. The server select must use the RAW vocabulary so
+ * the Edge Function's `eq('category', category)` filter actually matches
+ * persisted rows.
+ */
+const SERVER_CATEGORIES = [
+  'portfolio', 'valuation', 'autonomy', 'auth', 'system', 'admin',
+] as const;
+type ServerCategory = (typeof SERVER_CATEGORIES)[number];
 import { fetchAdminAuditEvents, type AdminAuditRow } from '../lib/utils/adminAuditApi';
 import { useAuth } from '../contexts/AuthContext';
 import AuditFilterBar from '../components/audit/AuditFilterBar';
@@ -41,7 +53,7 @@ const AdminAuditTrail: React.FC = () => {
 
   // Admin-specific filters (server-side).
   const [targetUserId, setTargetUserId] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<AuditCategory | ''>('');
+  const [categoryFilter, setCategoryFilter] = useState<ServerCategory | ''>('');
   const [window, setWindow] = useState<TimeWindow>('7d');
   const [limit, setLimit] = useState(200);
 
@@ -150,11 +162,11 @@ const AdminAuditTrail: React.FC = () => {
             <span className="uppercase tracking-wide text-[10px] font-bold">Category (server)</span>
             <select
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value as AuditCategory | '')}
+              onChange={(e) => setCategoryFilter(e.target.value as ServerCategory | '')}
               className="w-full bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500/60"
             >
               <option value="">All</option>
-              {['portfolio', 'valuation', 'autonomy', 'auth', 'system', 'admin'].map((c) => (
+              {SERVER_CATEGORIES.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>

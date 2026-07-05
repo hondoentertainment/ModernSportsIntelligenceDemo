@@ -15,7 +15,7 @@ vi.mock('../../lib/logger', () => ({
   },
 }));
 
-import { fetchRemoteAuditEvents } from '../../lib/utils/auditTrailRemote';
+import { fetchRemoteAuditEvents, fetchRemoteAuditEventsResult } from '../../lib/utils/auditTrailRemote';
 import * as supabaseModule from '../../lib/supabase';
 import { logger } from '../../lib/logger';
 
@@ -34,6 +34,7 @@ function buildQueryBuilder(result: { data: unknown; error: unknown }) {
     order: ReturnType<typeof vi.fn>;
     limit: ReturnType<typeof vi.fn>;
     lt: ReturnType<typeof vi.fn>;
+    or: ReturnType<typeof vi.fn>;
     then: (onFulfilled: (v: unknown) => unknown) => Promise<unknown>;
   } = {
     select: vi.fn(() => chain),
@@ -41,6 +42,7 @@ function buildQueryBuilder(result: { data: unknown; error: unknown }) {
     order: vi.fn(() => chain),
     limit: vi.fn(() => chain),
     lt: vi.fn(() => chain),
+    or: vi.fn(() => chain),
     then: (onFulfilled) => Promise.resolve(result).then(onFulfilled),
   };
   return chain;
@@ -53,6 +55,7 @@ function buildThrowingQueryBuilder(err: unknown) {
     order: ReturnType<typeof vi.fn>;
     limit: ReturnType<typeof vi.fn>;
     lt: ReturnType<typeof vi.fn>;
+    or: ReturnType<typeof vi.fn>;
     then: (onFulfilled: (v: unknown) => unknown, onRejected: (e: unknown) => unknown) => Promise<unknown>;
   } = {
     select: vi.fn(() => chain),
@@ -60,6 +63,7 @@ function buildThrowingQueryBuilder(err: unknown) {
     order: vi.fn(() => chain),
     limit: vi.fn(() => chain),
     lt: vi.fn(() => chain),
+    or: vi.fn(() => chain),
     then: (_onFulfilled, onRejected) => Promise.reject(err).catch(onRejected),
   };
   return chain;
@@ -120,7 +124,7 @@ describe('fetchRemoteAuditEvents', () => {
 
     const result = await fetchRemoteAuditEvents('user-1');
     expect(result).toEqual([]);
-    expect(logger.error).toHaveBeenCalledWith('fetchRemoteAuditEvents failed:', { message: 'boom' });
+    expect(logger.error).toHaveBeenCalledWith('fetchRemoteAuditEventsResult failed:', { message: 'boom' });
   });
 
   it('returns [] when supabase data is not an array', async () => {
@@ -137,7 +141,7 @@ describe('fetchRemoteAuditEvents', () => {
 
     const result = await fetchRemoteAuditEvents('user-1');
     expect(result).toEqual([]);
-    expect(logger.error).toHaveBeenCalledWith('fetchRemoteAuditEvents threw:', expect.any(Error));
+    expect(logger.error).toHaveBeenCalledWith('fetchRemoteAuditEventsResult threw:', expect.any(Error));
   });
 
   it('applies before cursor and honors an explicit limit', async () => {
@@ -157,5 +161,57 @@ describe('fetchRemoteAuditEvents', () => {
     expect(qb.limit).toHaveBeenLastCalledWith(500);
     await fetchRemoteAuditEvents('user-1', { limit: 0 });
     expect(qb.limit).toHaveBeenLastCalledWith(1);
+  });
+
+  it('uses a composite cursor (created_at + id) when beforeCursor is set', async () => {
+    const qb = buildQueryBuilder({ data: [], error: null });
+    (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
+
+    await fetchRemoteAuditEvents('user-1', {
+      beforeCursor: { createdAt: '2026-01-01T00:00:00.000Z', id: 'row-uuid' },
+    });
+    expect(qb.or).toHaveBeenCalledWith(
+      'created_at.lt.2026-01-01T00:00:00.000Z,and(created_at.eq.2026-01-01T00:00:00.000Z,id.lt.row-uuid)',
+    );
+    // Ensure we didn't fall back to the plain .lt() path.
+    expect(qb.lt).not.toHaveBeenCalled();
+  });
+});
+
+describe('fetchRemoteAuditEventsResult', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (supabaseModule as unknown as { isDemoMode: boolean }).isDemoMode = false;
+    (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn();
+  });
+
+  it('distinguishes an empty successful page from an error', async () => {
+    const qb = buildQueryBuilder({ data: [], error: null });
+    (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
+
+    const ok = await fetchRemoteAuditEventsResult('user-1');
+    expect(ok).toEqual({ ok: true, rows: [] });
+  });
+
+  it('surfaces query failures as { ok: false, reason: "query-failed" }', async () => {
+    const qb = buildQueryBuilder({ data: null, error: { message: 'boom' } });
+    (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
+
+    const result = await fetchRemoteAuditEventsResult('user-1');
+    expect(result).toEqual({ ok: false, reason: 'query-failed' });
+  });
+
+  it('surfaces network throws as { ok: false, reason: "threw" }', async () => {
+    const qb = buildThrowingQueryBuilder(new Error('network down'));
+    (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
+
+    const result = await fetchRemoteAuditEventsResult('user-1');
+    expect(result).toEqual({ ok: false, reason: 'threw' });
+  });
+
+  it('surfaces missing userId / demo mode as their own reasons', async () => {
+    expect(await fetchRemoteAuditEventsResult(null)).toEqual({ ok: false, reason: 'no-user' });
+    (supabaseModule as unknown as { isDemoMode: boolean }).isDemoMode = true;
+    expect(await fetchRemoteAuditEventsResult('user-1')).toEqual({ ok: false, reason: 'demo-mode' });
   });
 });

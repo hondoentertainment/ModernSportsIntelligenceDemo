@@ -5,6 +5,7 @@ import {
 import {
   getAuditEvents,
   getRemoteAuditEvents,
+  getRemoteAuditEventsResult,
   getComplianceRules,
   getComplianceReports,
   getRetentionPolicies,
@@ -64,36 +65,52 @@ const AuditTrail: React.FC = () => {
     };
   }, [user?.id, eventsRefresh]);
 
-  // Track the pagination cursor separately so `loadOlder` doesn't need to
-  // depend on the full events array — dependencies stay tight and the
-  // one-pass min-find replaces a filter+sort of every event on click.
-  const oldestCloudIso = useMemo(() => {
-    let oldest: string | undefined;
+  // Composite cursor (createdAt + rowId) for the "Load older" page. The
+  // tie-breaker on rowId means multiple rows sharing the exact same
+  // `created_at` millisecond can't silently fall off the boundary.
+  const oldestCloudCursor = useMemo<{ createdAt: string; id: string } | undefined>(() => {
+    let oldest: { createdAt: string; id: string } | undefined;
     for (const e of events) {
-      if (e.source !== 'cloud' || !e.isoTimestamp) continue;
-      if (oldest === undefined || e.isoTimestamp < oldest) oldest = e.isoTimestamp;
+      if (e.source !== 'cloud' || !e.isoTimestamp || !e.rowId) continue;
+      if (
+        oldest === undefined ||
+        e.isoTimestamp < oldest.createdAt ||
+        (e.isoTimestamp === oldest.createdAt && e.rowId < oldest.id)
+      ) {
+        oldest = { createdAt: e.isoTimestamp, id: e.rowId };
+      }
     }
     return oldest;
   }, [events]);
 
   const loadOlder = useCallback(async () => {
-    if (!user?.id || olderLoading || !oldestCloudIso) return;
+    if (!user?.id || olderLoading || !oldestCloudCursor) return;
     setOlderLoading(true);
     try {
-      const older = await getRemoteAuditEvents(user.id, {
+      const result = await getRemoteAuditEventsResult(user.id, {
         limit: REMOTE_PAGE_SIZE,
-        before: oldestCloudIso,
+        beforeCursor: oldestCloudCursor,
       });
-      if (older.length === 0) {
+      // Only mutate `remoteHasMore` on a definite empty page. A transient
+      // network / RLS failure must NOT hide the Load-older button — that
+      // would strand the user until they hard-refresh.
+      if (!result.ok) return;
+      if (result.events.length === 0) {
         setRemoteHasMore(false);
         return;
       }
-      setEvents((prev) => [...prev, ...older]);
-      setRemoteHasMore(older.length === REMOTE_PAGE_SIZE);
+      // Insert the older cloud page BEFORE the local/sample tail so the
+      // chronology stays: newer cloud → older cloud → local → sample.
+      setEvents((prev) => {
+        const firstNonCloud = prev.findIndex((e) => e.source !== 'cloud');
+        const cutoff = firstNonCloud === -1 ? prev.length : firstNonCloud;
+        return [...prev.slice(0, cutoff), ...result.events, ...prev.slice(cutoff)];
+      });
+      setRemoteHasMore(result.events.length === REMOTE_PAGE_SIZE);
     } finally {
       setOlderLoading(false);
     }
-  }, [user?.id, olderLoading, oldestCloudIso]);
+  }, [user?.id, olderLoading, oldestCloudCursor]);
 
   const rules = useMemo(() => getComplianceRules(), []);
   const compReports = useMemo(() => getComplianceReports(), []);
