@@ -3,7 +3,7 @@
 **Purpose:** Single document to review **what exists in the product**, **what is production-grade vs demo/beta**, and **what remains open**.  
 **Sources:** `PRD.md` §4 & §14, `lib/utils/featureCatalog.ts`, `PRODUCTION_READINESS.md`, `plans/next-steps-recommendation.md`, `plans/roadmap-review-and-enhancements.md`, routing in `App.tsx`.
 
-**Last updated:** May 22, 2026
+**Last updated:** July 4, 2026
 
 ---
 
@@ -136,21 +136,21 @@ Aligned with `PRODUCTION_READINESS.md` (not the same numbering as product “Pha
 
 These were proposed as **high-value additions**; overlap with existing tools is noted in `plans/roadmap-review-and-enhancements.md`.
 
-| Item                                 | Status in product                                                                        |
-| ------------------------------------ | ---------------------------------------------------------------------------------------- |
-| Insurance-grade report               | Partially addressed by insurance report / dossier — **extend** for carrier-ready packets |
-| Break-even calculator                | **Shipped** (catalog + UI)                                                               |
-| What-if simulator                    | **Shipped** (route)                                                                      |
-| Grading batch planner                | **Shipped**                                                                              |
-| eBay listing generator               | **Shipped**                                                                              |
-| Collection embed / vanity URL        | **Partial** — public portfolio exists; **embed/widget** can deepen                       |
-| Wax break ROI                        | **Shipped**                                                                              |
-| Tax-lot accounting (full)            | **Open** (major regulatory lift)                                                         |
-| P2P marketplace                      | **Open**                                                                                 |
-| Negotiation analytics                | **Open**                                                                                 |
-| Agent transparency / audit           | **Open**                                                                                 |
-| Visual centering / grade probability | **Open** (vision roadmap)                                                                |
-| Hobby health index                   | **Open**                                                                                 |
+| Item                                 | Status in product                                                                                                                                                                                                          |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Insurance-grade report               | Partially addressed by insurance report / dossier — **extend** for carrier-ready packets                                                                                                                                   |
+| Break-even calculator                | **Shipped** (catalog + UI)                                                                                                                                                                                                 |
+| What-if simulator                    | **Shipped** (route)                                                                                                                                                                                                        |
+| Grading batch planner                | **Shipped**                                                                                                                                                                                                                |
+| eBay listing generator               | **Shipped**                                                                                                                                                                                                                |
+| Collection embed / vanity URL        | **Partial** — public portfolio exists; **embed/widget** can deepen                                                                                                                                                         |
+| Wax break ROI                        | **Shipped**                                                                                                                                                                                                                |
+| Tax-lot accounting (full)            | **Open** (major regulatory lift)                                                                                                                                                                                           |
+| P2P marketplace                      | **Open**                                                                                                                                                                                                                   |
+| Negotiation analytics                | **Open**                                                                                                                                                                                                                   |
+| Agent transparency / audit           | **Partial** — user timeline (`/audit-trail`) + operator cross-user timeline (`/audit-trail/admin`) ship with filters, search, CSV export, pagination, and audit-of-audit writes. Per-agent reasoning surfacing still open. |
+| Visual centering / grade probability | **Open** (vision roadmap)                                                                                                                                                                                                  |
+| Hobby health index                   | **Open**                                                                                                                                                                                                                   |
 
 ---
 

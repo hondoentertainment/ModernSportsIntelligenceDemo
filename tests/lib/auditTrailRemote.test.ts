@@ -21,20 +21,48 @@ import { logger } from '../../lib/logger';
 
 type SupabaseMock = { from: ReturnType<typeof vi.fn> };
 
+/**
+ * The real fetch builds a chain that is BOTH chainable (`.lt()` may be called
+ * after `.limit()`) and thenable (the chain is awaited). The mock exposes a
+ * single `chain` object with every operator returning the same object plus a
+ * `then` method that resolves with the fixture.
+ */
 function buildQueryBuilder(result: { data: unknown; error: unknown }) {
-  const limit = vi.fn().mockResolvedValue(result);
-  const order = vi.fn().mockReturnValue({ limit });
-  const eq = vi.fn().mockReturnValue({ order });
-  const select = vi.fn().mockReturnValue({ eq });
-  return { select, eq, order, limit };
+  const chain: {
+    select: ReturnType<typeof vi.fn>;
+    eq: ReturnType<typeof vi.fn>;
+    order: ReturnType<typeof vi.fn>;
+    limit: ReturnType<typeof vi.fn>;
+    lt: ReturnType<typeof vi.fn>;
+    then: (onFulfilled: (v: unknown) => unknown) => Promise<unknown>;
+  } = {
+    select: vi.fn(() => chain),
+    eq: vi.fn(() => chain),
+    order: vi.fn(() => chain),
+    limit: vi.fn(() => chain),
+    lt: vi.fn(() => chain),
+    then: (onFulfilled) => Promise.resolve(result).then(onFulfilled),
+  };
+  return chain;
 }
 
 function buildThrowingQueryBuilder(err: unknown) {
-  const limit = vi.fn().mockRejectedValue(err);
-  const order = vi.fn().mockReturnValue({ limit });
-  const eq = vi.fn().mockReturnValue({ order });
-  const select = vi.fn().mockReturnValue({ eq });
-  return { select, eq, order, limit };
+  const chain: {
+    select: ReturnType<typeof vi.fn>;
+    eq: ReturnType<typeof vi.fn>;
+    order: ReturnType<typeof vi.fn>;
+    limit: ReturnType<typeof vi.fn>;
+    lt: ReturnType<typeof vi.fn>;
+    then: (onFulfilled: (v: unknown) => unknown, onRejected: (e: unknown) => unknown) => Promise<unknown>;
+  } = {
+    select: vi.fn(() => chain),
+    eq: vi.fn(() => chain),
+    order: vi.fn(() => chain),
+    limit: vi.fn(() => chain),
+    lt: vi.fn(() => chain),
+    then: (_onFulfilled, onRejected) => Promise.reject(err).catch(onRejected),
+  };
+  return chain;
 }
 
 describe('fetchRemoteAuditEvents', () => {
@@ -110,5 +138,24 @@ describe('fetchRemoteAuditEvents', () => {
     const result = await fetchRemoteAuditEvents('user-1');
     expect(result).toEqual([]);
     expect(logger.error).toHaveBeenCalledWith('fetchRemoteAuditEvents threw:', expect.any(Error));
+  });
+
+  it('applies before cursor and honors an explicit limit', async () => {
+    const qb = buildQueryBuilder({ data: [], error: null });
+    (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
+
+    await fetchRemoteAuditEvents('user-1', { limit: 50, before: '2026-01-01T00:00:00.000Z' });
+    expect(qb.limit).toHaveBeenCalledWith(50);
+    expect(qb.lt).toHaveBeenCalledWith('created_at', '2026-01-01T00:00:00.000Z');
+  });
+
+  it('clamps a limit above 500 down to 500 and below 1 up to 1', async () => {
+    const qb = buildQueryBuilder({ data: [], error: null });
+    (supabaseModule.supabase as unknown as SupabaseMock).from = vi.fn().mockReturnValue(qb);
+
+    await fetchRemoteAuditEvents('user-1', { limit: 9999 });
+    expect(qb.limit).toHaveBeenLastCalledWith(500);
+    await fetchRemoteAuditEvents('user-1', { limit: 0 });
+    expect(qb.limit).toHaveBeenLastCalledWith(1);
   });
 });
