@@ -590,6 +590,12 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                         </AdminRoute>
                     }
                 />
+                {/* provenance-chain exited beta (wave-3: DAL persistence + reload E2E),
+                    so its route ships in production like the rest of the live catalog. */}
+                <Route path="/provenance" element={<ProvenanceChain />} />
+                {/* vision-grading exited beta (wave-3: analysis-contract tests +
+                    in-session-only image handling) — same rationale. */}
+                <Route path="/grading-vision-engine" element={<GradingVisionEngine />} />
                 {/* Labs surface — the long tail ships only when VITE_FF_ENABLE_BETA_SURFACES
                     is set (see lib/productionLaunch.ts and docs/MVP_LAUNCH_SCOPE.md).
                     Production hides these routes; unknown paths fall through to the
@@ -677,7 +683,6 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/nhl-hub" element={<NHLHub />} />
                 <Route path="/soccer-hub" element={<SoccerHub />} />
                 {/* v4.0: Multi-Sport & Infrastructure */}
-                <Route path="/grading-vision-engine" element={<GradingVisionEngine />} />
                 <Route path="/notification-center" element={<NotificationCenter />} />
                 <Route path="/dashboard-builder" element={<DashboardBuilder />} />
                 <Route path="/marketplace-integrations" element={<MarketplaceIntegrations />} />
@@ -779,7 +784,6 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/market-indices" element={<MarketIndices />} />
                 <Route path="/player-trajectory" element={<PlayerTrajectory />} />
                 <Route path="/portfolio-attribution" element={<PortfolioAttribution />} />
-                <Route path="/provenance" element={<ProvenanceChain />} />
                 <Route path="/provenance-intelligence" element={<ProvenanceChainIntelligence />} />
                 <Route path="/quant-workbench" element={<QuantWorkbench />} />
                 <Route path="/research-reports" element={<ResearchReports />} />

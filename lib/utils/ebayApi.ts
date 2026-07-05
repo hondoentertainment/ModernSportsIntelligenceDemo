@@ -80,6 +80,8 @@ export const ebayApi = {
     cardNumber?: string;
     grading?: string;
     daysBack?: number;
+    /** Pages of 100 to aggregate (Browse API offset pagination). Default 3. */
+    maxPages?: number;
   }): Promise<{
     averagePrice: number;
     medianPrice: number;
@@ -94,13 +96,37 @@ export const ebayApi = {
     }>;
   }> {
     // Browse API returns active listings; `soldOnly` is reserved for future sold-comp feeds.
-    const searchResults = await this.searchSportsCards({
-      ...params,
-      limit: 100,
-      sort: 'price',
-    });
+    const PAGE_SIZE = 100;
+    const maxPages = Math.max(1, params.maxPages ?? 3);
+    const { maxPages: _mp, ...searchParams } = params;
 
-    if (!searchResults.itemSummaries || searchResults.itemSummaries.length === 0) {
+    const itemSummaries: EbayItemSummary[] = [];
+    for (let page = 0; page < maxPages; page++) {
+      let results: EbaySearchResponse;
+      try {
+        results = await this.searchSportsCards({
+          ...searchParams,
+          limit: PAGE_SIZE,
+          offset: page * PAGE_SIZE,
+          sort: 'price',
+        });
+      } catch (err) {
+        // First page failing means no data at all — let the caller's
+        // degraded-fallback handle it. A later page failing should not
+        // discard the comps already collected; aggregate what we have.
+        if (page === 0) throw err;
+        break;
+      }
+      const pageItems = results.itemSummaries ?? [];
+      itemSummaries.push(...pageItems);
+      // Stop when the API is exhausted: a short page always means the end;
+      // the reported total only gates when the API actually sent one —
+      // otherwise a full page keeps the walk going up to maxPages.
+      if (pageItems.length < PAGE_SIZE) break;
+      if (results.total != null && itemSummaries.length >= results.total) break;
+    }
+
+    if (itemSummaries.length === 0) {
       return {
         averagePrice: 0,
         medianPrice: 0,
@@ -114,7 +140,7 @@ export const ebayApi = {
     const prices: number[] = [];
     const sales: Array<{ price: number; date: string; condition: string; title: string; itemId: string }> = [];
 
-    searchResults.itemSummaries.forEach((item: EbayItemSummary) => {
+    itemSummaries.forEach((item: EbayItemSummary) => {
       if (item.price && item.price.value) {
         const price = parseFloat(item.price.value);
         prices.push(price);

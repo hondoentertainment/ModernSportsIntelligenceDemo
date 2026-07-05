@@ -54,7 +54,7 @@ const GROUP_FEATURE_IDS = new Set([
 
 // Feature IDs that belong to Enterprise scale
 const ENTERPRISE_FEATURE_IDS = new Set([
-  'agentic-negotiation', 'liquidity-pool', 'fractional-vault', 'fractional-vault-v2',
+  'agentic-negotiation', 'liquidity-pool', 'fractional-vault',
   'fractional-syndicate', 'market-maker-arena', 'market-microstructure', 'playbook-templates',
   'mlb-stats', 'players', 'prospect-pipeline', 'prospect-trends', 'rookie-pipeline-scanner',
   'draft-night-tracker', 'contract-valuation', 'teams', 'games',

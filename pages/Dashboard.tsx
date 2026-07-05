@@ -439,18 +439,21 @@ const Dashboard: React.FC = () => {
             </div>
 
             <div className="flex flex-wrap gap-4 justify-center pt-2">
-              <Link to="/collection" className="px-10 py-5 bg-brand-lime hover:bg-white text-brand-charcoal font-black rounded-2xl transition-all shadow-2xl shadow-brand-lime/20 flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group">
-                <Package size={18} strokeWidth={3} />
-                Deploy First Asset
-                <ChevronRight size={18} strokeWidth={3} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
+              {/* The first-five-minutes funnel is arrive → scan → see a real
+                  value with provenance → save, so the scan is the one primary
+                  action; everything else is a secondary path. */}
               <button
                 onClick={() => setIsScanOpen(true)}
-                className="px-10 py-5 bg-brand-charcoal hover:bg-slate-800 border border-brand-lime/30 text-brand-lime font-black rounded-2xl transition-all shadow-2xl flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group"
+                className="px-10 py-5 bg-brand-lime hover:bg-white text-brand-charcoal font-black rounded-2xl transition-all shadow-2xl shadow-brand-lime/20 flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group"
               >
-                <Sparkles size={18} className="group-hover:animate-pulse" />
-                AI Alpha Scan
+                <Sparkles size={18} strokeWidth={3} className="group-hover:animate-pulse" />
+                Scan Your First Card
+                <ChevronRight size={18} strokeWidth={3} className="group-hover:translate-x-1 transition-transform" />
               </button>
+              <Link to="/collection" className="px-10 py-5 bg-brand-charcoal hover:bg-slate-800 border border-brand-lime/30 text-brand-lime font-black rounded-2xl transition-all shadow-2xl flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group">
+                <Package size={18} strokeWidth={3} />
+                Add Manually
+              </Link>
               <button
                 onClick={() => initializeFullInventory()}
                 className="px-10 py-5 bg-brand-charcoal hover:bg-slate-800 border border-slate-700 text-white font-black rounded-2xl transition-all flex items-center gap-3 uppercase tracking-widest text-xs transform active:scale-95 group"
@@ -459,6 +462,15 @@ const Dashboard: React.FC = () => {
                 Initialize Demo Sync
               </button>
             </div>
+
+            <Link
+              to="/demo-flow"
+              className="inline-flex items-center gap-2 text-[11px] font-bold text-brand-muted hover:text-brand-lime uppercase tracking-widest transition-colors"
+            >
+              <Zap size={14} />
+              New here? Take the interactive demo tour
+              <ChevronRight size={14} />
+            </Link>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 opacity-80 scale-95">
               {[
@@ -1357,7 +1369,15 @@ const Dashboard: React.FC = () => {
             condition: 'Ungraded',
             ...card
           } as any;
+          const isFirstCard = inventory.length === 0;
           setInventory(prev => [newCard, ...prev]);
+          if (isFirstCard) {
+            showToast(
+              'info',
+              "We're fetching live pricing for this card — the data-source badge on each valuation shows where the number comes from.",
+              { duration: 8000, dedupeKey: 'first-card-pricing' },
+            );
+          }
         }}
       />
 

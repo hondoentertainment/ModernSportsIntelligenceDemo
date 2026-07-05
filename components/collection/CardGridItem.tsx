@@ -33,6 +33,7 @@ import {
   valuationBadgeVariantForEntity,
 } from '../../lib/utils/valuationProvenance';
 import DataSourceBadge from '../DataSourceBadge';
+import CertVerifiedBadge from '../CertVerifiedBadge';
 
 export interface CardGridItemProps {
   card: CardInventory;
@@ -151,6 +152,14 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
             <div className="bg-brand-lime text-brand-charcoal px-4 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-2xl flex items-center gap-2">
               <Trophy size={14} fill="currentColor" /> {card.gradingCompany} {card.grade}
             </div>
+          )}
+          {card.certNumber && (
+            <CertVerifiedBadge
+              key={card.certNumber}
+              certNumber={card.certNumber}
+              gradingCompany={card.gradingCompany}
+              className="shadow-2xl"
+            />
           )}
           {card.isAutographed && (
             <div className="bg-white text-brand-charcoal px-4 py-1.5 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-2xl flex items-center gap-2">

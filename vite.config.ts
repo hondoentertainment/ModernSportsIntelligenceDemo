@@ -128,6 +128,13 @@ export default defineConfig(({ command, mode }) => {
         'lib/utils/signals.ts',
         'lib/utils/rarity.ts',
         'lib/utils/auditLog.ts',
+        'lib/utils/auditTrailRemote.ts',
+        'lib/betaFeatureExit.ts',
+        'lib/integrations/ebayAdapter.ts',
+        // gradingVisionEngineService has unit coverage (~95% stmts) but its
+        // random-conditional branches are run-to-run unstable — unfit for
+        // this near-100% ratchet gate. Revisit if the simulator becomes
+        // seedable.
         'lib/utils/featureCatalog.ts',
         'lib/utils/telemetryService.ts',
         'lib/utils/jobQueue.ts',

@@ -47,6 +47,8 @@ export interface CardInventory {
   isGraded: boolean;
   gradingCompany?: 'PSA' | 'BGS' | 'SGC' | 'CSG' | 'HGA' | 'Other';
   grade?: string;
+  /** Grading cert number printed on the slab; enables PSA cert verification. */
+  certNumber?: string;
   purchasePrice: number;
   purchaseDate: string;
   currentValue?: number;

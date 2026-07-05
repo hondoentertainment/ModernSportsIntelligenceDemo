@@ -96,6 +96,9 @@ const InstantBuyModal: React.FC<InstantBuyModalProps> = ({ isOpen, onClose, card
             <div>
               <h2 className="text-2xl font-bebas tracking-widest text-white">Instant Liquidation</h2>
               <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">MSI House Buy • Instant Payout</p>
+              <span className="mt-1 inline-block px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 rounded-full text-[9px] font-black text-amber-300 uppercase tracking-widest">
+                Simulation — no real transaction
+              </span>
             </div>
           </div>
           <button onClick={onClose} aria-label="Close modal" className="p-3 bg-brand-charcoal hover:bg-slate-800 rounded-xl transition-colors">
@@ -124,6 +127,9 @@ const InstantBuyModal: React.FC<InstantBuyModalProps> = ({ isOpen, onClose, card
                     +${quote.speedBonus.toLocaleString()} Speed Bonus Applied
                   </p>
                 )}
+                <p className="text-[10px] text-amber-300/80 mt-2">
+                  Simulated payout — recorded to your history only; no funds move.
+                </p>
               </div>
               <button
                 onClick={onClose}

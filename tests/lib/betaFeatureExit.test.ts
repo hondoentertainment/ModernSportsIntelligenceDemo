@@ -25,8 +25,20 @@ describe('betaFeatureExit', () => {
     expect(getBetaFeatureExitStatus('live-impact')?.readyForLive).toBe(true);
   });
 
-  it('liquidity-pool remains blocked without a shipped surface', () => {
-    expect(getBetaFeatureExitStatus('liquidity-pool')?.readyForLive).toBe(false);
+  it('liquidity-pool meets exit criteria with persistence, tests, and sim labeling', () => {
+    expect(getBetaFeatureExitStatus('liquidity-pool')?.readyForLive).toBe(true);
+  });
+
+  it('provenance-chain meets exit criteria with persistence and reload E2E', () => {
+    expect(getBetaFeatureExitStatus('provenance-chain')?.readyForLive).toBe(true);
+  });
+
+  it('vision-grading meets exit criteria with analysis-contract coverage', () => {
+    expect(getBetaFeatureExitStatus('vision-grading')?.readyForLive).toBe(true);
+  });
+
+  it('returns undefined for an unknown feature id', () => {
+    expect(getBetaFeatureExitStatus('not-a-feature')).toBeUndefined();
   });
 
   it('getBetaFeaturesReadyForLive returns promotable subset', () => {

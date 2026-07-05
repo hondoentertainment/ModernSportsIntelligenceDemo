@@ -1,75 +1,66 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Generated 2026-06-10 · Reflects the state of `main` after the World-Class Pass 1 PRs (#57 wave-2 beta safety + #67 bundle split / a11y / Labs / adapter truth).
+> Refreshed 2026-07-03 · Reflects `main` at `17effb4` **plus this branch**, which implements the engineering items below. Previous edition: 2026-06-10.
 
 ## Current state in one paragraph
 
-MSI is past the “impressive prototype” bar and into a launchable MVP. The DAL is enforced (0 `localStorage` violators), auth + RLS are wired, billing webhook + idempotency are in place, CSP + Sentry + error beacon are required in production builds, and CI gates are dense (typecheck/strict, lint, format, 92/80 coverage, pricing-truth, smoke E2E, deployed-E2E, bundle gate, axe smoke, route smoke across all 223 routes, CodeQL, visual regression, Lighthouse). The product surface is now focused: the curated MVP routes ship by default and the ~300 Labs routes only mount when `VITE_FF_ENABLE_BETA_SURFACES=1`. eBay/PSA adapters label every response `source: 'live' \| 'mock'`. The lib-services monolith (1.16 MB gz) is split into five domain chunks.
+MSI is deployed and being watched — with one caveat found by checking job logs, not just run status (these workflows no-op green when their secrets are missing): **Deployed E2E** genuinely executes daily (`PLAYWRIGHT_DEPLOYMENT_URL` is set; Playwright runs against the deployment) and the **health ping** genuinely pings (`HEALTH_CHECK_URL` set; `/api/health` returns `ok:true`), but the **RLS verification** schedule is currently a no-op — its Supabase credential secrets are not set in GitHub, so every gated step skips. This branch executes the June recommendation wholesale: the stale PR queue is resolved, five of the seven original betas are now `live` (only `fractional-vault` remains, blocked on legal sign-off), the eBay/PSA integrations gained comp pagination + last-known-good stale fallback + a cert-verification badge, and the first-five-minutes onboarding funnel (scan-first empty state, demo tour link, first-card pricing toast) is in. What remains is **owner-held**: three launch-ops items and the real-data flag flips.
 
-The remaining gap to “world-class” is **not** more engineering surface — it’s **executing the launch playbook** with real credentials, **finishing the wave-3 beta items** for the seven features still labeled `beta`, and **deepening two integrations** (eBay sold comps and PSA cert) so the brand promise of pricing truth is backed by real data, not mocks.
+## Status of the June recommendation (implemented on this branch)
 
-## Priority 0 — Owner-held launch actions
+| Item                                    | Status                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0 — open-PR queue (#74, #75, #59, #58) | ✅ Resolved: dependency groups applied here with the Stripe `apiVersion` fix #74 was missing; #59's goal already shipped on main (June 10 consolidation); #58's unique audit work (filters/search/CSV/pagination + runbook + admin spec) ported here. All four closed as superseded.                                                                                                                                    |
+| P1 — punch-list items 1/3/4             | ⚠️ Items 3/4 checked off with job-log evidence (gated steps actually execute). Item 1 (RLS verification) turned out to be a **no-op green** — the workflow's Supabase secrets are unset in GitHub; returned to the owner-held list.                                                                                                                                                                                     |
+| P2 — beta exits                         | ✅ `provenance-chain` live (reload-persistence E2E added, route out of Labs gate) · ✅ `liquidity-pool` live (sim labeling added; persistence/tests landed in #68) · ✅ `fractional-vault-v2` removed (duplicate). ✅ `vision-grading` live (analysis-contract tests + in-session-only image handling documented and pinned by a no-persistence test). Remaining: `fractional-vault` (legal sign-off — no engineering). |
+| P3 — integration depth                  | ✅ eBay comp pagination (offset pages), last-known-good comps served as `source: 'stale'` on live failure, PSA `CertVerifiedBadge` on any card with a `certNumber`.                                                                                                                                                                                                                                                     |
+| P4 — onboarding                         | ✅ Scan-first empty state, `/demo-flow` tour link, first-card pricing toast pointing at the data-source badge.                                                                                                                                                                                                                                                                                                          |
 
-See [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md). Every item is a one-shot configuration that engineering cannot do without credentials. They unblock the staged rollout in [`docs/ROLLBACK_AND_STABILIZATION.md`](docs/ROLLBACK_AND_STABILIZATION.md).
+## Priority 1 — Remaining owner-held launch actions
 
-1. Run `npm run verify:rls` against Supabase with real free/basic/pro/alpha test users.
-2. Set `VITE_SENTRY_DSN` + `VITE_REQUIRE_TELEMETRY=true` in Vercel.
-3. Set repo secret `PLAYWRIGHT_DEPLOYMENT_URL` and repo variable `ENABLE_DEPLOYED_E2E=true` to activate the deployed-E2E workflow.
-4. Point uptime monitoring at `GET /api/health`.
-5. When ready to leave mock mode: `EBAY_CLIENT_ID/SECRET` + `VITE_FF_REAL_EBAY=true`, then `PSA_API_KEY` + `VITE_FF_REAL_PSA=true`.
-6. Run the Stripe lifecycle smoke (subscribe → upgrade → downgrade → cancel → failed-payment) in test mode against the production deployment.
-7. Verify `/api/me/export` returns the user’s data and `/api/me/delete` purges + revokes session on a throwaway account.
+1. **RLS verification secrets** — set the Supabase credential secrets the scheduled **RLS verification** workflow gates on, then confirm a run where the smoke test actually executes (item 1 — the current green runs are no-ops).
+2. **Server API auth on the deployment** — `/api/health` reports `config.serverApiAuth: false`: the Vercel deployment lacks the server-side Supabase env (`SUPABASE_URL`/`SUPABASE_ANON_KEY`), so authenticated API routes cannot validate JWTs. Set them per `docs/DEPLOY_ENV_CHECKLIST.md`.
+3. **Sentry** — set `VITE_SENTRY_DSN` + `VITE_REQUIRE_TELEMETRY=true` in Vercel and confirm a test error arrives (punch-list item 2).
+4. **Stripe lifecycle smoke** — subscribe → upgrade → downgrade → cancel → failed-payment in test mode against production; verify webhook deliveries are all 2xx and tier updates (item 6).
+5. **GDPR endpoints** — `PLAYWRIGHT_BASE_URL=<prod> npm run test:e2e:gdpr` covers the contracts and (opt-in) the authenticated export; run the destructive delete manually on a throwaway account (item 7).
 
-## Priority 1 — Wave-3 beta exits (engineering)
+## Priority 2 — Turn on real data (eBay, then PSA)
 
-Status of the 7 `status: 'beta'` IDs in [`lib/utils/featureCatalog.ts`](lib/utils/featureCatalog.ts) — wave-2 cleared all misleading copy and tenancy issues (see [`docs/BETA_EXIT_READINESS_PASS.md`](docs/BETA_EXIT_READINESS_PASS.md)). Wave-3 promotes them to `live` once persistence and tests land.
+The engineering is done and waiting behind flags; the deployed environment is stable enough to flip them:
 
-| ID                    | Wave-3 work to promote                                                                                                                                  |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `liquidity-pool`      | Surface the widget on the Dashboard, write a unit test for `recordInstantBuy` round-tripping through the per-user key.                                  |
-| `visual-audit`        | Modal-only feature; needs E2E covering upload → result; consider client-side image storage opt-in.                                                      |
-| `live-impact`         | Either wire a real sports-feed adapter behind a flag or commit to demo-only with a doc note; either way, add a snapshot test for `getLiveImpactAlerts`. |
-| `vision-grading`      | Same image-handling decision as `visual-audit`; explicit PSA/BGS comparison must remain labeled.                                                        |
-| `fractional-vault`    | Service is pure catalog read — promote when legal/securities review approves the "Simulation only" disclosure; no engineering blocker.                  |
-| `provenance-chain`    | `registerCard()` now persists via the DAL with per-user scoping (this PR). Promote when an E2E covers register → reload → entry survives.               |
-| `fractional-vault-v2` | Catalog-only since the route collision was resolved; remove from catalog or merge with v1.                                                              |
+1. Set `EBAY_CLIENT_ID`/`EBAY_CLIENT_SECRET` + `VITE_FF_REAL_EBAY=true`; watch the daily deployed-E2E and pricing-truth gates for a few days. Degraded fallback now serves last-known-good comps labeled `stale` instead of jumping to mock.
+2. Then `PSA_API_KEY` + `VITE_FF_REAL_PSA=true`; cards with a `certNumber` will switch from the "PSA (demo)" badge to live "PSA Verified".
 
-## Priority 2 — Real-data integration depth
+## Priority 3 — Last beta exit
 
-The brand is “pricing truth.” Two integrations move the needle most:
+- `fractional-vault`: legal/securities sign-off on the "Simulation only" disclosure. No engineering blocker — on approval, flip the catalog status.
+- (`vision-grading` exited on this branch: the image-handling decision matches `visual-audit` — in-session only, never persisted — and is pinned by tests.)
 
-- **eBay sold comps:** `lib/integrations/ebayAdapter.ts` now tags `source` and computes `trendPercent` from real history when live. Next: pagination beyond the first page, store the last successful comp set per `(player, year, set, grade)` so degraded fallback shows the last-known-good response with a stale-data label instead of jumping to mock.
-- **PSA cert verification:** Adapter is ready. Surface the verified label on every card that has a `certNumber` using the existing `DataSourceBadge` component.
+## Sustained dev experience (background, not blocking)
 
-## Priority 3 — Onboarding & first-five-minutes
-
-The funnel that defines "world-class" is: arrive → scan a card → see a real value with provenance → save. Audit it as a single flow:
-
-- Dashboard empty state for a brand-new user: one primary CTA ("Scan your first card") instead of widget grid.
-- Demo Flow currently sits behind `/demo-flow` and a widget — promote it into the empty-collection state.
-- After first card add, queue a non-blocking "We're fetching live pricing for this card" toast pointing at `DataSourceBadge`.
-
-## Priority 4 — Sustained dev experience
-
-- Add a `npm run perf:audit` script that runs `vite build && node scripts/ci-bundle-gate.cjs` and prints a one-line summary, so engineers see when their PR moves a chunk.
+- Keep merging the grouped Dependabot PRs promptly so they don't pile up again.
 - Tighten coverage gates incrementally — every PR that crosses a service file should add it to the explicit whitelist in `vite.config.ts`.
-- Schedule a quarterly catalog sweep — features that have been `beta` for 90+ days either go `live` or get hidden.
+- Quarterly catalog sweep: features `beta` for 90+ days either go `live` or get hidden. First sweep due ~2026-09.
+- Run the first key-rotation drill (`plans/incidents/key-rotation-drill.md`) and log it.
 
 ## What NOT to do next
 
-1. **Don’t add Labs features.** 330 routes is more than enough.
-2. **Don’t chase the lighthouse score below 0.95.** Diminishing returns versus shipping the wave-3 items.
-3. **Don’t restructure directories.** The DAL and chunk graph are settled; rearranging now would just churn the import map.
-4. **Don’t expose Labs routes in production** until the wave-3 work for a given beta lands — the Labs gate is now the only enforcer.
+1. **Don't add Labs features.** The surface is settled; the work is exits, not entries.
+2. **Don't restructure directories.** The DAL and chunk graph are stable; churn buys nothing.
+3. **Don't flip both real-data flags at once.** eBay first, observe, then PSA — the degraded-fallback paths get their first production exercise.
+4. **Don't let `main` idle behind open PRs again.** The deployed-E2E gate exists precisely so merging is cheap.
 
 ## Key references
 
-| Purpose                | File                                                                     |
-| ---------------------- | ------------------------------------------------------------------------ |
-| Owner-held launch ops  | `docs/LAUNCH_OPS_PUNCH_LIST.md`                                          |
-| Beta status / criteria | `docs/BETA_FEATURE_EXIT_CRITERIA.md`, `docs/BETA_EXIT_READINESS_PASS.md` |
-| MVP launch scope       | `docs/MVP_LAUNCH_SCOPE.md`                                               |
-| Production rollout     | `docs/PRODUCTION_ROLLOUT_PHASES.md`                                      |
-| Rollback runbook       | `docs/ROLLBACK_AND_STABILIZATION.md`                                     |
-| Coverage policy        | `docs/COVERAGE_POLICY.md`                                                |
-| Labs boundary          | `lib/productionLaunch.ts`                                                |
+| Purpose                         | File                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------ |
+| Owner-held launch ops           | `docs/LAUNCH_OPS_PUNCH_LIST.md`                                          |
+| Env sync after Supabase unpause | `docs/DEPLOY_ENV_CHECKLIST.md` (§ Supabase unpause + Vercel env sync)    |
+| Beta status / criteria          | `docs/BETA_FEATURE_EXIT_CRITERIA.md`, `docs/BETA_EXIT_READINESS_PASS.md` |
+| Admin audit viewer design       | `plans/admin-audit-viewer-spec.md`                                       |
+| Key-rotation runbook            | `plans/incidents/key-rotation-drill.md`                                  |
+| MVP launch scope                | `docs/MVP_LAUNCH_SCOPE.md`                                               |
+| Production rollout              | `docs/PRODUCTION_ROLLOUT_PHASES.md`                                      |
+| Rollback runbook                | `docs/ROLLBACK_AND_STABILIZATION.md`                                     |
+| Coverage policy                 | `docs/COVERAGE_POLICY.md`                                                |
+| Labs boundary                   | `lib/productionLaunch.ts`                                                |

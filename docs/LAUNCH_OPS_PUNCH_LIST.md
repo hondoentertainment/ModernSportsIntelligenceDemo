@@ -12,7 +12,7 @@ SUPABASE_DB_URL=postgres://... npm run verify:rls   # see scripts/run-rls-checks
 
 Pass = every cross-tenant SELECT/UPDATE returns 0 rows. Record the run date here.
 
-- [ ] Run completed on: \_\_\_\_
+- [ ] Run completed on: \_\_\_\_ — **not yet.** The scheduled **RLS verification** workflow shows green, but its job log (run 28653194272, 2026-07-03) shows every gated step skipped: the Supabase credential secrets are not set in GitHub, so the green runs are no-ops. Set the repo secrets the workflow gates on, then confirm a run where "Run anon RLS smoke test" actually executes.
 
 ## 2. Error telemetry in production (Phase D2)
 
@@ -27,13 +27,13 @@ Create a (free-tier) Sentry project and set in Vercel → Project → Environmen
 
 Set GitHub repo secret `PLAYWRIGHT_DEPLOYMENT_URL=https://<prod>.vercel.app` and repo variable `ENABLE_DEPLOYED_E2E=true`. This activates `.github/workflows/deployed-e2e.yml` (runs after each merge to main + daily).
 
-- [ ] Secret + variable set, first green run linked: \_\_\_\_
+- [x] Secret + variable set — verified from the job log (run 28647105378, 2026-07-03) that the gated steps actually execute: Playwright installs and "Run deployed API checks" passes against the deployment. A green run alone is not proof — the workflow no-ops green without the secret.
 
 ## 4. Uptime monitoring (Phase D1)
 
 Point any uptime service (UptimeRobot, Checkly, Vercel checks) at `GET /api/health` on the production URL. Alert at 2 consecutive failures.
 
-- [ ] Monitor live
+- [x] Monitor live — verified from the job log (run 28660913266, 2026-07-03) that the ping actually executes: `HEALTH_CHECK_URL` is set and the response was `{"ok":true,"service":"msi",...}`. Note the same response shows `config.serverApiAuth: false` — the deployment's server API auth (Supabase env on Vercel) is not configured; see the launch tracking issue.
 
 ## 5. Real-data API keys (when ready to leave mock mode)
 

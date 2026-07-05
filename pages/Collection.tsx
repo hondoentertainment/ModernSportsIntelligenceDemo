@@ -195,8 +195,16 @@ const Collection: React.FC = () => {
   };
 
   const handleAddCard = (card: CardInventory) => {
+    const isFirstCard = inventory.length === 0;
     addCard(card);
     setInitialAssetData(null); // Clear after adding
+    if (isFirstCard) {
+      showToast(
+        'info',
+        "We're fetching live pricing for this card — the data-source badge on each valuation shows where the number comes from.",
+        { duration: 8000, dedupeKey: 'first-card-pricing' },
+      );
+    }
   };
 
   const handleVisionSuccess = (cardData: Partial<CardInventory>) => {
@@ -255,7 +263,7 @@ const Collection: React.FC = () => {
       onConfirm: () => {
         removeCard(id);
         setConfirmState(prev => ({ ...prev, open: false }));
-        addToast('success', `${card.player} removed from collection.`, {
+        showToast('success', `${card.player} removed from collection.`, {
           onUndo: () => { addCard(card); },
           undoLabel: 'Undo Remove'
         });
@@ -276,7 +284,7 @@ const Collection: React.FC = () => {
         setConfirmState(prev => ({ ...prev, open: false }));
         setSelectedIds(new Set());
         setBulkMode(false);
-        addToast('success', `${cards.length} assets removed.`, {
+        showToast('success', `${cards.length} assets removed.`, {
           onUndo: () => { cards.forEach(c => addCard(c)); }
         });
       }
@@ -295,7 +303,7 @@ const Collection: React.FC = () => {
     a.download = `msi_collection_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    addToast('success', `Exported ${cards.length} cards to JSON.`);
+    showToast('success', `Exported ${cards.length} cards to JSON.`);
   };
 
   const filteredInventory = useMemo(() => {
