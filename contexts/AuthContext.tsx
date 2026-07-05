@@ -38,6 +38,13 @@ interface AuthContextType {
      * an unconditional "member" UI without null checks.
      */
     operatorRole: 'member' | 'support' | 'admin';
+    /**
+     * True while the initial `profiles` fetch is in flight for the signed-in
+     * user. Trust-boundary UI (e.g. `<AdminRoute>`) must wait for this to
+     * clear before evaluating `operatorRole`, otherwise the default `member`
+     * value briefly bounces support/admin users off restricted routes.
+     */
+    profileLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -89,6 +96,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [recoveryMode, setRecoveryMode] = useState(false);
     const [userTier, setUserTier] = useState<'free' | 'basic' | 'pro' | 'alpha'>('free');
     const [operatorRole, setOperatorRole] = useState<'member' | 'support' | 'admin'>('member');
+    // The user id whose profile row is currently reflected in `operatorRole`
+    // and `userTier`. `null` means "no profile loaded" (fresh mount, sign-out,
+    // just switched user). We derive `profileLoading` from this so the very
+    // first render after a session is adopted correctly says
+    // `profileLoading === true` — otherwise `<AdminRoute>` sees
+    // `loading=false` + default `operatorRole='member'` on that render and
+    // bounces a real support/admin user to `/audit-trail` with no way back.
+    const [loadedProfileForUserId, setLoadedProfileForUserId] = useState<string | null>(null);
+    // `profileLoading` is true whenever we have a signed-in user whose
+    // profile hasn't been loaded yet (or belongs to a different user id
+    // because we just switched accounts).
+    const profileLoading = !!user && loadedProfileForUserId !== user.id;
     const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     // Proactive session refresh to prevent token expiry
@@ -128,6 +147,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const resetProfileState = useCallback((tier: 'free' | 'basic' | 'pro' | 'alpha' = 'free') => {
         setUserTier(tier);
         setOperatorRole('member');
+        setLoadedProfileForUserId(null);
     }, []);
 
     useEffect(() => {
@@ -324,19 +344,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const fetchUserProfile = useCallback(async () => {
         if (isDemoMode) {
-            resetProfileState('alpha');
+            setUserTier('alpha');
+            setOperatorRole('member');
+            // Demo mode has a synthetic 'demo-user' — mark it loaded so
+            // downstream `<AdminRoute>` doesn't spin.
+            setLoadedProfileForUserId('demo-user');
             return;
         }
         if (!user) return;
+        const targetUserId = user.id;
         try {
             const { data, error } = await supabase
                 .from('profiles')
                 .select('subscription_tier, subscription_status, ai_valuations_used, card_tracking_limit, billing_cycle_start, role')
-                .eq('id', user.id)
+                .eq('id', targetUserId)
                 .single();
             if (error) {
                 logger.warn('Failed to fetch user profile:', error.message);
-                resetProfileState('free');
+                setUserTier('free');
+                setOperatorRole('member');
                 return;
             }
             const validTiers: Array<'free' | 'basic' | 'pro' | 'alpha'> = ['free', 'basic', 'pro', 'alpha'];
@@ -352,9 +378,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             store.set(LS_USER_PROFILE, data);
         } catch (e) {
             logger.warn('Error fetching user profile:', e);
-            resetProfileState('free');
+            setUserTier('free');
+            setOperatorRole('member');
+        } finally {
+            // Mark the profile fetch complete FOR THIS USER ID. On the first
+            // render after a session is adopted, `user?.id !==
+            // loadedProfileForUserId`, so `profileLoading === true`; this
+            // clears it and lets AdminRoute make a routing decision.
+            setLoadedProfileForUserId(targetUserId);
         }
-    }, [user, resetProfileState]);
+    }, [user]);
 
     useEffect(() => {
         if (!user) return;
@@ -366,7 +399,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const demoLogin = () => {
         store.set(LS_DEMO_SESSION, true);
         setUser({ id: 'demo-user', email: 'demo@sportsintel.io' } as User);
-        resetProfileState('alpha');
+        setUserTier('alpha');
+        setOperatorRole('member');
+        // Mark the synthetic demo profile "loaded" so <AdminRoute> doesn't
+        // hang on a demo session.
+        setLoadedProfileForUserId('demo-user');
     };
 
     return (
@@ -387,6 +424,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             demoLogin,
             userTier,
             operatorRole,
+            profileLoading,
         }}>
             {children}
         </AuthContext.Provider>

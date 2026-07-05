@@ -4,7 +4,11 @@
  */
 
 import { getLocalAuditTrail } from './auditLog';
-import { fetchRemoteAuditEvents, type FetchRemoteAuditOptions } from './auditTrailRemote';
+import {
+  fetchRemoteAuditEvents,
+  fetchRemoteAuditEventsResult,
+  type FetchRemoteAuditOptions,
+} from './auditTrailRemote';
 
 export type AuditCategory = 'portfolio' | 'trading' | 'auth' | 'admin' | 'finance' | 'api' | 'compliance' | 'data';
 export type AuditSeverity = 'info' | 'warning' | 'critical' | 'security';
@@ -19,6 +23,13 @@ export interface AuditEvent {
    * through the browser's local timezone). Undefined for sample rows.
    */
   isoTimestamp?: string;
+  /**
+   * Server-side row UUID from `audit_events.id`. Preserved on cloud rows so
+   * the pagination cursor has a tie-breaker for rows sharing the same
+   * `created_at` millisecond — without it, a page boundary through a
+   * timestamp cluster silently drops every remaining row.
+   */
+  rowId?: string;
   category: AuditCategory;
   severity: AuditSeverity;
   actor: string;
@@ -92,9 +103,25 @@ export interface AuditTrailStats {
   exportsPending: number;
 }
 
+/**
+ * The application writes `audit_events.category` from two vocabularies:
+ *   1. `AuditCategory` (the trail vocabulary shared with the UI)
+ *   2. A narrower operational vocabulary used by `logAuditEvent`:
+ *      `portfolio | valuation | autonomy | auth | system`, plus `admin` for
+ *      the cross-user Edge Function's audit-of-audit rows.
+ * The mapper folds (2) into (1) — but must preserve every value that is
+ * already a valid `AuditCategory` (like `admin`), otherwise the operator
+ * viewer's category filter for those rows silently returns nothing.
+ */
 type LogCategory = 'portfolio' | 'valuation' | 'autonomy' | 'auth' | 'system';
 
+const AUDIT_CATEGORY_VALUES: ReadonlySet<AuditCategory> = new Set<AuditCategory>([
+  'portfolio', 'trading', 'auth', 'admin', 'finance', 'api', 'compliance', 'data',
+]);
+
 function mapLogCategoryToTrail(cat: string): AuditCategory {
+  // A category already in the trail vocabulary passes through unchanged.
+  if (AUDIT_CATEGORY_VALUES.has(cat as AuditCategory)) return cat as AuditCategory;
   const c = cat as LogCategory;
   if (c === 'portfolio' || c === 'valuation') return 'portfolio';
   if (c === 'autonomy') return 'trading';
@@ -151,10 +178,13 @@ export function mapStoredRecordToAuditEvent(
   const actor = userId ? `user:${userId.slice(0, 8)}…` : source === 'cloud' ? 'cloud' : 'local';
 
   const prefix = source === 'cloud' ? 'cld' : 'rec';
+  const rowIdRaw = r.id;
+  const rowId = typeof rowIdRaw === 'string' && rowIdRaw.length > 0 ? rowIdRaw : undefined;
   return {
     id: `${prefix}-${index}-${created}-${action}`,
     timestamp: formatTimestamp(created),
     isoTimestamp: created,
+    rowId,
     category,
     severity,
     actor,
@@ -199,6 +229,27 @@ async function getRemoteAuditEvents(
   return rows
     .map((row, i) => mapStoredRecordToAuditEvent(row, i, 'cloud'))
     .filter((e): e is AuditEvent => e !== null);
+}
+
+/**
+ * Discriminated variant: distinguishes an empty successful page from a
+ * network / RLS / demo-mode failure so pagination UI doesn't silently strand
+ * the user on the current page.
+ */
+export type GetRemoteAuditEventsResult =
+  | { ok: true; events: AuditEvent[] }
+  | { ok: false; reason: string };
+
+async function getRemoteAuditEventsResult(
+  userId: string | undefined | null,
+  opts?: FetchRemoteAuditOptions,
+): Promise<GetRemoteAuditEventsResult> {
+  const result = await fetchRemoteAuditEventsResult(userId, opts);
+  if (!result.ok) return { ok: false, reason: result.reason };
+  const events = result.rows
+    .map((row, i) => mapStoredRecordToAuditEvent(row, i, 'cloud'))
+    .filter((e): e is AuditEvent => e !== null);
+  return { ok: true, events };
 }
 
 /** Apply UI filters in-memory. Returns a new array preserving input order. */
@@ -334,6 +385,7 @@ function getComplianceStatusColor(status: ComplianceStatus): string {
 export {
   getAuditEvents,
   getRemoteAuditEvents,
+  getRemoteAuditEventsResult,
   getComplianceRules,
   getComplianceReports,
   getRetentionPolicies,

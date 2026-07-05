@@ -67,6 +67,12 @@ vi.mock('../../contexts/AuthContext', () => ({
 vi.mock('../../lib/utils/auditTrailService', () => ({
   getAuditEvents: () => mockState.localEvents,
   getRemoteAuditEvents: vi.fn(async () => mockState.remoteEvents),
+  // Discriminated variant used by loadOlder. Fresh page renders never touch
+  // this path, but a missing export would break the module import itself.
+  getRemoteAuditEventsResult: vi.fn(async () => ({
+    ok: true,
+    events: mockState.remoteEvents,
+  })),
   // Passthrough helpers so the page's filter chip / CSV export code paths
   // still resolve without pulling in the real Supabase-backed module.
   filterAuditEvents: (events: unknown[]) => events,

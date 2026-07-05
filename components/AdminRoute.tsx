@@ -36,13 +36,22 @@ const AdminLoadingShell: React.FC = () => (
  * component's job is to keep the admin UI out of the way of regular users.
  */
 const AdminRoute: React.FC<AdminRouteProps> = ({ children, minRole = 'support' }) => {
-    const { user, loading, operatorRole } = useAuth();
+    const { user, loading, operatorRole, profileLoading } = useAuth();
 
+    // Auth is still resolving — show the loading shell.
     if (loading) {
         return <AdminLoadingShell />;
     }
     if (!user) {
         return <Navigate to="/login" replace />;
+    }
+    // Auth resolved, but the profile row (which owns `operatorRole`) is still
+    // in flight. Redirecting here would bounce real support/admin users to
+    // `/audit-trail` before their role arrives, and because `replace` overwrites
+    // history, they'd be stranded until they navigate back manually. Hold the
+    // shell until the profile fetch completes.
+    if (profileLoading) {
+        return <AdminLoadingShell />;
     }
 
     const isAllowed = minRole === 'admin'
