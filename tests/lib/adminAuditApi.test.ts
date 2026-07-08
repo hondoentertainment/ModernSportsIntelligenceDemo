@@ -15,8 +15,13 @@ vi.mock('../../lib/logger', () => ({
   },
 }));
 
+vi.mock('../../lib/sentry', () => ({
+  addBreadcrumb: vi.fn(),
+}));
+
 import { fetchAdminAuditEvents } from '../../lib/utils/adminAuditApi';
 import * as supabaseModule from '../../lib/supabase';
+import { addBreadcrumb } from '../../lib/sentry';
 
 type Mocked = {
   supabase: { functions: { invoke: ReturnType<typeof vi.fn> } };
@@ -90,5 +95,98 @@ describe('fetchAdminAuditEvents', () => {
       .mockResolvedValue({ data: { events: [], meta: { role: 'member', count: 0 } }, error: null });
     const result = await fetchAdminAuditEvents();
     expect(result.ok).toBe(false);
+  });
+
+  describe('Sentry breadcrumbs', () => {
+    it('emits an info breadcrumb on a successful read (targetUserId redacted)', async () => {
+      (supabaseModule.supabase as unknown as Mocked['supabase']).functions.invoke = vi.fn().mockResolvedValue({
+        data: {
+          events: [
+            {
+              user_id: 'target-uuid-1234',
+              category: 'auth',
+              action: 'login.ok',
+              entity_type: 'session',
+              entity_id: null,
+              metadata: {},
+              created_at: '2026-03-22T00:00:00.000Z',
+            },
+          ],
+          meta: { role: 'support', count: 1 },
+        },
+        error: null,
+      });
+      await fetchAdminAuditEvents({ targetUserId: 'target-uuid-1234', limit: 25 });
+      const call = vi.mocked(addBreadcrumb).mock.calls.find((c) => c[0].message === 'admin-audit-events read');
+      expect(call).toBeTruthy();
+      const filters = call![0].data?.filters as Record<string, unknown>;
+      // PII policy: raw UUID must never appear in the breadcrumb.
+      expect(JSON.stringify(filters)).not.toContain('target-uuid-1234');
+      expect(filters.hasTargetUser).toBe(true);
+      expect(typeof filters.targetUserPrefix).toBe('string');
+      expect((filters.targetUserPrefix as string).length).toBe(8);
+      // Non-identifying filters pass through untouched.
+      expect(filters.limit).toBe(25);
+    });
+
+    it('emits an error breadcrumb when the invoke fails (targetUserId redacted)', async () => {
+      (supabaseModule.supabase as unknown as Mocked['supabase']).functions.invoke = vi
+        .fn()
+        .mockResolvedValue({ data: null, error: { message: 'Forbidden' } });
+      await fetchAdminAuditEvents({ targetUserId: 'target-uuid-1234' });
+      const call = vi.mocked(addBreadcrumb).mock.calls.find(
+        (c) => c[0].message === 'admin-audit-events invoke failed',
+      );
+      expect(call).toBeTruthy();
+      const filters = call![0].data?.filters as Record<string, unknown>;
+      expect(JSON.stringify(filters)).not.toContain('target-uuid-1234');
+      expect(filters.hasTargetUser).toBe(true);
+      expect(call![0].data?.errorMessage).toBe('Forbidden');
+    });
+
+    it('omits targetUserPrefix and sets hasTargetUser=false when no target scope was set', async () => {
+      (supabaseModule.supabase as unknown as Mocked['supabase']).functions.invoke = vi
+        .fn()
+        .mockResolvedValue({ data: { events: [], meta: { role: 'admin', count: 0 } }, error: null });
+      await fetchAdminAuditEvents({ category: 'admin' });
+      const call = vi.mocked(addBreadcrumb).mock.calls.find((c) => c[0].message === 'admin-audit-events read');
+      const filters = call![0].data?.filters as Record<string, unknown>;
+      expect(filters.hasTargetUser).toBe(false);
+      expect(filters.targetUserPrefix).toBeUndefined();
+      expect(filters.category).toBe('admin');
+    });
+
+    it('is deterministic — same targetUserId maps to the same prefix', async () => {
+      (supabaseModule.supabase as unknown as Mocked['supabase']).functions.invoke = vi
+        .fn()
+        .mockResolvedValue({ data: { events: [], meta: { role: 'admin', count: 0 } }, error: null });
+      await fetchAdminAuditEvents({ targetUserId: 'target-uuid-1234' });
+      await fetchAdminAuditEvents({ targetUserId: 'target-uuid-1234' });
+      const calls = vi
+        .mocked(addBreadcrumb)
+        .mock.calls.filter((c) => c[0].message === 'admin-audit-events read');
+      const [first, second] = calls.map((c) => (c[0].data?.filters as { targetUserPrefix: string }).targetUserPrefix);
+      expect(first).toBe(second);
+    });
+
+    it('emits a warning breadcrumb when meta.role is unexpected', async () => {
+      (supabaseModule.supabase as unknown as Mocked['supabase']).functions.invoke = vi
+        .fn()
+        .mockResolvedValue({ data: { events: [], meta: { role: 'member', count: 0 } }, error: null });
+      await fetchAdminAuditEvents();
+      expect(vi.mocked(addBreadcrumb)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          category: 'admin.audit',
+          level: 'warning',
+          message: 'admin-audit-events returned an unexpected role',
+        }),
+      );
+    });
+
+    it('does not emit any breadcrumb in demo mode (no network hop happened)', async () => {
+      (supabaseModule as unknown as Mocked).isDemoMode = true;
+      await fetchAdminAuditEvents();
+      expect(vi.mocked(addBreadcrumb)).not.toHaveBeenCalled();
+    });
   });
 });

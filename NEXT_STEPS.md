@@ -1,12 +1,26 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-07-03 · Reflects `main` at `17effb4` **plus this branch**, which implements the engineering items below. Previous edition: 2026-06-10.
+> Refreshed 2026-07-05 · Reflects `main` at `062a70b` (post PR #79 + #80). Previous edition: 2026-07-03.
 
 ## Current state in one paragraph
 
-MSI is deployed and being watched — with one caveat found by checking job logs, not just run status (these workflows no-op green when their secrets are missing): **Deployed E2E** genuinely executes daily (`PLAYWRIGHT_DEPLOYMENT_URL` is set; Playwright runs against the deployment) and the **health ping** genuinely pings (`HEALTH_CHECK_URL` set; `/api/health` returns `ok:true`), but the **RLS verification** schedule is currently a no-op — its Supabase credential secrets are not set in GitHub, so every gated step skips. This branch executes the June recommendation wholesale: the stale PR queue is resolved, five of the seven original betas are now `live` (only `fractional-vault` remains, blocked on legal sign-off), the eBay/PSA integrations gained comp pagination + last-known-good stale fallback + a cert-verification badge, and the first-five-minutes onboarding funnel (scan-first empty state, demo tour link, first-card pricing toast) is in. What remains is **owner-held**: three launch-ops items and the real-data flag flips.
+MSI is deployed and being watched — with one caveat found by checking job logs, not just run status (these workflows no-op green when their secrets are missing): **Deployed E2E** genuinely executes daily (`PLAYWRIGHT_DEPLOYMENT_URL` is set; Playwright runs against the deployment) and the **health ping** genuinely pings (`HEALTH_CHECK_URL` set; `/api/health` returns `ok:true`), but the **RLS verification** schedule is currently a no-op — its Supabase credential secrets are not set in GitHub, so every gated step skips. Since the last refresh, **Phase 31 (Trust, Security & Data Governance) shipped complete**: user-facing audit-trail viewer at `/audit-trail` (filters + search + CSV + `Load older` pagination), operator cross-user viewer at `/audit-trail/admin` gated by a `profiles.role` trust boundary and served by the `admin-audit-events` Edge Function (writes an audit-of-audit row per read), plus the incident-response key-rotation runbook. Six of seven betas are `live`; only `fractional-vault` remains, blocked on legal sign-off. What remains is **owner-held**: five launch-ops items, real-data flag flips, the last beta exit, and the first key-rotation drill execution.
 
-## Status of the June recommendation (implemented on this branch)
+## Phase 31 — Shipped (2026-07-04 → 2026-07-05)
+
+| Piece                                                                   | Where                                                                                                              |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| User audit timeline (`/audit-trail`) with filters/search/CSV/pagination | `pages/AuditTrail.tsx`, `components/audit/*`, `lib/utils/auditTrail*`                                              |
+| Admin cross-user viewer (`/audit-trail/admin`)                          | `pages/AdminAuditTrail.tsx`, `components/AdminRoute.tsx`                                                           |
+| Server-side cross-user read + audit-of-audit write                      | `supabase/functions/admin-audit-events/index.ts`                                                                   |
+| `profiles.role` (member/support/admin) + RLS + trigger guard            | `supabase/migrations/00008_profiles_role.sql` + `00010_profiles_role_fixes.sql` (the P1 recursion + trigger fixes) |
+| `operatorRole` + `profileLoading` on AuthContext                        | `contexts/AuthContext.tsx`                                                                                         |
+| Key-rotation runbook                                                    | `plans/incidents/key-rotation-drill.md`                                                                            |
+| Design reference (post-implementation)                                  | `plans/admin-audit-viewer-spec.md`                                                                                 |
+
+**Owner still needs to** (see Priority 1 below): apply migration `00010`, deploy the Edge Function, assign the first admin via SQL Editor, and run the first key-rotation drill.
+
+## Status of the June recommendation (implemented on the July-3 branch)
 
 | Item                                    | Status                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -18,7 +32,13 @@ MSI is deployed and being watched — with one caveat found by checking job logs
 
 ## Priority 1 — Remaining owner-held launch actions
 
-1. **RLS verification secrets** — set the Supabase credential secrets the scheduled **RLS verification** workflow gates on, then confirm a run where the smoke test actually executes (item 1 — the current green runs are no-ops).
+0. **Phase 31 activation** (new — from PR #79 + #80):
+   1. Apply `supabase/migrations/00010_profiles_role_fixes.sql` in the Supabase Dashboard SQL Editor. **This is time-sensitive** — 00008 as-shipped contains a self-recursive RLS policy that would break every authenticated profile read. 00010 replaces it with a `SECURITY DEFINER` helper.
+   2. Deploy the new Edge Function: `supabase functions deploy admin-audit-events`.
+   3. Assign yourself the first admin role: `UPDATE profiles SET role = 'admin' WHERE email = '<owner>'` in the SQL Editor.
+   4. Hard-refresh `/audit-trail/admin` and confirm the viewer renders + writes a matching `audit.cross_user_read` row (visible on your own `/audit-trail` under the Recorded chip).
+   5. Execute the first key-rotation drill against staging following `plans/incidents/key-rotation-drill.md`; append a dated entry to the drill log at the bottom of that file.
+1. **RLS verification secrets** — set the Supabase credential secrets the scheduled **RLS verification** workflow gates on, then confirm a run where the smoke test actually executes (the current green runs are no-ops).
 2. **Server API auth on the deployment** — `/api/health` reports `config.serverApiAuth: false`: the Vercel deployment lacks the server-side Supabase env (`SUPABASE_URL`/`SUPABASE_ANON_KEY`), so authenticated API routes cannot validate JWTs. Set them per `docs/DEPLOY_ENV_CHECKLIST.md`.
 3. **Sentry** — set `VITE_SENTRY_DSN` + `VITE_REQUIRE_TELEMETRY=true` in Vercel and confirm a test error arrives (punch-list item 2).
 4. **Stripe lifecycle smoke** — subscribe → upgrade → downgrade → cancel → failed-payment in test mode against production; verify webhook deliveries are all 2xx and tier updates (item 6).

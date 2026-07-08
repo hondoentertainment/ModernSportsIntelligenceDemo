@@ -5,8 +5,18 @@
  * is not installed, everything no-ops.
  */
 
+interface SentryBreadcrumb {
+  category?: string;
+  message?: string;
+  level?: 'debug' | 'info' | 'warning' | 'error' | 'fatal';
+  data?: Record<string, unknown>;
+}
+
 let sentryReady = false;
-let sentryModule: { captureException: (error: unknown) => void } | null = null;
+let sentryModule: {
+  captureException: (error: unknown) => void;
+  addBreadcrumb?: (crumb: SentryBreadcrumb) => void;
+} | null = null;
 
 /** Dev-only: surface missing production error channels at bootstrap. */
 function warnMissingTelemetryInDev(): void {
@@ -68,6 +78,23 @@ export function captureException(error: unknown): void {
   }
   try {
     sentryModule.captureException(error);
+  } catch {
+    // no-op if Sentry API fails
+  }
+}
+
+/**
+ * Attach a breadcrumb to the current Sentry scope. Breadcrumbs travel with any
+ * future error report from this session, so they're the right shape for
+ * "operator did X" audit events — future exceptions will carry the audit trail
+ * that led up to them. Safe to call anytime; no-ops when Sentry isn't loaded.
+ */
+export function addBreadcrumb(crumb: SentryBreadcrumb): void {
+  if (!sentryReady || !sentryModule?.addBreadcrumb) {
+    return;
+  }
+  try {
+    sentryModule.addBreadcrumb(crumb);
   } catch {
     // no-op if Sentry API fails
   }
