@@ -4,7 +4,7 @@
 
 ## Current state in one paragraph
 
-MSI is deployed and being watched — with one caveat found by checking job logs, not just run status (these workflows no-op green when their secrets are missing): **Deployed E2E** genuinely executes daily (`PLAYWRIGHT_DEPLOYMENT_URL` is set; Playwright runs against the deployment) and the **health ping** genuinely pings (`HEALTH_CHECK_URL` set; `/api/health` returns `ok:true`), but the **RLS verification** schedule is currently a no-op — its Supabase credential secrets are not set in GitHub, so every gated step skips. Since the last refresh, **Phase 31 (Trust, Security & Data Governance) shipped complete**: user-facing audit-trail viewer at `/audit-trail` (filters + search + CSV + `Load older` pagination), operator cross-user viewer at `/audit-trail/admin` gated by a `profiles.role` trust boundary and served by the `admin-audit-events` Edge Function (writes an audit-of-audit row per read), plus the incident-response key-rotation runbook. Six of seven betas are `live`; only `fractional-vault` remains, blocked on legal sign-off. What remains is **owner-held**: five launch-ops items, real-data flag flips, the last beta exit, and the first key-rotation drill execution.
+MSI is deployed with a **live Supabase project** (`ModernSportsIntelligence`, ref `vhbsokjqchaafluimgjh` — replaces paused `iwxqemiqtusgmemlnrby`). Production `/api/health` reports `config.serverApiAuth: true`; Vercel + GitHub hold Supabase URL/anon (and Vercel also has service role + `ALLOWED_ORIGIN`). **Deployed E2E** and **health ping** run for real. Anon RLS smoke passes locally; CI uses Node 22 for the verifier. **Phase 31** code is shipped (audit trail + admin viewer + Edge Function + migrations through `00010`). Six of seven betas are `live`; only `fractional-vault` remains on legal sign-off. What remains is **owner-held**: Sentry DSN, Stripe lifecycle smoke, GDPR delete check, first admin assignment + key-rotation drill, and real-data API keys when ready.
 
 ## Phase 31 — Shipped (2026-07-04 → 2026-07-05)
 
@@ -25,26 +25,25 @@ MSI is deployed and being watched — with one caveat found by checking job logs
 | Item                                    | Status                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | P0 — open-PR queue (#74, #75, #59, #58) | ✅ Resolved: dependency groups applied here with the Stripe `apiVersion` fix #74 was missing; #59's goal already shipped on main (June 10 consolidation); #58's unique audit work (filters/search/CSV/pagination + runbook + admin spec) ported here. All four closed as superseded.                                                                                                                                    |
-| P1 — punch-list items 1/3/4             | ⚠️ Items 3/4 checked off with job-log evidence (gated steps actually execute). Item 1 (RLS verification) turned out to be a **no-op green** — the workflow's Supabase secrets are unset in GitHub; returned to the owner-held list.                                                                                                                                                                                     |
+| P1 — punch-list items 1/3/4             | ✅ Items 1/3/4 done (2026-07-18): new Supabase project linked, secrets set, RLS smoke green locally, health `serverApiAuth: true`, Deployed E2E live. Remaining punch-list: Sentry, Stripe smoke, GDPR, eBay/PSA keys.                                                                                                                                                                                                  |
 | P2 — beta exits                         | ✅ `provenance-chain` live (reload-persistence E2E added, route out of Labs gate) · ✅ `liquidity-pool` live (sim labeling added; persistence/tests landed in #68) · ✅ `fractional-vault-v2` removed (duplicate). ✅ `vision-grading` live (analysis-contract tests + in-session-only image handling documented and pinned by a no-persistence test). Remaining: `fractional-vault` (legal sign-off — no engineering). |
 | P3 — integration depth                  | ✅ eBay comp pagination (offset pages), last-known-good comps served as `source: 'stale'` on live failure, PSA `CertVerifiedBadge` on any card with a `certNumber`.                                                                                                                                                                                                                                                     |
 | P4 — onboarding                         | ✅ Scan-first empty state, `/demo-flow` tour link, first-card pricing toast pointing at the data-source badge.                                                                                                                                                                                                                                                                                                          |
 
 ## Priority 1 — Remaining owner-held launch actions
 
-> **Blocker (2026-07-18):** Supabase project `ModernSportsIntelligenc` (`iwxqemiqtusgmemlnrby`) is **INACTIVE/paused**. Unpause in the [dashboard](https://supabase.com/dashboard/project/iwxqemiqtusgmemlnrby) before any of the steps below. Then: `npx supabase link --project-ref iwxqemiqtusgmemlnrby` → `npm run sync:vercel-env` → `npm run deploy:infra`.
+> **Supabase (2026-07-18):** Active project `vhbsokjqchaafluimgjh` — schema + migrations `00001`–`00010`, Edge Functions deployed, auth `site_url` + redirect allowlist set, Vercel/GitHub env synced. Old paused project `iwxqemiqtusgmemlnrby` is abandoned.
 
-**CI hygiene shipped (engineering):** Deployed E2E runs on push to `main` (no skip when CI is cancelled). Scheduled/main RLS verification **fails** if GitHub secrets are missing (no more no-op green). Tracked in [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77).
+**CI hygiene shipped (engineering):** Deployed E2E on push to `main`; RLS verification fails closed when secrets missing; verifier runs on Node 22. Tracked in [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77).
 
-0. **Phase 31 activation** (from PR #79 + #80 + migrations through `00010`):
-   1. Unpause Supabase, then apply migrations `00008`–`00010` (or `npm run deploy:infra`).
-   2. Deploy Edge Function: `supabase functions deploy admin-audit-events`.
-   3. Assign first admin: `UPDATE profiles SET role = 'admin' WHERE email = '<owner>'`.
-   4. Confirm `/audit-trail/admin` + `audit.cross_user_read` row.
-   5. First key-rotation drill (`plans/incidents/key-rotation-drill.md`).
-1. **RLS verification secrets** — set GitHub `SUPABASE_URL` + `SUPABASE_ANON_KEY` (same values as Vercel). Schedule will stay red until set.
-2. **Server API auth on the deployment** — `/api/health` still reports `config.serverApiAuth: false`. Set Vercel `SUPABASE_URL`/`SUPABASE_ANON_KEY` (+ `VITE_*` pair) per `docs/DEPLOY_ENV_CHECKLIST.md`.
-3. **Sentry** — `VITE_SENTRY_DSN` + `VITE_REQUIRE_TELEMETRY=true` on Vercel.
+0. **Phase 31 activation** (infra done; owner actions left):
+   1. ~~Apply migrations / deploy Edge Functions~~ — done on `vhbsokjqchaafluimgjh`.
+   2. Assign first admin: `UPDATE profiles SET role = 'admin' WHERE email = '<owner>'`.
+   3. Confirm `/audit-trail/admin` + `audit.cross_user_read` row.
+   4. First key-rotation drill (`plans/incidents/key-rotation-drill.md`).
+1. ~~**RLS verification secrets**~~ — GitHub `SUPABASE_URL` + `SUPABASE_ANON_KEY` set; anon smoke green.
+2. ~~**Server API auth on the deployment**~~ — `/api/health` → `config.serverApiAuth: true`.
+3. **Sentry** — create project, set `VITE_SENTRY_DSN` (+ optional `VITE_REQUIRE_TELEMETRY=true`) on Vercel, redeploy.
 4. **Stripe lifecycle smoke** — five transitions in test mode (punch-list item 6).
 5. **GDPR endpoints** — `npm run test:e2e:gdpr` + manual delete on throwaway (item 7).
 

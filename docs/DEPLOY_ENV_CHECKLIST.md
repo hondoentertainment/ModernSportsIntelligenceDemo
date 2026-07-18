@@ -50,7 +50,11 @@ Use this when promoting a build to **production** (Vercel + Supabase + Stripe + 
 | `VITE_SENTRY_ENVIRONMENT`        | On Vercel, optional; defaults to build mode (`production` / `preview`)                                                               |
 | `VITE_SENTRY_TRACES_SAMPLE_RATE` | On Vercel, optional `0`–`1`; defaults to `0.1`                                                                                       |
 
-## Supabase unpause + Vercel env sync
+## Supabase project + Vercel env sync
+
+**Current production project (2026-07-18):** `ModernSportsIntelligence` — ref `vhbsokjqchaafluimgjh` (`https://vhbsokjqchaafluimgjh.supabase.co`). The older paused project `iwxqemiqtusgmemlnrby` is not used.
+
+## Supabase unpause + Vercel env sync (legacy note)
 
 If the linked Supabase project is **paused** (free-tier inactivity), restore it before migrations or env sync:
 

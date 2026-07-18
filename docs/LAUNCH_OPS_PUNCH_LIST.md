@@ -12,7 +12,7 @@ SUPABASE_DB_URL=postgres://... npm run verify:rls   # see scripts/run-rls-checks
 
 Pass = every cross-tenant SELECT/UPDATE returns 0 rows. Record the run date here.
 
-- [ ] Run completed on: \_\_\_\_ — **not yet.** As of 2026-07-18 the scheduled/main **RLS verification** job **fails** if `SUPABASE_URL` / `SUPABASE_ANON_KEY` are unset (no more no-op green). Unpause the Supabase project (`ModernSportsIntelligenc`, ref `iwxqemiqtusgmemlnrby`), set those GitHub secrets, then confirm a run where "Run anon RLS smoke test" executes.
+- [x] Run completed on: **2026-07-18** — new hosted project `ModernSportsIntelligence` (ref `vhbsokjqchaafluimgjh`) replaced paused `iwxqemiqtusgmemlnrby`. Schema + migrations applied; GitHub secrets `SUPABASE_URL` / `SUPABASE_ANON_KEY` set; local `npm run verify:rls` passed (all six strict-tenant tables deny anon reads). CI workflow bumped to Node 22 so the smoke test can create a Supabase client.
 
 ## 2. Error telemetry in production (Phase D2)
 
@@ -33,7 +33,7 @@ Set GitHub repo secret `PLAYWRIGHT_DEPLOYMENT_URL=https://<prod>.vercel.app` and
 
 Point any uptime service (UptimeRobot, Checkly, Vercel checks) at `GET /api/health` on the production URL. Alert at 2 consecutive failures.
 
-- [x] Monitor live — verified from the job log (run 28660913266, 2026-07-03) that the ping actually executes: `HEALTH_CHECK_URL` is set and the response was `{"ok":true,"service":"msi",...}`. Note the same response shows `config.serverApiAuth: false` — the deployment's server API auth (Supabase env on Vercel) is not configured; see the launch tracking issue.
+- [x] Monitor live — `HEALTH_CHECK_URL` pings production. As of **2026-07-18** redeploy after Vercel Supabase env sync: `GET /api/health` → `ok: true`, `config.serverApiAuth: true` (project `vhbsokjqchaafluimgjh`).
 
 ## 5. Real-data API keys (when ready to leave mock mode)
 

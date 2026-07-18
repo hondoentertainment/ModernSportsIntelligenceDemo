@@ -38,9 +38,31 @@ if (!url || !anonKey) {
   process.exit(0);
 }
 
-const supabase = createClient(url, anonKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
+/** @type {import('@supabase/supabase-js').SupabaseClientOptions} */
+const clientOptions = {
+  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+};
+
+// supabase-js constructs RealtimeClient at createClient time. Node 20 CI runners
+// lack global WebSocket; provide a minimal transport so REST-only checks still run.
+if (typeof globalThis.WebSocket === 'undefined') {
+  clientOptions.realtime = {
+    transport: class RlsVerifyNoopWebSocket {
+      constructor() {
+        queueMicrotask(() => this.onopen?.());
+      }
+      close() {}
+      send() {}
+      addEventListener() {}
+      removeEventListener() {}
+      dispatchEvent() {
+        return false;
+      }
+    },
+  };
+}
+
+const supabase = createClient(url, anonKey, clientOptions);
 
 /** @returns {Promise<{table: string, status: 'ok'|'leak'|'missing'|'error', detail: string}>} */
 async function checkTable(table) {
