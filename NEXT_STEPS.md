@@ -45,7 +45,7 @@ MSI is deployed with a **live Supabase project** (`ModernSportsIntelligence`, re
 2. ~~**Server API auth on the deployment**~~ — `config.serverApiAuth: true`.
 3. ~~**Error telemetry**~~ — `/api/client-error` + `VITE_ERROR_REPORTING_URL` + `VITE_REQUIRE_TELEMETRY=true`. Optional: add `VITE_SENTRY_DSN` for Issues UI.
 4. **Stripe lifecycle smoke** — needs Stripe test keys on Vercel (punch-list item 6).
-5. **GDPR endpoints** — re-run `npm run test:e2e:gdpr` after the `api/me/*` ESM fix deploys; delete on throwaway `msi-launch-gdpr@example.com`.
+5. ~~**GDPR endpoints**~~ — export E2E green on prod; delete cascade fixed (`profiles` before `auth.users`).
 
 ## Priority 2 — Turn on real data (eBay, then PSA)
 
