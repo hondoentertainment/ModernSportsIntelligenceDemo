@@ -5,9 +5,8 @@ name: Deployed E2E
 # Without it the job no-ops cleanly.
 
 on:
-  workflow_run:
-    workflows: ['CI / CD']
-    types: [completed]
+  # Push (not workflow_run) so cancelled concurrent CI / CD cannot skip post-merge checks.
+  push:
     branches: [main]
   schedule:
     - cron: '0 7 * * *'
@@ -23,7 +22,6 @@ concurrency:
 jobs:
   deployed-e2e:
     name: E2E vs deployment
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Check deployment URL secret

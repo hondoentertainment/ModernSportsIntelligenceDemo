@@ -41,9 +41,17 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
           if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
-            echo "SUPABASE_URL / SUPABASE_ANON_KEY not set — skipping RLS verification."
-            echo "See docs/SUPABASE_RLS.md to enable."
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            # PRs: skip cleanly. Schedule/push/dispatch: fail so green ≠ no-op.
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              echo "SUPABASE_URL / SUPABASE_ANON_KEY not set — skipping RLS on PR."
+              echo "See docs/SUPABASE_RLS.md and docs/GITHUB_PRODUCTION_SECRETS.md."
+              echo "enabled=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "::error::SUPABASE_URL and SUPABASE_ANON_KEY must be set for scheduled/main RLS verification."
+              echo "Add them under Settings → Secrets and variables → Actions."
+              echo "See docs/SUPABASE_RLS.md and issue #77."
+              exit 1
+            fi
           else
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           fi

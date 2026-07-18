@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-07-05 · Reflects `main` at `062a70b` (post PR #79 + #80). Previous edition: 2026-07-03.
+> Refreshed 2026-07-18 · Reflects `main` post PR #83–#86. Previous edition: 2026-07-05.
 
 ## Current state in one paragraph
 
@@ -32,17 +32,21 @@ MSI is deployed and being watched — with one caveat found by checking job logs
 
 ## Priority 1 — Remaining owner-held launch actions
 
-0. **Phase 31 activation** (new — from PR #79 + #80):
-   1. Apply `supabase/migrations/00010_profiles_role_fixes.sql` in the Supabase Dashboard SQL Editor. **This is time-sensitive** — 00008 as-shipped contains a self-recursive RLS policy that would break every authenticated profile read. 00010 replaces it with a `SECURITY DEFINER` helper.
-   2. Deploy the new Edge Function: `supabase functions deploy admin-audit-events`.
-   3. Assign yourself the first admin role: `UPDATE profiles SET role = 'admin' WHERE email = '<owner>'` in the SQL Editor.
-   4. Hard-refresh `/audit-trail/admin` and confirm the viewer renders + writes a matching `audit.cross_user_read` row (visible on your own `/audit-trail` under the Recorded chip).
-   5. Execute the first key-rotation drill against staging following `plans/incidents/key-rotation-drill.md`; append a dated entry to the drill log at the bottom of that file.
-1. **RLS verification secrets** — set the Supabase credential secrets the scheduled **RLS verification** workflow gates on, then confirm a run where the smoke test actually executes (the current green runs are no-ops).
-2. **Server API auth on the deployment** — `/api/health` reports `config.serverApiAuth: false`: the Vercel deployment lacks the server-side Supabase env (`SUPABASE_URL`/`SUPABASE_ANON_KEY`), so authenticated API routes cannot validate JWTs. Set them per `docs/DEPLOY_ENV_CHECKLIST.md`.
-3. **Sentry** — set `VITE_SENTRY_DSN` + `VITE_REQUIRE_TELEMETRY=true` in Vercel and confirm a test error arrives (punch-list item 2).
-4. **Stripe lifecycle smoke** — subscribe → upgrade → downgrade → cancel → failed-payment in test mode against production; verify webhook deliveries are all 2xx and tier updates (item 6).
-5. **GDPR endpoints** — `PLAYWRIGHT_BASE_URL=<prod> npm run test:e2e:gdpr` covers the contracts and (opt-in) the authenticated export; run the destructive delete manually on a throwaway account (item 7).
+> **Blocker (2026-07-18):** Supabase project `ModernSportsIntelligenc` (`iwxqemiqtusgmemlnrby`) is **INACTIVE/paused**. Unpause in the [dashboard](https://supabase.com/dashboard/project/iwxqemiqtusgmemlnrby) before any of the steps below. Then: `npx supabase link --project-ref iwxqemiqtusgmemlnrby` → `npm run sync:vercel-env` → `npm run deploy:infra`.
+
+**CI hygiene shipped (engineering):** Deployed E2E runs on push to `main` (no skip when CI is cancelled). Scheduled/main RLS verification **fails** if GitHub secrets are missing (no more no-op green). Tracked in [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77).
+
+0. **Phase 31 activation** (from PR #79 + #80 + migrations through `00010`):
+   1. Unpause Supabase, then apply migrations `00008`–`00010` (or `npm run deploy:infra`).
+   2. Deploy Edge Function: `supabase functions deploy admin-audit-events`.
+   3. Assign first admin: `UPDATE profiles SET role = 'admin' WHERE email = '<owner>'`.
+   4. Confirm `/audit-trail/admin` + `audit.cross_user_read` row.
+   5. First key-rotation drill (`plans/incidents/key-rotation-drill.md`).
+1. **RLS verification secrets** — set GitHub `SUPABASE_URL` + `SUPABASE_ANON_KEY` (same values as Vercel). Schedule will stay red until set.
+2. **Server API auth on the deployment** — `/api/health` still reports `config.serverApiAuth: false`. Set Vercel `SUPABASE_URL`/`SUPABASE_ANON_KEY` (+ `VITE_*` pair) per `docs/DEPLOY_ENV_CHECKLIST.md`.
+3. **Sentry** — `VITE_SENTRY_DSN` + `VITE_REQUIRE_TELEMETRY=true` on Vercel.
+4. **Stripe lifecycle smoke** — five transitions in test mode (punch-list item 6).
+5. **GDPR endpoints** — `npm run test:e2e:gdpr` + manual delete on throwaway (item 7).
 
 ## Priority 2 — Turn on real data (eBay, then PSA)
 

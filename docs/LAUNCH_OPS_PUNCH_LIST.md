@@ -12,7 +12,7 @@ SUPABASE_DB_URL=postgres://... npm run verify:rls   # see scripts/run-rls-checks
 
 Pass = every cross-tenant SELECT/UPDATE returns 0 rows. Record the run date here.
 
-- [ ] Run completed on: \_\_\_\_ — **not yet.** The scheduled **RLS verification** workflow shows green, but its job log (run 28653194272, 2026-07-03) shows every gated step skipped: the Supabase credential secrets are not set in GitHub, so the green runs are no-ops. Set the repo secrets the workflow gates on, then confirm a run where "Run anon RLS smoke test" actually executes.
+- [ ] Run completed on: \_\_\_\_ — **not yet.** As of 2026-07-18 the scheduled/main **RLS verification** job **fails** if `SUPABASE_URL` / `SUPABASE_ANON_KEY` are unset (no more no-op green). Unpause the Supabase project (`ModernSportsIntelligenc`, ref `iwxqemiqtusgmemlnrby`), set those GitHub secrets, then confirm a run where "Run anon RLS smoke test" executes.
 
 ## 2. Error telemetry in production (Phase D2)
 
@@ -27,7 +27,7 @@ Create a (free-tier) Sentry project and set in Vercel → Project → Environmen
 
 Set GitHub repo secret `PLAYWRIGHT_DEPLOYMENT_URL=https://<prod>.vercel.app` and repo variable `ENABLE_DEPLOYED_E2E=true`. This activates `.github/workflows/deployed-e2e.yml` (runs after each merge to main + daily).
 
-- [x] Secret + variable set — verified from the job log (run 28647105378, 2026-07-03) that the gated steps actually execute: Playwright installs and "Run deployed API checks" passes against the deployment. A green run alone is not proof — the workflow no-ops green without the secret.
+- [x] Secret + variable set — verified from the job log (run 28647105378, 2026-07-03). Workflow now runs on **push to `main`** (not only `workflow_run` after CI) so cancelled concurrent CI cannot skip it. Still no-ops green without `PLAYWRIGHT_DEPLOYMENT_URL`.
 
 ## 4. Uptime monitoring (Phase D1)
 
