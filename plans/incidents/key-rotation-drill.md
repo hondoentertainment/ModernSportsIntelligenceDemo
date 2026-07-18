@@ -120,8 +120,7 @@ billing, unexpected API usage).
 ### 1-24 hr — Recover
 
 - [ ] Audit git history for the leaked value:
-      `     git log -p -S '<last-4-chars>' --all
-  `
+      `    git log -p -S '<last-4-chars>' --all`
       Rewrite history and force-push only with explicit owner approval; prefer
       a public revocation note in the README.
 - [ ] Audit `audit_events`, `stripe_processed_events`, and Sentry for any
@@ -178,5 +177,13 @@ Append a dated entry under `## Drill log` below at the end of each run.
 
 ## Drill log
 
-_No drills logged yet — execute the first run before promoting Phase 31 to
-"complete" in `plans/next-steps-recommendation.md`._
+### 2026-07-18 — Supabase project cutover (emergency-style rotation)
+
+- Operator: launch ops (agent-assisted)
+- Duration: ~same day
+- Keys rotated: Supabase project URL + anon + service_role (paused `iwxqemiqtusgmemlnrby` → active `vhbsokjqchaafluimgjh`); Vercel + GitHub secrets rewritten; Edge Functions redeployed
+- Fingerprints (last 4): not logged here (use provider dashboards); old project abandoned/paused
+- Smoke tests: `/api/health` `serverApiAuth: true`; `npm run verify:rls` pass; Deployed E2E + RLS CI green on `main`
+- Follow-ups: Stripe / eBay / PSA / Gemini keys still unset on Vercel — rotate those when first provisioned; optional Sentry DSN when Issues UI is desired
+
+_Full quarterly multi-provider drill remains outstanding until Stripe test keys exist in a staging project._

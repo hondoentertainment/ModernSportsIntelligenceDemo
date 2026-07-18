@@ -4,7 +4,7 @@
 
 ## Current state in one paragraph
 
-MSI is deployed with a **live Supabase project** (`ModernSportsIntelligence`, ref `vhbsokjqchaafluimgjh` — replaces paused `iwxqemiqtusgmemlnrby`). Production `/api/health` reports `config.serverApiAuth: true`; Vercel + GitHub hold Supabase URL/anon (and Vercel also has service role + `ALLOWED_ORIGIN`). **Deployed E2E** and **health ping** run for real. Anon RLS smoke passes locally; CI uses Node 22 for the verifier. **Phase 31** code is shipped (audit trail + admin viewer + Edge Function + migrations through `00010`). Six of seven betas are `live`; only `fractional-vault` remains on legal sign-off. What remains is **owner-held**: Sentry DSN, Stripe lifecycle smoke, GDPR delete check, first admin assignment + key-rotation drill, and real-data API keys when ready.
+MSI is deployed with a **live Supabase project** (`ModernSportsIntelligence`, ref `vhbsokjqchaafluimgjh`). Production `/api/health` reports `config.serverApiAuth: true`. Telemetry beacon (`VITE_ERROR_REPORTING_URL=/api/client-error`) and `VITE_REQUIRE_TELEMETRY=true` are on Vercel. Launch admin + GDPR throwaway users are bootstrapped (`npm run ops:bootstrap-launch`); first admin role assigned. Supabase cutover logged as the first key-rotation drill entry. Six of seven betas are `live`; only `fractional-vault` remains on legal sign-off. **Still owner-held:** Stripe test keys + lifecycle smoke, eBay/PSA live keys, optional Sentry Issues UI DSN, promote your personal account to admin if you want `/audit-trail/admin` under your email.
 
 ## Phase 31 — Shipped (2026-07-04 → 2026-07-05)
 
@@ -38,14 +38,14 @@ MSI is deployed with a **live Supabase project** (`ModernSportsIntelligence`, re
 
 0. **Phase 31 activation** (infra done; owner actions left):
    1. ~~Apply migrations / deploy Edge Functions~~ — done on `vhbsokjqchaafluimgjh`.
-   2. Assign first admin: `UPDATE profiles SET role = 'admin' WHERE email = '<owner>'`.
-   3. Confirm `/audit-trail/admin` + `audit.cross_user_read` row.
-   4. First key-rotation drill (`plans/incidents/key-rotation-drill.md`).
-1. ~~**RLS verification secrets**~~ — GitHub `SUPABASE_URL` + `SUPABASE_ANON_KEY` set; anon smoke green.
-2. ~~**Server API auth on the deployment**~~ — `/api/health` → `config.serverApiAuth: true`.
-3. **Sentry** — create project, set `VITE_SENTRY_DSN` (+ optional `VITE_REQUIRE_TELEMETRY=true`) on Vercel, redeploy.
-4. **Stripe lifecycle smoke** — five transitions in test mode (punch-list item 6).
-5. **GDPR endpoints** — `npm run test:e2e:gdpr` + manual delete on throwaway (item 7).
+   2. ~~Assign first admin~~ — `msi-launch-admin@example.com` promoted (`npm run ops:promote-admin`). Promote your personal email the same way after signup.
+   3. Confirm `/audit-trail/admin` + `audit.cross_user_read` row while signed in as an admin.
+   4. ~~First key-rotation drill~~ — Supabase cutover logged in `plans/incidents/key-rotation-drill.md` (full multi-provider quarterly drill still needs Stripe staging keys).
+1. ~~**RLS verification secrets**~~ — set; anon smoke green.
+2. ~~**Server API auth on the deployment**~~ — `config.serverApiAuth: true`.
+3. ~~**Error telemetry**~~ — `/api/client-error` + `VITE_ERROR_REPORTING_URL` + `VITE_REQUIRE_TELEMETRY=true`. Optional: add `VITE_SENTRY_DSN` for Issues UI.
+4. **Stripe lifecycle smoke** — needs Stripe test keys on Vercel (punch-list item 6).
+5. **GDPR endpoints** — re-run `npm run test:e2e:gdpr` after the `api/me/*` ESM fix deploys; delete on throwaway `msi-launch-gdpr@example.com`.
 
 ## Priority 2 — Turn on real data (eBay, then PSA)
 

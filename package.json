@@ -46,6 +46,8 @@
     "guardrail:pricing-truth": "node scripts/check-pricing-truth-guardrail.mjs",
     "check:prod-env": "node scripts/check-production-env.mjs",
     "sync:vercel-env": "node scripts/sync-vercel-supabase-env.mjs",
+    "ops:bootstrap-launch": "node scripts/bootstrap-launch-ops.mjs",
+    "ops:promote-admin": "node scripts/promote-admin.mjs",
     "ci:bundle": "node scripts/ci-bundle-gate.cjs",
     "perf:audit": "npm run build --silent && bash -c 'set -o pipefail; npm run ci:bundle --silent | grep -E \"^(Total:|✅|❌|OVER BUDGET)\"'",
     "joe": "tsx scripts/orchestrator.ts",

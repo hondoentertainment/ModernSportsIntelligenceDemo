@@ -12,9 +12,10 @@ For a broader checklist (deploy, RLS audit, env vars, CSP), see **[OPS_RUNBOOK.m
 ## Error reporting
 
 - **Client:** `reportError(error, context)` in `lib/errorReporting.ts` logs via the app logger and, when `VITE_ERROR_REPORTING_URL` is set, sends a JSON beacon (e.g. your API or ingest).
-- **Sentry (optional):** `initSentry()` runs at bootstrap in [`index.tsx`](../index.tsx). When `VITE_SENTRY_DSN` is set and `@sentry/react` is installed (**optionalDependency** in `package.json`), the SDK loads dynamically and `reportError` forwards to `captureException` via [`lib/sentry.ts`](../lib/sentry.ts). No DSN → no-op.
+- **First-party beacon:** `POST /api/client-error` ([`api/client-error.ts`](../api/client-error.ts)) accepts the beacon payload, truncates fields, logs via `apiLogger.warn('Client error beacon', …)`, and returns `204`. Prefer `VITE_ERROR_REPORTING_URL=/api/client-error` so every deployment (prod + preview) reports to itself.
+- **Sentry (optional):** `initSentry()` runs at bootstrap in [`index.tsx`](../index.tsx). When `VITE_SENTRY_DSN` is set and `@sentry/react` is installed (**optionalDependency** in `package.json`), the SDK loads dynamically and `reportError` forwards to `captureException` via [`lib/sentry.ts`](../lib/sentry.ts). No DSN → no-op. Use Sentry when you want Issues UI / alerting; the first-party beacon alone satisfies Phase D2 observability.
 - **Wired:** `ErrorBoundary` and `LazyErrorBoundary` call `reportError` on `componentDidCatch`. **Unhandled promise rejections** are also reported: `window.addEventListener('unhandledrejection', ...)` in `index.tsx` calls `reportError(event.reason)` so escaped rejections are captured.
-- **Production:** Set `VITE_SENTRY_DSN` and/or `VITE_ERROR_REPORTING_URL` in the Vercel (or host) environment; never commit secrets.
+- **Production:** Set `VITE_ERROR_REPORTING_URL=/api/client-error` and/or `VITE_SENTRY_DSN` in the Vercel environment; never commit secrets.
 - **Local dev / build:** Missing telemetry is surfaced via dev-only `console.warn` in [`lib/sentry.ts`](../lib/sentry.ts) and [`vite.config.ts`](../vite.config.ts) (local `npm run build` only), plus [`lib/utils/env.ts`](../lib/utils/env.ts) `validateEnv()` warnings. Set `VITE_REQUIRE_TELEMETRY=true` to fail production builds when neither channel is configured.
 
 ## CI

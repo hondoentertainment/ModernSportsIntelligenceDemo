@@ -13,13 +13,13 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { setApiCorsHeaders } from '../lib/httpProduction';
-import { apiLogger } from '../lib/logger';
+import { setApiCorsHeaders } from '../lib/httpProduction.js';
+import { apiLogger } from '../lib/logger.js';
 import {
   checkRateLimit,
   clientKeyFromRequest,
   rateLimitDisabled,
-} from '../lib/rateLimit';
+} from '../lib/rateLimit.js';
 
 const ALLOWED_METHODS = 'GET, OPTIONS';
 const RATE_LIMIT_MAX = 5;

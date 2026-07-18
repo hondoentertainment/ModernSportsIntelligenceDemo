@@ -21,7 +21,7 @@ Create a (free-tier) Sentry project and set in Vercel → Project → Environmen
 - `VITE_SENTRY_DSN=<dsn>`
 - `VITE_REQUIRE_TELEMETRY=true` (makes future builds fail loudly if telemetry is ever dropped)
 
-- [ ] DSN set and a test error visible in Sentry
+- [x] First-party beacon live — `VITE_ERROR_REPORTING_URL=/api/client-error` + `VITE_REQUIRE_TELEMETRY=true` on Vercel (Phase D2). Optional Sentry Issues UI still available when you add `VITE_SENTRY_DSN`.
 
 ## 3. Deployed E2E (Phase E2)
 
@@ -56,7 +56,7 @@ In Stripe test mode against the production deployment: subscribe → upgrade →
 
 While signed in on production: call `/api/me/export` (expect a JSON download of your data) and on a throwaway account `/api/me/delete` (expect account + rows gone, sign-in revoked).
 
-- [ ] Export verified · [ ] Delete verified
+- [ ] Export verified · [ ] Delete verified — blocked until GDPR ESM import fix ships (`api/me/*` `.js` extensions); throwaway user `msi-launch-gdpr@example.com` bootstrapped via `npm run ops:bootstrap-launch` (creds in gitignored `.env.launch-ops.local`).
 
 ## Labs surface reminder
 

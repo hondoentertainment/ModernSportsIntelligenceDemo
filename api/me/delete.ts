@@ -22,13 +22,13 @@
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { z } from 'zod';
-import { setApiCorsHeaders } from '../lib/httpProduction';
-import { apiLogger } from '../lib/logger';
+import { setApiCorsHeaders } from '../lib/httpProduction.js';
+import { apiLogger } from '../lib/logger.js';
 import {
   checkRateLimit,
   clientKeyFromRequest,
   rateLimitDisabled,
-} from '../lib/rateLimit';
+} from '../lib/rateLimit.js';
 
 /** Body confirmation phrase. Defined exactly once in this file. */
 const CONFIRMATION_PHRASE = 'DELETE MY ACCOUNT';
