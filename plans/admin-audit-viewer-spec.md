@@ -1,149 +1,70 @@
-# Admin Audit Viewer — Design Spec
+# Admin Audit Viewer — Implementation Reference
 
-**Status:** Specification only — implementation deferred until a tenant
-role/permission layer lands (tracked under Phase 31).
+**Status:** **Shipped in PR #79 (2026-07-04) + PR #80 (2026-07-05).** Live in
+`main`. This document is now the pointer to the code, not a spec.
 
-## Why this is a separate document
+## What shipped
 
-The user-facing audit timeline (`pages/AuditTrail.tsx`) is correctly scoped
-to the signed-in user by Supabase RLS:
+Cross-user audit-trail viewer for operators (`profiles.role` ∈
+`{support, admin}`) with an audit-of-audit write on every read.
 
-```sql
-CREATE POLICY "Users can view their own audit events" ON audit_events
-  FOR SELECT USING (auth.uid() = user_id);
-```
+## Where it lives
 
-A cross-user / admin view needs to bypass that policy on purpose — only for
-operators with a vetted role. That requires infrastructure that does not yet
-exist in this codebase:
+| Concern                                                                   | File                                                                                                                       |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Trust-boundary role column + RLS                                          | `supabase/migrations/00008_profiles_role.sql` + `supabase/migrations/00010_profiles_role_fixes.sql`                        |
+| `is_operator()` SECURITY DEFINER helper                                   | `supabase/migrations/00010_profiles_role_fixes.sql`                                                                        |
+| BEFORE UPDATE trigger blocking self-role changes                          | `supabase/migrations/00008_profiles_role.sql` (see 00010 for the out-of-band exemption)                                    |
+| Server-side cross-user read                                               | `supabase/functions/admin-audit-events/index.ts`                                                                           |
+| Audit-of-audit row (`category='admin'`, `action='audit.cross_user_read'`) | same file, `admin.from('audit_events').insert(...)`                                                                        |
+| Client wrapper (discriminated result)                                     | `lib/utils/adminAuditApi.ts`                                                                                               |
+| Route gate                                                                | `components/AdminRoute.tsx` — waits on `profileLoading` before evaluating the role                                         |
+| Page                                                                      | `pages/AdminAuditTrail.tsx` — target user id, time window (24h/7d/30d/all), server-limit, category filter (raw vocabulary) |
+| `operatorRole` + `profileLoading` on AuthContext                          | `contexts/AuthContext.tsx`                                                                                                 |
+| Shared filter chips / CSV export                                          | `components/audit/AuditFilterBar.tsx`, `components/audit/useAuditFilters.ts`                                               |
 
-1. A persisted notion of an admin role (today there is no `profiles.role`
-   column; the `subscription_tier` column drives feature gating but is not a
-   trust boundary).
-2. A server-side surface for the admin read that can use the service role
-   key without exposing it to browsers.
-3. An audit-of-the-audit-trail — every admin read must itself be logged.
+## Test coverage
 
-This document specifies the minimum design for all three so the work can be
-picked up as a single contained ticket.
+| Scope                                                                                                              | File                                                                       |
+| ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| `AdminRoute` render/redirect matrix                                                                                | `tests/components/AdminRoute.test.tsx`                                     |
+| `adminAuditApi` — demo-mode short-circuit, filter forwarding, error handling, malformed-event filtering, role gate | `tests/lib/adminAuditApi.test.ts`                                          |
+| Edge Function role check + audit-of-audit insertion + filter passthrough + null-body handling                      | `tests/api/admin-audit-events.test.ts`                                     |
+| Shared filter helpers + CSV RFC 4180 quoting                                                                       | `tests/lib/auditTrailService.test.ts`                                      |
+| Pagination cursor + composite tie-breaker + discriminated result                                                   | `tests/lib/auditTrailRemote.test.ts`                                       |
+| E2E smoke (renders + CSV export)                                                                                   | `tests/e2e/admin-audit-trail.spec.ts`                                      |
+| a11y smoke                                                                                                         | `tests/e2e/accessibility.spec.ts` (adds `/audit-trail/admin` to the sweep) |
 
-## Goal
+## Deployment (one-time, after 00010 landed)
 
-Let a small set of operators view audit events across all tenants from a
-restricted UI, with every access itself auditable.
+1. Apply migration `00010_profiles_role_fixes.sql` in Supabase Dashboard → SQL Editor.
+2. Deploy the Edge Function: `supabase functions deploy admin-audit-events`.
+3. Assign the first operator role out-of-band:
+   ```sql
+   UPDATE profiles SET role = 'admin' WHERE email = '<owner-email>';
+   ```
+4. Hard-refresh `/audit-trail/admin` and confirm the viewer renders + a new
+   `audit.cross_user_read` row appears in the user's own `/audit-trail`.
 
-## Non-goals
+## Out of scope for this initial ship (recorded here so the follow-up is
 
-- Editing audit rows. The table is append-only.
-- Surfacing PII beyond what already exists in `metadata`.
-- Replacing Sentry / observability tooling for general debugging.
+obvious):
 
-## Architecture
+- Sentry breadcrumb on each admin read — **shipped** in the follow-up PR
+  (`lib/utils/adminAuditApi.ts` calls the breadcrumb helper).
+- Daily digest email of admin reads — Phase 35 territory; documented in
+  `docs/MONITORING.md` when the cron infrastructure lands.
+- Soft-delete / privileged-row hiding — Phase 39 (compliance layer), not this
+  ticket.
+- Default 30-day window on the server query — the client now defaults to a
+  30-day time-window filter, but the server still returns whatever the
+  `limit` allows. If cross-user query cost becomes a concern, gate on window
+  server-side in a follow-up.
 
-### 1. Role storage
+## Historical open questions and their resolutions
 
-Add to `supabase-schema.sql` and a follow-up migration:
-
-```sql
-ALTER TABLE profiles
-  ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'member'
-  CHECK (role IN ('member', 'support', 'admin'));
-
-CREATE INDEX IF NOT EXISTS profiles_role_idx ON profiles(role)
-  WHERE role <> 'member';
-```
-
-- `member` — default for every signup.
-- `support` — read-only access to the cross-user audit view.
-- `admin` — superset of `support`; also able to manage roles via SQL only
-  (no UI for role assignment — kept out-of-band by design).
-
-RLS for the new column:
-
-```sql
-DROP POLICY IF EXISTS "Users can view their own profile" ON profiles;
-CREATE POLICY "Users can view their own profile" ON profiles
-  FOR SELECT USING (auth.uid() = id);
-
--- Admins/support can read every profile (role lookup only).
-DROP POLICY IF EXISTS "Operators can view profiles" ON profiles;
-CREATE POLICY "Operators can view profiles" ON profiles
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM profiles p
-      WHERE p.id = auth.uid()
-      AND p.role IN ('support', 'admin')
-    )
-  );
-
--- Updates remain self-only; role changes are out-of-band.
-```
-
-### 2. Admin read endpoint
-
-New Supabase Edge Function `supabase/functions/admin-audit-events/index.ts`:
-
-- Verifies the caller's JWT, fetches their `profiles.role`, and 403s anyone
-  who is not `support` or `admin`.
-- Uses the service role key (server-side only) to query `audit_events` with
-  the requested filters (user_id, category, before, limit).
-- Before returning, writes a **new** `audit_events` row recording the admin
-  read (`category: 'admin'`, `action: 'audit.cross_user_read'`,
-  `metadata: { target_user_id, filters, row_count }`).
-
-JWT contract: same as the existing Edge Functions (see
-`docs/SUPABASE_EDGE_FUNCTIONS.md`).
-
-### 3. Client surface
-
-New page `pages/AdminAuditTrail.tsx` mounted at `/audit-trail/admin`:
-
-- Route gated by a new `<AdminRoute>` wrapper in `routes/AdminRoute.tsx`.
-  Render-blocks unless the loaded `profile.role` is `support` or `admin`;
-  otherwise redirects to `/audit-trail` (or `/`).
-- Reuses `FilterChipGroup`, `filterAuditEvents`, and `exportAuditEventsToCSV`
-  from `pages/AuditTrail.tsx` / `lib/utils/auditTrailService.ts`.
-- Adds two new filter dimensions specific to the admin view:
-  - **User ID** — text input that prefixes the query.
-  - **Time window** — last 24h / 7d / 30d / custom.
-- Cloud rows fetched via the new Edge Function (not the existing
-  `fetchRemoteAuditEvents`).
-- A persistent banner reminds the operator that every read is being logged.
-
-### 4. Telemetry
-
-- Sentry breadcrumb on every admin read with the target user id and filters.
-- A daily Supabase cron job (Phase 35 territory — note in `MONITORING.md`)
-  emails the platform owner a digest of admin reads.
-
-## Test plan
-
-- Unit: `tests/lib/auditTrailService.test.ts` already covers filter +
-  CSV behavior; reuse it.
-- Unit: new `tests/routes/AdminRoute.test.tsx` covering redirect for
-  non-operators and pass-through for operators.
-- Integration: new `tests/api/admin-audit-events.test.ts` covering the Edge
-  Function's role check, audit-of-audit insertion, and filter passthrough.
-- E2E: `tests/e2e/admin-audit-trail.spec.ts` — seeds a `support` profile,
-  signs in, confirms the admin viewer renders and CSV download works.
-
-## Open questions
-
-1. Should `support` see Stripe-related `audit_events` rows, or should those
-   be redacted? Default proposal: include but with a "Finance" badge to make
-   redaction policy obvious to reviewers.
-2. Do we need a soft-delete / hide capability for legally privileged rows?
-   Out of scope here; would be a separate Phase 39 task.
-3. Pagination: the cross-user query should default to a 30-day window and
-   require an explicit "load all time" toggle to avoid full-table scans.
-
-## Estimated effort
-
-- Schema migration + RLS + Edge Function: 1 day
-- Admin route + page + filters: 1 day
-- Tests + E2E + telemetry: 1 day
-- Buffer / review: 1 day
-
-**Total: ~4 engineering days.** Block on Phase 31 incident-drill completion
-so the audit-of-audit surface is exercised in the drill log before going
-live.
+1. **Should support see Stripe-related audit_events rows?** → **Include**, no
+   redaction. The events table doesn't carry PANs or Stripe secrets, only
+   customer/subscription ids and event types (see `docs/PAYMENT_SECURITY.md`).
+2. **Soft-delete for privileged rows?** → Deferred to Phase 39.
+3. **Server-side window default?** → Deferred (see above).

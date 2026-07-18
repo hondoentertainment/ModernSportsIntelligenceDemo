@@ -22,6 +22,11 @@ const ROUTES = [
     { hash: '/features', label: 'FeatureDirectory' },
     { hash: '/alerts', label: 'Alerts' },
     { hash: '/settings', label: 'Settings' },
+    // Phase 31 surfaces. `/audit-trail/admin` under demo mode redirects to
+    // `/audit-trail` (demo users are `member`), so the shell scan below
+    // covers both effectively via the redirect target.
+    { hash: '/audit-trail', label: 'AuditTrail' },
+    { hash: '/audit-trail/admin', label: 'AdminAuditTrail (redirects to user view for member)' },
 ] as const;
 
 test.describe('Accessibility — WCAG 2 A/AA smoke', () => {
