@@ -278,6 +278,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       .eq('user_id', userId);
     if (userDataErr) throw new Error(`user_data.delete: ${userDataErr.message}`);
 
+    // Optional tables — ignore missing-relation errors so older deploys still erase.
+    for (const table of ['price_history', 'market_events'] as const) {
+      const { error } = await admin.from(table).delete().eq('user_id', userId);
+      if (error && error.code !== '42P01') {
+        throw new Error(`${table}.delete: ${error.message}`);
+      }
+    }
+
     const { data: anonymizedRows, error: anonErr } = await admin
       .from('audit_events')
       .update({
@@ -291,6 +299,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       .select('id');
     if (anonErr) throw new Error(`audit_events.update: ${anonErr.message}`);
     const anonymizedAuditRows = Array.isArray(anonymizedRows) ? anonymizedRows.length : 0;
+
+    // profiles.id → auth.users without ON DELETE CASCADE; must go before auth.deleteUser.
+    const { error: profileDelErr } = await admin.from('profiles').delete().eq('id', userId);
+    if (profileDelErr) throw new Error(`profiles.delete: ${profileDelErr.message}`);
 
     const { error: authErr } = await admin.auth.admin.deleteUser(userId);
     if (authErr) throw new Error(`auth.deleteUser: ${authErr.message}`);

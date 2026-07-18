@@ -56,7 +56,8 @@ In Stripe test mode against the production deployment: subscribe → upgrade →
 
 While signed in on production: call `/api/me/export` (expect a JSON download of your data) and on a throwaway account `/api/me/delete` (expect account + rows gone, sign-in revoked).
 
-- [ ] Export verified · [ ] Delete verified — blocked until GDPR ESM import fix ships (`api/me/*` `.js` extensions); throwaway user `msi-launch-gdpr@example.com` bootstrapped via `npm run ops:bootstrap-launch` (creds in gitignored `.env.launch-ops.local`).
+- [x] Export verified — `npm run test:e2e:gdpr` against production (contract + authenticated export) after ESM `.js` import fix.
+- [x] Delete verified — `/api/me/delete` now deletes `profiles` (and optional price/market rows) before `auth.admin.deleteUser`; throwaway recreated via `npm run ops:bootstrap-launch`.
 
 ## Labs surface reminder
 

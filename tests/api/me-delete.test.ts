@@ -28,6 +28,9 @@ const profileMaybeSingle = vi.fn();
 const cardsDeleteEq = vi.fn();
 const targetsDeleteEq = vi.fn();
 const userDataDeleteEq = vi.fn();
+const priceHistoryDeleteEq = vi.fn();
+const marketEventsDeleteEq = vi.fn();
+const profilesDeleteEq = vi.fn();
 const auditEventsUpdateSelect = vi.fn();
 const auditEventsInsert = vi.fn();
 const authAdminDeleteUser = vi.fn();
@@ -44,6 +47,7 @@ const adminClient = {
         select: () => ({
           eq: () => ({ maybeSingle: profileMaybeSingle }),
         }),
+        delete: () => ({ eq: profilesDeleteEq }),
       };
     }
     if (table === 'cards') {
@@ -54,6 +58,12 @@ const adminClient = {
     }
     if (table === 'user_data') {
       return { delete: () => ({ eq: userDataDeleteEq }) };
+    }
+    if (table === 'price_history') {
+      return { delete: () => ({ eq: priceHistoryDeleteEq }) };
+    }
+    if (table === 'market_events') {
+      return { delete: () => ({ eq: marketEventsDeleteEq }) };
     }
     if (table === 'audit_events') {
       return {
@@ -171,6 +181,9 @@ beforeEach(() => {
   cardsDeleteEq.mockResolvedValue({ data: null, error: null });
   targetsDeleteEq.mockResolvedValue({ data: null, error: null });
   userDataDeleteEq.mockResolvedValue({ data: null, error: null });
+  priceHistoryDeleteEq.mockResolvedValue({ data: null, error: null });
+  marketEventsDeleteEq.mockResolvedValue({ data: null, error: null });
+  profilesDeleteEq.mockResolvedValue({ data: null, error: null });
   auditEventsUpdateSelect.mockResolvedValue({
     data: [{ id: 'a1' }, { id: 'a2' }, { id: 'a3' }],
     error: null,
@@ -297,18 +310,24 @@ describe('POST /api/me/delete', () => {
     expect(targetsDeleteEq).toHaveBeenCalledWith('user_id', 'user-abc-123');
     expect(userDataDeleteEq).toHaveBeenCalledTimes(1);
     expect(userDataDeleteEq).toHaveBeenCalledWith('user_id', 'user-abc-123');
+    expect(priceHistoryDeleteEq).toHaveBeenCalledWith('user_id', 'user-abc-123');
+    expect(marketEventsDeleteEq).toHaveBeenCalledWith('user_id', 'user-abc-123');
+    expect(profilesDeleteEq).toHaveBeenCalledWith('id', 'user-abc-123');
     expect(auditEventsUpdateSelect).toHaveBeenCalledTimes(1);
     expect(auditEventsInsert).toHaveBeenCalledTimes(1);
     expect(authAdminDeleteUser).toHaveBeenCalledTimes(1);
     expect(authAdminDeleteUser).toHaveBeenCalledWith('user-abc-123');
 
-    // Cascade order: cards → targets → user_data → anonymize audit_events
-    // → auth.admin.deleteUser → final audit insert.
+    // Cascade order: cards → targets → user_data → price/market → anonymize
+    // audit_events → profiles → auth.admin.deleteUser → final audit insert.
     const order = [
       cardsDeleteEq.mock.invocationCallOrder[0]!,
       targetsDeleteEq.mock.invocationCallOrder[0]!,
       userDataDeleteEq.mock.invocationCallOrder[0]!,
+      priceHistoryDeleteEq.mock.invocationCallOrder[0]!,
+      marketEventsDeleteEq.mock.invocationCallOrder[0]!,
       auditEventsUpdateSelect.mock.invocationCallOrder[0]!,
+      profilesDeleteEq.mock.invocationCallOrder[0]!,
       authAdminDeleteUser.mock.invocationCallOrder[0]!,
       auditEventsInsert.mock.invocationCallOrder[0]!,
     ];
