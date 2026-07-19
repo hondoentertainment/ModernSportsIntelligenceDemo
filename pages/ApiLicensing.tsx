@@ -120,9 +120,19 @@ const ApiLicensing: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-slate-100">API &amp; Data Licensing</h1>
           <p className="text-sm text-slate-400">
-            Key management, usage metering, webhooks &amp; embeddable widgets &mdash; Phase 122
+            Production endpoints are live under <code className="text-cyan-300">/api/*</code>. Key
+            issuance UI below may still show demo keys until Alpha metering ships.
           </p>
         </div>
+      </div>
+
+      <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-100">
+        <p className="font-semibold">Live now</p>
+        <p className="mt-1 text-cyan-100/90">
+          <code>/api/health</code>, <code>/api/market/ebay</code>, <code>/api/market/consensus</code>,{' '}
+          <code>/api/grading/psa/cert</code>, <code>/api/me/export</code> — filter the catalog by
+          &quot;Production (live)&quot;. Mock <code>/v1/*</code> stubs are design reference only.
+        </p>
       </div>
 
       {/* Summary Cards */}

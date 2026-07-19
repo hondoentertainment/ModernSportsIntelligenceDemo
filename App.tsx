@@ -596,6 +596,9 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 {/* vision-grading exited beta (wave-3: analysis-contract tests +
                     in-session-only image handling) — same rationale. */}
                 <Route path="/grading-vision-engine" element={<GradingVisionEngine />} />
+                {/* Bloomberg distribution + dealer floor — always-on (not Labs). */}
+                <Route path="/api-licensing" element={<ApiLicensing />} />
+                <Route path="/card-show-mode" element={<CardShowModePage />} />
                 {/* Labs surface — the long tail ships only when VITE_FF_ENABLE_BETA_SURFACES
                     is set (see lib/productionLaunch.ts and docs/MVP_LAUNCH_SCOPE.md).
                     Production hides these routes; unknown paths fall through to the
@@ -609,8 +612,6 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/grading-tracker" element={<GradingTracker />} />
                 <Route path="/dealer-dashboard" element={<DealerDashboard />} />
                 <Route path="/fund-manager" element={<FundManager />} />
-                <Route path="/api-licensing" element={<ApiLicensing />} />
-                <Route path="/card-show-mode" element={<CardShowModePage />} />
                 <Route path="/ar-scanner" element={<ArScanner />} />
                 <Route path="/hype-radar" element={<HypeRadar />} />
                 <Route path="/non-sports" element={<NonSportsExpansion />} />

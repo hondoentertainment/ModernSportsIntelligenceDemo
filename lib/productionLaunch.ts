@@ -18,6 +18,16 @@ export const MVP_LAUNCH_ROUTES = [
   '/settings',
   '/features',
   '/p/:username',
+  // Bloomberg terminal core (always-on in App.tsx)
+  '/deep-search',
+  '/war-room',
+  '/catalyst-market',
+  '/audit-dossier',
+  '/audit-trail',
+  '/provenance',
+  '/grading-vision-engine',
+  '/api-licensing',
+  '/card-show-mode',
 ] as const;
 
 export type MvpLaunchRoute = (typeof MVP_LAUNCH_ROUTES)[number];

@@ -1,10 +1,22 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-07-18 · Reflects `main` post PR #83–#86. Previous edition: 2026-07-05.
+> Refreshed 2026-07-19 · Bloomberg terminal core shipped in engineering. Previous edition: 2026-07-18.
 
 ## Current state in one paragraph
 
-MSI is deployed with a **live Supabase project** (`ModernSportsIntelligence`, ref `vhbsokjqchaafluimgjh`). Production `/api/health` reports `config.serverApiAuth: true`. Telemetry beacon (`VITE_ERROR_REPORTING_URL=/api/client-error`) and `VITE_REQUIRE_TELEMETRY=true` are on Vercel. Launch admin + GDPR throwaway users are bootstrapped (`npm run ops:bootstrap-launch`); first admin role assigned. Supabase cutover logged as the first key-rotation drill entry. Six of seven betas are `live`; only `fractional-vault` remains on legal sign-off. **Still owner-held:** Stripe test keys + lifecycle smoke, eBay/PSA live keys, optional Sentry Issues UI DSN, promote your personal account to admin if you want `/audit-trail/admin` under your email.
+MSI is deployed with live Supabase (`vhbsokjqchaafluimgjh`), server API auth, telemetry beacon, GDPR erase, and launch admin tooling. **Bloomberg terminal core (engineering):** consensus market ledger + holdings catalyst rail on Dashboard; War Room as Alpha home CTA; `/api-licensing` + `/card-show-mode` promoted out of Labs; `POST /api/market/consensus`; mobile nav dealer loop; MVP route allowlist expanded. Six of seven catalog betas are `live`; only `fractional-vault` remains on legal. **Still owner-held:** Stripe smoke, **eBay then PSA live keys** (`npm run ops:check-real-data`), optional Sentry DSN, promote your personal email to admin.
+
+## Bloomberg program — status
+
+| Bet                       | Engineering                                                                        | Owner blocker                            |
+| ------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------- |
+| Consensus pricing ledger  | ✅ `lib/pricing/consensusMarketLedger` + Dashboard strip + `/api/market/consensus` | Flip `VITE_FF_REAL_EBAY` when keys set   |
+| Holdings-linked news rail | ✅ Dashboard `HoldingsCatalystRail` + `/catalyst-market`                           | Optional `VITE_FF_REAL_SPORTS` later     |
+| War Room as Alpha home    | ✅ Dashboard CTA for `userTier === 'alpha'`                                        | —                                        |
+| Institutional export      | ✅ `/audit-dossier` always-on (prior)                                              | Schedule D–grade tax still legal-gated   |
+| Developer API desk        | ✅ `/api-licensing` GA + live endpoint catalog                                     | Alpha metering / real key issuance later |
+| Dealer mobile loop        | ✅ `MOBILE_NAV` → card-show-mode + war-room                                        | —                                        |
+| eBay / PSA tape           | ✅ adapters + readiness script                                                     | **Keys on Vercel**                       |
 
 ## Phase 31 — Shipped (2026-07-04 → 2026-07-05)
 
@@ -49,10 +61,10 @@ MSI is deployed with a **live Supabase project** (`ModernSportsIntelligence`, re
 
 ## Priority 2 — Turn on real data (eBay, then PSA)
 
-The engineering is done and waiting behind flags; the deployed environment is stable enough to flip them:
+Check readiness anytime: `npm run ops:check-real-data`.
 
-1. Set `EBAY_CLIENT_ID`/`EBAY_CLIENT_SECRET` + `VITE_FF_REAL_EBAY=true`; watch the daily deployed-E2E and pricing-truth gates for a few days. Degraded fallback now serves last-known-good comps labeled `stale` instead of jumping to mock.
-2. Then `PSA_API_KEY` + `VITE_FF_REAL_PSA=true`; cards with a `certNumber` will switch from the "PSA (demo)" badge to live "PSA Verified".
+1. Set `EBAY_CLIENT_ID`/`EBAY_CLIENT_SECRET` + `VITE_FF_REAL_EBAY=true`; watch Deployed E2E + pricing-truth for a few days. Stale-comp fallback already labels `source: 'stale'`.
+2. Then `PSA_API_KEY` + `VITE_FF_REAL_PSA=true`; cert badges switch from demo to live.
 
 ## Priority 3 — Last beta exit
 

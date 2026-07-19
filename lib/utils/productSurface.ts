@@ -22,17 +22,20 @@ export const PRIMARY_NAV_IDS = [
   'portfolio-scenario-theater',
   'private-deal-room-agent',
   'catalyst-market',
+  'api-licensing',
+  'card-show-mode',
   'collection-narrative',
   'frontier-lab',
   'billing',
   'settings',
 ] as const;
 
+/** Dealer / floor loop: book → inventory → scan/price → terminal → account. */
 export const MOBILE_NAV_IDS = [
   'dashboard',
   'collection',
-  'alerts',
-  'favorites',
+  'card-show-mode',
+  'warroom',
   'settings',
 ] as const;
 
@@ -40,16 +43,15 @@ export const FEATURED_FEATURE_IDS = [
   'dashboard',
   'collection',
   'deep-search',
-  'portfolio-audit',
-  'prospect-pipeline',
-  'benchmarking',
-  'liquidity-twin',
-  'counterparty-trust-graph',
-  'private-deal-room-agent',
+  'war-room',
   'catalyst-market',
-  'portfolio-scenario-theater',
   'collector-audit-dossier',
-  'frontier-lab',
+  'api-licensing',
+  'provenance-chain',
+  'portfolio-audit',
+  'liquidity-twin',
+  'private-deal-room-agent',
+  'portfolio-scenario-theater',
 ] as const;
 
 export const SEARCHABLE_FEATURE_IDS = [
@@ -67,6 +69,11 @@ export const SEARCHABLE_FEATURE_IDS = [
   'trends',
   'compare',
   'war-room',
+  'multi-agent',
+  'morning-briefing',
+  'provenance-chain',
+  'api-licensing',
+  'card-show-mode',
   'portfolio-builder',
   'prospect-pipeline',
   'notification-center',
@@ -291,5 +298,33 @@ export const COMMAND_ROUTES = [
     description: 'Compliance log, recorded events, and retention policies',
     path: '/audit-trail',
     keywords: ['audit', 'compliance', 'trail', 'log', 'security', 'recorded'],
+  },
+  {
+    id: 'nav-war-room',
+    label: 'Go to Analyst War Room',
+    description: 'Multi-agent terminal for Alpha-grade portfolio decisions',
+    path: '/war-room',
+    keywords: ['war room', 'terminal', 'agents', 'bloomberg'],
+  },
+  {
+    id: 'nav-catalyst',
+    label: 'Go to Catalyst Market',
+    description: 'Holdings-linked event-driven repricing windows',
+    path: '/catalyst-market',
+    keywords: ['catalyst', 'news', 'events', 'holdings'],
+  },
+  {
+    id: 'nav-api',
+    label: 'Go to API & Licensing',
+    description: 'Production data API catalog and Alpha licensing desk',
+    path: '/api-licensing',
+    keywords: ['api', 'developer', 'licensing', 'keys'],
+  },
+  {
+    id: 'nav-card-show',
+    label: 'Go to Card Show Mode',
+    description: 'Dealer floor scan → price → inventory loop',
+    path: '/card-show-mode',
+    keywords: ['show', 'dealer', 'scan', 'floor', 'mobile'],
   },
 ] as const;

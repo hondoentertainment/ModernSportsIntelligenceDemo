@@ -77,6 +77,8 @@ import StrategyMap from '../components/StrategyMap.tsx';
 import PricingTruthHealthPanel from '../components/PricingTruthHealthPanel.tsx';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice.tsx';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner.tsx';
+import MarketLedgerStrip from '../components/MarketLedgerStrip.tsx';
+import HoldingsCatalystRail from '../components/HoldingsCatalystRail.tsx';
 import {
   computeFreshVerifiableCoverage,
   FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
@@ -108,7 +110,7 @@ const WarRoomWidget = lazy(() => import('../components/WarRoomWidget.tsx'));
 
 
 const Dashboard: React.FC = () => {
-  const { user, isDemoMode } = useAuth();
+  const { user, isDemoMode, userTier } = useAuth();
   // Shared inventory state
   const {
     inventory,
@@ -384,6 +386,33 @@ const Dashboard: React.FC = () => {
           badgeVariant="mock"
           badgeLabel="Demo data"
         />
+      )}
+
+      {!isDemoMode && inventory.length > 0 && (
+        <div className="space-y-4">
+          <MarketLedgerStrip inventory={inventory} />
+          <HoldingsCatalystRail inventory={inventory} />
+        </div>
+      )}
+
+      {(userTier === 'alpha' || isDemoMode) && (
+        <section className="rounded-2xl border border-brand-lime/30 bg-brand-lime/5 px-5 py-4">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-brand-lime">Alpha terminal</p>
+              <h3 className="text-lg font-semibold text-white">Analyst War Room is your home desk</h3>
+              <p className="text-xs text-brand-muted">
+                Multi-agent thesis, exportable audit fingerprint, and holdings-aware panels — open when you need a Bloomberg-style composition.
+              </p>
+            </div>
+            <Link
+              to="/war-room"
+              className="inline-flex items-center justify-center rounded-xl bg-brand-lime px-4 py-2 text-[10px] font-black uppercase tracking-widest text-brand-charcoal"
+            >
+              Launch War Room
+            </Link>
+          </div>
+        </section>
       )}
 
       {loading && inventory.length === 0 ? (

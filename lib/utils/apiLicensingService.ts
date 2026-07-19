@@ -609,8 +609,82 @@ export function getUsageMetrics(): UsageMetrics[] {
   return [...MOCK_USAGE_HISTORY];
 }
 
+/** Live serverless routes already deployed on Vercel (not mock /v1 stubs). */
+const LIVE_PRODUCTION_ENDPOINTS: APIEndpoint[] = [
+  {
+    id: 'live-health',
+    path: '/api/health',
+    method: 'GET',
+    category: 'Production (live)',
+    description: 'Deployment health + serverApiAuth readiness.',
+    parameters: [],
+    responseExample: '{"ok":true,"service":"msi","config":{"serverApiAuth":true}}',
+    rateLimit: 120,
+    tierRequired: 'free',
+    cacheTTL: 0,
+    deprecated: false,
+  },
+  {
+    id: 'live-ebay',
+    path: '/api/market/ebay',
+    method: 'POST',
+    category: 'Production (live)',
+    description: 'eBay sold/active comps (requires Bearer JWT + EBAY_* server keys + VITE_FF_REAL_EBAY).',
+    parameters: [
+      { name: 'playerName', type: 'string', required: false, description: 'Player filter' },
+      { name: 'limit', type: 'number', required: false, description: 'Page size' },
+    ],
+    responseExample: '{"source":"live|mock|stale","items":[...]}',
+    rateLimit: 60,
+    tierRequired: 'pro',
+    cacheTTL: 120,
+    deprecated: false,
+  },
+  {
+    id: 'live-consensus',
+    path: '/api/market/consensus',
+    method: 'POST',
+    category: 'Production (live)',
+    description: 'Consensus FMV ledger for a card inventory payload (Bearer JWT).',
+    parameters: [
+      { name: 'cards', type: 'array', required: true, description: 'Card quotes with valuationSource/timestamp' },
+    ],
+    responseExample: '{"ok":true,"ledger":{"totalFmv":1200,"freshVerifiablePct":40,...}}',
+    rateLimit: 60,
+    tierRequired: 'pro',
+    cacheTTL: 0,
+    deprecated: false,
+  },
+  {
+    id: 'live-psa',
+    path: '/api/grading/psa/cert',
+    method: 'POST',
+    category: 'Production (live)',
+    description: 'PSA cert lookup (requires Bearer JWT + PSA_API_KEY + VITE_FF_REAL_PSA).',
+    parameters: [{ name: 'certNumber', type: 'string', required: true, description: 'PSA cert #' }],
+    responseExample: '{"source":"live|mock","cert":{...}}',
+    rateLimit: 30,
+    tierRequired: 'pro',
+    cacheTTL: 300,
+    deprecated: false,
+  },
+  {
+    id: 'live-export',
+    path: '/api/me/export',
+    method: 'GET',
+    category: 'Production (live)',
+    description: 'GDPR data export for the authenticated user.',
+    parameters: [],
+    responseExample: '{"schemaVersion":1,"user":{...},"data":{...}}',
+    rateLimit: 5,
+    tierRequired: 'free',
+    cacheTTL: 0,
+    deprecated: false,
+  },
+];
+
 export function getEndpointCatalog(): APIEndpoint[] {
-  return [...MOCK_ENDPOINTS];
+  return [...LIVE_PRODUCTION_ENDPOINTS, ...MOCK_ENDPOINTS];
 }
 
 export function getWebhooks(): WebhookConfig[] {
