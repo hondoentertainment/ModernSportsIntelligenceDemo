@@ -10,6 +10,7 @@ import {
     WAR_ROOM_PROMPT_VERSION,
     computeWarRoomInputFingerprint,
 } from "./warRoomThesisAudit.ts";
+import { buildWarRoomLedgerContext } from "./warRoomLedgerContext.ts";
 
 const ai = createGeminiClient();
 
@@ -53,19 +54,23 @@ export class MultiAgentService {
         }
 
         const inventorySummary = inventory.map(c =>
-            `${c.year} ${c.player} ${c.set} (${c.league}) - Value: $${c.currentValue || 'N/A'}`
+            `${c.year} ${c.player} ${c.set} (${c.league}) - Value: $${c.currentValue || 'N/A'} [${c.valuationSource || 'fallback'}]`
         ).join("\n");
+        const ledgerContext = buildWarRoomLedgerContext(inventory);
 
         const prompt = `Act as an Elite Multi-Agent Investment Committee. Analyze the following portfolio and generate a collaborative investment thesis.
     
     PORTFOLIO SUMMARY:
     ${inventorySummary}
+
+    ${ledgerContext}
     
     SYSTEM INSTRUCTIONS:
     1. Simulate the following specialist agents: ${includeStrategist ? 'Scout, Market, Risk, Negotiator, and Strategist' : 'Scout, Market, Risk, and Negotiator'}.
     2. Each agent must provide a concise (max 2 sentences) insight from their perspective.
     3. Synthesize their collaborative output into a unified thesis.
-    ${includeStrategist ? '4. Strategist Prime MUST provide a specific executionPlan as a list of actions.' : ''}
+    4. Weight ebay-api / historical-comps quotes above gemini / fallback when recommending actions. Call out coverage gaps when fresh verifiable % is below target.
+    ${includeStrategist ? '5. Strategist Prime MUST provide a specific executionPlan as a list of actions.' : ''}
     
     EXPECTED JSON OUTPUT:
     {

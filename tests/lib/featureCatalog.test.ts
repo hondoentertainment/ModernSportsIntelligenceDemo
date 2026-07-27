@@ -153,10 +153,15 @@ describe('featureCatalog', () => {
 
     it('excludes beta and demo surfaces by default', () => {
       const discoverableIds = new Set(DISCOVERABLE_FEATURE_CATALOG.map((f) => f.id));
+      // Still beta / legal-gated
       expect(discoverableIds.has('fractional-vault')).toBe(false);
-      expect(discoverableIds.has('provenance-chain')).toBe(false);
-      expect(discoverableIds.has('vision-grading')).toBe(false);
-      expect(discoverableIds.has('liquidity-pool')).toBe(false);
+      // Wave-3 exits + Bloomberg GA: these are live and searchable
+      expect(discoverableIds.has('provenance-chain')).toBe(true);
+      expect(discoverableIds.has('war-room')).toBe(true);
+      expect(discoverableIds.has('api-licensing')).toBe(true);
+      // Demo-only stubs remain hidden unless VITE_FF_ENABLE_DEMO_SURFACES
+      expect(DISCOVERABLE_FEATURE_CATALOG.every((f) => f.status !== 'demo')).toBe(true);
+      expect(DISCOVERABLE_FEATURE_CATALOG.every((f) => f.status !== 'beta')).toBe(true);
     });
   });
 

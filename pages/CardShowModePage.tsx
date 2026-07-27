@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import {
   MapPin,
   Wifi,
@@ -8,7 +9,11 @@ import {
   Calendar,
   Star,
   BarChart3,
+  ScanLine,
+  ShieldCheck,
+  Activity,
 } from 'lucide-react';
+import { preferRealCompsWhenConfigured, isFeatureEnabled } from '../lib/featureFlags';
 import {
   getUpcomingShows,
   getShowHaul,
@@ -104,7 +109,7 @@ const CardShowModePage: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-slate-100">Card Show Field Mode</h1>
             <p className="text-sm text-slate-400">
-              Nearby shows, quick-scan pricing &amp; deal tracking &mdash; Phase 123
+              Floor loop: scan → price → cert check → book the deal
             </p>
           </div>
         </div>
@@ -122,8 +127,43 @@ const CardShowModePage: React.FC = () => {
         </div>
       </div>
 
+      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
+        <p className="text-[10px] font-black uppercase tracking-widest text-emerald-300 mb-2">Floor loop</p>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to="/collection"
+            className="inline-flex items-center gap-1.5 min-h-[44px] px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-600 text-xs font-bold text-slate-100 hover:border-brand-lime/50"
+          >
+            <ScanLine size={14} className="text-brand-lime" />
+            Scan / price in Collection
+          </Link>
+          <Link
+            to="/grading-vision-engine"
+            className="inline-flex items-center gap-1.5 min-h-[44px] px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-600 text-xs font-bold text-slate-100 hover:border-brand-lime/50"
+          >
+            <ShieldCheck size={14} className="text-cyan-300" />
+            Cert / grade check
+            {!isFeatureEnabled('USE_REAL_PSA') && (
+              <span className="text-[9px] uppercase text-amber-300">demo PSA</span>
+            )}
+          </Link>
+          <Link
+            to="/war-room"
+            className="inline-flex items-center gap-1.5 min-h-[44px] px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-600 text-xs font-bold text-slate-100 hover:border-brand-lime/50"
+          >
+            <Activity size={14} className="text-fuchsia-300" />
+            War Room thesis
+          </Link>
+        </div>
+        <p className="mt-2 text-[11px] text-emerald-100/80">
+          Live comps: {preferRealCompsWhenConfigured() ? 'ON (eBay flag)' : 'OFF — mock/stale labels until VITE_FF_REAL_EBAY'}
+          {' · '}
+          PSA: {isFeatureEnabled('USE_REAL_PSA') ? 'live' : 'demo badges'}
+        </p>
+      </div>
+
       {/* Summary Cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
           <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Upcoming Shows</p>
           <p className="text-3xl font-bold text-blue-400">{shows.length}</p>
