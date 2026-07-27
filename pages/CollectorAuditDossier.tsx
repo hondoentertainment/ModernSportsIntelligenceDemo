@@ -19,6 +19,7 @@ import {
   renderReportHTML,
   saveReportToHistory,
 } from '../lib/utils/reportService';
+import MarketLedgerStrip from '../components/MarketLedgerStrip';
 
 function triggerDownload(content: string, filename: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });
@@ -146,6 +147,7 @@ const CollectorAuditDossier: React.FC = () => {
 
   return (
     <div className="space-y-8">
+      <MarketLedgerStrip inventory={inventory} />
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6">
         <div className="space-y-3">
           <div className="flex items-center gap-3">

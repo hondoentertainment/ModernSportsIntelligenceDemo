@@ -58,6 +58,15 @@ describe('CommandPalette', () => {
     expect(screen.queryByText('Run /compare')).not.toBeInTheDocument();
   });
 
+  it('ranks Run /scan first for bare "scan" query', () => {
+    renderPalette();
+    const input = screen.getByLabelText('Search commands and features');
+    fireEvent.change(input, { target: { value: 'scan' } });
+
+    const options = screen.getAllByRole('option');
+    expect(options[0]).toHaveTextContent(/Run \/scan/i);
+  });
+
   it('navigates to / when Enter is pressed on the Run /scan row', () => {
     const onClose = vi.fn();
     renderPalette({ onClose });

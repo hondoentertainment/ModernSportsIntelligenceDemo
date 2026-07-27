@@ -53,7 +53,8 @@ function buildOverviewSection(cards: CardInventory[], scopeLabel: string): Repor
       'Estimated Tax Liability': Math.round(taxSummary.estimatedTaxLiability * 100) / 100,
     },
     sourceType: 'inventory-history',
-    sourceNote: 'Built from current inventory, sold status, and stored valuation fields.',
+    sourceNote:
+      'Built from current inventory, sold status, and stored valuation fields. Pair with the consensus market ledger (Dashboard / War Room / this page strip) for source-ranked FMV; Schedule D–grade tax export remains legal-gated.',
   };
 }
 

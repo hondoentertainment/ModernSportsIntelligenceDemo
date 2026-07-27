@@ -1,10 +1,10 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-07-26 · War Room ↔ ledger + Alpha API honesty shipped. Previous edition: 2026-07-19.
+> Refreshed 2026-07-26 · Roadmap engineering pass: palette `/scan` fix, dossier ledger, audit pin, Dependabot unblocked. Previous edition: 2026-07-26 morning.
 
 ## Current state in one paragraph
 
-MSI is deployed with live Supabase (`vhbsokjqchaafluimgjh`), server API auth, telemetry beacon, GDPR erase, and launch admin tooling. **Bloomberg terminal core:** consensus ledger on Dashboard + War Room; holdings catalyst rail; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; `POST /api/market/consensus`; mobile dealer loop. **This pass (engineering):** War Room committee prompts include consensus ledger + valuationSource fingerprint (`war-room-committee-2026-07-v2`); `/api-licensing` defaults to live endpoints and watermarks demo metering/keys; Card Show floor-loop CTAs. Six of seven catalog betas are `live`; only `fractional-vault` remains on legal. **Still owner-held:** Stripe smoke, **eBay then PSA live keys** (`npm run ops:check-real-data`), optional Sentry DSN, personal admin promote.
+MSI is deployed with live Supabase (`vhbsokjqchaafluimgjh`), server API auth, telemetry beacon, GDPR erase, and launch admin tooling. **Bloomberg terminal core** is engineering-complete: consensus ledger across Dashboard, War Room, and Audit Dossier; holdings catalysts; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; command palette keeps `/scan` on dashboard. Coverage whitelist includes ledger + War Room context. npm high-severity audit is clean via router/brace overrides. Six of seven catalog betas are `live`; only `fractional-vault` remains on legal. **Still owner-held (blocking “trusted book”):** Stripe smoke, **eBay then PSA live keys**, optional Sentry DSN, personal admin promote — check `npm run ops:check-real-data`.
 
 ## Bloomberg program — status
 
@@ -13,10 +13,10 @@ MSI is deployed with live Supabase (`vhbsokjqchaafluimgjh`), server API auth, te
 | Consensus pricing ledger  | ✅ `lib/pricing/consensusMarketLedger` + Dashboard strip + `/api/market/consensus` | Flip `VITE_FF_REAL_EBAY` when keys set |
 | Holdings-linked news rail | ✅ Dashboard `HoldingsCatalystRail` + `/catalyst-market`                           | Optional `VITE_FF_REAL_SPORTS` later   |
 | War Room as Alpha home    | ✅ Dashboard CTA + ledger context in committee prompts                             | Live tape when eBay flag on            |
-| Institutional export      | ✅ `/audit-dossier` always-on (prior)                                              | Schedule D–grade tax still legal-gated |
+| Institutional export      | ✅ `/audit-dossier` + consensus ledger strip                                       | Schedule D–grade tax still legal-gated |
 | Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later          |
-| Dealer mobile loop        | ✅ `MOBILE_NAV` + Card Show floor-loop CTAs                                        | Field friction at a real show          |
-| eBay / PSA tape           | ✅ adapters + readiness script                                                     | **Keys on Vercel**                     |
+| Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show          |
+| eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel**                     |
 
 ## Phase 31 — Shipped (2026-07-04 → 2026-07-05)
 

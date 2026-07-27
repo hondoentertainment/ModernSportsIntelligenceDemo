@@ -143,6 +143,8 @@ export default defineConfig(({ command, mode }) => {
         'lib/analytics/valuationQuality.ts',
         'lib/utils/marketSync.ts',
         'lib/utils/warRoomThesisAudit.ts',
+        'lib/utils/warRoomLedgerContext.ts',
+        'lib/pricing/consensusMarketLedger.ts',
         'lib/htmlEscape.ts',
       ],
       // Thresholds track the current aggregate on the whitelist above so CI

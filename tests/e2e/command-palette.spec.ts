@@ -97,9 +97,10 @@ test.describe('Command Palette (Ctrl+K)', () => {
         await openPalette(page);
         await page.keyboard.type('scan');
 
-        // /scan is wired to path '/' in CommandPalette.SLASH_COMMANDS.
+        // /scan slash command ranks first for bare "scan" (dashboard Alpha scan).
         const firstOption = page.locator('[role="option"]').first();
         await expect(firstOption).toBeVisible({ timeout: 5_000 });
+        await expect(firstOption).toContainText(/\/scan|alpha scan/i);
 
         await page.keyboard.press('Enter');
         await expect(page).toHaveURL(/#\/?$/, { timeout: 5_000 });
