@@ -69,7 +69,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@google/genai": "^1.49.0",
     "@stripe/stripe-js": "^9.12.0",
-    "@supabase/supabase-js": "^2.110.8",
+    "@supabase/supabase-js": "^2.110.9",
     "@tanstack/react-virtual": "^3.14.8",
     "dompurify": "^3.4.12",
     "jspdf": "^4.1.0",
