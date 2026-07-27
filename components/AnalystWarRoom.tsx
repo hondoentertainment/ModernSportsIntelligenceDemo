@@ -10,6 +10,7 @@ import { showToast } from '../lib/utils/toast';
 import { store } from '../lib/dal/syncStore';
 import { safeParseCollaborativeThesis } from '../lib/schemas';
 import { downloadWarRoomThesisJson } from '../lib/utils/warRoomThesisAudit';
+import MarketLedgerStrip from './MarketLedgerStrip';
 
 const WAR_ROOM_THESIS_STORAGE_KEY = 'msi_war_room_last_thesis_v1';
 
@@ -128,10 +129,13 @@ const AnalystWarRoom: React.FC = () => {
                 </div>
             </div>
 
+            {inventory.length > 0 && <MarketLedgerStrip inventory={inventory} />}
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
                     <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">
-                        Multi-agent output is AI-generated guidance. Use it as decision support and verify with live comps before executing trades.
+                        Multi-agent output is AI-generated guidance. Committee prompts include the consensus market ledger;
+                        weight ebay-api / historical comps above AI estimates, and verify with live comps before executing trades.
                     </div>
 
                     {thesis && !isGenerating && thesis.runMetadata && (
