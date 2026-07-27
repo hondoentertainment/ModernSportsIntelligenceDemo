@@ -81,11 +81,31 @@ describe('warRoomThesisAudit', () => {
         currentValue: 1.23,
         purchasePrice: 3,
         status: 'active',
+        valuationSource: 'fallback',
       });
+    });
+
+    it('includes valuationSource in normalized cards', () => {
+      const [one] = normalizeInventoryForWarRoomHash([
+        card({ valuationSource: 'ebay-api' }),
+      ]);
+      expect(one.valuationSource).toBe('ebay-api');
     });
   });
 
   describe('computeWarRoomInputFingerprint', () => {
+    it('changes when valuationSource changes (v2 payload)', () => {
+      const a = [card({ id: '1', valuationSource: 'fallback' })];
+      const b = [card({ id: '1', valuationSource: 'ebay-api' })];
+      expect(computeWarRoomInputFingerprint(a, false)).not.toBe(
+        computeWarRoomInputFingerprint(b, false),
+      );
+    });
+
+    it('exports current prompt version', () => {
+      expect(WAR_ROOM_PROMPT_VERSION).toBe('war-room-committee-2026-07-v2');
+    });
+
     it('treats non-array inventory like empty portfolio', () => {
       expect(computeWarRoomInputFingerprint(null as unknown as CardInventory[], false)).toBe(
         computeWarRoomInputFingerprint([], false),

@@ -2,7 +2,7 @@ import type { CardInventory, CollaborativeThesis } from '../../types';
 import { logger } from '../logger';
 
 /** Bump when committee prompt or schema expectations change (traceability). */
-export const WAR_ROOM_PROMPT_VERSION = 'war-room-committee-2026-04-v1';
+export const WAR_ROOM_PROMPT_VERSION = 'war-room-committee-2026-07-v2';
 
 /** Model id passed to Gemini for this flow (audit / support). */
 export const WAR_ROOM_COMMITTEE_MODEL_ID = 'gemini-1.5-flash';
@@ -16,6 +16,7 @@ export type NormalizedWarRoomCard = {
   currentValue: number;
   purchasePrice: number;
   status: string;
+  valuationSource: string;
 };
 
 /**
@@ -35,6 +36,7 @@ export function normalizeInventoryForWarRoomHash(inventory: CardInventory[]): No
       currentValue: Math.round((Number(c.currentValue) || 0) * 100) / 100,
       purchasePrice: Math.round((Number(c.purchasePrice) || 0) * 100) / 100,
       status: String(c.status ?? 'active'),
+      valuationSource: String(c.valuationSource ?? 'fallback'),
     }))
     .sort((a, b) => a.id.localeCompare(b.id));
 }
@@ -58,7 +60,7 @@ export function computeWarRoomInputFingerprint(
   includeStrategist: boolean
 ): string {
   const cards = normalizeInventoryForWarRoomHash(inventory);
-  const payload = JSON.stringify({ v: 1, includeStrategist, cards });
+  const payload = JSON.stringify({ v: 2, includeStrategist, cards });
   const h1 = fnv1a32(payload);
   const h2 = fnv1a32(payload, 0x01000193);
   const h3 = fnv1a32(`${payload}|msi-war-room`, 0x9e3779b9);

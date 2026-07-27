@@ -44,7 +44,8 @@ const ApiLicensing: React.FC = () => {
   const [_requests, setRequests] = useState<APIRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('Production (live)');
+  const [showDemoMetering, setShowDemoMetering] = useState(false);
 
   useEffect(() => {
     try {
@@ -127,49 +128,69 @@ const ApiLicensing: React.FC = () => {
       </div>
 
       <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-100">
-        <p className="font-semibold">Live now</p>
+        <p className="font-semibold">Live now — call with Supabase Bearer JWT</p>
         <p className="mt-1 text-cyan-100/90">
           <code>/api/health</code>, <code>/api/market/ebay</code>, <code>/api/market/consensus</code>,{' '}
-          <code>/api/grading/psa/cert</code>, <code>/api/me/export</code> — filter the catalog by
-          &quot;Production (live)&quot;. Mock <code>/v1/*</code> stubs are design reference only.
+          <code>/api/grading/psa/cert</code>, <code>/api/me/export</code>. Demo API keys below are{' '}
+          <strong>not</strong> accepted by these routes. Mock <code>/v1/*</code> stubs are design reference
+          only.
         </p>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-5 gap-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs text-amber-200/90 uppercase tracking-widest font-black">
+          Demo metering (not billed) — synthetic traffic for UI preview
+        </p>
+        <button
+          type="button"
+          onClick={() => setShowDemoMetering((v) => !v)}
+          className="text-[10px] font-black uppercase tracking-widest text-cyan-300 hover:underline"
+        >
+          {showDemoMetering ? 'Hide demo metrics' : 'Show demo metrics'}
+        </button>
+      </div>
+
+      {/* Summary Cards — opt-in so mock quotas are not the hero */}
+      {showDemoMetering && (
+      <div className="grid grid-cols-5 gap-4 opacity-80">
         <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Requests Today</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Requests Today (demo)</p>
           <p className="text-3xl font-bold text-cyan-400">{totalRequestsToday.toLocaleString()}</p>
-          <p className="text-xs text-slate-600 mt-1">{apiKeys.length} active keys</p>
+          <p className="text-xs text-slate-600 mt-1">{apiKeys.length} demo keys</p>
         </div>
         <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Monthly Requests</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Monthly Requests (demo)</p>
           <p className="text-3xl font-bold text-blue-400">{(totalRequestsMonth / 1000).toFixed(0)}k</p>
-          <p className="text-xs text-slate-600 mt-1">across all keys</p>
+          <p className="text-xs text-slate-600 mt-1">synthetic</p>
         </div>
         <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Avg Latency</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Avg Latency (demo)</p>
           <p className="text-3xl font-bold text-emerald-400">{avgLatency}ms</p>
-          <p className="text-xs text-slate-600 mt-1">14-day average</p>
+          <p className="text-xs text-slate-600 mt-1">14-day fake series</p>
         </div>
         <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Error Rate</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Error Rate (demo)</p>
           <p className="text-3xl font-bold text-amber-400">{errorRate}%</p>
-          <p className="text-xs text-slate-600 mt-1">14-day average</p>
+          <p className="text-xs text-slate-600 mt-1">synthetic</p>
         </div>
         <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 text-center">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Webhooks</p>
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Webhooks (demo)</p>
           <p className="text-3xl font-bold text-purple-400">{webhooks.length}</p>
           <p className="text-xs text-slate-600 mt-1">{webhooks.filter((w) => w.status === 'active').length} active</p>
         </div>
       </div>
+      )}
 
-      {/* Usage Chart */}
-      <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
-        <h2 className="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
+      {/* Usage Chart — demo only */}
+      {showDemoMetering && (
+      <div className="bg-slate-800/50 border border-amber-500/20 rounded-xl p-6 opacity-80">
+        <h2 className="text-lg font-bold text-slate-200 mb-1 flex items-center gap-2">
           <Activity size={18} className="text-cyan-400" />
-          14-Day Usage Metrics
+          14-Day Usage Metrics (demo)
         </h2>
+        <p className="text-[10px] text-amber-200/80 uppercase tracking-widest font-black mb-4">
+          Synthetic series — not billed traffic
+        </p>
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={usage}>
@@ -191,6 +212,7 @@ const ApiLicensing: React.FC = () => {
           </ResponsiveContainer>
         </div>
       </div>
+      )}
 
       {/* API Keys & Webhooks */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -198,14 +220,19 @@ const ApiLicensing: React.FC = () => {
         <div className="lg:col-span-2 space-y-4">
           <h2 className="text-lg font-bold text-slate-200 flex items-center gap-2">
             <KeyRound size={18} className="text-cyan-400" />
-            API Keys
+            API Keys (demo preview)
           </h2>
+          <p className="text-xs text-amber-200/80">
+            These keys are UI fixtures. Authenticate production <code className="text-cyan-300">/api/*</code> with a
+            Supabase session JWT until Alpha key issuance ships.
+          </p>
           <div className="space-y-3">
             {apiKeys.map((key) => (
-              <div key={key.id} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
+              <div key={key.id} className="bg-slate-800/50 border border-amber-500/20 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-bold text-white">{key.name}</p>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">demo</span>
                     <span className={`text-[10px] px-2 py-0.5 rounded-full ${
                       key.tier === 'enterprise' ? 'bg-amber-500/20 text-amber-400' :
                       key.tier === 'pro' ? 'bg-blue-500/20 text-blue-400' :

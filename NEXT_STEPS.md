@@ -1,22 +1,22 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-07-19 · Bloomberg terminal core shipped in engineering. Previous edition: 2026-07-18.
+> Refreshed 2026-07-26 · War Room ↔ ledger + Alpha API honesty shipped. Previous edition: 2026-07-19.
 
 ## Current state in one paragraph
 
-MSI is deployed with live Supabase (`vhbsokjqchaafluimgjh`), server API auth, telemetry beacon, GDPR erase, and launch admin tooling. **Bloomberg terminal core (engineering):** consensus market ledger + holdings catalyst rail on Dashboard; War Room as Alpha home CTA; `/api-licensing` + `/card-show-mode` promoted out of Labs; `POST /api/market/consensus`; mobile nav dealer loop; MVP route allowlist expanded. Six of seven catalog betas are `live`; only `fractional-vault` remains on legal. **Still owner-held:** Stripe smoke, **eBay then PSA live keys** (`npm run ops:check-real-data`), optional Sentry DSN, promote your personal email to admin.
+MSI is deployed with live Supabase (`vhbsokjqchaafluimgjh`), server API auth, telemetry beacon, GDPR erase, and launch admin tooling. **Bloomberg terminal core:** consensus ledger on Dashboard + War Room; holdings catalyst rail; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; `POST /api/market/consensus`; mobile dealer loop. **This pass (engineering):** War Room committee prompts include consensus ledger + valuationSource fingerprint (`war-room-committee-2026-07-v2`); `/api-licensing` defaults to live endpoints and watermarks demo metering/keys; Card Show floor-loop CTAs. Six of seven catalog betas are `live`; only `fractional-vault` remains on legal. **Still owner-held:** Stripe smoke, **eBay then PSA live keys** (`npm run ops:check-real-data`), optional Sentry DSN, personal admin promote.
 
 ## Bloomberg program — status
 
-| Bet                       | Engineering                                                                        | Owner blocker                            |
-| ------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------- |
-| Consensus pricing ledger  | ✅ `lib/pricing/consensusMarketLedger` + Dashboard strip + `/api/market/consensus` | Flip `VITE_FF_REAL_EBAY` when keys set   |
-| Holdings-linked news rail | ✅ Dashboard `HoldingsCatalystRail` + `/catalyst-market`                           | Optional `VITE_FF_REAL_SPORTS` later     |
-| War Room as Alpha home    | ✅ Dashboard CTA for `userTier === 'alpha'`                                        | —                                        |
-| Institutional export      | ✅ `/audit-dossier` always-on (prior)                                              | Schedule D–grade tax still legal-gated   |
-| Developer API desk        | ✅ `/api-licensing` GA + live endpoint catalog                                     | Alpha metering / real key issuance later |
-| Dealer mobile loop        | ✅ `MOBILE_NAV` → card-show-mode + war-room                                        | —                                        |
-| eBay / PSA tape           | ✅ adapters + readiness script                                                     | **Keys on Vercel**                       |
+| Bet                       | Engineering                                                                        | Owner blocker                          |
+| ------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------- |
+| Consensus pricing ledger  | ✅ `lib/pricing/consensusMarketLedger` + Dashboard strip + `/api/market/consensus` | Flip `VITE_FF_REAL_EBAY` when keys set |
+| Holdings-linked news rail | ✅ Dashboard `HoldingsCatalystRail` + `/catalyst-market`                           | Optional `VITE_FF_REAL_SPORTS` later   |
+| War Room as Alpha home    | ✅ Dashboard CTA + ledger context in committee prompts                             | Live tape when eBay flag on            |
+| Institutional export      | ✅ `/audit-dossier` always-on (prior)                                              | Schedule D–grade tax still legal-gated |
+| Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later          |
+| Dealer mobile loop        | ✅ `MOBILE_NAV` + Card Show floor-loop CTAs                                        | Field friction at a real show          |
+| eBay / PSA tape           | ✅ adapters + readiness script                                                     | **Keys on Vercel**                     |
 
 ## Phase 31 — Shipped (2026-07-04 → 2026-07-05)
 
