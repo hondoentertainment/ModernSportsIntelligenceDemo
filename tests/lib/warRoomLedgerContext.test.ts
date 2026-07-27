@@ -36,4 +36,11 @@ describe('buildWarRoomLedgerContext', () => {
     expect(text).toContain('(no priced assets)');
     expect(text).toContain('Quoted assets: 0/0');
   });
+
+  it('reports source mix n/a when nothing is quoted', () => {
+    const text = buildWarRoomLedgerContext([
+      card({ id: 'z', currentValue: 0, valuationSource: 'fallback' }),
+    ]);
+    expect(text).toMatch(/Source mix: n\/a/);
+  });
 });
