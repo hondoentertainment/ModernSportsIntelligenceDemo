@@ -325,6 +325,7 @@ export const COMMAND_ROUTES = [
     label: 'Go to Card Show Mode',
     description: 'Dealer floor scan → price → inventory loop',
     path: '/card-show-mode',
-    keywords: ['show', 'dealer', 'scan', 'floor', 'mobile'],
+    // Avoid bare "scan" — that keyword owns the /scan Alpha slash command.
+    keywords: ['show', 'dealer', 'floor', 'booth', 'mobile', 'field'],
   },
 ] as const;

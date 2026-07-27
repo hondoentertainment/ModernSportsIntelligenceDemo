@@ -93,4 +93,25 @@ console.log(
     ? 'No live adapters yet. Flip eBay first (NEXT_STEPS Priority 2), observe Deployed E2E, then PSA.'
     : `${readyCount} check(s) partially/fully ready.`,
 );
+
+// Owner-held launch ops (presence only — never print values).
+console.log('\nLaunch ops readiness (owner keys)\n');
+const stripeKeys = [
+  'STRIPE_SECRET_KEY',
+  'STRIPE_WEBHOOK_SECRET',
+  'VITE_STRIPE_PUBLISHABLE_KEY',
+];
+const stripeOk = stripeKeys.every((k) => set(k));
+console.log(`[${stripeOk ? 'KEYS_OK' : 'NEED_KEYS'}] Stripe lifecycle smoke`);
+for (const k of stripeKeys) {
+  console.log(`         ${k}: ${set(k) ? 'set' : 'missing'}`);
+}
+if (!stripeOk) {
+  console.log('         next: set Stripe test keys on Vercel, then subscribe→upgrade→cancel smoke');
+}
+
+const sentryOn = set('VITE_SENTRY_DSN');
+console.log(`\n[${sentryOn ? 'SET' : 'OPTIONAL'}] Sentry Issues UI`);
+console.log(`         VITE_SENTRY_DSN: ${sentryOn ? 'set' : 'missing (first-party /api/client-error still live)'}`);
+
 process.exit(0);

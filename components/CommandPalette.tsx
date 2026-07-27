@@ -212,8 +212,20 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onAddC
       c.keywords?.some((kw) => kw.toLowerCase().includes(q));
 
     const filteredCommands = commands.filter(match);
+    // Slash/run intents win when the query matches their command token
+    // (e.g. "scan" → /scan before navigate hits that share a keyword).
+    const runFirst = filteredCommands.filter((c) => c.section === 'Run');
+    const restCommands = filteredCommands.filter((c) => c.section !== 'Run');
+    const preferRun =
+      q.length > 0 &&
+      runFirst.some(
+        (c) =>
+          c.keywords?.some((kw) => kw.toLowerCase() === q || kw.toLowerCase() === `/${q}`) ||
+          c.label.toLowerCase().includes(`/${q}`),
+      );
+    const orderedCommands = preferRun ? [...runFirst, ...restCommands] : filteredCommands;
     // Features are already searched/filtered by `searchFeatures`; render as-is.
-    return [...filteredCommands, ...featureItems];
+    return [...orderedCommands, ...featureItems];
   }, [commands, featureItems, query]);
 
   // Reset selection when results change
