@@ -1,10 +1,10 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-07-26 · Roadmap engineering pass: palette `/scan` fix, dossier ledger, audit pin, Dependabot unblocked. Previous edition: 2026-07-26 morning.
+> Refreshed 2026-08-17 · Platform/toolchain hardening pass: Node 22 floor, TypeScript 7, jsdom 30, two CVE closures, Dependabot queue drained. Previous edition: 2026-07-26.
 
 ## Current state in one paragraph
 
-MSI is deployed with live Supabase (`vhbsokjqchaafluimgjh`), server API auth, telemetry beacon, GDPR erase, and launch admin tooling. **Bloomberg terminal core** is engineering-complete: consensus ledger across Dashboard, War Room, and Audit Dossier; holdings catalysts; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; command palette keeps `/scan` on dashboard. Coverage whitelist includes ledger + War Room context. npm high-severity audit is clean via router/brace overrides. Six of seven catalog betas are `live`; only `fractional-vault` remains on legal. **Still owner-held (blocking “trusted book”):** Stripe smoke, **eBay then PSA live keys**, optional Sentry DSN, personal admin promote — check `npm run ops:check-real-data`.
+MSI is deployed with live Supabase (`vhbsokjqchaafluimgjh`), server API auth, telemetry beacon, GDPR erase, and launch admin tooling. **Bloomberg terminal core** is engineering-complete: consensus ledger across Dashboard, War Room, and Audit Dossier; holdings catalysts; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; command palette keeps `/scan` on dashboard. Coverage whitelist includes ledger + War Room context. The toolchain is current — Node ≥22.22.2, TypeScript 7.0.2 (side-by-side with the TS 6 API for ESLint), jsdom 30 — and `npm audit --audit-level=high` is clean with **no open Dependabot PRs**. Six of seven catalog betas are `live`; only `fractional-vault` remains on legal. **Still owner-held (blocking “trusted book”):** Stripe smoke, **eBay then PSA live keys**, optional Sentry DSN, personal admin promote — check `npm run ops:check-real-data`.
 
 ## Bloomberg program — status
 
@@ -30,14 +30,33 @@ MSI is deployed with live Supabase (`vhbsokjqchaafluimgjh`), server API auth, te
 | Key-rotation runbook                                                    | `plans/incidents/key-rotation-drill.md`                                                                            |
 | Design reference (post-implementation)                                  | `plans/admin-audit-viewer-spec.md`                                                                                 |
 
-**Owner still needs to** (see Priority 1 below): apply migration `00010`, deploy the Edge Function, assign the first admin via SQL Editor, and run the first key-rotation drill.
+**Activation is done except one check.** Migrations `00001`–`00010` are applied, the Edge Functions are deployed, `msi-launch-admin@example.com` is promoted, and the Supabase cutover is logged as the first rotation drill (`plans/incidents/key-rotation-drill.md`, entry `2026-07-18`). The single item left is owner-held and needs a real login: **confirm `/audit-trail/admin` renders and writes an `audit.cross_user_read` row while signed in as an operator** (Priority 1, item 0.3).
+
+## Platform & toolchain hardening — Shipped (2026-08-01 → 2026-08-13)
+
+Two security findings surfaced through the Dependabot queue and were traced to a
+single root cause: the Node 20 floor had fallen behind what the ecosystem ships.
+
+| Change                                    | Detail                                                                                                                                                                                                                                                           |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Node floor 20 → 22** (`def3e06`)        | `.nvmrc` = `22`, `engines.node` = `>=22.22.2`. Every workflow reads `.nvmrc`; `rls-verify.yml` already pinned 22 independently.                                                                                                                                  |
+| **jsdom 29 → 30** (`def3e06`)             | Required the Node bump (jsdom 30 floor is `^22.22.2`). Pulls patched `undici@^8.9.0`, closing 5 high-severity advisories.                                                                                                                                        |
+| **`brace-expansion` → 5.0.9** (`e47efc8`) | Override bump; closes the DoS that bypassed the CVE-2026-14257 mitigation.                                                                                                                                                                                       |
+| **TypeScript 7.0.2** (`49c077e`, #102)    | TS 7 has no programmatic compiler API, so `typescript` is aliased to `@typescript/typescript6` for typescript-eslint while TS 7 installs as `@typescript/native`. No bin collision — the TS 6 alias ships its binary as `tsc6`, so `tsc` is unambiguously 7.0.2. |
+| **Stripe API version sync** (#97)         | `stripe@22.4.0` narrowed the `apiVersion` literal; pinned version moved `2026-06-24.dahlia` → `2026-07-29.dahlia` (same generation).                                                                                                                             |
+| **Dependabot queue drained**              | #89 and #92–#103 merged or closed as superseded (#89 closed in favour of #102's side-by-side approach). Zero open PRs.                                                                                                                                           |
+
+Why it matters beyond hygiene: the `undici` advisories were failing
+`npm audit --audit-level=high` on `main` itself, so the `CI / CD` gate was red
+for every contributor until the Node floor moved. **Contributors on Node 20 must
+upgrade** — `npm ci` will refuse the engine constraint.
 
 ## Status of the June recommendation (implemented on the July-3 branch)
 
 | Item                                    | Status                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | P0 — open-PR queue (#74, #75, #59, #58) | ✅ Resolved: dependency groups applied here with the Stripe `apiVersion` fix #74 was missing; #59's goal already shipped on main (June 10 consolidation); #58's unique audit work (filters/search/CSV/pagination + runbook + admin spec) ported here. All four closed as superseded.                                                                                                                                    |
-| P1 — punch-list items 1/3/4             | ✅ Items 1/3/4 done (2026-07-18): new Supabase project linked, secrets set, RLS smoke green locally, health `serverApiAuth: true`, Deployed E2E live. Remaining punch-list: Sentry, Stripe smoke, GDPR, eBay/PSA keys.                                                                                                                                                                                                  |
+| P1 — punch-list items 1/3/4             | ✅ Items 1/3/4 done (2026-07-18): new Supabase project linked, secrets set, RLS smoke green locally, health `serverApiAuth: true`, Deployed E2E live. Remaining punch-list: Stripe smoke, eBay/PSA keys, optional Sentry DSN (GDPR closed 2026-08).                                                                                                                                                                     |
 | P2 — beta exits                         | ✅ `provenance-chain` live (reload-persistence E2E added, route out of Labs gate) · ✅ `liquidity-pool` live (sim labeling added; persistence/tests landed in #68) · ✅ `fractional-vault-v2` removed (duplicate). ✅ `vision-grading` live (analysis-contract tests + in-session-only image handling documented and pinned by a no-persistence test). Remaining: `fractional-vault` (legal sign-off — no engineering). |
 | P3 — integration depth                  | ✅ eBay comp pagination (offset pages), last-known-good comps served as `source: 'stale'` on live failure, PSA `CertVerifiedBadge` on any card with a `certNumber`.                                                                                                                                                                                                                                                     |
 | P4 — onboarding                         | ✅ Scan-first empty state, `/demo-flow` tour link, first-card pricing toast pointing at the data-source badge.                                                                                                                                                                                                                                                                                                          |
@@ -46,9 +65,9 @@ MSI is deployed with live Supabase (`vhbsokjqchaafluimgjh`), server API auth, te
 
 > **Supabase (2026-07-18):** Active project `vhbsokjqchaafluimgjh` — schema + migrations `00001`–`00010`, Edge Functions deployed, auth `site_url` + redirect allowlist set, Vercel/GitHub env synced. Old paused project `iwxqemiqtusgmemlnrby` is abandoned.
 
-**CI hygiene shipped (engineering):** Deployed E2E on push to `main`; RLS verification fails closed when secrets missing; verifier runs on Node 22. Tracked in [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77).
+**CI hygiene shipped (engineering):** Deployed E2E on push to `main`; RLS verification fails closed when secrets missing; all workflows now run Node 22 via `.nvmrc`. Tracked in [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77).
 
-0. **Phase 31 activation** (infra done; owner actions left):
+0. **Phase 31 activation** (infra done; one owner check left — item 3):
    1. ~~Apply migrations / deploy Edge Functions~~ — done on `vhbsokjqchaafluimgjh`.
    2. ~~Assign first admin~~ — `msi-launch-admin@example.com` promoted (`npm run ops:promote-admin`). Promote your personal email the same way after signup.
    3. Confirm `/audit-trail/admin` + `audit.cross_user_read` row while signed in as an admin.
@@ -73,10 +92,11 @@ Check readiness anytime: `npm run ops:check-real-data`.
 
 ## Sustained dev experience (background, not blocking)
 
-- Keep merging the grouped Dependabot PRs promptly so they don't pile up again.
+- Keep merging the grouped Dependabot PRs promptly so they don't pile up again. The queue is currently empty — the Dependency Guardian report ([#50](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/50)) runs weekly.
 - Tighten coverage gates incrementally — every PR that crosses a service file should add it to the explicit whitelist in `vite.config.ts`.
-- Quarterly catalog sweep: features `beta` for 90+ days either go `live` or get hidden. First sweep due ~2026-09.
-- Run the first key-rotation drill (`plans/incidents/key-rotation-drill.md`) and log it.
+- **Quarterly catalog sweep — due next month (~2026-09).** Features `beta` for 90+ days either go `live` or get hidden. `fractional-vault` is the only remaining beta and is legal-gated, so this sweep is mostly a confirmation pass unless new betas land.
+- The first key-rotation drill is logged (Supabase cutover, `2026-07-18`). The **full multi-provider quarterly drill** still needs Stripe staging keys — it rolls up with Priority 1 item 4.
+- Watch for `typescript-eslint` shipping native TS 7 support ([typescript-eslint#10940](https://github.com/typescript-eslint/typescript-eslint/issues/10940)); when it lands, the `@typescript/typescript6` alias in `package.json` can be dropped and `typescript` pointed straight at 7.x.
 
 ## What NOT to do next
 
