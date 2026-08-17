@@ -129,6 +129,11 @@ export default defineConfig(({ command, mode }) => {
         'lib/utils/rarity.ts',
         'lib/utils/auditLog.ts',
         'lib/utils/auditTrailRemote.ts',
+        // Trust-boundary client for the admin-audit-events Edge Function. On the
+        // ratchet so the Sentry PII redaction (targetUserId is never sent raw)
+        // cannot regress unnoticed. 100% stmts/branches/funcs/lines.
+        'lib/utils/adminAuditApi.ts',
+        'lib/utils/cardConsignmentCodec.ts',
         'lib/betaFeatureExit.ts',
         'lib/integrations/ebayAdapter.ts',
         // gradingVisionEngineService has unit coverage (~95% stmts) but its
@@ -153,10 +158,10 @@ export default defineConfig(({ command, mode }) => {
       // never down. Branches lag (~91%) due to defensive branches,
       // import.meta / env splits, and optional chaining.
       thresholds: {
-        statements: 98.4,
-        branches: 91,
-        functions: 98,
-        lines: 99,
+        statements: 98.5,
+        branches: 92,
+        functions: 99,
+        lines: 99.1,
       },
       exclude: [
         '**/node_modules/**',

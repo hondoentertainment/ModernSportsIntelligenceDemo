@@ -189,4 +189,85 @@ describe('fetchAdminAuditEvents', () => {
       expect(vi.mocked(addBreadcrumb)).not.toHaveBeenCalled();
     });
   });
+
+  // The Edge Function is a trust boundary, so every defensive fallback below is
+  // reachable in production from a malformed or partial response. Pinning them
+  // keeps this module eligible for the coverage ratchet (docs/COVERAGE_POLICY.md).
+  describe('degraded and malformed responses', () => {
+    const okInvoke = (data: unknown) =>
+      ((supabaseModule.supabase as unknown as Mocked['supabase']).functions.invoke = vi
+        .fn()
+        .mockResolvedValue({ data, error: null }));
+
+    it('forwards the `before` cursor and reports it in the breadcrumb summary', async () => {
+      okInvoke({ events: [], meta: { role: 'admin', count: 0 } });
+      await fetchAdminAuditEvents({ before: '2026-03-22T00:00:00.000Z' });
+      const call = (supabaseModule.supabase as unknown as Mocked['supabase']).functions.invoke.mock
+        .calls[0];
+      expect(call[1]).toEqual({ body: { before: '2026-03-22T00:00:00.000Z' } });
+      const crumb = vi
+        .mocked(addBreadcrumb)
+        .mock.calls.find((c) => c[0].message === 'admin-audit-events read');
+      // `before` is a timestamp cursor, not identifying — passes through unredacted.
+      expect((crumb![0].data?.filters as Record<string, unknown>).before).toBe(
+        '2026-03-22T00:00:00.000Z',
+      );
+    });
+
+    it('falls back to a generic error when the invoke error carries no message', async () => {
+      (supabaseModule.supabase as unknown as Mocked['supabase']).functions.invoke = vi
+        .fn()
+        .mockResolvedValue({ data: null, error: {} });
+      const result = await fetchAdminAuditEvents();
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error).toBe('Admin audit read failed');
+      const crumb = vi
+        .mocked(addBreadcrumb)
+        .mock.calls.find((c) => c[0].message === 'admin-audit-events invoke failed');
+      expect(crumb![0].data?.errorMessage).toBeNull();
+    });
+
+    it('falls back to a generic error when the invoke error message is empty', async () => {
+      (supabaseModule.supabase as unknown as Mocked['supabase']).functions.invoke = vi
+        .fn()
+        .mockResolvedValue({ data: null, error: { message: '' } });
+      const result = await fetchAdminAuditEvents();
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error).toBe('Admin audit read failed');
+    });
+
+    it('treats a non-array `events` payload as empty rather than throwing', async () => {
+      okInvoke({ events: 'not-an-array', meta: { role: 'admin', count: 0 } });
+      const result = await fetchAdminAuditEvents();
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.events).toEqual([]);
+    });
+
+    it('records the role *type* in the breadcrumb when the role is not a string', async () => {
+      okInvoke({ events: [], meta: {} });
+      const result = await fetchAdminAuditEvents();
+      expect(result.ok).toBe(false);
+      const crumb = vi
+        .mocked(addBreadcrumb)
+        .mock.calls.find((c) => c[0].message === 'admin-audit-events returned an unexpected role');
+      // Never echo an arbitrary value back into Sentry — only its type.
+      expect(crumb![0].data?.role).toBe('undefined');
+    });
+
+    it('derives count from the row array when meta.count is not a number', async () => {
+      const row = {
+        user_id: 'u-1',
+        category: 'auth',
+        action: 'login.ok',
+        entity_type: 'session',
+        entity_id: null,
+        metadata: {},
+        created_at: '2026-03-22T00:00:00.000Z',
+      };
+      okInvoke({ events: [row, row], meta: { role: 'admin', count: 'lots' } });
+      const result = await fetchAdminAuditEvents();
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.count).toBe(2);
+    });
+  });
 });

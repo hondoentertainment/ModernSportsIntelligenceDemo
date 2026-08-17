@@ -4,7 +4,7 @@
 
 `npm run test:coverage` enforces a **baseline threshold** on an explicit **whitelist** in `vite.config.ts` (`test.coverage.include`), with `coverage.all: false` so untested files elsewhere do not dilute the gate.
 
-**Current gate (typical):** ~**99%** lines / statements / functions and ~**88–90%** branches on the whitelist. Full **100% branches** is often impractical (Vite-inlined `import.meta.env`, unreachable defensive branches, ternary explosion). Raise thresholds in `vite.config.ts` only after `npm run test:coverage` exceeds them.
+**Current gate (2026-08-17):** `statements 98.5` / `branches 92` / `functions 99` / `lines 99.1` across 43 whitelisted files, measuring ~98.5 / 92.1 / 99.4 / 99.2. Full **100% branches** is often impractical (Vite-inlined `import.meta.env`, unreachable defensive branches, ternary explosion). Raise thresholds in `vite.config.ts` only after `npm run test:coverage` exceeds them, and set them a little under the measured value — v8 branch counts drift slightly run to run.
 
 ## What is included
 
