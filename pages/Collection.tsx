@@ -16,7 +16,6 @@ import {
   Clock,
   Cloud,
   CloudOff,
-  Star,
   Share2,
   BriefcaseBusiness,
 } from 'lucide-react';
@@ -34,26 +33,24 @@ import OCRIngestionModal from '../components/OCRIngestionModal';
 import { getRarityTier, getTierStyles } from '../lib/utils/rarity';
 import { generatePopData, ScarcityService } from '../lib/analytics/scarcityService';
 import { getPriceTrend, getSparklineData } from '../lib/analytics/priceHistory';
-import CardImage from '../components/CardImage';
 import ImageLightbox from '../components/ImageLightbox';
 import GradingAuditModal from '../components/GradingAuditModal';
-import { LiquidityBadge } from '../components/LiquidityBadge';
 import { ExitStrategyModal } from '../components/ExitStrategyModal';
 import ConsignmentModal from '../components/ConsignmentModal';
 import CardGridItem from '../components/collection/CardGridItem';
 import VirtualizedGrid from '../components/collection/VirtualizedGrid';
+import CardListRow from '../components/collection/CardListRow';
+import { CardItemActionHandlers } from '../components/collection/cardItemActions';
 import { LiquidityService } from '../lib/analytics/liquidityService';
 import GradingPremiumTool from '../components/GradingPremiumTool';
 import ShareAlphaModal from '../components/ShareAlphaModal';
 import { fetchPublicProfile } from '../lib/social/socialService';
 import { useAuth } from '../contexts/AuthContext';
 import { computePortfolioStats } from '../lib/portfolioUtils';
-import { getStaleValuationLabel } from '../lib/utils/valuationFreshness';
 import {
   applyPricingAnalysisToCard,
   computeFreshVerifiableCoverage,
   FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
-  getValuationSourceChipForCard,
 } from '../lib/utils/valuationProvenance';
 import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAlerts';
 import { showToast } from '../lib/utils/toast';
@@ -304,6 +301,35 @@ const Collection: React.FC = () => {
     a.click();
     URL.revokeObjectURL(url);
     showToast('success', `Exported ${cards.length} cards to JSON.`);
+  };
+
+  const openLightbox = (card: CardInventory) => setLightboxCard(card);
+  const openExitStrategy = (card: CardInventory) => {
+    setExitStrategyCard(card);
+    setIsExitModalOpen(true);
+  };
+  const openGradingCalc = (card: CardInventory) => {
+    setPremiumCard(card);
+    setIsPremiumModalOpen(true);
+  };
+  const openDossier = (card: CardInventory) => {
+    window.location.hash = `/audit-dossier?cardId=${card.id}`;
+  };
+  const openConsignment = (card: CardInventory) => setConsignmentCard(card);
+
+  const cardActionHandlers: CardItemActionHandlers = {
+    isFavorite,
+    toggleFavorite,
+    deleteCard,
+    setEditingAsset,
+    setIsAssetModalOpen,
+    handleAddToWatchlist,
+    handleUpdatePrice,
+    isPricing,
+    onOpenExitStrategy: openExitStrategy,
+    onOpenGradingCalc: openGradingCalc,
+    onOpenDossier: openDossier,
+    onOpenConsignment: openConsignment,
   };
 
   const filteredInventory = useMemo(() => {
@@ -637,23 +663,12 @@ const Collection: React.FC = () => {
                   rowGap={ROW_GAP}
                   getRarityTier={getRarityTier}
                   getTierStyles={getTierStyles}
-                  isFavorite={isFavorite}
-                  toggleFavorite={toggleFavorite}
-                  deleteCard={deleteCard}
-                  setEditingAsset={setEditingAsset}
-                  setIsAssetModalOpen={setIsAssetModalOpen}
-                  handleAddToWatchlist={handleAddToWatchlist}
-                  handleUpdatePrice={handleUpdatePrice}
-                  isPricing={isPricing}
                   getSparklineData={getSparklineData}
                   getPriceTrend={getPriceTrend}
-                  onOpenLightbox={(c) => setLightboxCard(c)}
-                  onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
-                  onOpenGradingCalc={(c) => { setPremiumCard(c); setIsPremiumModalOpen(true); }}
-                  onOpenDossier={(c) => { window.location.hash = `/audit-dossier?cardId=${c.id}`; }}
-                  onOpenConsignment={(c) => setConsignmentCard(c)}
+                  onOpenLightbox={openLightbox}
                   isItemSelected={(id) => selectedIds.has(id)}
                   onToggleSelect={toggleSelection}
+                  {...cardActionHandlers}
                 />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
@@ -663,23 +678,12 @@ const Collection: React.FC = () => {
                       card={card}
                       getRarityTier={getRarityTier}
                       getTierStyles={getTierStyles}
-                      isFavorite={isFavorite}
-                      toggleFavorite={toggleFavorite}
-                      deleteCard={deleteCard}
-                      setEditingAsset={setEditingAsset}
-                      setIsAssetModalOpen={setIsAssetModalOpen}
-                      handleAddToWatchlist={handleAddToWatchlist}
-                      handleUpdatePrice={handleUpdatePrice}
-                      isPricing={isPricing}
                       getSparklineData={getSparklineData}
                       getPriceTrend={getPriceTrend}
-                      onOpenLightbox={(c) => setLightboxCard(c)}
-                      onOpenExitStrategy={(c) => { setExitStrategyCard(c); setIsExitModalOpen(true); }}
-                      onOpenGradingCalc={(c) => { setPremiumCard(c); setIsPremiumModalOpen(true); }}
-                      onOpenDossier={(c) => { window.location.hash = `/audit-dossier?cardId=${c.id}`; }}
-                      onOpenConsignment={(c) => setConsignmentCard(c)}
+                      onOpenLightbox={openLightbox}
                       isSelected={selectedIds.has(card.id)}
                       onToggleSelect={toggleSelection}
+                      {...cardActionHandlers}
                     />
                   ))}
                 </div>
@@ -690,6 +694,26 @@ const Collection: React.FC = () => {
                 <table className="w-full text-left">
                   <thead className="bg-brand-charcoal/50 text-[10px] font-black text-brand-muted uppercase tracking-widest border-b border-slate-800">
                     <tr>
+                      <th className="px-4 py-4 w-12">
+                        <button
+                          type="button"
+                          role="checkbox"
+                          aria-checked={filteredInventory.length > 0 && filteredInventory.every(c => selectedIds.has(c.id))}
+                          aria-label={filteredInventory.length > 0 && filteredInventory.every(c => selectedIds.has(c.id)) ? 'Clear selection' : 'Select all'}
+                          onClick={() => {
+                            const allSelected = filteredInventory.length > 0 && filteredInventory.every(c => selectedIds.has(c.id));
+                            if (allSelected) clearSelection();
+                            else selectAll();
+                          }}
+                          className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
+                            filteredInventory.length > 0 && filteredInventory.every(c => selectedIds.has(c.id))
+                              ? 'bg-brand-lime border-brand-lime text-brand-charcoal'
+                              : 'bg-transparent border-white/20 text-slate-500 hover:border-white/50'
+                          }`}
+                        >
+                          <CheckCircle2 size={16} strokeWidth={3} />
+                        </button>
+                      </th>
                       <th className="px-8 py-4">Asset</th>
                       <th className="px-8 py-4">Details</th>
                       <th className="px-8 py-4 text-right">P-Price</th>
@@ -701,63 +725,14 @@ const Collection: React.FC = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-800/50">
                     {filteredInventory.map((card) => (
-                      <tr key={card.id} className="hover:bg-brand-lime/5 transition-colors group">
-                        <td className="px-8 py-4">
-                          <div className="flex items-center gap-4">
-                            <CardImage
-                              src={card.image}
-                              playerName={card.player}
-                              year={card.year}
-                              manufacturer={card.manufacturer}
-                              className="w-10 h-10 rounded-lg"
-                              enableLightbox={true}
-                              onImageClick={() => setLightboxCard(card)}
-                            />
-                            <span className="font-bold text-white">{card.player}</span>
-                          </div>
-                        </td>
-                        <td className="px-8 py-4">
-                          <span className="text-[10px] font-bold text-brand-muted uppercase tracking-widest">{card.year} {card.manufacturer}</span>
-                        </td>
-                        <td className="px-8 py-4 text-right font-mono text-sm">${(card.purchasePrice ?? 0).toLocaleString()}</td>
-                        <td className="px-8 py-4 text-right">
-                          <p className="font-mono text-sm text-brand-lime">${card.currentValue?.toLocaleString() || '—'}</p>
-                          <div className="mt-2 flex justify-end gap-1.5">
-                            <span className={`inline-flex items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider ${getValuationSourceChipForCard(card).className}`}>
-                              {getValuationSourceChipForCard(card).label}
-                            </span>
-                            {getStaleValuationLabel(card.lastValuationDate) && (
-                              <span className="inline-flex items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-500 bg-brand-charcoal/35 border border-slate-700/45">
-                                {getStaleValuationLabel(card.lastValuationDate)}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-8 py-4 text-center text-[10px] font-black uppercase">{card.isGraded ? `${card.gradingCompany} ${card.grade}` : 'Raw'}</td>
-                        <td className="px-8 py-4 text-center">
-                          <LiquidityBadge score={card.liquidityScore || LiquidityService.calculateLiquidityScore(card)} size="sm" />
-                        </td>
-                        <td className="px-8 py-4 text-right flex justify-end gap-2">
-                          <button
-                            onClick={() => toggleFavorite(card)}
-                            className={`p-2 transition-colors ${isFavorite(card.id) ? 'text-amber-400' : 'text-slate-500 hover:text-amber-400 opacity-0 group-hover:opacity-100'}`}
-                          >
-                            <Star size={16} fill={isFavorite(card.id) ? 'currentColor' : 'none'} />
-                          </button>
-                          <button onClick={() => { setEditingAsset(card); setIsAssetModalOpen(true); }} className="p-2 text-slate-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
-                            <Edit3 size={16} />
-                          </button>
-                          <button onClick={() => deleteCard(card.id)} className="p-2 text-slate-500 hover:text-brand-red transition-colors opacity-0 group-hover:opacity-100">
-                            <Trash2 size={16} />
-                          </button>
-                          <button onClick={() => handleAddToWatchlist(card)} className="p-2 text-slate-500 hover:text-brand-lime transition-colors opacity-0 group-hover:opacity-100" title="Add to Watchlist">
-                            <Target size={16} />
-                          </button>
-                          <button onClick={() => window.location.hash = `/audit-dossier?cardId=${card.id}`} className="p-2 text-slate-500 hover:text-cyan-300 transition-colors opacity-0 group-hover:opacity-100" title="Open Audit Dossier">
-                            <BriefcaseBusiness size={16} />
-                          </button>
-                        </td>
-                      </tr>
+                      <CardListRow
+                        key={card.id}
+                        card={card}
+                        isSelected={selectedIds.has(card.id)}
+                        onToggleSelect={toggleSelection}
+                        onOpenLightbox={openLightbox}
+                        {...cardActionHandlers}
+                      />
                     ))}
                   </tbody>
                 </table>
