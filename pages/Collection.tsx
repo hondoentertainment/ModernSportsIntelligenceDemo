@@ -569,12 +569,18 @@ const Collection: React.FC = () => {
 
           <div className="flex items-center gap-3 p-1 bg-brand-slate border border-slate-800 rounded-xl mb-2">
             <button
+              type="button"
+              aria-label="Grid view"
+              aria-pressed={viewMode === 'grid'}
               onClick={() => setViewMode('grid')}
               className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-muted hover:text-slate-200'}`}
             >
               <Grid size={18} />
             </button>
             <button
+              type="button"
+              aria-label="List view"
+              aria-pressed={viewMode === 'list'}
               onClick={() => setViewMode('list')}
               className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-muted hover:text-slate-200'}`}
             >
