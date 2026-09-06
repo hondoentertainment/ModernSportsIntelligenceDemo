@@ -82,10 +82,11 @@ describe('NegotiationAnalyticsPanel', () => {
   it('renders populated KPIs and simulated disclosure', () => {
     wrap(<NegotiationAnalyticsPanel intel={populatedIntel()} />);
 
-    expect(screen.getByText('50%')).toBeInTheDocument();
-    expect(screen.getByText('20%')).toBeInTheDocument();
-    expect(screen.getByText('1h')).toBeInTheDocument();
-    expect(screen.getByText('50%')).toBeInTheDocument();
+    const region = screen.getByRole('region', { name: /negotiation analytics/i });
+    expect(region).toHaveTextContent('50%');
+    expect(region).toHaveTextContent('20%');
+    expect(region).toHaveTextContent('1h');
+    expect(region).toHaveTextContent('$40 saved');
     expect(screen.getByText(/simulated campaign negotiations/i)).toBeInTheDocument();
     expect(screen.queryByText(/no negotiation outcomes yet/i)).not.toBeInTheDocument();
   });
