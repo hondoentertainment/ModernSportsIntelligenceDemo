@@ -84,6 +84,37 @@ Engineering work to bring the 7 remaining betas to the bar for `status: 'live'`.
 | `fractional-vault`    | Pending. Service is pure catalog read; no engineering blocker — gated on legal/securities review of the "Simulation only" disclosure.                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | `fractional-vault-v2` | Pending. Catalog-only (`path: null`); decide whether to remove from catalog or merge with v1.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
+Later promotions (after this wave-3 snapshot): `provenance-chain`, `liquidity-pool`, `live-impact`, `visual-audit`, and `vision-grading` are `live`. `fractional-vault-v2` was removed. See the September 2026 sweep below for current catalog truth.
+
 ## Promotion checklist (when ready)
 
 Once a feature passes its wave-3 row, flip `status` to `'live'` in [`lib/utils/featureCatalog.ts`](../lib/utils/featureCatalog.ts) and refresh the `description` to drop any "prototype / simulated" language no longer accurate.
+
+---
+
+# September 2026 quarterly catalog sweep (2026-09-05)
+
+Confirmation pass against the 90-day rule in [`NEXT_STEPS.md`](../NEXT_STEPS.md): features `beta` for 90+ days either go `live` or get hidden. No Labs features added; no directory restructure; `fractional-vault` was **not** flipped to `live`.
+
+## Audit inputs
+
+- [`lib/utils/featureCatalog.ts`](../lib/utils/featureCatalog.ts) core + [`featureCatalogRouteSupplement.ts`](../lib/utils/featureCatalogRouteSupplement.ts)
+- Default discovery: `DISCOVERABLE_FEATURE_CATALOG` (hides `beta` / `demo` unless `VITE_FF_ENABLE_BETA_SURFACES` / `VITE_FF_ENABLE_DEMO_SURFACES`)
+- Labs route gate: [`lib/productionLaunch.ts`](../lib/productionLaunch.ts) (`isBetaSurfacesEnabled`)
+- Exit tracker: [`lib/betaFeatureExit.ts`](../lib/betaFeatureExit.ts) (historical six-ID list; catalog truth is `status` on `FEATURE_CATALOG`)
+
+## Outcomes
+
+| ID / surface                                                                          | Status after sweep     | Action                                                                                                                                                           |
+| ------------------------------------------------------------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fractional-vault`                                                                    | **beta** (legal-gated) | **Stayed beta.** Hidden from Feature Directory / search by default. No engineering blocker — securities/"Simulation only" sign-off still required before `live`. |
+| `fractional-vault-v2`                                                                 | **absent**             | Already removed (duplicate of v1). Sweep confirmed it is not in `FEATURE_CATALOG`.                                                                               |
+| `provenance-chain`, `vision-grading`, `liquidity-pool`, `visual-audit`, `live-impact` | **live**               | Already promoted in wave 3. No demotion.                                                                                                                         |
+| Auto-supplement `demo` rows                                                           | **demo**               | Already hidden from default discovery. No additional hides.                                                                                                      |
+| New betas                                                                             | **none**               | No new `status: 'beta'` rows landed since the August NEXT_STEPS edition.                                                                                         |
+
+**Hidden / demoted this cycle:** none.
+
+**Next sweep:** ~2026-12.
+
+Pinned by `tests/lib/featureCatalog.test.ts` — `keeps fractional-vault as the only catalog beta (2026-09 sweep)`.

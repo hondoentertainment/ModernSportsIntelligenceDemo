@@ -52,11 +52,13 @@ Use this when promoting a build to **production** (Vercel + Supabase + Stripe + 
 
 ## Supabase project + Vercel env sync
 
-**Current production project (2026-07-18):** `ModernSportsIntelligence` — ref `vhbsokjqchaafluimgjh` (`https://vhbsokjqchaafluimgjh.supabase.co`). The older paused project `iwxqemiqtusgmemlnrby` is not used.
+**Current production project:** `ModernSportsIntelligence` — ref `vhbsokjqchaafluimgjh` (`https://vhbsokjqchaafluimgjh.supabase.co`). The older paused project `iwxqemiqtusgmemlnrby` is not used.
 
-## Supabase unpause + Vercel env sync (legacy note)
+**Status (2026-09-05):** `vhbsokjqchaafluimgjh` is **INACTIVE / paused** so Pulse can occupy the free-plan slot. July 18 cutover (migrations, Edge Functions, Vercel/GitHub env) is the last successful activation. Restore this project, then re-sync Vercel env, before owner-held live-data steps (Stripe smoke, eBay/PSA flags, admin-audit confirm). Do **not** restore or pause from an engineering PR.
 
-If the linked Supabase project is **paused** (free-tier inactivity), restore it before migrations or env sync:
+## Supabase unpause + Vercel env sync
+
+If the linked Supabase project is **paused** (free-tier slot or inactivity), restore it before migrations or env sync:
 
 1. Open [Supabase Dashboard](https://supabase.com/dashboard) → select the project → **Restore project**
 2. Wait until the project is active (API + database healthy)
