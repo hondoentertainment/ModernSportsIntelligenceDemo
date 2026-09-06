@@ -7,6 +7,7 @@ import {
 } from '../lib/utils/valuationProvenance';
 import { isValuationStale } from '../lib/utils/valuationFreshness';
 import { getCoverageHistory } from '../lib/utils/valuationCoverageAlerts';
+import { preferredValuationForCard } from '../lib/pricing/compConsensus';
 
 interface PricingTruthHealthPanelProps {
   inventory: CardInventory[];
@@ -29,13 +30,16 @@ const PricingTruthHealthPanel: React.FC<PricingTruthHealthPanelProps> = ({ inven
   const sourceMix = useMemo(() => {
     return activeCards.reduce(
       (acc, card) => {
-        if (card.valuationSource === 'ebay-api') acc.ebay += 1;
-        else if (card.valuationSource === 'historical-comps') acc.historical += 1;
-        else if (card.valuationSource === 'gemini') acc.gemini += 1;
+        const preferred = preferredValuationForCard(card);
+        if (preferred.method === 'sold-comp-consensus') acc.consensus += 1;
+        if (preferred.method === 'thin-comp-fallback') acc.thin += 1;
+        if (preferred.source === 'ebay-api') acc.ebay += 1;
+        else if (preferred.source === 'historical-comps') acc.historical += 1;
+        else if (preferred.source === 'gemini') acc.gemini += 1;
         else acc.fallback += 1;
         return acc;
       },
-      { ebay: 0, historical: 0, gemini: 0, fallback: 0 },
+      { ebay: 0, historical: 0, gemini: 0, fallback: 0, consensus: 0, thin: 0 },
     );
   }, [activeCards]);
   const trendText = useMemo(() => {
@@ -77,7 +81,11 @@ const PricingTruthHealthPanel: React.FC<PricingTruthHealthPanelProps> = ({ inven
         <div className="rounded-xl border border-slate-800 bg-brand-charcoal/40 px-3 py-2">
           <p className="text-[9px] uppercase tracking-widest text-slate-500 font-black">Source Mix</p>
           <p className="text-sm font-bold text-brand-lime">Live {sourceMix.ebay}</p>
-          <p className="text-[9px] text-slate-500">Hist {sourceMix.historical} · AI {sourceMix.gemini}</p>
+          <p className="text-[9px] text-slate-500">
+            Hist {sourceMix.historical} · AI {sourceMix.gemini}
+            {sourceMix.consensus > 0 ? ` · Comp ${sourceMix.consensus}` : ''}
+            {sourceMix.thin > 0 ? ` · Thin ${sourceMix.thin}` : ''}
+          </p>
         </div>
         <div className="rounded-xl border border-slate-800 bg-brand-charcoal/40 px-3 py-2">
           <p className="text-[9px] uppercase tracking-widest text-slate-500 font-black">Target</p>

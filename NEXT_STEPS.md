@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-05 · Quarterly catalog sweep + Collection list/grid action parity (#115). Previous edition: 2026-08-17 (platform/toolchain hardening).
+> Refreshed 2026-09-06 · Pricing truth (sold-comp consensus), Schedule D–style packet, NBA/NFL/NHL player-team desks. Previous edition: 2026-09-05 (catalog sweep + #115).
 
 ## Current state in one paragraph
 
@@ -8,15 +8,15 @@ MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger acro
 
 ## Bloomberg program — status
 
-| Bet                       | Engineering                                                                        | Owner blocker                          |
-| ------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------- |
-| Consensus pricing ledger  | ✅ `lib/pricing/consensusMarketLedger` + Dashboard strip + `/api/market/consensus` | Flip `VITE_FF_REAL_EBAY` when keys set |
-| Holdings-linked news rail | ✅ Dashboard `HoldingsCatalystRail` + `/catalyst-market`                           | Optional `VITE_FF_REAL_SPORTS` later   |
-| War Room as Alpha home    | ✅ Dashboard CTA + ledger context in committee prompts                             | Live tape when eBay flag on            |
-| Institutional export      | ✅ `/audit-dossier` + consensus ledger strip                                       | Schedule D–grade tax still legal-gated |
-| Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later          |
-| Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show          |
-| eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel** (after restore)     |
+| Bet                       | Engineering                                                                        | Owner blocker                                      |
+| ------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Consensus pricing ledger  | ✅ `lib/pricing/consensusMarketLedger` + Dashboard strip + `/api/market/consensus` | Flip `VITE_FF_REAL_EBAY` when keys set             |
+| Holdings-linked news rail | ✅ Dashboard `HoldingsCatalystRail` + `/catalyst-market`                           | Optional `VITE_FF_REAL_SPORTS` later               |
+| War Room as Alpha home    | ✅ Dashboard CTA + ledger context in committee prompts                             | Live tape when eBay flag on                        |
+| Institutional export      | ✅ `/audit-dossier` + consensus ledger strip + Schedule D–style packet             | Full IRS regulatory completeness still legal-gated |
+| Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later                      |
+| Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show                      |
+| eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel** (after restore)                 |
 
 ## Collection list/grid action parity — Shipped (2026-09-05)
 

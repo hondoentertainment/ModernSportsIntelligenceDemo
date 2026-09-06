@@ -123,6 +123,37 @@ export interface LeagueHub {
   transfers?: TransferImpact[];
 }
 
+export type LeaguePlayerRole = 'leader' | 'rookie' | 'watch';
+
+export interface LeaguePlayerDesk {
+  id: string;
+  name: string;
+  team: string;
+  position: string;
+  sport: LeagueSport;
+  role: LeaguePlayerRole;
+  headlineStat: string;
+  cardValue: number;
+  cardChange: number;
+  note: string;
+}
+
+export interface LeagueTeamDesk {
+  team: string;
+  sport: LeagueSport;
+  conference: string;
+  division: string;
+  record: string;
+  winPct: number;
+  playoffSeed?: number;
+  cardMarketIndex: number;
+  cardMarketChange: number;
+  spotlightPlayer: string | null;
+}
+
+export const LEAGUE_HUB_DATA_DISCLOSURE =
+  'Seeded 2025-26 desk for collector context. Not a live league feed. Live MLB stats stay on PressBox Hub (/mlb-stats). Card values are demo marks.';
+
 // ── NFL Mock Data ────────────────────────────────────────────────────────────
 
 const NFL_STANDINGS: LeagueStanding[] = [
@@ -482,6 +513,108 @@ export function getInjuryImpacts(): InjuryCardImpact[] {
 
 export function getTransferImpacts(): TransferImpact[] {
   return SOCCER_TRANSFERS;
+}
+
+export function getLeaguePlayerDesk(sport: LeagueSport): LeaguePlayerDesk[] {
+  const leaders = getStatLeaders(sport);
+  const rookies = getDraftClass(sport);
+  const watch = getRookieWatch(sport);
+  const byName = new Map<string, LeaguePlayerDesk>();
+
+  for (const leader of leaders) {
+    const existing = byName.get(leader.player);
+    const row: LeaguePlayerDesk = {
+      id: `${sport}-p-${leader.player.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+      name: leader.player,
+      team: leader.team,
+      position: leader.position,
+      sport,
+      role: 'leader',
+      headlineStat: `${leader.statValue} ${leader.statLabel}`,
+      cardValue: leader.cardValue,
+      cardChange: leader.cardChange,
+      note: existing
+        ? `${existing.note} · ${leader.statCategory}`
+        : `${leader.statCategory} leader`,
+    };
+    byName.set(leader.player, row);
+  }
+
+  for (const rookie of rookies) {
+    if (byName.has(rookie.name)) continue;
+    byName.set(rookie.name, {
+      id: `${sport}-r-${rookie.id}`,
+      name: rookie.name,
+      team: rookie.team,
+      position: rookie.position,
+      sport,
+      role: 'rookie',
+      headlineStat: `RC $${rookie.rookieCardValue}`,
+      cardValue: rookie.rookieCardValue,
+      cardChange: rookie.rookieCardChange,
+      note: `Pick ${rookie.pickNumber} · ceiling $${rookie.projectedCeiling}`,
+    });
+  }
+
+  for (const item of watch) {
+    if (byName.has(item.name)) continue;
+    byName.set(item.name, {
+      id: `${sport}-w-${item.id}`,
+      name: item.name,
+      team: item.team,
+      position: item.position,
+      sport,
+      role: 'watch',
+      headlineStat: item.topCardName,
+      cardValue: item.topCardValue,
+      cardChange: item.weeklyChange,
+      note: item.recentPerformance,
+    });
+  }
+
+  return [...byName.values()].sort((a, b) => b.cardValue - a.cardValue);
+}
+
+export function getLeagueTeamDesk(sport: LeagueSport): LeagueTeamDesk[] {
+  const standings = getLeagueStandings(sport);
+  const players = getLeaguePlayerDesk(sport);
+  return standings
+    .map((team) => {
+      const spotlight =
+        players.find((p) =>
+          p.team === team.team ||
+          team.team.toLowerCase().includes(p.team.toLowerCase()) ||
+          p.team.toLowerCase().includes(team.team.split(' ').pop()?.toLowerCase() || ''),
+        )?.name ?? null;
+      return {
+        team: team.team,
+        sport,
+        conference: team.conference,
+        division: team.division,
+        record: team.draws != null
+          ? `${team.wins}-${team.losses}-${team.draws}`
+          : team.otLosses != null
+            ? `${team.wins}-${team.losses}-${team.otLosses}`
+            : `${team.wins}-${team.losses}`,
+        winPct: team.winPct,
+        playoffSeed: team.playoffSeed,
+        cardMarketIndex: team.cardMarketIndex,
+        cardMarketChange: team.cardMarketChange,
+        spotlightPlayer: spotlight,
+      };
+    })
+    .sort((a, b) => b.cardMarketIndex - a.cardMarketIndex);
+}
+
+export function searchLeaguePlayers(sport: LeagueSport, query: string): LeaguePlayerDesk[] {
+  const q = query.trim().toLowerCase();
+  const rows = getLeaguePlayerDesk(sport);
+  if (!q) return rows;
+  return rows.filter((p) =>
+    p.name.toLowerCase().includes(q) ||
+    p.team.toLowerCase().includes(q) ||
+    p.position.toLowerCase().includes(q),
+  );
 }
 
 export function getLeagueHub(sport: LeagueSport): LeagueHub {

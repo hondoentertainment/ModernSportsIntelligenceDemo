@@ -1,5 +1,9 @@
 // Phase 200 – One-Click Tax Report (Form 8949) Service
 import { store } from '../dal/syncStore';
+import {
+  SCHEDULE_D_COMPLETENESS_NOTE,
+  SCHEDULE_D_METHODOLOGY_DISCLAIMER,
+} from './taxLotService';
 
 // ---- Types ----
 
@@ -1332,6 +1336,43 @@ export function generateForm8949(year?: TaxYear): Form8949Entry[] {
   }));
 }
 
+export function buildScheduleDStyleExport(year?: TaxYear): string {
+  const txs = getTransactions(year);
+  const summary = getTaxSummary(year);
+  const scheduleD = generateScheduleD(year);
+  const shortTerm = txs.filter((tx) => tx.holdingPeriod === 'short_term');
+  const longTerm = txs.filter((tx) => tx.holdingPeriod === 'long_term');
+  const stProceeds = shortTerm.reduce((s, t) => s + t.proceeds, 0);
+  const stBasis = shortTerm.reduce((s, t) => s + t.costBasis, 0);
+  const ltProceeds = longTerm.reduce((s, t) => s + t.proceeds, 0);
+  const ltBasis = longTerm.reduce((s, t) => s + t.costBasis, 0);
+
+  let output = 'MSI Schedule D–style packet — Capital Gains and Losses\n';
+  output += `Tax Year: ${summary.taxYear}\n`;
+  output += `Generated: ${new Date().toISOString()}\n\n`;
+  output += 'Part I — Short-term (< 1 year)\n';
+  output += `  Lots: ${shortTerm.length}\n`;
+  output += `  Proceeds: ${formatCurrency(stProceeds)}\n`;
+  output += `  Cost basis: ${formatCurrency(stBasis)}\n`;
+  output += `  Line 7 (Form 8949 Boxes A–C): ${formatCurrency(scheduleD.shortTermFromForm8949)}\n`;
+  output += `  Total short-term: ${formatCurrency(scheduleD.totalShortTerm)}\n\n`;
+  output += 'Part II — Long-term (≥ 1 year)\n';
+  output += `  Lots: ${longTerm.length}\n`;
+  output += `  Proceeds: ${formatCurrency(ltProceeds)}\n`;
+  output += `  Cost basis: ${formatCurrency(ltBasis)}\n`;
+  output += `  Line 15 (Form 8949 Boxes D–F): ${formatCurrency(scheduleD.longTermFromForm8949)}\n`;
+  output += `  Total long-term: ${formatCurrency(scheduleD.totalLongTerm)}\n\n`;
+  output += 'Part III — Totals\n';
+  output += `  Dispositions: ${summary.totalTransactions}\n`;
+  output += `  Net gain/loss: ${formatCurrency(scheduleD.netGainLoss)}\n`;
+  output += `  Capital loss carryover (illustrative): ${formatCurrency(scheduleD.capitalLossCarryover)}\n`;
+  output += `  Taxable gain (illustrative): ${formatCurrency(scheduleD.taxableGain)}\n\n`;
+  output += 'Methodology\n';
+  output += `${SCHEDULE_D_METHODOLOGY_DISCLAIMER}\n\n`;
+  output += `${SCHEDULE_D_COMPLETENESS_NOTE}\n`;
+  return output;
+}
+
 export function generateScheduleD(year?: TaxYear): ScheduleD {
   const entries = generateForm8949(year);
 
@@ -1453,7 +1494,6 @@ export function exportReport(format: ReportFormat, year?: TaxYear): string {
   const txs = getTransactions(year);
   const summary = getTaxSummary(year);
   const entries = generateForm8949(year);
-  const scheduleD = generateScheduleD(year);
 
   switch (format) {
     case 'form_8949': {
@@ -1481,23 +1521,8 @@ export function exportReport(format: ReportFormat, year?: TaxYear): string {
       return output;
     }
 
-    case 'schedule_d': {
-      let output = 'Schedule D - Capital Gains and Losses\n';
-      output += `Tax Year: ${summary.taxYear}\n\n`;
-      output += 'Part I - Short-Term Capital Gains and Losses\n';
-      output += `  Line 7: Short-term gain/loss from Form 8949 (Box A, B, C): ${formatCurrency(scheduleD.shortTermFromForm8949)}\n`;
-      output += `  Line 8: Other short-term gains: ${formatCurrency(scheduleD.shortTermOther)}\n`;
-      output += `  Line 7+8: Total short-term: ${formatCurrency(scheduleD.totalShortTerm)}\n\n`;
-      output += 'Part II - Long-Term Capital Gains and Losses\n';
-      output += `  Line 15: Long-term gain/loss from Form 8949 (Box D, E, F): ${formatCurrency(scheduleD.longTermFromForm8949)}\n`;
-      output += `  Line 16: Other long-term gains: ${formatCurrency(scheduleD.longTermOther)}\n`;
-      output += `  Line 15+16: Total long-term: ${formatCurrency(scheduleD.totalLongTerm)}\n\n`;
-      output += 'Part III - Summary\n';
-      output += `  Net gain/loss: ${formatCurrency(scheduleD.netGainLoss)}\n`;
-      output += `  Capital loss carryover: ${formatCurrency(scheduleD.capitalLossCarryover)}\n`;
-      output += `  Taxable gain: ${formatCurrency(scheduleD.taxableGain)}\n`;
-      return output;
-    }
+    case 'schedule_d':
+      return buildScheduleDStyleExport(year);
 
     case 'csv': {
       const headers = 'Description,Date Acquired,Date Sold,Proceeds,Cost Basis,Adjustment Code,Adjustment Amount,Gain/Loss,Box,Holding Period,Platform,Wash Sale\n';

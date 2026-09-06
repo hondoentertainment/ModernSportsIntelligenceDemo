@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { generatePortfolioReport } from '../../lib/pdfExport';
+import { generatePortfolioReport, generateScheduleDPacketPdf } from '../../lib/pdfExport';
 import type { CardInventory } from '../../types';
 
 // Mock jsPDF to avoid actual PDF generation in tests
@@ -11,6 +11,8 @@ const mockDoc = {
   setFont: vi.fn().mockReturnThis(),
   text: vi.fn().mockReturnThis(),
   save: vi.fn(),
+  splitTextToSize: vi.fn((text: string) => text.split('\n')),
+  addPage: vi.fn().mockReturnThis(),
   internal: {
     pageSize: {
       getWidth: () => 210,
@@ -80,6 +82,13 @@ describe('pdfExport', () => {
         purchaseDate: '2024-01-01',
       }));
       expect(() => generatePortfolioReport(inventory)).not.toThrow();
+    });
+  });
+
+  describe('generateScheduleDPacketPdf', () => {
+    it('writes a demo-honest packet without throwing', () => {
+      expect(() => generateScheduleDPacketPdf('Part I — Short-term\nMethodology', 2026)).not.toThrow();
+      expect(mockDoc.save).toHaveBeenCalled();
     });
   });
 });

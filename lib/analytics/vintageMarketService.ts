@@ -3,7 +3,10 @@
  * Specialized vintage card (pre-1980) intelligence — condition census tracking,
  * registry set competition, historical significance scoring, and generational
  * wealth preservation metrics. The "Sotheby's intelligence desk" for vintage sports cards.
+ *
+ * Persistence uses MSI `store` (syncStore / DAL), not raw localStorage.
  */
+import { store } from '../dal/syncStore';
 
 export interface VintageCard {
   id: string;
@@ -73,9 +76,12 @@ const STORAGE_KEYS = {
 
 function loadOrInit<T>(key: string, init: () => T): T {
   try {
-    const stored = store.get(key, null);
-    if (stored) return JSON.parse(stored);
-  } catch { /* ignore localStorage errors */ }
+    const stored = store.get<T | string | null>(key, null);
+    if (stored && typeof stored === 'string') {
+      return JSON.parse(stored) as T;
+    }
+    if (stored) return stored as T;
+  } catch { /* ignore store errors */ }
   const data = init();
   store.set(key, data);
   return data;
@@ -807,7 +813,6 @@ export function getGrowthMetrics(): { overallGrowth: number; bestEra: string; be
   return { overallGrowth: 12.5, bestEra: best.era, bestEraGrowth: best.avgAppreciation, totalMarketCap: totalValue, avgAnnualReturn: Math.round(avgReturn * 10) / 10 };
 }
 
-import { store } from '../dal/syncStore';
 export function getMarketCapData(): { era: string; marketCap: number; volume: number; growth: number }[] {
   return getEraBreakdown().map(e => ({ era: e.era, marketCap: e.totalValue, volume: e.cardCount * 150, growth: e.avgAppreciation }));
 }

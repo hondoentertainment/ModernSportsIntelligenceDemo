@@ -238,6 +238,8 @@ describe('taxReportService', () => {
       expect(report).toContain('Schedule D');
       expect(report).toContain('Short-term');
       expect(report).toContain('Long-term');
+      expect(report).toContain('Methodology');
+      expect(report).toContain('Demo-honest');
     });
 
     it('exports csv format with headers', () => {

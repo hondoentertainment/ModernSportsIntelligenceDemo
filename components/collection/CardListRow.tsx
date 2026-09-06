@@ -13,6 +13,7 @@ import {
   getValuationSourceChipForCard,
   valuationBadgeVariantForEntity,
 } from '../../lib/utils/valuationProvenance';
+import { preferredValuationForCard } from '../../lib/pricing/compConsensus';
 import ValuationProvenanceChips from '../ValuationProvenanceChips';
 import CardItemActionIcons from './CardItemActionIcons';
 import { CardItemActionHandlers } from './cardItemActions';
@@ -31,14 +32,16 @@ const CardListRow: React.FC<CardListRowProps> = ({
   onOpenLightbox,
   ...actionHandlers
 }) => {
+  const preferred = preferredValuationForCard(card);
   const staleLabel = getStaleValuationLabel(card.lastValuationDate);
   const valuationChip = getValuationSourceChipForCard(card);
   const provenanceTitle = buildValuationProvenanceTitle({
     timestamp: card.valuationTimestamp,
     lastValuationDate: card.lastValuationDate,
-    confidence: card.valuationConfidence,
-    rationale: card.pricingRationale,
+    confidence: preferred.confidence || card.valuationConfidence,
+    rationale: preferred.rationale || card.pricingRationale,
   });
+  const displayNav = preferred.value || card.currentValue;
 
   return (
     <tr className={`hover:bg-brand-lime/5 transition-colors group ${isSelected ? 'bg-brand-lime/10' : ''}`}>
@@ -83,13 +86,13 @@ const CardListRow: React.FC<CardListRowProps> = ({
         ${(card.purchasePrice ?? 0).toLocaleString()}
       </td>
       <td className="px-8 py-4 text-right">
-        <p className="font-mono text-sm text-brand-lime">${card.currentValue?.toLocaleString() || '—'}</p>
+        <p className="font-mono text-sm text-brand-lime">${displayNav ? displayNav.toLocaleString() : '—'}</p>
         <ValuationProvenanceChips
           className="mt-2 justify-end"
           sourceChip={valuationChip}
-          badgeVariant={valuationBadgeVariantForEntity(card)}
+          badgeVariant={valuationBadgeVariantForEntity({ ...card, valuationSource: preferred.source })}
           staleLabel={staleLabel}
-          thinMarket={isThinLiquidityScore(card.liquidityScore)}
+          thinMarket={isThinLiquidityScore(card.liquidityScore) || preferred.thinMarket}
           title={provenanceTitle}
         />
       </td>

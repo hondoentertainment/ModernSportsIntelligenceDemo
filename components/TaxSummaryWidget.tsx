@@ -198,7 +198,7 @@ const TaxSummaryWidget: React.FC<TaxSummaryWidgetProps> = ({ inventory, onCardCl
             </p>
           </div>
           <p className="text-[10px] font-black text-brand-lime uppercase tracking-widest">
-            IRS-Ready
+            Schedule D–style (demo)
           </p>
         </div>
       )}

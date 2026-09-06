@@ -166,6 +166,28 @@ describe('valuationProvenance', () => {
     expect(next.lastValuationDate).toBe('2026-03-26T12:00:00.000Z');
   });
 
+  it('prefers sold-comp consensus over an explicit Gemini estimate when salesData is present', () => {
+    const card = makeCard({
+      currentValue: 180,
+      valuationSource: 'gemini',
+      valuationTimestamp: '2026-03-20T00:00:00.000Z',
+    });
+    const analysis = makeAnalysis({
+      estimatedValue: 900,
+      valuationSource: 'gemini',
+      valuationTimestamp: '2026-03-26T12:00:00.000Z',
+      lastUpdated: '2026-03-26T12:00:00.000Z',
+      salesData: [
+        { title: 'A', price: 210, condition: 'Raw', soldAt: '2026-03-20' },
+        { title: 'B', price: 230, condition: 'Raw', soldAt: '2026-03-22' },
+        { title: 'C', price: 220, condition: 'Raw', soldAt: '2026-03-24' },
+      ],
+    });
+    const next = applyPricingAnalysisToCard(card, analysis, Date.parse('2026-03-26T12:05:00.000Z'));
+    expect(next.currentValue).toBe(220);
+    expect(next.valuationSource).toBe('historical-comps');
+  });
+
   it('renders historical comps chip when source missing but comps exist', () => {
     const chip = getValuationSourceChipForCard({
       salesData: [

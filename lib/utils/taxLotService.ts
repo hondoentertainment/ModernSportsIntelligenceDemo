@@ -113,6 +113,59 @@ function sortByMethod(cards: CardInventory[], method: CostBasisMethod): CardInve
   }
 }
 
+export const SCHEDULE_D_METHODOLOGY_DISCLAIMER =
+  'Schedule D–style packet for collector records. Short-term vs long-term buckets use a 365.25-day hold test on recorded purchase and sale dates. Cost basis is purchase price plus stored grading and shipping fees. Method labels (FIFO / LIFO / Specific ID / Average) reorder lots for illustration only — this is not IRS Form 8949 / Schedule D regulatory completeness, FIFO/LIFO audit support, or tax advice. Confirm figures with a qualified tax professional before filing.';
+
+export const SCHEDULE_D_COMPLETENESS_NOTE =
+  'Demo-honest export: realized lots with a stored sale date only. Wash-sale, collectibles 28% rate, state tax, and specific-identification substantiation are out of scope.';
+
+export interface ScheduleDBucket {
+  holdingPeriod: HoldingPeriod;
+  entries: ScheduleDEntry[];
+  count: number;
+  proceeds: number;
+  costBasis: number;
+  gains: number;
+  losses: number;
+  net: number;
+}
+
+export interface ScheduleDPacket {
+  taxYear: TaxYear;
+  method: CostBasisMethod;
+  generatedAt: string;
+  shortTerm: ScheduleDBucket;
+  longTerm: ScheduleDBucket;
+  totals: {
+    dispositions: number;
+    proceeds: number;
+    costBasis: number;
+    net: number;
+    estimatedTaxLiability: number;
+  };
+  methodologyDisclaimer: string;
+  completenessNote: string;
+}
+
+function roundCents(value: number): number {
+  return Math.round(value * 100) / 100;
+}
+
+function bucketFromEntries(holdingPeriod: HoldingPeriod, entries: ScheduleDEntry[]): ScheduleDBucket {
+  const gains = entries.filter((e) => e.gainLoss >= 0).reduce((sum, e) => sum + e.gainLoss, 0);
+  const losses = entries.filter((e) => e.gainLoss < 0).reduce((sum, e) => sum + Math.abs(e.gainLoss), 0);
+  return {
+    holdingPeriod,
+    entries,
+    count: entries.length,
+    proceeds: roundCents(entries.reduce((sum, e) => sum + e.proceeds, 0)),
+    costBasis: roundCents(entries.reduce((sum, e) => sum + e.costBasis, 0)),
+    gains: roundCents(gains),
+    losses: roundCents(losses),
+    net: roundCents(gains - losses),
+  };
+}
+
 export class TaxLotService {
   /**
    * Generates a complete tax summary for a given year and method.
@@ -277,6 +330,90 @@ export class TaxLotService {
   /**
    * Compares tax liability across all cost-basis methods.
    */
+  /**
+   * Schedule D–style export packet: ST/LT buckets, totals, methodology disclaimer.
+   * Not IRS regulatory completeness.
+   */
+  static buildScheduleDPacket(
+    inventory: CardInventory[],
+    taxYear: TaxYear = new Date().getFullYear(),
+    method: CostBasisMethod = 'FIFO',
+    generatedAt: string = new Date().toISOString(),
+  ): ScheduleDPacket {
+    const summary = this.generateTaxSummary(inventory, taxYear, method);
+    const shortTerm = bucketFromEntries(
+      'Short-Term',
+      summary.scheduleDEntries.filter((e) => e.holdingPeriod === 'Short-Term'),
+    );
+    const longTerm = bucketFromEntries(
+      'Long-Term',
+      summary.scheduleDEntries.filter((e) => e.holdingPeriod === 'Long-Term'),
+    );
+    return {
+      taxYear,
+      method,
+      generatedAt,
+      shortTerm,
+      longTerm,
+      totals: {
+        dispositions: summary.totalTransactions,
+        proceeds: roundCents(summary.totalProceeds),
+        costBasis: roundCents(summary.totalCostBasis),
+        net: roundCents(summary.totalNetGainLoss),
+        estimatedTaxLiability: roundCents(summary.estimatedTaxLiability),
+      },
+      methodologyDisclaimer: SCHEDULE_D_METHODOLOGY_DISCLAIMER,
+      completenessNote: SCHEDULE_D_COMPLETENESS_NOTE,
+    };
+  }
+
+  static formatScheduleDPacket(packet: ScheduleDPacket): string {
+    const money = (n: number) =>
+      n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    const lines: string[] = [
+      `MSI Schedule D–style packet — tax year ${packet.taxYear}`,
+      `Generated: ${packet.generatedAt}`,
+      `Cost-basis method (illustrative): ${packet.method}`,
+      '',
+      'Part I — Short-term (< 1 year)',
+      `  Lots: ${packet.shortTerm.count}`,
+      `  Proceeds: ${money(packet.shortTerm.proceeds)}`,
+      `  Cost basis: ${money(packet.shortTerm.costBasis)}`,
+      `  Gains: ${money(packet.shortTerm.gains)}`,
+      `  Losses: ${money(packet.shortTerm.losses)}`,
+      `  Net: ${money(packet.shortTerm.net)}`,
+      '',
+      'Part II — Long-term (≥ 1 year)',
+      `  Lots: ${packet.longTerm.count}`,
+      `  Proceeds: ${money(packet.longTerm.proceeds)}`,
+      `  Cost basis: ${money(packet.longTerm.costBasis)}`,
+      `  Gains: ${money(packet.longTerm.gains)}`,
+      `  Losses: ${money(packet.longTerm.losses)}`,
+      `  Net: ${money(packet.longTerm.net)}`,
+      '',
+      'Part III — Totals',
+      `  Dispositions: ${packet.totals.dispositions}`,
+      `  Proceeds: ${money(packet.totals.proceeds)}`,
+      `  Cost basis: ${money(packet.totals.costBasis)}`,
+      `  Net: ${money(packet.totals.net)}`,
+      `  Estimated tax (illustrative): ${money(packet.totals.estimatedTaxLiability)}`,
+      '',
+      'Methodology',
+      packet.methodologyDisclaimer,
+      '',
+      packet.completenessNote,
+    ];
+    if (packet.shortTerm.entries.length + packet.longTerm.entries.length > 0) {
+      lines.push('', 'Lots');
+      for (const entry of [...packet.shortTerm.entries, ...packet.longTerm.entries]) {
+        lines.push(
+          `  ${entry.holdingPeriod} | ${entry.description} | ${entry.dateAcquired} → ${entry.dateSold} | ${money(entry.proceeds)} − ${money(entry.costBasis)} = ${money(entry.gainLoss)}`,
+        );
+      }
+    }
+    return lines.join('\n');
+  }
+
   static compareMethodTaxImpact(
     inventory: CardInventory[],
     taxYear: TaxYear = new Date().getFullYear()

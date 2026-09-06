@@ -26,6 +26,7 @@ import {
   getValuationSourceChipForCard,
   valuationBadgeVariantForEntity,
 } from '../../lib/utils/valuationProvenance';
+import { preferredValuationForCard } from '../../lib/pricing/compConsensus';
 import ValuationProvenanceChips from '../ValuationProvenanceChips';
 import CertVerifiedBadge from '../CertVerifiedBadge';
 import { CardItemActionHandlers, getCardItemActionsForSurface } from './cardItemActions';
@@ -79,16 +80,21 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
 }) => {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
+  const preferred = preferredValuationForCard(card);
   const valuationChip = getValuationSourceChipForCard(card);
-  const valuationBadgeVariant = valuationBadgeVariantForEntity(card);
+  const valuationBadgeVariant = valuationBadgeVariantForEntity({
+    ...card,
+    valuationSource: preferred.source,
+  });
   const staleLabel = getStaleValuationLabel(card.lastValuationDate);
-  const showThinMarket = isThinLiquidityScore(card.liquidityScore);
+  const showThinMarket = isThinLiquidityScore(card.liquidityScore) || preferred.thinMarket;
   const provenanceTitle = buildValuationProvenanceTitle({
     timestamp: card.valuationTimestamp,
     lastValuationDate: card.lastValuationDate,
-    confidence: card.valuationConfidence,
-    rationale: card.pricingRationale,
+    confidence: preferred.confidence || card.valuationConfidence,
+    rationale: preferred.rationale || card.pricingRationale,
   });
+  const displayNav = preferred.value || card.currentValue;
   const bodyActions = getCardItemActionsForSurface(card, {
     isFavorite,
     toggleFavorite,
@@ -258,9 +264,9 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
             <p className="text-[9px] font-black text-brand-muted uppercase tracking-tighter mb-1">Market Nav</p>
             <div className="flex items-center gap-2">
               <p className="text-sm font-mono font-black text-brand-lime">
-                {card.currentValue ? `$${Math.round(card.currentValue).toLocaleString()}` : '—'}
+                {displayNav ? `$${Math.round(displayNav).toLocaleString()}` : '—'}
               </p>
-              {card.currentValue !== undefined && (
+              {displayNav !== undefined && displayNav > 0 && (
                 <OpportunityBadge asset={card} size="sm" showLabel={false} />
               )}
             </div>

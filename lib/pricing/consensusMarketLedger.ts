@@ -11,6 +11,7 @@ import {
   FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
   isVerifiableValuationSource,
 } from '../utils/valuationProvenance';
+import { preferredValuationForCard } from './compConsensus';
 
 const SOURCE_RANK: Record<ValuationSource, number> = {
   'ebay-api': 4,
@@ -63,13 +64,15 @@ function labelFor(source: LedgerSourceKind, fresh: boolean): string {
 }
 
 export function quoteCard(card: CardInventory, nowMs: number = Date.now()): ConsensusQuote | null {
-  const fmv = Number(card.currentValue) || 0;
+  const preferred = preferredValuationForCard(card, nowMs);
+  const fmv = preferred.value || Number(card.currentValue) || 0;
   if (fmv <= 0) return null;
 
-  const source = (card.valuationSource ?? 'fallback') as ValuationSource;
+  const source = (preferred.source || card.valuationSource || 'fallback') as ValuationSource;
   const ts = card.valuationTimestamp || card.lastValuationDate || null;
   const ms = toMs(ts);
-  const fresh = ms !== null && nowMs - ms < STALE_AFTER_MS;
+  const stampFresh = ms !== null && nowMs - ms < STALE_AFTER_MS;
+  const fresh = preferred.method === 'sold-comp-consensus' ? !preferred.stale : stampFresh && !preferred.stale;
   const verifiable = isVerifiableValuationSource(source);
 
   return {
@@ -77,11 +80,13 @@ export function quoteCard(card: CardInventory, nowMs: number = Date.now()): Cons
     player: card.player,
     fmv,
     source,
-    confidence: Math.max(0, Math.min(1, card.valuationConfidence ?? (verifiable ? 0.75 : 0.45))),
+    confidence: Math.max(0, Math.min(1, preferred.confidence || card.valuationConfidence || (verifiable ? 0.75 : 0.45))),
     valuationTimestamp: ts,
     fresh,
     verifiable,
-    label: labelFor(source, fresh),
+    label: preferred.method === 'sold-comp-consensus' || preferred.method === 'thin-comp-fallback'
+      ? preferred.label
+      : labelFor(source, fresh),
   };
 }
 
