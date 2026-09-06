@@ -133,6 +133,20 @@ describe('buildWhyFromAgent', () => {
     expect(view.persona).toBe('');
     expect(view.conclusion).toBe('');
   });
+
+  it('drops non-string chain items and non-string identity', () => {
+    const view = buildWhyFromAgent(
+      agent({
+        agentId: 9 as unknown as string,
+        agentName: 8 as unknown as string,
+        reasoningChain: [1, 'Comps hold', null] as unknown as string[],
+      }),
+    );
+    expect(view.agentId).toBe('unknown');
+    expect(view.agentName).toBe('Unknown agent');
+    expect(view.reasoningChain).toEqual(['Comps hold']);
+    expect(view.provenance).toBe('logged');
+  });
 });
 
 describe('buildWhyFromThesis', () => {
@@ -177,6 +191,19 @@ describe('buildWhyFromThesis', () => {
     expect(view.provenance).toBe('missing');
     expect(view.conflictNotes).toEqual([]);
   });
+
+  it('ignores non-string thesis copy', () => {
+    const view = buildWhyFromThesis(
+      thesis({
+        recommendedAction: 1 as unknown as string,
+        summary: 2 as unknown as string,
+        riskAssessment: 3 as unknown as string,
+        keyTakeaways: ['Keep dry powder'],
+      }),
+    );
+    expect(view.conclusion).toBe('');
+    expect(view.supportingNotes).toEqual(['Keep dry powder']);
+  });
 });
 
 describe('buildWhyFromRecommendation', () => {
@@ -195,6 +222,36 @@ describe('buildWhyFromRecommendation', () => {
     const view = buildWhyFromRecommendation(base);
     expect(view.provenance).toBe('missing');
     expect(view.missingReason).toBe(MISSING_COMMITTEE_REASONING);
+  });
+
+  it('defaults optional recommendation fields when omitted', () => {
+    const view = buildWhyFromRecommendation({
+      ...base,
+      keyTakeaways: undefined as unknown as string[],
+      riskAssessment: undefined,
+      agents: undefined as unknown as AgentInsight[],
+      executionPlan: undefined,
+    });
+    expect(view.provenance).toBe('missing');
+    expect(view.supportingNotes).toEqual([]);
+    expect(view.conflictNotes).toEqual([]);
+  });
+
+  it('ignores a non-array execution plan and non-string action notes', () => {
+    const invalidPlan = buildWhyFromRecommendation({
+      ...base,
+      executionPlan: 'nope' as unknown as AgentRecommendationRecord['executionPlan'],
+    });
+    expect(invalidPlan.provenance).toBe('missing');
+
+    const nonStringNotes = buildWhyFromRecommendation({
+      ...base,
+      executionPlan: [
+        action({ rationale: 1 as unknown as string, policyReason: 2 as unknown as string }),
+      ],
+    });
+    expect(nonStringNotes.provenance).toBe('missing');
+    expect(nonStringNotes.reasoningChain).toEqual([]);
   });
 
   it('derives a chain from execution-plan rationales when agents did not log one', () => {
@@ -238,6 +295,18 @@ describe('buildWhyFromAction', () => {
     expect(view.missingReason).toBe(MISSING_AGENT_REASONING);
     expect(view.supportingNotes).toEqual(['Needs approval']);
   });
+
+  it('ignores non-string rationale and policy fields', () => {
+    const view = buildWhyFromAction(
+      action({
+        rationale: 12 as unknown as string,
+        policyReason: 4 as unknown as string,
+      }),
+    );
+    expect(view.provenance).toBe('missing');
+    expect(view.reasoningChain).toEqual([]);
+    expect(view.supportingNotes).toEqual([]);
+  });
 });
 
 describe('buildWhyFromPricing', () => {
@@ -260,6 +329,16 @@ describe('buildWhyFromPricing', () => {
     const view = buildWhyFromPricing({ targetPrice: Number.NaN });
     expect(view.provenance).toBe('missing');
     expect(view.conclusion).toBe('');
+    expect(view.persona).toBe('Deal negotiation');
+  });
+
+  it('ignores non-string pricing copy', () => {
+    const view = buildWhyFromPricing({
+      reasoning: 1 as unknown as string,
+      suggestedStrategy: 2 as unknown as string,
+      playbookLabel: 3 as unknown as string,
+    });
+    expect(view.provenance).toBe('missing');
     expect(view.persona).toBe('Deal negotiation');
   });
 });
@@ -288,5 +367,17 @@ describe('buildWhyFromBriefing', () => {
     });
     expect(view.provenance).toBe('missing');
     expect(view.conclusion).toBe('');
+  });
+
+  it('ignores non-string headline and details', () => {
+    const view = buildWhyFromBriefing({
+      agentId: 'market',
+      agentName: 'Apex',
+      persona: 'Market Agent',
+      headline: 7 as unknown as string,
+      details: 8 as unknown as string,
+    });
+    expect(view.conclusion).toBe('');
+    expect(view.provenance).toBe('missing');
   });
 });
