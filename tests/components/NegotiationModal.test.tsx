@@ -93,8 +93,11 @@ describe('NegotiationModal', () => {
         fireEvent.click(screen.getByLabelText(/second card/i));
 
         await waitFor(() => {
-            expect(screen.getByText(/package/i)).toBeInTheDocument();
-            expect(screen.getByText(/demo/i)).toBeInTheDocument();
+            expect(screen.getByText(/lot of 2: test player, second card/i)).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /package \$216/i })).toBeInTheDocument();
+            expect(screen.getAllByText('Test Player').length).toBeGreaterThan(1);
+            expect(screen.getAllByText('$150').length).toBeGreaterThan(0);
+            expect(screen.getByText(/not a live dealer quote/i)).toBeInTheDocument();
         });
         expect(screen.getByRole('button', { name: /enter arena/i })).not.toBeDisabled();
     });

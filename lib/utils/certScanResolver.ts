@@ -118,7 +118,7 @@ export function extractIdentifier(raw: string): string {
   if (!trimmed) return '';
   const urlMatch = trimmed.match(PSA_URL) || trimmed.match(CERT_QUERY);
   if (urlMatch?.[1]) return urlMatch[1];
-  return trimmed.replace(/[\s\-]/g, '');
+  return trimmed.replace(/[\s-]/g, '');
 }
 
 export function classifyScanIdentifier(raw: string): ClassifiedScanIdentifier {

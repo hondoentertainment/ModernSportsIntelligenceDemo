@@ -59,6 +59,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
     const [pricingMode, setPricingMode] = useState<LotPricingMode>('package');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const recordedIds = useRef<Set<string>>(new Set());
+    const userEditedMax = useRef(false);
 
     const catalog = useMemo(() => {
         const rows = [...lotCatalog];
@@ -95,6 +96,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
             setSession(null);
             setOfferInput('');
             setMaxWilling('');
+            userEditedMax.current = false;
             setLightboxOpen(false);
             const seedIds = targetItem.id ? [targetItem.id] : [];
             if (targetItem.lotItems && targetItem.lotItems.length > 1 && targetItem.id) {
@@ -108,11 +110,11 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
     }, [isOpen, targetItem]);
 
     useEffect(() => {
-        if (step !== 'config' || !dealItem) return;
-        if (maxWilling === '' && quote.suggestedMax > 0) {
+        if (step !== 'config' || userEditedMax.current) return;
+        if (quote.itemCount >= 1 && quote.suggestedMax > 0) {
             setMaxWilling(String(quote.suggestedMax));
         }
-    }, [dealItem, maxWilling, quote.suggestedMax, step]);
+    }, [quote.itemCount, quote.suggestedMax, step]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -320,6 +322,14 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
                                             Sum ${quote.sumAsk}
                                         </button>
                                     </div>
+                                    <ul className="text-xs text-slate-300 space-y-1">
+                                        {lotLines.map((line) => (
+                                            <li key={line.id} className="flex justify-between gap-3">
+                                                <span>{line.player || line.name}</span>
+                                                <span className="font-mono text-slate-400">${line.price}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
                                     <p className="text-xs text-slate-400">
                                         Package is a demo {quote.packageDiscountPct}% lot discount off the sum of singles — not a live dealer quote.
                                     </p>
@@ -342,7 +352,10 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
                                     <input
                                         type="number"
                                         value={maxWilling}
-                                        onChange={e => setMaxWilling(e.target.value)}
+                                        onChange={e => {
+                                            userEditedMax.current = true;
+                                            setMaxWilling(e.target.value);
+                                        }}
                                         className="w-full bg-slate-900 border border-slate-800 rounded-xl py-4 pl-12 pr-4 text-white font-mono font-bold focus:outline-none focus:border-brand-blue transition-colors"
                                         placeholder="0.00"
                                     />
