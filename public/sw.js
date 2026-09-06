@@ -1,5 +1,5 @@
 // Bump when shell/offline behavior changes so clients drop stale caches (see PRODUCTION_READINESS PWA notes).
-const CACHE_VERSION = 'msi-v4';
+const CACHE_VERSION = 'msi-v5';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 const API_CACHE = `api-${CACHE_VERSION}`;
@@ -83,8 +83,14 @@ self.addEventListener('fetch', (event) => {
                     return response;
                 })
                 .catch(() =>
-                    caches.match(event.request)
-                        .then((cached) => cached || caches.match('/offline.html'))
+                    caches.match(event.request).then((cached) => {
+                        if (cached) return cached;
+                        // Hash-router shell: serve cached SPA so /#/routes still open offline.
+                        return caches.match('/').then((root) =>
+                            root ||
+                            caches.match('/index.html').then((index) => index || caches.match('/offline.html'))
+                        );
+                    })
                 )
         );
         return;

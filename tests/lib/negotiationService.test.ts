@@ -1,8 +1,23 @@
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { NegotiationService } from '../../lib/trading/negotiationService';
+import { getPlaybookById } from '../../lib/trading/negotiationPlaybooks';
+import { getNegotiationResponse } from '../../lib/utils/gemini';
+
+vi.mock('../../lib/utils/gemini', async () => {
+    const actual = await vi.importActual<typeof import('../../lib/utils/gemini')>('../../lib/utils/gemini');
+    return {
+        ...actual,
+        getNegotiationResponse: vi.fn(),
+        getAgenticOffer: vi.fn(),
+    };
+});
 
 describe('NegotiationService', () => {
+    beforeEach(() => {
+        vi.mocked(getNegotiationResponse).mockReset();
+    });
+
     const mockItem = {
         id: 'test-item-1',
         name: 'Test Card',
@@ -80,5 +95,39 @@ describe('NegotiationService', () => {
         // Verify seller moved somewhat
         expect(updatedSession.sellerAsk).toBeLessThan(100);
         expect(updatedSession.sellerAsk).toBeGreaterThan(80);
+        expect(updatedSession.counterSource).toBe('deterministic');
+        expect(updatedSession.sellerFirmnessLabel).toBeTruthy();
+    });
+
+    it('uses a tighter accept band for Lowball & Walk', () => {
+        const session = NegotiationService.startNegotiation(mockItem, 120);
+        const playbook = getPlaybookById('lowball_walk')!;
+        const updated = NegotiationService.processUserOffer(session, { amount: 96 }, playbook);
+        expect(updated.status).toBe('active');
+        expect(updated.counterSource).toBe('deterministic');
+    });
+
+    it('applies Gemini seller counters when the generate path returns a payload', async () => {
+        vi.mocked(getNegotiationResponse).mockResolvedValueOnce({
+            action: 'counter',
+            sentiment: 'neutral',
+            message: 'I can do 92 — simulated seller.',
+            counterAmount: 92,
+            sellerFirmness: 0.61,
+            reasoning: 'Offer is constructive.',
+        });
+        const session = NegotiationService.startNegotiation(mockItem, 120);
+        const updated = await NegotiationService.processUserOfferWithGemini(session, { amount: 80 });
+        expect(updated.counterSource).toBe('gemini');
+        expect(updated.sellerAsk).toBe(92);
+        expect(updated.messages.at(-1)?.content).toMatch(/simulated seller/);
+    });
+
+    it('falls back to deterministic logic when Gemini returns null', async () => {
+        vi.mocked(getNegotiationResponse).mockResolvedValueOnce(null);
+        const session = NegotiationService.startNegotiation(mockItem, 120);
+        const updated = await NegotiationService.processUserOfferWithGemini(session, { amount: 96 });
+        expect(updated.counterSource).toBe('deterministic');
+        expect(updated.status).toBe('accepted');
     });
 });

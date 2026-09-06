@@ -1,5 +1,12 @@
 import { NegotiationSession, NegotiableItem } from '../../types';
 import { getNegotiationResponse, getAgenticOffer } from '../utils/gemini';
+import { getSelectedPlaybook, type NegotiationPlaybook } from './negotiationPlaybooks';
+import {
+    buildAgentPromptAddendum,
+    buildSellerPromptAddendum,
+    estimateSellerFirmness,
+    playbookCounterThresholds,
+} from './negotiationContext';
 
 // Mock responses for the simulated seller (fallback when Gemini unavailable)
 const SELLER_RESPONSES = {
@@ -59,7 +66,11 @@ export class NegotiationService {
         };
     }
 
-    static processUserOffer(session: NegotiationSession, offerAttributes: { amount: number, content?: string }): NegotiationSession {
+    static processUserOffer(
+        session: NegotiationSession,
+        offerAttributes: { amount: number, content?: string },
+        playbook: NegotiationPlaybook = getSelectedPlaybook(),
+    ): NegotiationSession {
         const newSession = { ...session };
 
         // Add User Message
@@ -72,12 +83,16 @@ export class NegotiationService {
         });
         newSession.currentUserOffer = offerAttributes.amount;
 
-        // Logic to determine Seller Response
+        // Logic to determine Seller Response (playbook-aligned deterministic fallback)
         const spread = newSession.sellerAsk - offerAttributes.amount;
-        const percentGap = spread / newSession.sellerAsk;
+        const percentGap = newSession.sellerAsk > 0 ? spread / newSession.sellerAsk : 1;
+        const thresholds = playbookCounterThresholds(playbook);
+        const firmness = estimateSellerFirmness(percentGap, playbook);
+        newSession.counterSource = 'deterministic';
+        newSession.sellerFirmness = firmness.score;
+        newSession.sellerFirmnessLabel = firmness.label;
 
-        if (percentGap <= 0.05) {
-            // Within 5%, accept
+        if (percentGap <= thresholds.acceptGapPct) {
             newSession.status = 'accepted';
             newSession.messages.push({
                 id: crypto.randomUUID(),
@@ -86,10 +101,8 @@ export class NegotiationService {
                 timestamp: new Date().toISOString(),
                 sentiment: 'positive'
             });
-        } else if (percentGap > 0.4) {
-            // User lowballed > 40%, reject or stiff counter
-            // For simulation, let's just counter strictly
-            const nextAsk = Math.floor(newSession.sellerAsk * 0.95); // seller barely moves
+        } else if (percentGap > thresholds.lowballGapPct) {
+            const nextAsk = Math.floor(newSession.sellerAsk * 0.95);
             newSession.messages.push({
                 id: crypto.randomUUID(),
                 sender: 'seller',
@@ -100,8 +113,8 @@ export class NegotiationService {
             });
             newSession.sellerAsk = nextAsk;
         } else {
-            // Standard counter: Meet halfway-ish
-            const move = spread * (0.3 + Math.random() * 0.2); // Seller moves 30-50% of the gap
+            const span = thresholds.concessionMax - thresholds.concessionMin;
+            const move = spread * (thresholds.concessionMin + Math.random() * span);
             const nextAsk = Math.floor(newSession.sellerAsk - move);
 
             newSession.messages.push({
@@ -127,25 +140,36 @@ export class NegotiationService {
         session: NegotiationSession,
         offerAttributes: { amount: number; content?: string }
     ): Promise<NegotiationSession> {
+        const playbook = getSelectedPlaybook();
+        const percentGap = session.sellerAsk > 0
+            ? (session.sellerAsk - offerAttributes.amount) / session.sellerAsk
+            : 1;
+        const firmness = estimateSellerFirmness(percentGap, playbook);
         const geminiResponse = await getNegotiationResponse(
             session.targetItem.name,
             session.targetItem.price,
             offerAttributes.amount,
             session.maxWillingToPay,
             session.sellerAsk,
-            session.messages.map(m => `${m.sender}: ${m.content}`)
+            session.messages.map(m => `${m.sender}: ${m.content}`),
+            undefined,
+            { promptAddendum: buildSellerPromptAddendum(playbook, firmness) },
         );
 
         if (geminiResponse) {
-            return this.applySellerResponse(session, offerAttributes, geminiResponse);
+            const next = this.applySellerResponse(session, offerAttributes, geminiResponse);
+            next.counterSource = 'gemini';
+            next.sellerFirmness = geminiResponse.sellerFirmness ?? firmness.score;
+            next.sellerFirmnessLabel = firmness.label;
+            return next;
         }
-        return this.processUserOffer(session, offerAttributes);
+        return this.processUserOffer(session, offerAttributes, playbook);
     }
 
     private static applySellerResponse(
         session: NegotiationSession,
         offerAttributes: { amount: number; content?: string },
-        response: { action: string; sentiment: string; message: string; counterAmount?: number }
+        response: { action: string; sentiment: string; message: string; counterAmount?: number; sellerFirmness?: number }
     ): NegotiationSession {
         const newSession = { ...session };
         newSession.messages.push({
@@ -195,13 +219,16 @@ export class NegotiationService {
     static async autoNegotiateRound(session: NegotiationSession): Promise<NegotiationSession> {
         if (session.status !== 'active') return session;
 
+        const playbook = getSelectedPlaybook();
         const agentOffer = await getAgenticOffer(
             session.targetItem.name,
             session.targetItem.price || 100,
             session.sellerAsk,
             session.maxWillingToPay,
             session.currentUserOffer,
-            session.messages.map(m => `${m.sender}: ${m.content}`)
+            session.messages.map(m => `${m.sender}: ${m.content}`),
+            undefined,
+            { promptAddendum: buildAgentPromptAddendum(playbook) },
         );
 
         if (!agentOffer) {

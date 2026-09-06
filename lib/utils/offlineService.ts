@@ -228,7 +228,9 @@ export function queueTransaction(transaction: QueuedTransaction): void {
 }
 
 export function getSyncQueue(): SyncQueueItem[] {
-  return safeGetItem<SyncQueueItem[]>(KEYS.SYNC_QUEUE, getMockSyncQueue());
+  // Empty default — do not seed mock pending rows into the live shell banner.
+  // Offline Manager can still preview demo conflicts separately.
+  return safeGetItem<SyncQueueItem[]>(KEYS.SYNC_QUEUE, []);
 }
 
 export async function processSyncQueue(): Promise<SyncProgress> {
@@ -489,7 +491,8 @@ function getMockPortfolio(): Record<string, unknown>[] {
   ];
 }
 
-function getMockSyncQueue(): SyncQueueItem[] {
+/** Disclosed demo rows for Offline Manager preview only — not the live shell default. */
+export function getDemoSyncQueue(): SyncQueueItem[] {
   return [
     { id: 'sq-1', action: 'update', entity: 'portfolio', payload: { cardId: '1', field: 'value', newValue: 4350 }, timestamp: Date.now() - 45000, retryCount: 0, maxRetries: 5, status: 'pending', priority: 2 },
     { id: 'sq-2', action: 'create', entity: 'watchlist', payload: { cardName: '2024 Bowman Chrome Paul Skenes', targetPrice: 150 }, timestamp: Date.now() - 30000, retryCount: 0, maxRetries: 5, status: 'pending', priority: 1 },

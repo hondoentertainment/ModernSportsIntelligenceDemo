@@ -11,6 +11,7 @@ import {
     computeWarRoomInputFingerprint,
 } from "./warRoomThesisAudit.ts";
 import { buildWarRoomLedgerContext } from "./warRoomLedgerContext.ts";
+import { formatAgentPreferencesForPrompt, getAgentPreferences } from "./agentPreferences.ts";
 
 const ai = createGeminiClient();
 
@@ -57,6 +58,8 @@ export class MultiAgentService {
             `${c.year} ${c.player} ${c.set} (${c.league}) - Value: $${c.currentValue || 'N/A'} [${c.valuationSource || 'fallback'}]`
         ).join("\n");
         const ledgerContext = buildWarRoomLedgerContext(inventory);
+        const agentPrefs = getAgentPreferences();
+        const prefsBlock = formatAgentPreferencesForPrompt(agentPrefs);
 
         const prompt = `Act as an Elite Multi-Agent Investment Committee. Analyze the following portfolio and generate a collaborative investment thesis.
     
@@ -64,6 +67,8 @@ export class MultiAgentService {
     ${inventorySummary}
 
     ${ledgerContext}
+
+    ${prefsBlock}
     
     SYSTEM INSTRUCTIONS:
     1. Simulate the following specialist agents: ${includeStrategist ? 'Scout, Market, Risk, Negotiator, and Strategist' : 'Scout, Market, Risk, and Negotiator'}.
@@ -71,6 +76,7 @@ export class MultiAgentService {
     3. Each agent must also provide a reasoningChain: 2-4 short steps explaining how they reached the insight. If an agent dissents from likely consensus, add conflictNotes.
     4. Synthesize their collaborative output into a unified thesis.
     5. Weight ebay-api / historical-comps quotes above gemini / fallback when recommending actions. Call out coverage gaps when fresh verifiable % is below target.
+    5b. Honor USER AGENT PRIORITIES: conservative/short-horizon users get smaller, more liquid recommendations; league tilt should surface matching sports first. Do not invent live tape.
     ${includeStrategist ? '6. Strategist Prime MUST provide a specific executionPlan as a list of actions.' : ''}
     
     EXPECTED JSON OUTPUT:
@@ -94,7 +100,7 @@ export class MultiAgentService {
       ]
     }`;
 
-        const inputHash = computeWarRoomInputFingerprint(inventory, includeStrategist);
+        const inputHash = computeWarRoomInputFingerprint(inventory, includeStrategist, agentPrefs);
 
         try {
             const response = await ai.models.generateContent({

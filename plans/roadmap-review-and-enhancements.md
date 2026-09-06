@@ -64,7 +64,7 @@ Still **owner-held / open:** tax-lot regulatory completeness (#16), P2P marketpl
 
 **Recommendations:**
 
-4. **Negotiation Playbook Templates** — Let users define reusable negotiation strategies ("Lowball & Walk", "Fair Market Anchor", "Bundle Discount") that the AI agent follows. Currently the agent has a single behavior pattern; playbooks add personalization without requiring users to manually negotiate every time.
+4. **Negotiation Playbook Templates** — **Shipped** (playbooks + Arena selector). Gemini counters now receive the selected playbook and a seller-firmness hint; deterministic demo bands apply when AI is unavailable. Not live marketplace trading.
 
 5. **Multi-Item Bundle Negotiation** — Extend the negotiation modal to handle "lot" purchases (e.g., "I'll take all 5 of your Bowman Chrome autos for $X"). Bundle deals are the highest-value transactions at card shows and online.
 
@@ -100,7 +100,7 @@ Still **owner-held / open:** tax-lot regulatory completeness (#16), P2P marketpl
 
 12. **Agent Transparency & Audit Trail** — **Shipped (deepened):** expandable “Why this recommendation?” on War Room committee cards, outcome memory, guild proposals, Auto-Pilot actions, and acquisition pricing. Agents may log `reasoningChain` / `conflictNotes`; when a run stored a conclusion only, the panel says so instead of inventing steps. User/admin audit timelines remain on `/audit-trail`.
 
-13. **User-Defined Agent Priorities** — Let users configure agent behavior (e.g., "Risk Agent: be aggressive" vs. "Risk Agent: be conservative"). A slider-based configuration for risk tolerance, time horizon, and league preference allows the multi-agent system to align with individual investment theses.
+13. **User-Defined Agent Priorities** — **Shipped:** risk / time-horizon / league-tilt / max-position sliders persist via MSI store (`msi_agent_user_preferences`) and are injected into War Room committee prompts + Auto-Pilot ranking. Human still approves. Not a live cloned trader.
 
 14. **Agent Conflict Resolution UI** — When the Scout agent recommends "Buy" but the Risk agent recommends "Wait," surface the disagreement explicitly. Present a "Consensus View" alongside individual agent opinions, similar to how sell-side analyst ratings work in equities.
 

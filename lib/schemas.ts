@@ -24,6 +24,25 @@ export const GeminiValuationSchema = z.object({
 
 export type GeminiValuation = z.infer<typeof GeminiValuationSchema>;
 
+export const NegotiationSellerResponseSchema = z.object({
+  action: z.enum(['accept', 'counter', 'reject']),
+  sentiment: z.enum(['positive', 'neutral', 'negative', 'aggressive']),
+  message: z.string().min(1),
+  counterAmount: z.number().optional(),
+  sellerFirmness: z.number().min(0).max(1).optional(),
+  reasoning: z.string().optional(),
+});
+
+export type NegotiationSellerResponseValidated = z.infer<typeof NegotiationSellerResponseSchema>;
+
+export const AgenticOfferResponseSchema = z.object({
+  offerAmount: z.number(),
+  message: z.string().min(1),
+  reasoning: z.string(),
+});
+
+export type AgenticOfferResponseValidated = z.infer<typeof AgenticOfferResponseSchema>;
+
 // ─── eBay API Responses ──────────────────────────────────────────────
 
 export const EbayItemSchema = z.object({

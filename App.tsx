@@ -22,6 +22,7 @@ import { MigrationProvider } from './contexts/MigrationContext.tsx';
 import MigrationBanner from './components/MigrationBanner.tsx';
 import ProductionConfigBanner from './components/ProductionConfigBanner.tsx';
 import PwaUpdateBanner from './components/PwaUpdateBanner.tsx';
+import OfflineIndicator from './components/OfflineIndicator.tsx';
 import MarketTicker from './components/MarketTicker.tsx';
 import { useSupabaseInventory } from './lib/utils/useSupabaseInventory.ts';
 import LazyErrorBoundary from './components/LazyErrorBoundary.tsx';
@@ -511,6 +512,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
         <MigrationBanner />
         <ProductionConfigBanner />
         <PwaUpdateBanner />
+        <OfflineIndicator />
 
         {isWallHUDOpen && (
           <Suspense fallback={null}>

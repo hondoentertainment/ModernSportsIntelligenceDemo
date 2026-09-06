@@ -4,8 +4,16 @@ import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import { LiquidityBadge } from '../LiquidityBadge';
 import { LiquidityService } from '../../lib/analytics/liquidityService';
-import { getStaleValuationLabel } from '../../lib/utils/valuationFreshness';
-import { getValuationSourceChipForCard } from '../../lib/utils/valuationProvenance';
+import {
+  buildValuationProvenanceTitle,
+  getStaleValuationLabel,
+  isThinLiquidityScore,
+} from '../../lib/utils/valuationFreshness';
+import {
+  getValuationSourceChipForCard,
+  valuationBadgeVariantForEntity,
+} from '../../lib/utils/valuationProvenance';
+import ValuationProvenanceChips from '../ValuationProvenanceChips';
 import CardItemActionIcons from './CardItemActionIcons';
 import { CardItemActionHandlers } from './cardItemActions';
 
@@ -25,6 +33,12 @@ const CardListRow: React.FC<CardListRowProps> = ({
 }) => {
   const staleLabel = getStaleValuationLabel(card.lastValuationDate);
   const valuationChip = getValuationSourceChipForCard(card);
+  const provenanceTitle = buildValuationProvenanceTitle({
+    timestamp: card.valuationTimestamp,
+    lastValuationDate: card.lastValuationDate,
+    confidence: card.valuationConfidence,
+    rationale: card.pricingRationale,
+  });
 
   return (
     <tr className={`hover:bg-brand-lime/5 transition-colors group ${isSelected ? 'bg-brand-lime/10' : ''}`}>
@@ -70,18 +84,14 @@ const CardListRow: React.FC<CardListRowProps> = ({
       </td>
       <td className="px-8 py-4 text-right">
         <p className="font-mono text-sm text-brand-lime">${card.currentValue?.toLocaleString() || '—'}</p>
-        <div className="mt-2 flex justify-end gap-1.5">
-          <span
-            className={`inline-flex items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider ${valuationChip.className}`}
-          >
-            {valuationChip.label}
-          </span>
-          {staleLabel && (
-            <span className="inline-flex items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-500 bg-brand-charcoal/35 border border-slate-700/45">
-              {staleLabel}
-            </span>
-          )}
-        </div>
+        <ValuationProvenanceChips
+          className="mt-2 justify-end"
+          sourceChip={valuationChip}
+          badgeVariant={valuationBadgeVariantForEntity(card)}
+          staleLabel={staleLabel}
+          thinMarket={isThinLiquidityScore(card.liquidityScore)}
+          title={provenanceTitle}
+        />
       </td>
       <td className="px-8 py-4 text-center text-[10px] font-black uppercase">
         {card.isGraded ? `${card.gradingCompany} ${card.grade}` : 'Raw'}

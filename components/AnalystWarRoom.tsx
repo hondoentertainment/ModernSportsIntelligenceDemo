@@ -13,6 +13,8 @@ import { store } from '../lib/dal/syncStore';
 import { safeParseCollaborativeThesis } from '../lib/schemas';
 import { downloadWarRoomThesisJson } from '../lib/utils/warRoomThesisAudit';
 import MarketLedgerStrip from './MarketLedgerStrip';
+import AgentPrioritiesPanel from './AgentPrioritiesPanel';
+import { formatAgentPreferencesSummary } from '../lib/utils/agentPreferences';
 
 const WAR_ROOM_THESIS_STORAGE_KEY = 'msi_war_room_last_thesis_v1';
 
@@ -132,6 +134,19 @@ const AnalystWarRoom: React.FC = () => {
             </div>
 
             {inventory.length > 0 && <MarketLedgerStrip inventory={inventory} />}
+
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start">
+                <div className="flex-1">
+                    <AgentPrioritiesPanel compact />
+                </div>
+                <p className="text-xs text-slate-500 lg:max-w-xs lg:pt-4">
+                    Committee prompts include {formatAgentPreferencesSummary()}. Adjust here or on{' '}
+                    <a href="#/agent-personality" className="text-brand-lime underline-offset-2 hover:underline">
+                        Agent Personality
+                    </a>
+                    . Preferences persist in the MSI store.
+                </p>
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">

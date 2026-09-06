@@ -7,6 +7,7 @@ import { estimateGeminiCostUsd, recordModelUsage } from './telemetryService.ts';
 import { createGeminiClient } from './geminiClient.ts';
 import { logger } from '../logger';
 import { preferRealCompsWhenConfigured } from '../featureFlags';
+import { AgenticOfferResponseSchema, NegotiationSellerResponseSchema, safeParse } from '../schemas.ts';
 
 const ai = createGeminiClient();
 
@@ -564,6 +565,23 @@ export interface NegotiationSellerResponse {
   sentiment: 'positive' | 'neutral' | 'negative' | 'aggressive';
   message: string;
   counterAmount?: number;
+  sellerFirmness?: number;
+  reasoning?: string;
+}
+
+export interface NegotiationAiOptions {
+  signal?: AbortSignal;
+  promptAddendum?: string;
+}
+
+function normalizeNegotiationPayload(raw: unknown): unknown {
+  if (!raw || typeof raw !== 'object') return raw;
+  const o = raw as Record<string, unknown>;
+  return {
+    ...o,
+    action: typeof o.action === 'string' ? o.action.toLowerCase() : o.action,
+    sentiment: typeof o.sentiment === 'string' ? o.sentiment.toLowerCase() : o.sentiment,
+  };
 }
 
 export async function getNegotiationResponse(
@@ -573,9 +591,10 @@ export async function getNegotiationResponse(
   maxWillingToPay: number,
   sellerCurrentAsk: number,
   recentMessages: string[],
-  _signal?: AbortSignal
+  _signal?: AbortSignal,
+  options?: NegotiationAiOptions
 ): Promise<NegotiationSellerResponse | null> {
-  const prompt = `You are simulating a sports card seller in a negotiation. 
+  const prompt = `You are simulating a sports card seller in a negotiation (demo / educational — not a live marketplace). 
   
 ITEM: ${itemName}
 LISTING PRICE: $${listingPrice}
@@ -592,8 +611,9 @@ Decide the seller's response based on:
 - Otherwise → COUNTER with a price between user offer and seller ask
 - Counter amount should be influenced by how reasonable the offer seems (never exceed listing price)
 - Generate a short, natural seller message (1-2 sentences)
+${options?.promptAddendum ? `\n${options.promptAddendum}` : ''}
 
-Return JSON with: action (accept|counter|reject), sentiment (positive|neutral|negative|aggressive), message, counterAmount (only if action is counter, number between userOffer and sellerAsk).`;
+Return JSON with: action (accept|counter|reject), sentiment (positive|neutral|negative|aggressive), message, counterAmount (only if action is counter, number between userOffer and sellerAsk), sellerFirmness (0-1), reasoning (short).`;
 
   try {
     const response = await ai.models.generateContent({
@@ -609,19 +629,27 @@ Return JSON with: action (accept|counter|reject), sentiment (positive|neutral|ne
             sentiment: { type: Type.STRING },
             message: { type: Type.STRING },
             counterAmount: { type: Type.NUMBER },
+            sellerFirmness: { type: Type.NUMBER },
+            reasoning: { type: Type.STRING },
           },
           required: ["action", "sentiment", "message"],
         },
       },
     });
 
-    const data = JSON.parse(response.text || "{}");
-    return {
-      action: data.action || "counter",
-      sentiment: data.sentiment || "neutral",
-      message: data.message || "Let me think about it.",
-      counterAmount: data.counterAmount,
-    };
+    let parsedJson: unknown;
+    try {
+      parsedJson = JSON.parse(response.text || "{}");
+    } catch {
+      return null;
+    }
+    const data = safeParse(
+      NegotiationSellerResponseSchema,
+      normalizeNegotiationPayload(parsedJson),
+      'negotiation-seller',
+    );
+    if (!data) return null;
+    return data;
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return null;
     logger.error("Gemini Negotiation Error:", error);
@@ -645,9 +673,10 @@ export async function getAgenticOffer(
   userMaxBudget: number,
   userCurrentOffer: number,
   recentMessages: string[],
-  _signal?: AbortSignal
+  _signal?: AbortSignal,
+  options?: NegotiationAiOptions
 ): Promise<AgenticOfferResponse | null> {
-  const prompt = `You are an expert sports card investment agent negotiating ON BEHALF of your client (the user).
+  const prompt = `You are an expert sports card investment agent negotiating ON BEHALF of your client (the user) in a simulated demo — not live marketplace trading.
   
 ITEM: ${itemName}
 LISTING PRICE: $${listingPrice}
@@ -666,6 +695,7 @@ DIRECTIONS:
 3. If seller is flexible, use incremental increases (e.g., 5-10% of the gap).
 4. Never exceed $${userMaxBudget}.
 5. If the gap is too large and the seller isn't budging, warn the user in the reasoning.
+${options?.promptAddendum ? `\n${options.promptAddendum}` : ''}
 
 Return JSON with: offerAmount (number), message (string for the seller), reasoning (short summary for the user).`;
 
@@ -688,11 +718,18 @@ Return JSON with: offerAmount (number), message (string for the seller), reasoni
       },
     });
 
-    const data = JSON.parse(response.text || "{}");
+    let parsedJson: unknown;
+    try {
+      parsedJson = JSON.parse(response.text || "{}");
+    } catch {
+      return null;
+    }
+    const data = safeParse(AgenticOfferResponseSchema, parsedJson, 'negotiation-agent');
+    if (!data) return null;
     return {
       offerAmount: Math.min(data.offerAmount || userCurrentOffer, userMaxBudget),
-      message: data.message || "I'd like to make another offer.",
-      reasoning: data.reasoning || "Incremental step to reach a deal.",
+      message: data.message,
+      reasoning: data.reasoning,
     };
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return null;

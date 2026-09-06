@@ -7,6 +7,11 @@ import { ExecutionService, OrderIntent } from "../utils/executionService";
 import { ensureMockExecutionAdapter } from "../utils/phaseEndpoints";
 import { logger } from "../logger";
 import { store } from "../dal/syncStore";
+import {
+    getAgentPreferences,
+    leagueMatchesPreference,
+    timeHorizonSellMultiplier,
+} from "../utils/agentPreferences";
 
 const STORAGE_KEY = 'msi_autopilot_config';
 const ACTIONS_KEY = 'msi_autonomous_actions';
@@ -422,12 +427,18 @@ export class AutonomousExecutionService {
 
         const riskWarden = thesis.agents.find(a => a.agentId === 'risk');
         const scout = thesis.agents.find(a => a.agentId === 'scout');
+        const prefs = getAgentPreferences();
+        const leagueBoost = (card: CardInventory) => (leagueMatchesPreference(card.league, prefs.leagueStyle) ? 20 : 0);
         const topAsset = inventory
             .slice()
             .sort((a, b) => ((b.currentValue || 0) - (a.currentValue || 0)))[0];
         const candidateBuy = inventory
             .slice()
-            .sort((a, b) => ((b.opportunityScore || 0) - (a.opportunityScore || 0)))[0];
+            .sort((a, b) => {
+                const scoreB = (b.opportunityScore || 0) + leagueBoost(b);
+                const scoreA = (a.opportunityScore || 0) + leagueBoost(a);
+                return scoreB - scoreA;
+            })[0];
 
         if (riskWarden && riskWarden.sentiment === 'negative' && topAsset) {
             candidates.push({
@@ -462,7 +473,8 @@ export class AutonomousExecutionService {
             });
         }
 
-        if (topAsset && ((topAsset.currentValue || 0) > (topAsset.purchasePrice || 0) * (1 + ((config.collar.autoSellThreshold || 15) / 100)))) {
+        const sellThresholdPct = (config.collar.autoSellThreshold || 15) * timeHorizonSellMultiplier(prefs.timeHorizon);
+        if (topAsset && ((topAsset.currentValue || 0) > (topAsset.purchasePrice || 0) * (1 + (sellThresholdPct / 100)))) {
             candidates.push({
                 id: crypto.randomUUID(),
                 cycleId,
