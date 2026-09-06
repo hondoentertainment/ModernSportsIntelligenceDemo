@@ -1,25 +1,26 @@
-import jsPDF from 'jspdf';
-import { CardInventory } from '../../types';
+import type { CardInventory } from '../../types';
 import { buildInsurancePacket, type BuildInsurancePacketOptions } from './insurancePacket';
 
 export type GenerateInsurancePdfOptions = BuildInsurancePacketOptions;
 
 /**
- * Phase 25: Generate an insurance-ready valuation PDF.
- * Timestamped FMV per card, total collection value, methodology, and disclaimer.
+ * Optional jsPDF writer. Do not statically import this module from Dashboard /
+ * Collection / ReportModal — jsPDF + html2canvas blow the gzip total budget.
+ * App shells should use `insurancePacketExport` (printable HTML packet).
  */
 export function generateInsuranceReport(
   inventory: CardInventory[],
   ownerName: string = 'Collector',
   policyNumber: string = ''
-): void {
-  generateInsurancePdf(inventory, { ownerName, policyNumber });
+): Promise<void> {
+  return generateInsurancePdf(inventory, { ownerName, policyNumber });
 }
 
-export function generateInsurancePdf(
+export async function generateInsurancePdf(
   inventory: CardInventory[],
   options: GenerateInsurancePdfOptions = {}
-): void {
+): Promise<void> {
+  const { default: jsPDF } = await import('jspdf');
   const packet = buildInsurancePacket(inventory, options);
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();

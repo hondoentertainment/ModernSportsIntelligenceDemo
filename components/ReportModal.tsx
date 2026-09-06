@@ -36,7 +36,6 @@ import {
   getCachedReport,
   cacheReport,
 } from '../lib/utils/reportService';
-import { generateInsurancePdf } from '../lib/utils/insuranceReport';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -194,14 +193,12 @@ export const ReportModal: React.FC<ReportModalProps> = ({
     }
   }, []);
 
-  const handleDownloadPdf = useCallback((report: GeneratedReport) => {
+  const handleDownloadPdf = useCallback(async (report: GeneratedReport) => {
     if (report.type !== 'insurance') return;
-    generateInsurancePdf(inventory, {
-      generatedAt: report.generatedAt,
-      reportId: String(report.metadata.packetId || report.id),
-      includeSold: report.config.includeSold,
-    });
-  }, [inventory]);
+    const { downloadInsurancePacket, printInsurancePacket } = await import('../lib/utils/insurancePacketExport');
+    downloadInsurancePacket(report);
+    printInsurancePacket(report);
+  }, []);
 
   const handleViewFromHistory = useCallback((id: string) => {
     const cached = getCachedReport(id);

@@ -53,7 +53,7 @@ import { detectSignals } from '../lib/utils/signals.ts';
 import { syncPortfolio, SyncProgress } from '../lib/utils/marketSync.ts';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import { useAlerts } from '../lib/utils/useAlerts.ts';
-import ReportModal from '../components/ReportModal.tsx';
+const ReportModal = lazy(() => import('../components/ReportModal.tsx'));
 import MorningBriefingModal from '../components/MorningBriefingModal.tsx';
 import ShareAlphaModal from '../components/ShareAlphaModal.tsx';
 import OCRIngestionModal from '../components/OCRIngestionModal.tsx';
@@ -1387,11 +1387,13 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Report Modal */}
-      <ReportModal
-        isOpen={isReportOpen}
-        onClose={() => setIsReportOpen(false)}
-        inventory={inventory}
-      />
+      <Suspense fallback={null}>
+        <ReportModal
+          isOpen={isReportOpen}
+          onClose={() => setIsReportOpen(false)}
+          inventory={inventory}
+        />
+      </Suspense>
 
       {/* Morning Briefing Modal */}
       <MorningBriefingModal
