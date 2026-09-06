@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   X,
   Send,
@@ -11,11 +11,18 @@ import {
   ThumbsDown,
   Minus,
   Zap,
+  Package,
 } from 'lucide-react';
 import { NegotiationSession, NegotiableItem } from '../types';
 import { NegotiationService } from '../lib/trading/negotiationService';
 import { recordNegotiation } from '../lib/trading/negotiationAnalytics';
-import { getSelectedPlaybook } from '../lib/trading/negotiationPlaybooks';
+import { getSelectedPlaybook, setSelectedPlaybookId } from '../lib/trading/negotiationPlaybooks';
+import {
+  buildLotNegotiableItem,
+  collectLotLines,
+  quoteLot,
+  type LotPricingMode,
+} from '../lib/trading/lotNegotiation';
 import { logger } from '../lib/logger';
 import CardImage from './CardImage.tsx';
 import ImageLightbox from './ImageLightbox.tsx';
@@ -24,6 +31,7 @@ interface NegotiationModalProps {
     isOpen: boolean;
     onClose: () => void;
     targetItem: NegotiableItem | null;
+    lotCatalog?: NegotiableItem[];
     onSuccess: (_finalPrice: number) => void;
 }
 
@@ -34,15 +42,42 @@ const SENTIMENT_ICONS = {
     aggressive: <Zap className="w-3.5 h-3.5" />,
 };
 
-const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, targetItem, onSuccess }) => {
+const NegotiationModal: React.FC<NegotiationModalProps> = ({
+    isOpen,
+    onClose,
+    targetItem,
+    lotCatalog = [],
+    onSuccess,
+}) => {
     const [session, setSession] = useState<NegotiationSession | null>(null);
     const [offerInput, setOfferInput] = useState('');
     const [maxWilling, setMaxWilling] = useState<string>('');
     const [step, setStep] = useState<'config' | 'arena' | 'result'>('config');
     const [agentThinking, setAgentThinking] = useState(false);
     const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [pricingMode, setPricingMode] = useState<LotPricingMode>('package');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const recordedIds = useRef<Set<string>>(new Set());
+
+    const catalog = useMemo(() => {
+        const rows = [...lotCatalog];
+        if (targetItem && !rows.some((row) => row.id && row.id === targetItem.id)) {
+            rows.unshift(targetItem);
+        }
+        return rows;
+    }, [lotCatalog, targetItem]);
+
+    const selectedItems = useMemo(
+        () => catalog.filter((item) => item.id && selectedIds.includes(item.id)),
+        [catalog, selectedIds],
+    );
+    const lotLines = useMemo(() => collectLotLines(selectedItems), [selectedItems]);
+    const quote = useMemo(() => quoteLot(lotLines, pricingMode), [lotLines, pricingMode]);
+    const dealItem = useMemo(
+        () => (lotLines.length > 0 ? buildLotNegotiableItem(lotLines, pricingMode) : targetItem),
+        [lotLines, pricingMode, targetItem],
+    );
 
     const persistOutcome = useCallback((next: NegotiationSession, outcome?: 'accepted' | 'walked') => {
         if (recordedIds.current.has(next.id)) return;
@@ -61,16 +96,35 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
             setOfferInput('');
             setMaxWilling('');
             setLightboxOpen(false);
+            const seedIds = targetItem.id ? [targetItem.id] : [];
+            if (targetItem.lotItems && targetItem.lotItems.length > 1 && targetItem.id) {
+                setSelectedIds([targetItem.id]);
+                setPricingMode(targetItem.pricingMode || 'package');
+            } else {
+                setSelectedIds(seedIds);
+                setPricingMode('package');
+            }
         }
     }, [isOpen, targetItem]);
+
+    useEffect(() => {
+        if (step !== 'config' || !dealItem) return;
+        if (maxWilling === '' && quote.suggestedMax > 0) {
+            setMaxWilling(String(quote.suggestedMax));
+        }
+    }, [dealItem, maxWilling, quote.suggestedMax, step]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [session?.messages]);
 
+    const toggleCatalogItem = (id: string) => {
+        setSelectedIds((prev) => (prev.includes(id) ? prev.filter((row) => row !== id) : [...prev, id]));
+    };
+
     const startSession = () => {
-        if (!targetItem || !maxWilling) return;
-        const newSession = NegotiationService.startNegotiation(targetItem, parseFloat(maxWilling));
+        if (!dealItem || !maxWilling) return;
+        const newSession = NegotiationService.startNegotiation(dealItem, parseFloat(maxWilling));
         setSession(newSession);
         setStep('arena');
     };
@@ -144,7 +198,10 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
         }
     };
 
-    if (!isOpen || !targetItem) return null;
+    if (!isOpen || !targetItem || !dealItem) return null;
+
+    const isLot = quote.itemCount >= 2;
+    const displayName = dealItem.player || dealItem.name || 'Card';
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
@@ -159,7 +216,9 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                         </div>
                         <div>
                             <h2 className="text-xl font-bebas tracking-wide text-white">Negotiation <span className="text-brand-blue">Arena</span></h2>
-                            <p className="text-[10px] uppercase tracking-widest text-brand-muted font-bold">Powered by Gemini Logic</p>
+                            <p className="text-[10px] uppercase tracking-widest text-brand-muted font-bold">
+                                {isLot ? 'Demo lot · simulated seller' : 'Powered by Gemini Logic'}
+                            </p>
                         </div>
                     </div>
                     <button onClick={handleWalkAway} className="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors" aria-label="Close negotiation">
@@ -173,20 +232,108 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
                             <div className="flex items-center gap-6 p-4 bg-slate-900/50 rounded-2xl border border-slate-800">
                                 <CardImage
-                                    src={targetItem.image}
-                                    playerName={targetItem.player || targetItem.name || 'Card'}
-                                    year={targetItem.year}
-                                    manufacturer={targetItem.manufacturer}
+                                    src={dealItem.image}
+                                    playerName={displayName}
+                                    year={dealItem.year}
+                                    manufacturer={dealItem.manufacturer}
                                     className="w-20 h-20 rounded-xl shrink-0"
                                     enableLightbox={true}
                                     onImageClick={() => setLightboxOpen(true)}
                                 />
                                 <div>
-                                    <h3 className="font-bold text-lg text-white">{targetItem.player || targetItem.name}</h3>
-                                    <p className="text-brand-muted text-sm">{targetItem.year} {targetItem.manufacturer}</p>
-                                    <p className="text-brand-lime font-mono font-bold mt-1 text-xl">${targetItem.price || targetItem.currentValue}</p>
+                                    <h3 className="font-bold text-lg text-white">{displayName}</h3>
+                                    <p className="text-brand-muted text-sm">
+                                        {isLot
+                                            ? `${quote.itemCount} cards · ${quote.mode === 'package' ? 'package ask' : 'sum of singles'}`
+                                            : `${dealItem.year || ''} ${dealItem.manufacturer || ''}`.trim()}
+                                    </p>
+                                    <p className="text-brand-lime font-mono font-bold mt-1 text-xl">${quote.ask || dealItem.price || dealItem.currentValue}</p>
                                 </div>
                             </div>
+
+                            {catalog.length > 1 && (
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <p className="text-sm font-bold text-slate-300 flex items-center gap-2">
+                                            <Package size={16} /> Build a lot
+                                        </p>
+                                        <p className="text-[10px] uppercase tracking-widest text-brand-muted font-bold">
+                                            Demo marketplace · not live tape
+                                        </p>
+                                    </div>
+                                    <ul className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                                        {catalog.map((item) => {
+                                            const id = item.id || item.player || item.name || 'item';
+                                            const checked = selectedIds.includes(id);
+                                            const lotCount = item.lotItems?.length ?? 0;
+                                            return (
+                                                <li key={id}>
+                                                    <label className="flex items-center gap-3 p-3 rounded-xl border border-slate-800 bg-slate-900/40 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={checked}
+                                                            onChange={() => toggleCatalogItem(id)}
+                                                            className="accent-brand-lime w-4 h-4"
+                                                        />
+                                                        <span className="flex-1 text-sm text-white">
+                                                            {item.player || item.name}
+                                                            {lotCount >= 2 && (
+                                                                <span className="ml-2 text-[10px] uppercase tracking-widest text-brand-orange font-bold">
+                                                                    {lotCount}-card lot
+                                                                </span>
+                                                            )}
+                                                        </span>
+                                                        <span className="font-mono text-xs text-slate-400">
+                                                            ${item.price || item.currentValue || 0}
+                                                        </span>
+                                                    </label>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {isLot && (
+                                <div className="space-y-3 rounded-2xl border border-brand-orange/20 bg-brand-orange/5 p-4">
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setPricingMode('package')}
+                                            className={`flex-1 min-h-[44px] rounded-xl text-[10px] font-black uppercase tracking-widest ${
+                                                pricingMode === 'package'
+                                                    ? 'bg-brand-orange text-brand-charcoal'
+                                                    : 'bg-slate-900 text-slate-400 border border-slate-800'
+                                            }`}
+                                        >
+                                            Package ${quote.packagePrice}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setPricingMode('sum')}
+                                            className={`flex-1 min-h-[44px] rounded-xl text-[10px] font-black uppercase tracking-widest ${
+                                                pricingMode === 'sum'
+                                                    ? 'bg-brand-orange text-brand-charcoal'
+                                                    : 'bg-slate-900 text-slate-400 border border-slate-800'
+                                            }`}
+                                        >
+                                            Sum ${quote.sumAsk}
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-slate-400">
+                                        Package is a demo {quote.packageDiscountPct}% lot discount off the sum of singles — not a live dealer quote.
+                                    </p>
+                                    {getSelectedPlaybook().id !== 'bundle_friendly' && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedPlaybookId('bundle_friendly')}
+                                            className="text-[10px] font-black uppercase tracking-widest text-brand-orange hover:text-white"
+                                        >
+                                            Apply Bundle Discount playbook
+                                        </button>
+                                    )}
+                                </div>
+                            )}
 
                             <div className="space-y-4">
                                 <label className="block text-sm font-bold text-slate-300">Max Willing to Pay</label>
@@ -200,12 +347,15 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                                         placeholder="0.00"
                                     />
                                 </div>
-                                <p className="text-xs text-slate-500">Your agent will not exceed this amount. The seller does not see this.</p>
+                                <p className="text-xs text-slate-500">
+                                    Your agent will not exceed this amount. The seller does not see this.
+                                    {isLot ? ` Suggested ceiling $${quote.suggestedMax} (demo).` : ''}
+                                </p>
                             </div>
 
                             <button
                                 onClick={startSession}
-                                disabled={!maxWilling}
+                                disabled={!maxWilling || quote.itemCount < 1}
                                 className="w-full py-4 bg-brand-blue hover:bg-blue-600 text-white font-black uppercase tracking-widest rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-brand-blue/20"
                             >
                                 Enter Arena
@@ -314,7 +464,9 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                             </div>
                             <div>
                                 <h2 className="text-3xl font-bebas text-white">Deal Secured!</h2>
-                                <p className="text-brand-muted">You acquired this asset for <span className="text-brand-lime font-bold">${session.currentUserOffer}</span>.</p>
+                                <p className="text-brand-muted">
+                                    You acquired {session.targetItem.lotSize && session.targetItem.lotSize >= 2 ? 'this lot' : 'this asset'} for <span className="text-brand-lime font-bold">${session.currentUserOffer}</span>.
+                                </p>
                             </div>
 
                             <div className="p-4 bg-slate-900 rounded-xl border border-slate-800 text-sm text-slate-400">
@@ -338,9 +490,9 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
             <ImageLightbox
                 isOpen={lightboxOpen}
                 onClose={() => setLightboxOpen(false)}
-                src={targetItem.image}
-                alt={targetItem.player || targetItem.name || 'Card'}
-                caption={targetItem.player || targetItem.name ? `${targetItem.player || targetItem.name} • ${targetItem.year || ''} ${targetItem.manufacturer || ''}`.trim() : undefined}
+                src={dealItem.image}
+                alt={displayName}
+                caption={displayName ? `${displayName} • ${dealItem.year || ''} ${dealItem.manufacturer || ''}`.trim() : undefined}
             />
         </div>
     );

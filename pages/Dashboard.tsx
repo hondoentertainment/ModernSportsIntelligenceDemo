@@ -64,8 +64,10 @@ import { StatsService } from '../lib/utils/statsService.ts';
 import { AggregationService } from '../lib/analytics/aggregationService.ts';
 import { Cloud, CloudOff, Gavel } from 'lucide-react';
 import CardImage from '../components/CardImage.tsx';
+import AddAssetModal from '../components/AddAssetModal.tsx';
 import NegotiationModal from '../components/NegotiationModal.tsx';
 import NegotiationAnalyticsPanel from '../components/NegotiationAnalyticsPanel.tsx';
+import { MARKETPLACE_LOT_CATALOG } from '../lib/trading/lotNegotiation.ts';
 import HypeFeed from '../components/HypeFeed.tsx';
 import MarketPulseTable from '../components/MarketPulseTable.tsx';
 import DeepDiverReport from '../components/DeepDiverReport.tsx';
@@ -90,7 +92,7 @@ import LazyErrorBoundary from '../components/LazyErrorBoundary.tsx';
 import { WidgetLoadingFallback } from '../components/LazyLoadFallback.tsx';
 import { useAuth } from '../contexts/AuthContext';
 import { fetchPublicProfile } from '../lib/social/socialService';
-import type { UserProfile } from '../types';
+import type { CardInventory, UserProfile } from '../types';
 
 const BreakoutRadar = lazy(() => import('../components/BreakoutRadar.tsx'));
 const AgentInsightsPanel = lazy(() => import('../components/AgentInsightsPanel.tsx'));
@@ -149,6 +151,8 @@ const Dashboard: React.FC = () => {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isScanOpen, setIsScanOpen] = useState(false);
+  const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
+  const [initialAssetData, setInitialAssetData] = useState<Partial<CardInventory> | null>(null);
   const [isNegotiationOpen, setIsNegotiationOpen] = useState(false);
   const [negotiationTarget, setNegotiationTarget] = useState<any>(null);
   const [isTerminalMode, setIsTerminalMode] = useState(false);
@@ -913,9 +917,24 @@ const Dashboard: React.FC = () => {
                   <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Live Negotiations</p>
                 </div>
               </div>
-              <div className="px-3 py-1 bg-brand-charcoal border border-slate-800 rounded-full flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-brand-lime animate-pulse"></div>
-                <span className="text-[10px] font-black text-white uppercase tracking-widest">Simulation Active</span>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNegotiationTarget(
+                      MARKETPLACE_LOT_CATALOG.find((item) => item.id === 'market-lot-bowman-five')
+                      || MARKETPLACE_LOT_CATALOG[0],
+                    );
+                    setIsNegotiationOpen(true);
+                  }}
+                  className="px-3 py-1.5 bg-brand-orange/10 border border-brand-orange/30 rounded-full text-[10px] font-black uppercase tracking-widest text-brand-orange hover:bg-brand-orange hover:text-brand-charcoal transition-colors"
+                >
+                  Negotiate 5-card lot
+                </button>
+                <div className="px-3 py-1 bg-brand-charcoal border border-slate-800 rounded-full flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-brand-lime animate-pulse"></div>
+                  <span className="text-[10px] font-black text-white uppercase tracking-widest">Simulation Active</span>
+                </div>
               </div>
             </div>
 
@@ -1396,15 +1415,24 @@ const Dashboard: React.FC = () => {
         isOpen={isScanOpen}
         onClose={() => setIsScanOpen(false)}
         onSuccess={(card) => {
-          const newCard = {
-            id: `card-${Date.now()}`,
-            purchasePrice: 0,
-            purchaseDate: new Date().toISOString(),
-            condition: 'Ungraded',
-            ...card
-          } as any;
+          setInitialAssetData(card);
+          setIsAssetModalOpen(true);
+          setIsScanOpen(false);
+        }}
+      />
+
+      <AddAssetModal
+        isOpen={isAssetModalOpen}
+        onClose={() => {
+          setIsAssetModalOpen(false);
+          setInitialAssetData(null);
+        }}
+        initialData={initialAssetData}
+        onAdd={(card) => {
           const isFirstCard = inventory.length === 0;
-          setInventory(prev => [newCard, ...prev]);
+          setInventory((prev) => [card, ...prev]);
+          setIsAssetModalOpen(false);
+          setInitialAssetData(null);
           if (isFirstCard) {
             showToast(
               'info',
@@ -1419,6 +1447,7 @@ const Dashboard: React.FC = () => {
         isOpen={isNegotiationOpen}
         onClose={() => setIsNegotiationOpen(false)}
         targetItem={negotiationTarget}
+        lotCatalog={MARKETPLACE_LOT_CATALOG}
         onSuccess={(finalPrice) => {
           // Add to inventory logic here if desired
           logger.log('Acquired for', finalPrice);

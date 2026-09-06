@@ -156,6 +156,11 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive, onBarcodeD
                     <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-brand-lime"></div>
                     <div className="absolute inset-0 bg-brand-lime/5"></div>
                 </div>
+                {onBarcodeDetected && (
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 border border-brand-lime/30 text-[10px] font-black uppercase tracking-widest text-brand-lime">
+                        Align PSA cert or UPC barcode
+                    </div>
+                )}
             </div>
 
             {/* Controls Overlay - touch-friendly on mobile */}

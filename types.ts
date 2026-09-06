@@ -442,6 +442,17 @@ export interface NegotiationMessage {
   sentiment?: 'positive' | 'neutral' | 'negative' | 'aggressive';
 }
 
+/** One line in a multi-card lot / bundle negotiation. */
+export interface LotLineItem {
+  id: string;
+  name: string;
+  player?: string;
+  year?: number;
+  manufacturer?: string;
+  price: number;
+  image?: string;
+}
+
 /** Minimal shape accepted by the negotiation flow from any card/target/mock source */
 export interface NegotiableItem {
   id?: string;
@@ -454,6 +465,10 @@ export interface NegotiableItem {
   currentMarketPrice?: number;
   image?: string;
   cardDescription?: string;
+  /** When set, this target is a multi-item lot. */
+  lotItems?: LotLineItem[];
+  pricingMode?: 'sum' | 'package';
+  packagePrice?: number;
 }
 
 export interface NegotiationSession {
@@ -463,6 +478,8 @@ export interface NegotiationSession {
     name: string;
     price: number; // Listing Price
     image: string;
+    lotSize?: number;
+    pricingMode?: 'sum' | 'package';
   };
   currentUserOffer: number;
   sellerAsk: number;
