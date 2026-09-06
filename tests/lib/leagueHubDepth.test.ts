@@ -18,8 +18,11 @@ describe('league hub player/team desk', () => {
   it('builds NFL and NHL team desks from seeded standings', () => {
     const nfl = getLeagueTeamDesk('nfl');
     const nhl = getLeagueTeamDesk('nhl');
+    const nba = getLeagueTeamDesk('nba');
     expect(nfl.length).toBeGreaterThan(5);
     expect(nhl.length).toBeGreaterThan(5);
+    expect(nba.some((t) => t.team.includes('Celtics'))).toBe(true);
+    expect(nba.some((t) => t.team.includes('Lions'))).toBe(false);
     expect(nfl[0].cardMarketIndex).toBeGreaterThanOrEqual(nfl[nfl.length - 1].cardMarketIndex);
     expect(nhl.every((t) => t.record.includes('-'))).toBe(true);
   });
