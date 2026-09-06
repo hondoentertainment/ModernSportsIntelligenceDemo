@@ -304,6 +304,32 @@ describe('WarRoomCommitteeResponseSchema', () => {
     expect(result.success).toBe(true);
   });
 
+  it('accepts optional reasoningChain and conflictNotes', () => {
+    const result = WarRoomCommitteeResponseSchema.safeParse({
+      summary: 'Balanced',
+      keyTakeaways: ['a'],
+      riskAssessment: 'Medium',
+      recommendedAction: 'Hold',
+      agents: [
+        {
+          agentId: 'scout',
+          agentName: 'Scout Prime',
+          persona: 'x',
+          insight: 'y',
+          sentiment: 'neutral',
+          confidence: 0.7,
+          reasoningChain: ['comp coverage', 'breakout score'],
+          conflictNotes: ['Risk is more cautious'],
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.agents[0].reasoningChain).toEqual(['comp coverage', 'breakout score']);
+      expect(result.data.agents[0].conflictNotes).toEqual(['Risk is more cautious']);
+    }
+  });
+
   it('rejects invalid agent sentiment', () => {
     const result = WarRoomCommitteeResponseSchema.safeParse({
       summary: 'x',

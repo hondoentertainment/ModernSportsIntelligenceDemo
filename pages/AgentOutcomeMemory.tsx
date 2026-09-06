@@ -5,6 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useAgentRecommendations } from '../lib/utils/useAgentRecommendations';
 import { ChartSkeleton } from '../components/SkeletonLoader';
+import WhyRecommendationPanel from '../components/WhyRecommendationPanel';
+import { buildWhyFromRecommendation } from '../lib/utils/agentReasoning';
 
 const AgentOutcomeMemory: React.FC = () => {
   const { user } = useAuth();
@@ -100,9 +102,12 @@ const AgentOutcomeMemory: React.FC = () => {
         ) : (
           <ul className="space-y-3" role="list">
             {recommendations.slice(0, 20).map(rec => (
-              <li key={rec.id} className="flex items-center justify-between rounded-xl bg-slate-800/50 p-3 text-sm">
-                <span className="text-slate-300 truncate max-w-md">{rec.summary || rec.recommendedAction}</span>
-                <span className={`px-2 py-0.5 rounded text-xs font-medium ${rec.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : rec.status === 'rejected' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>{rec.status}</span>
+              <li key={rec.id} className="rounded-xl bg-slate-800/50 p-3 text-sm space-y-2">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-slate-300 truncate max-w-md">{rec.summary || rec.recommendedAction}</span>
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium shrink-0 ${rec.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : rec.status === 'rejected' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>{rec.status}</span>
+                </div>
+                <WhyRecommendationPanel view={buildWhyFromRecommendation(rec)} compact />
               </li>
             ))}
           </ul>

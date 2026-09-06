@@ -103,7 +103,7 @@ describe('warRoomThesisAudit', () => {
     });
 
     it('exports current prompt version', () => {
-      expect(WAR_ROOM_PROMPT_VERSION).toBe('war-room-committee-2026-07-v2');
+      expect(WAR_ROOM_PROMPT_VERSION).toBe('war-room-committee-2026-09-v3');
     });
 
     it('treats non-array inventory like empty portfolio', () => {

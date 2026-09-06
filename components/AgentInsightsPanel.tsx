@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import { CardInventory } from '../types';
 import { generatePortfolioBriefing, AGENTS, AgentRole } from '../lib/utils/agentFramework';
+import WhyRecommendationPanel from './WhyRecommendationPanel';
+import { buildWhyFromBriefing } from '../lib/utils/agentReasoning';
 
 interface AgentInsightsPanelProps {
   inventory: CardInventory[];
@@ -102,6 +104,19 @@ const AgentInsightsPanel: React.FC<AgentInsightsPanelProps> = ({ inventory, onCa
                       ))}
                     </div>
                   )}
+                  <div className="pl-14">
+                    <WhyRecommendationPanel
+                      view={buildWhyFromBriefing({
+                        agentId: report.agent.role,
+                        agentName: report.agent.name,
+                        persona: report.agent.title,
+                        headline: report.headline,
+                        details: report.details,
+                        actionItems: report.actionItems,
+                      })}
+                      compact
+                    />
+                  </div>
                 </div>
               )}
             </div>

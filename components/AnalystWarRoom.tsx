@@ -5,6 +5,8 @@ import { AutonomousExecutionService } from '../lib/trading/AutonomousExecutionSe
 import { CollaborativeThesis } from '../types';
 import AgentCard from './AgentCard';
 import AutoPilotControl from './AutoPilotControl';
+import WhyRecommendationPanel from './WhyRecommendationPanel';
+import { buildWhyFromThesis } from '../lib/utils/agentReasoning';
 import { Brain, RefreshCw, Send, ShieldCheck, Target, TrendingUp, Info, Activity, Zap, Download } from 'lucide-react';
 import { showToast } from '../lib/utils/toast';
 import { store } from '../lib/dal/syncStore';
@@ -249,6 +251,7 @@ const AnalystWarRoom: React.FC = () => {
                                                 </button>
                                             </div>
                                         </div>
+                                        {thesis && <WhyRecommendationPanel view={buildWhyFromThesis(thesis)} />}
                                     </div>
                                 )}
                             </div>
@@ -303,7 +306,7 @@ const AnalystWarRoom: React.FC = () => {
                             </>
                         ) : (
                             thesis?.agents.map((agent) => (
-                                <AgentCard key={agent.agentId} agent={agent} />
+                                <AgentCard key={agent.agentId} agent={agent} committee={thesis.agents} />
                             ))
                         )}
                     </div>

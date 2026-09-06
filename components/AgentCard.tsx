@@ -1,14 +1,17 @@
 import React from 'react';
 import { AgentInsight } from '../types';
 import { MultiAgentService } from '../lib/utils/MultiAgentService';
+import { buildWhyFromAgent } from '../lib/utils/agentReasoning';
+import WhyRecommendationPanel from './WhyRecommendationPanel';
 import { Brain, TrendingUp, ShieldAlert, BadgeDollarSign, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
 
 interface AgentCardProps {
     agent: AgentInsight;
+    committee?: AgentInsight[];
     isLoading?: boolean;
 }
 
-const AgentCard: React.FC<AgentCardProps> = ({ agent, isLoading }) => {
+const AgentCard: React.FC<AgentCardProps> = ({ agent, committee, isLoading }) => {
     const persona = MultiAgentService.getPersona(agent.agentId);
 
     const getSentimentIcon = () => {
@@ -83,6 +86,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, isLoading }) => {
                 </p>
                 <div className="absolute -left-3 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-brand-lime/20 to-transparent rounded-full" />
             </div>
+            <WhyRecommendationPanel view={buildWhyFromAgent(agent, committee)} compact />
         </div>
     );
 };
