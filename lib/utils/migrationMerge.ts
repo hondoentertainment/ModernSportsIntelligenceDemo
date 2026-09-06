@@ -41,6 +41,128 @@ export interface TargetMigrationPlan {
   mergedOverwrites: number;
 }
 
+export type DuplicateOutcomeAction = 'merge' | 'skip';
+
+export interface DuplicateOutcome {
+  identityKey: string;
+  kind: 'card' | 'target';
+  label: string;
+  outcome: DuplicateOutcomeAction;
+  localFreshness?: string;
+  cloudFreshness?: string;
+}
+
+export interface MigrationDuplicatePreview {
+  policy: MigrationConflictPolicy;
+  localCards: number;
+  localTargets: number;
+  cloudCards: number;
+  cloudTargets: number;
+  newCards: number;
+  newTargets: number;
+  duplicates: number;
+  wouldMerge: number;
+  wouldSkip: number;
+  wouldInsert: number;
+  outcomes: DuplicateOutcome[];
+}
+
+function cardLabel(card: CardInventory): string {
+  return `${card.player} ${card.year} ${card.set} #${card.cardNumber}`.trim();
+}
+
+function decideOutcome(
+  policy: MigrationConflictPolicy,
+  localMs: number,
+  cloudMs: number
+): DuplicateOutcomeAction {
+  if (policy === 'prefer_cloud') return 'skip';
+  if (policy === 'prefer_local') return 'merge';
+  return localMs >= cloudMs ? 'merge' : 'skip';
+}
+
+export function listCardDuplicateOutcomes(
+  local: CardInventory[],
+  cloud: CardInventory[],
+  policy: MigrationConflictPolicy
+): DuplicateOutcome[] {
+  const cloudByIdentity = new Map<string, CardInventory>();
+  for (const row of cloud) {
+    cloudByIdentity.set(cardIdentityKey(row), row);
+  }
+  const outcomes: DuplicateOutcome[] = [];
+  for (const loc of local) {
+    const key = cardIdentityKey(loc);
+    const cloudRow = cloudByIdentity.get(key);
+    if (!cloudRow) continue;
+    outcomes.push({
+      identityKey: key,
+      kind: 'card',
+      label: cardLabel(loc),
+      outcome: decideOutcome(policy, freshnessMs(loc), freshnessMs(cloudRow)),
+      localFreshness: loc.lastValuationDate || loc.purchaseDate,
+      cloudFreshness: cloudRow.lastValuationDate || cloudRow.purchaseDate,
+    });
+  }
+  return outcomes;
+}
+
+export function listTargetDuplicateOutcomes(
+  local: TargetWatchlist[],
+  cloud: TargetWatchlist[],
+  policy: MigrationConflictPolicy
+): DuplicateOutcome[] {
+  const cloudByIdentity = new Map<string, TargetWatchlist>();
+  for (const row of cloud) {
+    cloudByIdentity.set(targetIdentityKey(row), row);
+  }
+  const outcomes: DuplicateOutcome[] = [];
+  for (const loc of local) {
+    const key = targetIdentityKey(loc);
+    const cloudRow = cloudByIdentity.get(key);
+    if (!cloudRow) continue;
+    outcomes.push({
+      identityKey: key,
+      kind: 'target',
+      label: `${loc.player} — ${loc.cardDescription}`,
+      outcome: decideOutcome(policy, targetFreshnessMs(loc), targetFreshnessMs(cloudRow)),
+      localFreshness: loc.createdAt,
+      cloudFreshness: cloudRow.createdAt,
+    });
+  }
+  return outcomes;
+}
+
+export function planMigrationPreview(
+  localCards: CardInventory[],
+  cloudCards: CardInventory[],
+  localTargets: TargetWatchlist[],
+  cloudTargets: TargetWatchlist[],
+  policy: MigrationConflictPolicy
+): MigrationDuplicatePreview {
+  const cardPlan = planCardMigration(localCards, cloudCards, policy);
+  const targetPlan = planTargetMigration(localTargets, cloudTargets, policy);
+  const cardOutcomes = listCardDuplicateOutcomes(localCards, cloudCards, policy);
+  const targetOutcomes = listTargetDuplicateOutcomes(localTargets, cloudTargets, policy);
+  const outcomes = [...cardOutcomes, ...targetOutcomes];
+  const newCards = localCards.length - cardOutcomes.length;
+  const newTargets = localTargets.length - targetOutcomes.length;
+  return {
+    policy,
+    localCards: localCards.length,
+    localTargets: localTargets.length,
+    cloudCards: cloudCards.length,
+    cloudTargets: cloudTargets.length,
+    newCards,
+    newTargets,
+    duplicates: outcomes.length,
+    wouldMerge: outcomes.filter((o) => o.outcome === 'merge').length,
+    wouldSkip: outcomes.filter((o) => o.outcome === 'skip').length,
+    wouldInsert: newCards + newTargets,
+    outcomes,
+  };
+}
+
 /**
  * Decide which local cards to upsert given rows already in Supabase.
  */

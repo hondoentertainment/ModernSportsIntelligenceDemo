@@ -6,12 +6,14 @@
 import { logger } from '../logger';
 import { store } from '../dal/syncStore';
 import { CardInventory, TargetWatchlist } from '../../types.ts';
-import { isDemoMode } from '../supabase';
+import { isDemoMode, supabase } from '../supabase';
 import { fetchCards, fetchTargets } from '../supabaseData';
 import {
     type MigrationConflictPolicy,
+    type MigrationDuplicatePreview,
     planCardMigration,
     planTargetMigration,
+    planMigrationPreview,
 } from './migrationMerge';
 
 // Known MSI persistence keys (syncStore + DAL)
@@ -116,6 +118,106 @@ export function formatMigrationMergeLine(summary: MigrationMergeSummary): string
 /** Short toast body after sync. */
 export function formatMigrationMergeToast(summary: MigrationMergeSummary): string {
     return `Uplink complete: ${formatMigrationMergeLine(summary)}`;
+}
+
+export type MigrationPreviewReason = 'ok' | 'demo' | 'not-signed-in' | 'no-local' | 'cloud-unavailable';
+
+export interface MigrationConflictPreview extends MigrationDuplicatePreview {
+    available: boolean;
+    reason: MigrationPreviewReason;
+}
+
+export function formatConflictPreviewLine(preview: MigrationConflictPreview): string {
+    if (preview.reason === 'demo') {
+        return `Demo mode — ${preview.localCards} local card${preview.localCards === 1 ? '' : 's'} on this device. Cloud compare is skipped while demo isolation is on.`;
+    }
+    if (preview.reason === 'not-signed-in') {
+        return 'Sign in to compare local inventory with cloud duplicates.';
+    }
+    if (preview.reason === 'no-local') {
+        return 'No local inventory or targets to bridge.';
+    }
+    if (preview.reason === 'cloud-unavailable') {
+        return `Local data ready (${preview.localCards} cards, ${preview.localTargets} targets). Cloud compare unavailable — sync will retry when uplink is online.`;
+    }
+    const policyLabel =
+        preview.policy === 'prefer_cloud'
+            ? 'keep cloud'
+            : preview.policy === 'merge_newer'
+              ? 'newer wins'
+              : 'prefer local';
+    if (preview.duplicates === 0) {
+        return `${preview.wouldInsert} new row${preview.wouldInsert === 1 ? '' : 's'} to insert · no duplicate keys`;
+    }
+    return `${preview.duplicates} duplicate key${preview.duplicates === 1 ? '' : 's'} · ${policyLabel} will merge ${preview.wouldMerge} and skip ${preview.wouldSkip} · ${preview.wouldInsert} new`;
+}
+
+function emptyConflictPreview(
+    reason: MigrationPreviewReason,
+    policy: MigrationConflictPolicy,
+    extras?: Partial<MigrationConflictPreview>
+): MigrationConflictPreview {
+    return {
+        available: reason === 'ok',
+        reason,
+        policy,
+        localCards: 0,
+        localTargets: 0,
+        cloudCards: 0,
+        cloudTargets: 0,
+        newCards: 0,
+        newTargets: 0,
+        duplicates: 0,
+        wouldMerge: 0,
+        wouldSkip: 0,
+        wouldInsert: 0,
+        outcomes: [],
+        ...extras,
+    };
+}
+
+/**
+ * Compare local vs cloud without writing. Demo-safe when Supabase is paused or isolation is on.
+ */
+export async function previewMigrationConflicts(userId?: string): Promise<MigrationConflictPreview> {
+    const policy = getMigrationConflictPolicy();
+    const localCards = getPersistedData<CardInventory[]>(STORAGE_KEYS.INVENTORY) || [];
+    const localTargets = getPersistedData<TargetWatchlist[]>(STORAGE_KEYS.TARGETS) || [];
+
+    if (isDemoMode) {
+        return emptyConflictPreview('demo', policy, {
+            localCards: localCards.length,
+            localTargets: localTargets.length,
+        });
+    }
+    if (!userId) {
+        return emptyConflictPreview('not-signed-in', policy, {
+            localCards: localCards.length,
+            localTargets: localTargets.length,
+        });
+    }
+    if (localCards.length === 0 && localTargets.length === 0) {
+        return emptyConflictPreview('no-local', policy);
+    }
+
+    try {
+        const { error } = await supabase.from('cards').select('id').eq('user_id', userId).limit(1);
+        if (error) {
+            return emptyConflictPreview('cloud-unavailable', policy, {
+                localCards: localCards.length,
+                localTargets: localTargets.length,
+            });
+        }
+        const cloudCards = await fetchCards(userId);
+        const cloudTargets = await fetchTargets(userId);
+        const planned = planMigrationPreview(localCards, cloudCards, localTargets, cloudTargets, policy);
+        return { ...planned, available: true, reason: 'ok' };
+    } catch {
+        return emptyConflictPreview('cloud-unavailable', policy, {
+            localCards: localCards.length,
+            localTargets: localTargets.length,
+        });
+    }
 }
 
 /**

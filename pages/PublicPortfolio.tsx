@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Shield, LayoutGrid, List as ListIcon, Search, Share2, CheckCircle2 } from 'lucide-react';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { Shield, LayoutGrid, List as ListIcon, Search, Share2, CheckCircle2, Code2 } from 'lucide-react';
 import { CardInventory, UserProfile, League } from '../types';
 import { fetchPublicProfile, fetchPublicInventory, generateShareLink } from '../lib/social/socialService';
 import CardImage from '../components/CardImage';
@@ -10,9 +10,13 @@ import { useToast } from '../contexts/ToastContext';
 import { logger } from '../lib/logger';
 import { withRetry } from '../lib/retry';
 import { validateUsername } from '../lib/apiValidation';
+import { buildIframeEmbedSnippet, isPortfolioEmbedView, PORTFOLIO_EMBED_DISCLOSURE } from '../lib/social/portfolioEmbed';
+import { buildShareableCollectionPreview, generateEmbedCode } from '../lib/social/collectionShare';
 
 const PublicPortfolio: React.FC = () => {
     const { username: usernameParam } = useParams<{ username: string }>();
+    const [searchParams] = useSearchParams();
+    const isEmbed = isPortfolioEmbedView(searchParams.toString());
     let username: string | null = null;
     let usernameError: string | null = null;
     if (usernameParam) {
@@ -30,7 +34,7 @@ const PublicPortfolio: React.FC = () => {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [filterLeague, setFilterLeague] = useState<League | 'All'>('All');
-    const [copied, setCopied] = useState(false);
+    const [copied, setCopied] = useState<'link' | 'embed' | null>(null);
 
     const loadData = useCallback(async () => {
         if (!username) return;
@@ -75,8 +79,16 @@ const PublicPortfolio: React.FC = () => {
     const copyLink = () => {
         if (username) {
             navigator.clipboard.writeText(generateShareLink(username));
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
+            setCopied('link');
+            setTimeout(() => setCopied(null), 2000);
+        }
+    };
+
+    const copyEmbed = () => {
+        if (username) {
+            navigator.clipboard.writeText(buildIframeEmbedSnippet(username));
+            setCopied('embed');
+            setTimeout(() => setCopied(null), 2000);
         }
     };
 
@@ -127,8 +139,19 @@ const PublicPortfolio: React.FC = () => {
         );
     }
 
+    const widgetPreview = username
+        ? generateEmbedCode(buildShareableCollectionPreview(inventory, {
+            ownerName: profile.displayName || profile.username,
+            title: `${profile.displayName || profile.username} collection`,
+            description: profile.bio || 'Public collection snapshot',
+        }))
+        : '';
+
     return (
-        <div className="max-w-[1920px] mx-auto space-y-8">
+        <div className={`mx-auto space-y-8 ${isEmbed ? 'max-w-xl p-3' : 'max-w-[1920px]'}`}>
+            {isEmbed && (
+                <p className="text-[10px] text-slate-500 font-semibold">{PORTFOLIO_EMBED_DISCLOSURE}</p>
+            )}
             {/* Profile Header */}
             <div className="bg-slate-900/50 border border-slate-800 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8 backdrop-blur-sm">
                 <div className="relative">
@@ -158,13 +181,34 @@ const PublicPortfolio: React.FC = () => {
                         </p>
                     </div>
                 </div>
-                <button onClick={copyLink} className="p-4 bg-brand-lime text-brand-charcoal rounded-2xl hover:bg-white transition-colors">
-                    {copied ? <CheckCircle2 size={24} /> : <Share2 size={24} />}
-                </button>
+                {!isEmbed && (
+                    <div className="flex gap-2">
+                        <button type="button" onClick={copyLink} className="p-4 bg-brand-lime text-brand-charcoal rounded-2xl hover:bg-white transition-colors" aria-label="Copy share link">
+                            {copied === 'link' ? <CheckCircle2 size={24} /> : <Share2 size={24} />}
+                        </button>
+                        <button type="button" onClick={copyEmbed} className="p-4 bg-slate-800 text-brand-lime rounded-2xl hover:bg-slate-700 transition-colors" aria-label="Copy embed snippet">
+                            {copied === 'embed' ? <CheckCircle2 size={24} /> : <Code2 size={24} />}
+                        </button>
+                    </div>
+                )}
             </div>
 
+            {!isEmbed && (
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                    <Code2 size={16} className="text-brand-lime" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Iframe embed snippet</span>
+                </div>
+                <p className="text-[10px] text-slate-500">{PORTFOLIO_EMBED_DISCLOSURE}</p>
+                <pre className="text-[10px] font-mono text-slate-400 bg-black/40 rounded-xl p-3 overflow-x-auto whitespace-pre-wrap">{username ? buildIframeEmbedSnippet(username) : ''}</pre>
+                {widgetPreview && (
+                    <iframe title="Static widget preview" srcDoc={widgetPreview} sandbox="" className="w-full h-64 border border-slate-800 rounded-xl" />
+                )}
+            </div>
+            )}
+
             {/* Controls */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between sticky top-0 z-20 bg-brand-charcoal/95 backdrop-blur-xl py-4 border-b border-slate-800/50">
+            <div className={`flex flex-col md:flex-row gap-4 items-center justify-between ${isEmbed ? '' : 'sticky top-0 z-20'} bg-brand-charcoal/95 backdrop-blur-xl py-4 border-b border-slate-800/50`}>
                 <div className="flex flex-1 gap-4 w-full md:w-auto">
                     <div className="relative flex-1 md:max-w-md group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-brand-lime transition-colors" size={20} />

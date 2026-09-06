@@ -1,7 +1,26 @@
 # Roadmap Review & Feature Enhancement Recommendations
 
 **Date:** 2026-03-08
+**Last updated:** 2026-09-06
 **Scope:** Review of the 24-phase roadmap (PRD.md) and strategic next-steps (next-steps-recommendation.md)
+
+## Status addendum (2026-09-06)
+
+Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-safe; no secret or `VITE_FF_REAL_*` flips):
+
+| Item                                             | Status                                                                                                 |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| #1 Barcode / cert scan (card-show floor loop)    | **Shipped** (#119) — CameraFeed + cert/UPC resolver prefills Add Asset. Live PSA stays gated.          |
+| #3 Swipe triage (keep / sell / consign / review) | **Shipped** — Collection mobile 4-way swipe + haptics + local review queue.                            |
+| #5 Bundle / lot negotiation                      | **Shipped** (#119) — Arena lot/package pricing on existing negotiation surfaces.                       |
+| #6 Negotiation analytics                         | **Shipped** (#117) — win rate, discount, time-to-close, walk-away from local Arena history.            |
+| #12 Agent transparency / why-panels              | **Shipped** (#118) — expandable reasoning on multi-agent recommendations.                              |
+| #18 Hobby Health Index                           | **Shipped (seeded)** — disclosed synthetic composite on Macro-Sentinel. Not a live feed.               |
+| #19 Insurance-grade report                       | **Shipped** — timestamped FMV packet, totals, methodology, printable/PDF from Report Modal.            |
+| #24 Collection embed / vanity widget             | **Shipped** — iframe snippet + preview on Share Alpha / Public Portfolio. Custom domain still open.    |
+| Migration conflict / duplicate policy UX         | **Shipped** — merge vs skip preview on Migration Banner + Profile when local and cloud both have data. |
+
+Still **owner-held / open:** tax-lot regulatory completeness (#16), P2P marketplace (#7), centering CV (#17), live marketplace / Stripe / Supabase restore, Gemini-deepened live counters.
 
 ---
 

@@ -32,8 +32,8 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
   - **Detection + auto sync:** Shipped — `contexts/MigrationContext.tsx` runs `needsMigration()` and **auto-triggers** `migrateToSupabase` once per user after login when local data exists (non-demo, Supabase configured).
   - **Manual sync:** Shipped — `components/MigrationBanner.tsx` ("Sync Now"), `pages/Profile.tsx` institutional sync control, both call `triggerMigration()`.
   - **Persistence stack:** DAL + `store` (`lib/dal/syncStore.ts`, `lib/dal.ts`, `initDAL`) — see `docs/DAL_MIGRATION.md` and `PRODUCTION_READINESS.md`.
-  - **Conflict resolution:** Still **productize** — document and enforce explicit rules for duplicate keys / merge vs skip when cloud already has rows (today: migrate path exists; advanced merge policy is the gap).
-- **Status:** **Operational for typical first-time cloud sync** — prioritize conflict/duplicate policy and user-visible outcomes next, not the initial migration plumbing.
+  - **Conflict resolution:** **Shipped** (2026-09-06) — `planMigrationPreview` + banner/Profile show merge vs skip / duplicate-key outcomes before sync; demo-safe when Supabase is unavailable.
+- **Status:** **Operational** for first-time cloud sync and duplicate-policy UX. Remaining work is field-level merge UI, not the policy plumbing.
 
 ---
 

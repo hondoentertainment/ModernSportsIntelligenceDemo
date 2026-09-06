@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Plus,
   Search,
@@ -19,7 +19,7 @@ import {
   Share2,
   BriefcaseBusiness,
 } from 'lucide-react';
-import { CardInventory, TargetWatchlist, League, ExitPlan } from '../types';
+import { CardInventory, TargetWatchlist, League, ExitPlan, UserProfile } from '../types';
 import { Link } from 'react-router-dom';
 import { getEbayCardPrice } from '../lib/utils/gemini';
 import { logger } from '../lib/logger';
@@ -56,6 +56,8 @@ import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAle
 import { showToast } from '../lib/utils/toast';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice';
+import { type SwipeTriageAction, SWIPE_TRIAGE_HINT } from '../lib/utils/swipeTriage';
+import { getTriageReviewIds, toggleTriageReview } from '../lib/utils/collectionTriage';
 
 type SortField = 'player' | 'value' | 'purchasePrice' | 'date' | 'roi' | 'league';
 type SortDir = 'asc' | 'desc';
@@ -317,6 +319,31 @@ const Collection: React.FC = () => {
   };
   const openConsignment = (card: CardInventory) => setConsignmentCard(card);
 
+  const [reviewIds, setReviewIds] = useState<string[]>(() => getTriageReviewIds());
+  const [filterReviewOnly, setFilterReviewOnly] = useState(false);
+
+  const handleSwipeTriage = useCallback((card: CardInventory, action: SwipeTriageAction) => {
+    if (action === 'keep') {
+      if (!isFavorite(card.id)) toggleFavorite(card);
+      showToast('success', `Kept ${card.player} in collection.`);
+      return;
+    }
+    if (action === 'sell') {
+      openExitStrategy(card);
+      showToast('info', `Sell path opened for ${card.player}.`);
+      return;
+    }
+    if (action === 'consign') {
+      openConsignment(card);
+      return;
+    }
+    const next = toggleTriageReview(card.id);
+    setReviewIds(next.ids);
+    showToast(next.added ? 'info' : 'success', next.added
+      ? `${card.player} marked for review.`
+      : `${card.player} cleared from review.`);
+  }, [isFavorite, toggleFavorite]);
+
   const cardActionHandlers: CardItemActionHandlers = {
     isFavorite,
     toggleFavorite,
@@ -339,11 +366,16 @@ const Collection: React.FC = () => {
         c.manufacturer.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesLeague = filterLeague === 'All' || c.league === filterLeague;
 
-      if (activeTab === 'inventory') return matchesSearch && matchesLeague && c.status !== 'sold';
+      if (activeTab === 'inventory') {
+        const inInventory = matchesSearch && matchesLeague && c.status !== 'sold';
+        if (!inInventory) return false;
+        if (filterReviewOnly) return reviewIds.includes(c.id);
+        return true;
+      }
       if (activeTab === 'vault') return matchesSearch && matchesLeague && c.status === 'sold';
       return matchesSearch && matchesLeague;
     });
-  }, [inventory, searchQuery, filterLeague, activeTab]);
+  }, [inventory, searchQuery, filterLeague, activeTab, filterReviewOnly, reviewIds]);
 
   const stats = useMemo(() => {
     const p = computePortfolioStats(inventory, { excludeSold: true });
@@ -660,6 +692,19 @@ const Collection: React.FC = () => {
               </div>
             )}
 
+            <div className="md:hidden rounded-2xl border border-slate-800 bg-brand-slate/40 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              {SWIPE_TRIAGE_HINT}
+              {reviewIds.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setFilterReviewOnly((v) => !v)}
+                  className={`ml-3 underline ${filterReviewOnly ? 'text-amber-300' : 'text-amber-400'}`}
+                >
+                  {filterReviewOnly ? 'Show all' : `${reviewIds.length} in review`}
+                </button>
+              )}
+            </div>
+
             {/* Assets Grid */}
             {viewMode === 'grid' ? (
               filteredInventory.length > VIRTUAL_THRESHOLD ? (
@@ -675,6 +720,7 @@ const Collection: React.FC = () => {
                   onOpenLightbox={openLightbox}
                   isItemSelected={(id) => selectedIds.has(id)}
                   onToggleSelect={toggleSelection}
+                  onSwipeTriage={handleSwipeTriage}
                   {...cardActionHandlers}
                 />
               ) : (
@@ -690,6 +736,7 @@ const Collection: React.FC = () => {
                       onOpenLightbox={openLightbox}
                       isSelected={selectedIds.has(card.id)}
                       onToggleSelect={toggleSelection}
+                      onSwipeTriage={handleSwipeTriage}
                       {...cardActionHandlers}
                     />
                   ))}
@@ -979,16 +1026,35 @@ const Collection: React.FC = () => {
           </div>
         </div>
 
-        {userProfile && (
-          <ShareAlphaModal
-            isOpen={isShareModalOpen}
-            onClose={() => setIsShareModalOpen(false)}
-            profile={userProfile}
-            onToggleVisibility={(isPublic) => {
-              setUserProfile({ ...userProfile, isPublic });
-            }}
-          />
-        )}
+        {(() => {
+          const fallbackShareProfile: UserProfile | null = userProfile ?? (user?.email
+            ? {
+                id: user.id ?? 'local-share',
+                username: user.email.split('@')[0],
+                displayName: user.email.split('@')[0],
+                isPublic: true,
+                joinedAt: new Date().toISOString(),
+                alphaScore: 0,
+                portfolioValue: stats.totalValue,
+                roi: 0,
+                tier: isDemoMode ? 'Demo' : 'Collector',
+                bio: isDemoMode
+                  ? 'Demo-mode share surface. Public page uses demo catalog when cloud is unavailable.'
+                  : undefined,
+              }
+            : null);
+          return fallbackShareProfile ? (
+            <ShareAlphaModal
+              isOpen={isShareModalOpen}
+              onClose={() => setIsShareModalOpen(false)}
+              profile={fallbackShareProfile}
+              inventory={inventory}
+              onToggleVisibility={(isPublic) => {
+                setUserProfile({ ...fallbackShareProfile, isPublic });
+              }}
+            />
+          ) : null;
+        })()}
       </div>
     </div>
   );

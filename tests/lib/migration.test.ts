@@ -4,7 +4,9 @@ import {
     getMigrationStatus,
     buildMigrationMergeSummary,
     formatMigrationMergeLine,
+    formatConflictPreviewLine,
     type MigrationResult,
+    type MigrationConflictPreview,
 } from '../../lib/utils/migration';
 
 const STORAGE_KEYS = {
@@ -90,6 +92,39 @@ describe('migration', () => {
             expect(formatMigrationMergeLine(s)).toContain('3 cards, 1 target written');
             expect(formatMigrationMergeLine(s)).toContain('2 conflicts resolved per policy');
             expect(formatMigrationMergeLine(s)).toContain('2 duplicates skipped (cloud retained)');
+        });
+    });
+
+    describe('conflict preview copy', () => {
+        const preview = (over: Partial<MigrationConflictPreview>): MigrationConflictPreview => ({
+            available: true,
+            reason: 'ok',
+            policy: 'prefer_local',
+            localCards: 4,
+            localTargets: 1,
+            cloudCards: 2,
+            cloudTargets: 1,
+            newCards: 2,
+            newTargets: 0,
+            duplicates: 3,
+            wouldMerge: 3,
+            wouldSkip: 0,
+            wouldInsert: 2,
+            outcomes: [],
+            ...over,
+        });
+
+        it('explains merge vs skip when cloud compare is available', () => {
+            expect(formatConflictPreviewLine(preview({}))).toContain('3 duplicate keys');
+            expect(formatConflictPreviewLine(preview({}))).toContain('merge 3');
+            expect(formatConflictPreviewLine(preview({}))).toContain('skip 0');
+        });
+
+        it('stays demo-honest when uplink is unavailable', () => {
+            expect(formatConflictPreviewLine(preview({ reason: 'cloud-unavailable', available: false }))).toContain(
+                'Cloud compare unavailable'
+            );
+            expect(formatConflictPreviewLine(preview({ reason: 'demo', available: false }))).toContain('Demo mode');
         });
     });
 });

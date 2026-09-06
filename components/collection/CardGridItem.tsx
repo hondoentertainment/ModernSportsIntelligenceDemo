@@ -25,6 +25,8 @@ import {
 import DataSourceBadge from '../DataSourceBadge';
 import CertVerifiedBadge from '../CertVerifiedBadge';
 import { CardItemActionHandlers, getCardItemActionsForSurface } from './cardItemActions';
+import SwipeableCard from './SwipeableCard';
+import type { SwipeTriageAction } from '../../lib/utils/swipeTriage';
 
 export interface CardGridItemProps extends CardItemActionHandlers {
   card: CardInventory;
@@ -35,6 +37,7 @@ export interface CardGridItemProps extends CardItemActionHandlers {
   onOpenLightbox?: (_card: CardInventory) => void;
   isSelected?: boolean;
   onToggleSelect?: (_id: string) => void;
+  onSwipeTriage?: (_card: CardInventory, _action: SwipeTriageAction) => void;
 }
 
 /** Renders a single card — shared between virtualized and static grid. Memoized for list performance so parent re-renders don't re-render unchanged items. */
@@ -68,6 +71,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
   onOpenDossier,
   isSelected,
   onToggleSelect,
+  onSwipeTriage,
 }) => {
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
@@ -101,7 +105,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
     onOpenDossier,
   }, 'body');
 
-  return (
+  const cardBody = (
     <div
       className={`group bg-brand-slate border ${isSelected ? 'border-brand-lime ring-2 ring-brand-lime/20' : styles.border} rounded-[2.5rem] overflow-hidden transition-all flex flex-col active:scale-[0.98] relative`}
     >
@@ -363,6 +367,19 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
         })}
       </div>
     </div>
+  );
+
+  if (!onSwipeTriage) return cardBody;
+
+  return (
+    <SwipeableCard
+      onKeep={() => onSwipeTriage(card, 'keep')}
+      onSell={() => onSwipeTriage(card, 'sell')}
+      onConsign={() => onSwipeTriage(card, 'consign')}
+      onReview={() => onSwipeTriage(card, 'review')}
+    >
+      {cardBody}
+    </SwipeableCard>
   );
 });
 
