@@ -147,22 +147,16 @@ const TaxReport: React.FC = () => {
     setTimeout(() => setExportStatus(null), 3000);
   };
 
-  const handleScheduleDPacket = async (asPdf: boolean) => {
+  const handleScheduleDPacket = () => {
     const content = buildScheduleDStyleExport(selectedYear);
-    if (asPdf) {
-      const { generateScheduleDPacketPdf } = await import('../lib/utils/pdfExport');
-      generateScheduleDPacketPdf(content, selectedYear);
-      setExportStatus('Schedule D–style PDF packet downloaded');
-    } else {
-      const blob = new Blob([content], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `msi_schedule_d_style_${selectedYear}.txt`;
-      a.click();
-      URL.revokeObjectURL(url);
-      setExportStatus('Schedule D–style text packet downloaded');
-    }
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `msi_schedule_d_style_${selectedYear}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setExportStatus('Schedule D–style text packet downloaded');
     setTimeout(() => setExportStatus(null), 3000);
   };
 
@@ -535,17 +529,10 @@ const TaxReport: React.FC = () => {
             <div className="flex flex-wrap items-center gap-2 mb-6">
               <button
                 type="button"
-                onClick={() => handleScheduleDPacket(false)}
+                onClick={handleScheduleDPacket}
                 className="px-3 py-2 text-xs font-bold rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
               >
                 Download text packet
-              </button>
-              <button
-                type="button"
-                onClick={() => handleScheduleDPacket(true)}
-                className="px-3 py-2 text-xs font-bold rounded-lg bg-slate-700/50 text-slate-200 border border-slate-600/50"
-              >
-                Download PDF packet
               </button>
               {exportStatus && <span className="text-xs text-emerald-300">{exportStatus}</span>}
             </div>

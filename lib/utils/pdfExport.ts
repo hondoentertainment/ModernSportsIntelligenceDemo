@@ -253,38 +253,3 @@ export function generateBriefingReport(
     // Save
     doc.save(`MSI_Morning_Briefing_${new Date().toISOString().split('T')[0]}.pdf`);
 }
-
-/**
- * Schedule D–style packet PDF. Lazy-import from Tax Report only —
- * keep jsPDF/html2canvas off the Dashboard graph.
- */
-export function generateScheduleDPacketPdf(packetText: string, taxYear: number): void {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 16;
-    let y = margin;
-
-    doc.setFillColor(30, 41, 59);
-    doc.rect(0, 0, pageWidth, 28, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('MSI Schedule D–style packet', margin, 12);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.text(`Tax year ${taxYear} · Demo-honest collector record`, margin, 20);
-
-    y = 38;
-    doc.setTextColor(30, 41, 59);
-    doc.setFontSize(8);
-    const lines = doc.splitTextToSize(packetText, pageWidth - margin * 2) as string[];
-    for (const line of lines) {
-        if (y > 280) {
-            doc.addPage();
-            y = margin;
-        }
-        doc.text(line, margin, y);
-        y += 4;
-    }
-    doc.save(`MSI_Schedule_D_style_${taxYear}.pdf`);
-}
