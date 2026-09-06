@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   X,
   Send,
@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { NegotiationSession, NegotiableItem } from '../types';
 import { NegotiationService } from '../lib/trading/negotiationService';
+import { recordNegotiation } from '../lib/trading/negotiationAnalytics';
+import { getSelectedPlaybook } from '../lib/trading/negotiationPlaybooks';
 import { logger } from '../lib/logger';
 import CardImage from './CardImage.tsx';
 import ImageLightbox from './ImageLightbox.tsx';
@@ -40,6 +42,17 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
     const [agentThinking, setAgentThinking] = useState(false);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const recordedIds = useRef<Set<string>>(new Set());
+
+    const persistOutcome = useCallback((next: NegotiationSession, outcome?: 'accepted' | 'walked') => {
+        if (recordedIds.current.has(next.id)) return;
+        recordedIds.current.add(next.id);
+        try {
+            recordNegotiation(next, getSelectedPlaybook().label, outcome);
+        } catch {
+            recordedIds.current.delete(next.id);
+        }
+    }, []);
 
     useEffect(() => {
         if (isOpen && targetItem) {
@@ -75,18 +88,25 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
             const updatedSession = await NegotiationService.processUserOfferWithGemini(session, { amount });
             setSession(updatedSession);
             if (updatedSession.status === 'accepted') {
+                persistOutcome(updatedSession, 'accepted');
                 setStep('result');
             }
         } catch  {
             const fallback = NegotiationService.processUserOffer(session, { amount });
             setSession(fallback);
-            if (fallback.status === 'accepted') setStep('result');
+            if (fallback.status === 'accepted') {
+                persistOutcome(fallback, 'accepted');
+                setStep('result');
+            }
         } finally {
             setAgentThinking(false);
         }
     };
 
-    const _handleWalkAway = () => {
+    const handleWalkAway = () => {
+        if (session && step === 'arena') {
+            persistOutcome(session, 'walked');
+        }
         onClose();
     };
 
@@ -102,6 +122,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
             setSession(updatedSession);
 
             if (updatedSession.status === 'accepted') {
+                persistOutcome(updatedSession, 'accepted');
                 setStep('result');
             } else if (updatedSession.status === 'active') {
                 // If the user wants to keep going, they can click again, 
@@ -114,7 +135,10 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                 content: `Let's close this at $${Math.min(session.maxWillingToPay, session.sellerAsk)}.`
             });
             setSession(fallback);
-            if (fallback.status === 'accepted') setStep('result');
+            if (fallback.status === 'accepted') {
+                persistOutcome(fallback, 'accepted');
+                setStep('result');
+            }
         } finally {
             setAgentThinking(false);
         }
@@ -124,7 +148,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={handleWalkAway} />
 
             <div className="relative w-full max-w-2xl bg-brand-charcoal border border-slate-800 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header */}
@@ -138,7 +162,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                             <p className="text-[10px] uppercase tracking-widest text-brand-muted font-bold">Powered by Gemini Logic</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors">
+                    <button onClick={handleWalkAway} className="p-2 hover:bg-slate-800 rounded-full text-slate-400 transition-colors" aria-label="Close negotiation">
                         <X size={20} />
                     </button>
                 </div>
@@ -251,6 +275,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                                     </button>
                                 </div>
                                 <div className="flex justify-between items-center">
+                                    <div className="flex items-center gap-3">
                                     <button
                                         onClick={handleAutoAgent}
                                         disabled={agentThinking}
@@ -258,6 +283,14 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({ isOpen, onClose, ta
                                     >
                                         <Bot size={12} /> Auto-Negotiate
                                     </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleWalkAway}
+                                        className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-orange-400 transition-colors"
+                                    >
+                                        Walk away
+                                    </button>
+                                    </div>
                                     <span className="text-[10px] font-mono text-slate-500">
                                         Ask: ${session.sellerAsk} | Your Max: ${session.maxWillingToPay}
                                     </span>

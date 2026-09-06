@@ -8,8 +8,15 @@ import {
   getActiveCampaigns,
   getAgentActivityFeed,
   getAcquisitionAnalytics,
+  getAllNegotiations,
   CampaignStatus,
 } from '../lib/trading/autonomousAcquisitionService';
+import {
+  formatDurationMs,
+  formatRatePct,
+  getNegotiationIntel,
+  recordsFromAcquisitionSessions,
+} from '../lib/trading/negotiationAnalytics';
 
 interface AutonomousAcquisitionWidgetProps {
   onOpenModal?: () => void;
@@ -51,6 +58,10 @@ const AutonomousAcquisitionWidget: React.FC<AutonomousAcquisitionWidgetProps> = 
   const campaigns = useMemo(() => getActiveCampaigns(), []);
   const activity = useMemo(() => getAgentActivityFeed().slice(0, 2), []);
   const analytics = useMemo(() => getAcquisitionAnalytics(), []);
+  const intel = useMemo(
+    () => getNegotiationIntel(recordsFromAcquisitionSessions(getAllNegotiations())),
+    []
+  );
 
   const activeCampaigns = campaigns.filter(c => c.status === 'active');
   const negotiating = campaigns.reduce((sum, c) => sum + c.negotiationsActive, 0);
@@ -155,6 +166,33 @@ const AutonomousAcquisitionWidget: React.FC<AutonomousAcquisitionWidgetProps> = 
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Negotiation analytics">
+        <div className="rounded-xl border border-slate-700/50 bg-slate-800/40 p-3">
+          <p className="text-[9px] uppercase tracking-wider text-slate-500">Win rate</p>
+          <p className="font-bebas text-xl text-emerald-400">
+            {intel.stats.totalNegotiations === 0 ? '—' : formatRatePct(intel.stats.winRate)}
+          </p>
+        </div>
+        <div className="rounded-xl border border-slate-700/50 bg-slate-800/40 p-3">
+          <p className="text-[9px] uppercase tracking-wider text-slate-500">Avg discount</p>
+          <p className="font-bebas text-xl text-violet-400">
+            {intel.stats.totalNegotiations === 0 ? '—' : formatRatePct(intel.stats.avgDiscount)}
+          </p>
+        </div>
+        <div className="rounded-xl border border-slate-700/50 bg-slate-800/40 p-3">
+          <p className="text-[9px] uppercase tracking-wider text-slate-500">Time to close</p>
+          <p className="font-bebas text-xl text-amber-400">
+            {intel.stats.totalNegotiations === 0 ? '—' : formatDurationMs(intel.stats.avgTimeToClose)}
+          </p>
+        </div>
+        <div className="rounded-xl border border-slate-700/50 bg-slate-800/40 p-3">
+          <p className="text-[9px] uppercase tracking-wider text-slate-500">Walk / incomplete</p>
+          <p className="font-bebas text-xl text-orange-400">
+            {intel.stats.totalNegotiations === 0 ? '—' : formatRatePct(intel.stats.walkIncompleteRate)}
+          </p>
         </div>
       </div>
 

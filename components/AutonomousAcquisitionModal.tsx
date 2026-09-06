@@ -69,6 +69,7 @@ import {
   getSelectedPlaybook,
 } from '../lib/trading/negotiationPlaybooks';
 import { showToast } from '../lib/utils/toast';
+import NegotiationAnalyticsPanel from './NegotiationAnalyticsPanel.tsx';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 
@@ -774,6 +775,8 @@ const AnalyticsTab: React.FC = () => {
       <div className="rounded-lg border border-amber-500/25 bg-amber-500/5 p-2 text-[10px] text-amber-200/90">
         {AUTONOMOUS_ACQUISITION_DISCLOSURE}
       </div>
+      <NegotiationAnalyticsPanel variant="embedded" />
+
       <div className="flex items-start gap-2 p-3 rounded-xl bg-violet-500/5 border border-violet-500/15">
         <ScrollText size={16} className="text-violet-400 shrink-0 mt-0.5" />
         <div>
