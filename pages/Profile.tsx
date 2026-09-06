@@ -15,6 +15,7 @@ import {
   buildMigrationMergeSummary,
   formatMigrationMergeToast,
   formatMigrationMergeLine,
+  formatConflictPreviewLine,
 } from '../lib/utils/migration';
 import { MIGRATION_CONFLICT_POLICY_OPTIONS } from '../lib/utils/migrationPolicyOptions';
 import { Link } from 'react-router-dom';
@@ -49,7 +50,7 @@ const defaultSettings: UserSettings = {
 
 const Profile: React.FC = () => {
   const { user, signOut, isDemoMode } = useAuth();
-  const { triggerMigration, isMigrating, lastResult, lastMergeSummary } = useMigration();
+  const { triggerMigration, isMigrating, lastResult, lastMergeSummary, conflictPreview, refreshConflictPreview } = useMigration();
   const { addToast } = useToast();
   const navigate = useNavigate();
   const [settings, setSettings] = useState<UserSettings>(() => {
@@ -66,6 +67,7 @@ const Profile: React.FC = () => {
   const handleConflictPolicyChange = (value: MigrationConflictPolicy) => {
     setConflictPolicy(value);
     setMigrationConflictPolicy(value);
+    void refreshConflictPreview();
   };
 
   // Persist settings
@@ -380,6 +382,20 @@ const Profile: React.FC = () => {
                 <span className="text-[10px] font-black text-brand-muted uppercase tracking-wider">Local: Cache Active</span>
               </div>
             </div>
+            {conflictPreview && (
+              <p className="text-[10px] text-slate-400 font-semibold leading-snug border-l-2 border-brand-teal/40 pl-2 pt-1 text-left mx-auto md:mx-0 max-w-xl">
+                Duplicate policy: {formatConflictPreviewLine(conflictPreview)}
+              </p>
+            )}
+            {conflictPreview?.reason === 'ok' && conflictPreview.outcomes.length > 0 && (
+              <ul className="text-[10px] text-slate-500 leading-snug text-left mx-auto md:mx-0 max-w-xl space-y-0.5">
+                {conflictPreview.outcomes.slice(0, 8).map((row) => (
+                  <li key={`${row.kind}-${row.identityKey}`}>
+                    {row.outcome === 'merge' ? 'Merge local over cloud' : 'Skip — keep cloud'} · {row.label}
+                  </li>
+                ))}
+              </ul>
+            )}
             {lastResult?.success && lastMergeSummary && (
               <p className="text-[10px] text-slate-400 font-semibold leading-snug border-l-2 border-brand-teal/40 pl-2 pt-1 text-left mx-auto md:mx-0 max-w-xl">
                 Last uplink: {formatMigrationMergeLine(lastMergeSummary)}

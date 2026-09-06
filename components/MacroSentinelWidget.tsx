@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Activity, TrendingUp, TrendingDown, AlertTriangle, ShieldAlert, Cpu } from 'lucide-react';
 import { MacroSignal, MacroTrend } from '../types.ts';
 import { fetchMacroSignals, analyzeMacroImpactOnPortfolio } from '../lib/analytics/macroSentinel.ts';
+import { computeHobbyHealthIndex } from '../lib/utils/hobbyHealthIndex';
 import { logger } from '../lib/logger';
 
 interface Props {
@@ -12,6 +13,7 @@ const MacroSentinelWidget: React.FC<Props> = ({ portfolioValue }) => {
     const [signals, setSignals] = useState<MacroSignal[]>([]);
     const [analysis, setAnalysis] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
+    const hobbyHealth = computeHobbyHealthIndex({ portfolioNav: portfolioValue });
 
     useEffect(() => {
         const loadMacroData = async () => {
@@ -86,6 +88,17 @@ const MacroSentinelWidget: React.FC<Props> = ({ portfolioValue }) => {
                         <span className="text-[8px] font-bold text-[#8F9BB3] uppercase tracking-[0.2em]">Grounded by Google Search</span>
                     </div>
                 </div>
+            </div>
+
+            <div className="mb-6 relative z-10 rounded-lg border border-white/10 bg-black/30 p-4">
+                <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wide">Hobby Health Index</h3>
+                    <span className="text-2xl font-bebas text-brand-lime">{hobbyHealth.score}</span>
+                </div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                    {hobbyHealth.band} · seeded composite
+                </p>
+                <p className="text-[10px] text-slate-500 leading-relaxed">{hobbyHealth.disclosure}</p>
             </div>
 
             <div className="space-y-4 mb-6 relative z-10">

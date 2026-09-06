@@ -7,7 +7,9 @@ import {
     MigrationResult,
     deniedMigrationResult,
     buildMigrationMergeSummary,
+    previewMigrationConflicts,
     type MigrationMergeSummary,
+    type MigrationConflictPreview,
 } from '../lib/utils/migration';
 
 interface MigrationContextType {
@@ -17,6 +19,10 @@ interface MigrationContextType {
     lastResult: MigrationResult | null;
     /** Last successful run merge/conflict tallies (plain object for UI) */
     lastMergeSummary: MigrationMergeSummary | null;
+    /** Local vs cloud duplicate preview (demo-safe when uplink is down) */
+    conflictPreview: MigrationConflictPreview | null;
+    /** Refresh duplicate-key preview without writing */
+    refreshConflictPreview: () => Promise<MigrationConflictPreview>;
     /** Manually trigger migration from localStorage to Supabase */
     triggerMigration: () => Promise<MigrationResult>;
     /** Whether migration is needed (local data exists, user is authenticated) */
@@ -36,10 +42,17 @@ export const MigrationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const [isMigrating, setIsMigrating] = useState(false);
     const [lastResult, setLastResult] = useState<MigrationResult | null>(null);
     const [lastMergeSummary, setLastMergeSummary] = useState<MigrationMergeSummary | null>(null);
+    const [conflictPreview, setConflictPreview] = useState<MigrationConflictPreview | null>(null);
     // Prevent double-triggering when user object changes reference but userId stays the same
     const autoTriggeredForRef = useRef<string | null>(null);
 
     const migrationAvailable = !!user && !isDemoMode && needsMigration();
+
+    const refreshConflictPreview = useCallback(async (): Promise<MigrationConflictPreview> => {
+        const preview = await previewMigrationConflicts(user?.id);
+        setConflictPreview(preview);
+        return preview;
+    }, [user]);
 
     const triggerMigration = useCallback(async (): Promise<MigrationResult> => {
         if (!user || isDemoMode) {
@@ -66,9 +79,21 @@ export const MigrationProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         triggerMigration();
     }, [user, triggerMigration]);
 
+    useEffect(() => {
+        void refreshConflictPreview();
+    }, [refreshConflictPreview]);
+
     return (
         <MigrationContext.Provider
-            value={{ isMigrating, lastResult, lastMergeSummary, triggerMigration, migrationAvailable }}
+            value={{
+                isMigrating,
+                lastResult,
+                lastMergeSummary,
+                conflictPreview,
+                refreshConflictPreview,
+                triggerMigration,
+                migrationAvailable,
+            }}
         >
             {children}
         </MigrationContext.Provider>

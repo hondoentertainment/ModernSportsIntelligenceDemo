@@ -1405,6 +1405,7 @@ const Dashboard: React.FC = () => {
           isOpen={isShareOpen}
           onClose={() => setIsShareOpen(false)}
           profile={shareProfile}
+          inventory={inventory}
           onToggleVisibility={(isPublic) => {
             setUserProfile((prev) => (prev ? { ...prev, isPublic } : { ...shareProfile, isPublic }));
           }}

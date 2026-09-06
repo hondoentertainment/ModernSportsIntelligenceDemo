@@ -1,4 +1,5 @@
 import { CardInventory } from '../../types';
+import { escapeHtml } from '../htmlEscape';
 import { store } from '../dal/syncStore';
 
 export interface ShareableCollection {
@@ -42,7 +43,7 @@ const STORAGE_KEY = 'msi-shared-collections';
  */
 export function createShareableCollection(
   inventory: CardInventory[],
-  config: { ownerName: string; title: string; description: string; cardIds?: string[] }
+  config: { ownerName: string; title: string; description: string; cardIds?: string[]; persist?: boolean }
 ): ShareableCollection {
   const active = inventory.filter(c => c.status !== 'sold');
   const selectedCards = config.cardIds
@@ -89,10 +90,19 @@ export function createShareableCollection(
     updatedAt: new Date().toISOString()
   };
 
-  // Persist locally
-  saveCollection(collection);
+  if (config.persist !== false) {
+    saveCollection(collection);
+  }
 
   return collection;
+}
+
+/** Preview snapshot that does not write to local share storage. */
+export function buildShareableCollectionPreview(
+  inventory: CardInventory[],
+  config: { ownerName: string; title: string; description: string; cardIds?: string[] }
+): ShareableCollection {
+  return createShareableCollection(inventory, { ...config, persist: false });
 }
 
 function saveCollection(collection: ShareableCollection): void {
@@ -123,28 +133,28 @@ export function generateEmbedCode(collection: ShareableCollection): string {
 
   const cardRows = topCards.map(c =>
     `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #334155;">
-      <span>${c.player} (${c.year})</span>
+      <span>${escapeHtml(c.player)} (${escapeHtml(c.year)})</span>
       <span style="color:#d9f99d;font-family:monospace;">$${c.currentValue.toLocaleString()}</span>
     </div>`
   ).join('\n');
 
-  return `<!-- MSI Collection Widget -->
+  return `<!-- MSI Collection Widget (static fallback) -->
 <div style="background:#1e1e24;color:#fff;font-family:Arial,sans-serif;border-radius:16px;padding:24px;max-width:400px;border:1px solid #334155;">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
     <div>
-      <div style="font-size:18px;font-weight:bold;">${collection.title}</div>
-      <div style="font-size:12px;color:#94a3b8;">${collection.ownerName}</div>
+      <div style="font-size:18px;font-weight:bold;">${escapeHtml(collection.title)}</div>
+      <div style="font-size:12px;color:#94a3b8;">${escapeHtml(collection.ownerName)}</div>
     </div>
     <div style="text-align:right;">
       <div style="font-size:20px;font-weight:bold;color:#d9f99d;">$${collection.stats.totalValue.toLocaleString()}</div>
-      <div style="font-size:10px;color:#94a3b8;">${collection.stats.totalCards} cards</div>
+      <div style="font-size:10px;color:#94a3b8;">${collection.stats.totalCards} cards · estimate</div>
     </div>
   </div>
   <div style="font-size:13px;">
     ${cardRows}
   </div>
   <div style="margin-top:12px;text-align:center;font-size:10px;color:#64748b;">
-    Powered by Modern Sports Intelligence
+    Powered by Modern Sports Intelligence · estimates, not live comps
   </div>
 </div>`;
 }

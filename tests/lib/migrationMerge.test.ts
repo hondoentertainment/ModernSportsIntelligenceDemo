@@ -3,6 +3,7 @@ import type { CardInventory, TargetWatchlist } from '../../types';
 import {
   cardIdentityKey,
   planCardMigration,
+  planMigrationPreview,
   planTargetMigration,
   targetIdentityKey,
 } from '../../lib/utils/migrationMerge';
@@ -81,6 +82,21 @@ describe('migrationMerge', () => {
     const plan = planCardMigration(local, cloud, 'merge_newer');
     expect(plan.toUpsert).toHaveLength(1);
     expect(plan.toUpsert[0].id).toBe('c1');
+  });
+
+  it('planMigrationPreview lists merge vs skip outcomes', () => {
+    const preview = planMigrationPreview(
+      [baseCard({ id: 'l1' }), baseCard({ id: 'l2', player: 'Other', cardNumber: '9' })],
+      [baseCard({ id: 'c1' })],
+      [baseTarget({ id: 'lt1' })],
+      [baseTarget({ id: 'ct1' })],
+      'prefer_cloud'
+    );
+    expect(preview.duplicates).toBe(2);
+    expect(preview.wouldSkip).toBe(2);
+    expect(preview.wouldMerge).toBe(0);
+    expect(preview.wouldInsert).toBe(1);
+    expect(preview.outcomes.every((o) => o.outcome === 'skip')).toBe(true);
   });
 
   it('targetIdentityKey and prefer_cloud', () => {

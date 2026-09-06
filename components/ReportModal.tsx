@@ -36,6 +36,7 @@ import {
   getCachedReport,
   cacheReport,
 } from '../lib/utils/reportService';
+import { generateInsurancePdf } from '../lib/utils/insuranceReport';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -71,7 +72,7 @@ const reportTypeConfig: Record<ReportType, { label: string; icon: React.ReactNod
     color: 'text-emerald-400',
     bg: 'bg-emerald-500/10',
     border: 'border-emerald-500/30',
-    description: 'Itemized card list with market values, grading details, and replacement costs',
+    description: 'Carrier-ready packet: timestamped FMV per card, collection total, methodology, and printable/PDF layout',
   },
   performance: {
     label: 'Performance Analysis',
@@ -192,6 +193,15 @@ export const ReportModal: React.FC<ReportModalProps> = ({
       setTimeout(() => printWindow.print(), 300);
     }
   }, []);
+
+  const handleDownloadPdf = useCallback((report: GeneratedReport) => {
+    if (report.type !== 'insurance') return;
+    generateInsurancePdf(inventory, {
+      generatedAt: report.generatedAt,
+      reportId: String(report.metadata.packetId || report.id),
+      includeSold: report.config.includeSold,
+    });
+  }, [inventory]);
 
   const handleViewFromHistory = useCallback((id: string) => {
     const cached = getCachedReport(id);
@@ -504,6 +514,16 @@ export const ReportModal: React.FC<ReportModalProps> = ({
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
+                      {currentReport.type === 'insurance' && (
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadPdf(currentReport)}
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all"
+                        >
+                          <FileText size={14} />
+                          PDF packet
+                        </button>
+                      )}
                       <button
                         onClick={() => handlePrint(currentReport)}
                         className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-slate-400 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 transition-all"

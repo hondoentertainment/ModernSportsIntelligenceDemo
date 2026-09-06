@@ -2,6 +2,7 @@ import { store } from '../dal/syncStore';
 import { CardInventory, Sport } from '../../types';
 import { buildCollectorAuditDossierReport } from '../core/collectorAuditDossierService';
 import { escapeHtml } from '../htmlEscape';
+import { buildInsurancePacket } from './insurancePacket';
 
 // ---- Types ----
 
@@ -57,6 +58,11 @@ export interface InsuranceLineItem {
   grade?: string;
   currentValue: number;
   replacementCost: number;
+  fmvAsOf: string;
+  certNumber?: string;
+  valuationSource: string;
+  manufacturer?: string;
+  cardNumber?: string;
 }
 
 export interface PerformanceMetrics {
@@ -416,32 +422,31 @@ export function generateTaxReport(inventory: CardInventory[], config: ReportConf
 export function generateInsuranceReport(inventory: CardInventory[], config: ReportConfig): GeneratedReport {
   const cards = filterInventory(inventory, config).filter(c => c.status !== 'sold');
   const now = new Date().toISOString();
-
-  const REPLACEMENT_MULTIPLIER = 1.15;
-
-  const insuranceItems: InsuranceLineItem[] = cards.map(card => {
-    const currentValue = card.currentValue ?? card.purchasePrice;
-    return {
-      cardId: card.id,
-      player: card.player,
-      year: card.year,
-      set: card.set,
-      sport: card.sport,
-      condition: card.condition,
-      isGraded: card.isGraded,
-      gradingCompany: card.gradingCompany,
-      grade: card.grade,
-      currentValue: Math.round(currentValue * 100) / 100,
-      replacementCost: Math.round(currentValue * REPLACEMENT_MULTIPLIER * 100) / 100,
-    };
+  const packet = buildInsurancePacket(cards, {
+    generatedAt: now,
+    includeSold: false,
+    reportId: generateId().replace('rpt-', 'INS-').toUpperCase(),
   });
 
-  const totalMarketValue = insuranceItems.reduce((s, i) => s + i.currentValue, 0);
-  const totalReplacementCost = insuranceItems.reduce((s, i) => s + i.replacementCost, 0);
-  const gradedCount = insuranceItems.filter(i => i.isGraded).length;
-  const ungradedCount = insuranceItems.length - gradedCount;
+  const insuranceItems: InsuranceLineItem[] = packet.items.map((item) => ({
+    cardId: item.cardId,
+    player: item.player,
+    year: item.year,
+    set: item.set,
+    sport: item.sport,
+    condition: item.condition,
+    isGraded: item.isGraded,
+    gradingCompany: item.gradingCompany,
+    grade: item.grade,
+    currentValue: item.fmv,
+    replacementCost: item.replacementCost,
+    fmvAsOf: item.fmvAsOf,
+    certNumber: item.certNumber,
+    valuationSource: item.valuationSource,
+    manufacturer: item.manufacturer,
+    cardNumber: item.cardNumber,
+  }));
 
-  // Group by sport
   const bySport: Record<string, { count: number; value: number; replacement: number }> = {};
   for (const item of insuranceItems) {
     if (!bySport[item.sport]) bySport[item.sport] = { count: 0, value: 0, replacement: 0 };
@@ -459,20 +464,23 @@ export function generateInsuranceReport(inventory: CardInventory[], config: Repo
       replacementCost: Math.round(data.replacement * 100) / 100,
     }) as Record<string, unknown>);
 
-  // High-value items (top 20 by value)
-  const highValueItems = [...insuranceItems]
-    .sort((a, b) => b.currentValue - a.currentValue)
-    .slice(0, 20)
-    .map(i => ({
-      player: i.player,
-      year: i.year,
-      set: i.set,
-      sport: i.sport,
-      condition: i.condition,
-      graded: i.isGraded ? `${i.gradingCompany ?? ''} ${i.grade ?? ''}`.trim() : 'Raw',
-      currentValue: i.currentValue,
-      replacementCost: i.replacementCost,
-    }) as Record<string, unknown>);
+  const toLineRow = (i: InsuranceLineItem) => ({
+    player: i.player,
+    year: i.year,
+    set: i.set,
+    sport: i.sport,
+    condition: i.condition,
+    graded: i.isGraded ? `${i.gradingCompany ?? ''} ${i.grade ?? ''}`.trim() : 'Raw',
+    certNumber: i.certNumber || '—',
+    fmvAsOf: i.fmvAsOf,
+    valuationSource: i.valuationSource,
+    currentValue: i.currentValue,
+    replacementCost: i.replacementCost,
+  } as Record<string, unknown>);
+
+  const lineColumns = ['player', 'year', 'set', 'sport', 'condition', 'graded', 'certNumber', 'fmvAsOf', 'valuationSource', 'currentValue', 'replacementCost'];
+
+  const highValueItems = insuranceItems.slice(0, 20).map(toLineRow);
 
   const sections: ReportSection[] = [
     {
@@ -480,13 +488,25 @@ export function generateInsuranceReport(inventory: CardInventory[], config: Repo
       type: 'summary',
       data: [],
       summary: {
-        'Total Items': insuranceItems.length,
-        'Total Market Value': Math.round(totalMarketValue * 100) / 100,
-        'Total Replacement Cost': Math.round(totalReplacementCost * 100) / 100,
+        'Total Items': packet.totals.itemCount,
+        'Total Collection FMV': packet.totals.totalFmv,
+        'Total Replacement Cost': packet.totals.totalReplacement,
         'Replacement Premium': '15%',
-        'Graded Cards': gradedCount,
-        'Raw Cards': ungradedCount,
+        'Graded Cards': packet.totals.gradedCount,
+        'Raw Cards': packet.totals.rawCount,
+        'Certified Slabs': packet.totals.certifiedCount,
+        'Packet ID': packet.reportId,
       },
+      sourceType: 'heuristic-estimate',
+      sourceNote: 'Carrier-ready packet of timestamped FMV marks. Not a licensed appraisal.',
+    },
+    {
+      title: 'Valuation Methodology',
+      type: 'table',
+      data: packet.methodology.map((bullet, index) => ({ step: index + 1, method: bullet }) as Record<string, unknown>),
+      columns: ['step', 'method'],
+      sourceType: 'heuristic-estimate',
+      sourceNote: packet.disclaimer,
     },
     {
       title: 'Value by Sport',
@@ -498,22 +518,22 @@ export function generateInsuranceReport(inventory: CardInventory[], config: Repo
       title: 'High-Value Items (Top 20)',
       type: 'table',
       data: highValueItems,
-      columns: ['player', 'year', 'set', 'sport', 'condition', 'graded', 'currentValue', 'replacementCost'],
+      columns: lineColumns,
     },
     {
       title: 'Complete Itemized Inventory',
       type: 'table',
-      data: insuranceItems.map(i => ({
-        player: i.player,
-        year: i.year,
-        set: i.set,
-        sport: i.sport,
-        condition: i.condition,
-        graded: i.isGraded ? `${i.gradingCompany ?? ''} ${i.grade ?? ''}`.trim() : 'Raw',
-        currentValue: i.currentValue,
-        replacementCost: i.replacementCost,
-      }) as Record<string, unknown>),
-      columns: ['player', 'year', 'set', 'sport', 'condition', 'graded', 'currentValue', 'replacementCost'],
+      data: insuranceItems.map(toLineRow),
+      columns: lineColumns,
+    },
+    {
+      title: 'Carrier Disclaimer',
+      type: 'summary',
+      data: [],
+      summary: {
+        Disclaimer: packet.disclaimer,
+      },
+      sourceType: 'heuristic-estimate',
     },
   ];
 
@@ -526,10 +546,12 @@ export function generateInsuranceReport(inventory: CardInventory[], config: Repo
     sections,
     cardCount: cards.length,
     metadata: {
-      totalMarketValue: Math.round(totalMarketValue * 100) / 100,
-      totalReplacementCost: Math.round(totalReplacementCost * 100) / 100,
-      gradedCount,
-      ungradedCount,
+      totalMarketValue: packet.totals.totalFmv,
+      totalCollectionValue: packet.totals.totalFmv,
+      totalReplacementCost: packet.totals.totalReplacement,
+      gradedCount: packet.totals.gradedCount,
+      ungradedCount: packet.totals.rawCount,
+      packetId: packet.reportId,
     },
   };
 }
@@ -807,7 +829,7 @@ export function renderReportHTML(report: GeneratedReport): string {
         const isPos = !isNaN(numVal) && numVal > 0;
         const colorClass = isNeg ? 'negative' : isPos ? 'positive' : '';
         const summaryKey = key.toLowerCase();
-        const isCurrencySummary = ['value', 'cost', 'liability', 'premium', 'gap', 'net', 'replacement'].some(token => summaryKey.includes(token));
+        const isCurrencySummary = ['value', 'cost', 'liability', 'premium', 'gap', 'net', 'replacement', 'fmv'].some(token => summaryKey.includes(token));
         const isPercentSummary = key.includes('%') || summaryKey.includes('percent');
         const displayValue =
           typeof value === 'number' && isCurrencySummary
