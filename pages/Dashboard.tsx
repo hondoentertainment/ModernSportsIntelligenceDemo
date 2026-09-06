@@ -65,6 +65,7 @@ import { AggregationService } from '../lib/analytics/aggregationService.ts';
 import { Cloud, CloudOff, Gavel } from 'lucide-react';
 import CardImage from '../components/CardImage.tsx';
 import NegotiationModal from '../components/NegotiationModal.tsx';
+import NegotiationAnalyticsPanel from '../components/NegotiationAnalyticsPanel.tsx';
 import HypeFeed from '../components/HypeFeed.tsx';
 import MarketPulseTable from '../components/MarketPulseTable.tsx';
 import DeepDiverReport from '../components/DeepDiverReport.tsx';
@@ -916,6 +917,10 @@ const Dashboard: React.FC = () => {
                 <div className="w-2 h-2 rounded-full bg-brand-lime animate-pulse"></div>
                 <span className="text-[10px] font-black text-white uppercase tracking-widest">Simulation Active</span>
               </div>
+            </div>
+
+            <div className="mb-6">
+              <NegotiationAnalyticsPanel />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
