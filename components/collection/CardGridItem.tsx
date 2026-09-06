@@ -7,17 +7,7 @@ import {
   Star,
   Target,
   Tag,
-  Search,
-  Award,
-  DollarSign,
-  Zap,
-  Users,
-  BarChart3,
-  FileText,
-  Eye,
   Package,
-  LineChart,
-  AlertTriangle,
   CheckCircle2,
 } from 'lucide-react';
 import { CardInventory } from '../../types';
@@ -34,34 +24,15 @@ import {
 } from '../../lib/utils/valuationProvenance';
 import DataSourceBadge from '../DataSourceBadge';
 import CertVerifiedBadge from '../CertVerifiedBadge';
+import { CardItemActionHandlers, getCardItemActionsForSurface } from './cardItemActions';
 
-export interface CardGridItemProps {
+export interface CardGridItemProps extends CardItemActionHandlers {
   card: CardInventory;
   getRarityTier: (_c: CardInventory) => string;
   getTierStyles: (_tier: string) => { border: string; glow?: string; text: string; badge: string };
-  isFavorite: (_id: string) => boolean;
-  toggleFavorite: (_c: CardInventory) => void;
-  deleteCard: (_id: string) => void;
-  setEditingAsset: (_c: CardInventory | null) => void;
-  setIsAssetModalOpen: (_v: boolean) => void;
-  handleAddToWatchlist: (_c: CardInventory) => void;
-  handleUpdatePrice: (_c: CardInventory) => void;
-  isPricing: string | null;
   getSparklineData: (_id: string, _limit?: number) => number[];
   getPriceTrend: (_id: string) => string;
   onOpenLightbox?: (_card: CardInventory) => void;
-  onOpenExitStrategy?: (_card: CardInventory) => void;
-  onOpenGradingCalc?: (_card: CardInventory) => void;
-  onOpenBreakEven?: (_card: CardInventory) => void;
-  onInstantBuy?: (_card: CardInventory) => void;
-  onOpenPredictive?: (_card: CardInventory) => void;
-  onOpenThesis?: (_card: CardInventory) => void;
-  onOpenMarketDepth?: (_card: CardInventory) => void;
-  onOpenTaxLot?: (_card: CardInventory) => void;
-  onOpenGradePrediction?: (_card: CardInventory) => void;
-  onOpenPriceHistory?: (_card: CardInventory) => void;
-  onOpenConsignment?: (_card: CardInventory) => void;
-  onOpenAnomaly?: (_card: CardInventory) => void;
   isSelected?: boolean;
   onToggleSelect?: (_id: string) => void;
 }
@@ -94,6 +65,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
   onOpenPriceHistory,
   onOpenConsignment,
   onOpenAnomaly,
+  onOpenDossier,
   isSelected,
   onToggleSelect,
 }) => {
@@ -105,6 +77,29 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
   const showThinMarket = isThinLiquidityScore(card.liquidityScore);
   const mutedChipClass =
     'inline-flex min-h-[26px] items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-500 bg-brand-charcoal/35 border border-slate-700/45';
+  const bodyActions = getCardItemActionsForSurface(card, {
+    isFavorite,
+    toggleFavorite,
+    deleteCard,
+    setEditingAsset,
+    setIsAssetModalOpen,
+    handleAddToWatchlist,
+    handleUpdatePrice,
+    isPricing,
+    onOpenExitStrategy,
+    onOpenGradingCalc,
+    onOpenBreakEven,
+    onInstantBuy,
+    onOpenPredictive,
+    onOpenThesis,
+    onOpenMarketDepth,
+    onOpenTaxLot,
+    onOpenGradePrediction,
+    onOpenPriceHistory,
+    onOpenConsignment,
+    onOpenAnomaly,
+    onOpenDossier,
+  }, 'body');
 
   return (
     <div
@@ -327,126 +322,45 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
           </div>
           <Sparkline data={getSparklineData(card.id)} showTrend={true} height={32} />
         </div>
-        <button
-          onClick={() => handleUpdatePrice(card)}
-          disabled={isPricing === card.id}
-          className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all disabled:opacity-50"
-        >
-          {isPricing === card.id ? (
+        {bodyActions.map(action => {
+          const Icon = action.icon;
+          const lime = action.tone === 'lime';
+          const className = lime
+            ? 'w-full flex items-center justify-center gap-3 py-3.5 bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime transition-all'
+            : 'w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all disabled:opacity-50';
+          const icon = action.busy ? (
             <div className="w-4 h-4 border-2 border-brand-lime border-t-transparent rounded-full animate-spin"></div>
           ) : (
-            <Sparkles size={16} className="text-brand-lime" />
-          )}
-          Intelligence Check
-        </button>
-        {onOpenPredictive && (
-          <button
-            onClick={() => onOpenPredictive(card)}
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
-          >
-            <Target size={16} className="text-brand-teal" />
-            Price Trajectory
-          </button>
-        )}
-        {onOpenThesis && (
-          <button
-            onClick={() => onOpenThesis(card)}
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
-          >
-            <Users size={16} className="text-brand-blue" />
-            Agent Thesis
-          </button>
-        )}
-        {onOpenMarketDepth && (
-          <button
-            onClick={() => onOpenMarketDepth(card)}
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
-          >
-            <BarChart3 size={16} className="text-brand-green" />
-            Market Depth
-          </button>
-        )}
-        {!card.isGraded && onOpenGradingCalc && (
-          <button
-            onClick={() => onOpenGradingCalc(card)}
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
-          >
-            <Award size={16} className="text-brand-lime" />
-            Grade Premium Calc
-          </button>
-        )}
-        {!card.isGraded && onOpenGradePrediction && (
-          <button
-            onClick={() => onOpenGradePrediction(card)}
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
-          >
-            <Eye size={16} className="text-purple-400" />
-            Grade Prediction
-          </button>
-        )}
-        {onOpenBreakEven && (
-          <button
-            onClick={() => onOpenBreakEven(card)}
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
-          >
-            <DollarSign size={16} className="text-brand-orange" />
-            Break-Even Calc
-          </button>
-        )}
-        {onOpenTaxLot && (
-          <button
-            onClick={() => onOpenTaxLot(card)}
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
-          >
-            <FileText size={16} className="text-brand-orange" />
-            Tax Lot Analysis
-          </button>
-        )}
-        {onOpenPriceHistory && (
-          <button
-            onClick={() => onOpenPriceHistory(card)}
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
-          >
-            <LineChart size={16} className="text-cyan-400" />
-            Price History
-          </button>
-        )}
-        {onOpenConsignment && card.status !== 'sold' && card.status !== 'consignment' && (
-          <button
-            onClick={() => onOpenConsignment(card)}
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
-          >
-            <Package size={16} className="text-amber-400" />
-            Consignment
-          </button>
-        )}
-        {onOpenAnomaly && (
-          <button
-            onClick={() => onOpenAnomaly(card)}
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-charcoal hover:bg-slate-800 border border-slate-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all"
-          >
-            <AlertTriangle size={16} className="text-rose-400" />
-            Anomaly Check
-          </button>
-        )}
-        {card.status !== 'sold' && onInstantBuy && (
-          <button
-            onClick={() => onInstantBuy(card)}
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime transition-all"
-          >
-            <Zap size={16} /> Instant Sell to MSI House
-          </button>
-        )}
-        {card.searchUrl && (
-          <a
-            href={card.searchUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center justify-center gap-3 py-3.5 bg-brand-lime/10 hover:bg-brand-lime/20 border border-brand-lime/30 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-brand-lime transition-all"
-          >
-            <Search size={16} /> Verify on eBay
-          </a>
-        )}
+            <Icon size={16} className={action.iconClassName} />
+          );
+
+          if (action.href) {
+            return (
+              <a
+                key={action.id}
+                href={action.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={className}
+              >
+                {icon} {action.label}
+              </a>
+            );
+          }
+
+          return (
+            <button
+              key={action.id}
+              type="button"
+              onClick={action.onClick}
+              disabled={action.busy}
+              className={className}
+            >
+              {icon}
+              {action.label}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

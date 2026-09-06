@@ -97,4 +97,21 @@ describe('CardGridItem — DataSourceBadge regression guard', () => {
 
     expect(screen.getByText(/live comps/i)).toBeInTheDocument();
   });
+
+  it('renders Audit Dossier when onOpenDossier is wired (Collection already passes this handler)', () => {
+    const onOpenDossier = vi.fn();
+    const card = makeCard({ isGraded: false });
+    render(
+      <CardGridItem
+        {...makeProps(card)}
+        onOpenDossier={onOpenDossier}
+        onOpenGradingCalc={vi.fn()}
+        onOpenConsignment={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: /audit dossier/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /grade premium calc/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /consignment/i })).toBeInTheDocument();
+  });
 });
