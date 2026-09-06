@@ -1,5 +1,6 @@
 import type { CardInventory, PricingAnalysis, TargetWatchlist, ValuationSource } from '../../types';
 import type { DataSourceVariant } from '../../components/DataSourceBadge';
+import { resolveAnalysisValue, selectPreferredValuation } from '../pricing/compConsensus';
 
 const SOURCE_PRIORITY: Record<ValuationSource, number> = {
   'ebay-api': 3,
@@ -26,7 +27,18 @@ function isStale(ts: number | null, nowMs: number): boolean {
   return nowMs - ts >= STALE_AFTER_MS;
 }
 
-function inferSourceFromAnalysis(analysis: PricingAnalysis): ValuationSource {
+function inferSourceFromAnalysis(analysis: PricingAnalysis, nowMs: number = Date.now()): ValuationSource {
+  if (analysis.valuationSource === 'ebay-api') return 'ebay-api';
+  const preferred = selectPreferredValuation({
+    salesData: analysis.salesData,
+    aiEstimate: analysis.estimatedValue,
+    storedSource: analysis.valuationSource,
+    storedTimestamp: analysis.valuationTimestamp || analysis.lastUpdated,
+    nowMs,
+  });
+  if (preferred.method === 'sold-comp-consensus' || preferred.method === 'thin-comp-fallback') {
+    return preferred.source;
+  }
   if (analysis.valuationSource) return analysis.valuationSource;
   if ((analysis.salesData?.length || 0) >= 3) return 'historical-comps';
   return 'fallback';
@@ -61,9 +73,10 @@ export function applyPricingAnalysisToCard(
   analysis: PricingAnalysis,
   nowMs: number = Date.now(),
 ): CardInventory {
-  const incomingSource = inferSourceFromAnalysis(analysis);
+  const incomingSource = inferSourceFromAnalysis(analysis, nowMs);
   const incomingTimestamp = analysis.valuationTimestamp || analysis.lastUpdated || new Date(nowMs).toISOString();
   const existingTimestamp = card.valuationTimestamp || card.lastValuationDate;
+  const resolved = resolveAnalysisValue(analysis, nowMs);
 
   if (!shouldApplyIncoming(card.valuationSource, existingTimestamp, incomingSource, incomingTimestamp, nowMs)) {
     return card;
@@ -71,13 +84,13 @@ export function applyPricingAnalysisToCard(
 
   return {
     ...card,
-    currentValue: analysis.estimatedValue,
+    currentValue: resolved.value,
     lastValuationDate: incomingTimestamp,
-    valuationConfidence: analysis.confidence,
-    pricingRationale: analysis.rationale || card.pricingRationale,
+    valuationConfidence: resolved.confidence,
+    pricingRationale: resolved.rationale || analysis.rationale || card.pricingRationale,
     searchUrl: analysis.searchUrl,
     salesData: analysis.salesData || card.salesData,
-    valuationSource: incomingSource,
+    valuationSource: resolved.source || incomingSource,
     valuationTimestamp: incomingTimestamp,
   };
 }
@@ -87,8 +100,9 @@ export function applyPricingAnalysisToTarget(
   analysis: PricingAnalysis,
   nowMs: number = Date.now(),
 ): TargetWatchlist {
-  const incomingSource = inferSourceFromAnalysis(analysis);
+  const incomingSource = inferSourceFromAnalysis(analysis, nowMs);
   const incomingTimestamp = analysis.valuationTimestamp || analysis.lastUpdated || new Date(nowMs).toISOString();
+  const resolved = resolveAnalysisValue(analysis, nowMs);
 
   if (
     !shouldApplyIncoming(
@@ -104,11 +118,11 @@ export function applyPricingAnalysisToTarget(
 
   return {
     ...target,
-    currentMarketPrice: analysis.estimatedValue,
+    currentMarketPrice: resolved.value,
     searchUrl: analysis.searchUrl,
-    pricingRationale: analysis.rationale || target.pricingRationale,
+    pricingRationale: resolved.rationale || analysis.rationale || target.pricingRationale,
     salesData: analysis.salesData || target.salesData,
-    valuationSource: incomingSource,
+    valuationSource: resolved.source || incomingSource,
     valuationTimestamp: incomingTimestamp,
   };
 }
@@ -194,10 +208,19 @@ export function getValuationSourceChipForSource(source: ValuationSource | undefi
   }
 }
 
-export function getValuationSourceChipForCard(card: Pick<CardInventory, 'valuationSource' | 'salesData'>): {
+export function getValuationSourceChipForCard(card: Pick<CardInventory, 'valuationSource' | 'salesData' | 'currentValue' | 'valuationTimestamp' | 'lastValuationDate'>): {
   label: string;
   className: string;
 } {
+  const preferred = selectPreferredValuation({
+    salesData: card.salesData,
+    storedValue: card.currentValue,
+    storedSource: card.valuationSource,
+    storedTimestamp: card.valuationTimestamp || card.lastValuationDate,
+  });
+  if (preferred.method === 'sold-comp-consensus' || preferred.method === 'thin-comp-fallback') {
+    return getValuationSourceChipForSource(preferred.source);
+  }
   const source = card.valuationSource || ((card.salesData?.length || 0) >= 3 ? 'historical-comps' : 'fallback');
   return getValuationSourceChipForSource(source);
 }

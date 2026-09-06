@@ -187,4 +187,42 @@ describe('TaxLotService', () => {
       }
     });
   });
+
+  describe('buildScheduleDPacket', () => {
+    it('splits short-term and long-term buckets with a methodology disclaimer', () => {
+      const cards = [
+        makeCard({
+          id: 'st',
+          player: 'Short Flip',
+          purchasePrice: 100,
+          status: 'sold',
+          salePrice: 140,
+          saleDate: `${thisYear}-06-01`,
+          purchaseDate: sixMonthsAgo,
+        }),
+        makeCard({
+          id: 'lt',
+          player: 'Long Hold',
+          purchasePrice: 200,
+          status: 'sold',
+          salePrice: 260,
+          saleDate: `${thisYear}-07-01`,
+          purchaseDate: twoYearsAgo,
+        }),
+      ];
+      const packet = TaxLotService.buildScheduleDPacket(cards, thisYear, 'FIFO', '2026-09-06T00:00:00.000Z');
+      expect(packet.shortTerm.count).toBe(1);
+      expect(packet.longTerm.count).toBe(1);
+      expect(packet.totals.dispositions).toBe(2);
+      expect(packet.totals.net).toBe(100);
+      expect(packet.methodologyDisclaimer).toMatch(/not IRS/);
+      expect(packet.completenessNote).toMatch(/Demo-honest/);
+
+      const text = TaxLotService.formatScheduleDPacket(packet);
+      expect(text).toContain('Part I — Short-term');
+      expect(text).toContain('Part II — Long-term');
+      expect(text).toContain('Methodology');
+      expect(text).toContain('Short Flip');
+    });
+  });
 });

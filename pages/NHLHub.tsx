@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Trophy, TrendingUp, TrendingDown, Minus, Calendar, Users, Activity,
-  BarChart3, Star, Zap, Target, Snowflake, Award, ChevronRight
+  BarChart3, Star, Zap, Target, Snowflake, Award, ChevronRight, Shield
 } from 'lucide-react';
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip,
@@ -12,12 +12,16 @@ import {
   getCardMarketTrends, getRookieWatch,
   type LeagueStanding, type LeagueDraftClass, type LeagueSeasonEvent,
   type LeagueStatLeader, type LeagueCardMarketTrend, type LeagueRookieWatch,
+  LEAGUE_HUB_DATA_DISCLOSURE,
 } from '../lib/social/leagueHubService.ts';
+import LeagueHubDepthPanels from '../components/LeagueHubDepthPanels';
 
-type NHLTab = 'standings' | 'draft' | 'calendar' | 'leaders' | 'market' | 'playoffs';
+type NHLTab = 'standings' | 'draft' | 'calendar' | 'leaders' | 'market' | 'playoffs' | 'players' | 'teams';
 
 const TAB_CONFIG: { key: NHLTab; label: string; icon: React.ReactNode }[] = [
   { key: 'standings', label: 'Standings', icon: <Trophy size={14} /> },
+  { key: 'players', label: 'Players', icon: <Users size={14} /> },
+  { key: 'teams', label: 'Teams', icon: <Shield size={14} /> },
   { key: 'draft', label: 'Draft Prospects', icon: <Users size={14} /> },
   { key: 'calendar', label: 'Calendar', icon: <Calendar size={14} /> },
   { key: 'leaders', label: 'Stat Leaders', icon: <BarChart3 size={14} /> },
@@ -94,14 +98,17 @@ const NHLHub: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-slate-100">NHL League Hub</h1>
             <p className="text-sm text-slate-400">
-              2025-26 Season &mdash; Division Standings, Draft Prospects, Stats &amp; Card Market
+              2025-26 Season &mdash; Division Standings, Player/Team desk, Draft Prospects, Stats &amp; Card Market
             </p>
           </div>
         </div>
         <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-cyan-500/20 text-cyan-400 uppercase">
-          NHL 2025-26
+          NHL 2025-26 · seeded
         </span>
       </div>
+      <p className="text-[11px] text-slate-500 border border-slate-800 rounded-lg px-3 py-2 bg-slate-900/40">
+        {LEAGUE_HUB_DATA_DISCLOSURE}
+      </p>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -144,6 +151,9 @@ const NHLHub: React.FC = () => {
           </button>
         ))}
       </div>
+
+      {activeTab === 'players' && <LeagueHubDepthPanels sport="nhl" accent="text-cyan-400" surface="players" />}
+      {activeTab === 'teams' && <LeagueHubDepthPanels sport="nhl" accent="text-cyan-400" surface="teams" />}
 
       {/* Standings */}
       {activeTab === 'standings' && (

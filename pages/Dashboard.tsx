@@ -86,6 +86,7 @@ import {
   computeFreshVerifiableCoverage,
   FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
 } from '../lib/utils/valuationProvenance.ts';
+import { preferredValueForCard } from '../lib/pricing/compConsensus.ts';
 import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAlerts.ts';
 import { showToast } from '../lib/utils/toast.ts';
 import LazyErrorBoundary from '../components/LazyErrorBoundary.tsx';
@@ -354,7 +355,7 @@ const Dashboard: React.FC = () => {
 
   const activeLeagueStats = useMemo(() => {
     const leagueCards = inventory.filter(c => c.league === activeLeague);
-    const value = leagueCards.reduce((sum, c) => sum + (c.currentValue || 0), 0);
+    const value = leagueCards.reduce((sum, c) => sum + (preferredValueForCard(c) || c.currentValue || 0), 0);
     const cost = leagueCards.reduce((sum, c) => sum + (c.purchasePrice || 0), 0);
     return {
       count: leagueCards.length,

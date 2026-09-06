@@ -12,12 +12,16 @@ import {
   getCardMarketTrends, getRookieWatch,
   type LeagueStanding, type LeagueDraftClass, type LeagueSeasonEvent,
   type LeagueStatLeader, type LeagueCardMarketTrend, type LeagueRookieWatch,
+  LEAGUE_HUB_DATA_DISCLOSURE,
 } from '../lib/social/leagueHubService.ts';
+import LeagueHubDepthPanels from '../components/LeagueHubDepthPanels';
 
-type NBATab = 'standings' | 'draft' | 'calendar' | 'leaders' | 'market' | 'efficiency';
+type NBATab = 'standings' | 'draft' | 'calendar' | 'leaders' | 'market' | 'efficiency' | 'players' | 'teams';
 
 const TAB_CONFIG: { key: NBATab; label: string; icon: React.ReactNode }[] = [
   { key: 'standings', label: 'Standings', icon: <Trophy size={14} /> },
+  { key: 'players', label: 'Players', icon: <Users size={14} /> },
+  { key: 'teams', label: 'Teams', icon: <Target size={14} /> },
   { key: 'draft', label: 'Draft Class', icon: <Users size={14} /> },
   { key: 'calendar', label: 'Calendar', icon: <Calendar size={14} /> },
   { key: 'leaders', label: 'Stat Leaders', icon: <BarChart3 size={14} /> },
@@ -110,14 +114,17 @@ const NBAHub: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-slate-100">NBA League Hub</h1>
             <p className="text-sm text-slate-400">
-              2025-26 Season &mdash; Conference Standings, Draft Lottery, Stats &amp; Card Market
+              2025-26 Season &mdash; Conference Standings, Player/Team desk, Draft Lottery, Stats &amp; Card Market
             </p>
           </div>
         </div>
         <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-orange-500/20 text-orange-400 uppercase">
-          NBA 2025-26
+          NBA 2025-26 · seeded
         </span>
       </div>
+      <p className="text-[11px] text-slate-500 border border-slate-800 rounded-lg px-3 py-2 bg-slate-900/40">
+        {LEAGUE_HUB_DATA_DISCLOSURE}
+      </p>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -160,6 +167,9 @@ const NBAHub: React.FC = () => {
           </button>
         ))}
       </div>
+
+      {activeTab === 'players' && <LeagueHubDepthPanels sport="nba" accent="text-orange-400" surface="players" />}
+      {activeTab === 'teams' && <LeagueHubDepthPanels sport="nba" accent="text-orange-400" surface="teams" />}
 
       {/* Standings */}
       {activeTab === 'standings' && (

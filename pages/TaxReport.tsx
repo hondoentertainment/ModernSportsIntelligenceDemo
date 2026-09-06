@@ -12,6 +12,7 @@ import {
   updateTaxSettings,
   getWashSaleTransactions,
   exportReport,
+  buildScheduleDStyleExport,
   formatCurrency,
   formatDate,
   getHoldingPeriodLabel,
@@ -143,6 +144,19 @@ const TaxReport: React.FC = () => {
     a.click();
     URL.revokeObjectURL(url);
     setExportStatus(`${format.replace('_', ' ').toUpperCase()} exported successfully`);
+    setTimeout(() => setExportStatus(null), 3000);
+  };
+
+  const handleScheduleDPacket = () => {
+    const content = buildScheduleDStyleExport(selectedYear);
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `msi_schedule_d_style_${selectedYear}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setExportStatus('Schedule D–style text packet downloaded');
     setTimeout(() => setExportStatus(null), 3000);
   };
 
@@ -484,9 +498,44 @@ const TaxReport: React.FC = () => {
           <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
             <h2 className="text-lg font-bold text-slate-200 mb-2 flex items-center gap-2">
               <Calculator size={18} className="text-emerald-400" />
-              Schedule D &mdash; Capital Gains and Losses
+              Schedule D–style packet
             </h2>
-            <p className="text-xs text-slate-500 mb-6">Summary of Form 8949 entries for your tax return</p>
+            <p className="text-xs text-slate-500 mb-4">
+              Short-term vs long-term buckets from recorded lots. Demo-honest collector record — not IRS Form 8949 / Schedule D regulatory completeness.
+            </p>
+            <div className="mb-6 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs text-slate-400">
+              Methodology: 365-day hold test, stored cost basis + fees, illustrative method labels. Confirm with a tax professional before filing.
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 p-4">
+                <p className="text-[10px] uppercase tracking-widest text-amber-400 font-black">Short-term bucket</p>
+                <p className={`text-2xl font-bold ${scheduleD.totalShortTerm >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {formatCurrency(scheduleD.totalShortTerm)}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  {transactions.filter((t) => t.holdingPeriod === 'short_term').length} lots · Form 8949 A–C
+                </p>
+              </div>
+              <div className="rounded-xl border border-blue-500/25 bg-blue-500/5 p-4">
+                <p className="text-[10px] uppercase tracking-widest text-blue-400 font-black">Long-term bucket</p>
+                <p className={`text-2xl font-bold ${scheduleD.totalLongTerm >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {formatCurrency(scheduleD.totalLongTerm)}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  {transactions.filter((t) => t.holdingPeriod === 'long_term').length} lots · Form 8949 D–F
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 mb-6">
+              <button
+                type="button"
+                onClick={handleScheduleDPacket}
+                className="px-3 py-2 text-xs font-bold rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+              >
+                Download text packet
+              </button>
+              {exportStatus && <span className="text-xs text-emerald-300">{exportStatus}</span>}
+            </div>
 
             {/* Part I */}
             <div className="mb-8">
@@ -731,7 +780,7 @@ const TaxReport: React.FC = () => {
               Export Tax Reports
             </h2>
             <p className="text-xs text-slate-500 mb-6">
-              Download your tax data in various formats for filing or import into tax software
+              Download Schedule D–style packets and software imports. These are collector records with a methodology disclaimer — not a complete IRS filing package.
             </p>
 
             {exportStatus && (
@@ -744,7 +793,7 @@ const TaxReport: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {([
                 { format: 'form_8949' as ReportFormat, title: 'IRS Form 8949', desc: 'Complete Form 8949 with all boxes (A-F)', icon: <FileText size={24} className="text-emerald-400" /> },
-                { format: 'schedule_d' as ReportFormat, title: 'Schedule D', desc: 'Capital Gains and Losses summary', icon: <Calculator size={24} className="text-blue-400" /> },
+                { format: 'schedule_d' as ReportFormat, title: 'Schedule D–style packet', desc: 'ST/LT buckets, totals, methodology disclaimer', icon: <Calculator size={24} className="text-blue-400" /> },
                 { format: 'csv' as ReportFormat, title: 'CSV Export', desc: 'Spreadsheet-compatible format for custom analysis', icon: <Download size={24} className="text-amber-400" /> },
                 { format: 'turbotax' as ReportFormat, title: 'TurboTax (TXF)', desc: 'Direct import into TurboTax software', icon: <DollarSign size={24} className="text-purple-400" /> },
                 { format: 'hrblock' as ReportFormat, title: 'H&R Block', desc: 'Compatible with H&R Block tax software', icon: <DollarSign size={24} className="text-red-400" /> },

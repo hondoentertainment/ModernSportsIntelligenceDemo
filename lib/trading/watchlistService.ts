@@ -1,3 +1,5 @@
+import { store } from '../dal/syncStore';
+
 // ---- Types ----
 
 export type AlertType = 'price_drop' | 'price_target' | 'grade_change' | 'new_listing';
@@ -697,7 +699,6 @@ export async function checkWatchlistPriceAlerts(): Promise<WatchlistPriceCheckRe
   return results;
 }
 
-import { store } from '../dal/syncStore';
 export function getSportIcon(sport: string): string {
   switch (sport) {
     case 'Baseball': return '\u26BE';

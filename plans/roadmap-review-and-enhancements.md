@@ -20,7 +20,7 @@ Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-sa
 | #24 Collection embed / vanity widget             | **Shipped** — iframe snippet + preview on Share Alpha / Public Portfolio. Custom domain still open.    |
 | Migration conflict / duplicate policy UX         | **Shipped** — merge vs skip preview on Migration Banner + Profile when local and cloud both have data. |
 
-Still **owner-held / open:** tax-lot regulatory completeness (#16), P2P marketplace (#7), centering CV (#17), live marketplace / Stripe / Supabase restore, Gemini-deepened live counters.
+Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P marketplace (#7), centering CV (#17), live marketplace / Stripe / Supabase restore. Schedule D–style (demo) packet and sold-comp consensus shipped 2026-09-06.
 
 ---
 

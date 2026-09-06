@@ -13,12 +13,16 @@ import {
   type LeagueStanding, type LeagueDraftClass, type LeagueSeasonEvent,
   type LeagueStatLeader, type LeagueCardMarketTrend, type LeagueRookieWatch,
   type InjuryCardImpact,
+  LEAGUE_HUB_DATA_DISCLOSURE,
 } from '../lib/social/leagueHubService.ts';
+import LeagueHubDepthPanels from '../components/LeagueHubDepthPanels';
 
-type NFLTab = 'standings' | 'draft' | 'calendar' | 'leaders' | 'market' | 'injuries';
+type NFLTab = 'standings' | 'draft' | 'calendar' | 'leaders' | 'market' | 'injuries' | 'players' | 'teams';
 
 const TAB_CONFIG: { key: NFLTab; label: string; icon: React.ReactNode }[] = [
   { key: 'standings', label: 'Standings', icon: <Trophy size={14} /> },
+  { key: 'players', label: 'Players', icon: <Users size={14} /> },
+  { key: 'teams', label: 'Teams', icon: <Shield size={14} /> },
   { key: 'draft', label: 'Draft Class', icon: <Users size={14} /> },
   { key: 'calendar', label: 'Calendar', icon: <Calendar size={14} /> },
   { key: 'leaders', label: 'Stat Leaders', icon: <BarChart3 size={14} /> },
@@ -110,16 +114,19 @@ const NFLHub: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-slate-100">NFL League Hub</h1>
             <p className="text-sm text-slate-400">
-              2025-26 Season &mdash; Standings, Draft Class, Stat Leaders &amp; Card Market Intelligence
+              2025-26 Season &mdash; Standings, Player/Team desk, Draft Class, Stat Leaders &amp; Card Market
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-blue-500/20 text-blue-400 uppercase">
-            NFL 2025-26
+            NFL 2025-26 · seeded
           </span>
         </div>
       </div>
+      <p className="text-[11px] text-slate-500 border border-slate-800 rounded-lg px-3 py-2 bg-slate-900/40">
+        {LEAGUE_HUB_DATA_DISCLOSURE}
+      </p>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -162,6 +169,9 @@ const NFLHub: React.FC = () => {
           </button>
         ))}
       </div>
+
+      {activeTab === 'players' && <LeagueHubDepthPanels sport="nfl" accent="text-blue-400" surface="players" />}
+      {activeTab === 'teams' && <LeagueHubDepthPanels sport="nfl" accent="text-blue-400" surface="teams" />}
 
       {/* Tab Content */}
       {activeTab === 'standings' && (

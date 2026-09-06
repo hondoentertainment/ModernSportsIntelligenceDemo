@@ -3,6 +3,11 @@ import { CardInventory, Sport } from '../../types';
 import { buildCollectorAuditDossierReport } from '../core/collectorAuditDossierService';
 import { escapeHtml } from '../htmlEscape';
 import { buildInsurancePacket } from './insurancePacket';
+import {
+  SCHEDULE_D_COMPLETENESS_NOTE,
+  SCHEDULE_D_METHODOLOGY_DISCLAIMER,
+  TaxLotService,
+} from './taxLotService';
 
 // ---- Types ----
 
@@ -397,6 +402,20 @@ export function generateTaxReport(inventory: CardInventory[], config: ReportConf
         holdingPeriod: i.holdingPeriod === 'short_term' ? 'Short-Term' : 'Long-Term',
       }) as Record<string, unknown>),
       columns: ['player', 'sport', 'costBasis', 'gradingFees', 'shippingFees', 'adjustedBasis', 'proceeds', 'gainLoss', 'holdingPeriod'],
+    },
+    {
+      title: 'Methodology & disclaimer',
+      type: 'summary',
+      data: [],
+      summary: {
+        Completeness: SCHEDULE_D_COMPLETENESS_NOTE,
+        Methodology: SCHEDULE_D_METHODOLOGY_DISCLAIMER,
+        Packet: TaxLotService.formatScheduleDPacket(
+          TaxLotService.buildScheduleDPacket(cards, new Date().getFullYear(), 'FIFO', now),
+        ).slice(0, 400),
+      },
+      sourceType: 'inventory-history',
+      sourceNote: 'Schedule D–style buckets from recorded lots. Not IRS regulatory completeness.',
     },
   ];
 
