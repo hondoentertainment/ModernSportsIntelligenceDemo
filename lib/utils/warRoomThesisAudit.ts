@@ -1,8 +1,12 @@
 import type { CardInventory, CollaborativeThesis } from '../../types';
 import { logger } from '../logger';
+import {
+  DEFAULT_AGENT_PREFERENCES,
+  type AgentUserPreferences,
+} from './agentPreferences';
 
 /** Bump when committee prompt or schema expectations change (traceability). */
-export const WAR_ROOM_PROMPT_VERSION = 'war-room-committee-2026-09-v3';
+export const WAR_ROOM_PROMPT_VERSION = 'war-room-committee-2026-09-v4';
 
 /** Model id passed to Gemini for this flow (audit / support). */
 export const WAR_ROOM_COMMITTEE_MODEL_ID = 'gemini-1.5-flash';
@@ -57,10 +61,21 @@ function fnv1a32(str: string, seed = 0x811c9dc5): number {
  */
 export function computeWarRoomInputFingerprint(
   inventory: CardInventory[],
-  includeStrategist: boolean
+  includeStrategist: boolean,
+  prefs: Pick<AgentUserPreferences, 'riskTolerance' | 'timeHorizon' | 'leagueStyle' | 'maxPositionPct'> = DEFAULT_AGENT_PREFERENCES,
 ): string {
   const cards = normalizeInventoryForWarRoomHash(inventory);
-  const payload = JSON.stringify({ v: 2, includeStrategist, cards });
+  const payload = JSON.stringify({
+    v: 3,
+    includeStrategist,
+    prefs: {
+      riskTolerance: prefs.riskTolerance,
+      timeHorizon: prefs.timeHorizon,
+      leagueStyle: prefs.leagueStyle,
+      maxPositionPct: prefs.maxPositionPct,
+    },
+    cards,
+  });
   const h1 = fnv1a32(payload);
   const h2 = fnv1a32(payload, 0x01000193);
   const h3 = fnv1a32(`${payload}|msi-war-room`, 0x9e3779b9);

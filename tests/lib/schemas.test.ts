@@ -8,6 +8,8 @@ import {
   safeParse,
   WarRoomCommitteeResponseSchema,
   safeParseCollaborativeThesis,
+  NegotiationSellerResponseSchema,
+  AgenticOfferResponseSchema,
 } from '../../lib/schemas';
 
 describe('GeminiResponseSchema', () => {
@@ -395,5 +397,39 @@ describe('safeParseCollaborativeThesis', () => {
     });
     expect(t).not.toBeNull();
     expect(t?.runMetadata?.inputHash).toHaveLength(32);
+  });
+});
+
+describe('NegotiationSellerResponseSchema', () => {
+  it('accepts a counter with firmness', () => {
+    const result = NegotiationSellerResponseSchema.safeParse({
+      action: 'counter',
+      sentiment: 'neutral',
+      message: 'Meet at 90.',
+      counterAmount: 90,
+      sellerFirmness: 0.55,
+      reasoning: 'Constructive offer.',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects unknown actions', () => {
+    const result = NegotiationSellerResponseSchema.safeParse({
+      action: 'maybe',
+      sentiment: 'neutral',
+      message: 'Hmm',
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('AgenticOfferResponseSchema', () => {
+  it('requires offer, message, and reasoning', () => {
+    expect(AgenticOfferResponseSchema.safeParse({
+      offerAmount: 80,
+      message: 'Can you do 80?',
+      reasoning: 'Stay under max.',
+    }).success).toBe(true);
+    expect(AgenticOfferResponseSchema.safeParse({ offerAmount: 80, message: 'x' }).success).toBe(false);
   });
 });

@@ -17,12 +17,16 @@ import { LiquidityBadge } from '../LiquidityBadge';
 import { OpportunityBadge } from '../OpportunityBadge';
 import Sparkline from '../Sparkline';
 import { LiquidityService } from '../../lib/analytics/liquidityService';
-import { getStaleValuationLabel, isThinLiquidityScore } from '../../lib/utils/valuationFreshness';
+import {
+  buildValuationProvenanceTitle,
+  getStaleValuationLabel,
+  isThinLiquidityScore,
+} from '../../lib/utils/valuationFreshness';
 import {
   getValuationSourceChipForCard,
   valuationBadgeVariantForEntity,
 } from '../../lib/utils/valuationProvenance';
-import DataSourceBadge from '../DataSourceBadge';
+import ValuationProvenanceChips from '../ValuationProvenanceChips';
 import CertVerifiedBadge from '../CertVerifiedBadge';
 import { CardItemActionHandlers, getCardItemActionsForSurface } from './cardItemActions';
 import SwipeableCard from './SwipeableCard';
@@ -79,8 +83,12 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
   const valuationBadgeVariant = valuationBadgeVariantForEntity(card);
   const staleLabel = getStaleValuationLabel(card.lastValuationDate);
   const showThinMarket = isThinLiquidityScore(card.liquidityScore);
-  const mutedChipClass =
-    'inline-flex min-h-[26px] items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-500 bg-brand-charcoal/35 border border-slate-700/45';
+  const provenanceTitle = buildValuationProvenanceTitle({
+    timestamp: card.valuationTimestamp,
+    lastValuationDate: card.lastValuationDate,
+    confidence: card.valuationConfidence,
+    rationale: card.pricingRationale,
+  });
   const bodyActions = getCardItemActionsForSurface(card, {
     isFavorite,
     toggleFavorite,
@@ -256,14 +264,14 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
                 <OpportunityBadge asset={card} size="sm" showLabel={false} />
               )}
             </div>
-            <div className="mt-2 flex flex-wrap items-center gap-1.5">
-              <span className={`inline-flex min-h-[26px] items-center rounded-lg px-2 py-1 text-[9px] font-black uppercase tracking-wider ${valuationChip.className}`}>
-                {valuationChip.label}
-              </span>
-              <DataSourceBadge variant={valuationBadgeVariant} size="xs" className="ml-1" />
-              {staleLabel && <span className={mutedChipClass}>{staleLabel}</span>}
-              {showThinMarket && <span className={mutedChipClass}>Thin market</span>}
-            </div>
+            <ValuationProvenanceChips
+              className="mt-2"
+              sourceChip={valuationChip}
+              badgeVariant={valuationBadgeVariant}
+              staleLabel={staleLabel}
+              thinMarket={showThinMarket}
+              title={provenanceTitle}
+            />
           </div>
         </div>
         {card.pricingRationale && (

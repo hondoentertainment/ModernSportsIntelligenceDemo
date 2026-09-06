@@ -16,7 +16,13 @@ import {
 import { NegotiationSession, NegotiableItem } from '../types';
 import { NegotiationService } from '../lib/trading/negotiationService';
 import { recordNegotiation } from '../lib/trading/negotiationAnalytics';
-import { getSelectedPlaybook, setSelectedPlaybookId } from '../lib/trading/negotiationPlaybooks';
+import {
+    getNegotiationPlaybooks,
+    getSelectedPlaybook,
+    getSelectedPlaybookId,
+    setSelectedPlaybookId,
+} from '../lib/trading/negotiationPlaybooks';
+import { counterSourceLabel } from '../lib/trading/negotiationContext';
 import {
   buildLotNegotiableItem,
   collectLotLines,
@@ -57,6 +63,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [pricingMode, setPricingMode] = useState<LotPricingMode>('package');
+    const [playbookId, setPlaybookId] = useState(getSelectedPlaybookId);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const recordedIds = useRef<Set<string>>(new Set());
     const userEditedMax = useRef(false);
@@ -219,7 +226,11 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
                         <div>
                             <h2 className="text-xl font-bebas tracking-wide text-white">Negotiation <span className="text-brand-blue">Arena</span></h2>
                             <p className="text-[10px] uppercase tracking-widest text-brand-muted font-bold">
-                                {isLot ? 'Demo lot · simulated seller' : 'Powered by Gemini Logic'}
+                                {session
+                                    ? counterSourceLabel(session.counterSource)
+                                    : isLot
+                                        ? 'Demo lot · simulated seller'
+                                        : 'Gemini when available · demo fallback otherwise'}
                             </p>
                         </div>
                     </div>
@@ -346,6 +357,30 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
                             )}
 
                             <div className="space-y-4">
+                                <label className="block text-sm font-bold text-slate-300" htmlFor="arena-playbook">
+                                    Negotiation playbook
+                                </label>
+                                <select
+                                    id="arena-playbook"
+                                    value={playbookId}
+                                    onChange={(e) => {
+                                        setSelectedPlaybookId(e.target.value);
+                                        setPlaybookId(e.target.value);
+                                    }}
+                                    className="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-brand-blue"
+                                >
+                                    {getNegotiationPlaybooks().map((book) => (
+                                        <option key={book.id} value={book.id}>
+                                            {book.label}
+                                        </option>
+                                    ))}
+                                </select>
+                                <p className="text-xs text-slate-500">
+                                    {getSelectedPlaybook().agentDirective} Gemini uses this when available; otherwise the demo seller follows the same bands.
+                                </p>
+                            </div>
+
+                            <div className="space-y-4">
                                 <label className="block text-sm font-bold text-slate-300">Max Willing to Pay</label>
                                 <div className="relative">
                                     <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
@@ -456,6 +491,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
                                     </div>
                                     <span className="text-[10px] font-mono text-slate-500">
                                         Ask: ${session.sellerAsk} | Your Max: ${session.maxWillingToPay}
+                                        {session.sellerFirmnessLabel ? ` | Seller: ${session.sellerFirmnessLabel}` : ''}
                                     </span>
                                 </div>
                                 {agentThinking && session.messages.some(m => m.content.includes('[AGENT]')) && (

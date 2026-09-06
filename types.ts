@@ -488,6 +488,10 @@ export interface NegotiationSession {
   messages: NegotiationMessage[];
   createdAt: string;
   updatedAt: string;
+  /** Provenance of the latest seller counter. */
+  counterSource?: 'gemini' | 'deterministic';
+  sellerFirmness?: number;
+  sellerFirmnessLabel?: string;
 }
 
 export type MacroTrend = 'bullish' | 'bearish' | 'neutral';

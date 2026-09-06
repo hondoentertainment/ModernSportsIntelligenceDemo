@@ -21,6 +21,12 @@ const PwaUpdateBanner: React.FC = () => {
     const onUpdateAvailable = () => setVisible(true);
     window.addEventListener('sw-update-available', onUpdateAvailable);
 
+    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+      void navigator.serviceWorker.getRegistration().then((reg) => {
+        if (reg?.waiting) setVisible(true);
+      });
+    }
+
     const onControllerChange = () => {
       if (expectingReloadRef.current) {
         window.location.reload();

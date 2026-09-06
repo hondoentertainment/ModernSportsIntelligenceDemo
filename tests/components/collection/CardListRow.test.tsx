@@ -114,6 +114,21 @@ describe('CardListRow — grid action parity', () => {
     expect(handlers.onOpenConsignment).toHaveBeenCalledWith(expect.objectContaining({ id: 'card-1' }));
   });
 
+  it('shows source, stale, and thin-market provenance chips', () => {
+    renderRow(
+      makeCard({
+        valuationSource: 'historical-comps',
+        lastValuationDate: '2020-01-01',
+        liquidityScore: 20,
+        valuationConfidence: 0.7,
+        pricingRationale: 'Four sold comps on a thin book.',
+      }),
+    );
+    expect(screen.getByText('Historical comps')).toBeInTheDocument();
+    expect(screen.getByText('Thin market')).toBeInTheDocument();
+    expect(screen.getByTitle(/70% conf/)).toBeInTheDocument();
+  });
+
   it('marks the row selected for the batch toolbar highlight', () => {
     renderRow(makeCard(), makeHandlers(), { isSelected: true });
 

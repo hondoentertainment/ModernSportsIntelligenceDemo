@@ -103,7 +103,24 @@ describe('warRoomThesisAudit', () => {
     });
 
     it('exports current prompt version', () => {
-      expect(WAR_ROOM_PROMPT_VERSION).toBe('war-room-committee-2026-09-v3');
+      expect(WAR_ROOM_PROMPT_VERSION).toBe('war-room-committee-2026-09-v4');
+    });
+
+    it('changes when agent priorities change (v3 payload)', () => {
+      const inv = [card({ id: '1' })];
+      const conservative = computeWarRoomInputFingerprint(inv, false, {
+        riskTolerance: 10,
+        timeHorizon: 'long',
+        leagueStyle: 'mlb-first',
+        maxPositionPct: 10,
+      });
+      const aggressive = computeWarRoomInputFingerprint(inv, false, {
+        riskTolerance: 90,
+        timeHorizon: 'short',
+        leagueStyle: 'nba-first',
+        maxPositionPct: 30,
+      });
+      expect(conservative).not.toBe(aggressive);
     });
 
     it('treats non-array inventory like empty portfolio', () => {

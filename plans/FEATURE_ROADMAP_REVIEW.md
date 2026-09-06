@@ -3,7 +3,7 @@
 **Purpose:** Single document to review **what exists in the product**, **what is production-grade vs demo/beta**, and **what remains open**.  
 **Sources:** `PRD.md` §4 & §14, `lib/utils/featureCatalog.ts`, `PRODUCTION_READINESS.md`, `plans/next-steps-recommendation.md`, `plans/roadmap-review-and-enhancements.md`, routing in `App.tsx`.
 
-**Last updated:** September 6, 2026 (NEXT_STEPS engineering batch — embed widget, insurance packet, Collection swipe triage, migration conflict UX; #117–#119 already on `main`)
+**Last updated:** September 6, 2026 (NEXT_STEPS engineering batch — Gemini negotiation counters, user agent priorities, pricing provenance chips, NAV/ROI/tax unit tests; builds on #117–#120)
 
 ---
 
@@ -44,7 +44,7 @@
 | Area                                                 | Implemented (high level)                                                                                                                                                                                                                                              | Open / next                                                                                |
 | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | **Dashboard**                                        | NAV-style hub, widgets, market pulse concepts                                                                                                                                                                                                                         | Deeper default use of verified comps; performance budgets on largest charts                |
-| **Collection**                                       | Inventory + sold vault, OCR/vision ingest, grading/scarcity UI, virtualized grid, bulk actions, **consignment** modal + **status + Supabase notes codec**, return-to-collection, **stale valuation / thin market** chips, **portfolio stats** helper for header tiles | List view parity with grid actions; optional dedicated DB columns for consignment vs notes |
+| **Collection**                                       | Inventory + sold vault, OCR/vision ingest, grading/scarcity UI, virtualized grid, bulk actions, **consignment** modal + **status + Supabase notes codec**, return-to-collection, **stale / thin / source / timestamp / confidence** chips on grid + list + watchlist, **portfolio stats** helper for header tiles | Optional dedicated DB columns for consignment vs notes; live comps still behind owner-held `VITE_FF_REAL_EBAY` |
 | **Watchlist / targets**                              | Targets tab in Collection flow; alerts surfaces                                                                                                                                                                                                                       | Server-driven push beyond on-device notifications (if product requires)                    |
 | **Deep search / audit**                              | Routes `/deep-search`, `/audit`                                                                                                                                                                                                                                       | Tighter coupling to live indices where applicable                                          |
 | **MLB / players / teams / games / trends / compare** | Routed pages, data layers (mix of live + simulated)                                                                                                                                                                                                                   | Non-MLB hubs depth per PRD “in progress”                                                   |
@@ -58,17 +58,17 @@
 
 | Area                           | Implemented                                                                                                                                                     | Open / next                                                                 |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **15 Mobile / PWA**            | Service worker, offline shell, mobile nav, **Collection 4-way swipe triage** (keep/sell/consign/review + haptics), **Alpha Scanner cert/UPC floor loop** (#119) | Battle-test offline edge cases; live PSA remains behind `VITE_FF_REAL_PSA`  |
-| **16 Agentic negotiation**     | Negotiation UI, **playbooks**, **analytics KPIs** (#117), **bundle/lot negotiation** (#119)                                                                     | Gemini-deepened live counters (demo-honest only); no live marketplace       |
+| **15 Mobile / PWA**            | Service worker, offline shell, **offline banner + hashed-shell fallback**, mobile nav, **Collection 4-way swipe triage** (keep/sell/consign/review + haptics), **Alpha Scanner cert/UPC floor loop** (#119) | Live PSA remains behind `VITE_FF_REAL_PSA`                                  |
+| **16 Agentic negotiation**     | Negotiation UI, **playbooks**, **analytics KPIs** (#117), **bundle/lot negotiation** (#119), **Gemini-deepened counters + seller-firmness** with deterministic fallback | No live marketplace trading                                                 |
 | **17 Liquidity / consignment** | Instant-sell concept, **ConsignmentService** (local history), **card-level consignment** + cloud sync                                                           | P2P order book (roadmap); MSI-house execution rails                         |
 | **18 Predictive alpha**        | Modals / engines (prototype)                                                                                                                                    | Live injury/transaction feeds; comp regression layer                        |
-| **19 Multi-agent**             | War Room + **why-panels / agent transparency** (#118)                                                                                                           | User-defined agent priorities; deeper live conflict consensus               |
+| **19 Multi-agent**             | War Room + **why-panels / agent transparency** (#118) + **user-defined agent priorities** (risk / horizon / league / max position)                              | Deeper live conflict consensus                                              |
 | **20 Liquidity intelligence**  | Scores, badges, market depth modals                                                                                                                             | Exchange-grade depth where APIs allow                                       |
 | **21 Cross-asset correlation** | Live catalog row with synthetic/seeded data disclosure; duplicate v2 row should stay aligned                                                                    | Live cross-asset data feeds                                                 |
 | **22 Fiscal**                  | Tax-lot style tooling in product (**live** in catalog)                                                                                                          | FIFO/LIFO/specific ID **regulatory completeness**; Schedule D-grade exports |
 | **23 Visual audit / grading**  | Vision / prediction modals (**beta** elements)                                                                                                                  | Centering CV; production vision pipeline                                    |
 | **24 Macro sentinel**          | Signals / monitoring + **seeded Hobby Health Index** on Dashboard Macro widget (disclosed synthetic)                                                            | Live velocity / PSA / sentiment feeds                                       |
-| **25–31 Tools**                | Break-even, insurance report, what-if, grading planner, eBay listing gen, wax ROI, etc. (mostly **live**)                                                       | Polish + data provenance labels everywhere                                  |
+| **25–31 Tools**                | Break-even, insurance report, what-if, grading planner, eBay listing gen, wax ROI, etc. (mostly **live**)                                                       | Provenance chips deepened on collection/watchlist; live tape still flag-gated |
 | **35 Consignment tracker**     | Catalog is **live** with inventory lifecycle + return flow and Supabase-backed notes codec                                                                      | Partner APIs if any                                                         |
 | **38 Anomaly detection**       | Live with heuristic/model disclosure                                                                                                                            | Live anomaly feeds                                                          |
 
@@ -81,7 +81,7 @@
 | **Trading / rules / reports**                 | Trade block concepts, rules engine UI, PDF/exports, benchmarks | Idempotent automation + approvals (frontier)                                |
 | **Technical analysis / time machine / goals** | Shipped surfaces                                               | Historical price table in Supabase (roadmap recommendation)                 |
 | **Notifications**                             | `/alerts`, scheduler hooks                                     | Web push + server triggers at scale                                         |
-| **Data import**                               | Hub patterns                                                   | Reduce remaining direct `localStorage` in services (`PRODUCTION_READINESS`) |
+| **Data import**                               | Hub patterns; agent priorities persist via `syncStore` (`msi_agent_user_preferences`) | Remaining raw `localStorage` is DAL/offline quota only (`audit:localstorage` = 0) |
 
 ---
 
@@ -89,7 +89,7 @@
 
 | Area                                           | Implemented         | Open / next                            |
 | ---------------------------------------------- | ------------------- | -------------------------------------- |
-| **Stress testing, grade predict, tax harvest** | Live surfaces       | Test coverage on all financial outputs |
+| **Stress testing, grade predict, tax harvest** | Live surfaces + focused Fiscal / NAV / tax-path Vitest | Full tax-lot **regulatory** completeness still open |
 | **Live game impact**                           | **Beta**            | Real play-by-play + pricing link       |
 | **Vision grading lab**                         | **Beta**            | Production model + cert integration    |
 | **Fractional / provenance**                    | **Beta** / live mix | Execution rails                        |
@@ -112,11 +112,11 @@ Aligned with `PRODUCTION_READINESS.md` (not the same numbering as product “Pha
 
 | Theme              | Implemented                                                        | Open                                                         |
 | ------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------ |
-| **DAL / Supabase** | `lib/dal.ts`, migrations, RLS docs, `useSupabaseInventory`         | Migrate remaining services off raw `localStorage`            |
+| **DAL / Supabase** | `lib/dal.ts`, migrations, RLS docs, `useSupabaseInventory`; **agent priorities** via `syncStore` (`msi_agent_user_preferences`); **offline sync queue** no longer seeds mock pending rows | Raw `localStorage` remains DAL + offline quota only |
 | **Auth**           | Session refresh, recovery flow, **loading UX** on protected routes | CSRF/rate limits on any new mutating public API              |
 | **API**            | `api/ai/generate`, `api/market/ebay`, Zod, rate limit, logging     | Broader tracing/metrics (roadmap 30–90 day plan)             |
 | **Security**       | Headers, CSP Report-Only, sanitization, payment docs               | Enforce CSP when rollout complete                            |
-| **Testing**        | Vitest + Playwright + coverage thresholds                          | Raise coverage on NAV/ROI/tax paths; more E2E critical paths |
+| **Testing**        | Vitest + Playwright + coverage thresholds; **NAV/ROI + FiscalService + TaxStrategyAgent** unit coverage raised | More E2E critical paths; **not** full Schedule D regulatory completeness |
 | **Observability**  | `reportError`, optional Sentry                                     | Error budgets, dashboards                                    |
 
 ---
@@ -154,6 +154,8 @@ These were proposed as **high-value additions**; overlap with existing tools is 
 | Collection swipe triage               | **Shipped** (2026-09-06) — Collection grid 4-way keep/sell/consign/review with haptics                                                                                                                                                                                                                                                                                                           |
 | Migration conflict / duplicate UX     | **Shipped** (2026-09-06) — merge vs skip preview on banner + Profile; demo-safe when cloud is unavailable                                                                                                                                                                                                                                                                                        |
 | Hobby health index                    | **Shipped (seeded)** (2026-09-06) — disclosed synthetic composite on Macro-Sentinel. Live feeds remain open.                                                                                                                                                                                                                                                                                     |
+| Gemini-deepened negotiation counters  | **Shipped** (2026-09-06) — playbook + seller-firmness in Gemini prompts; honest deterministic fallback; not live marketplace                                                                                                                                                                                                                                                                     |
+| User-defined agent priorities         | **Shipped** (2026-09-06) — sliders persist via MSI store; War Room / Auto-Pilot honor them                                                                                                                                                                                                                                                                                                       |
 
 ---
 
