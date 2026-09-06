@@ -105,13 +105,13 @@ Confirmation pass against the 90-day rule in [`NEXT_STEPS.md`](../NEXT_STEPS.md)
 
 ## Outcomes
 
-| ID / surface | Status after sweep | Action |
-| ------------ | ------------------ | ------ |
-| `fractional-vault` | **beta** (legal-gated) | **Stayed beta.** Hidden from Feature Directory / search by default. No engineering blocker — securities/"Simulation only" sign-off still required before `live`. |
-| `fractional-vault-v2` | **absent** | Already removed (duplicate of v1). Sweep confirmed it is not in `FEATURE_CATALOG`. |
-| `provenance-chain`, `vision-grading`, `liquidity-pool`, `visual-audit`, `live-impact` | **live** | Already promoted in wave 3. No demotion. |
-| Auto-supplement `demo` rows | **demo** | Already hidden from default discovery. No additional hides. |
-| New betas | **none** | No new `status: 'beta'` rows landed since the August NEXT_STEPS edition. |
+| ID / surface                                                                          | Status after sweep     | Action                                                                                                                                                           |
+| ------------------------------------------------------------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fractional-vault`                                                                    | **beta** (legal-gated) | **Stayed beta.** Hidden from Feature Directory / search by default. No engineering blocker — securities/"Simulation only" sign-off still required before `live`. |
+| `fractional-vault-v2`                                                                 | **absent**             | Already removed (duplicate of v1). Sweep confirmed it is not in `FEATURE_CATALOG`.                                                                               |
+| `provenance-chain`, `vision-grading`, `liquidity-pool`, `visual-audit`, `live-impact` | **live**               | Already promoted in wave 3. No demotion.                                                                                                                         |
+| Auto-supplement `demo` rows                                                           | **demo**               | Already hidden from default discovery. No additional hides.                                                                                                      |
+| New betas                                                                             | **none**               | No new `status: 'beta'` rows landed since the August NEXT_STEPS edition.                                                                                         |
 
 **Hidden / demoted this cycle:** none.
 
