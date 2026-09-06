@@ -163,6 +163,12 @@ describe('featureCatalog', () => {
       expect(DISCOVERABLE_FEATURE_CATALOG.every((f) => f.status !== 'demo')).toBe(true);
       expect(DISCOVERABLE_FEATURE_CATALOG.every((f) => f.status !== 'beta')).toBe(true);
     });
+
+    it('keeps fractional-vault as the only catalog beta (2026-09 sweep)', () => {
+      const betas = FEATURE_CATALOG.filter((f) => f.status === 'beta');
+      expect(betas.map((f) => f.id)).toEqual(['fractional-vault']);
+      expect(FEATURE_CATALOG.some((f) => f.id === 'fractional-vault-v2')).toBe(false);
+    });
   });
 
   describe('v5.2 Frontier feature ids', () => {

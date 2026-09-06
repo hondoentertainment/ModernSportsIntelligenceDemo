@@ -3,7 +3,7 @@
 **Purpose:** Single document to review **what exists in the product**, **what is production-grade vs demo/beta**, and **what remains open**.  
 **Sources:** `PRD.md` §4 & §14, `lib/utils/featureCatalog.ts`, `PRODUCTION_READINESS.md`, `plans/next-steps-recommendation.md`, `plans/roadmap-review-and-enhancements.md`, routing in `App.tsx`.
 
-**Last updated:** July 4, 2026
+**Last updated:** September 5, 2026 (quarterly catalog sweep — `fractional-vault` remains the only beta)
 
 ---
 
@@ -156,17 +156,13 @@ These were proposed as **high-value additions**; overlap with existing tools is 
 
 ## 7. `featureCatalog` — non-GA list (explicit)
 
-These core catalog entries are **beta** until exit criteria are met (data, policy, tests):
+**2026-09-05 quarterly sweep:** the only core catalog **beta** is:
 
-1. Institutional liquidity pool
-2. Visual audit simulation
-3. Live game impact engine
-4. AI vision grading lab
-5. Fractional vault & copy-trading
-6. Fractional vault v2 / tokenized ownership
-7. Provenance chain & digital twin
+1. Fractional vault & copy-trading (`fractional-vault`) — legal/securities-gated; stays `beta`; hidden from default discovery.
 
-Auto-supplemented routes marked `demo` are shipped surfaces, not GA promises. Promote them only after the same persistence, data honesty, auth/tenancy, error-state, and test checks in `docs/BETA_FEATURE_EXIT_CRITERIA.md`.
+Wave-3 promotions (no longer beta): institutional liquidity pool, visual audit simulation, live game impact engine, AI vision grading lab, provenance chain & digital twin. `fractional-vault-v2` was removed (duplicate of v1).
+
+Auto-supplemented routes marked `demo` are shipped surfaces, not GA promises. They stay hidden from `DISCOVERABLE_FEATURE_CATALOG` unless `VITE_FF_ENABLE_DEMO_SURFACES`. Promote them only after the same persistence, data honesty, auth/tenancy, error-state, and test checks in `docs/BETA_FEATURE_EXIT_CRITERIA.md`.
 
 ---
 
