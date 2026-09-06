@@ -19,7 +19,28 @@ describe('NegotiationService', () => {
         expect(session.sellerAsk).toBe(100);
         expect(session.messages).toHaveLength(1);
         expect(session.messages[0].sender).toBe('seller');
+        expect(session.messages[0].content).toMatch(/asking \$100 for this\./);
         expect(session.status).toBe('active');
+        expect(session.targetItem.lotSize).toBeUndefined();
+    });
+
+    it('starts a lot session with package copy', () => {
+        const lot = {
+            id: 'lot-1',
+            name: 'Lot of 2: A, B',
+            player: 'Lot of 2: A, B',
+            price: 180,
+            image: '',
+            pricingMode: 'package' as const,
+            lotItems: [
+                { id: 'a', name: 'A', price: 100 },
+                { id: 'b', name: 'B', price: 100 },
+            ],
+        };
+        const session = NegotiationService.startNegotiation(lot, 170);
+        expect(session.targetItem.lotSize).toBe(2);
+        expect(session.targetItem.pricingMode).toBe('package');
+        expect(session.messages[0].content).toMatch(/2-card lot \(package price\)/);
     });
 
     it('should accept an offer close to the ask price', () => {

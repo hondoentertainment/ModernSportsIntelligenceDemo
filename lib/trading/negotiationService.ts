@@ -27,24 +27,32 @@ const SELLER_RESPONSES = {
 
 export class NegotiationService {
     static startNegotiation(targetItem: NegotiableItem, maxWillingToPay: number): NegotiationSession {
+        const lotSize = Array.isArray(targetItem.lotItems) ? targetItem.lotItems.length : 0;
+        const ask = targetItem.price || targetItem.currentValue || 100;
+        const name = targetItem.player || targetItem.name || 'this card';
+        const isLot = lotSize >= 2;
         return {
             id: crypto.randomUUID(),
             targetItem: {
-                id: targetItem.id,
-                name: targetItem.player || targetItem.name,
-                price: targetItem.price || targetItem.currentValue || 100,
-                image: targetItem.image
+                id: targetItem.id || crypto.randomUUID(),
+                name,
+                price: ask,
+                image: targetItem.image || '',
+                lotSize: isLot ? lotSize : undefined,
+                pricingMode: isLot ? (targetItem.pricingMode || 'package') : undefined,
             },
             currentUserOffer: 0,
-            sellerAsk: targetItem.price || targetItem.currentValue || 100,
+            sellerAsk: ask,
             maxWillingToPay,
             status: 'active',
             messages: [{
                 id: crypto.randomUUID(),
                 sender: 'seller',
-                content: `I'm asking $${targetItem.price || 100} for this. What's your offer?`,
+                content: isLot
+                    ? `I'm asking $${ask} for this ${lotSize}-card lot (${targetItem.pricingMode === 'sum' ? 'sum of singles' : 'package price'}). What's your offer?`
+                    : `I'm asking $${ask} for this. What's your offer?`,
                 timestamp: new Date().toISOString(),
-                offerAmount: targetItem.price || 100
+                offerAmount: ask
             }],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()

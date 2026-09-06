@@ -65,4 +65,40 @@ describe('NegotiationModal', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Send Offer' }));
 
     });
+
+    it('lets the user select a multi-card lot and shows package math', async () => {
+        const catalog = [
+            mockItem,
+            {
+                id: 'second',
+                name: 'Second Card',
+                player: 'Second Card',
+                year: 2023,
+                manufacturer: 'Prizm',
+                price: 80,
+                image: 'b.jpg',
+            },
+        ];
+        render(
+            <NegotiationModal
+                isOpen={true}
+                onClose={onClose}
+                targetItem={mockItem}
+                lotCatalog={catalog}
+                onSuccess={onSuccess}
+            />,
+        );
+
+        expect(screen.getByText(/build a lot/i)).toBeInTheDocument();
+        fireEvent.click(screen.getByLabelText(/second card/i));
+
+        await waitFor(() => {
+            expect(screen.getByText(/lot of 2: test player, second card/i)).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: /package \$216/i })).toBeInTheDocument();
+            expect(screen.getAllByText('Test Player').length).toBeGreaterThan(1);
+            expect(screen.getAllByText('$150').length).toBeGreaterThan(0);
+            expect(screen.getByText(/not a live dealer quote/i)).toBeInTheDocument();
+        });
+        expect(screen.getByRole('button', { name: /enter arena/i })).not.toBeDisabled();
+    });
 });

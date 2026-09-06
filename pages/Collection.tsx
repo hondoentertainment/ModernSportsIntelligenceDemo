@@ -488,6 +488,7 @@ const Collection: React.FC = () => {
           </Link>
           <button
             onClick={() => setIsOCRModalOpen(true)}
+            title="Scan a card photo, PSA cert, or UPC barcode"
             className="flex items-center gap-3 px-6 py-4 bg-brand-charcoal border border-brand-lime/30 text-brand-lime font-black rounded-2xl transition-all shadow-xl active:scale-95 uppercase tracking-widest text-[10px] group"
           >
             <Sparkles size={16} className="group-hover:animate-pulse" />

@@ -176,6 +176,7 @@ vi.mock('../../components/CardImage.tsx', () => ({ default: () => null }));
 vi.mock('../../components/NegotiationModal.tsx', () => ({ default: () => null }));
 vi.mock('../../components/NegotiationAnalyticsPanel.tsx', () => ({ default: () => null }));
 vi.mock('../../components/OCRIngestionModal.tsx', () => ({ default: () => null }));
+vi.mock('../../components/AddAssetModal.tsx', () => ({ default: () => null }));
 vi.mock('../../components/MorningBriefingModal.tsx', () => ({ default: () => null }));
 vi.mock('../../components/ShareAlphaModal.tsx', () => ({ default: () => null }));
 vi.mock('../../components/ReportModal.tsx', () => ({ default: () => null }));
