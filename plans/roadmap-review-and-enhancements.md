@@ -8,20 +8,22 @@
 ## 1. Current State Assessment
 
 ### Strengths
+
 - **Deep vertical integration** — The platform covers the full collector lifecycle: discovery, acquisition (negotiation), portfolio management, valuation, and exit strategy.
 - **AI-first architecture** — Gemini integration for valuation, negotiation, semantic search, and correlation analysis provides genuine differentiation.
 - **Financial rigor** — Realized P/L, NAV by league, cost-basis tracking, and grading ROI put this ahead of typical hobby tools.
 - **Solid tech stack** — React 19, Vite 6, TypeScript, Supabase with RLS, Stripe billing, and Playwright/Vitest testing provide a modern, maintainable foundation.
 
 ### Gaps & Risks Identified
-| Area | Gap | Risk Level |
-|------|-----|------------|
-| **Data freshness** | Prices still rely heavily on AI estimation rather than live market feeds | High |
-| **Offline reliability** | PWA/Service Worker work is in-progress but not battle-tested | Medium |
-| **Test coverage** | Limited unit and E2E tests for financial calculation paths | High |
-| **Multi-sport breadth** | Feature depth is MLB-centric; NBA, NFL, Soccer, Hockey have thinner integrations | Medium |
-| **Social moat** | Hype Feed exists but no peer-to-peer marketplace or community trading | Medium |
-| **Regulatory readiness** | No tax-lot accounting (FIFO/LIFO/Specific ID) for IRS/CRA compliance | High |
+
+| Area                     | Gap                                                                              | Risk Level |
+| ------------------------ | -------------------------------------------------------------------------------- | ---------- |
+| **Data freshness**       | Prices still rely heavily on AI estimation rather than live market feeds         | High       |
+| **Offline reliability**  | PWA/Service Worker work is in-progress but not battle-tested                     | Medium     |
+| **Test coverage**        | Limited unit and E2E tests for financial calculation paths                       | High       |
+| **Multi-sport breadth**  | Feature depth is MLB-centric; NBA, NFL, Soccer, Hockey have thinner integrations | Medium     |
+| **Social moat**          | Hype Feed exists but no peer-to-peer marketplace or community trading            | Medium     |
+| **Regulatory readiness** | No tax-lot accounting (FIFO/LIFO/Specific ID) for IRS/CRA compliance             | High       |
 
 ---
 
@@ -77,7 +79,7 @@
 
 **Recommendations:**
 
-12. **Agent Transparency & Audit Trail** — Each agent (Scout, Market, Risk, Negotiator) should log its reasoning chain in a user-visible audit trail. Opaque recommendations erode trust, especially when real money is involved. Add a "Why did the agent recommend this?" expandable panel for every agent action.
+12. **Agent Transparency & Audit Trail** — **Shipped (deepened):** expandable “Why this recommendation?” on War Room committee cards, outcome memory, guild proposals, Auto-Pilot actions, and acquisition pricing. Agents may log `reasoningChain` / `conflictNotes`; when a run stored a conclusion only, the panel says so instead of inventing steps. User/admin audit timelines remain on `/audit-trail`.
 
 13. **User-Defined Agent Priorities** — Let users configure agent behavior (e.g., "Risk Agent: be aggressive" vs. "Risk Agent: be conservative"). A slider-based configuration for risk tolerance, time horizon, and league preference allows the multi-agent system to align with individual investment theses.
 
@@ -104,36 +106,43 @@
 These features are not covered by any existing phase but would meaningfully accelerate platform adoption and retention:
 
 ### 19. Collection Insurance Valuation Report
+
 **Priority: High** | **Effort: Medium**
 
 Generate insurance-ready valuation documents with timestamped FMV for each card, total collection value, and photo documentation. Insurance companies require this, and no hobby tool produces it automatically. Leverage the existing `pdfExport.ts` and `reportGenerator.ts` infrastructure.
 
 ### 20. Break-Even Calculator
+
 **Priority: High** | **Effort: Low**
 
 For each card, calculate and display the break-even sale price accounting for: purchase price + grading fees + shipping + platform seller fees (eBay 13%, COMC, MySlabs). This is a single formula but collectors constantly miscalculate it. Show it prominently on the card detail view.
 
 ### 21. "What If" Portfolio Simulator
+
 **Priority: Medium** | **Effort: Medium**
 
 Let users simulate portfolio changes before executing: "What happens to my NAV if I sell Card A and buy Card B?" Show the delta in diversification, risk concentration, and projected returns. This turns the platform from a ledger into a decision-support system.
 
 ### 22. Grading Submission Batch Planner
+
 **Priority: Medium** | **Effort: Medium**
 
 Help users plan grading submissions by: (a) identifying raw cards with the highest grading ROI potential, (b) grouping them into cost-efficient submission tiers (PSA economy, regular, express), and (c) calculating expected net value after grading fees. This bridges the existing `GradingCalculatorModal` into a batch workflow.
 
 ### 23. eBay Listing Draft Generator
+
 **Priority: Medium** | **Effort: Low**
 
 Auto-generate eBay listing titles and descriptions from card metadata (player, year, set, grade, comp prices). Follow eBay SEO best practices (keyword ordering, character limits). Users can copy to clipboard or (future) publish directly via eBay API. This reduces friction in the "exit" phase of the collector lifecycle.
 
 ### 24. Collection Sharing & Embed Widget
+
 **Priority: Medium** | **Effort: Medium**
 
 Extend the existing `PublicPortfolio.tsx` with an embeddable widget (iframe or Web Component) that collectors can place on their personal sites, forums, or social profiles. Add a vanity URL (e.g., `msi.app/u/username`). Community visibility drives organic growth.
 
 ### 25. Wax Break ROI Tracker
+
 **Priority: Low** | **Effort: Low**
 
 Track the cost vs. return of wax/hobby box breaks. Input the break cost and log every card pulled; calculate the instant ROI of the break. This is a common use case with no good tooling and would bring in a new user segment (break participants).
@@ -144,36 +153,40 @@ Track the cost vs. return of wax/hobby box breaks. Input the break cost and log 
 
 Based on the analysis above, the suggested execution order for maximum impact:
 
-| Order | Item | Rationale |
-|-------|------|-----------|
-| 1 | **Phase 15 completion** + Barcode Scanner (#1) | Unlock the card show use case — in-person events are the hobby's center of gravity |
-| 2 | **Break-Even Calculator** (#20) | Trivial to build, immediately useful, drives daily active usage |
-| 3 | **Tax-Lot Accounting** (#16) | Highest value for "sports as an asset class" positioning; tax season is a forcing function |
-| 4 | **Phase 18 + Injury/Transaction Alerts** (#9) | Predictive signals are the #1 reason users would pay for a Pro subscription |
-| 5 | **Insurance Valuation Report** (#19) | Monetizable as a premium feature; no competition |
-| 6 | **Phase 16 + Bundle Negotiation** (#5) | AI negotiation is the most shareable/viral feature |
-| 7 | **Phase 17 + P2P Exchange** (#7) | Build marketplace liquidity organically before taking inventory risk |
-| 8 | **Phase 19 + Agent Transparency** (#12) | Multi-agent only works if users trust the agents |
-| 9 | **Visual Grading Prediction** (#17) | High word-of-mouth potential; technically ambitious but defensible |
-| 10 | **Hobby Market Health Index** (#18) | Brand-defining feature that positions MSI as the Bloomberg of sports cards |
+| Order | Item                                           | Rationale                                                                                  |
+| ----- | ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1     | **Phase 15 completion** + Barcode Scanner (#1) | Unlock the card show use case — in-person events are the hobby's center of gravity         |
+| 2     | **Break-Even Calculator** (#20)                | Trivial to build, immediately useful, drives daily active usage                            |
+| 3     | **Tax-Lot Accounting** (#16)                   | Highest value for "sports as an asset class" positioning; tax season is a forcing function |
+| 4     | **Phase 18 + Injury/Transaction Alerts** (#9)  | Predictive signals are the #1 reason users would pay for a Pro subscription                |
+| 5     | **Insurance Valuation Report** (#19)           | Monetizable as a premium feature; no competition                                           |
+| 6     | **Phase 16 + Bundle Negotiation** (#5)         | AI negotiation is the most shareable/viral feature                                         |
+| 7     | **Phase 17 + P2P Exchange** (#7)               | Build marketplace liquidity organically before taking inventory risk                       |
+| 8     | **Phase 19 + Agent Transparency** (#12)        | Multi-agent only works if users trust the agents                                           |
+| 9     | **Visual Grading Prediction** (#17)            | High word-of-mouth potential; technically ambitious but defensible                         |
+| 10    | **Hobby Market Health Index** (#18)            | Brand-defining feature that positions MSI as the Bloomberg of sports cards                 |
 
 ---
 
 ## 5. Technical Recommendations
 
 ### Testing
+
 - **Financial calculation paths must have 100% unit test coverage** before adding more features. NAV, P/L, ROI, and tax-lot calculations are liability-critical.
 - Add snapshot tests for PDF report generation to catch formatting regressions.
 
 ### Performance
+
 - The existing `@tanstack/react-virtual` integration is good. Ensure all list/grid views use it consistently, especially as card counts grow.
 - Consider adding React Suspense boundaries around AI-powered components (Deep Search, Correlation Terminal) that have variable latency.
 
 ### Data Architecture
+
 - Add a `price_history` table in Supabase with daily snapshots. Many recommended features (seasonality detection, trend analysis, comp regression) require historical price data that currently isn't persisted.
 - Introduce an `events` table for tracking MLB transactions, injuries, and milestones. This feeds the Predictive Alpha Engine and alert system.
 
 ### API Strategy
+
 - Prioritize the eBay Browse API integration — it unlocks accurate FMV, comp-based predictions, and listing generation simultaneously.
 - Consider the PSA Cert Verification API for instant grade lookups during barcode scanning.
 

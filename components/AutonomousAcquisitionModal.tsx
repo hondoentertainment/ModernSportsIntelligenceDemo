@@ -70,6 +70,8 @@ import {
 } from '../lib/trading/negotiationPlaybooks';
 import { showToast } from '../lib/utils/toast';
 import NegotiationAnalyticsPanel from './NegotiationAnalyticsPanel.tsx';
+import WhyRecommendationPanel from './WhyRecommendationPanel.tsx';
+import { buildWhyFromPricing } from '../lib/utils/agentReasoning';
 
 // ── Types ───────────────────────────────────────────────────────────────────────
 
@@ -572,6 +574,7 @@ const NegotiationsTab: React.FC = () => {
                 Playbook-adjusted pricing (preview)
               </p>
               <p className="text-[11px] text-slate-400 leading-relaxed">{pricingPreview.reasoning}</p>
+              <WhyRecommendationPanel view={buildWhyFromPricing(pricingPreview)} compact />
               <div className="grid grid-cols-2 gap-2 text-center">
                 <div className="rounded-lg bg-slate-900/80 p-2 border border-slate-700/50">
                   <p className="text-[9px] text-slate-500 uppercase">Suggested open</p>

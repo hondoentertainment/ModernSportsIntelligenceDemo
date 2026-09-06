@@ -68,9 +68,10 @@ export class MultiAgentService {
     SYSTEM INSTRUCTIONS:
     1. Simulate the following specialist agents: ${includeStrategist ? 'Scout, Market, Risk, Negotiator, and Strategist' : 'Scout, Market, Risk, and Negotiator'}.
     2. Each agent must provide a concise (max 2 sentences) insight from their perspective.
-    3. Synthesize their collaborative output into a unified thesis.
-    4. Weight ebay-api / historical-comps quotes above gemini / fallback when recommending actions. Call out coverage gaps when fresh verifiable % is below target.
-    ${includeStrategist ? '5. Strategist Prime MUST provide a specific executionPlan as a list of actions.' : ''}
+    3. Each agent must also provide a reasoningChain: 2-4 short steps explaining how they reached the insight. If an agent dissents from likely consensus, add conflictNotes.
+    4. Synthesize their collaborative output into a unified thesis.
+    5. Weight ebay-api / historical-comps quotes above gemini / fallback when recommending actions. Call out coverage gaps when fresh verifiable % is below target.
+    ${includeStrategist ? '6. Strategist Prime MUST provide a specific executionPlan as a list of actions.' : ''}
     
     EXPECTED JSON OUTPUT:
     {
@@ -85,7 +86,9 @@ export class MultiAgentService {
           "persona": "Performance Analytics Specialist",
           "insight": "...",
           "sentiment": "positive|neutral|negative",
-          "confidence": 0.9
+          "confidence": 0.9,
+          "reasoningChain": ["step 1", "step 2"],
+          "conflictNotes": []
         },
         ... (repeat for all 4 agents)
       ]
@@ -116,7 +119,9 @@ export class MultiAgentService {
                                         persona: { type: Type.STRING },
                                         insight: { type: Type.STRING },
                                         sentiment: { type: Type.STRING },
-                                        confidence: { type: Type.NUMBER }
+                                        confidence: { type: Type.NUMBER },
+                                        reasoningChain: { type: Type.ARRAY, items: { type: Type.STRING } },
+                                        conflictNotes: { type: Type.ARRAY, items: { type: Type.STRING } }
                                     },
                                     required: ["agentId", "agentName", "persona", "insight", "sentiment", "confidence"]
                                 }

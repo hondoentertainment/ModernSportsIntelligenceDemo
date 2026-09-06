@@ -242,6 +242,10 @@ export interface AgentInsight {
   insight: string;
   sentiment: 'positive' | 'neutral' | 'negative';
   confidence: number;
+  /** Ordered steps when the agent logged a reasoning chain (not just a conclusion). */
+  reasoningChain?: string[];
+  /** Notes when this agent dissented or conflicted with peers. */
+  conflictNotes?: string[];
 }
 
 /** Traceability for War Room / multi-agent runs (input fingerprint, prompt rev, model id). */

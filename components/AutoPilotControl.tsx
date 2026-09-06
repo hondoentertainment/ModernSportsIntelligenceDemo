@@ -3,6 +3,8 @@ import { AutonomousExecutionService } from '../lib/trading/AutonomousExecutionSe
 import { AutoPilotConfig, RiskCollar, AutonomousAction } from '../types';
 import { Shield, Zap, Settings, AlertCircle, CheckCircle2, History, TrendingUp, DollarSign, Play, Check, X } from 'lucide-react';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import WhyRecommendationPanel from './WhyRecommendationPanel';
+import { buildWhyFromAction, buildWhyFromThesis } from '../lib/utils/agentReasoning';
 
 const AutoPilotControl: React.FC = () => {
     const { inventory } = useSupabaseInventory();
@@ -209,6 +211,7 @@ const AutoPilotControl: React.FC = () => {
                                                 <span className="text-[8px] text-slate-500 whitespace-nowrap">{new Date(action.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                             </div>
                                             <p className="text-[9px] text-slate-400 leading-tight line-clamp-2">{action.rationale}</p>
+                                            <WhyRecommendationPanel view={buildWhyFromAction(action)} compact />
                                         </div>
                                     </div>
                                 ))}
@@ -229,6 +232,7 @@ const AutoPilotControl: React.FC = () => {
                             Cash Delta {preview.impact.projectedNetCashDelta >= 0 ? '+' : ''}${preview.impact.projectedNetCashDelta.toFixed(0)}
                         </span>
                     </div>
+                    <WhyRecommendationPanel view={buildWhyFromThesis(preview.thesis)} compact />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {preview.actions.map(action => (
                             <div key={action.id} className="p-3 rounded-xl bg-brand-charcoal/70 border border-slate-800">
@@ -237,6 +241,7 @@ const AutoPilotControl: React.FC = () => {
                                 <p className="text-[9px] text-brand-lime font-black uppercase tracking-widest mt-2">
                                     {action.policyDecision} {action.estimatedEdgePct ? `| Edge ${action.estimatedEdgePct}%` : ''}
                                 </p>
+                                <WhyRecommendationPanel view={buildWhyFromAction(action)} compact />
                             </div>
                         ))}
                     </div>
@@ -254,6 +259,7 @@ const AutoPilotControl: React.FC = () => {
                             <div className="flex-1">
                                 <p className="text-[11px] font-black uppercase tracking-widest text-white">{action.type} {action.assetName}</p>
                                 <p className="text-[10px] text-slate-400 mt-1">{action.policyReason}</p>
+                                <WhyRecommendationPanel view={buildWhyFromAction(action)} compact />
                             </div>
                             <div className="flex gap-2">
                                 <button

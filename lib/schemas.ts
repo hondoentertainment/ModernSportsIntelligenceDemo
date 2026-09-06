@@ -324,6 +324,8 @@ export const WarRoomAgentInsightSchema = z.object({
   insight: z.string(),
   sentiment: z.enum(['positive', 'neutral', 'negative']),
   confidence: z.number(),
+  reasoningChain: z.array(z.string()).optional(),
+  conflictNotes: z.array(z.string()).optional(),
 });
 
 export const WarRoomCommitteeExecutionActionSchema = z.object({

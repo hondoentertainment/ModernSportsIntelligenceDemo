@@ -2,7 +2,7 @@ import type { CardInventory, CollaborativeThesis } from '../../types';
 import { logger } from '../logger';
 
 /** Bump when committee prompt or schema expectations change (traceability). */
-export const WAR_ROOM_PROMPT_VERSION = 'war-room-committee-2026-07-v2';
+export const WAR_ROOM_PROMPT_VERSION = 'war-room-committee-2026-09-v3';
 
 /** Model id passed to Gemini for this flow (audit / support). */
 export const WAR_ROOM_COMMITTEE_MODEL_ID = 'gemini-1.5-flash';

@@ -1,6 +1,8 @@
 import React from 'react';
 import { JointAcquisitionProposal } from '../types';
 import { Users, DollarSign, Clock, CheckCircle2, ThumbsUp, ThumbsDown, Gavel } from 'lucide-react';
+import WhyRecommendationPanel from './WhyRecommendationPanel';
+import { buildWhyFromThesis } from '../lib/utils/agentReasoning';
 
 interface AcquisitionProposalProps {
     proposal: JointAcquisitionProposal;
@@ -97,6 +99,7 @@ const AcquisitionProposal: React.FC<AcquisitionProposalProps> = ({
                     {proposal.proposalMemo && (
                         <p className="text-[10px] text-slate-400 leading-relaxed">{proposal.proposalMemo}</p>
                     )}
+                    <WhyRecommendationPanel view={buildWhyFromThesis(proposal.agentEvaluation)} compact />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
