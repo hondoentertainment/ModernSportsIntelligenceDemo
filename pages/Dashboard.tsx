@@ -81,9 +81,6 @@ import PricingTruthHealthPanel from '../components/PricingTruthHealthPanel.tsx';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice.tsx';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner.tsx';
 import MarketLedgerStrip from '../components/MarketLedgerStrip.tsx';
-import HoldingsCatalystRail from '../components/HoldingsCatalystRail.tsx';
-import SeasonalWindowRail from '../components/SeasonalWindowRail.tsx';
-import PerformanceVsPriceChart from '../components/PerformanceVsPriceChart.tsx';
 import { buildPerformanceVsPriceSeries } from '../lib/analytics/performanceVsPrice.ts';
 import {
   computeFreshVerifiableCoverage,
@@ -98,6 +95,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { fetchPublicProfile } from '../lib/social/socialService';
 import type { CardInventory, UserProfile } from '../types';
 
+const HoldingsCatalystRail = lazy(() => import('../components/HoldingsCatalystRail.tsx'));
+const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail.tsx'));
+const PerformanceVsPriceChart = lazy(() => import('../components/PerformanceVsPriceChart.tsx'));
 const BreakoutRadar = lazy(() => import('../components/BreakoutRadar.tsx'));
 const AgentInsightsPanel = lazy(() => import('../components/AgentInsightsPanel.tsx'));
 const LiquidityHeatmap = lazy(() => import('../components/LiquidityHeatmap.tsx'));
@@ -404,8 +404,12 @@ const Dashboard: React.FC = () => {
       {inventory.length > 0 && (
         <div className="space-y-4">
           {!isDemoMode && <MarketLedgerStrip inventory={inventory} />}
-          <SeasonalWindowRail inventory={inventory} />
-          <HoldingsCatalystRail inventory={inventory} />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              <SeasonalWindowRail inventory={inventory} />
+              <HoldingsCatalystRail inventory={inventory} />
+            </Suspense>
+          </LazyErrorBoundary>
         </div>
       )}
 
@@ -1205,7 +1209,11 @@ const Dashboard: React.FC = () => {
                     </div>
                   ))}
                 </div>
-                <PerformanceVsPriceChart points={performanceVsPrice} />
+                <LazyErrorBoundary compact>
+                  <Suspense fallback={<WidgetLoadingFallback />}>
+                    <PerformanceVsPriceChart points={performanceVsPrice} />
+                  </Suspense>
+                </LazyErrorBoundary>
               </div>
             )}
           </section>

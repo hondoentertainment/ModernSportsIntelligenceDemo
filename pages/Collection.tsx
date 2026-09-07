@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import {
   Plus,
   Search,
@@ -56,13 +56,16 @@ import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAle
 import { showToast } from '../lib/utils/toast';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice';
-import SeasonalWindowRail from '../components/SeasonalWindowRail';
-import TradeProposalPanel from '../components/TradeProposalPanel';
+import LazyErrorBoundary from '../components/LazyErrorBoundary';
+import { WidgetLoadingFallback } from '../components/LazyLoadFallback';
 import { type SwipeTriageAction, SWIPE_TRIAGE_HINT } from '../lib/utils/swipeTriage';
 import { getTriageReviewIds, toggleTriageReview } from '../lib/utils/collectionTriage';
 
 type SortField = 'player' | 'value' | 'purchasePrice' | 'date' | 'roi' | 'league';
 type SortDir = 'asc' | 'desc';
+
+const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail'));
+const TradeProposalPanel = lazy(() => import('../components/TradeProposalPanel'));
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -579,8 +582,12 @@ const Collection: React.FC = () => {
 
       {inventory.length > 0 && (
         <div className="space-y-4">
-          <SeasonalWindowRail inventory={inventory} />
-          <TradeProposalPanel inventory={inventory} />
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              <SeasonalWindowRail inventory={inventory} />
+              <TradeProposalPanel inventory={inventory} />
+            </Suspense>
+          </LazyErrorBoundary>
         </div>
       )}
 
