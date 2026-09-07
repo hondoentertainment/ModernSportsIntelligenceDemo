@@ -603,7 +603,7 @@ export interface ValuationQuality {
 export type MarketplaceVenue = 'ebay' | 'pwcc' | 'goldin' | 'private' | 'internal';
 export type TrustEdgeType = 'transaction' | 'referral' | 'guild' | 'brokered' | 'social' | 'provenance';
 export type CounterpartyRiskLevel = 'low' | 'medium' | 'high';
-export type CatalystType = 'call_up' | 'playoff' | 'award_race' | 'injury_recovery' | 'scarcity_spike';
+export type CatalystType = 'call_up' | 'playoff' | 'award_race' | 'injury_recovery' | 'injury' | 'transaction' | 'scarcity_spike';
 export type CatalystSeverity = 'watch' | 'actionable' | 'urgent';
 export type ScenarioTemplateKind = 'liquidity' | 'market' | 'player' | 'macro' | 'custom';
 

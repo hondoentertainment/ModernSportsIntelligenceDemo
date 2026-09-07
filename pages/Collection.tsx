@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import {
   Plus,
   Search,
@@ -56,11 +56,16 @@ import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAle
 import { showToast } from '../lib/utils/toast';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice';
+import LazyErrorBoundary from '../components/LazyErrorBoundary';
+import { WidgetLoadingFallback } from '../components/LazyLoadFallback';
 import { type SwipeTriageAction, SWIPE_TRIAGE_HINT } from '../lib/utils/swipeTriage';
 import { getTriageReviewIds, toggleTriageReview } from '../lib/utils/collectionTriage';
 
 type SortField = 'player' | 'value' | 'purchasePrice' | 'date' | 'roi' | 'league';
 type SortDir = 'asc' | 'desc';
+
+const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail'));
+const TradeProposalPanel = lazy(() => import('../components/TradeProposalPanel'));
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -102,15 +107,7 @@ const Collection: React.FC = () => {
         if (!card.popReport && card.isGraded) {
           const popData = generatePopData(card);
           hydrated = true;
-          // Synchronous fallback for display, but simulate a report
-          const popReport: any = {
-            popAtGrade: popData.popCount,
-            popTotal: Math.floor(popData.popCount * 2.5),
-            popHigher: card.grade === '10' ? 0 : Math.floor(popData.popCount * 0.15),
-            lastChecked: new Date().toISOString(),
-            source: 'simulated',
-            badge: ScarcityService.getBadgeType(popData.popCount, card.grade === '10' ? 0 : 5)
-          };
+          const popReport = ScarcityService.buildPopReport({ ...card, ...popData });
           return { ...card, ...popData, popReport };
         }
         return card;
@@ -582,6 +579,17 @@ const Collection: React.FC = () => {
           </div>
         ))}
       </section>
+
+      {inventory.length > 0 && (
+        <div className="space-y-4">
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              <SeasonalWindowRail inventory={inventory} />
+              <TradeProposalPanel inventory={inventory} />
+            </Suspense>
+          </LazyErrorBoundary>
+        </div>
+      )}
 
       {/* Toolbar & Tabs */}
       <div className="space-y-6">

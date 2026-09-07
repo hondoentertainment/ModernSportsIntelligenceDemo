@@ -81,7 +81,7 @@ import PricingTruthHealthPanel from '../components/PricingTruthHealthPanel.tsx';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice.tsx';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner.tsx';
 import MarketLedgerStrip from '../components/MarketLedgerStrip.tsx';
-import HoldingsCatalystRail from '../components/HoldingsCatalystRail.tsx';
+import { buildPerformanceVsPriceSeries } from '../lib/analytics/performanceVsPrice.ts';
 import {
   computeFreshVerifiableCoverage,
   FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
@@ -95,6 +95,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { fetchPublicProfile } from '../lib/social/socialService';
 import type { CardInventory, UserProfile } from '../types';
 
+const HoldingsCatalystRail = lazy(() => import('../components/HoldingsCatalystRail.tsx'));
+const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail.tsx'));
+const PerformanceVsPriceChart = lazy(() => import('../components/PerformanceVsPriceChart.tsx'));
 const BreakoutRadar = lazy(() => import('../components/BreakoutRadar.tsx'));
 const AgentInsightsPanel = lazy(() => import('../components/AgentInsightsPanel.tsx'));
 const LiquidityHeatmap = lazy(() => import('../components/LiquidityHeatmap.tsx'));
@@ -194,6 +197,10 @@ const Dashboard: React.FC = () => {
       tier: tier.title,
     };
   }, [user, userProfile, alphaScore, syncMeta.totalValue, tier.title]);
+  const performanceVsPrice = useMemo(
+    () => buildPerformanceVsPriceSeries(inventory, realMlbStats),
+    [inventory, realMlbStats],
+  );
   const dnaData = useMemo(() => getPortfolioDNA(inventory), [inventory]);
   const signals = useMemo(() => detectSignals(targets, inventory), [targets, inventory]);
   const [marketSentiment, setMarketSentiment] = useState('Analyzing portfolio alpha signals...');
@@ -394,10 +401,15 @@ const Dashboard: React.FC = () => {
         />
       )}
 
-      {!isDemoMode && inventory.length > 0 && (
+      {inventory.length > 0 && (
         <div className="space-y-4">
-          <MarketLedgerStrip inventory={inventory} />
-          <HoldingsCatalystRail inventory={inventory} />
+          {!isDemoMode && <MarketLedgerStrip inventory={inventory} />}
+          <LazyErrorBoundary compact>
+            <Suspense fallback={<WidgetLoadingFallback />}>
+              <SeasonalWindowRail inventory={inventory} />
+              <HoldingsCatalystRail inventory={inventory} />
+            </Suspense>
+          </LazyErrorBoundary>
         </div>
       )}
 
@@ -1197,6 +1209,11 @@ const Dashboard: React.FC = () => {
                     </div>
                   ))}
                 </div>
+                <LazyErrorBoundary compact>
+                  <Suspense fallback={<WidgetLoadingFallback />}>
+                    <PerformanceVsPriceChart points={performanceVsPrice} />
+                  </Suspense>
+                </LazyErrorBoundary>
               </div>
             )}
           </section>

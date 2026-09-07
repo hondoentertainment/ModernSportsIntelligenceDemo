@@ -1,8 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { X, Sun, TrendingUp, TrendingDown, ArrowUpRight, Zap, History } from 'lucide-react';
 import { CardInventory } from '../types.ts';
 import { getHistoricalDelta, getMarketInsight } from '../lib/analytics/marketHistory.ts';
+import {
+    buildLeagueAllocation,
+    downloadBriefingDocument,
+    LEAGUE_BAR_CLASS,
+} from '../lib/utils/leagueAllocation.ts';
 
 interface MorningBriefingModalProps {
     isOpen: boolean;
@@ -29,6 +34,8 @@ const MorningBriefingModal: React.FC<MorningBriefingModalProps> = ({ isOpen, onC
             }
         }
     }, [isOpen, inventory]);
+
+    const allocation = useMemo(() => buildLeagueAllocation(inventory), [inventory]);
 
     if (!isOpen) return null;
 
@@ -99,6 +106,38 @@ const MorningBriefingModal: React.FC<MorningBriefingModalProps> = ({ isOpen, onC
                             </p>
                         </div>
                     </div>
+
+                    {allocation.length > 0 && (
+                        <div className="p-5 bg-brand-charcoal/50 border border-slate-800 rounded-2xl space-y-3">
+                            <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">League allocation</p>
+                            <ul className="space-y-2">
+                                {allocation.map((slice) => (
+                                    <li key={slice.league}>
+                                        <div className="mb-1 flex items-center justify-between text-[11px] text-slate-300">
+                                            <span className="font-semibold">{slice.league}</span>
+                                            <span className="font-mono">
+                                                {slice.pct.toFixed(1)}% · ${Math.round(slice.value).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+                                            <div
+                                                className={`h-full rounded-full ${LEAGUE_BAR_CLASS[slice.league] || LEAGUE_BAR_CLASS.Other}`}
+                                                style={{ width: `${Math.max(2, slice.pct)}%` }}
+                                            />
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+
+                    <button
+                        type="button"
+                        onClick={() => downloadBriefingDocument(inventory, insight || undefined, 'html')}
+                        className="w-full py-4 bg-slate-900 border border-slate-700 hover:border-brand-lime/40 text-white font-black rounded-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+                    >
+                        Download briefing (HTML)
+                    </button>
 
                     <button
                         onClick={onClose}

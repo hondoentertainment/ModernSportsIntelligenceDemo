@@ -99,7 +99,9 @@ export * from './notificationCenterService';
 export * from './notifications';
 export * from './offlineService';
 export * from './parallelUniverseService';
-export * from './pdfExport';
+export * from './leagueAllocation';
+// pdfExport (jsPDF) is intentionally not barrel-exported — live UI must not
+// pull it into the production graph. Tests may import `lib/pdfExport` directly.
 export * from './performanceOptimizer';
 export * from './personalityMatrixService';
 export * from './phaseEndpoints';

@@ -1,5 +1,54 @@
+/**
+ * jsPDF helpers for optional offline packets. Do not import this module from
+ * live UI (static or dynamic) — jsPDF pulls html2canvas and trips gzip gates.
+ * Morning Briefing uses `leagueAllocation.ts` (DOM bars + HTML download).
+ */
 import jsPDF from 'jspdf';
 import { CardInventory } from '../../types';
+import { buildLeagueAllocation, type LeagueAllocationSlice } from './leagueAllocation';
+
+export { buildLeagueAllocation, type LeagueAllocationSlice };
+
+const LEAGUE_BAR_COLORS: Record<string, [number, number, number]> = {
+    MLB: [34, 197, 94],
+    MiLB: [132, 204, 22],
+    NBA: [249, 115, 22],
+    NFL: [59, 130, 246],
+    Other: [148, 163, 184],
+};
+
+type PdfShapeDoc = {
+    setFillColor: (r: number, g: number, b: number) => unknown;
+    rect: (x: number, y: number, w: number, h: number, style?: string) => unknown;
+    setTextColor: (r: number, g: number, b: number) => unknown;
+    setFontSize: (n: number) => unknown;
+    setFont: (name: string, style: string) => unknown;
+    text: (text: string, x: number, y: number) => unknown;
+};
+
+/** Horizontal league bars using existing jsPDF rects — no html2canvas. */
+export function drawLeagueAllocationBars(
+    doc: PdfShapeDoc,
+    slices: LeagueAllocationSlice[],
+    origin: { x: number; y: number; width: number; barHeight?: number },
+): number {
+    const barHeight = origin.barHeight ?? 8;
+    let y = origin.y;
+    slices.forEach((slice) => {
+        const color = LEAGUE_BAR_COLORS[slice.league] || LEAGUE_BAR_COLORS.Other;
+        const barWidth = Math.max(2, (origin.width * slice.pct) / 100);
+        doc.setFillColor(226, 232, 240);
+        doc.rect(origin.x, y, origin.width, barHeight, 'F');
+        doc.setFillColor(color[0], color[1], color[2]);
+        doc.rect(origin.x, y, barWidth, barHeight, 'F');
+        doc.setTextColor(30, 41, 59);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${slice.league}  ${slice.pct.toFixed(1)}%  $${Math.round(slice.value).toLocaleString()}`, origin.x, y + barHeight + 4);
+        y += barHeight + 10;
+    });
+    return y;
+}
 
 interface _PortfolioSummary {
     totalValue: number;
@@ -35,19 +84,7 @@ export function generatePortfolioReport(
         .sort((a, b) => (b.currentValue || 0) - (a.currentValue || 0))
         .slice(0, 5);
 
-    // League breakdown
-    const leagueMap = new Map<string, { value: number; count: number }>();
-    inventory.forEach(card => {
-        const league = card.league || 'Other';
-        const current = leagueMap.get(league) || { value: 0, count: 0 };
-        leagueMap.set(league, {
-            value: current.value + (card.currentValue || 0),
-            count: current.count + 1
-        });
-    });
-    const leagueBreakdown = Array.from(leagueMap.entries())
-        .map(([league, data]) => ({ league, ...data }))
-        .sort((a, b) => b.value - a.value);
+    const leagueBreakdown = buildLeagueAllocation(inventory);
 
     // === HEADER ===
     doc.setFillColor(30, 41, 59); // brand-charcoal
@@ -110,14 +147,15 @@ export function generatePortfolioReport(
     y += 6;
 
     doc.setFont('helvetica', 'normal');
-    leagueBreakdown.forEach(({ league, value, count }) => {
-        const pct = totalValue > 0 ? (value / totalValue) * 100 : 0;
+    leagueBreakdown.forEach(({ league, value, count, pct }) => {
         doc.text(league, margin, y);
         doc.text(`$${value.toLocaleString()}`, margin + 50, y);
         doc.text(count.toString(), margin + 90, y);
         doc.text(`${pct.toFixed(1)}%`, margin + 120, y);
         y += 6;
     });
+    y += 4;
+    y = drawLeagueAllocationBars(doc, leagueBreakdown, { x: margin, y, width: pageWidth - margin * 2 });
 
     y += 15;
 
@@ -229,7 +267,18 @@ export function generateBriefingReport(
         y += 7;
     });
 
-    y += 15;
+    y += 12;
+
+    const leagueSlices = buildLeagueAllocation(inventory);
+    if (leagueSlices.length > 0) {
+        doc.setTextColor(30, 41, 59);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('League Allocation', margin, y);
+        y += 8;
+        y = drawLeagueAllocationBars(doc, leagueSlices, { x: margin, y, width: pageWidth - margin * 2 });
+        y += 6;
+    }
 
     // === ALERTS ===
     if (alerts.length > 0) {

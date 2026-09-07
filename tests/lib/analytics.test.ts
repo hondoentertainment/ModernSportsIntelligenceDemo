@@ -117,6 +117,35 @@ describe('analytics', () => {
       expect(score).toBeGreaterThan(0);
     });
 
+    it('applies a larger premium when popReport is Pop 1 vs high pop', () => {
+      const base = {
+        id: 'card-1',
+        player: 'Test Player',
+        year: 2024,
+        manufacturer: 'Topps',
+        cardNumber: '1',
+        set: 'Series 1',
+        sport: 'Baseball' as const,
+        league: 'MLB' as const,
+        isAutographed: false,
+        condition: 'Mint',
+        isGraded: true,
+        purchasePrice: 100,
+        purchaseDate: '2024-01-01',
+        scarcityIndex: 80,
+      };
+      const low = calculateAlphaScore([{
+        ...base,
+        popReport: { popAtGrade: 1, popTotal: 1, popHigher: 0, lastChecked: '2026-01-01', source: 'simulated', badge: 'Apex' },
+      }]);
+      const high = calculateAlphaScore([{
+        ...base,
+        id: 'card-2',
+        popReport: { popAtGrade: 400, popTotal: 900, popHigher: 20, lastChecked: '2026-01-01', source: 'simulated', badge: 'Standard' },
+      }]);
+      expect(low).toBeGreaterThan(high);
+    });
+
     it('handles Pop 1 premium correctly', () => {
       const inventory: CardInventory[] = [
         {

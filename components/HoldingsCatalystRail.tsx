@@ -35,7 +35,7 @@ const HoldingsCatalystRail: React.FC<Props> = ({ inventory, limit = 4 }) => {
             <h3 className="text-sm font-semibold text-white">Holdings catalysts</h3>
             <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
               {summary.bullish} bullish · {summary.defensive} defensive · avg move{' '}
-              {summary.avgMove.toFixed(1)}%
+              {summary.avgMove.toFixed(1)}% · seeded injury / txn when holdings match
             </p>
           </div>
         </div>
@@ -67,8 +67,11 @@ const HoldingsCatalystRail: React.FC<Props> = ({ inventory, limit = 4 }) => {
               </span>
             </div>
             <p className="mt-1 text-xs text-brand-muted">
-              {s.assetName} · {s.triggerWindow} · +{s.expectedMovePct}% / −{s.downsidePct}%
+              {s.catalyst.replace('_', ' ')} · {s.assetName} · {s.triggerWindow} · +{s.expectedMovePct}% / −{s.downsidePct}%
             </p>
+            {s.disclosure && (
+              <p className="mt-1 text-[10px] text-slate-500">{s.disclosure}</p>
+            )}
           </li>
         ))}
       </ul>

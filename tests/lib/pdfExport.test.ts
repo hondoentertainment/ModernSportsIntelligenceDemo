@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { generatePortfolioReport } from '../../lib/pdfExport';
+import { buildLeagueAllocation, drawLeagueAllocationBars, generateBriefingReport, generatePortfolioReport } from '../../lib/pdfExport';
 import type { CardInventory } from '../../types';
 
 // Mock jsPDF to avoid actual PDF generation in tests
@@ -60,6 +60,69 @@ describe('pdfExport', () => {
         },
       ];
       expect(() => generatePortfolioReport(inventory, 'Test User')).not.toThrow();
+    });
+
+    it('draws league allocation bars from inventory slices', () => {
+      const slices = buildLeagueAllocation([
+        {
+          id: 'card-1',
+          player: 'A',
+          year: 2024,
+          manufacturer: 'Topps',
+          cardNumber: '1',
+          set: 'S',
+          sport: 'Baseball',
+          league: 'MLB',
+          isAutographed: false,
+          condition: 'Mint',
+          isGraded: false,
+          purchasePrice: 100,
+          currentValue: 75,
+          purchaseDate: '2024-01-01',
+        },
+        {
+          id: 'card-2',
+          player: 'B',
+          year: 2024,
+          manufacturer: 'Panini',
+          cardNumber: '2',
+          set: 'P',
+          sport: 'Basketball',
+          league: 'NBA',
+          isAutographed: false,
+          condition: 'Mint',
+          isGraded: false,
+          purchasePrice: 100,
+          currentValue: 25,
+          purchaseDate: '2024-01-01',
+        },
+      ]);
+      expect(slices[0].league).toBe('MLB');
+      expect(slices[0].pct).toBe(75);
+      const y = drawLeagueAllocationBars(mockDoc, slices, { x: 20, y: 40, width: 160 });
+      expect(y).toBeGreaterThan(40);
+      expect(mockDoc.rect).toHaveBeenCalled();
+    });
+
+    it('generates a morning briefing PDF with allocation', () => {
+      expect(() => generateBriefingReport([
+        {
+          id: 'card-1',
+          player: 'Test Player',
+          year: 2024,
+          manufacturer: 'Topps',
+          cardNumber: '1',
+          set: 'Series 1',
+          sport: 'Baseball',
+          league: 'MLB',
+          isAutographed: false,
+          condition: 'Mint',
+          isGraded: false,
+          purchasePrice: 100,
+          currentValue: 150,
+          purchaseDate: '2024-01-01',
+        },
+      ], [{ title: 'Alert', description: 'Seeded insight' }])).not.toThrow();
     });
 
     it('handles multiple cards', () => {
