@@ -27,8 +27,8 @@ describe('CompsUsedPanel', () => {
 
     await user.click(screen.getByRole('button', { name: /comps used/i }));
     expect(screen.getByRole('region', { name: /comps used/i })).toHaveTextContent('2023 Chrome RC');
-    expect(screen.getByText('$210')).toBeInTheDocument();
-    expect(screen.getByText(/median/i)).toBeInTheDocument();
+    expect(screen.getAllByText('$210').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/Median \$210/i)).toBeInTheDocument();
   });
 
   it('discloses an AI-only path when no comps exist', () => {
