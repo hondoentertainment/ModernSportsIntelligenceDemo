@@ -48,7 +48,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
   - **MLB Stats API:** Map player IDs to performance endpoints to power "Performance vs. Price" correlation charts.
 - **Current state:**
   - **eBay:** **Partially shipped** — Vercel handler `api/market/ebay.ts` (OAuth client-credentials, Zod validation, rate limiting, structured logging); client surface `lib/ebayApi.ts` + feature flags (`VITE_FF_REAL_EBAY`, etc.). FMV across the product still mixes AI estimates with optional real calls — next step is **defaulting more flows to sold/comp-backed pricing** where keys are configured.
-  - **MLB:** **Client/API layer present** — `lib/utils/mlbApi.ts` (e.g. player stats by ID/season). Next step is **deeper UI binding** (Performance vs. Price charts, portfolio-linked alerts) and production key/ops hardening if not already env-complete.
+  - **MLB:** **Client/API layer present** — `lib/utils/mlbApi.ts` (e.g. player stats by ID/season). **Performance vs Price** chart on Dashboard binds StatsService hitting lines to collection marks when names match (2026-09-07). Production key/ops hardening still owner-held if not env-complete.
 - **Status:** **Integration scaffolding live** — shift focus from "can we call the API?" to **coverage** (which screens use real comps by default) and **observability** in deploy.
 
 ### 2.2 Automated Market Sync Scheduler
@@ -74,7 +74,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 - **Actions:**
   - **Data Mapping:** Add `popReport` fields to `CardInventory` type.
   - **Scarcity Weighting:** Update the Alpha Score algorithm to factor in low-pop counts (e.g., "Pop 1" premium).
-- **Status:** Strategic planning.
+- **Status:** **Shipped (lite, 2026-09-07)** — `CardInventory.popReport` hydrates from a disclosed simulated model; Alpha Score applies Pop 1 / low-pop premium from `popAtGrade`. Live PSA pop remains owner-held.
 
 ### 3.2 Grading Premium Calculator
 
@@ -106,7 +106,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 - **Actions:**
   - **Portfolio Delta:** Identify over-concentrated leagues/players in the user's portfolio.
   - **Proposal Generation:** Suggest "Card A for Card B + Cash" trades based on user needs vs. marketplace availability.
-- **Status:** R&D.
+- **Status:** **Shipped (lite, 2026-09-07)** — advisory “Card A for Card B + cash” from local inventory on Collection. Not a live marketplace / order book.
 
 ---
 
@@ -119,7 +119,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 - **Actions:**
   - **Morning Briefing:** Automate the `generateBriefingReport` trigger for a daily summary.
   - **Visual Fidelity:** Improve `pdfExport.ts` with custom charts (using PDF shapes) for league allocation.
-- **Status:** Basic export functional; formatting pending.
+- **Status:** **Shipped (lite, 2026-09-07)** — `generateBriefingReport` draws league-allocation bars with existing jsPDF shapes; Morning Briefing modal downloads via dynamic import.
 
 ---
 
@@ -201,7 +201,7 @@ Modern Sports Intelligence has successfully reached the "Sentinel" stage (Phase 
 
 - [ ] Add hard risk collars (daily budget, per-asset cap, max drawdown stop).
 - [ ] Require human approval checkpoints for high-dollar or low-confidence actions.
-- [ ] Add idempotency + retry contracts for autonomous actions and external API calls.
+- [x] Add local idempotency keys + duplicate-action guards for autonomous actions (2026-09-07). External API retry contracts still open.
 - [ ] Expand simulation mode with before/after NAV and tax impact preview.
 - **Exit Criteria:** No unapproved high-risk actions; full replayability of autonomous decision history.
 

@@ -13,6 +13,7 @@ import {
 import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import ScarcityBadge from '../ScarcityBadge';
+import SeasonalWindowChip from '../SeasonalWindowChip';
 import { LiquidityBadge } from '../LiquidityBadge';
 import { OpportunityBadge } from '../OpportunityBadge';
 import Sparkline from '../Sparkline';
@@ -192,6 +193,9 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
             {card.sport}
           </span>
           <h3 className="text-2xl font-bold text-white leading-tight truncate">{card.player}</h3>
+          <div className="mt-2">
+            <SeasonalWindowChip card={card} />
+          </div>
         </div>
         <button
           onClick={e => {

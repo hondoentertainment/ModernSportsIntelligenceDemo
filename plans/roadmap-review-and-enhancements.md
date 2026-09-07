@@ -19,8 +19,14 @@ Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-sa
 | #19 Insurance-grade report                       | **Shipped** — timestamped FMV packet, totals, methodology, printable/PDF from Report Modal.            |
 | #24 Collection embed / vanity widget             | **Shipped** — iframe snippet + preview on Share Alpha / Public Portfolio. Custom domain still open.    |
 | Migration conflict / duplicate policy UX         | **Shipped** — merge vs skip preview on Migration Banner + Profile when local and cloud both have data. |
+| #9 Injury / transaction impact                   | **Shipped (seeded)** — HoldingsCatalystRail + CatalystEngine. Not a live sports wire.                  |
+| #11 Seasonal buy/sell windows                    | **Shipped (seeded)** — Dashboard/Collection rails + per-card chips.                                    |
+| Priority 3.1 Pop / scarcity weighting            | **Shipped (lite)** — simulated popReport + Alpha Score low-pop premium.                                |
+| Priority 4.2 Trade proposal / portfolio delta    | **Shipped (lite)** — advisory Card A for Card B + cash from local inventory.                           |
+| Priority 5.1 Morning briefing PDF charts         | **Shipped (lite)** — jsPDF league-allocation bars; dynamic import from briefing modal.                 |
+| Phase 33 Auto-Pilot idempotency                  | **Shipped (stub)** — day-bucketed local keys + duplicate-action guards.                                |
 
-Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P marketplace (#7), centering CV (#17), live marketplace / Stripe / Supabase restore. Schedule D–style (demo) packet and sold-comp consensus shipped 2026-09-06. **Engineering shipped 2026-09-07:** Consensus View (#14), Comps Used (#10), FIFO/LIFO/Specific ID selector (demo), Auto-Pilot daily/drawdown collars + human approval.
+Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P marketplace (#7), centering CV (#17), live marketplace / Stripe / Supabase restore, custom vanity domain, Scout-to-Acquire cloud E2E. Schedule D–style (demo) packet and sold-comp consensus shipped 2026-09-06. Seasonal windows (#11), injury/txn catalysts (#9), pop weighting (3.1 lite), trade proposals (4.2 lite), briefing PDF bars (5.1 lite), and Auto-Pilot idempotency shipped 2026-09-07. **Engineering shipped 2026-09-07:** Consensus View (#14), Comps Used (#10), FIFO/LIFO/Specific ID selector (demo), Auto-Pilot daily/drawdown collars + human approval.
 
 ---
 
@@ -86,11 +92,11 @@ Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P mark
 
 **Recommendations:**
 
-9. **Injury & Transaction Impact Modeling** — Integrate MLB transaction feeds (DFA, call-ups, IL placements) as real-time signals. A prospect getting called up to the majors is the single largest price catalyst in the hobby. The Predictive Alpha Engine should trigger instant alerts for portfolio-relevant transactions.
+9. **Injury & Transaction Impact Modeling** — **Shipped (seeded, 2026-09-07):** holdings-relevant injury/transaction cards on `HoldingsCatalystRail` / `CatalystEngine`. Live MLB transaction feeds remain owner-held.
 
 10. **Comparable Sales Regression** — **Shipped (Comps Used UX):** Collection grid/list lists the sold/historical comps that drive `preferredValuationForCard` / `selectPreferredValuation`. Thin tape and AI-only paths stay labeled. Live eBay tape still owner-held; no `VITE_FF_REAL_*` flip.
 
-11. **Seasonal Pattern Detection** — Card prices follow seasonal patterns (spring training hype, All-Star break, playoff runs, off-season lulls). Surface "Buy Window" and "Sell Window" signals based on historical seasonality for each player/league.
+11. **Seasonal Pattern Detection** — **Shipped (seeded, 2026-09-07):** Buy/Sell/Hold window hints per player/league (spring training, All-Star, playoffs, off-season) on Dashboard + Collection. Heuristic disclosure — not live sold comps.
 
 ---
 

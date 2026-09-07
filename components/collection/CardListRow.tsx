@@ -16,6 +16,8 @@ import {
 import { compsUsedForPreferred, preferredValuationForCard } from '../../lib/pricing/compConsensus';
 import ValuationProvenanceChips from '../ValuationProvenanceChips';
 import CompsUsedPanel from '../CompsUsedPanel';
+import ScarcityBadge from '../ScarcityBadge';
+import SeasonalWindowChip from '../SeasonalWindowChip';
 import CardItemActionIcons from './CardItemActionIcons';
 import { CardItemActionHandlers } from './cardItemActions';
 
@@ -75,7 +77,13 @@ const CardListRow: React.FC<CardListRowProps> = ({
             enableLightbox={!!onOpenLightbox}
             onImageClick={onOpenLightbox ? () => onOpenLightbox(card) : undefined}
           />
-          <span className="font-bold text-white">{card.player}</span>
+          <div className="min-w-0">
+            <span className="font-bold text-white">{card.player}</span>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <SeasonalWindowChip card={card} />
+              {card.popReport && <ScarcityBadge report={card.popReport} />}
+            </div>
+          </div>
         </div>
       </td>
       <td className="px-8 py-4">

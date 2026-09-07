@@ -56,6 +56,8 @@ import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAle
 import { showToast } from '../lib/utils/toast';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice';
+import SeasonalWindowRail from '../components/SeasonalWindowRail';
+import TradeProposalPanel from '../components/TradeProposalPanel';
 import { type SwipeTriageAction, SWIPE_TRIAGE_HINT } from '../lib/utils/swipeTriage';
 import { getTriageReviewIds, toggleTriageReview } from '../lib/utils/collectionTriage';
 
@@ -102,15 +104,7 @@ const Collection: React.FC = () => {
         if (!card.popReport && card.isGraded) {
           const popData = generatePopData(card);
           hydrated = true;
-          // Synchronous fallback for display, but simulate a report
-          const popReport: any = {
-            popAtGrade: popData.popCount,
-            popTotal: Math.floor(popData.popCount * 2.5),
-            popHigher: card.grade === '10' ? 0 : Math.floor(popData.popCount * 0.15),
-            lastChecked: new Date().toISOString(),
-            source: 'simulated',
-            badge: ScarcityService.getBadgeType(popData.popCount, card.grade === '10' ? 0 : 5)
-          };
+          const popReport = ScarcityService.buildPopReport({ ...card, ...popData });
           return { ...card, ...popData, popReport };
         }
         return card;
@@ -582,6 +576,13 @@ const Collection: React.FC = () => {
           </div>
         ))}
       </section>
+
+      {inventory.length > 0 && (
+        <div className="space-y-4">
+          <SeasonalWindowRail inventory={inventory} />
+          <TradeProposalPanel inventory={inventory} />
+        </div>
+      )}
 
       {/* Toolbar & Tabs */}
       <div className="space-y-6">

@@ -108,6 +108,23 @@ export class ScarcityService {
     }
 
     /**
+     * Demo-safe PopReport when live PSA pop is unavailable.
+     * Source stays `simulated` unless the card already carries a live report.
+     */
+    static buildPopReport(card: CardInventory): PopReport {
+        if (card.popReport) return card.popReport;
+        const data = this.generatePopData(card);
+        return {
+            popAtGrade: data.popCount,
+            popTotal: Math.max(data.popCount, Math.floor(data.popCount * 2.5)),
+            popHigher: data.popHigher,
+            lastChecked: new Date().toISOString(),
+            source: 'simulated',
+            badge: this.getBadgeType(data.popCount, data.popHigher),
+        };
+    }
+
+    /**
      * Calculates a scarcity score from 0-100.
      */
     static calculateScarcityIndex(popAtGrade: number, popHigher: number): number {

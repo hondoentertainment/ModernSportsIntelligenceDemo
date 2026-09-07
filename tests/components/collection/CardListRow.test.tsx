@@ -129,6 +129,21 @@ describe('CardListRow — grid action parity', () => {
     expect(screen.getByTitle(/70% conf/)).toBeInTheDocument();
   });
 
+  it('shows a seasonal window chip and scarcity badge when popReport is present', () => {
+    renderRow(makeCard({
+      popReport: {
+        popAtGrade: 1,
+        popTotal: 1,
+        popHigher: 0,
+        lastChecked: '2026-01-01',
+        source: 'simulated',
+        badge: 'Apex',
+      },
+    }));
+    expect(screen.getByText(/spring training|all-star|playoffs|off-season|regular season|opening stretch|pennant race|world series/i)).toBeInTheDocument();
+    expect(screen.getByText(/apex|pop 1/i)).toBeInTheDocument();
+  });
+
   it('marks the row selected for the batch toolbar highlight', () => {
     renderRow(makeCard(), makeHandlers(), { isSelected: true });
 

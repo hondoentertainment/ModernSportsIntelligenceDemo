@@ -47,14 +47,15 @@ export function calculateAlphaScore(inventory: CardInventory[]): number {
     let scarcityScore = 0;
     inventory.forEach(card => {
         const enriched = withScarcity(card);
+        const popAtGrade = card.popReport?.popAtGrade ?? enriched.popCount ?? 0;
         let weight: number;
 
         // Dynamic weighting based on Scarcity Index
         weight = (enriched.scarcityIndex || 10) / 100;
 
-        // Apex Scarcity Bonus
-        if (enriched.popCount === 1) weight *= 2.0;
-        else if (enriched.popCount < 50) weight *= 1.5;
+        // Apex / low-pop premium (popReport.popAtGrade when present)
+        if (popAtGrade === 1) weight *= 2.0;
+        else if (popAtGrade > 0 && popAtGrade < 50) weight *= 1.5;
 
         scarcityScore += weight;
     });

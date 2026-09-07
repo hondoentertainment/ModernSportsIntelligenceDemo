@@ -101,6 +101,17 @@ const MorningBriefingModal: React.FC<MorningBriefingModalProps> = ({ isOpen, onC
                     </div>
 
                     <button
+                        type="button"
+                        onClick={async () => {
+                            const { generateBriefingReport } = await import('../lib/utils/pdfExport.ts');
+                            generateBriefingReport(inventory, insight ? [{ title: 'Market Insight', description: insight }] : []);
+                        }}
+                        className="w-full py-4 bg-slate-900 border border-slate-700 hover:border-brand-lime/40 text-white font-black rounded-2xl transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+                    >
+                        Download briefing PDF
+                    </button>
+
+                    <button
                         onClick={onClose}
                         className="w-full py-4 bg-brand-lime hover:bg-white text-brand-charcoal font-black rounded-2xl transition-all shadow-xl shadow-brand-lime/20 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
                     >

@@ -55,6 +55,58 @@ describe('scarcityService', () => {
       expect(data.popHigher).toBe(2);
     });
 
+    it('builds a simulated popReport when live PSA pop is missing', () => {
+      const card: CardInventory = {
+        id: 'card-1',
+        player: 'Test Player',
+        year: 1999,
+        manufacturer: 'Topps',
+        cardNumber: '1',
+        set: 'Chrome Refractor',
+        sport: 'Baseball',
+        league: 'MLB',
+        isAutographed: false,
+        condition: 'Mint',
+        isGraded: true,
+        gradingCompany: 'PSA',
+        grade: '10',
+        purchasePrice: 100,
+        purchaseDate: '2024-01-01',
+      };
+      const report = ScarcityService.buildPopReport(card);
+      expect(report.source).toBe('simulated');
+      expect(report.popAtGrade).toBeGreaterThan(0);
+      expect(report.badge).toBeTruthy();
+    });
+
+    it('preserves an existing popReport', () => {
+      const existing = {
+        popAtGrade: 1,
+        popTotal: 1,
+        popHigher: 0,
+        lastChecked: '2026-01-01',
+        source: 'psa' as const,
+        badge: 'Apex' as const,
+      };
+      const report = ScarcityService.buildPopReport({
+        id: 'card-1',
+        player: 'Test Player',
+        year: 2024,
+        manufacturer: 'Topps',
+        cardNumber: '1',
+        set: 'Series 1',
+        sport: 'Baseball',
+        league: 'MLB',
+        isAutographed: false,
+        condition: 'Mint',
+        isGraded: true,
+        purchasePrice: 100,
+        purchaseDate: '2024-01-01',
+        popReport: existing,
+      });
+      expect(report).toEqual(existing);
+    });
+
     it('calculates scarcity index correctly', () => {
       const card: CardInventory = {
         id: 'card-1',

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { AutonomousExecutionService } from '../../lib/trading/AutonomousExecutionService';
+import { AutonomousExecutionService, buildAutopilotIdempotencyKey } from '../../lib/trading/AutonomousExecutionService';
 import { AutoPilotConfig, AutonomousAction } from '../../types';
 
 describe('AutonomousExecutionService', () => {
@@ -202,5 +202,67 @@ describe('AutonomousExecutionService', () => {
         );
         expect(underwater.decision).toBe('blocked');
         expect(underwater.reason).toMatch(/drawdown/i);
+    });
+
+    it('builds a day-bucketed idempotency key without using a unique timestamp suffix', () => {
+        const key = buildAutopilotIdempotencyKey({
+            type: 'BUY',
+            assetName: 'Mike Trout Chrome',
+            cycleId: 'cycle-1',
+            timestamp: '2026-09-07T15:00:00.000Z',
+        });
+        expect(key).toBe('BUY:mike-trout-chrome:cycle-1:2026-09-07');
+        const again = buildAutopilotIdempotencyKey({
+            type: 'BUY',
+            assetName: 'Mike Trout Chrome',
+            cycleId: 'cycle-1',
+            timestamp: '2026-09-07T23:59:00.000Z',
+        });
+        expect(again).toBe(key);
+    });
+
+    it('blocks duplicate candidates that share an idempotency key', async () => {
+        await AutonomousExecutionService.addAction({
+            id: 'prior',
+            type: 'BUY',
+            assetName: 'Mike Trout Chrome',
+            amount: 80,
+            rationale: 'first',
+            timestamp: '2026-09-07T10:00:00.000Z',
+            status: 'pending',
+            cycleId: 'cycle-1',
+            idempotencyKey: 'BUY:mike-trout-chrome:cycle-1:2026-09-07',
+        });
+        const gated = AutonomousExecutionService.enforceRiskCollars(
+            [{
+                id: 'dup',
+                type: 'BUY',
+                assetName: 'Mike Trout Chrome',
+                amount: 80,
+                rationale: 'retry',
+                timestamp: '2026-09-07T18:00:00.000Z',
+                status: 'pending',
+                cycleId: 'cycle-1',
+                confidence: 0.9,
+            }],
+            { ...config, collar: { ...config.collar, requireApprovalAbove: 500, minActionConfidence: 0.1 } },
+        );
+        expect(gated[0].policyDecision).toBe('blocked');
+        expect(gated[0].policyReason).toMatch(/idempotency/i);
+    });
+
+    it('refuses addAction when the idempotency key already exists', async () => {
+        const action = {
+            id: 'one',
+            type: 'SELL' as const,
+            assetName: 'Dup Asset',
+            amount: 50,
+            rationale: 'x',
+            timestamp: new Date().toISOString(),
+            status: 'pending' as const,
+            idempotencyKey: 'SELL:dup-asset:default:2026-09-07',
+        };
+        expect(await AutonomousExecutionService.addAction(action)).toBe(true);
+        expect(await AutonomousExecutionService.addAction({ ...action, id: 'two' })).toBe(false);
     });
 });

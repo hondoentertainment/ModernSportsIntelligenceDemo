@@ -37,6 +37,22 @@ function startOfDay(d: Date): Date {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
+/** Day-bucketed local idempotency key — same type + asset + cycle on the same UTC day collapses. */
+export function buildAutopilotIdempotencyKey(
+    action: Pick<AutonomousAction, 'type' | 'assetName' | 'cycleId' | 'timestamp'>,
+    now = new Date(),
+): string {
+    const day = (action.timestamp ? new Date(action.timestamp) : now);
+    const dayKey = Number.isNaN(day.getTime()) ? now.toISOString().slice(0, 10) : day.toISOString().slice(0, 10);
+    const asset = action.assetName.trim().toLowerCase().replace(/\s+/g, '-');
+    const cycle = action.cycleId || 'default';
+    return `${action.type}:${asset}:${cycle}:${dayKey}`;
+}
+
+function isOpenAutopilotStatus(status: AutonomousAction['status'] | undefined): boolean {
+    return status !== 'failed' && status !== 'rejected' && status !== 'cancelled';
+}
+
 function mapActionToIntentType(action: AutonomousAction): 'buy' | 'list' | 'counter' {
     switch (action.type) {
         case 'BUY':
@@ -163,9 +179,24 @@ export class AutonomousExecutionService {
         const drawdownStop = config.collar.maxDrawdownPct ?? 0;
         const drawdownActive = drawdownStop > 0 && inventory.length > 0 && this.portfolioDrawdownPct(inventory) >= drawdownStop;
 
+        const seenKeys = new Set(
+            existingActions
+                .filter((existing) => isOpenAutopilotStatus(existing.status) && existing.idempotencyKey)
+                .map((existing) => existing.idempotencyKey as string),
+        );
+
         for (let i = 0; i < candidates.length; i++) {
             const action = { ...candidates[i] };
-            action.idempotencyKey = action.idempotencyKey || `${action.type}:${action.assetName}:${action.timestamp}`;
+            action.idempotencyKey = action.idempotencyKey || buildAutopilotIdempotencyKey(action);
+
+            if (seenKeys.has(action.idempotencyKey)) {
+                action.policyDecision = 'blocked';
+                action.policyReason = 'Duplicate action (idempotency key).';
+                action.status = 'failed';
+                gated.push(action);
+                continue;
+            }
+            seenKeys.add(action.idempotencyKey);
 
             if ((config.collar.maxDailyActions || 0) > 0 && (todayActionCount + i) >= (config.collar.maxDailyActions || 0)) {
                 action.policyDecision = 'blocked';
