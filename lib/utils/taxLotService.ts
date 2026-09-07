@@ -1,6 +1,30 @@
 import { CardInventory } from '../../types';
 
 export type CostBasisMethod = 'FIFO' | 'LIFO' | 'SpecificID' | 'AvgCost';
+
+/** Open lot used for FIFO / LIFO / Specific ID matching on a disposition. */
+export interface SelectableLot {
+  lotId: string;
+  dateAcquired: string;
+  costBasis: number;
+  quantity?: number;
+  description?: string;
+}
+
+export interface LotSelectionResult {
+  method: CostBasisMethod;
+  selected: SelectableLot[];
+  remaining: SelectableLot[];
+  totalCostBasis: number;
+  missingSpecificIds: string[];
+  disclosure: string;
+}
+
+export const LOT_METHOD_DISCLAIMER =
+  'FIFO / LIFO / Specific ID matching is illustrative for collector records. It is not IRS Form 8949 substantiation, audit-ready lot identification, or tax advice.';
+
+export const SPECIFIC_ID_MISSING =
+  'Specific Identification was elected but one or more requested lot IDs were not in the open pool. Missing IDs are disclosed; they were not invented.';
 export type HoldingPeriod = 'Short-Term' | 'Long-Term';
 export type TaxYear = number;
 
@@ -96,16 +120,97 @@ function buildCardDescription(card: CardInventory): string {
 /**
  * Sorts sold cards by method for cost-basis ordering.
  */
-function sortByMethod(cards: CardInventory[], method: CostBasisMethod): CardInventory[] {
+function parseLotDate(iso: string): number {
+  const ts = Date.parse(iso);
+  return Number.isNaN(ts) ? 0 : ts;
+}
+
+/**
+ * Pick which open lots close against a sale quantity.
+ * FIFO = oldest acquired first; LIFO = newest first; Specific ID = caller-selected IDs;
+ * AvgCost = same order as input (basis averaged by caller).
+ */
+export function selectLotsByMethod(
+  lots: SelectableLot[],
+  quantity: number,
+  method: CostBasisMethod,
+  specificLotIds: string[] = [],
+): LotSelectionResult {
+  const pool = (lots ?? []).filter((lot) => typeof lot.lotId === 'string' && lot.lotId.trim());
+  const qty = Number.isFinite(quantity) ? Math.max(0, Math.floor(quantity)) : 0;
+  const missingSpecificIds: string[] = [];
+
+  if (qty === 0 || pool.length === 0) {
+    return {
+      method,
+      selected: [],
+      remaining: [...pool],
+      totalCostBasis: 0,
+      missingSpecificIds: method === 'SpecificID' ? specificLotIds.filter(Boolean) : [],
+      disclosure: LOT_METHOD_DISCLAIMER,
+    };
+  }
+
+  let ordered: SelectableLot[] = [...pool];
+  if (method === 'FIFO') {
+    ordered.sort((a, b) => parseLotDate(a.dateAcquired) - parseLotDate(b.dateAcquired));
+  } else if (method === 'LIFO') {
+    ordered.sort((a, b) => parseLotDate(b.dateAcquired) - parseLotDate(a.dateAcquired));
+  } else if (method === 'SpecificID') {
+    const byId = new Map(pool.map((lot) => [lot.lotId, lot]));
+    const picked: SelectableLot[] = [];
+    for (const id of specificLotIds) {
+      const lot = byId.get(id);
+      if (lot) {
+        picked.push(lot);
+        byId.delete(id);
+      } else if (id) {
+        missingSpecificIds.push(id);
+      }
+    }
+    const leftovers = [...byId.values()].sort(
+      (a, b) => parseLotDate(a.dateAcquired) - parseLotDate(b.dateAcquired),
+    );
+    ordered = [...picked, ...leftovers];
+  }
+
+  const selected = ordered.slice(0, qty);
+  const selectedIds = new Set(selected.map((lot) => lot.lotId));
+  const remaining = pool.filter((lot) => !selectedIds.has(lot.lotId));
+  const totalCostBasis = roundCents(selected.reduce((sum, lot) => sum + (lot.costBasis || 0), 0));
+
+  return {
+    method,
+    selected,
+    remaining,
+    totalCostBasis,
+    missingSpecificIds,
+    disclosure: missingSpecificIds.length > 0
+      ? `${LOT_METHOD_DISCLAIMER} ${SPECIFIC_ID_MISSING}`
+      : LOT_METHOD_DISCLAIMER,
+  };
+}
+
+function sortByMethod(cards: CardInventory[], method: CostBasisMethod, specificLotIds: string[] = []): CardInventory[] {
   const sorted = [...cards];
   switch (method) {
     case 'FIFO':
       return sorted.sort((a, b) => new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime());
     case 'LIFO':
       return sorted.sort((a, b) => new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime());
-    case 'SpecificID':
-      // Specific ID: optimize for lowest tax — sell highest basis first
+    case 'SpecificID': {
+      if (specificLotIds.length > 0) {
+        const rank = new Map(specificLotIds.map((id, i) => [id, i]));
+        return sorted.sort((a, b) => {
+          const aRank = rank.has(a.id) ? (rank.get(a.id) as number) : Number.MAX_SAFE_INTEGER;
+          const bRank = rank.has(b.id) ? (rank.get(b.id) as number) : Number.MAX_SAFE_INTEGER;
+          if (aRank !== bRank) return aRank - bRank;
+          return calculateCostBasis(b) - calculateCostBasis(a);
+        });
+      }
+      // No lot IDs stored: illustrate highest-basis-first, not IRS substantiation.
       return sorted.sort((a, b) => calculateCostBasis(b) - calculateCostBasis(a));
+    }
     case 'AvgCost':
       return sorted; // Order doesn't matter for average cost
     default:
@@ -114,7 +219,7 @@ function sortByMethod(cards: CardInventory[], method: CostBasisMethod): CardInve
 }
 
 export const SCHEDULE_D_METHODOLOGY_DISCLAIMER =
-  'Schedule D–style packet for collector records. Short-term vs long-term buckets use a 365.25-day hold test on recorded purchase and sale dates. Cost basis is purchase price plus stored grading and shipping fees. Method labels (FIFO / LIFO / Specific ID / Average) reorder lots for illustration only — this is not IRS Form 8949 / Schedule D regulatory completeness, FIFO/LIFO audit support, or tax advice. Confirm figures with a qualified tax professional before filing.';
+  'Schedule D–style packet for collector records. Short-term vs long-term buckets use a 365.25-day hold test on recorded purchase and sale dates. Cost basis is purchase price plus stored grading and shipping fees. FIFO / LIFO / Average reorder or average lots for illustration. Specific Identification rematches sale proceeds onto the identified lots’ stored basis when lot IDs are selected — this is not IRS Form 8949 / Schedule D regulatory completeness, FIFO/LIFO audit support, or tax advice. Confirm figures with a qualified tax professional before filing.';
 
 export const SCHEDULE_D_COMPLETENESS_NOTE =
   'Demo-honest export: realized lots with a stored sale date only. Wash-sale, collectibles 28% rate, state tax, and specific-identification substantiation are out of scope.';
@@ -173,35 +278,58 @@ export class TaxLotService {
   static generateTaxSummary(
     inventory: CardInventory[],
     taxYear: TaxYear = new Date().getFullYear(),
-    method: CostBasisMethod = 'FIFO'
+    method: CostBasisMethod = 'FIFO',
+    specificLotIds: string[] = [],
   ): TaxSummary {
     const yearStart = new Date(taxYear, 0, 1);
     const yearEnd = new Date(taxYear, 11, 31, 23, 59, 59);
 
     // Realized: sold cards in the tax year
-    const soldInYear = sortByMethod(
-      inventory.filter(c =>
-        c.status === 'sold' &&
-        c.saleDate &&
-        new Date(c.saleDate) >= yearStart &&
-        new Date(c.saleDate) <= yearEnd
-      ),
-      method
+    const soldInYearRaw = inventory.filter(c =>
+      c.status === 'sold' &&
+      c.saleDate &&
+      new Date(c.saleDate) >= yearStart &&
+      new Date(c.saleDate) <= yearEnd
     );
+    const soldInYear = sortByMethod(soldInYearRaw, method, specificLotIds);
 
     // For average cost method, compute portfolio-wide average
     const avgCostBasis = method === 'AvgCost'
       ? inventory.reduce((sum, c) => sum + calculateCostBasis(c), 0) / Math.max(1, inventory.length)
       : 0;
 
+    const specificMatch =
+      method === 'SpecificID' && specificLotIds.length > 0
+        ? selectLotsByMethod(
+            inventory.map((card) => ({
+              lotId: card.id,
+              dateAcquired: card.purchaseDate,
+              costBasis: calculateCostBasis(card),
+              description: buildCardDescription(card),
+            })),
+            soldInYear.length,
+            'SpecificID',
+            specificLotIds,
+          )
+        : null;
+    const salesForMatch = [...soldInYearRaw].sort(
+      (a, b) => new Date(a.saleDate || 0).getTime() - new Date(b.saleDate || 0).getTime(),
+    );
+
     // Build Schedule D entries
-    const scheduleDEntries: ScheduleDEntry[] = soldInYear.map(card => {
-      const costBasis = method === 'AvgCost' ? avgCostBasis : calculateCostBasis(card);
+    const scheduleDEntries: ScheduleDEntry[] = (specificMatch ? salesForMatch : soldInYear).map((card, index) => {
+      const matchedLot = specificMatch?.selected[index];
+      const costBasis = method === 'AvgCost'
+        ? avgCostBasis
+        : matchedLot
+          ? matchedLot.costBasis
+          : calculateCostBasis(card);
+      const dateAcquired = matchedLot?.dateAcquired || card.purchaseDate;
       const proceeds = card.salePrice || 0;
-      const holdingPeriod = getHoldingPeriod(card.purchaseDate, card.saleDate);
+      const holdingPeriod = getHoldingPeriod(dateAcquired, card.saleDate);
       return {
         description: buildCardDescription(card),
-        dateAcquired: card.purchaseDate,
+        dateAcquired,
         dateSold: card.saleDate || '',
         proceeds,
         costBasis,
@@ -339,8 +467,9 @@ export class TaxLotService {
     taxYear: TaxYear = new Date().getFullYear(),
     method: CostBasisMethod = 'FIFO',
     generatedAt: string = new Date().toISOString(),
+    specificLotIds: string[] = [],
   ): ScheduleDPacket {
-    const summary = this.generateTaxSummary(inventory, taxYear, method);
+    const summary = this.generateTaxSummary(inventory, taxYear, method, specificLotIds);
     const shortTerm = bucketFromEntries(
       'Short-Term',
       summary.scheduleDEntries.filter((e) => e.holdingPeriod === 'Short-Term'),

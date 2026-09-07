@@ -42,7 +42,7 @@ export const StatsService = {
                 ]
             };
         } catch (error) {
-            logger.error(`StatsService Error for ${playerName}:`, error);
+            logger.warn(`StatsService Error for ${playerName}:`, error);
             return null;
         }
     },
@@ -59,7 +59,7 @@ export const StatsService = {
             // Using the standard MLB headshot CDN
             return `https://img.mlbstatic.com/mlb-photos/person/${playerId}.jpg`;
         } catch (error) {
-            logger.error(`Headshot Resolution Error for ${playerName}:`, error);
+            logger.warn(`Headshot Resolution Error for ${playerName}:`, error);
             return null;
         }
     },

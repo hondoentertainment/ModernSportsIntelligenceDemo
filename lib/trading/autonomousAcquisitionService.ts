@@ -610,7 +610,10 @@ function buildMonthlySavingsFromResults(results: AcquisitionResult[]): { month: 
 
 // ── Service Functions ──────────────────────────────────────────────────────────
 
-export function createCampaign(criteria: CampaignCriteria): AcquisitionCampaign {
+export function createCampaign(
+  criteria: CampaignCriteria,
+  options: { status?: CampaignStatus } = {},
+): AcquisitionCampaign {
   const safeCriteria: CampaignCriteria = {
     ...criteria,
     player: criteria.player.trim(),
@@ -621,12 +624,12 @@ export function createCampaign(criteria: CampaignCriteria): AcquisitionCampaign 
     platforms: criteria.platforms.length > 0 ? criteria.platforms : ['eBay'],
     notes: criteria.notes?.trim() || undefined,
   };
-  const id = `camp-${Date.now()}`;
+  const id = `camp-${Date.now()}-${MOCK_CAMPAIGNS.length}`;
   const campaign: AcquisitionCampaign = {
     id,
     name: `${safeCriteria.player} ${safeCriteria.set || ''} ${safeCriteria.grade || ''}`.trim(),
     criteria: safeCriteria,
-    status: 'active',
+    status: options.status ?? 'active',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     listingsFound: 0,
@@ -753,6 +756,28 @@ export function resumeCampaign(id: string): AcquisitionCampaign | undefined {
   const campaign = MOCK_CAMPAIGNS.find(c => c.id === id);
   if (campaign && campaign.status === 'paused') {
     campaign.status = 'active';
+    campaign.updatedAt = new Date().toISOString();
+    persistCampaignStore();
+  }
+  return campaign;
+}
+
+/** Human checkpoint: activate a campaign staged as pending_review. */
+export function approveCampaign(id: string): AcquisitionCampaign | undefined {
+  const campaign = MOCK_CAMPAIGNS.find(c => c.id === id);
+  if (campaign && campaign.status === 'pending_review') {
+    campaign.status = 'active';
+    campaign.updatedAt = new Date().toISOString();
+    persistCampaignStore();
+  }
+  return campaign;
+}
+
+/** Human checkpoint: cancel a campaign staged as pending_review. */
+export function rejectCampaign(id: string): AcquisitionCampaign | undefined {
+  const campaign = MOCK_CAMPAIGNS.find(c => c.id === id);
+  if (campaign && campaign.status === 'pending_review') {
+    campaign.status = 'failed';
     campaign.updatedAt = new Date().toISOString();
     persistCampaignStore();
   }

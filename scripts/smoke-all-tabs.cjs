@@ -70,8 +70,8 @@ async function visitRoute(page, route) {
     const onConsoleError = (msg) => {
         if (msg.type() !== 'error') return;
         const text = msg.text();
-        // Ignore noisy non-fatal stuff (network 4xx, vendor logs)
-        if (/Failed to load resource|favicon|net::ERR_/i.test(text)) return;
+        // Ignore noisy non-fatal stuff (network 4xx, vendor logs, demo MLB fetch)
+        if (/Failed to load resource|favicon|net::ERR_|Failed to fetch|StatsService Error/i.test(text)) return;
         if (/ChunkLoadError|Loading chunk|dynamically imported|Uncaught|TypeError|ReferenceError|SyntaxError/i.test(text)) {
             errors.push(`console: ${text}`);
         }

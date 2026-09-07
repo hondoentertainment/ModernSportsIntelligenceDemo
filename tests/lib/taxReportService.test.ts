@@ -224,6 +224,11 @@ describe('taxReportService', () => {
       const s = updateTaxSettings({ state: 'Texas' });
       expect(s.stateRate).toBe(0);
     });
+
+    it('mirrors cost-basis method onto tax-lot preferences', () => {
+      updateTaxSettings({ costBasisMethod: 'lifo' });
+      expect(getTaxSettings().costBasisMethod).toBe('lifo');
+    });
   });
 
   describe('exportReport', () => {

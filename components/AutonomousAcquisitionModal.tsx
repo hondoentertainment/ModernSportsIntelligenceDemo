@@ -44,6 +44,8 @@ import {
   getAllAcquisitionResults,
   pauseCampaign,
   resumeCampaign,
+  approveCampaign,
+  rejectCampaign,
   createCampaign,
   getSmartPricingRecommendation,
   AUTONOMOUS_ACQUISITION_DATA_MODE,
@@ -69,6 +71,8 @@ import {
   getSelectedPlaybook,
 } from '../lib/trading/negotiationPlaybooks';
 import { showToast } from '../lib/utils/toast';
+import { AutonomousExecutionService } from '../lib/trading/AutonomousExecutionService';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
 import NegotiationAnalyticsPanel from './NegotiationAnalyticsPanel.tsx';
 import WhyRecommendationPanel from './WhyRecommendationPanel.tsx';
 import { buildWhyFromPricing } from '../lib/utils/agentReasoning';
@@ -153,6 +157,7 @@ const PIE_COLORS = ['#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6366f1'];
 // ── Tab: Campaigns ──────────────────────────────────────────────────────────────
 
 const CampaignsTab: React.FC = () => {
+  const { inventory } = useSupabaseInventory();
   const [campaigns, setCampaigns] = useState<AcquisitionCampaign[]>(() => getActiveCampaigns());
   const [showCreate, setShowCreate] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -165,17 +170,38 @@ const CampaignsTab: React.FC = () => {
   const [newROI, setNewROI] = useState('20');
   const [newUrgency, setNewUrgency] = useState<UrgencyLevel>('medium');
 
+  const parsedMax = parseFloat(newMax);
+  const collarGate = AutonomousExecutionService.evaluateExternalSpend(
+    Number.isFinite(parsedMax) ? parsedMax : 0,
+    AutonomousExecutionService.getConfig(),
+    AutonomousExecutionService.getActions(),
+    inventory,
+  );
+
   const handleCreate = () => {
     if (!newPlayer || !newMax) return;
-    createCampaign({
-      player: newPlayer,
-      set: newSet || undefined,
-      grade: newGrade,
-      maxPrice: parseFloat(newMax),
-      targetROI: parseFloat(newROI),
-      urgency: newUrgency,
-      platforms: ['eBay', 'COMC', 'MySlabs'] as MarketplacePlatform[],
-    });
+    if (collarGate.decision === 'blocked') {
+      showToast('error', `Campaign blocked by risk collar: ${collarGate.reason}`);
+      return;
+    }
+    createCampaign(
+      {
+        player: newPlayer,
+        set: newSet || undefined,
+        grade: newGrade,
+        maxPrice: parsedMax,
+        targetROI: parseFloat(newROI),
+        urgency: newUrgency,
+        platforms: ['eBay', 'COMC', 'MySlabs'] as MarketplacePlatform[],
+      },
+      { status: collarGate.decision === 'needs_approval' ? 'pending_review' : 'active' },
+    );
+    showToast(
+      collarGate.decision === 'needs_approval' ? 'info' : 'success',
+      collarGate.decision === 'needs_approval'
+        ? `Campaign staged for human approval: ${collarGate.reason}`
+        : 'Campaign created (demo/advisory — no live marketplace order).',
+    );
     setCampaigns(getActiveCampaigns());
     setShowCreate(false);
     setNewPlayer('');
@@ -191,6 +217,18 @@ const CampaignsTab: React.FC = () => {
   const handleResume = (id: string) => {
     resumeCampaign(id);
     setCampaigns(getActiveCampaigns());
+  };
+
+  const handleApprove = (id: string) => {
+    approveCampaign(id);
+    setCampaigns(getActiveCampaigns());
+    showToast('success', 'Campaign approved and activated (demo/advisory — no live marketplace order).');
+  };
+
+  const handleReject = (id: string) => {
+    rejectCampaign(id);
+    setCampaigns(getActiveCampaigns());
+    showToast('info', 'Campaign rejected and cancelled.');
   };
 
   return (
@@ -244,8 +282,27 @@ const CampaignsTab: React.FC = () => {
               </select>
             </div>
           </div>
+          {newMax ? (
+            <p
+              className={`text-[11px] ${
+                collarGate.decision === 'blocked'
+                  ? 'text-red-300'
+                  : collarGate.decision === 'needs_approval'
+                    ? 'text-amber-200'
+                    : 'text-slate-400'
+              }`}
+            >
+              Collar preview: {collarGate.decision.replace('_', ' ')} — {collarGate.reason} Demo/advisory only; no live marketplace order.
+            </p>
+          ) : null}
           <div className="flex gap-2 pt-1">
-            <button onClick={handleCreate} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-lg text-xs font-semibold transition-colors">Launch Campaign</button>
+            <button
+              onClick={handleCreate}
+              disabled={collarGate.decision === 'blocked' && !!newMax}
+              className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+            >
+              Launch Campaign
+            </button>
             <button onClick={() => setShowCreate(false)} className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs font-semibold transition-colors">Cancel</button>
           </div>
         </div>
@@ -333,6 +390,16 @@ const CampaignsTab: React.FC = () => {
                       <button onClick={() => handleResume(c.id)} className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-semibold hover:bg-emerald-500/30 transition-colors">
                         <Play size={10} /> Resume
                       </button>
+                    )}
+                    {c.status === 'pending_review' && (
+                      <>
+                        <button onClick={() => handleApprove(c.id)} className="flex items-center gap-1 px-3 py-1.5 bg-brand-lime/20 text-brand-lime border border-brand-lime/30 rounded-lg text-xs font-semibold hover:bg-brand-lime/30 transition-colors">
+                          <CheckCircle2 size={10} /> Approve
+                        </button>
+                        <button onClick={() => handleReject(c.id)} className="flex items-center gap-1 px-3 py-1.5 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-xs font-semibold hover:bg-red-500/30 transition-colors">
+                          <X size={10} /> Reject
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>

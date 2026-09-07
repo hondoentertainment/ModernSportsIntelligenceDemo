@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { TaxLotService } from '../../lib/utils/taxLotService';
+import { selectLotsByMethod, TaxLotService } from '../../lib/utils/taxLotService';
 import { makeCard } from '../helpers';
 
 describe('TaxLotService', () => {
@@ -188,6 +188,47 @@ describe('TaxLotService', () => {
     });
   });
 
+  describe('selectLotsByMethod', () => {
+    const lots = [
+      { lotId: 'oldest', dateAcquired: '2024-01-15', costBasis: 100, description: 'Jan' },
+      { lotId: 'mid', dateAcquired: '2024-06-15', costBasis: 200, description: 'Jun' },
+      { lotId: 'newest', dateAcquired: '2024-12-15', costBasis: 300, description: 'Dec' },
+    ];
+
+    it('selects oldest lots first under FIFO', () => {
+      const result = selectLotsByMethod(lots, 2, 'FIFO');
+      expect(result.selected.map((lot) => lot.lotId)).toEqual(['oldest', 'mid']);
+      expect(result.totalCostBasis).toBe(300);
+      expect(result.remaining.map((lot) => lot.lotId)).toEqual(['newest']);
+      expect(result.disclosure).toMatch(/not IRS/);
+    });
+
+    it('selects newest lots first under LIFO', () => {
+      const result = selectLotsByMethod(lots, 2, 'LIFO');
+      expect(result.selected.map((lot) => lot.lotId)).toEqual(['newest', 'mid']);
+      expect(result.totalCostBasis).toBe(500);
+    });
+
+    it('honors Specific ID order and discloses missing IDs', () => {
+      const result = selectLotsByMethod(lots, 2, 'SpecificID', ['newest', 'missing-lot', 'oldest']);
+      expect(result.selected.map((lot) => lot.lotId)).toEqual(['newest', 'oldest']);
+      expect(result.totalCostBasis).toBe(400);
+      expect(result.missingSpecificIds).toEqual(['missing-lot']);
+      expect(result.disclosure).toMatch(/not invented/);
+    });
+
+    it('keeps input order for average-cost illustration', () => {
+      const result = selectLotsByMethod(lots, 2, 'AvgCost');
+      expect(result.selected.map((lot) => lot.lotId)).toEqual(['oldest', 'mid']);
+    });
+
+    it('returns an empty selection for zero quantity or empty pools', () => {
+      expect(selectLotsByMethod(lots, 0, 'FIFO').selected).toEqual([]);
+      expect(selectLotsByMethod([], 2, 'FIFO').selected).toEqual([]);
+      expect(selectLotsByMethod(lots, Number.NaN, 'SpecificID', ['ghost']).missingSpecificIds).toEqual(['ghost']);
+    });
+  });
+
   describe('buildScheduleDPacket', () => {
     it('splits short-term and long-term buckets with a methodology disclaimer', () => {
       const cards = [
@@ -223,6 +264,75 @@ describe('TaxLotService', () => {
       expect(text).toContain('Part II — Long-term');
       expect(text).toContain('Methodology');
       expect(text).toContain('Short Flip');
+    });
+
+    it('honors Specific ID lot order when building a packet', () => {
+      const cards = [
+        makeCard({
+          id: 'late',
+          purchasePrice: 50,
+          status: 'sold',
+          salePrice: 80,
+          saleDate: `${thisYear}-08-01`,
+          purchaseDate: `${thisYear - 1}-11-01`,
+        }),
+        makeCard({
+          id: 'early',
+          purchasePrice: 90,
+          status: 'sold',
+          salePrice: 80,
+          saleDate: `${thisYear}-08-02`,
+          purchaseDate: `${thisYear - 1}-01-01`,
+        }),
+      ];
+      const packet = TaxLotService.buildScheduleDPacket(
+        cards,
+        thisYear,
+        'SpecificID',
+        '2026-09-07T00:00:00.000Z',
+        ['early'],
+      );
+      expect(packet.method).toBe('SpecificID');
+      const summary = TaxLotService.generateTaxSummary(cards, thisYear, 'SpecificID', ['early']);
+      expect(summary.scheduleDEntries[0].costBasis).toBe(90);
+    });
+
+    it('assigns identified-lot cost basis instead of the sold card own basis', () => {
+      const cards = [
+        makeCard({
+          id: 'sold-a',
+          purchasePrice: 100,
+          status: 'sold',
+          salePrice: 200,
+          saleDate: `${thisYear}-06-15`,
+          purchaseDate: `${thisYear - 1}-03-01`,
+        }),
+        makeCard({
+          id: 'open-c',
+          purchasePrice: 500,
+          status: 'active',
+          currentValue: 480,
+          purchaseDate: `${thisYear - 1}-01-01`,
+        }),
+      ];
+      const ownBasis = TaxLotService.generateTaxSummary(cards, thisYear, 'FIFO');
+      expect(ownBasis.totalCostBasis).toBe(100);
+      expect(ownBasis.totalNetGainLoss).toBe(100);
+
+      const identified = TaxLotService.generateTaxSummary(cards, thisYear, 'SpecificID', ['open-c']);
+      expect(identified.scheduleDEntries[0].costBasis).toBe(500);
+      expect(identified.scheduleDEntries[0].dateAcquired).toBe(`${thisYear - 1}-01-01`);
+      expect(identified.totalCostBasis).toBe(500);
+      expect(identified.totalNetGainLoss).toBe(-300);
+      const packet = TaxLotService.buildScheduleDPacket(
+        cards,
+        thisYear,
+        'SpecificID',
+        '2026-09-07T00:00:00.000Z',
+        ['open-c'],
+      );
+      expect(packet.totals.net).toBe(-300);
+      expect(packet.methodologyDisclaimer).toMatch(/not IRS/);
     });
   });
 });

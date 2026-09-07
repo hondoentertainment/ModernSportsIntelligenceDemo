@@ -278,6 +278,10 @@ export interface RiskCollar {
   minActionConfidence?: number; // 0-1
   requireApprovalAbove?: number; // Dollar threshold
   maxDailyActions?: number;
+  /** Hard daily BUY spend cap (default 800). Distinct from cycle maxBudget. */
+  maxDailyBudget?: number;
+  /** Stop new BUY / REBALANCE if NAV is down this % from cost basis. */
+  maxDrawdownPct?: number;
   blockedPlayers?: string[];
   blockedSports?: Sport[];
 }

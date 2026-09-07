@@ -6,7 +6,8 @@ import { CollaborativeThesis } from '../types';
 import AgentCard from './AgentCard';
 import AutoPilotControl from './AutoPilotControl';
 import WhyRecommendationPanel from './WhyRecommendationPanel';
-import { buildWhyFromThesis } from '../lib/utils/agentReasoning';
+import AgentConsensusView from './AgentConsensusView';
+import { buildConsensusView, buildWhyFromThesis } from '../lib/utils/agentReasoning';
 import { Brain, RefreshCw, Send, ShieldCheck, Target, TrendingUp, Info, Activity, Zap, Download } from 'lucide-react';
 import { showToast } from '../lib/utils/toast';
 import { store } from '../lib/dal/syncStore';
@@ -266,7 +267,14 @@ const AnalystWarRoom: React.FC = () => {
                                                 </button>
                                             </div>
                                         </div>
-                                        {thesis && <WhyRecommendationPanel view={buildWhyFromThesis(thesis)} />}
+                                        {thesis && (
+                                            <>
+                                                <AgentConsensusView
+                                                    view={buildConsensusView(thesis.agents, thesis.recommendedAction)}
+                                                />
+                                                <WhyRecommendationPanel view={buildWhyFromThesis(thesis)} />
+                                            </>
+                                        )}
                                     </div>
                                 )}
                             </div>

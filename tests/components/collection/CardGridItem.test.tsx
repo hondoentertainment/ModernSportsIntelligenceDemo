@@ -59,6 +59,20 @@ describe('CardGridItem — DataSourceBadge regression guard', () => {
     expect(liveBadges.length).toBeGreaterThanOrEqual(1);
   });
 
+  it('exposes a Comps Used control on the card surface', () => {
+    const card = makeCard({
+      valuationSource: 'historical-comps',
+      valuationTimestamp: new Date().toISOString(),
+      salesData: [
+        { title: 'Comp A', price: 200, condition: 'Raw', soldAt: new Date().toISOString() },
+        { title: 'Comp B', price: 220, condition: 'Raw', soldAt: new Date().toISOString() },
+        { title: 'Comp C', price: 210, condition: 'Raw', soldAt: new Date().toISOString() },
+      ],
+    });
+    render(<CardGridItem {...makeProps(card)} />);
+    expect(screen.getByRole('button', { name: /comps used/i })).toBeInTheDocument();
+  });
+
   it('renders the "mock" DataSourceBadge variant when no valuationSource is provided', () => {
     const card = makeCard({
       valuationSource: undefined,
