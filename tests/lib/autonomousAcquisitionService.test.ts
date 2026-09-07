@@ -61,7 +61,7 @@ describe('autonomousAcquisitionService hardening', () => {
   it('approves or rejects pending_review campaigns and ignores other states', () => {
     const pending = createCampaign(
       {
-        player: 'Review Prospect',
+        player: 'Review Prospect Approve',
         grade: 'PSA 10',
         maxPrice: 150,
         targetROI: 10,
@@ -71,14 +71,13 @@ describe('autonomousAcquisitionService hardening', () => {
       { status: 'pending_review' },
     );
     expect(pending.status).toBe('pending_review');
-
     expect(pauseCampaign(pending.id)?.status).toBe('pending_review');
     expect(approveCampaign(pending.id)?.status).toBe('active');
     expect(rejectCampaign(pending.id)?.status).toBe('active');
 
     const other = createCampaign(
       {
-        player: 'Cancel Prospect',
+        player: 'Review Prospect Reject',
         grade: 'PSA 9',
         maxPrice: 90,
         targetROI: 8,
@@ -87,8 +86,10 @@ describe('autonomousAcquisitionService hardening', () => {
       },
       { status: 'pending_review' },
     );
-    expect(rejectCampaign(other.id)?.status).toBe('failed');
-    expect(approveCampaign(other.id)?.status).toBe('failed');
+    const rejectTarget = getActiveCampaigns().find((campaign) => campaign.criteria.player === 'Review Prospect Reject');
+    expect(rejectTarget?.status).toBe('pending_review');
+    expect(rejectCampaign(rejectTarget!.id)?.status).toBe('failed');
+    expect(approveCampaign(rejectTarget!.id)?.status).toBe('failed');
   });
 
   it('aligns analytics totals and monthly rollups with persisted acquisition results', () => {

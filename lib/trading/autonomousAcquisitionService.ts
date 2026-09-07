@@ -624,7 +624,7 @@ export function createCampaign(
     platforms: criteria.platforms.length > 0 ? criteria.platforms : ['eBay'],
     notes: criteria.notes?.trim() || undefined,
   };
-  const id = `camp-${Date.now()}`;
+  const id = `camp-${Date.now()}-${MOCK_CAMPAIGNS.length}`;
   const campaign: AcquisitionCampaign = {
     id,
     name: `${safeCriteria.player} ${safeCriteria.set || ''} ${safeCriteria.grade || ''}`.trim(),
