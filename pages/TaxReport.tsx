@@ -132,6 +132,7 @@ const TaxReport: React.FC = () => {
   const handleSettingChange = (key: keyof TaxSettings, value: string | boolean) => {
     const updated = updateTaxSettings({ [key]: value });
     setSettings(updated);
+    setLotPrefs(getTaxLotPreferences());
     setSummary(getTaxSummary(selectedYear));
   };
 
@@ -900,7 +901,10 @@ const TaxReport: React.FC = () => {
                             <input
                               type="checkbox"
                               checked={checked}
-                              onChange={() => setLotPrefs(toggleSpecificLotId(tx.id))}
+                              onChange={() => {
+                                setLotPrefs(toggleSpecificLotId(tx.id));
+                                setSettings(getTaxSettings());
+                              }}
                             />
                             <span className="truncate">{tx.cardName} · acquired {tx.dateAcquired}</span>
                           </label>

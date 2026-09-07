@@ -4,7 +4,12 @@ import {
   SCHEDULE_D_COMPLETENESS_NOTE,
   SCHEDULE_D_METHODOLOGY_DISCLAIMER,
 } from './taxLotService';
-import { REPORT_METHOD_TO_LOT, setTaxLotMethod } from './taxLotPreferences';
+import {
+  LOT_METHOD_TO_REPORT,
+  REPORT_METHOD_TO_LOT,
+  getTaxLotPreferences,
+  setTaxLotMethod,
+} from './taxLotPreferences';
 
 // ---- Types ----
 
@@ -1434,8 +1439,8 @@ export function getMonthlyBreakdown(year?: TaxYear): MonthlyBreakdown[] {
   });
 }
 
-export function getTaxSettings(): TaxSettings {
-  return loadFromStorage<TaxSettings>('settings', {
+export function getDefaultTaxSettings(): TaxSettings {
+  return {
     filingStatus: 'single',
     taxBracket: '22%',
     stateRate: 0.05,
@@ -1444,7 +1449,17 @@ export function getTaxSettings(): TaxSettings {
     includeShippingFees: true,
     includePlatformFees: true,
     costBasisMethod: 'fifo',
-  });
+  };
+}
+
+export function getTaxSettings(): TaxSettings {
+  const stored = loadFromStorage<Partial<TaxSettings> | null>('settings', null);
+  const merged: TaxSettings = {
+    ...getDefaultTaxSettings(),
+    ...(stored && typeof stored === 'object' ? stored : {}),
+  };
+  merged.costBasisMethod = LOT_METHOD_TO_REPORT[getTaxLotPreferences().method];
+  return merged;
 }
 
 export function updateTaxSettings(settings: Partial<TaxSettings>): TaxSettings {

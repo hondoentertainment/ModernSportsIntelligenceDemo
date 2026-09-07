@@ -7,6 +7,8 @@ import type { CostBasisMethod } from './taxLotService';
 import { LOT_METHOD_DISCLAIMER } from './taxLotService';
 
 export const TAX_LOT_PREFERENCES_KEY = 'msi_tax_lot_preferences';
+/** Shared with Tax Report settings so Fiscal Intelligence and export stay aligned. */
+export const TAX_REPORT_SETTINGS_KEY = 'msi_tax_report_settings';
 
 export interface TaxLotPreferences {
   method: CostBasisMethod;
@@ -50,13 +52,38 @@ export function normalizeTaxLotPreferences(raw: unknown): TaxLotPreferences {
   };
 }
 
+function asReportMethod(value: unknown): keyof typeof REPORT_METHOD_TO_LOT | null {
+  return value === 'fifo' || value === 'lifo' || value === 'specific_id' || value === 'average'
+    ? value
+    : null;
+}
+
+function hydrateFromReportSettings(): TaxLotPreferences | null {
+  const settings = store.get<{ costBasisMethod?: unknown } | null>(TAX_REPORT_SETTINGS_KEY, null);
+  const reportMethod = asReportMethod(settings?.costBasisMethod);
+  if (!reportMethod) return null;
+  return { method: REPORT_METHOD_TO_LOT[reportMethod], specificLotIds: [] };
+}
+
+function patchReportCostBasisMethod(method: CostBasisMethod): void {
+  const current = store.get<Record<string, unknown> | null>(TAX_REPORT_SETTINGS_KEY, null);
+  const next = {
+    ...(current && typeof current === 'object' ? current : {}),
+    costBasisMethod: LOT_METHOD_TO_REPORT[method],
+  };
+  store.set(TAX_REPORT_SETTINGS_KEY, next);
+}
+
 export function getTaxLotPreferences(): TaxLotPreferences {
-  return normalizeTaxLotPreferences(store.get<unknown>(TAX_LOT_PREFERENCES_KEY, DEFAULT_TAX_LOT_PREFERENCES));
+  const stored = store.get<unknown>(TAX_LOT_PREFERENCES_KEY, null);
+  if (stored != null) return normalizeTaxLotPreferences(stored);
+  return hydrateFromReportSettings() ?? { ...DEFAULT_TAX_LOT_PREFERENCES };
 }
 
 export function setTaxLotPreferences(partial: Partial<TaxLotPreferences>): TaxLotPreferences {
   const next = normalizeTaxLotPreferences({ ...getTaxLotPreferences(), ...partial });
   store.set(TAX_LOT_PREFERENCES_KEY, next);
+  patchReportCostBasisMethod(next.method);
   return next;
 }
 

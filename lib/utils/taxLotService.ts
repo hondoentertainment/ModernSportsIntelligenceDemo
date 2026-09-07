@@ -219,7 +219,7 @@ function sortByMethod(cards: CardInventory[], method: CostBasisMethod, specificL
 }
 
 export const SCHEDULE_D_METHODOLOGY_DISCLAIMER =
-  'Schedule D–style packet for collector records. Short-term vs long-term buckets use a 365.25-day hold test on recorded purchase and sale dates. Cost basis is purchase price plus stored grading and shipping fees. Method labels (FIFO / LIFO / Specific ID / Average) reorder lots for illustration only — this is not IRS Form 8949 / Schedule D regulatory completeness, FIFO/LIFO audit support, or tax advice. Confirm figures with a qualified tax professional before filing.';
+  'Schedule D–style packet for collector records. Short-term vs long-term buckets use a 365.25-day hold test on recorded purchase and sale dates. Cost basis is purchase price plus stored grading and shipping fees. FIFO / LIFO / Average reorder or average lots for illustration. Specific Identification rematches sale proceeds onto the identified lots’ stored basis when lot IDs are selected — this is not IRS Form 8949 / Schedule D regulatory completeness, FIFO/LIFO audit support, or tax advice. Confirm figures with a qualified tax professional before filing.';
 
 export const SCHEDULE_D_COMPLETENESS_NOTE =
   'Demo-honest export: realized lots with a stored sale date only. Wash-sale, collectibles 28% rate, state tax, and specific-identification substantiation are out of scope.';
@@ -285,30 +285,51 @@ export class TaxLotService {
     const yearEnd = new Date(taxYear, 11, 31, 23, 59, 59);
 
     // Realized: sold cards in the tax year
-    const soldInYear = sortByMethod(
-      inventory.filter(c =>
-        c.status === 'sold' &&
-        c.saleDate &&
-        new Date(c.saleDate) >= yearStart &&
-        new Date(c.saleDate) <= yearEnd
-      ),
-      method,
-      specificLotIds,
+    const soldInYearRaw = inventory.filter(c =>
+      c.status === 'sold' &&
+      c.saleDate &&
+      new Date(c.saleDate) >= yearStart &&
+      new Date(c.saleDate) <= yearEnd
     );
+    const soldInYear = sortByMethod(soldInYearRaw, method, specificLotIds);
 
     // For average cost method, compute portfolio-wide average
     const avgCostBasis = method === 'AvgCost'
       ? inventory.reduce((sum, c) => sum + calculateCostBasis(c), 0) / Math.max(1, inventory.length)
       : 0;
 
+    const specificMatch =
+      method === 'SpecificID' && specificLotIds.length > 0
+        ? selectLotsByMethod(
+            inventory.map((card) => ({
+              lotId: card.id,
+              dateAcquired: card.purchaseDate,
+              costBasis: calculateCostBasis(card),
+              description: buildCardDescription(card),
+            })),
+            soldInYear.length,
+            'SpecificID',
+            specificLotIds,
+          )
+        : null;
+    const salesForMatch = [...soldInYearRaw].sort(
+      (a, b) => new Date(a.saleDate || 0).getTime() - new Date(b.saleDate || 0).getTime(),
+    );
+
     // Build Schedule D entries
-    const scheduleDEntries: ScheduleDEntry[] = soldInYear.map(card => {
-      const costBasis = method === 'AvgCost' ? avgCostBasis : calculateCostBasis(card);
+    const scheduleDEntries: ScheduleDEntry[] = (specificMatch ? salesForMatch : soldInYear).map((card, index) => {
+      const matchedLot = specificMatch?.selected[index];
+      const costBasis = method === 'AvgCost'
+        ? avgCostBasis
+        : matchedLot
+          ? matchedLot.costBasis
+          : calculateCostBasis(card);
+      const dateAcquired = matchedLot?.dateAcquired || card.purchaseDate;
       const proceeds = card.salePrice || 0;
-      const holdingPeriod = getHoldingPeriod(card.purchaseDate, card.saleDate);
+      const holdingPeriod = getHoldingPeriod(dateAcquired, card.saleDate);
       return {
         description: buildCardDescription(card),
-        dateAcquired: card.purchaseDate,
+        dateAcquired,
         dateSold: card.saleDate || '',
         proceeds,
         costBasis,

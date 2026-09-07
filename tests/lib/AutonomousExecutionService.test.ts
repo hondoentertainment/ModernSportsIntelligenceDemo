@@ -161,4 +161,46 @@ describe('AutonomousExecutionService', () => {
             { purchasePrice: 200, currentValue: 100 } as never,
         ])).toBe(50);
     });
+
+    it('blocks campaign spend that exceeds cycle maxBudget even when per-asset allows it', () => {
+        const cycle: AutoPilotConfig = {
+            ...config,
+            collar: {
+                ...config.collar,
+                maxBudget: 100,
+                maxSpendPerAsset: 250,
+                requireApprovalAbove: 1000,
+                minActionConfidence: 0.1,
+            },
+        };
+        const blocked = AutonomousExecutionService.evaluateExternalSpend(200, cycle);
+        expect(blocked.decision).toBe('blocked');
+        expect(blocked.reason).toMatch(/cycle budget/i);
+
+        const under = AutonomousExecutionService.evaluateExternalSpend(80, cycle);
+        expect(under.decision).toBe('approved');
+    });
+
+    it('applies the drawdown stop when campaign preview receives real inventory', () => {
+        const drawdownCfg: AutoPilotConfig = {
+            ...config,
+            collar: {
+                ...config.collar,
+                maxDrawdownPct: 10,
+                requireApprovalAbove: 1000,
+                minActionConfidence: 0.1,
+            },
+        };
+        const emptyInventory = AutonomousExecutionService.evaluateExternalSpend(80, drawdownCfg, [], []);
+        expect(emptyInventory.decision).toBe('approved');
+
+        const underwater = AutonomousExecutionService.evaluateExternalSpend(
+            80,
+            drawdownCfg,
+            [],
+            [{ purchasePrice: 1000, currentValue: 800 } as never],
+        );
+        expect(underwater.decision).toBe('blocked');
+        expect(underwater.reason).toMatch(/drawdown/i);
+    });
 });

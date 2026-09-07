@@ -123,6 +123,10 @@ export class AutonomousExecutionService {
             return { decision: 'blocked', reason: 'Amount exceeds max spend per asset collar.' };
         }
 
+        if ((collar.maxBudget || 0) > 0 && spend > collar.maxBudget) {
+            return { decision: 'blocked', reason: 'Amount exceeds cycle budget collar.' };
+        }
+
         const dailyBudget = collar.maxDailyBudget ?? 0;
         if (dailyBudget > 0 && this.getTodayBuySpend(existingActions) + spend > dailyBudget) {
             return { decision: 'blocked', reason: 'Amount exceeds daily budget collar.' };

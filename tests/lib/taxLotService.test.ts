@@ -296,5 +296,43 @@ describe('TaxLotService', () => {
       const summary = TaxLotService.generateTaxSummary(cards, thisYear, 'SpecificID', ['early']);
       expect(summary.scheduleDEntries[0].costBasis).toBe(90);
     });
+
+    it('assigns identified-lot cost basis instead of the sold card own basis', () => {
+      const cards = [
+        makeCard({
+          id: 'sold-a',
+          purchasePrice: 100,
+          status: 'sold',
+          salePrice: 200,
+          saleDate: `${thisYear}-06-15`,
+          purchaseDate: `${thisYear - 1}-03-01`,
+        }),
+        makeCard({
+          id: 'open-c',
+          purchasePrice: 500,
+          status: 'active',
+          currentValue: 480,
+          purchaseDate: `${thisYear - 1}-01-01`,
+        }),
+      ];
+      const ownBasis = TaxLotService.generateTaxSummary(cards, thisYear, 'FIFO');
+      expect(ownBasis.totalCostBasis).toBe(100);
+      expect(ownBasis.totalNetGainLoss).toBe(100);
+
+      const identified = TaxLotService.generateTaxSummary(cards, thisYear, 'SpecificID', ['open-c']);
+      expect(identified.scheduleDEntries[0].costBasis).toBe(500);
+      expect(identified.scheduleDEntries[0].dateAcquired).toBe(`${thisYear - 1}-01-01`);
+      expect(identified.totalCostBasis).toBe(500);
+      expect(identified.totalNetGainLoss).toBe(-300);
+      const packet = TaxLotService.buildScheduleDPacket(
+        cards,
+        thisYear,
+        'SpecificID',
+        '2026-09-07T00:00:00.000Z',
+        ['open-c'],
+      );
+      expect(packet.totals.net).toBe(-300);
+      expect(packet.methodologyDisclaimer).toMatch(/not IRS/);
+    });
   });
 });

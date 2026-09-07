@@ -5,6 +5,8 @@ import {
   getActiveCampaigns,
   pauseCampaign,
   resumeCampaign,
+  approveCampaign,
+  rejectCampaign,
   getAcquisitionAnalytics,
   getAllAcquisitionResults,
   getAllNegotiations,
@@ -54,6 +56,39 @@ describe('autonomousAcquisitionService hardening', () => {
 
     const resumed = resumeCampaign(active.id);
     expect(resumed?.status).toBe('active');
+  });
+
+  it('approves or rejects pending_review campaigns and ignores other states', () => {
+    const pending = createCampaign(
+      {
+        player: 'Review Prospect',
+        grade: 'PSA 10',
+        maxPrice: 150,
+        targetROI: 10,
+        urgency: 'medium',
+        platforms: ['eBay'],
+      },
+      { status: 'pending_review' },
+    );
+    expect(pending.status).toBe('pending_review');
+
+    expect(pauseCampaign(pending.id)?.status).toBe('pending_review');
+    expect(approveCampaign(pending.id)?.status).toBe('active');
+    expect(rejectCampaign(pending.id)?.status).toBe('active');
+
+    const other = createCampaign(
+      {
+        player: 'Cancel Prospect',
+        grade: 'PSA 9',
+        maxPrice: 90,
+        targetROI: 8,
+        urgency: 'low',
+        platforms: ['eBay'],
+      },
+      { status: 'pending_review' },
+    );
+    expect(rejectCampaign(other.id)?.status).toBe('failed');
+    expect(approveCampaign(other.id)?.status).toBe('failed');
   });
 
   it('aligns analytics totals and monthly rollups with persisted acquisition results', () => {

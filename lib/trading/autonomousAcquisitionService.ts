@@ -762,6 +762,28 @@ export function resumeCampaign(id: string): AcquisitionCampaign | undefined {
   return campaign;
 }
 
+/** Human checkpoint: activate a campaign staged as pending_review. */
+export function approveCampaign(id: string): AcquisitionCampaign | undefined {
+  const campaign = MOCK_CAMPAIGNS.find(c => c.id === id);
+  if (campaign && campaign.status === 'pending_review') {
+    campaign.status = 'active';
+    campaign.updatedAt = new Date().toISOString();
+    persistCampaignStore();
+  }
+  return campaign;
+}
+
+/** Human checkpoint: cancel a campaign staged as pending_review. */
+export function rejectCampaign(id: string): AcquisitionCampaign | undefined {
+  const campaign = MOCK_CAMPAIGNS.find(c => c.id === id);
+  if (campaign && campaign.status === 'pending_review') {
+    campaign.status = 'failed';
+    campaign.updatedAt = new Date().toISOString();
+    persistCampaignStore();
+  }
+  return campaign;
+}
+
 export function getSmartPricingRecommendation(listing: {
   price: number;
   player: string;
