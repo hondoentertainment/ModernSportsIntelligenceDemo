@@ -119,7 +119,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 - **Actions:**
   - **Morning Briefing:** Automate the `generateBriefingReport` trigger for a daily summary.
   - **Visual Fidelity:** Improve `pdfExport.ts` with custom charts (using PDF shapes) for league allocation.
-- **Status:** **Shipped (lite, 2026-09-07)** — `generateBriefingReport` draws league-allocation bars with existing jsPDF shapes; Morning Briefing modal downloads via dynamic import.
+- **Status:** **Shipped (lite, 2026-09-07)** — Morning Briefing shows league-allocation bars in the modal DOM and downloads text/HTML via `leagueAllocation`. Live UI does not import `pdfExport` / jsPDF.
 
 ---
 

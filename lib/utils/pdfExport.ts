@@ -1,12 +1,13 @@
+/**
+ * jsPDF helpers for optional offline packets. Do not import this module from
+ * live UI (static or dynamic) — jsPDF pulls html2canvas and trips gzip gates.
+ * Morning Briefing uses `leagueAllocation.ts` (DOM bars + HTML download).
+ */
 import jsPDF from 'jspdf';
 import { CardInventory } from '../../types';
+import { buildLeagueAllocation, type LeagueAllocationSlice } from './leagueAllocation';
 
-export interface LeagueAllocationSlice {
-    league: string;
-    value: number;
-    count: number;
-    pct: number;
-}
+export { buildLeagueAllocation, type LeagueAllocationSlice };
 
 const LEAGUE_BAR_COLORS: Record<string, [number, number, number]> = {
     MLB: [34, 197, 94],
@@ -15,27 +16,6 @@ const LEAGUE_BAR_COLORS: Record<string, [number, number, number]> = {
     NFL: [59, 130, 246],
     Other: [148, 163, 184],
 };
-
-export function buildLeagueAllocation(inventory: CardInventory[]): LeagueAllocationSlice[] {
-    const totalValue = inventory.reduce((sum, c) => sum + (c.currentValue || 0), 0);
-    const leagueMap = new Map<string, { value: number; count: number }>();
-    inventory.forEach((card) => {
-        const league = card.league || 'Other';
-        const current = leagueMap.get(league) || { value: 0, count: 0 };
-        leagueMap.set(league, {
-            value: current.value + (card.currentValue || 0),
-            count: current.count + 1,
-        });
-    });
-    return Array.from(leagueMap.entries())
-        .map(([league, data]) => ({
-            league,
-            value: data.value,
-            count: data.count,
-            pct: totalValue > 0 ? (data.value / totalValue) * 100 : 0,
-        }))
-        .sort((a, b) => b.value - a.value);
-}
 
 type PdfShapeDoc = {
     setFillColor: (r: number, g: number, b: number) => unknown;

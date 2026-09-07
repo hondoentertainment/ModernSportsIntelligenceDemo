@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-07 · Seasonal windows, injury/txn catalysts, Performance vs Price, pop/scarcity Alpha, trade proposals, briefing PDF bars, Auto-Pilot idempotency. Previous edition same day: Consensus View / Comps Used / tax-lot selector / Auto-Pilot collars (#123).
+> Refreshed 2026-09-07 · Seasonal windows, injury/txn catalysts, Performance vs Price, pop/scarcity Alpha, trade proposals, briefing DOM bars + HTML download, Auto-Pilot idempotency. Previous edition same day: Consensus View / Comps Used / tax-lot selector / Auto-Pilot collars (#123).
 
 ## Current state in one paragraph
 
@@ -22,19 +22,19 @@ MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger acro
 
 Demo/DAL-safe product slices on existing Dashboard, Collection, Morning Briefing, and Auto-Pilot surfaces. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` flips, no new Labs pages.**
 
-| Slice | Where |
-| ----- | ----- |
-| **Seasonal Buy/Sell windows** (roadmap #11) | Seeded calendar (spring training / All-Star / playoffs / off-season) on Dashboard + Collection rails and per-card chips. Heuristic disclosure — not live tape. |
-| **Injury / transaction catalysts** (roadmap #9) | `HoldingsCatalystRail` + `CatalystEngine` seeded injury/DFA/call-up cards for matching holdings. Not a live sports wire. |
-| **Performance vs Price** (MLB binding) | Dashboard binds `StatsService` / mlbApi hitting lines to collection marks on an existing Recharts composed chart. |
-| **Pop / scarcity weighting** (Priority 3.1 lite) | `popReport` hydrates from a simulated model when live PSA is unavailable; Alpha Score applies a Pop 1 / low-pop premium; list/grid badges stay honest about source. |
-| **Trade proposal / portfolio delta** (Priority 4.2 lite) | Advisory “Card A for Card B + cash” from local inventory on Collection. Not a P2P marketplace. |
-| **Morning briefing visual fidelity** (Priority 5.1 lite) | `generateBriefingReport` / `pdfExport` draw league-allocation bars with jsPDF rects; modal downloads via dynamic import. No jsPDF/html2canvas bundle blowup. |
-| **Auto-Pilot idempotency stub** (Phase 33 leftover) | Day-bucketed local keys + duplicate-action guards in `AutonomousExecutionService`. Still advisory — no live execution. |
-| **Agent Consensus View** (roadmap #14) | Per-agent Buy / Wait / Hold / Sell stances + split summary on Analyst War Room and Outcome Memory. Builds on `WhyRecommendationPanel` / `agentReasoning`. Missing stances disclosed, never invented. |
-| **Comps Used** (roadmap #10) | Collection grid + list show the sold/historical comps that underpin `preferredValuationForCard`. Thin tape and AI-only paths stay labeled. |
-| **Tax-lot method selector** | FIFO / LIFO / Specific ID / Average persist via MSI store (`msi_tax_lot_preferences`) and drive Fiscal Intelligence + `/tax-report`. Lot-selection math is unit-tested. **Not** IRS regulatory completeness. |
-| **Auto-Pilot collars + approval** | Daily budget, per-asset cap, max drawdown stop; high-dollar or low-confidence actions go to the human approval queue. Acquisition campaigns preview the same collars. Advisory stays default — no live marketplace trades. |
+| Slice                                                    | Where                                                                                                                                                                                                                      |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Seasonal Buy/Sell windows** (roadmap #11)              | Seeded calendar (spring training / All-Star / playoffs / off-season) on Dashboard + Collection rails and per-card chips. Heuristic disclosure — not live tape.                                                             |
+| **Injury / transaction catalysts** (roadmap #9)          | `HoldingsCatalystRail` + `CatalystEngine` seeded injury/DFA/call-up cards for matching holdings. Not a live sports wire.                                                                                                   |
+| **Performance vs Price** (MLB binding)                   | Dashboard binds `StatsService` / mlbApi hitting lines to collection marks on an existing Recharts composed chart.                                                                                                          |
+| **Pop / scarcity weighting** (Priority 3.1 lite)         | `popReport` hydrates from a simulated model when live PSA is unavailable; Alpha Score applies a Pop 1 / low-pop premium; list/grid badges stay honest about source.                                                        |
+| **Trade proposal / portfolio delta** (Priority 4.2 lite) | Advisory “Card A for Card B + cash” from local inventory on Collection. Not a P2P marketplace.                                                                                                                             |
+| **Morning briefing visual fidelity** (Priority 5.1 lite) | In-modal league-allocation bars + text/HTML download via `leagueAllocation` (no jsPDF/html2canvas on the live briefing path).                                                                                              |
+| **Auto-Pilot idempotency stub** (Phase 33 leftover)      | Day-bucketed local keys + duplicate-action guards in `AutonomousExecutionService`. Still advisory — no live execution.                                                                                                     |
+| **Agent Consensus View** (roadmap #14)                   | Per-agent Buy / Wait / Hold / Sell stances + split summary on Analyst War Room and Outcome Memory. Builds on `WhyRecommendationPanel` / `agentReasoning`. Missing stances disclosed, never invented.                       |
+| **Comps Used** (roadmap #10)                             | Collection grid + list show the sold/historical comps that underpin `preferredValuationForCard`. Thin tape and AI-only paths stay labeled.                                                                                 |
+| **Tax-lot method selector**                              | FIFO / LIFO / Specific ID / Average persist via MSI store (`msi_tax_lot_preferences`) and drive Fiscal Intelligence + `/tax-report`. Lot-selection math is unit-tested. **Not** IRS regulatory completeness.               |
+| **Auto-Pilot collars + approval**                        | Daily budget, per-asset cap, max drawdown stop; high-dollar or low-confidence actions go to the human approval queue. Acquisition campaigns preview the same collars. Advisory stays default — no live marketplace trades. |
 
 **Deferred / skipped this pass:** Scout-to-Acquire Playwright E2E (no cloud fixtures; existing War Room / collection-add-asset smokes remain). Full P2P order book, production centering CV, custom vanity domain.
 

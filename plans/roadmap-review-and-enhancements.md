@@ -8,25 +8,25 @@
 
 Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-safe; no secret or `VITE_FF_REAL_*` flips):
 
-| Item                                             | Status                                                                                                 |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| #1 Barcode / cert scan (card-show floor loop)    | **Shipped** (#119) — CameraFeed + cert/UPC resolver prefills Add Asset. Live PSA stays gated.          |
-| #3 Swipe triage (keep / sell / consign / review) | **Shipped** — Collection mobile 4-way swipe + haptics + local review queue.                            |
-| #5 Bundle / lot negotiation                      | **Shipped** (#119) — Arena lot/package pricing on existing negotiation surfaces.                       |
-| #6 Negotiation analytics                         | **Shipped** (#117) — win rate, discount, time-to-close, walk-away from local Arena history.            |
-| #12 Agent transparency / why-panels              | **Shipped** (#118) — expandable reasoning on multi-agent recommendations.                              |
-| #18 Hobby Health Index                           | **Shipped (seeded)** — disclosed synthetic composite on Macro-Sentinel. Not a live feed.               |
-| #19 Insurance-grade report                       | **Shipped** — timestamped FMV packet, totals, methodology, printable/PDF from Report Modal.            |
-| #24 Collection embed / vanity widget             | **Shipped** — iframe snippet + preview on Share Alpha / Public Portfolio. Custom domain still open.    |
-| Migration conflict / duplicate policy UX         | **Shipped** — merge vs skip preview on Migration Banner + Profile when local and cloud both have data. |
-| #9 Injury / transaction impact                   | **Shipped (seeded)** — HoldingsCatalystRail + CatalystEngine. Not a live sports wire.                  |
-| #11 Seasonal buy/sell windows                    | **Shipped (seeded)** — Dashboard/Collection rails + per-card chips.                                    |
-| Priority 3.1 Pop / scarcity weighting            | **Shipped (lite)** — simulated popReport + Alpha Score low-pop premium.                                |
-| Priority 4.2 Trade proposal / portfolio delta    | **Shipped (lite)** — advisory Card A for Card B + cash from local inventory.                           |
-| Priority 5.1 Morning briefing PDF charts         | **Shipped (lite)** — jsPDF league-allocation bars; dynamic import from briefing modal.                 |
-| Phase 33 Auto-Pilot idempotency                  | **Shipped (stub)** — day-bucketed local keys + duplicate-action guards.                                |
+| Item                                             | Status                                                                                                    |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| #1 Barcode / cert scan (card-show floor loop)    | **Shipped** (#119) — CameraFeed + cert/UPC resolver prefills Add Asset. Live PSA stays gated.             |
+| #3 Swipe triage (keep / sell / consign / review) | **Shipped** — Collection mobile 4-way swipe + haptics + local review queue.                               |
+| #5 Bundle / lot negotiation                      | **Shipped** (#119) — Arena lot/package pricing on existing negotiation surfaces.                          |
+| #6 Negotiation analytics                         | **Shipped** (#117) — win rate, discount, time-to-close, walk-away from local Arena history.               |
+| #12 Agent transparency / why-panels              | **Shipped** (#118) — expandable reasoning on multi-agent recommendations.                                 |
+| #18 Hobby Health Index                           | **Shipped (seeded)** — disclosed synthetic composite on Macro-Sentinel. Not a live feed.                  |
+| #19 Insurance-grade report                       | **Shipped** — timestamped FMV packet, totals, methodology, printable/PDF from Report Modal.               |
+| #24 Collection embed / vanity widget             | **Shipped** — iframe snippet + preview on Share Alpha / Public Portfolio. Custom domain still open.       |
+| Migration conflict / duplicate policy UX         | **Shipped** — merge vs skip preview on Migration Banner + Profile when local and cloud both have data.    |
+| #9 Injury / transaction impact                   | **Shipped (seeded)** — HoldingsCatalystRail + CatalystEngine. Not a live sports wire.                     |
+| #11 Seasonal buy/sell windows                    | **Shipped (seeded)** — Dashboard/Collection rails + per-card chips.                                       |
+| Priority 3.1 Pop / scarcity weighting            | **Shipped (lite)** — simulated popReport + Alpha Score low-pop premium.                                   |
+| Priority 4.2 Trade proposal / portfolio delta    | **Shipped (lite)** — advisory Card A for Card B + cash from local inventory.                              |
+| Priority 5.1 Morning briefing visual fidelity    | **Shipped (lite)** — DOM league-allocation bars + text/HTML download. No jsPDF on the live briefing path. |
+| Phase 33 Auto-Pilot idempotency                  | **Shipped (stub)** — day-bucketed local keys + duplicate-action guards.                                   |
 
-Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P marketplace (#7), centering CV (#17), live marketplace / Stripe / Supabase restore, custom vanity domain, Scout-to-Acquire cloud E2E. Schedule D–style (demo) packet and sold-comp consensus shipped 2026-09-06. Seasonal windows (#11), injury/txn catalysts (#9), pop weighting (3.1 lite), trade proposals (4.2 lite), briefing PDF bars (5.1 lite), and Auto-Pilot idempotency shipped 2026-09-07. **Engineering shipped 2026-09-07:** Consensus View (#14), Comps Used (#10), FIFO/LIFO/Specific ID selector (demo), Auto-Pilot daily/drawdown collars + human approval.
+Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P marketplace (#7), centering CV (#17), live marketplace / Stripe / Supabase restore, custom vanity domain, Scout-to-Acquire cloud E2E. Schedule D–style (demo) packet and sold-comp consensus shipped 2026-09-06. Seasonal windows (#11), injury/txn catalysts (#9), pop weighting (3.1 lite), trade proposals (4.2 lite), briefing DOM bars + HTML download (5.1 lite), and Auto-Pilot idempotency shipped 2026-09-07. **Engineering shipped 2026-09-07:** Consensus View (#14), Comps Used (#10), FIFO/LIFO/Specific ID selector (demo), Auto-Pilot daily/drawdown collars + human approval.
 
 ---
 
@@ -41,13 +41,13 @@ Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P mark
 
 ### Gaps & Risks Identified
 
-| Area                     | Gap                                                                              | Risk Level |
-| ------------------------ | -------------------------------------------------------------------------------- | ---------- |
-| **Data freshness**       | Prices still rely heavily on AI estimation rather than live market feeds         | High       |
-| **Offline reliability**  | PWA/Service Worker work is in-progress but not battle-tested                     | Medium     |
-| **Test coverage**        | Limited unit and E2E tests for financial calculation paths                       | High       |
-| **Multi-sport breadth**  | Feature depth is MLB-centric; NBA, NFL, Soccer, Hockey have thinner integrations | Medium     |
-| **Social moat**          | Hype Feed exists but no peer-to-peer marketplace or community trading            | Medium     |
+| Area                     | Gap                                                                                              | Risk Level |
+| ------------------------ | ------------------------------------------------------------------------------------------------ | ---------- |
+| **Data freshness**       | Prices still rely heavily on AI estimation rather than live market feeds                         | High       |
+| **Offline reliability**  | PWA/Service Worker work is in-progress but not battle-tested                                     | Medium     |
+| **Test coverage**        | Limited unit and E2E tests for financial calculation paths                                       | High       |
+| **Multi-sport breadth**  | Feature depth is MLB-centric; NBA, NFL, Soccer, Hockey have thinner integrations                 | Medium     |
+| **Social moat**          | Hype Feed exists but no peer-to-peer marketplace or community trading                            | Medium     |
 | **Regulatory readiness** | FIFO/LIFO/Specific ID **selector** exists (demo); IRS/CRA **regulatory completeness** still open | High       |
 
 ---
