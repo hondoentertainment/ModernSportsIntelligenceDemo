@@ -11,6 +11,7 @@ vi.mock('../../lib/utils/mlbApi', () => ({
 vi.mock('../../lib/logger', () => ({
   logger: {
     error: vi.fn(),
+    warn: vi.fn(),
   },
 }));
 
@@ -71,7 +72,7 @@ describe('StatsService', () => {
       vi.mocked(searchMLBPlayers).mockRejectedValue(new Error('API error'));
       const result = await StatsService.getPlayerPerformance('Test Player');
       expect(result).toBeNull();
-      expect(logger.error).toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalled();
     });
   });
 
@@ -97,7 +98,7 @@ describe('StatsService', () => {
       vi.mocked(searchMLBPlayers).mockRejectedValue(new Error('API error'));
       const url = await StatsService.getPlayerHeadshot('Test Player');
       expect(url).toBeNull();
-      expect(logger.error).toHaveBeenCalled();
+      expect(logger.warn).toHaveBeenCalled();
     });
   });
 
