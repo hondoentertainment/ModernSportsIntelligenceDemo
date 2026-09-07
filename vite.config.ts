@@ -150,6 +150,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/utils/warRoomThesisAudit.ts',
         'lib/utils/warRoomLedgerContext.ts',
         'lib/utils/agentReasoning.ts',
+        'lib/utils/taxLotPreferences.ts',
         'lib/pricing/consensusMarketLedger.ts',
         'lib/htmlEscape.ts',
       ],

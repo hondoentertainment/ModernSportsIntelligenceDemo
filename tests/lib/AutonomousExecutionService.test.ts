@@ -68,4 +68,97 @@ describe('AutonomousExecutionService', () => {
         expect(action?.status).toBe('submitted');
         expect(action?.approvalActor).toBe('tester');
     });
+
+    it('routes low-confidence actions to human approval instead of blocking', () => {
+        const gated = AutonomousExecutionService.enforceRiskCollars(
+            [{
+                id: 'low-conf',
+                type: 'BUY',
+                assetName: 'Cautious Bid',
+                amount: 80,
+                rationale: 'Thin tape',
+                timestamp: new Date().toISOString(),
+                status: 'pending',
+                confidence: 0.4,
+            }],
+            config,
+        );
+        expect(gated[0].policyDecision).toBe('needs_approval');
+        expect(gated[0].policyReason).toMatch(/human approval/i);
+    });
+
+    it('blocks spend that exceeds the daily budget or drawdown stop', () => {
+        const daily: AutoPilotConfig = {
+            ...config,
+            collar: { ...config.collar, maxDailyBudget: 100, requireApprovalAbove: 1000, minActionConfidence: 0.1 },
+        };
+        const overDaily = AutonomousExecutionService.enforceRiskCollars(
+            [{
+                id: 'daily',
+                type: 'BUY',
+                assetName: 'Over Daily',
+                amount: 150,
+                rationale: 'Test',
+                timestamp: new Date().toISOString(),
+                status: 'pending',
+                confidence: 0.9,
+            }],
+            daily,
+        );
+        expect(overDaily[0].policyDecision).toBe('blocked');
+        expect(overDaily[0].policyReason).toMatch(/daily budget/i);
+
+        const drawdown = AutonomousExecutionService.enforceRiskCollars(
+            [{
+                id: 'dd',
+                type: 'BUY',
+                assetName: 'After Drawdown',
+                amount: 80,
+                rationale: 'Test',
+                timestamp: new Date().toISOString(),
+                status: 'pending',
+                confidence: 0.9,
+            }],
+            { ...config, collar: { ...config.collar, maxDrawdownPct: 10, requireApprovalAbove: 1000 } },
+            [],
+            [{ purchasePrice: 1000, currentValue: 800 } as never],
+        );
+        expect(drawdown[0].policyDecision).toBe('blocked');
+        expect(drawdown[0].policyReason).toMatch(/drawdown/i);
+    });
+
+    it('evaluates external campaign spend against collars without live trades', () => {
+        const blocked = AutonomousExecutionService.evaluateExternalSpend(400, config);
+        expect(blocked.decision).toBe('blocked');
+        const approval = AutonomousExecutionService.evaluateExternalSpend(220, config);
+        expect(approval.decision).toBe('needs_approval');
+        const ok = AutonomousExecutionService.evaluateExternalSpend(80, {
+            ...config,
+            collar: { ...config.collar, requireApprovalAbove: 500, minActionConfidence: 0.1 },
+        });
+        expect(ok.decision).toBe('approved');
+
+        const lowConf = AutonomousExecutionService.evaluateExternalSpend(80, {
+            ...config,
+            collar: { ...config.collar, requireApprovalAbove: 500, minActionConfidence: 0.8 },
+        }, [], [], 0.2);
+        expect(lowConf.decision).toBe('needs_approval');
+
+        const daily = AutonomousExecutionService.evaluateExternalSpend(50, {
+            ...config,
+            collar: { ...config.collar, maxDailyBudget: 100, maxSpendPerAsset: 200 },
+        }, [{
+            id: 'prior',
+            type: 'BUY',
+            assetName: 'Earlier',
+            amount: 80,
+            rationale: 'x',
+            timestamp: new Date().toISOString(),
+            status: 'submitted',
+        }]);
+        expect(daily.decision).toBe('blocked');
+        expect(AutonomousExecutionService.portfolioDrawdownPct([
+            { purchasePrice: 200, currentValue: 100 } as never,
+        ])).toBe(50);
+    });
 });

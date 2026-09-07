@@ -1,6 +1,30 @@
 import { CardInventory } from '../../types';
 
 export type CostBasisMethod = 'FIFO' | 'LIFO' | 'SpecificID' | 'AvgCost';
+
+/** Open lot used for FIFO / LIFO / Specific ID matching on a disposition. */
+export interface SelectableLot {
+  lotId: string;
+  dateAcquired: string;
+  costBasis: number;
+  quantity?: number;
+  description?: string;
+}
+
+export interface LotSelectionResult {
+  method: CostBasisMethod;
+  selected: SelectableLot[];
+  remaining: SelectableLot[];
+  totalCostBasis: number;
+  missingSpecificIds: string[];
+  disclosure: string;
+}
+
+export const LOT_METHOD_DISCLAIMER =
+  'FIFO / LIFO / Specific ID matching is illustrative for collector records. It is not IRS Form 8949 substantiation, audit-ready lot identification, or tax advice.';
+
+export const SPECIFIC_ID_MISSING =
+  'Specific Identification was elected but one or more requested lot IDs were not in the open pool. Missing IDs are disclosed; they were not invented.';
 export type HoldingPeriod = 'Short-Term' | 'Long-Term';
 export type TaxYear = number;
 
@@ -96,16 +120,97 @@ function buildCardDescription(card: CardInventory): string {
 /**
  * Sorts sold cards by method for cost-basis ordering.
  */
-function sortByMethod(cards: CardInventory[], method: CostBasisMethod): CardInventory[] {
+function parseLotDate(iso: string): number {
+  const ts = Date.parse(iso);
+  return Number.isNaN(ts) ? 0 : ts;
+}
+
+/**
+ * Pick which open lots close against a sale quantity.
+ * FIFO = oldest acquired first; LIFO = newest first; Specific ID = caller-selected IDs;
+ * AvgCost = same order as input (basis averaged by caller).
+ */
+export function selectLotsByMethod(
+  lots: SelectableLot[],
+  quantity: number,
+  method: CostBasisMethod,
+  specificLotIds: string[] = [],
+): LotSelectionResult {
+  const pool = (lots ?? []).filter((lot) => typeof lot.lotId === 'string' && lot.lotId.trim());
+  const qty = Number.isFinite(quantity) ? Math.max(0, Math.floor(quantity)) : 0;
+  const missingSpecificIds: string[] = [];
+
+  if (qty === 0 || pool.length === 0) {
+    return {
+      method,
+      selected: [],
+      remaining: [...pool],
+      totalCostBasis: 0,
+      missingSpecificIds: method === 'SpecificID' ? specificLotIds.filter(Boolean) : [],
+      disclosure: LOT_METHOD_DISCLAIMER,
+    };
+  }
+
+  let ordered: SelectableLot[] = [...pool];
+  if (method === 'FIFO') {
+    ordered.sort((a, b) => parseLotDate(a.dateAcquired) - parseLotDate(b.dateAcquired));
+  } else if (method === 'LIFO') {
+    ordered.sort((a, b) => parseLotDate(b.dateAcquired) - parseLotDate(a.dateAcquired));
+  } else if (method === 'SpecificID') {
+    const byId = new Map(pool.map((lot) => [lot.lotId, lot]));
+    const picked: SelectableLot[] = [];
+    for (const id of specificLotIds) {
+      const lot = byId.get(id);
+      if (lot) {
+        picked.push(lot);
+        byId.delete(id);
+      } else if (id) {
+        missingSpecificIds.push(id);
+      }
+    }
+    const leftovers = [...byId.values()].sort(
+      (a, b) => parseLotDate(a.dateAcquired) - parseLotDate(b.dateAcquired),
+    );
+    ordered = [...picked, ...leftovers];
+  }
+
+  const selected = ordered.slice(0, qty);
+  const selectedIds = new Set(selected.map((lot) => lot.lotId));
+  const remaining = pool.filter((lot) => !selectedIds.has(lot.lotId));
+  const totalCostBasis = roundCents(selected.reduce((sum, lot) => sum + (lot.costBasis || 0), 0));
+
+  return {
+    method,
+    selected,
+    remaining,
+    totalCostBasis,
+    missingSpecificIds,
+    disclosure: missingSpecificIds.length > 0
+      ? `${LOT_METHOD_DISCLAIMER} ${SPECIFIC_ID_MISSING}`
+      : LOT_METHOD_DISCLAIMER,
+  };
+}
+
+function sortByMethod(cards: CardInventory[], method: CostBasisMethod, specificLotIds: string[] = []): CardInventory[] {
   const sorted = [...cards];
   switch (method) {
     case 'FIFO':
       return sorted.sort((a, b) => new Date(a.purchaseDate).getTime() - new Date(b.purchaseDate).getTime());
     case 'LIFO':
       return sorted.sort((a, b) => new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime());
-    case 'SpecificID':
-      // Specific ID: optimize for lowest tax — sell highest basis first
+    case 'SpecificID': {
+      if (specificLotIds.length > 0) {
+        const rank = new Map(specificLotIds.map((id, i) => [id, i]));
+        return sorted.sort((a, b) => {
+          const aRank = rank.has(a.id) ? (rank.get(a.id) as number) : Number.MAX_SAFE_INTEGER;
+          const bRank = rank.has(b.id) ? (rank.get(b.id) as number) : Number.MAX_SAFE_INTEGER;
+          if (aRank !== bRank) return aRank - bRank;
+          return calculateCostBasis(b) - calculateCostBasis(a);
+        });
+      }
+      // No lot IDs stored: illustrate highest-basis-first, not IRS substantiation.
       return sorted.sort((a, b) => calculateCostBasis(b) - calculateCostBasis(a));
+    }
     case 'AvgCost':
       return sorted; // Order doesn't matter for average cost
     default:
@@ -173,7 +278,8 @@ export class TaxLotService {
   static generateTaxSummary(
     inventory: CardInventory[],
     taxYear: TaxYear = new Date().getFullYear(),
-    method: CostBasisMethod = 'FIFO'
+    method: CostBasisMethod = 'FIFO',
+    specificLotIds: string[] = [],
   ): TaxSummary {
     const yearStart = new Date(taxYear, 0, 1);
     const yearEnd = new Date(taxYear, 11, 31, 23, 59, 59);
@@ -186,7 +292,8 @@ export class TaxLotService {
         new Date(c.saleDate) >= yearStart &&
         new Date(c.saleDate) <= yearEnd
       ),
-      method
+      method,
+      specificLotIds,
     );
 
     // For average cost method, compute portfolio-wide average
@@ -339,8 +446,9 @@ export class TaxLotService {
     taxYear: TaxYear = new Date().getFullYear(),
     method: CostBasisMethod = 'FIFO',
     generatedAt: string = new Date().toISOString(),
+    specificLotIds: string[] = [],
   ): ScheduleDPacket {
-    const summary = this.generateTaxSummary(inventory, taxYear, method);
+    const summary = this.generateTaxSummary(inventory, taxYear, method, specificLotIds);
     const shortTerm = bucketFromEntries(
       'Short-Term',
       summary.scheduleDEntries.filter((e) => e.holdingPeriod === 'Short-Term'),

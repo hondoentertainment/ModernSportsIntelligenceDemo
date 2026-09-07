@@ -1,7 +1,7 @@
 # Roadmap Review & Feature Enhancement Recommendations
 
 **Date:** 2026-03-08
-**Last updated:** 2026-09-06
+**Last updated:** 2026-09-07
 **Scope:** Review of the 24-phase roadmap (PRD.md) and strategic next-steps (next-steps-recommendation.md)
 
 ## Status addendum (2026-09-06)
@@ -20,7 +20,7 @@ Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-sa
 | #24 Collection embed / vanity widget             | **Shipped** — iframe snippet + preview on Share Alpha / Public Portfolio. Custom domain still open.    |
 | Migration conflict / duplicate policy UX         | **Shipped** — merge vs skip preview on Migration Banner + Profile when local and cloud both have data. |
 
-Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P marketplace (#7), centering CV (#17), live marketplace / Stripe / Supabase restore. Schedule D–style (demo) packet and sold-comp consensus shipped 2026-09-06.
+Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P marketplace (#7), centering CV (#17), live marketplace / Stripe / Supabase restore. Schedule D–style (demo) packet and sold-comp consensus shipped 2026-09-06. **Engineering shipped 2026-09-07:** Consensus View (#14), Comps Used (#10), FIFO/LIFO/Specific ID selector (demo), Auto-Pilot daily/drawdown collars + human approval.
 
 ---
 
@@ -42,7 +42,7 @@ Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P mark
 | **Test coverage**        | Limited unit and E2E tests for financial calculation paths                       | High       |
 | **Multi-sport breadth**  | Feature depth is MLB-centric; NBA, NFL, Soccer, Hockey have thinner integrations | Medium     |
 | **Social moat**          | Hype Feed exists but no peer-to-peer marketplace or community trading            | Medium     |
-| **Regulatory readiness** | No tax-lot accounting (FIFO/LIFO/Specific ID) for IRS/CRA compliance             | High       |
+| **Regulatory readiness** | FIFO/LIFO/Specific ID **selector** exists (demo); IRS/CRA **regulatory completeness** still open | High       |
 
 ---
 
@@ -88,7 +88,7 @@ Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P mark
 
 9. **Injury & Transaction Impact Modeling** — Integrate MLB transaction feeds (DFA, call-ups, IL placements) as real-time signals. A prospect getting called up to the majors is the single largest price catalyst in the hobby. The Predictive Alpha Engine should trigger instant alerts for portfolio-relevant transactions.
 
-10. **Comparable Sales Regression** — Supplement Gemini-based price predictions with a lightweight regression model trained on the user's own historical sold data plus eBay comps. Users trust predictions more when they can see the comparable sales driving the estimate. Display a "Comps Used" section alongside each prediction.
+10. **Comparable Sales Regression** — **Shipped (Comps Used UX):** Collection grid/list lists the sold/historical comps that drive `preferredValuationForCard` / `selectPreferredValuation`. Thin tape and AI-only paths stay labeled. Live eBay tape still owner-held; no `VITE_FF_REAL_*` flip.
 
 11. **Seasonal Pattern Detection** — Card prices follow seasonal patterns (spring training hype, All-Star break, playoff runs, off-season lulls). Surface "Buy Window" and "Sell Window" signals based on historical seasonality for each player/league.
 
@@ -102,7 +102,7 @@ Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P mark
 
 13. **User-Defined Agent Priorities** — **Shipped:** risk / time-horizon / league-tilt / max-position sliders persist via MSI store (`msi_agent_user_preferences`) and are injected into War Room committee prompts + Auto-Pilot ranking. Human still approves. Not a live cloned trader.
 
-14. **Agent Conflict Resolution UI** — When the Scout agent recommends "Buy" but the Risk agent recommends "Wait," surface the disagreement explicitly. Present a "Consensus View" alongside individual agent opinions, similar to how sell-side analyst ratings work in equities.
+14. **Agent Conflict Resolution UI** — **Shipped:** Consensus View on War Room / Outcome Memory shows per-agent Buy/Wait/Hold/Sell stance plus a split summary when agents disagree. Missing opinions are disclosed, never invented.
 
 ---
 
@@ -112,7 +112,7 @@ Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P mark
 
 15. **Cross-Asset Correlation (Phase 21) — Add Non-Sports Collectibles** — Extend correlation analysis beyond sports leagues to include adjacent collectible markets (Pokemon, Magic: The Gathering, memorabilia). Many collectors diversify across categories, and cross-category correlation data is nearly impossible to find elsewhere.
 
-16. **Fiscal Intelligence (Phase 22) — Tax-Lot Accounting** — Implement FIFO, LIFO, and Specific Identification methods for cost-basis calculation. This is a regulatory requirement for serious collectors reporting capital gains. Generate IRS Schedule D-compatible reports. This is the single highest-value enhancement for the "sports as an asset class" positioning.
+16. **Fiscal Intelligence (Phase 22) — Tax-Lot Accounting** — **Partial (demo):** FIFO / LIFO / Specific ID / Average selector persists via MSI store; lot-matching math is unit-tested; Schedule D–style packet already shipped. **Not** IRS Form 8949 / Schedule D regulatory completeness.
 
 17. **Visual Audit Simulation (Phase 23) — Centering Analysis** — Use computer vision to analyze card centering from user-uploaded photos and predict grade probability distributions (e.g., "80% chance PSA 9, 15% chance PSA 10"). This is the feature collectors most wish existed and would drive significant word-of-mouth.
 

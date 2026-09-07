@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { X, FileText, ArrowUpRight, ArrowDownRight, Scale, TrendingDown, AlertTriangle } from 'lucide-react';
 import { CardInventory } from '../types';
 import { TaxLotService, CostBasisMethod } from '../lib/utils/taxLotService';
+import { getTaxLotPreferences, setTaxLotMethod, toggleSpecificLotId } from '../lib/utils/taxLotPreferences';
 
 interface TaxReportModalProps {
   isOpen: boolean;
@@ -11,7 +12,8 @@ interface TaxReportModalProps {
 }
 
 const TaxReportModal: React.FC<TaxReportModalProps> = ({ isOpen, onClose, card, portfolio }) => {
-  const [method, setMethod] = useState<CostBasisMethod>('FIFO');
+  const [prefs, setPrefs] = useState(getTaxLotPreferences);
+  const method = prefs.method;
 
   const taxLot = useMemo(() => TaxLotService.getCardTaxLot(card), [card]);
   const methodComparison = useMemo(() => TaxLotService.compareMethodTaxImpact(portfolio), [portfolio]);
@@ -212,7 +214,7 @@ const TaxReportModal: React.FC<TaxReportModalProps> = ({ isOpen, onClose, card, 
                 return (
                   <button
                     key={mc.method}
-                    onClick={() => setMethod(mc.method)}
+                    onClick={() => setPrefs(setTaxLotMethod(mc.method))}
                     className={`p-4 rounded-xl border text-left transition-all ${
                       isActive
                         ? 'bg-brand-lime/10 border-brand-lime/30'
@@ -240,6 +242,37 @@ const TaxReportModal: React.FC<TaxReportModalProps> = ({ isOpen, onClose, card, 
               })}
             </div>
           </div>
+
+          {method === 'SpecificID' && (
+            <div className="bg-brand-charcoal/30 border border-slate-800 rounded-2xl p-5">
+              <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-3">
+                Specific Identification — pick lots
+              </p>
+              <p className="text-[11px] text-slate-500 mb-3">
+                Demo-safe lot picks persist in the MSI store. This is not IRS substantiation.
+              </p>
+              <ul className="space-y-2 max-h-48 overflow-y-auto">
+                {portfolio.map((lot) => {
+                  const checked = prefs.specificLotIds.includes(lot.id);
+                  return (
+                    <li key={lot.id}>
+                      <label className="flex items-center gap-3 cursor-pointer text-sm text-slate-300">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => setPrefs(toggleSpecificLotId(lot.id))}
+                          className="rounded border-slate-600"
+                        />
+                        <span className="flex-1 truncate">
+                          {lot.player} · {lot.year} · acquired {lot.purchaseDate}
+                        </span>
+                      </label>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
 
           {/* Tax-Loss Harvesting Alert */}
           {!isGain && card.status !== 'sold' && (

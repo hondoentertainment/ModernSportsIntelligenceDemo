@@ -6,6 +6,12 @@ import {
   preferredValuationForCard,
   resolveAnalysisValue,
   selectPreferredValuation,
+  listCompsUsed,
+  compsUsedForPreferred,
+  compsUsedForCard,
+  COMPS_USED_AI_ONLY,
+  COMPS_USED_THIN,
+  COMPS_USED_UNAVAILABLE,
 } from '../../lib/pricing/compConsensus';
 import type { CardInventory, PricingAnalysis } from '../../types';
 
@@ -125,5 +131,82 @@ describe('compConsensus selection + freshness', () => {
     const preferred = preferredValuationForCard(card, NOW);
     expect(preferred.method).toBe('sold-comp-consensus');
     expect(preferred.value).toBe(210);
+  });
+});
+
+describe('listCompsUsed / Comps Used view', () => {
+  it('lists usable sold comps newest first and skips bad prices', () => {
+    const rows = listCompsUsed(
+      [
+        { title: 'Older', price: 100, condition: 'Raw', soldAt: '2026-07-01' },
+        { title: '  ', price: 0, condition: 'Raw', soldAt: '2026-08-01' },
+        { title: 'Fresh', price: 140, condition: 'PSA 10', soldAt: '2026-08-20' },
+      ],
+      NOW,
+    );
+    expect(rows).toHaveLength(2);
+    expect(rows[0].title).toBe('Fresh');
+    expect(rows[0].fresh).toBe(true);
+    expect(rows[0].condition).toBe('PSA 10');
+    expect(rows[1].title).toBe('Older');
+  });
+
+  it('labels AI-only and unavailable paths honestly', () => {
+    const ai = compsUsedForPreferred(
+      selectPreferredValuation({ aiEstimate: 310, nowMs: NOW }),
+      undefined,
+      NOW,
+    );
+    expect(ai.emptyReason).toBe(COMPS_USED_AI_ONLY);
+    expect(ai.rows).toEqual([]);
+
+    const none = compsUsedForPreferred(
+      selectPreferredValuation({ nowMs: NOW }),
+      [],
+      NOW,
+    );
+    expect(none.emptyReason).toBe(COMPS_USED_UNAVAILABLE);
+  });
+
+  it('attaches the comps that underpin a card consensus mark', () => {
+    const card = {
+      currentValue: 800,
+      valuationSource: 'gemini' as const,
+      salesData: [
+        { title: 'A', price: 200, condition: 'Raw', soldAt: '2026-08-01' },
+        { title: 'B', price: 220, condition: 'Raw', soldAt: '2026-08-08' },
+        { title: 'C', price: 210, condition: 'Raw', soldAt: '2026-08-15' },
+      ],
+    };
+    const view = compsUsedForCard(card, NOW);
+    expect(view.method).toBe('sold-comp-consensus');
+    expect(view.rows).toHaveLength(3);
+    expect(view.median).toBe(210);
+    expect(view.emptyReason).toBeNull();
+
+    const thin = compsUsedForPreferred(
+      selectPreferredValuation({ salesData: [sale(175, '2026-08-15')], nowMs: NOW }),
+      [sale(175, '2026-08-15')],
+      NOW,
+    );
+    expect(thin.disclosure).toBe(COMPS_USED_THIN);
+  });
+
+  it('discloses stored-only marks and untitled comps', () => {
+    const stored = compsUsedForPreferred(
+      selectPreferredValuation({ storedValue: 88, storedSource: 'fallback', nowMs: NOW }),
+      [{ title: '', price: 88, soldAt: 'not-a-date' }],
+      NOW,
+    );
+    expect(stored.method).toBe('stored');
+    expect(stored.rows[0].title).toBe('Untitled sold comp');
+    expect(stored.rows[0].fresh).toBe(false);
+
+    const storedEmpty = compsUsedForPreferred(
+      selectPreferredValuation({ storedValue: 88, storedSource: 'fallback', nowMs: NOW }),
+      [],
+      NOW,
+    );
+    expect(storedEmpty.emptyReason).toMatch(/No sold-comp tape/);
   });
 });

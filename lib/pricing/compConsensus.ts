@@ -50,6 +50,37 @@ export interface PreferredValuation {
   freshCompCount: number;
 }
 
+export interface CompUsedRow {
+  title: string;
+  price: number;
+  soldAt: string;
+  fresh: boolean;
+  condition?: string;
+}
+
+export interface CompsUsedView {
+  method: CompSelectionMethod;
+  rows: CompUsedRow[];
+  median: number | null;
+  disclosure: string;
+  emptyReason: string | null;
+}
+
+export const COMPS_USED_AI_ONLY =
+  'No sold comps on file. This mark is an AI estimate (demo/sample) — not a verified clearing tape.';
+
+export const COMPS_USED_UNAVAILABLE =
+  'No sold comps, AI estimate, or stored mark. Comps Used cannot be assembled.';
+
+export const COMPS_USED_STORED_ONLY =
+  'Using the last stored mark. No sold-comp tape is attached to this card, so individual comps cannot be listed.';
+
+export const COMPS_USED_THIN =
+  'Thin tape: fewer than 3 usable sold comps underpin this mark. Demo-honest — not a deep book.';
+
+export const COMPS_USED_CONSENSUS =
+  'These sold/historical comps drive the preferred mark (median). Seeded or stale tape is labeled — this is not a live marketplace book.';
+
 function parseSoldAt(soldAt: string | undefined): number | null {
   if (!soldAt) return null;
   const trimmed = soldAt.trim();
@@ -261,6 +292,108 @@ export function preferredValueForCard(
   nowMs: number = Date.now(),
 ): number {
   return preferredValuationForCard(card, nowMs).value;
+}
+
+function asCompTitle(sale: SoldCompLike | MarketComp): string {
+  if ('title' in sale && typeof sale.title === 'string' && sale.title.trim()) {
+    return sale.title.trim();
+  }
+  return 'Untitled sold comp';
+}
+
+function asCompCondition(sale: SoldCompLike | MarketComp): string | undefined {
+  if ('condition' in sale && typeof sale.condition === 'string' && sale.condition.trim()) {
+    return sale.condition.trim();
+  }
+  return undefined;
+}
+
+/** Usable sold comps that underpin a preferred valuation — never invented. */
+export function listCompsUsed(
+  sales: SoldCompLike[] | MarketComp[] | undefined,
+  nowMs: number = Date.now(),
+): CompUsedRow[] {
+  const rows: CompUsedRow[] = [];
+  for (const sale of sales ?? []) {
+    const price = usablePrice(sale.price);
+    if (price === null) continue;
+    const soldAt = typeof sale.soldAt === 'string' ? sale.soldAt.trim() : '';
+    rows.push({
+      title: asCompTitle(sale),
+      price,
+      soldAt,
+      fresh: isFreshSoldComp(soldAt, nowMs),
+      condition: asCompCondition(sale),
+    });
+  }
+  return rows.sort((a, b) => {
+    const aTs = parseSoldAt(a.soldAt) ?? 0;
+    const bTs = parseSoldAt(b.soldAt) ?? 0;
+    return bTs - aTs;
+  });
+}
+
+export function compsUsedForPreferred(
+  preferred: PreferredValuation,
+  sales: SoldCompLike[] | MarketComp[] | undefined,
+  nowMs: number = Date.now(),
+): CompsUsedView {
+  const rows = listCompsUsed(sales, nowMs);
+  if (preferred.method === 'ai-estimate') {
+    return {
+      method: preferred.method,
+      rows,
+      median: null,
+      disclosure: COMPS_USED_AI_ONLY,
+      emptyReason: rows.length === 0 ? COMPS_USED_AI_ONLY : null,
+    };
+  }
+  if (preferred.method === 'unavailable') {
+    return {
+      method: preferred.method,
+      rows,
+      median: null,
+      disclosure: COMPS_USED_UNAVAILABLE,
+      emptyReason: COMPS_USED_UNAVAILABLE,
+    };
+  }
+  if (preferred.method === 'stored') {
+    return {
+      method: preferred.method,
+      rows,
+      median: rows.length > 0 ? preferred.value : null,
+      disclosure: rows.length > 0 ? COMPS_USED_CONSENSUS : COMPS_USED_STORED_ONLY,
+      emptyReason: rows.length === 0 ? COMPS_USED_STORED_ONLY : null,
+    };
+  }
+  if (rows.length === 0) {
+    return {
+      method: preferred.method,
+      rows,
+      median: null,
+      disclosure: COMPS_USED_UNAVAILABLE,
+      emptyReason: COMPS_USED_UNAVAILABLE,
+    };
+  }
+  const consensus = computeSoldCompConsensus(sales, nowMs);
+  return {
+    method: preferred.method,
+    rows,
+    median: consensus?.median ?? preferred.value,
+    disclosure: preferred.method === 'thin-comp-fallback' ? COMPS_USED_THIN : COMPS_USED_CONSENSUS,
+    emptyReason: null,
+  };
+}
+
+export function compsUsedForCard(
+  card: Pick<
+    CardInventory,
+    'currentValue' | 'valuationSource' | 'valuationTimestamp' | 'lastValuationDate' | 'salesData'
+  >,
+  nowMs: number = Date.now(),
+): CompsUsedView {
+  const preferred = preferredValuationForCard(card, nowMs);
+  return compsUsedForPreferred(preferred, card.salesData, nowMs);
 }
 
 /** When Gemini analysis carries sold comps, prefer the consensus mark over the AI point. */

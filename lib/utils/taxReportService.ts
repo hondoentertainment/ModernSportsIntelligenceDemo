@@ -4,6 +4,7 @@ import {
   SCHEDULE_D_COMPLETENESS_NOTE,
   SCHEDULE_D_METHODOLOGY_DISCLAIMER,
 } from './taxLotService';
+import { REPORT_METHOD_TO_LOT, setTaxLotMethod } from './taxLotPreferences';
 
 // ---- Types ----
 
@@ -1349,7 +1350,8 @@ export function buildScheduleDStyleExport(year?: TaxYear): string {
 
   let output = 'MSI Schedule D–style packet — Capital Gains and Losses\n';
   output += `Tax Year: ${summary.taxYear}\n`;
-  output += `Generated: ${new Date().toISOString()}\n\n`;
+  output += `Generated: ${new Date().toISOString()}\n`;
+  output += `Cost-basis method (illustrative): ${getTaxSettings().costBasisMethod}\n\n`;
   output += 'Part I — Short-term (< 1 year)\n';
   output += `  Lots: ${shortTerm.length}\n`;
   output += `  Proceeds: ${formatCurrency(stProceeds)}\n`;
@@ -1450,6 +1452,9 @@ export function updateTaxSettings(settings: Partial<TaxSettings>): TaxSettings {
   const updated = { ...current, ...settings };
   if (settings.state && STATE_RATES[settings.state] !== undefined) {
     updated.stateRate = STATE_RATES[settings.state];
+  }
+  if (settings.costBasisMethod && REPORT_METHOD_TO_LOT[settings.costBasisMethod]) {
+    setTaxLotMethod(REPORT_METHOD_TO_LOT[settings.costBasisMethod]);
   }
   saveToStorage('settings', updated);
   return updated;

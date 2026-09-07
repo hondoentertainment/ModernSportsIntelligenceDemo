@@ -69,6 +69,7 @@ import {
   getSelectedPlaybook,
 } from '../lib/trading/negotiationPlaybooks';
 import { showToast } from '../lib/utils/toast';
+import { AutonomousExecutionService } from '../lib/trading/AutonomousExecutionService';
 import NegotiationAnalyticsPanel from './NegotiationAnalyticsPanel.tsx';
 import WhyRecommendationPanel from './WhyRecommendationPanel.tsx';
 import { buildWhyFromPricing } from '../lib/utils/agentReasoning';
@@ -165,17 +166,35 @@ const CampaignsTab: React.FC = () => {
   const [newROI, setNewROI] = useState('20');
   const [newUrgency, setNewUrgency] = useState<UrgencyLevel>('medium');
 
+  const parsedMax = parseFloat(newMax);
+  const collarGate = AutonomousExecutionService.evaluateExternalSpend(
+    Number.isFinite(parsedMax) ? parsedMax : 0,
+  );
+
   const handleCreate = () => {
     if (!newPlayer || !newMax) return;
-    createCampaign({
-      player: newPlayer,
-      set: newSet || undefined,
-      grade: newGrade,
-      maxPrice: parseFloat(newMax),
-      targetROI: parseFloat(newROI),
-      urgency: newUrgency,
-      platforms: ['eBay', 'COMC', 'MySlabs'] as MarketplacePlatform[],
-    });
+    if (collarGate.decision === 'blocked') {
+      showToast('error', `Campaign blocked by risk collar: ${collarGate.reason}`);
+      return;
+    }
+    createCampaign(
+      {
+        player: newPlayer,
+        set: newSet || undefined,
+        grade: newGrade,
+        maxPrice: parsedMax,
+        targetROI: parseFloat(newROI),
+        urgency: newUrgency,
+        platforms: ['eBay', 'COMC', 'MySlabs'] as MarketplacePlatform[],
+      },
+      { status: collarGate.decision === 'needs_approval' ? 'pending_review' : 'active' },
+    );
+    showToast(
+      collarGate.decision === 'needs_approval' ? 'info' : 'success',
+      collarGate.decision === 'needs_approval'
+        ? `Campaign staged for human approval: ${collarGate.reason}`
+        : 'Campaign created (demo/advisory — no live marketplace order).',
+    );
     setCampaigns(getActiveCampaigns());
     setShowCreate(false);
     setNewPlayer('');
@@ -244,8 +263,27 @@ const CampaignsTab: React.FC = () => {
               </select>
             </div>
           </div>
+          {newMax ? (
+            <p
+              className={`text-[11px] ${
+                collarGate.decision === 'blocked'
+                  ? 'text-red-300'
+                  : collarGate.decision === 'needs_approval'
+                    ? 'text-amber-200'
+                    : 'text-slate-400'
+              }`}
+            >
+              Collar preview: {collarGate.decision.replace('_', ' ')} — {collarGate.reason} Demo/advisory only; no live marketplace order.
+            </p>
+          ) : null}
           <div className="flex gap-2 pt-1">
-            <button onClick={handleCreate} className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-lg text-xs font-semibold transition-colors">Launch Campaign</button>
+            <button
+              onClick={handleCreate}
+              disabled={collarGate.decision === 'blocked' && !!newMax}
+              className="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
+            >
+              Launch Campaign
+            </button>
             <button onClick={() => setShowCreate(false)} className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg text-xs font-semibold transition-colors">Cancel</button>
           </div>
         </div>

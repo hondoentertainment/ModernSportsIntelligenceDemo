@@ -23,7 +23,9 @@ const DEFAULT_COLLAR: RiskCollar = {
     autoSellThreshold: 15,
     minActionConfidence: 0.6,
     requireApprovalAbove: 500,
-    maxDailyActions: 5
+    maxDailyActions: 5,
+    maxDailyBudget: 800,
+    maxDrawdownPct: 15,
 };
 
 const DEFAULT_CONFIG: AutoPilotConfig = {
@@ -58,7 +60,12 @@ function mapActionToRecommendationStatus(action: AutonomousAction): 'approved' |
 
 export class AutonomousExecutionService {
     static getConfig(): AutoPilotConfig {
-        return store.get<AutoPilotConfig>(STORAGE_KEY, DEFAULT_CONFIG);
+        const stored = store.get<AutoPilotConfig>(STORAGE_KEY, DEFAULT_CONFIG);
+        return {
+            ...DEFAULT_CONFIG,
+            ...stored,
+            collar: { ...DEFAULT_COLLAR, ...(stored?.collar ?? {}) },
+        };
     }
 
     static saveConfig(config: AutoPilotConfig) {
@@ -77,14 +84,80 @@ export class AutonomousExecutionService {
         }).length;
     }
 
+    static getTodayBuySpend(actions: AutonomousAction[] = this.getActions()): number {
+        const today = startOfDay(new Date());
+        return actions
+            .filter((action) => {
+                if (action.type !== 'BUY') return false;
+                if (action.policyDecision === 'blocked' || action.status === 'failed' || action.status === 'rejected' || action.status === 'cancelled') {
+                    return false;
+                }
+                const ts = new Date(action.timestamp);
+                return !Number.isNaN(ts.getTime()) && ts >= today;
+            })
+            .reduce((sum, action) => sum + (Number.isFinite(action.amount) ? action.amount : 0), 0);
+    }
+
+    static portfolioDrawdownPct(inventory: CardInventory[]): number {
+        const cost = inventory.reduce((sum, card) => sum + (card.purchasePrice || 0), 0);
+        const nav = inventory.reduce((sum, card) => sum + (card.currentValue || card.purchasePrice || 0), 0);
+        if (cost <= 0) return 0;
+        return Math.max(0, ((cost - nav) / cost) * 100);
+    }
+
+    /**
+     * Gate a dollar amount (campaign / preview) against hard collars.
+     * Advisory stays default — this does not place live marketplace trades.
+     */
+    static evaluateExternalSpend(
+        amount: number,
+        config: AutoPilotConfig = this.getConfig(),
+        existingActions: AutonomousAction[] = this.getActions(),
+        inventory: CardInventory[] = [],
+        confidence: number = 1,
+    ): { decision: 'approved' | 'blocked' | 'needs_approval'; reason: string } {
+        const spend = Number.isFinite(amount) && amount > 0 ? amount : 0;
+        const collar = { ...DEFAULT_COLLAR, ...config.collar };
+
+        if (spend > collar.maxSpendPerAsset) {
+            return { decision: 'blocked', reason: 'Amount exceeds max spend per asset collar.' };
+        }
+
+        const dailyBudget = collar.maxDailyBudget ?? 0;
+        if (dailyBudget > 0 && this.getTodayBuySpend(existingActions) + spend > dailyBudget) {
+            return { decision: 'blocked', reason: 'Amount exceeds daily budget collar.' };
+        }
+
+        const drawdownStop = collar.maxDrawdownPct ?? 0;
+        if (drawdownStop > 0 && inventory.length > 0 && this.portfolioDrawdownPct(inventory) >= drawdownStop) {
+            return { decision: 'blocked', reason: 'Max drawdown stop is active — new spend is blocked.' };
+        }
+
+        const minConfidence = collar.minActionConfidence ?? 0;
+        if (confidence < minConfidence) {
+            return { decision: 'needs_approval', reason: 'Confidence below threshold — human approval required.' };
+        }
+
+        if ((collar.requireApprovalAbove || 0) > 0 && spend >= (collar.requireApprovalAbove || 0)) {
+            return { decision: 'needs_approval', reason: 'Amount exceeds auto-approval threshold.' };
+        }
+
+        return { decision: 'approved', reason: 'Passed risk collar checks.' };
+    }
+
     static enforceRiskCollars(
         candidates: AutonomousAction[],
         config: AutoPilotConfig,
-        existingActions: AutonomousAction[] = this.getActions()
+        existingActions: AutonomousAction[] = this.getActions(),
+        inventory: CardInventory[] = [],
     ): AutonomousAction[] {
         const gated: AutonomousAction[] = [];
         const todayActionCount = this.getTodayActionCount(existingActions);
         let approvedBuySpend = 0;
+        let dailyBuySpend = this.getTodayBuySpend(existingActions);
+        const dailyBudget = config.collar.maxDailyBudget ?? 0;
+        const drawdownStop = config.collar.maxDrawdownPct ?? 0;
+        const drawdownActive = drawdownStop > 0 && inventory.length > 0 && this.portfolioDrawdownPct(inventory) >= drawdownStop;
 
         for (let i = 0; i < candidates.length; i++) {
             const action = { ...candidates[i] };
@@ -115,10 +188,17 @@ export class AutonomousExecutionService {
                 continue;
             }
 
-            const minConfidence = config.collar.minActionConfidence ?? 0;
-            if ((action.confidence ?? 1) < minConfidence) {
+            if (action.type === 'BUY' && dailyBudget > 0 && (dailyBuySpend + action.amount) > dailyBudget) {
                 action.policyDecision = 'blocked';
-                action.policyReason = 'Action confidence below configured threshold.';
+                action.policyReason = 'Action exceeds daily budget collar.';
+                action.status = 'failed';
+                gated.push(action);
+                continue;
+            }
+
+            if ((action.type === 'BUY' || action.type === 'REBALANCE') && drawdownActive) {
+                action.policyDecision = 'blocked';
+                action.policyReason = 'Max drawdown stop is active — new risk is blocked.';
                 action.status = 'failed';
                 gated.push(action);
                 continue;
@@ -133,9 +213,22 @@ export class AutonomousExecutionService {
                     continue;
                 }
                 approvedBuySpend += action.amount;
+                dailyBuySpend += action.amount;
             }
 
-            if ((config.collar.requireApprovalAbove || 0) > 0 && action.amount >= (config.collar.requireApprovalAbove || 0)) {
+            const minConfidence = config.collar.minActionConfidence ?? 0;
+            const lowConfidence = (action.confidence ?? 1) < minConfidence;
+            const highDollar = (config.collar.requireApprovalAbove || 0) > 0 && action.amount >= (config.collar.requireApprovalAbove || 0);
+
+            if (lowConfidence && highDollar) {
+                action.policyDecision = 'needs_approval';
+                action.policyReason = 'High-dollar and low-confidence — human approval required.';
+                action.status = 'pending';
+            } else if (lowConfidence) {
+                action.policyDecision = 'needs_approval';
+                action.policyReason = 'Confidence below threshold — human approval required.';
+                action.status = 'pending';
+            } else if (highDollar) {
                 action.policyDecision = 'needs_approval';
                 action.policyReason = 'Amount exceeds auto-approval threshold.';
                 action.status = 'pending';
@@ -502,7 +595,7 @@ export class AutonomousExecutionService {
 
         const candidates = this.buildActionCandidates(inventory, config, thesis);
         const actions = await this.persistActionRecommendations(
-            this.enforceRiskCollars(candidates, config, this.getActions()),
+            this.enforceRiskCollars(candidates, config, this.getActions(), inventory),
             'autopilot-preview',
             thesis
         );
@@ -526,7 +619,7 @@ export class AutonomousExecutionService {
 
         const candidates = this.buildActionCandidates(inventory, config, thesis);
         const actions = await this.persistActionRecommendations(
-            this.enforceRiskCollars(candidates, config, this.getActions()),
+            this.enforceRiskCollars(candidates, config, this.getActions(), inventory),
             'autopilot-cycle',
             thesis
         );

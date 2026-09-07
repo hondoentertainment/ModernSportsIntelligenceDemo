@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-06 · Pricing truth (sold-comp consensus), Schedule D–style packet, NBA/NFL/NHL player-team desks. Previous edition: 2026-09-05 (catalog sweep + #115).
+> Refreshed 2026-09-07 · Consensus View, Comps Used, tax-lot FIFO/LIFO/Specific ID selector, Auto-Pilot risk collars + human approval. Previous edition: 2026-09-06 (pricing truth / Schedule D–style packet / non-MLB hubs).
 
 ## Current state in one paragraph
 
@@ -17,6 +17,19 @@ MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger acro
 | Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later                      |
 | Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show                      |
 | eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel** (after restore)                 |
+
+## Engineering-friendly NEXT_STEPS — Shipped (2026-09-07)
+
+Demo/DAL-safe product slices on existing War Room, Collection, Tax Report, and Auto-Pilot surfaces. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` flips, no new Labs pages.**
+
+| Slice | Where |
+| ----- | ----- |
+| **Agent Consensus View** (roadmap #14) | Per-agent Buy / Wait / Hold / Sell stances + split summary on Analyst War Room and Outcome Memory. Builds on `WhyRecommendationPanel` / `agentReasoning`. Missing stances disclosed, never invented. |
+| **Comps Used** (roadmap #10) | Collection grid + list show the sold/historical comps that underpin `preferredValuationForCard`. Thin tape and AI-only paths stay labeled. |
+| **Tax-lot method selector** | FIFO / LIFO / Specific ID / Average persist via MSI store (`msi_tax_lot_preferences`) and drive Fiscal Intelligence + `/tax-report`. Lot-selection math is unit-tested. **Not** IRS regulatory completeness. |
+| **Auto-Pilot collars + approval** | Daily budget, per-asset cap, max drawdown stop; high-dollar or low-confidence actions go to the human approval queue. Acquisition campaigns preview the same collars. Advisory stays default — no live marketplace trades. |
+
+Still owner-held: Supabase restore, Stripe smoke, eBay/PSA keys, optional Sentry DSN.
 
 ## Collection list/grid action parity — Shipped (2026-09-05)
 

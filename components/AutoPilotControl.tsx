@@ -116,6 +116,29 @@ const AutoPilotControl: React.FC = () => {
 
                         <div className="grid grid-cols-2 gap-3">
                             <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-brand-muted block mb-3">Daily Budget</label>
+                                <input
+                                    type="number"
+                                    value={config.collar.maxDailyBudget || 0}
+                                    onChange={(e) => updateCollar('maxDailyBudget', parseInt(e.target.value))}
+                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-none"
+                                />
+                            </div>
+                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-brand-muted block mb-3">Max Drawdown %</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    value={config.collar.maxDrawdownPct || 0}
+                                    onChange={(e) => updateCollar('maxDrawdownPct', parseFloat(e.target.value))}
+                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-none"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-brand-muted block mb-3">Min Confidence</label>
                                 <input
                                     type="number"
@@ -280,12 +303,20 @@ const AutoPilotControl: React.FC = () => {
                 </div>
             )}
 
+            <p className="text-[10px] leading-relaxed text-slate-500 mb-4">
+                Hard collars (cycle budget, daily budget, per-asset cap, drawdown stop) block spend. High-dollar or
+                low-confidence actions require a human approval checkpoint. Advisory stays default — no live marketplace trades.
+            </p>
+
             {config.isActive && (
                 <div className="bg-brand-lime/10 border border-brand-lime/20 p-4 rounded-2xl flex items-start gap-3">
                     <CheckCircle2 className="text-brand-lime mt-0.5" size={16} />
                     <p className="text-[10px] text-brand-lime font-medium leading-relaxed">
-                        Strategist Prime is actively monitoring market signals. Actions will be logged above.
-                        <strong> Budget Lock Active:</strong> Purchases capped at ${config.collar.maxBudget} total.
+                        Advisory stays default — collars gate queued actions and do not place live marketplace trades.
+                        <strong> Cycle budget:</strong> ${config.collar.maxBudget}.
+                        <strong> Daily budget:</strong> ${config.collar.maxDailyBudget || 0}.
+                        <strong> Drawdown stop:</strong> {config.collar.maxDrawdownPct || 0}%.
+                        High-dollar or low-confidence actions stay in the approval queue.
                     </p>
                 </div>
             )}

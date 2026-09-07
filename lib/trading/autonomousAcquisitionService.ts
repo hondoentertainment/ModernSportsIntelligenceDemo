@@ -610,7 +610,10 @@ function buildMonthlySavingsFromResults(results: AcquisitionResult[]): { month: 
 
 // ── Service Functions ──────────────────────────────────────────────────────────
 
-export function createCampaign(criteria: CampaignCriteria): AcquisitionCampaign {
+export function createCampaign(
+  criteria: CampaignCriteria,
+  options: { status?: CampaignStatus } = {},
+): AcquisitionCampaign {
   const safeCriteria: CampaignCriteria = {
     ...criteria,
     player: criteria.player.trim(),
@@ -626,7 +629,7 @@ export function createCampaign(criteria: CampaignCriteria): AcquisitionCampaign 
     id,
     name: `${safeCriteria.player} ${safeCriteria.set || ''} ${safeCriteria.grade || ''}`.trim(),
     criteria: safeCriteria,
-    status: 'active',
+    status: options.status ?? 'active',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     listingsFound: 0,

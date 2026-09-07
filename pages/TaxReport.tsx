@@ -28,6 +28,7 @@ import {
   type TaxBracket,
   type ReportFormat,
 } from '../lib/utils/taxReportService';
+import { getTaxLotPreferences, toggleSpecificLotId } from '../lib/utils/taxLotPreferences';
 
 const TAX_YEARS: TaxYear[] = [2023, 2024, 2025, 2026];
 const CHART_COLORS = ['#f97316', '#60a5fa', '#f87171', '#34d399', '#a78bfa', '#fbbf24', '#22d3ee', '#fb923c'];
@@ -45,6 +46,7 @@ const TaxReport: React.FC = () => {
   const [monthlyData, setMonthlyData] = useState<MonthlyBreakdown[]>([]);
   const [washSales, setWashSales] = useState<TaxableTransaction[]>([]);
   const [settings, setSettings] = useState<TaxSettings>(getTaxSettings());
+  const [lotPrefs, setLotPrefs] = useState(getTaxLotPreferences);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -884,6 +886,29 @@ const TaxReport: React.FC = () => {
                   <option value="specific_id">Specific Identification</option>
                   <option value="average">Average Cost</option>
                 </select>
+                <p className="text-xs text-slate-500 mt-1">
+                  Preference persists in the MSI store and drives Fiscal Intelligence / Schedule D–style packets.
+                  Illustrative only — not IRS Form 8949 substantiation.
+                </p>
+                {settings.costBasisMethod === 'specific_id' && (
+                  <ul className="mt-3 space-y-2 max-h-40 overflow-y-auto">
+                    {transactions.slice(0, 12).map((tx) => {
+                      const checked = lotPrefs.specificLotIds.includes(tx.id);
+                      return (
+                        <li key={tx.id}>
+                          <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={() => setLotPrefs(toggleSpecificLotId(tx.id))}
+                            />
+                            <span className="truncate">{tx.cardName} · acquired {tx.dateAcquired}</span>
+                          </label>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
               </div>
             </div>
 

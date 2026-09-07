@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { CardInventory } from '../types';
 import { TaxLotService, CostBasisMethod } from '../lib/utils/taxLotService';
+import { getTaxLotPreferences, setTaxLotMethod } from '../lib/utils/taxLotPreferences';
 
 interface TaxSummaryWidgetProps {
   inventory: CardInventory[];
@@ -17,10 +18,18 @@ interface TaxSummaryWidgetProps {
 }
 
 const TaxSummaryWidget: React.FC<TaxSummaryWidgetProps> = ({ inventory, onCardClick }) => {
-  const [method, setMethod] = useState<CostBasisMethod>('FIFO');
+  const [prefs, setPrefs] = useState(getTaxLotPreferences);
   const [showHarvest, setShowHarvest] = useState(false);
+  const method = prefs.method;
 
-  const summary = useMemo(() => TaxLotService.generateTaxSummary(inventory, new Date().getFullYear(), method), [inventory, method]);
+  const summary = useMemo(
+    () => TaxLotService.generateTaxSummary(inventory, new Date().getFullYear(), method, prefs.specificLotIds),
+    [inventory, method, prefs.specificLotIds],
+  );
+
+  const handleMethod = (next: CostBasisMethod) => {
+    setPrefs(setTaxLotMethod(next));
+  };
 
   if (inventory.length === 0) return null;
 
@@ -45,7 +54,7 @@ const TaxSummaryWidget: React.FC<TaxSummaryWidgetProps> = ({ inventory, onCardCl
           {(['FIFO', 'LIFO', 'SpecificID', 'AvgCost'] as CostBasisMethod[]).map(m => (
             <button
               key={m}
-              onClick={() => setMethod(m)}
+              onClick={() => handleMethod(m)}
               className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${
                 method === m
                   ? 'bg-brand-lime/10 border border-brand-lime/30 text-brand-lime'
@@ -57,6 +66,10 @@ const TaxSummaryWidget: React.FC<TaxSummaryWidgetProps> = ({ inventory, onCardCl
           ))}
         </div>
       </div>
+      <p className="text-[10px] italic leading-relaxed text-slate-500">
+        Method preference persists in the MSI store. FIFO / LIFO / Specific ID matching is illustrative — not IRS
+        Form 8949 substantiation or tax advice.
+      </p>
 
       {/* Key Metrics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -198,7 +211,7 @@ const TaxSummaryWidget: React.FC<TaxSummaryWidgetProps> = ({ inventory, onCardCl
             </p>
           </div>
           <p className="text-[10px] font-black text-brand-lime uppercase tracking-widest">
-            Schedule D–style (demo)
+            Schedule D–style (demo) · {method}
           </p>
         </div>
       )}

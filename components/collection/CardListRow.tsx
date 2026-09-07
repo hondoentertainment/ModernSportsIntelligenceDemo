@@ -13,8 +13,9 @@ import {
   getValuationSourceChipForCard,
   valuationBadgeVariantForEntity,
 } from '../../lib/utils/valuationProvenance';
-import { preferredValuationForCard } from '../../lib/pricing/compConsensus';
+import { compsUsedForPreferred, preferredValuationForCard } from '../../lib/pricing/compConsensus';
 import ValuationProvenanceChips from '../ValuationProvenanceChips';
+import CompsUsedPanel from '../CompsUsedPanel';
 import CardItemActionIcons from './CardItemActionIcons';
 import { CardItemActionHandlers } from './cardItemActions';
 
@@ -95,6 +96,7 @@ const CardListRow: React.FC<CardListRowProps> = ({
           thinMarket={isThinLiquidityScore(card.liquidityScore) || preferred.thinMarket}
           title={provenanceTitle}
         />
+        <CompsUsedPanel compact view={compsUsedForPreferred(preferred, card.salesData)} />
       </td>
       <td className="px-8 py-4 text-center text-[10px] font-black uppercase">
         {card.isGraded ? `${card.gradingCompany} ${card.grade}` : 'Raw'}

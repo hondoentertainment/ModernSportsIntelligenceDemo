@@ -26,8 +26,9 @@ import {
   getValuationSourceChipForCard,
   valuationBadgeVariantForEntity,
 } from '../../lib/utils/valuationProvenance';
-import { preferredValuationForCard } from '../../lib/pricing/compConsensus';
+import { compsUsedForPreferred, preferredValuationForCard } from '../../lib/pricing/compConsensus';
 import ValuationProvenanceChips from '../ValuationProvenanceChips';
+import CompsUsedPanel from '../CompsUsedPanel';
 import CertVerifiedBadge from '../CertVerifiedBadge';
 import { CardItemActionHandlers, getCardItemActionsForSurface } from './cardItemActions';
 import SwipeableCard from './SwipeableCard';
@@ -278,6 +279,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
               thinMarket={showThinMarket}
               title={provenanceTitle}
             />
+            <CompsUsedPanel compact view={compsUsedForPreferred(preferred, card.salesData)} />
           </div>
         </div>
         {card.pricingRationale && (

@@ -16,6 +16,10 @@ import {
   buildWhyFromRecommendation,
   buildWhyFromThesis,
   detectCommitteeConflicts,
+  inferAgentStance,
+  buildConsensusView,
+  MISSING_COMMITTEE_AGENTS,
+  MISSING_CONSENSUS_STANCES,
 } from '../../lib/utils/agentReasoning';
 
 function agent(overrides: Partial<AgentInsight> = {}): AgentInsight {
@@ -340,6 +344,98 @@ describe('buildWhyFromPricing', () => {
     });
     expect(view.provenance).toBe('missing');
     expect(view.persona).toBe('Deal negotiation');
+  });
+});
+
+describe('inferAgentStance', () => {
+  it('reads keywords before sentiment', () => {
+    expect(inferAgentStance({ sentiment: 'positive', insight: 'Sell into strength.' })).toBe('sell');
+    expect(inferAgentStance({ sentiment: 'positive', insight: 'Wait — too early.' })).toBe('wait');
+    expect(inferAgentStance({ sentiment: 'negative', insight: 'Buy the breakout.' })).toBe('buy');
+    expect(inferAgentStance({ sentiment: 'positive', insight: 'Hold the core book.' })).toBe('hold');
+  });
+
+  it('falls back to sentiment and discloses unknown when nothing is logged', () => {
+    expect(inferAgentStance({ sentiment: 'positive', insight: 'Looks constructive.' })).toBe('buy');
+    expect(inferAgentStance({ sentiment: 'negative', insight: 'Looks stretched.' })).toBe('wait');
+    expect(inferAgentStance({ sentiment: 'neutral', insight: 'Tape is mixed.' })).toBe('hold');
+    expect(inferAgentStance({ sentiment: 'neutral', insight: '  ' })).toBe('neutral');
+    expect(inferAgentStance({ sentiment: undefined, insight: '' })).toBe('unknown');
+    expect(inferAgentStance({ sentiment: undefined, insight: undefined as unknown as string })).toBe('unknown');
+  });
+});
+
+describe('buildConsensusView', () => {
+  it('discloses missing committees', () => {
+    const empty = buildConsensusView(undefined, 'Hold');
+    expect(empty.consensusLabel).toBe('insufficient');
+    expect(empty.missingData).toBe(MISSING_COMMITTEE_AGENTS);
+    expect(empty.stances).toEqual([]);
+    expect(empty.recommendedAction).toBe('Hold');
+    expect(buildConsensusView(null).recommendedAction).toBe('');
+    expect(buildConsensusView([]).summary).toBe(MISSING_COMMITTEE_AGENTS);
+  });
+
+  it('marks the committee aligned when stances match', () => {
+    const view = buildConsensusView([
+      agent({ insight: 'Buy the dip.', sentiment: 'positive' }),
+      agent({ agentId: 'market', agentName: 'Market Sentinel', insight: 'Accumulate on weakness.', sentiment: 'positive' }),
+    ], 'Add selectively');
+    expect(view.consensusLabel).toBe('aligned');
+    expect(view.consensusStance).toBe('buy');
+    expect(view.hasConflict).toBe(false);
+    expect(view.summary).toMatch(/Committee aligned: Buy/);
+    expect(view.stances).toHaveLength(2);
+  });
+
+  it('surfaces a split when Buy and Wait coexist', () => {
+    const view = buildConsensusView([
+      agent({ insight: 'Buy now.', sentiment: 'positive' }),
+      agent({
+        agentId: 'risk',
+        agentName: 'Risk Warden',
+        insight: 'Wait for a cleaner tape.',
+        sentiment: 'negative',
+        conflictNotes: ['Scout is early'],
+      }),
+    ], 'Stay patient');
+    expect(view.consensusLabel).toBe('split');
+    expect(view.hasConflict).toBe(true);
+    expect(view.summary).toMatch(/Consensus split/);
+    expect(view.summary).toMatch(/Thesis action: Stay patient/);
+    expect(view.stances.map((row) => row.stance).sort()).toEqual(['buy', 'wait']);
+  });
+
+  it('discloses unstated stances instead of inventing them', () => {
+    const view = buildConsensusView([
+      agent({ agentName: '', insight: '', sentiment: undefined, persona: undefined as unknown as string, agentId: '  ' }),
+    ]);
+    expect(view.consensusLabel).toBe('insufficient');
+    expect(view.missingData).toBe(MISSING_CONSENSUS_STANCES);
+    expect(view.stances[0].stance).toBe('unknown');
+    expect(view.stances[0].missing).toBe(true);
+    expect(view.stances[0].agentName).toBe('Unknown agent');
+    expect(view.stances[0].conclusion).toBe('');
+  });
+
+  it('treats Buy vs Sell as an explicit conflict', () => {
+    const view = buildConsensusView([
+      agent({ insight: 'Buy the dip.' }),
+      agent({ agentId: 'risk', agentName: 'Risk Warden', insight: 'Sell into the spike.', sentiment: 'negative' }),
+    ], 9 as unknown as string);
+    expect(view.hasConflict).toBe(true);
+    expect(view.recommendedAction).toBe('');
+    expect(view.stances.map((row) => row.stance)).toEqual(['buy', 'sell']);
+  });
+
+  it('notes partial missing opinions when some agents logged a stance', () => {
+    const view = buildConsensusView([
+      agent({ insight: 'Hold core.', sentiment: 'neutral' }),
+      agent({ agentId: 'risk', agentName: 'Risk Warden', insight: '', sentiment: undefined }),
+    ]);
+    expect(view.missingData).toMatch(/1 of 2 agents/);
+    expect(view.stances[0].missing).toBe(false);
+    expect(view.stances[1].missing).toBe(true);
   });
 });
 

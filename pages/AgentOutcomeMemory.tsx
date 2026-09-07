@@ -6,7 +6,8 @@ import { useToast } from '../contexts/ToastContext';
 import { useAgentRecommendations } from '../lib/utils/useAgentRecommendations';
 import { ChartSkeleton } from '../components/SkeletonLoader';
 import WhyRecommendationPanel from '../components/WhyRecommendationPanel';
-import { buildWhyFromRecommendation } from '../lib/utils/agentReasoning';
+import AgentConsensusView from '../components/AgentConsensusView';
+import { buildConsensusView, buildWhyFromRecommendation } from '../lib/utils/agentReasoning';
 
 const AgentOutcomeMemory: React.FC = () => {
   const { user } = useAuth();
@@ -107,6 +108,12 @@ const AgentOutcomeMemory: React.FC = () => {
                   <span className="text-slate-300 truncate max-w-md">{rec.summary || rec.recommendedAction}</span>
                   <span className={`px-2 py-0.5 rounded text-xs font-medium shrink-0 ${rec.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : rec.status === 'rejected' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>{rec.status}</span>
                 </div>
+                {rec.agents && rec.agents.length > 0 ? (
+                  <AgentConsensusView
+                    compact
+                    view={buildConsensusView(rec.agents, rec.recommendedAction)}
+                  />
+                ) : null}
                 <WhyRecommendationPanel view={buildWhyFromRecommendation(rec)} compact />
               </li>
             ))}
