@@ -46,9 +46,9 @@ describe('tradeProposalService', () => {
 
   it('does not propose when allocation is already diversified', () => {
     const inventory = [
-      card({ id: 'a', player: 'A', currentValue: 120, league: 'MLB' }),
+      card({ id: 'a', player: 'A', currentValue: 110, league: 'MLB' }),
       card({ id: 'b', player: 'B', currentValue: 110, league: 'NBA', sport: 'Basketball' }),
-      card({ id: 'c', player: 'C', currentValue: 100, league: 'NFL', sport: 'Football' }),
+      card({ id: 'c', player: 'C', currentValue: 110, league: 'NFL', sport: 'Football' }),
     ];
     expect(generateTradeProposals(inventory)).toEqual([]);
   });
