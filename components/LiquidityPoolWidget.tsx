@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { useDALSyncStatus } from '../lib/dal/useDALSyncStatus';
 import {
   Zap,
   TrendingUp,
@@ -26,7 +27,8 @@ const LiquidityPoolWidget: React.FC<LiquidityPoolWidgetProps> = ({ inventory, on
   );
 
   const _bestQuote = quotes[0];
-  const intentSummary = useMemo(() => summarizeIntentBoard(), []);
+  const { hydrated } = useDALSyncStatus();
+  const intentSummary = useMemo(() => summarizeIntentBoard(), [hydrated]);
 
   if (inventory.length === 0) return null;
 

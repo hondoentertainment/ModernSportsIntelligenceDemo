@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Handshake } from 'lucide-react';
 import type { CardInventory } from '../types';
+import { useDALSyncStatus } from '../lib/dal/useDALSyncStatus';
 import {
   intentBoardDisclaimer,
   listIntents,
@@ -25,6 +26,7 @@ function heldCards(inventory: CardInventory[]): CardInventory[] {
 
 const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
   const held = useMemo(() => heldCards(inventory), [inventory]);
+  const { hydrated } = useDALSyncStatus();
   const [intents, setIntents] = useState<P2PIntent[]>(() => listIntents());
   const [side, setSide] = useState<IntentSide>('ask');
   const [cardId, setCardId] = useState(held[0]?.id ?? '');
@@ -32,6 +34,10 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
   const [limitPrice, setLimitPrice] = useState(String(held[0] ? suggestAskFromCard(held[0]).limitPrice : ''));
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setIntents(listIntents());
+  }, [hydrated]);
 
   const openIntents = intents.filter((intent) => intent.status === 'open');
 
@@ -46,10 +52,21 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
   const setIntentSide = (value: IntentSide) => {
     setSide(value);
     if (value === 'bid') {
+      // Typed bids must not inherit the preselected holding — otherwise
+      // postIntent overwrites the player with the held card.
       setCardId('');
       return;
     }
-    if (!cardId && held[0]) applyCard(held[0].id);
+    setCardId((current) => {
+      if (current) return current;
+      const fallback = held[0];
+      if (fallback) {
+        setPlayer(fallback.player);
+        setLimitPrice(String(suggestAskFromCard(fallback).limitPrice));
+        return fallback.id;
+      }
+      return '';
+    });
   };
 
   const handlePost = (event: React.FormEvent) => {

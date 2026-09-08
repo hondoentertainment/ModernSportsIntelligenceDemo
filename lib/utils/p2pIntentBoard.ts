@@ -181,7 +181,7 @@ export function postIntent(input: PostIntentInput, inventory: CardInventory[] = 
   }
 
   const card = heldCard(inventory, input.cardId);
-  if (input.side === 'ask' && input.cardId && !card) {
+  if (side === 'ask' && !card) {
     throw new Error('Sell intents must use a held local inventory card.');
   }
 

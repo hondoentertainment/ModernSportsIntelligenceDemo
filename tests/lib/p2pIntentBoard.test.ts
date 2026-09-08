@@ -70,6 +70,10 @@ describe('p2pIntentBoard', () => {
     const sold = makeCard({ id: 'sold-1', player: 'Sold Star', status: 'sold', currentValue: 200 });
     expect(() => postIntent({ side: 'ask', cardId: 'sold-1', limitPrice: 200 }, [sold])).toThrow(/held local inventory/i);
     expect(() => postIntent({ side: 'ask', cardId: 'missing', limitPrice: 10 }, [])).toThrow(/held local inventory/i);
+    expect(() => postIntent({ side: 'ask', player: 'No Card', limitPrice: 10 }, [])).toThrow(/held local inventory/i);
+    expect(() => postIntent({ side: 'ask', cardId: null, player: 'Empty Select', limitPrice: 10 }, [sold])).toThrow(
+      /held local inventory/i,
+    );
     expect(() => postIntent({ side: 'bid', player: '  ', limitPrice: 50 })).toThrow(/player name/i);
     expect(() => postIntent({ side: 'bid', player: 'Rookie', limitPrice: 0 })).toThrow(/positive number/i);
 
