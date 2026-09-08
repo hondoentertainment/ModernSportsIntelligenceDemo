@@ -29,7 +29,7 @@ const troutChrome: CardInventory = {
   id: 'trout-chrome',
   set: 'Chrome',
   purchasePrice: 2500,
-  purchaseDate: '2025-08-01',
+  purchaseDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
   currentValue: 9000,
 };
 
