@@ -88,4 +88,63 @@ describe('autoPilotReplay', () => {
     expect(rows.length).toBe(40);
     expect(rows[0].cycleId).toMatch(/replay-|cycle/);
   });
+
+  it('hydrates sparse store rows and ignores a non-array payload', () => {
+    store.set(AUTOPILOT_REPLAY_KEY, {
+      not: 'an-array',
+    });
+    expect(listAutopilotReplay()).toEqual([]);
+
+    store.set(AUTOPILOT_REPLAY_KEY, [
+      { id: 'ok', dayKey: '2026-09-08', timestamp: '2026-09-08T12:00:00.000Z', source: 'cycle' },
+      { id: 'bad-source', dayKey: '2026-09-08', timestamp: '2026-09-08T12:00:00.000Z', source: 'live' },
+    ]);
+    const rows = listAutopilotReplay();
+    expect(rows).toHaveLength(1);
+    expect(rows[0].cycleId).toBe('default');
+    expect(rows[0].considered).toEqual([]);
+    expect(rows[0].disclosure).toBe(AUTOPILOT_REPLAY_DISCLOSURE);
+    expect(listAutopilotReplayForDay().every((row) => row.dayKey.length === 10)).toBe(true);
+    expect(replayDayKey()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('falls back when crypto.randomUUID is unavailable', () => {
+    const original = globalThis.crypto.randomUUID;
+    // @ts-expect-error — exercise fallback id generator
+    globalThis.crypto.randomUUID = undefined;
+    try {
+      recordAutopilotReplay({
+        source: 'preview',
+        considered: [],
+        gated: [],
+        collar,
+        impact: { startingValue: 1, projectedPostCycleValue: 1, navDelta: 0, estimatedTotalTax: 0 },
+        now: new Date('2026-09-08T15:00:00.000Z'),
+      });
+    } finally {
+      globalThis.crypto.randomUUID = original;
+    }
+    const [entry] = listAutopilotReplay();
+    expect(entry.id).toMatch(/^replay-/);
+    expect(entry.cycleId).toBe('replay-2026-09-08');
+  });
+
+  it('records a cycle without an explicit cycle id or optional collar fields', () => {
+    const entry = recordAutopilotReplay({
+      source: 'cycle',
+      considered: [action({ cycleId: 'from-considered' })],
+      gated: [action({ id: 'g1', policyDecision: 'approved', cycleId: undefined })],
+      collar: {
+        maxBudget: 500,
+        maxSpendPerAsset: 100,
+        riskTolerance: 'Conservative',
+        autoSellThreshold: 10,
+      },
+      impact: { startingValue: 2, projectedPostCycleValue: 2, navDelta: 0, estimatedTotalTax: 0 },
+    });
+    expect(entry.cycleId).toBe('from-considered');
+    expect(entry.collar.maxDailyBudget).toBe(0);
+    expect(entry.approvals.approved).toBe(1);
+    expect(entry.source).toBe('cycle');
+  });
 });

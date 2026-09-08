@@ -196,6 +196,8 @@ describe('performanceVsPrice', () => {
     expect(soccerSeries[0].source).toBe('seeded_league_stats_plus_mark');
     expect(namesMatch('', 'x')).toBe(false);
     expect(normalizeLeagueLeaderToScore(leader('x'), 'nba')).toBe(0);
+    expect(leagueToHubSport('EPL')).toBe('soccer');
+    expect(buildLeaguePerformanceVsPriceSeries([haaland], [leader('Erling Haaland')], 'unknown' as 'nba')).toEqual([]);
   });
 
   it('skips MLB rows with no mark', () => {
