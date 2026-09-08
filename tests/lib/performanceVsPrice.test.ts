@@ -70,6 +70,8 @@ describe('performanceVsPrice', () => {
     expect(leagueToHubSport('NBA')).toBe('nba');
     expect(leagueToHubSport('NFL')).toBe('nfl');
     expect(leagueToHubSport('NHL')).toBe('nhl');
+    expect(leagueToHubSport('Soccer')).toBe('soccer');
+    expect(leagueToHubSport('MLS')).toBe('soccer');
     expect(leagueToHubSport('MLB')).toBeNull();
 
     const nba: LeagueStatLeader = {
@@ -92,6 +94,8 @@ describe('performanceVsPrice', () => {
     expect(normalizeLeagueLeaderToScore({ ...nba, efficiency: 1.5 }, 'nhl')).toBeGreaterThan(0);
     expect(normalizeLeagueLeaderToScore({ ...nba, efficiency: undefined, statValue: 4000 }, 'nfl')).toBeGreaterThan(0);
     expect(normalizeLeagueLeaderToScore({ ...nba, efficiency: undefined, statValue: 90 }, 'nhl')).toBeGreaterThan(0);
+    expect(normalizeLeagueLeaderToScore({ ...nba, efficiency: 2, statValue: 22 }, 'soccer')).toBeGreaterThan(0);
+    expect(normalizeLeagueLeaderToScore({ ...nba, efficiency: undefined, statValue: 22 }, 'soccer')).toBeGreaterThan(0);
   });
 
   it('binds NBA holdings to seeded leaders and skips mismatches', () => {
@@ -175,8 +179,25 @@ describe('performanceVsPrice', () => {
     const nhl = buildLeaguePerformanceVsPriceSeries([mack], [leader('Nathan MacKinnon')], 'nhl');
     expect(nhl).toHaveLength(1);
     expect(buildLeaguePerformanceVsPriceSeries([mack], [leader('Nathan MacKinnon')], 'soccer')).toEqual([]);
+    const haaland: CardInventory = {
+      ...troutCard,
+      id: 'haal',
+      player: 'Erling Haaland',
+      sport: 'Soccer',
+      league: 'Other',
+      currentValue: 525,
+    };
+    const soccerSeries = buildLeaguePerformanceVsPriceSeries(
+      [haaland, { ...haaland, id: 'empty', currentValue: 0, purchasePrice: 0 }],
+      [leader('Erling Haaland')],
+      'soccer',
+    );
+    expect(soccerSeries).toHaveLength(1);
+    expect(soccerSeries[0].source).toBe('seeded_league_stats_plus_mark');
     expect(namesMatch('', 'x')).toBe(false);
     expect(normalizeLeagueLeaderToScore(leader('x'), 'nba')).toBe(0);
+    expect(leagueToHubSport('EPL')).toBe('soccer');
+    expect(buildLeaguePerformanceVsPriceSeries([haaland], [leader('Erling Haaland')], 'unknown' as 'nba')).toEqual([]);
   });
 
   it('skips MLB rows with no mark', () => {

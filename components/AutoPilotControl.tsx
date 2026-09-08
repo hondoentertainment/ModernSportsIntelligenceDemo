@@ -5,6 +5,8 @@ import { Shield, Zap, Settings, AlertCircle, CheckCircle2, History, TrendingUp, 
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
 import WhyRecommendationPanel from './WhyRecommendationPanel';
 import { buildWhyFromAction, buildWhyFromThesis } from '../lib/utils/agentReasoning';
+import AutoPilotReplayLog from './AutoPilotReplayLog';
+import { listAutopilotReplay } from '../lib/trading/autoPilotReplay';
 
 const AutoPilotControl: React.FC = () => {
     const { inventory } = useSupabaseInventory();
@@ -12,6 +14,7 @@ const AutoPilotControl: React.FC = () => {
     const [actions, setActions] = useState<AutonomousAction[]>(AutonomousExecutionService.getActions());
     const [preview, setPreview] = useState<Awaited<ReturnType<typeof AutonomousExecutionService.previewAutonomousCycle>> | null>(null);
     const [isPreviewing, setIsPreviewing] = useState(false);
+    const [replayEntries, setReplayEntries] = useState(() => listAutopilotReplay());
 
     const toggleActive = () => {
         const newConfig = { ...config, isActive: !config.isActive };
@@ -41,6 +44,7 @@ const AutoPilotControl: React.FC = () => {
         setIsPreviewing(true);
         const nextPreview = await AutonomousExecutionService.previewAutonomousCycle(inventory);
         setPreview(nextPreview);
+        setReplayEntries(listAutopilotReplay());
         refreshActions();
         setIsPreviewing(false);
     };
@@ -321,6 +325,10 @@ const AutoPilotControl: React.FC = () => {
                     ))}
                 </div>
             )}
+
+            <div className="mb-8">
+                <AutoPilotReplayLog entries={replayEntries} />
+            </div>
 
             <p className="text-[10px] leading-relaxed text-slate-500 mb-4">
                 Hard collars (cycle budget, daily budget, per-asset cap, drawdown stop) block spend. High-dollar or

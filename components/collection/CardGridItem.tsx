@@ -34,6 +34,7 @@ import CertVerifiedBadge from '../CertVerifiedBadge';
 import { CardItemActionHandlers, getCardItemActionsForSurface } from './cardItemActions';
 import SwipeableCard from './SwipeableCard';
 import type { SwipeTriageAction } from '../../lib/utils/swipeTriage';
+import BreakEvenStrip from '../BreakEvenStrip';
 
 export interface CardGridItemProps extends CardItemActionHandlers {
   card: CardInventory;
@@ -333,6 +334,9 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
             size="sm"
           />
         </div>
+        {card.status !== 'sold' && (
+          <BreakEvenStrip card={card} compact onOpenFull={onOpenBreakEven} />
+        )}
         <div className="bg-brand-charcoal/30 border border-slate-800/30 rounded-xl p-3">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[9px] font-black text-brand-muted uppercase tracking-tighter">Price Trend</span>

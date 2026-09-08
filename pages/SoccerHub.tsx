@@ -13,13 +13,19 @@ import {
   type LeagueStanding, type LeagueDraftClass, type LeagueSeasonEvent,
   type LeagueStatLeader, type LeagueCardMarketTrend, type LeagueRookieWatch,
   type TransferImpact,
+  LEAGUE_HUB_DATA_DISCLOSURE,
 } from '../lib/social/leagueHubService.ts';
+import LeagueHubDepthPanels from '../components/LeagueHubDepthPanels';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import LeaguePerformanceVsPricePanel from '../components/LeaguePerformanceVsPricePanel';
 
-type SoccerTab = 'tables' | 'youngstars' | 'calendar' | 'leaders' | 'market' | 'transfers';
+type SoccerTab = 'tables' | 'players' | 'teams' | 'youngstars' | 'calendar' | 'leaders' | 'market' | 'transfers';
 type LeagueFilter = 'all' | 'Premier League' | 'La Liga' | 'Serie A' | 'Bundesliga' | 'MLS';
 
 const TAB_CONFIG: { key: SoccerTab; label: string; icon: React.ReactNode }[] = [
   { key: 'tables', label: 'League Tables', icon: <Trophy size={14} /> },
+  { key: 'players', label: 'Players', icon: <Users size={14} /> },
+  { key: 'teams', label: 'Teams', icon: <Target size={14} /> },
   { key: 'youngstars', label: 'Young Stars', icon: <Star size={14} /> },
   { key: 'calendar', label: 'Calendar', icon: <Calendar size={14} /> },
   { key: 'leaders', label: 'Top Scorers', icon: <Target size={14} /> },
@@ -40,6 +46,7 @@ const EVENT_TYPE_STYLES: Record<string, string> = {
 };
 
 const SoccerHub: React.FC = () => {
+  const { inventory } = useSupabaseInventory();
   const [activeTab, setActiveTab] = useState<SoccerTab>('tables');
   const [leagueFilter, setLeagueFilter] = useState<LeagueFilter>('all');
   const [standings, setStandings] = useState<LeagueStanding[]>([]);
@@ -116,14 +123,17 @@ const SoccerHub: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-slate-100">Soccer / Football Hub</h1>
             <p className="text-sm text-slate-400">
-              Multi-League Intelligence &mdash; EPL, La Liga, Serie A, Bundesliga, MLS &amp; International
+              2025-26 Season &mdash; Player/Team desk, multi-league tables, transfers &amp; card market
             </p>
           </div>
         </div>
         <span className="px-3 py-1.5 text-xs font-bold rounded-full bg-green-500/20 text-green-400 uppercase">
-          2025-26
+          Soccer 2025-26 · seeded
         </span>
       </div>
+      <p className="text-[11px] text-slate-500 border border-slate-800 rounded-lg px-3 py-2 bg-slate-900/40">
+        {LEAGUE_HUB_DATA_DISCLOSURE}
+      </p>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -166,6 +176,9 @@ const SoccerHub: React.FC = () => {
           </button>
         ))}
       </div>
+
+      {activeTab === 'players' && <LeagueHubDepthPanels sport="soccer" accent="text-green-400" surface="players" />}
+      {activeTab === 'teams' && <LeagueHubDepthPanels sport="soccer" accent="text-green-400" surface="teams" />}
 
       {/* League Tables */}
       {activeTab === 'tables' && (
@@ -512,6 +525,8 @@ const SoccerHub: React.FC = () => {
           </div>
         </div>
       )}
+
+      <LeaguePerformanceVsPricePanel sport="soccer" inventory={inventory} />
     </div>
   );
 };

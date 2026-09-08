@@ -1,7 +1,7 @@
 # Roadmap Review & Feature Enhancement Recommendations
 
 **Date:** 2026-03-08
-**Last updated:** 2026-09-08 (Post-#130 Wave-2)
+**Last updated:** 2026-09-08 (Wave-3 on top of Wave-2 #131/#132)
 **Scope:** Review of the 24-phase roadmap (PRD.md) and strategic next-steps (next-steps-recommendation.md)
 
 ## Status addendum (2026-09-06)
@@ -36,8 +36,14 @@ Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-sa
 | Card-show show bag                               | **Shipped (lite, Wave-2)** — review + consignment + targets + supplies packing list.                      |
 | Priority 3.2 Grading ROI lite                    | **Shipped (lite, Wave-2)** — raw vs PSA 9/10 simulated/comp estimate. Live PSA owner-held.                |
 | Phase 33 Auto-Pilot NAV + tax preview            | **Shipped (lite, Wave-2)** — advisory before/after NAV and rough ST/LT tax.                               |
+| Portfolio concentration / risk rail              | **Shipped (lite, Wave-3)** — player/league NAV shares + advisory rebalance links.                         |
+| Fee-aware break-even strip (#20 remainder)       | **Shipped (lite, Wave-3)** — Collection/sell strip with eBay/COMC/MySlabs/custom presets.                 |
+| Soccer hub player/team desks                     | **Shipped (parity, Wave-3)** — desks + Performance vs Price bind on `/soccer-hub`.                        |
+| Phase 27 capital gains year-vs-next              | **Shipped (lite, Wave-3)** — Fiscal / Tax Report / Collection sell ST/LT compare. Not IRS completeness.   |
+| Phase 33 Auto-Pilot decision replay              | **Shipped (lite, Wave-3)** — day-bucketed considered/collar/approval/NAV replay. No live execution.       |
+| Priority 2.2 SyncScheduler product defaults      | **Shipped (lite, Wave-3)** — daily signed-in/demo opt-in remembered via MSI store. Not Web Push.          |
 
-Still **owner-held / open:** #77 Supabase restore, eBay/PSA/Stripe, fractional-vault legal, custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness. Tailwind 4 and `@eslint/js` 10 deferred. **#130 shipped:** thin P2P intent board, Scout-to-Acquire smoke, `@google/genai` 2.x, adjacent hobby correlation, price-alert haptics, centering heuristic. **Wave-2 shipped on top of #130.**
+Still **owner-held / open:** #77 Supabase restore, eBay/PSA/Stripe, fractional-vault legal, custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness. Tailwind 4 and `@eslint/js` 10 deferred. **#130 shipped:** thin P2P intent board, Scout-to-Acquire smoke, `@google/genai` 2.x, adjacent hobby correlation, price-alert haptics, centering heuristic. **Wave-2 shipped on top of #130. Wave-3 shipped on top of Wave-2.**
 
 ---
 
@@ -151,7 +157,7 @@ Generate insurance-ready valuation documents with timestamped FMV for each card,
 
 **Priority: High** | **Effort: Low**
 
-For each card, calculate and display the break-even sale price accounting for: purchase price + grading fees + shipping + platform seller fees (eBay 13%, COMC, MySlabs). This is a single formula but collectors constantly miscalculate it. Show it prominently on the card detail view.
+For each card, calculate and display the break-even sale price accounting for: purchase price + grading fees + shipping + platform seller fees (eBay 13%, COMC, MySlabs). **Shipped (lite, Wave-3)** on Collection card detail / sell surfaces via the existing Break-Even calculator helpers, including a custom fee preset. Full marketplace listing quotes remain open.
 
 ### 21. "What If" Portfolio Simulator
 

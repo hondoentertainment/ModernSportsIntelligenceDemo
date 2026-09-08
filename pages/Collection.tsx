@@ -36,6 +36,7 @@ import { getCardSparkline, getPriceTrend, getPriceTrendForCard, getSparklineData
 import ImageLightbox from '../components/ImageLightbox';
 import GradingAuditModal from '../components/GradingAuditModal';
 import { ExitStrategyModal } from '../components/ExitStrategyModal';
+import { BreakEvenModal } from '../components/BreakEvenModal';
 import ConsignmentModal from '../components/ConsignmentModal';
 import CardGridItem from '../components/collection/CardGridItem';
 import VirtualizedGrid from '../components/collection/VirtualizedGrid';
@@ -66,6 +67,7 @@ type SortDir = 'asc' | 'desc';
 
 const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail'));
 const TradeProposalPanel = lazy(() => import('../components/TradeProposalPanel'));
+const PortfolioConcentrationRail = lazy(() => import('../components/PortfolioConcentrationRail'));
 const P2PIntentBoard = lazy(() => import('../components/P2PIntentBoard'));
 const ShowBagPanel = lazy(() => import('../components/ShowBagPanel'));
 const GradingRoiLitePanel = lazy(() => import('../components/GradingRoiLitePanel'));
@@ -138,6 +140,7 @@ const Collection: React.FC = () => {
   const [lightboxCard, setLightboxCard] = useState<CardInventory | null>(null);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
   const [exitStrategyCard, setExitStrategyCard] = useState<CardInventory | null>(null);
+  const [breakEvenCard, setBreakEvenCard] = useState<CardInventory | null>(null);
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
   const [premiumCard, setPremiumCard] = useState<CardInventory | null>(null);
   const [consignmentCard, setConsignmentCard] = useState<CardInventory | null>(null);
@@ -318,6 +321,7 @@ const Collection: React.FC = () => {
     window.location.hash = `/audit-dossier?cardId=${card.id}`;
   };
   const openConsignment = (card: CardInventory) => setConsignmentCard(card);
+  const openBreakEven = (card: CardInventory) => setBreakEvenCard(card);
 
   const [reviewIds, setReviewIds] = useState<string[]>(() => getTriageReviewIds());
   const [filterReviewOnly, setFilterReviewOnly] = useState(false);
@@ -355,6 +359,7 @@ const Collection: React.FC = () => {
     isPricing,
     onOpenExitStrategy: openExitStrategy,
     onOpenGradingCalc: openGradingCalc,
+    onOpenBreakEven: openBreakEven,
     onOpenDossier: openDossier,
     onOpenConsignment: openConsignment,
   };
@@ -598,6 +603,7 @@ const Collection: React.FC = () => {
           <LazyErrorBoundary compact>
             <Suspense fallback={<WidgetLoadingFallback />}>
               <SeasonalWindowRail inventory={inventory} />
+              <PortfolioConcentrationRail inventory={inventory} />
               <TradeProposalPanel inventory={inventory} />
               <P2PIntentBoard inventory={inventory} />
               <GradingRoiLitePanel inventory={inventory} />
@@ -1031,6 +1037,15 @@ const Collection: React.FC = () => {
             onClose={() => { setIsExitModalOpen(false); setExitStrategyCard(null); }}
             card={exitStrategyCard}
             onSave={handleSaveExitStrategy}
+            onOpenBreakEven={openBreakEven}
+          />
+        )}
+
+        {breakEvenCard && (
+          <BreakEvenModal
+            isOpen={!!breakEvenCard}
+            onClose={() => setBreakEvenCard(null)}
+            card={breakEvenCard}
           />
         )}
 

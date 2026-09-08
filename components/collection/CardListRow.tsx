@@ -22,6 +22,7 @@ import Sparkline from '../Sparkline';
 import { getCardSparkline } from '../../lib/analytics/priceHistory';
 import CardItemActionIcons from './CardItemActionIcons';
 import { CardItemActionHandlers } from './cardItemActions';
+import BreakEvenStrip from '../BreakEvenStrip';
 
 export interface CardListRowProps extends CardItemActionHandlers {
   card: CardInventory;
@@ -108,6 +109,11 @@ const CardListRow: React.FC<CardListRowProps> = ({
           title={provenanceTitle}
         />
         <CompsUsedPanel compact view={compsUsedForPreferred(preferred, card.salesData)} />
+        {card.status !== 'sold' && (
+          <div className="mt-2">
+            <BreakEvenStrip card={card} compact onOpenFull={actionHandlers.onOpenBreakEven} />
+          </div>
+        )}
       </td>
       <td className="px-8 py-4">
         <Sparkline data={sparkline.values} showTrend={true} height={28} />

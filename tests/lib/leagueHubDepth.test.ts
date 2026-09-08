@@ -35,6 +35,15 @@ describe('league hub player/team desk', () => {
     expect(luka.every((p) => p.name.toLowerCase().includes('luka') || p.team.toLowerCase().includes('luka'))).toBe(true);
   });
 
+  it('builds a soccer player and team desk from seeded standings', () => {
+    const players = getLeaguePlayerDesk('soccer');
+    const teams = getLeagueTeamDesk('soccer');
+    expect(players.length).toBeGreaterThan(5);
+    expect(players.some((p) => p.name.toLowerCase().includes('haaland'))).toBe(true);
+    expect(teams.length).toBeGreaterThan(3);
+    expect(searchLeaguePlayers('soccer', 'salah').length).toBeGreaterThan(0);
+  });
+
   it('discloses seeded / non-live data', () => {
     expect(LEAGUE_HUB_DATA_DISCLOSURE).toMatch(/Seeded/);
     expect(LEAGUE_HUB_DATA_DISCLOSURE).toMatch(/Not a live league feed/);

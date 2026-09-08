@@ -4,6 +4,7 @@ import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import { useAuth } from '../contexts/AuthContext.tsx';
 import { useMigration } from '../contexts/MigrationContext.tsx';
 import { initializeScheduler, stopScheduler } from '../lib/utils/syncScheduler.ts';
+import { applyProductSyncDefaults } from '../lib/utils/syncProductDefaults.ts';
 import { initPriceHistory, teardownPriceHistory, isPriceHistoryInitialized } from '../lib/analytics/priceHistory.ts';
 import {
     initMarketEvents,
@@ -47,6 +48,7 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
 
     useEffect(() => {
         if (inventory.length > 0 && !isMigrating) {
+            applyProductSyncDefaults({ signedIn: !!user?.id, isDemo: isDemoMode });
             if (import.meta.env.DEV) logger.log('Initializing Automated Sync Scheduler...');
             const _scheduler = initializeScheduler(inventory, targets, {
                 onProgress: (p) => {

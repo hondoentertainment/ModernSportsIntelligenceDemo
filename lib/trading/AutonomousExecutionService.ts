@@ -13,6 +13,7 @@ import {
     timeHorizonSellMultiplier,
 } from "../utils/agentPreferences";
 import { simulateAutopilotImpact } from "./autoPilotImpactPreview";
+import { recordAutopilotReplay } from "./autoPilotReplay";
 
 const STORAGE_KEY = 'msi_autopilot_config';
 const ACTIONS_KEY = 'msi_autonomous_actions';
@@ -625,11 +626,20 @@ export class AutonomousExecutionService {
             thesis
         );
         const impact = this.simulateCycleImpact(inventory, actions);
+        const replay = recordAutopilotReplay({
+            source: 'preview',
+            cycleId: candidates[0]?.cycleId || actions[0]?.cycleId,
+            considered: candidates,
+            gated: actions,
+            collar: config.collar,
+            impact,
+        });
 
         return {
             thesis,
             actions,
-            impact
+            impact,
+            replay,
         };
     }
 
@@ -648,6 +658,14 @@ export class AutonomousExecutionService {
             'autopilot-cycle',
             thesis
         );
+        recordAutopilotReplay({
+            source: 'cycle',
+            cycleId: candidates[0]?.cycleId || actions[0]?.cycleId,
+            considered: candidates,
+            gated: actions,
+            collar: config.collar,
+            impact: this.simulateCycleImpact(inventory, actions),
+        });
         await Promise.all(actions.map(action => this.addAction(action)));
         for (const action of actions.filter(candidate => candidate.policyDecision === 'approved')) {
             await this.decideAction(action.id, 'approve', 'policy-engine');

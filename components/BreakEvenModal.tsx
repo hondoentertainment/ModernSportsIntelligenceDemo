@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { X, DollarSign, TrendingUp, TrendingDown, Minus, ArrowRightLeft } from 'lucide-react';
 import { CardInventory } from '../types';
-import { calculateBreakEven, MARKETPLACE_FEES } from '../lib/analytics/breakEvenService';
+import { calculateBreakEven, MARKETPLACE_FEES, resolveMarketplaceFee } from '../lib/analytics/breakEvenService';
 
 interface BreakEvenModalProps {
   isOpen: boolean;
@@ -12,15 +12,17 @@ interface BreakEvenModalProps {
 export const BreakEvenModal: React.FC<BreakEvenModalProps> = ({ isOpen, onClose, card }) => {
   const [marketplace, setMarketplace] = useState('ebay');
   const [additionalCosts, setAdditionalCosts] = useState(0);
+  const [customRatePct, setCustomRatePct] = useState(10);
 
+  const customFee = { rate: customRatePct / 100, fixed: 0 };
   const result = useMemo(
-    () => calculateBreakEven(card, marketplace, additionalCosts),
-    [card, marketplace, additionalCosts]
+    () => calculateBreakEven(card, marketplace, additionalCosts, marketplace === 'custom' ? customFee : undefined),
+    [card, marketplace, additionalCosts, customRatePct]
   );
 
   if (!isOpen) return null;
 
-  const fee = MARKETPLACE_FEES[marketplace];
+  const fee = resolveMarketplaceFee(marketplace, marketplace === 'custom' ? customFee : undefined);
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
@@ -97,6 +99,21 @@ export const BreakEvenModal: React.FC<BreakEvenModalProps> = ({ isOpen, onClose,
             <p className="text-[9px] text-brand-muted mt-2">
               {fee.label}: {(fee.rate * 100).toFixed(1)}%{fee.fixed > 0 ? ` + $${fee.fixed.toFixed(2)}` : ''} per sale
             </p>
+            {marketplace === 'custom' && (
+              <label className="mt-3 flex items-center justify-between gap-3 text-[11px] text-slate-400">
+                Custom fee %
+                <input
+                  type="number"
+                  min={0}
+                  max={99}
+                  step={0.1}
+                  value={customRatePct}
+                  onChange={(e) => setCustomRatePct(Number(e.target.value) || 0)}
+                  aria-label="Custom marketplace fee percent"
+                  className="w-24 rounded-lg border border-slate-700 bg-slate-950 px-2 py-1 font-mono text-slate-200"
+                />
+              </label>
+            )}
           </div>
 
           {/* Additional costs input */}

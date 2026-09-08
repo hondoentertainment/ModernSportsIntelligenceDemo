@@ -29,6 +29,8 @@ import {
   type ReportFormat,
 } from '../lib/utils/taxReportService';
 import { getTaxLotPreferences, toggleSpecificLotId } from '../lib/utils/taxLotPreferences';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import CapitalGainsExitStrip from '../components/CapitalGainsExitStrip';
 
 const TAX_YEARS: TaxYear[] = [2023, 2024, 2025, 2026];
 const CHART_COLORS = ['#f97316', '#60a5fa', '#f87171', '#34d399', '#a78bfa', '#fbbf24', '#22d3ee', '#fb923c'];
@@ -36,6 +38,7 @@ const CHART_COLORS = ['#f97316', '#60a5fa', '#f87171', '#34d399', '#a78bfa', '#f
 type ActiveTab = 'summary' | 'form8949' | 'scheduled' | 'transactions' | 'optimizations' | 'export' | 'settings';
 
 const TaxReport: React.FC = () => {
+  const { inventory } = useSupabaseInventory();
   const [selectedYear, setSelectedYear] = useState<TaxYear>(2025);
   const [activeTab, setActiveTab] = useState<ActiveTab>('summary');
   const [transactions, setTransactions] = useState<TaxableTransaction[]>([]);
@@ -304,6 +307,8 @@ const TaxReport: React.FC = () => {
               <p className="text-xs text-slate-500 mt-1">Taxed at preferential capital gains rates</p>
             </div>
           </div>
+
+          {inventory.length > 0 && <CapitalGainsExitStrip inventory={inventory} />}
 
           {/* Monthly Breakdown Chart */}
           <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">

@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-08 · **Post-#130 / September 2026 Wave-2** (quiet hours, non-MLB PvP, local sparklines, show bag, grading ROI lite, Auto-Pilot NAV/tax preview). Previous edition same day: Scout-to-Acquire Playwright smoke, thin P2P intent board, `@google/genai` 2.x, adjacent hobby correlation, price-alert haptics, disclosed centering heuristic (#130).
+> Refreshed 2026-09-08 · **September 2026 Wave-3** (concentration rail, fee-aware break-even strip, soccer desk/PvP parity, capital-gains year-vs-next, Auto-Pilot decision replay, SyncScheduler product defaults). Builds on Wave-2 (#131/#132) and #130.
 
 ## Current state in one paragraph
 
@@ -17,6 +17,23 @@ MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger acro
 | Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later                      |
 | Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show                      |
 | eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel** (after restore)                 |
+
+## September 2026 Wave-3 — Shipped (2026-09-08)
+
+Demo/DAL-safe deepenings on existing Collection, Dashboard, Soccer Hub, Fiscal / Tax Report, War Room Auto-Pilot, and Alerts / Profile / Notification Center. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` flips, no new Labs pages, no Tailwind 4 / `@eslint/js` 10 half-migrate, no jsPDF on these live paths.**
+
+| Slice                                   | Label                                    | Where                                                                                                                                                                                                                                                 |
+| --------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Portfolio concentration / risk rail** | **lite** (extends trade-proposal math)   | Player + league share of local NAV on Collection + Dashboard. 35% heuristic threshold. Advisory rebalance hints link to existing trade proposals (`/collection`) or Auto-Pilot (`/war-room`). Local inventory only.                                   |
+| **Fee-aware break-even strip**          | **lite** (extends Break-Even calculator) | Collection grid/list + Exit Strategy + `BreakEvenModal`. Purchase + grading + shipping + selectable eBay ~13% / COMC / MySlabs / custom presets via `breakEvenService`. Full calculator now wired from card actions.                                  |
+| **Soccer hub player/team desks**        | **parity** (NBA/NFL/NHL Wave-2 pattern)  | `/soccer-hub` Players + Teams desks + `LeaguePerformanceVsPricePanel` bound to collection marks. Seeded/heuristic disclosure and empty-bind state. Live soccer wires still unconfigured.                                                              |
+| **Capital gains exit simulator**        | **lite** (Phase 27 Fiscal Shield)        | Sell-this-year vs next ST/LT compare via `FiscalService.simulateExit` on Tax Report, Fiscal Shield widget, Tax Exit Simulator, and Collection sell modal. Advisory only — **not** IRS regulatory completeness.                                        |
+| **Auto-Pilot decision replay**          | **lite** (Phase 33 exit criteria)        | Day-bucketed local replay (`msi_autopilot_replay_v1`) of actions considered, collars, approvals, and NAV preview snapshot. War Room Auto-Pilot surface. No live marketplace execution.                                                                |
+| **SyncScheduler product defaults**      | **lite** (Priority 2.2 leftover)         | Signed-in / demo daily portfolio+watchlist defaults remembered via `msi_sync_product_defaults_v1`. Opt-in toggle on Alert delivery (Alerts / Profile / Notification Center). Quiet hours still suppress haptics + Notification API. **Not** Web Push. |
+
+**Still owner-held (do not start from this PR):** #77 Supabase restore, eBay/PSA/Stripe keys and smokes, fractional-vault legal flip, custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness.
+
+**Deferred / not this wave:** Tailwind 4; `@eslint/js` 10; jsPDF/html2canvas on live entry graph; Web Push / server push; new Labs pages; live non-MLB sports wires; new `price_history` table; partner show-bag APIs; full P2P matching/escrow.
 
 ## Post-#130 / September 2026 Wave-2 — Shipped (2026-09-08)
 

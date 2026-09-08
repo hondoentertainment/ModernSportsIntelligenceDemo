@@ -5,6 +5,7 @@ import { FiscalService } from '../lib/utils/FiscalService';
 import { TaxStrategyAgent } from '../lib/utils/TaxStrategyAgent';
 import { Shield, TrendingDown, AlertTriangle, Info, PieChart } from 'lucide-react';
 import { TaxExitSimulator } from './TaxExitSimulator';
+import CapitalGainsExitStrip from './CapitalGainsExitStrip';
 
 const FiscalHealthWidget: React.FC = () => {
     const { inventory } = useSupabaseInventory();
@@ -62,6 +63,8 @@ const FiscalHealthWidget: React.FC = () => {
                         <p className="text-[8px] font-bold text-slate-500 uppercase mt-2 text-right tracking-widest">Threshold: {formatCurrency(exposure.threshold)}</p>
                     </div>
                 </div>
+
+                {inventory.length > 0 && <CapitalGainsExitStrip inventory={inventory} compact />}
 
                 {/* Agent Insights Swarm */}
                 <div className="space-y-3 pt-4 border-t border-slate-800/50">
