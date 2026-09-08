@@ -6,11 +6,11 @@ import AdjacentHobbyMarketsRail from '../../components/AdjacentHobbyMarketsRail'
 describe('AdjacentHobbyMarketsRail', () => {
   it('discloses seeded adjacent hobby markets', () => {
     render(<AdjacentHobbyMarketsRail />);
-    expect(screen.getByRole('status', { name: /adjacent hobby markets/i })).toBeInTheDocument();
-    expect(screen.getByText(/not live auction/i)).toBeInTheDocument();
-    expect(screen.getByText(/Pokémon/i)).toBeInTheDocument();
-    expect(screen.getByText(/Magic: The Gathering/i)).toBeInTheDocument();
-    expect(screen.getByText(/memorabilia/i)).toBeInTheDocument();
+    const rail = screen.getByRole('status', { name: /adjacent hobby markets/i });
+    expect(rail).toHaveTextContent(/not live auction/i);
+    expect(rail).toHaveTextContent(/Pokémon/i);
+    expect(rail).toHaveTextContent(/Magic: The Gathering/i);
+    expect(rail).toHaveTextContent(/memorabilia/i);
   });
 
   it('can show portfolio correlations when provided', () => {

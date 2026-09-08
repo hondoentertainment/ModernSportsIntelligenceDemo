@@ -49,20 +49,21 @@ function ratioPair(bias: number): { left: number; right: number; label: string }
 
 function buildBuckets(centeringScore: number): GradeProbabilityBucket[] {
   const gem = clamp((centeringScore - 55) / 45, 0, 1);
-  const psa10 = Math.round(8 + gem * 42);
-  const psa9 = Math.round(18 + (1 - Math.abs(gem - 0.65)) * 28);
-  const psa8 = Math.round(12 + (1 - gem) * 22);
-  let remainder = 100 - psa10 - psa9 - psa8;
-  if (remainder < 4) remainder = 4;
-  const psa7 = Math.min(remainder, 24);
-  const below = 100 - psa10 - psa9 - psa8 - psa7;
-  return [
-    { grade: 'PSA 10', probabilityPct: psa10 },
-    { grade: 'PSA 9', probabilityPct: psa9 },
-    { grade: 'PSA 8', probabilityPct: psa8 },
-    { grade: 'PSA 7', probabilityPct: psa7 },
-    { grade: 'PSA 6 or below', probabilityPct: Math.max(0, below) },
+  const raw = [
+    { grade: 'PSA 10', weight: 8 + gem * 42 },
+    { grade: 'PSA 9', weight: 18 + (1 - Math.abs(gem - 0.65)) * 28 },
+    { grade: 'PSA 8', weight: 12 + (1 - gem) * 22 },
+    { grade: 'PSA 7', weight: 8 + (1 - gem) * 12 },
+    { grade: 'PSA 6 or below', weight: Math.max(4, 10 - gem * 8) },
   ];
+  const total = raw.reduce((sum, row) => sum + row.weight, 0);
+  const buckets = raw.map((row) => ({
+    grade: row.grade,
+    probabilityPct: Math.round((row.weight / total) * 100),
+  }));
+  const drift = 100 - buckets.reduce((sum, row) => sum + row.probabilityPct, 0);
+  buckets[buckets.length - 1].probabilityPct += drift;
+  return buckets;
 }
 
 export function estimateByteLengthFromDataUrl(dataUrl: string): number {

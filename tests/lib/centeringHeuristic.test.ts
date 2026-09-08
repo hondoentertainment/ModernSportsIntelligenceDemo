@@ -18,6 +18,59 @@ describe('centeringHeuristic', () => {
     expect(total).toBe(100);
   });
 
+  it('treats a data URL without a comma as the raw payload', async () => {
+    const { estimateByteLengthFromDataUrl } = await import('../../lib/utils/centeringHeuristic');
+    expect(estimateByteLengthFromDataUrl('AAAA')).toBe(3);
+  });
+
+  it('returns null dimensions when Image is unavailable', async () => {
+    const { loadImageDimensions } = await import('../../lib/utils/centeringHeuristic');
+    const globalObj = globalThis as { Image?: typeof Image };
+    const previous = globalObj.Image;
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete globalObj.Image;
+    expect(await loadImageDimensions('data:image/jpeg;base64,xxxx')).toBeNull();
+    globalObj.Image = previous;
+  });
+
+  it('falls back to element width/height when natural size is zero', async () => {
+    const { loadImageDimensions } = await import('../../lib/utils/centeringHeuristic');
+    class ZeroNaturalImage {
+      naturalWidth = 0;
+      naturalHeight = 0;
+      width = 800;
+      height = 1120;
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      set src(_value: string) {
+        queueMicrotask(() => this.onload?.());
+      }
+    }
+    vi.stubGlobal('Image', ZeroNaturalImage);
+    await expect(loadImageDimensions('data:image/jpeg;base64,AAAA')).resolves.toEqual({
+      width: 800,
+      height: 1120,
+    });
+    vi.unstubAllGlobals();
+  });
+
+  it('rejects when FileReader fails', async () => {
+    const { estimateCenteringFromFile } = await import('../../lib/utils/centeringHeuristic');
+    class FailingReader {
+      result = '';
+      error = new Error('read fail');
+      onloadend: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      readAsDataURL() {
+        queueMicrotask(() => this.onerror?.());
+      }
+    }
+    vi.stubGlobal('FileReader', FailingReader);
+    const file = new File(['card'], 'card.jpg', { type: 'image/jpeg' });
+    await expect(estimateCenteringFromFile(file)).rejects.toBeInstanceOf(Error);
+    vi.unstubAllGlobals();
+  });
+
   it('returns a demo-path result when Image cannot load', async () => {
     const { estimateCenteringFromDataUrl, loadImageDimensions } = await import(
       '../../lib/utils/centeringHeuristic'
@@ -106,5 +159,7 @@ describe('centeringHeuristic', () => {
     expect(Math.abs(714 / 1000 - STANDARD_CARD_ASPECT)).toBeLessThan(0.01);
     expect(good.centeringScore).toBeGreaterThan(off.centeringScore);
     expect(good.buckets.some((b) => b.grade === 'PSA 10')).toBe(true);
+    expect(good.buckets.reduce((sum, b) => sum + b.probabilityPct, 0)).toBe(100);
+    expect(off.buckets.reduce((sum, b) => sum + b.probabilityPct, 0)).toBe(100);
   });
 });
