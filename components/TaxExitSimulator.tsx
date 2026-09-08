@@ -4,6 +4,7 @@ import { CardInventory } from '../types';
 import { FiscalService } from '../lib/utils/FiscalService';
 import { Calculator, DollarSign, Percent, ArrowRight, X, ShieldCheck } from 'lucide-react';
 import { showToast } from '../lib/utils/toast';
+import CapitalGainsExitStrip from './CapitalGainsExitStrip';
 
 interface TaxExitSimulatorProps {
     card: CardInventory;
@@ -88,6 +89,10 @@ export const TaxExitSimulator: React.FC<TaxExitSimulatorProps> = ({ card, onClos
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div className="mb-6">
+                <CapitalGainsExitStrip card={card} compact />
             </div>
 
             {recommendation && (

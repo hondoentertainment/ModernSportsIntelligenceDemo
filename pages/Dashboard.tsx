@@ -98,6 +98,7 @@ import type { CardInventory, UserProfile } from '../types';
 
 const HoldingsCatalystRail = lazy(() => import('../components/HoldingsCatalystRail.tsx'));
 const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail.tsx'));
+const PortfolioConcentrationRail = lazy(() => import('../components/PortfolioConcentrationRail.tsx'));
 const PerformanceVsPriceChart = lazy(() => import('../components/PerformanceVsPriceChart.tsx'));
 const BreakoutRadar = lazy(() => import('../components/BreakoutRadar.tsx'));
 const AgentInsightsPanel = lazy(() => import('../components/AgentInsightsPanel.tsx'));
@@ -412,6 +413,7 @@ const Dashboard: React.FC = () => {
           <LazyErrorBoundary compact>
             <Suspense fallback={<WidgetLoadingFallback />}>
               <SeasonalWindowRail inventory={inventory} />
+              <PortfolioConcentrationRail inventory={inventory} />
               <HoldingsCatalystRail inventory={inventory} />
             </Suspense>
           </LazyErrorBoundary>

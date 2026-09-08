@@ -10,19 +10,23 @@ import {
 import { CardInventory, ExitPlan } from '../types';
 import { LiquidityService } from '../lib/analytics/liquidityService';
 import { LiquidityBadge } from './LiquidityBadge';
+import BreakEvenStrip from './BreakEvenStrip';
+import CapitalGainsExitStrip from './CapitalGainsExitStrip';
 
 interface ExitStrategyModalProps {
     isOpen: boolean;
     onClose: () => void;
     card: CardInventory;
     onSave: (_cardId: string, _exitPlan: ExitPlan) => void;
+    onOpenBreakEven?: (_card: CardInventory) => void;
 }
 
 export const ExitStrategyModal: React.FC<ExitStrategyModalProps> = ({
     isOpen,
     onClose,
     card,
-    onSave
+    onSave,
+    onOpenBreakEven,
 }) => {
     const [targetPrice, setTargetPrice] = useState<number>(0);
     const [timeframe, setTimeframe] = useState<ExitPlan['timeframe']>('Medium (6-12m)');
@@ -93,6 +97,9 @@ export const ExitStrategyModal: React.FC<ExitStrategyModalProps> = ({
                             <p className="text-xl font-mono font-black text-brand-lime">${(card.currentValue || card.purchasePrice || 0).toLocaleString()}</p>
                         </div>
                     </div>
+
+                    <BreakEvenStrip card={card} onOpenFull={onOpenBreakEven} />
+                    <CapitalGainsExitStrip card={card} compact />
 
                     {/* Configuration Form */}
                     <div className="space-y-6">

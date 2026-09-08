@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { calculateBreakEven, MARKETPLACE_FEES } from '../../lib/analytics/breakEvenService';
+import {
+  BREAK_EVEN_STRIP_PRESETS,
+  calculateBreakEven,
+  clampFeeRate,
+  MARKETPLACE_FEES,
+  resolveMarketplaceFee,
+} from '../../lib/analytics/breakEvenService';
 import { makeCard } from '../helpers';
 
 describe('breakEvenService', () => {
@@ -87,7 +93,21 @@ describe('breakEvenService', () => {
     it('has expected marketplaces', () => {
       expect(MARKETPLACE_FEES).toHaveProperty('ebay');
       expect(MARKETPLACE_FEES).toHaveProperty('comc');
+      expect(MARKETPLACE_FEES).toHaveProperty('myslabs');
+      expect(MARKETPLACE_FEES).toHaveProperty('custom');
       expect(MARKETPLACE_FEES).toHaveProperty('private');
+      expect(BREAK_EVEN_STRIP_PRESETS).toContain('custom');
+    });
+
+    it('resolves a custom fee preset and clamps junk rates', () => {
+      expect(clampFeeRate(Number.NaN)).toBe(0);
+      expect(clampFeeRate(1.5)).toBe(0.99);
+      expect(resolveMarketplaceFee('custom', { rate: 0.2, fixed: 2 }).rate).toBe(0.2);
+      const card = makeCard({ purchasePrice: 100, currentValue: 200 });
+      const custom = calculateBreakEven(card, 'custom', 0, { rate: 0.2, fixed: 0 });
+      const ebay = calculateBreakEven(card, 'ebay');
+      expect(custom.breakEvenPrice).toBeGreaterThan(100);
+      expect(custom.breakEvenPrice).not.toBe(ebay.breakEvenPrice);
     });
 
     it('private sale has zero fees', () => {

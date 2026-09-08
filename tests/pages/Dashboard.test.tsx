@@ -202,6 +202,7 @@ vi.mock('../../components/AnomalyWidget.tsx', () => ({ default: () => null }));
 vi.mock('../../components/dashboard/RecentlyIngested.tsx', () => ({ default: () => null }));
 vi.mock('../../components/PerformanceVsPriceChart.tsx', () => ({ default: () => null }));
 vi.mock('../../components/SeasonalWindowRail.tsx', () => ({ default: () => null }));
+vi.mock('../../components/PortfolioConcentrationRail.tsx', () => ({ default: () => null }));
 vi.mock('../../components/HoldingsCatalystRail.tsx', () => ({ default: () => null }));
 
 async function loadDashboard() {

@@ -28,6 +28,15 @@ describe('FiscalService', () => {
         expect(result.taxTreatment).toBe('Short Term');
     });
 
+    it('treats a short-term lot as long-term when asOf crosses 365 days', () => {
+        const card = makeCard({ purchaseDate: '2026-01-01' });
+        const now = FiscalService.simulateExit(card, 200, undefined, new Date('2026-09-08T12:00:00.000Z'));
+        const next = FiscalService.simulateExit(card, 200, undefined, new Date('2027-01-02T12:00:00.000Z'));
+        expect(now.taxTreatment).toBe('Short Term');
+        expect(next.taxTreatment).toBe('Long Term');
+        expect(next.estimatedTax).toBeLessThan(now.estimatedTax);
+    });
+
     it('recommends harvesting losses and long-term waits', () => {
         const recommendations = FiscalService.optimizeExitPlan([
             makeCard({ id: 'loss', currentValue: 70 }),

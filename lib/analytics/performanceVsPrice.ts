@@ -64,6 +64,7 @@ export function leagueToHubSport(league: string | undefined): LeagueSport | null
   if (key === 'NBA') return 'nba';
   if (key === 'NFL') return 'nfl';
   if (key === 'NHL') return 'nhl';
+  if (key === 'SOCCER' || key === 'MLS' || key === 'EPL') return 'soccer';
   return null;
 }
 
@@ -73,6 +74,9 @@ function cardMatchesSport(card: CardInventory, sport: LeagueSport): boolean {
   if (sport === 'nba') return league === 'NBA' || game === 'basketball';
   if (sport === 'nfl') return league === 'NFL' || game === 'football';
   if (sport === 'nhl') return league === 'NHL' || game === 'hockey';
+  if (sport === 'soccer') {
+    return game === 'soccer' || league === 'SOCCER' || league === 'MLS' || league === 'EPL';
+  }
   return false;
 }
 
@@ -89,11 +93,15 @@ export function normalizeLeagueLeaderToScore(leader: LeagueStatLeader, sport: Le
       const scaled = leader.efficiency > 20 ? ((leader.efficiency - 70) / 40) * 75 + 20 : ((leader.efficiency - 3) / 12) * 75 + 20;
       return Math.round(Math.min(100, Math.max(0, scaled)));
     }
+    if (sport === 'soccer') {
+      return Math.round(Math.min(100, Math.max(0, (leader.efficiency / 2.5) * 80 + 15)));
+    }
     return Math.round(Math.min(100, Math.max(0, (leader.efficiency / 2) * 80 + 15)));
   }
   const value = Number.isFinite(leader.statValue) ? leader.statValue : 0;
   if (sport === 'nba') return Math.round(Math.min(100, Math.max(0, (value / 40) * 90)));
   if (sport === 'nfl') return Math.round(Math.min(100, Math.max(0, (value / 4500) * 90)));
+  if (sport === 'soccer') return Math.round(Math.min(100, Math.max(0, (value / 30) * 90)));
   return Math.round(Math.min(100, Math.max(0, (value / 120) * 90)));
 }
 

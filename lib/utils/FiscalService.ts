@@ -33,14 +33,14 @@ export interface ExitRecommendation {
     reason: string;
 }
 
-function getHoldingDays(item: CardInventory): number {
-    const purchaseDate = new Date(item.purchaseDate || new Date().toISOString());
-    const diff = Date.now() - purchaseDate.getTime();
+function getHoldingDays(item: CardInventory, asOf: Date = new Date()): number {
+    const purchaseDate = new Date(item.purchaseDate || asOf.toISOString());
+    const diff = asOf.getTime() - purchaseDate.getTime();
     return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
 }
 
-function getTaxProfile(item: CardInventory, shortTermRate: number, longTermRate: number) {
-    const holdingDays = getHoldingDays(item);
+function getTaxProfile(item: CardInventory, shortTermRate: number, longTermRate: number, asOf: Date = new Date()) {
+    const holdingDays = getHoldingDays(item, asOf);
     const taxTreatment: ExitSimulationResult['taxTreatment'] = holdingDays >= 365 ? 'Long Term' : 'Short Term';
     const daysToLongTerm = Math.max(0, 365 - holdingDays);
 
@@ -83,10 +83,10 @@ export const FiscalService = {
     /**
      * Simulates a sale event to determine net profit after tax and overhead.
      */
-    simulateExit(item: CardInventory, targetPrice: number, taxRate?: number): ExitSimulationResult {
+    simulateExit(item: CardInventory, targetPrice: number, taxRate?: number, asOf: Date = new Date()): ExitSimulationResult {
         const currentOverhead = (item.gradingFees || 0) + (item.shippingFees || 0) + (item.insuranceFees || 0);
         const totalBasis = (item.purchasePrice || 0) + currentOverhead;
-        const taxProfile = getTaxProfile(item, taxRate ?? 0.35, 0.2);
+        const taxProfile = getTaxProfile(item, taxRate ?? 0.35, 0.2, asOf);
         const baseSaleFees = targetPrice * 0.13; // Average marketplace fee (eBay ~13%)
         const grossProfit = targetPrice - totalBasis - baseSaleFees;
         const estimatedTax = Math.max(0, grossProfit * taxProfile.taxRate);

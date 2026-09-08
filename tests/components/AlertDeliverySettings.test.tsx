@@ -7,6 +7,8 @@ import {
   ALERT_PREFERENCES_DISCLOSURE,
   getAlertPreferences,
 } from '../../lib/utils/alertPreferences';
+import { getSyncConfig } from '../../lib/utils/syncScheduler';
+import { SYNC_PRODUCT_DEFAULTS_DISCLOSURE } from '../../lib/utils/syncProductDefaults';
 import { store } from '../../lib/dal/syncStore';
 
 describe('AlertDeliverySettings', () => {
@@ -30,5 +32,9 @@ describe('AlertDeliverySettings', () => {
     expect(prefs.quietHoursEnabled).toBe(true);
     expect(prefs.hapticsEnabled).toBe(false);
     expect(prefs.browserNotificationsEnabled).toBe(false);
+
+    expect(screen.getByText(SYNC_PRODUCT_DEFAULTS_DISCLOSURE)).toBeInTheDocument();
+    await user.click(screen.getByLabelText(/enable daily portfolio and watchlist sync/i));
+    expect(getSyncConfig().interval).toBe('manual');
   });
 });

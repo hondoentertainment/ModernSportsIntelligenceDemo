@@ -6,9 +6,18 @@ import {
   setAlertPreferences,
   type AlertPreferences,
 } from '../lib/utils/alertPreferences';
+import {
+  SYNC_PRODUCT_DEFAULTS_DISCLOSURE,
+  getSyncProductDefaults,
+  resolveSyncProductProfile,
+  setDailySyncOptIn,
+} from '../lib/utils/syncProductDefaults';
+import { isDemoMode } from '../lib/supabase';
 
 const AlertDeliverySettings: React.FC<{ compact?: boolean }> = ({ compact }) => {
   const [prefs, setPrefs] = useState<AlertPreferences>(() => getAlertPreferences());
+  const profile = resolveSyncProductProfile({ signedIn: !isDemoMode, isDemo: isDemoMode });
+  const [dailySync, setDailySync] = useState(() => getSyncProductDefaults()?.optedIn !== false);
 
   const patch = (partial: Partial<AlertPreferences>) => {
     setPrefs(setAlertPreferences(partial));
@@ -79,6 +88,20 @@ const AlertDeliverySettings: React.FC<{ compact?: boolean }> = ({ compact }) => 
             aria-label="Enable browser notifications"
           />
         </label>
+        <label className="flex items-center justify-between gap-3 text-sm text-slate-200">
+          <span>Daily portfolio + watchlist sync</span>
+          <input
+            type="checkbox"
+            checked={dailySync}
+            onChange={(e) => {
+              const next = e.target.checked;
+              setDailySync(next);
+              setDailySyncOptIn(next, profile);
+            }}
+            aria-label="Enable daily portfolio and watchlist sync"
+          />
+        </label>
+        <p className="text-[11px] leading-relaxed text-slate-500">{SYNC_PRODUCT_DEFAULTS_DISCLOSURE}</p>
       </div>
     </section>
   );

@@ -48,7 +48,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
   - **MLB Stats API:** Map player IDs to performance endpoints to power "Performance vs. Price" correlation charts.
 - **Current state:**
   - **eBay:** **Partially shipped** — Vercel handler `api/market/ebay.ts` (OAuth client-credentials, Zod validation, rate limiting, structured logging); client surface `lib/ebayApi.ts` + feature flags (`VITE_FF_REAL_EBAY`, etc.). FMV across the product still mixes AI estimates with optional real calls — next step is **defaulting more flows to sold/comp-backed pricing** where keys are configured.
-  - **MLB:** **Client/API layer present** — `lib/utils/mlbApi.ts` (e.g. player stats by ID/season). **Performance vs Price** chart on Dashboard binds StatsService hitting lines to collection marks when names match (2026-09-07). **Non-MLB (Wave-2):** NBA / NFL / NHL hubs + Dashboard bind seeded desk stats the same way, with heuristic disclosure. Production key/ops hardening still owner-held if not env-complete.
+  - **MLB:** **Client/API layer present** — `lib/utils/mlbApi.ts` (e.g. player stats by ID/season). **Performance vs Price** chart on Dashboard binds StatsService hitting lines to collection marks when names match (2026-09-07). **Non-MLB (Wave-2 + Wave-3):** NBA / NFL / NHL / Soccer hubs + Dashboard bind seeded desk stats the same way, with heuristic disclosure and empty-bind states. Production key/ops hardening still owner-held if not env-complete.
 - **Status:** **Integration scaffolding live** — shift focus from "can we call the API?" to **coverage** (which screens use real comps by default) and **observability** in deploy.
 
 ### 2.2 Automated Market Sync Scheduler
@@ -61,7 +61,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 - **Current state:**
   - **Scheduler:** Shipped — `lib/utils/syncScheduler.ts` (`SyncScheduler`, configurable **daily/hourly/weekly/manual**, watchdog heartbeat, `store`-backed config); integrates with `lib/utils/marketSync.ts` (portfolio + watchlist sync helpers, stale checks including 24h semantics).
   - **Notifications:** **In-app / Notification API + haptics (2026-09-08) + quiet hours (Wave-2)** — `syncScheduler` can request notification permission; `lib/utils/haptics.ts` + `notifications.ts` vibrate when a watchlist / target-price threshold fires. Delivery honors `msi_alert_preferences_v1` (quiet hours window, haptic on/off, Notification API on/off). Settings live on `/alerts`, Profile, and Notification Center. Watchlist target UX exists in product surfaces; **dedicated Web Push subscription + server-triggered pushes** remain optional product work if you want off-device alerts at scale.
-- **Status:** **Client scheduling, sync loop, and on-device delivery prefs implemented** — remaining work is **product defaults** (what runs automatically for signed-in users) and, if required, **full push infrastructure** beyond on-device notifications.
+  - **Status:** **Client scheduling, sync loop, on-device delivery prefs, and product defaults implemented (Wave-3)** — signed-in / demo daily portfolio+watchlist opt-in is remembered via `msi_sync_product_defaults_v1` and honors quiet hours. Remaining work, if required, is **full push infrastructure** beyond on-device notifications.
 
 ---
 
@@ -106,7 +106,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 - **Actions:**
   - **Portfolio Delta:** Identify over-concentrated leagues/players in the user's portfolio.
   - **Proposal Generation:** Suggest "Card A for Card B + Cash" trades based on user needs vs. marketplace availability.
-- **Status:** **Shipped (lite, 2026-09-07)** — advisory “Card A for Card B + cash” from local inventory on Collection. Not a live marketplace / order book.
+- **Status:** **Shipped (lite, 2026-09-07)** — advisory “Card A for Card B + cash” from local inventory on Collection. **Wave-3:** concentration / risk rail surfaces player + league NAV shares and links those hints to trade proposals / Auto-Pilot. Not a live marketplace / order book.
 
 ---
 
@@ -160,7 +160,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 
 - [ ] **Phase 25: Smart Vaulting**: Research API endpoints for PWCC and Goldin to enable real-time "Vault NAV" tracking.
 - [ ] **Phase 26: Alpha Guilds**: Design the social architecture for gated intelligence sharing and shared agent pipelines.
-- [ ] **Phase 27: Fiscal Shield**: Implement a capital gains simulator to help users plan tax-efficient exits.
+- [x] **Phase 27: Fiscal Shield**: Implement a capital gains simulator to help users plan tax-efficient exits. **Shipped (lite, Wave-3)** — sell this year vs next ST/LT on Fiscal / Tax Report / Collection sell. **Not** IRS regulatory completeness.
 - [ ] **Phase 28: AR Showcase**: Explore WebXR for displaying "Grail" cards in a spatial 3D environment.
 - [ ] **Phase 29: Cross-Sector Nodes**: Expand the correlation engine to ingest data from Luxury Watch and Fine Art marketplaces.
 - [ ] **Phase 30: Auto-Pilot**: Prototype the "Autonomous Trader" agent with strict risk-collars and user-defined budget locks.
@@ -203,7 +203,8 @@ Modern Sports Intelligence has successfully reached the "Sentinel" stage (Phase 
 - [x] Require human approval checkpoints for high-dollar or low-confidence actions (2026-09-07).
 - [x] Add local idempotency keys + duplicate-action guards for autonomous actions (2026-09-07). External API retry contracts still open.
 - [x] Expand simulation mode with before/after NAV and tax impact preview (2026-09-08 Wave-2; advisory `FiscalService` / tax-lot helpers). Live marketplace execution still open.
-- **Exit Criteria:** No unapproved high-risk actions; full replayability of autonomous decision history.
+- [x] Local day-bucketed decision replay of actions considered, collars, approvals, and NAV preview (2026-09-08 Wave-3). Live marketplace execution still open.
+- **Exit Criteria:** No unapproved high-risk actions; full replayability of autonomous decision history. **Replayability shipped locally (lite);** live execution + external API retry contracts still open.
 
 ### Phase 34: Guild Economics and Governance
 
