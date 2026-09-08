@@ -313,6 +313,12 @@ export interface AutonomousAction {
   recommendationId?: string;
   linkedIntentId?: string;
   linkedOutcomeId?: string;
+  /**
+   * Inventory card id when the action targets a specific lot.
+   * Sell/rebalance previews use this so FiscalService.simulateExit gets the
+   * correct basis and purchase date instead of the first year+player match.
+   */
+  inventoryCardId?: string;
 }
 
 export type AgentRecommendationOrigin = 'war-room' | 'autopilot-preview' | 'autopilot-cycle' | 'manual' | 'system';

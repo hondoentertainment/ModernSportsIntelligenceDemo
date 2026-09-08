@@ -332,6 +332,41 @@ describe('WarRoomCommitteeResponseSchema', () => {
     }
   });
 
+  it('keeps optional inventoryCardId on execution-plan actions', () => {
+    const result = WarRoomCommitteeResponseSchema.safeParse({
+      summary: 'Balanced',
+      keyTakeaways: ['a'],
+      riskAssessment: 'Medium',
+      recommendedAction: 'Sell',
+      agents: [
+        {
+          agentId: 'scout',
+          agentName: 'Scout Prime',
+          persona: 'x',
+          insight: 'y',
+          sentiment: 'neutral',
+          confidence: 0.7,
+        },
+      ],
+      executionPlan: [
+        {
+          id: 'sell-1',
+          type: 'SELL',
+          assetName: '2011 Mike Trout',
+          amount: 4000,
+          rationale: 'Take profit',
+          timestamp: '2026-09-08T00:00:00Z',
+          status: 'pending',
+          inventoryCardId: 'trout-chrome',
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.executionPlan?.[0]?.inventoryCardId).toBe('trout-chrome');
+    }
+  });
+
   it('rejects invalid agent sentiment', () => {
     const result = WarRoomCommitteeResponseSchema.safeParse({
       summary: 'x',

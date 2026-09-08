@@ -73,7 +73,7 @@ const ShowBagPanel: React.FC<Props> = ({ inventory, targets = [] }) => {
                             type="checkbox"
                             checked={row.packed}
                             onChange={() => {
-                              toggleShowBagPacked(row.id);
+                              toggleShowBagPacked(row.id, row.packed);
                               setTick((n) => n + 1);
                             }}
                           />

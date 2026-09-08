@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AutonomousExecutionService, buildAutopilotIdempotencyKey } from '../../lib/trading/AutonomousExecutionService';
-import { AutoPilotConfig, AutonomousAction } from '../../types';
+import { AutoPilotConfig, AutonomousAction, CardInventory } from '../../types';
 
 describe('AutonomousExecutionService', () => {
     const config: AutoPilotConfig = {
@@ -264,5 +264,35 @@ describe('AutonomousExecutionService', () => {
         };
         expect(await AutonomousExecutionService.addAction(action)).toBe(true);
         expect(await AutonomousExecutionService.addAction({ ...action, id: 'two' })).toBe(false);
+    });
+
+    it('stamps inventoryCardId on generated sell and buy candidates', () => {
+        const inventory: CardInventory[] = [{
+            id: 'lot-99',
+            player: 'Mike Trout',
+            year: 2011,
+            manufacturer: 'Topps',
+            cardNumber: '1',
+            set: 'Update',
+            sport: 'Baseball',
+            league: 'MLB',
+            isAutographed: false,
+            condition: 'Mint',
+            isGraded: false,
+            purchasePrice: 100,
+            purchaseDate: '2020-01-01',
+            currentValue: 500,
+            status: 'active',
+        }];
+        const thesis = AutonomousExecutionService.createFallbackThesis(inventory);
+        thesis.agents.find((agent) => agent.agentId === 'risk')!.sentiment = 'negative';
+        const candidates = AutonomousExecutionService.buildActionCandidates(
+            inventory,
+            { ...config, collar: { ...config.collar, autoSellThreshold: 15 } },
+            thesis,
+        );
+        expect(candidates.find((row) => row.type === 'SELL')?.inventoryCardId).toBe('lot-99');
+        expect(candidates.find((row) => row.type === 'REBALANCE')?.inventoryCardId).toBe('lot-99');
+        expect(candidates.find((row) => row.type === 'BUY')?.inventoryCardId).toBe('lot-99');
     });
 });
