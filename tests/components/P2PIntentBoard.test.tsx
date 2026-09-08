@@ -49,6 +49,7 @@ describe('P2PIntentBoard', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /buy intent/i }));
+    expect(screen.getByLabelText(/^player$/i)).toHaveValue('Held Card');
     await user.clear(screen.getByLabelText(/^player$/i));
     await user.type(screen.getByLabelText(/^player$/i), 'Paul Skenes');
     await user.clear(screen.getByLabelText(/limit price/i));

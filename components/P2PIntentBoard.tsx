@@ -43,6 +43,15 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
     setLimitPrice(String(suggestAskFromCard(card).limitPrice));
   };
 
+  const setIntentSide = (value: IntentSide) => {
+    setSide(value);
+    if (value === 'bid') {
+      setCardId('');
+      return;
+    }
+    if (!cardId && held[0]) applyCard(held[0].id);
+  };
+
   const handlePost = (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
@@ -99,7 +108,7 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
                 key={value}
                 type="button"
                 aria-pressed={side === value}
-                onClick={() => setSide(value)}
+                onClick={() => setIntentSide(value)}
                 className={`rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-widest ${
                   side === value
                     ? 'bg-brand-lime text-brand-charcoal'
