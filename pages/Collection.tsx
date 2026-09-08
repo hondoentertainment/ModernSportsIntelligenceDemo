@@ -628,20 +628,24 @@ const Collection: React.FC = () => {
             <button
               type="button"
               aria-label="Grid view"
+              title="Grid view"
               aria-pressed={viewMode === 'grid'}
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-muted hover:text-slate-200'}`}
+              className={`inline-flex min-h-[40px] items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'grid' ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-muted hover:text-slate-200'}`}
             >
-              <Grid size={18} />
+              <Grid size={18} aria-hidden />
+              Grid
             </button>
             <button
               type="button"
               aria-label="List view"
+              title="List view"
               aria-pressed={viewMode === 'list'}
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-muted hover:text-slate-200'}`}
+              className={`inline-flex min-h-[40px] items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'list' ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-muted hover:text-slate-200'}`}
             >
-              <List size={18} />
+              <List size={18} aria-hidden />
+              List
             </button>
           </div>
         </div>

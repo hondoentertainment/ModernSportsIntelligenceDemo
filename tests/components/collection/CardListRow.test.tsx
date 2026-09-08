@@ -144,6 +144,11 @@ describe('CardListRow — grid action parity', () => {
     expect(screen.getByText(/apex|pop 1/i)).toBeInTheDocument();
   });
 
+  it('shows an honest thin-state sparkline label when history is missing', () => {
+    renderRow();
+    expect(screen.getByText(/awaiting points/i)).toBeInTheDocument();
+  });
+
   it('marks the row selected for the batch toolbar highlight', () => {
     renderRow(makeCard(), makeHandlers(), { isSelected: true });
 
