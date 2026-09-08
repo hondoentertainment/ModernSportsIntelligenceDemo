@@ -87,4 +87,13 @@ describe('autoPilotImpactPreview', () => {
     expect(preview.unmatchedSellCount).toBe(1);
     expect(preview.matchedSellCount).toBe(1);
   });
+
+  it('treats missing currentValue as zero book', () => {
+    const preview = simulateAutopilotImpact(
+      [{ ...trout, currentValue: undefined as unknown as number }],
+      [],
+    );
+    expect(preview.startingValue).toBe(0);
+    expect(preview.navDelta).toBe(0);
+  });
 });

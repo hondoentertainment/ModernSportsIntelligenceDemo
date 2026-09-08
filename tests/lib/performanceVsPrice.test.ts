@@ -3,6 +3,7 @@ import {
   buildLeaguePerformanceVsPriceSeries,
   buildPerformanceVsPriceSeries,
   leagueToHubSport,
+  namesMatch,
   normalizeHittingToScore,
   normalizeLeagueLeaderToScore,
 } from '../../lib/analytics/performanceVsPrice';
@@ -125,5 +126,62 @@ describe('performanceVsPrice', () => {
     expect(series).toHaveLength(1);
     expect(series[0].source).toBe('seeded_league_stats_plus_mark');
     expect(series[0].price).toBe(1200);
+  });
+
+  it('matches NFL/NHL holdings by sport field and skips soccer / zero marks / empties', () => {
+    const leader = (player: string): LeagueStatLeader => ({
+      rank: 1,
+      player,
+      team: 'X',
+      position: 'X',
+      statCategory: 'YDS',
+      statValue: Number.NaN,
+      statLabel: 'YDS',
+      gamesPlayed: 1,
+      cardValue: 1,
+      cardChange: 0,
+    });
+    const lamar: CardInventory = {
+      ...troutCard,
+      id: 'lamar',
+      player: 'Lamar Jackson',
+      sport: 'Football',
+      league: '' as CardInventory['league'],
+      currentValue: 0,
+      purchasePrice: 300,
+    };
+    const mack: CardInventory = {
+      ...troutCard,
+      id: 'mack',
+      player: 'Nathan MacKinnon',
+      sport: 'Hockey',
+      league: '' as CardInventory['league'],
+      currentValue: 900,
+    };
+    const zero: CardInventory = {
+      ...lamar,
+      id: 'zero',
+      player: 'Lamar Jackson',
+      currentValue: 0,
+      purchasePrice: 0,
+    };
+    const nfl = buildLeaguePerformanceVsPriceSeries(
+      [lamar, zero, lamar],
+      [leader('Lamar Jackson')],
+      'nfl',
+    );
+    expect(nfl).toHaveLength(1);
+    expect(nfl[0].price).toBe(300);
+    const nhl = buildLeaguePerformanceVsPriceSeries([mack], [leader('Nathan MacKinnon')], 'nhl');
+    expect(nhl).toHaveLength(1);
+    expect(buildLeaguePerformanceVsPriceSeries([mack], [leader('Nathan MacKinnon')], 'soccer')).toEqual([]);
+    expect(namesMatch('', 'x')).toBe(false);
+    expect(normalizeLeagueLeaderToScore(leader('x'), 'nba')).toBe(0);
+  });
+
+  it('skips MLB rows with no mark', () => {
+    const broke = { ...troutCard, currentValue: 0, purchasePrice: 0 };
+    expect(buildPerformanceVsPriceSeries([broke], [troutPerf])).toEqual([]);
+    expect(normalizeHittingToScore([{ label: 'OPS', value: 'bad', change: '0' }]).score).toBeGreaterThanOrEqual(0);
   });
 });

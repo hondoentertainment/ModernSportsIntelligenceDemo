@@ -54,6 +54,13 @@ describe('gradingRoiLite', () => {
     expect(extractGradeCompMedian(sales, 10)).toBe(2100);
     expect(extractGradeCompMedian(undefined, 10)).toBeNull();
     expect(extractGradeCompMedian([{ title: 'raw', price: 10, soldAt: '2026-01-01', condition: 'Raw' }], 9)).toBeNull();
+    expect(extractGradeCompMedian([], 10)).toBeNull();
+    expect(
+      extractGradeCompMedian(
+        [{ title: undefined as unknown as string, price: -5, totalPrice: -1, soldAt: '2026-01-01', condition: 'x' }],
+        10,
+      ),
+    ).toBeNull();
 
     const row = estimateGradingRoiLite({ ...rawCard, salesData: sales });
     expect(row?.source).toBe('comps');
@@ -70,6 +77,12 @@ describe('gradingRoiLite', () => {
     });
     expect(row?.recommendation).toBe('Hold Raw');
     expect(row?.source).toBe('comps');
+  });
+
+  it('uses the zero-cost fallback when fee cancels the raw mark', () => {
+    const row = estimateGradingRoiLite(rawCard, -500);
+    expect(row?.roi9).toBe(0);
+    expect(row?.roi10).toBe(0);
   });
 
   it('lists top raw ROI cards and skips graded inventory', () => {

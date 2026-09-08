@@ -112,6 +112,43 @@ describe('showBag', () => {
     expect(formatShowBagHtml(doc)).toContain('A &amp; B &lt;C&gt;');
   });
 
+  it('covers consignment without house/reserve and targets without description', () => {
+    const inventory = [
+      card({
+        id: 'consign-bare',
+        status: 'consignment',
+        consignment: {
+          houseId: 'h2',
+          houseName: '',
+          entryId: 'e2',
+          submittedAt: '2026-01-01',
+          reservePrice: 0,
+        },
+      }),
+    ];
+    const doc = buildShowBag({
+      inventory,
+      targets: [
+        {
+          id: 't-empty',
+          player: 'Prospect',
+          cardDescription: '',
+          priority: 'Low',
+          targetPrice: 0,
+          sport: 'Basketball',
+          league: 'NBA',
+          status: 'active',
+          createdAt: '2026-01-01',
+        },
+      ],
+      reviewIds: [],
+      checklist: [],
+    });
+    expect(doc.counts.consign).toBe(1);
+    expect(doc.items.find((item) => item.section === 'targets')?.label).toMatch(/watchlist/);
+    expect(formatShowBagHtml(doc)).toContain('☐');
+  });
+
   it('falls back to triage ids and the Card Show checklist when omitted', () => {
     const doc = buildShowBag({ inventory: [], targets: [] });
     expect(doc.counts.supplies).toBeGreaterThan(0);
