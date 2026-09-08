@@ -60,7 +60,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
   - **Price Alerts:** Add browser push notification triggers when a "Watchlist" item drops below its target acquisition price.
 - **Current state:**
   - **Scheduler:** Shipped — `lib/utils/syncScheduler.ts` (`SyncScheduler`, configurable **daily/hourly/weekly/manual**, watchdog heartbeat, `store`-backed config); integrates with `lib/utils/marketSync.ts` (portfolio + watchlist sync helpers, stale checks including 24h semantics).
-  - **Notifications:** **In-app / Notification API path** — `syncScheduler` can request notification permission; `lib/utils/notifications.ts` supports vibrate + `Notification` display patterns. Watchlist target UX exists in product surfaces (e.g. alerts/watchlist cards); **dedicated Web Push subscription + server-triggered pushes** remain optional product work if you want off-device alerts at scale.
+  - **Notifications:** **In-app / Notification API + haptics (2026-09-08)** — `syncScheduler` can request notification permission; `lib/utils/haptics.ts` + `notifications.ts` vibrate when a watchlist / target-price threshold fires. Watchlist target UX exists in product surfaces (e.g. alerts/watchlist cards); **dedicated Web Push subscription + server-triggered pushes** remain optional product work if you want off-device alerts at scale.
 - **Status:** **Client scheduling and sync loop implemented** — remaining work is **product defaults** (what runs automatically for signed-in users) and, if required, **full push infrastructure** beyond on-device notifications.
 
 ---
@@ -131,7 +131,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 
 - **Actions:**
   - **Vitest:** Implement unit tests for NAV and ROI math in `lib/portfolioUtils.ts`.
-  - **E2E:** Expand Playwright coverage to include the full "Scout-to-Acquire" flow.
+  - **E2E:** Expand Playwright coverage to include the full "Scout-to-Acquire" flow. **Shipped (demo smoke, 2026-09-08):** `tests/e2e/scout-to-acquire.spec.ts` walks Collection holding → War Room scout desk → Autonomous Acquisition campaign persist. Cloud/live-tape E2E remains owner-held.
 
 ### 6.2 Data Virtualization
 

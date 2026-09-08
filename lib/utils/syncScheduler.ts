@@ -15,6 +15,7 @@ import {
   syncWatchlistPrices,
   WatchlistSyncResult,
 } from './marketSync';
+import { vibrateForPriceAlert } from './haptics';
 
 migrateLocalStorageJsonKeyOnce('cardx_sync_config', 'msi_sync_scheduler_config', 'msi_migration_done_sched_cfg_v1');
 migrateLocalStorageJsonKeyOnce('cardx_sync_schedule', 'msi_sync_scheduler_schedule', 'msi_migration_done_sched_sch_v1');
@@ -302,6 +303,7 @@ export class SyncScheduler {
             if (watchlistResult.priceHits.length > 0 && 'Notification' in window) {
                 for (const hit of watchlistResult.priceHits) {
                     const msg = `${hit.player}: $${hit.currentMarketPrice} ≤ $${hit.targetPrice} target`;
+                    vibrateForPriceAlert();
                     this.showNotification('Target Price Hit', msg);
                 }
             }

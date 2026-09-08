@@ -1,4 +1,6 @@
 import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { useDALSyncStatus } from '../lib/dal/useDALSyncStatus';
 import {
   Zap,
   TrendingUp,
@@ -8,6 +10,7 @@ import {
 } from 'lucide-react';
 import { CardInventory } from '../types';
 import { generatePortfolioQuotes, getLiquidityPoolStats } from '../lib/trading/instantBuyService';
+import { intentBoardDisclaimer, summarizeIntentBoard } from '../lib/utils/p2pIntentBoard';
 
 interface LiquidityPoolWidgetProps {
   inventory: CardInventory[];
@@ -24,6 +27,8 @@ const LiquidityPoolWidget: React.FC<LiquidityPoolWidgetProps> = ({ inventory, on
   );
 
   const _bestQuote = quotes[0];
+  const { hydrated } = useDALSyncStatus();
+  const intentSummary = useMemo(() => summarizeIntentBoard(), [hydrated]);
 
   if (inventory.length === 0) return null;
 
@@ -111,6 +116,24 @@ const LiquidityPoolWidget: React.FC<LiquidityPoolWidgetProps> = ({ inventory, on
             </div>
           );
         })}
+      </div>
+
+      <div className="mt-8 rounded-2xl border border-slate-800 bg-brand-charcoal/40 p-4">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Peer intent board</p>
+            <p className="text-sm text-white">
+              {intentSummary.openBids} buy · {intentSummary.openAsks} sell intents
+            </p>
+            <p className="mt-1 text-[11px] text-amber-200/80">{intentBoardDisclaimer()}</p>
+          </div>
+          <Link
+            to="/collection"
+            className="inline-flex items-center justify-center rounded-xl border border-brand-lime/40 px-3 py-2 text-[10px] font-black uppercase tracking-widest text-brand-lime"
+          >
+            Post intents on Collection
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -66,6 +66,7 @@ type SortDir = 'asc' | 'desc';
 
 const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail'));
 const TradeProposalPanel = lazy(() => import('../components/TradeProposalPanel'));
+const P2PIntentBoard = lazy(() => import('../components/P2PIntentBoard'));
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -586,6 +587,7 @@ const Collection: React.FC = () => {
             <Suspense fallback={<WidgetLoadingFallback />}>
               <SeasonalWindowRail inventory={inventory} />
               <TradeProposalPanel inventory={inventory} />
+              <P2PIntentBoard inventory={inventory} />
             </Suspense>
           </LazyErrorBoundary>
         </div>

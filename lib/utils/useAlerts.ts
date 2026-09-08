@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Alert, AlertType } from '../../types.ts';
 import { migrateLocalStorageJsonKeyOnce, store } from '../dal/syncStore';
+import { vibrateForPriceAlert } from './haptics';
 
 migrateLocalStorageJsonKeyOnce('cardx_alerts', 'msi_alerts', 'msi_migration_done_alerts_v1');
 
@@ -79,6 +80,7 @@ export function useAlerts() {
     // Helper to create specific alert types
     const alertHelpers = {
         priceTargetHit: (playerName: string, cardDesc: string, targetPrice: number, currentPrice: number, targetId: string) => {
+            vibrateForPriceAlert();
             addAlert(
                 'price_target',
                 `🎯 Target Alert: ${playerName}`,

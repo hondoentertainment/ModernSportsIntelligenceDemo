@@ -1,4 +1,5 @@
 import { logger } from '../logger';
+import { PRICE_ALERT_HAPTIC_PATTERN, vibrateIfAvailable } from './haptics';
 
 export class NotificationService {
     static async requestPermission(): Promise<boolean> {
@@ -13,9 +14,7 @@ export class NotificationService {
 
     /** Trigger device haptic feedback (mobile) */
     static vibrate(pattern: number | number[] = [200, 100, 200]) {
-        if ('vibrate' in navigator) {
-            navigator.vibrate(pattern);
-        }
+        vibrateIfAvailable(pattern);
     }
 
     static async notify(title: string, options?: NotificationOptions & { vibrate?: boolean }) {
@@ -42,7 +41,7 @@ export class NotificationService {
 
     static async sendPriceAlert(player: string, currentPrice: number, targetPrice: number) {
         // Strong vibration pattern for price alerts — attention-critical
-        this.vibrate([200, 100, 200, 100, 300]);
+        this.vibrate(PRICE_ALERT_HAPTIC_PATTERN);
 
         this.notify(`Target Hit: ${player}`, {
             body: `Current market price is $${currentPrice.toLocaleString()}, reaching your target of $${targetPrice.toLocaleString()}.`,
