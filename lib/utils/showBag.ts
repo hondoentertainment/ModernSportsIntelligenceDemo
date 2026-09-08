@@ -8,6 +8,7 @@ import { getTriageReviewIds } from './collectionTriage';
 import { getShowChecklist, type ShowChecklist } from './cardShowModeService';
 
 export const SHOW_BAG_PACKED_KEY = 'msi_show_bag_packed_v1';
+export const SHOW_BAG_UNPACKED_KEY = 'msi_show_bag_unpacked_v1';
 
 export const SHOW_BAG_DISCLOSURE =
   'Local packing list only — swipe-triage review, consignment candidates, active watchlist targets, and Card Show supplies. Not a partner API or live marketplace.';
@@ -29,24 +30,62 @@ export interface ShowBagDocument {
   disclosure: string;
 }
 
-function packedSet(): Set<string> {
-  const raw = store.get<string[]>(SHOW_BAG_PACKED_KEY, []);
+function idSet(key: string): Set<string> {
+  const raw = store.get<string[]>(key, []);
   return new Set(Array.isArray(raw) ? raw.filter((id) => typeof id === 'string') : []);
+}
+
+function packedSet(): Set<string> {
+  return idSet(SHOW_BAG_PACKED_KEY);
+}
+
+function unpackedSet(): Set<string> {
+  return idSet(SHOW_BAG_UNPACKED_KEY);
+}
+
+function persistPackedState(packed: Set<string>, unpacked: Set<string>): string[] {
+  const ids = [...packed];
+  store.set(SHOW_BAG_PACKED_KEY, ids);
+  store.set(SHOW_BAG_UNPACKED_KEY, [...unpacked]);
+  return ids;
 }
 
 export function getPackedShowBagIds(): string[] {
   return [...packedSet()];
 }
 
-export function toggleShowBagPacked(itemId: string): string[] {
+export function getUnpackedShowBagIds(): string[] {
+  return [...unpackedSet()];
+}
+
+function inferCurrentlyPacked(id: string, packed: Set<string>, unpacked: Set<string>): boolean {
+  if (unpacked.has(id)) return false;
+  if (packed.has(id)) return true;
+  if (!id.startsWith('supply:')) return false;
+  const checklistId = id.slice('supply:'.length);
+  return Boolean(getShowChecklist().find((row) => row.id === checklistId)?.checked);
+}
+
+function isPacked(id: string, defaultPacked: boolean, packed: Set<string>, unpacked: Set<string>): boolean {
+  if (unpacked.has(id)) return false;
+  if (packed.has(id)) return true;
+  return defaultPacked;
+}
+
+export function toggleShowBagPacked(itemId: string, currentlyPacked?: boolean): string[] {
   const id = itemId.trim();
   if (!id) return getPackedShowBagIds();
-  const next = packedSet();
-  if (next.has(id)) next.delete(id);
-  else next.add(id);
-  const ids = [...next];
-  store.set(SHOW_BAG_PACKED_KEY, ids);
-  return ids;
+  const packed = packedSet();
+  const unpacked = unpackedSet();
+  const wasPacked = currentlyPacked ?? inferCurrentlyPacked(id, packed, unpacked);
+  if (wasPacked) {
+    packed.delete(id);
+    unpacked.add(id);
+  } else {
+    unpacked.delete(id);
+    packed.add(id);
+  }
+  return persistPackedState(packed, unpacked);
 }
 
 function cardLabel(card: CardInventory): string {
@@ -61,6 +100,7 @@ export function buildShowBag(input: {
   now?: Date;
 }): ShowBagDocument {
   const packed = packedSet();
+  const unpacked = unpackedSet();
   const inventory = input.inventory ?? [];
   const reviewIds = new Set(input.reviewIds ?? getTriageReviewIds());
   const items: ShowBagItem[] = [];
@@ -73,7 +113,7 @@ export function buildShowBag(input: {
         section: 'review',
         label: cardLabel(card),
         detail: 'Swipe-triage review — decide keep / sell / consign on the floor',
-        packed: packed.has(`review:${card.id}`),
+        packed: isPacked(`review:${card.id}`, false, packed, unpacked),
       });
     }
     if (card.status === 'consignment') {
@@ -86,7 +126,7 @@ export function buildShowBag(input: {
         section: 'consign',
         label: cardLabel(card),
         detail: `Consignment candidate${house}${reserve}`,
-        packed: packed.has(`consign:${card.id}`),
+        packed: isPacked(`consign:${card.id}`, false, packed, unpacked),
       });
     }
   }
@@ -98,7 +138,7 @@ export function buildShowBag(input: {
       section: 'targets',
       label: `${target.player} · ${target.cardDescription || 'watchlist'}`.trim(),
       detail: `Buy target ≤ $${(target.targetPrice || 0).toLocaleString()}`,
-      packed: packed.has(`target:${target.id}`),
+      packed: isPacked(`target:${target.id}`, false, packed, unpacked),
     });
   }
 
@@ -110,7 +150,7 @@ export function buildShowBag(input: {
       section: 'supplies',
       label: row.item,
       detail: row.category === 'prep' ? 'Prep checklist' : 'Show supplies',
-      packed: packed.has(`supply:${row.id}`) || Boolean(row.checked),
+      packed: isPacked(`supply:${row.id}`, Boolean(row.checked), packed, unpacked),
     });
   }
 

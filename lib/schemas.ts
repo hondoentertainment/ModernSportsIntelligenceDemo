@@ -355,6 +355,8 @@ export const WarRoomCommitteeExecutionActionSchema = z.object({
   rationale: z.string(),
   timestamp: z.string(),
   status: z.string(),
+  /** Optional lot id so sell tax/NAV preview can disambiguate duplicate year+player holdings. */
+  inventoryCardId: z.string().optional(),
 });
 
 /** Parsed body from Gemini structured output for the War Room committee flow. */

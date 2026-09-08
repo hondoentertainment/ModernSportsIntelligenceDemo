@@ -143,7 +143,8 @@ export class MultiAgentService {
                                         amount: { type: Type.NUMBER },
                                         rationale: { type: Type.STRING },
                                         timestamp: { type: Type.STRING },
-                                        status: { type: Type.STRING }
+                                        status: { type: Type.STRING },
+                                        inventoryCardId: { type: Type.STRING }
                                     },
                                     required: ["id", "type", "assetName", "amount", "rationale", "timestamp", "status"]
                                 }

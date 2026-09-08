@@ -1,15 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   SHOW_BAG_DISCLOSURE,
+  SHOW_BAG_UNPACKED_KEY,
   buildShowBag,
   downloadShowBagHtml,
   formatShowBagHtml,
   formatShowBagText,
   getPackedShowBagIds,
+  getUnpackedShowBagIds,
   toggleShowBagPacked,
 } from '../../lib/utils/showBag';
 import type { CardInventory, TargetWatchlist } from '../../types';
-import type { ShowChecklist } from '../../lib/utils/cardShowModeService';
+import { toggleChecklistItem, type ShowChecklist } from '../../lib/utils/cardShowModeService';
+import { store } from '../../lib/dal/syncStore';
 
 const card = (partial: Partial<CardInventory>): CardInventory => ({
   id: 'c1',
@@ -160,6 +163,43 @@ describe('showBag', () => {
     expect(toggleShowBagPacked('review:c1')).toEqual(['review:c1']);
     expect(getPackedShowBagIds()).toEqual(['review:c1']);
     expect(toggleShowBagPacked('review:c1')).toEqual([]);
+    expect(getUnpackedShowBagIds()).toEqual(['review:c1']);
+  });
+
+  it('lets users unpack supplies that start pre-checked on the Card Show checklist', () => {
+    const checklist: ShowChecklist[] = [
+      { id: 'p1', category: 'prep', item: 'Print list', checked: true, priority: 'low' },
+    ];
+    const input = { inventory: [], targets: [], reviewIds: [], checklist };
+    expect(buildShowBag(input).items.find((item) => item.id === 'supply:p1')?.packed).toBe(true);
+
+    expect(toggleShowBagPacked('supply:p1', true)).toEqual([]);
+    expect(getUnpackedShowBagIds()).toEqual(['supply:p1']);
+    expect(buildShowBag(input).items.find((item) => item.id === 'supply:p1')?.packed).toBe(false);
+
+    expect(toggleShowBagPacked('supply:p1', false)).toEqual(['supply:p1']);
+    expect(getUnpackedShowBagIds()).toEqual([]);
+    expect(buildShowBag(input).items.find((item) => item.id === 'supply:p1')?.packed).toBe(true);
+  });
+
+  it('infers packed state from the live checklist when toggling a supply without an override', () => {
+    expect(toggleShowBagPacked('supply:cl-001')).toEqual(['supply:cl-001']);
+    expect(getPackedShowBagIds()).toContain('supply:cl-001');
+
+    toggleChecklistItem('cl-018');
+    expect(toggleShowBagPacked('supply:cl-018')).toEqual(['supply:cl-001']);
+    expect(getUnpackedShowBagIds()).toContain('supply:cl-018');
+    expect(buildShowBag({ inventory: [], targets: [], reviewIds: [] }).items.find((item) => item.id === 'supply:cl-018')?.packed).toBe(false);
+    expect(toggleShowBagPacked('supply:cl-018')).toEqual(['supply:cl-001', 'supply:cl-018']);
+    expect(getUnpackedShowBagIds()).not.toContain('supply:cl-018');
+  });
+
+  it('ignores junk packed/unpacked store blobs', () => {
+    store.set('msi_show_bag_packed_v1', { nope: true });
+    store.set(SHOW_BAG_UNPACKED_KEY, 'nope');
+    expect(getPackedShowBagIds()).toEqual([]);
+    expect(getUnpackedShowBagIds()).toEqual([]);
+    expect(buildShowBag({ inventory: [], targets: [], reviewIds: [], checklist: [] }).counts.supplies).toBe(0);
   });
 
   it('downloads an HTML blob when document exists', () => {
@@ -175,10 +215,11 @@ describe('showBag', () => {
     const revoke = vi.fn();
     vi.stubGlobal('URL', { createObjectURL: () => 'blob:show', revokeObjectURL: revoke });
 
-    downloadShowBagHtml(buildShowBag({ inventory: [], targets: [], reviewIds: [], checklist: [] }));
+    const doc = buildShowBag({ inventory: [], targets: [], reviewIds: [], checklist: [] });
+    downloadShowBagHtml(doc);
     expect(click).toHaveBeenCalled();
     expect(revoke).toHaveBeenCalled();
-    expect(downloadShowBagHtml(buildShowBag({ inventory: [], targets: [], reviewIds: [], checklist: [] }), null)).toBeUndefined();
+    downloadShowBagHtml(doc, null);
     append.mockRestore();
     vi.restoreAllMocks();
   });

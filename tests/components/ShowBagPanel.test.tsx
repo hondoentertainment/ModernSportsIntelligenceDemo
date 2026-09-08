@@ -4,7 +4,8 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import ShowBagPanel from '../../components/ShowBagPanel';
 import { makeCard } from '../helpers';
-import { SHOW_BAG_DISCLOSURE, getPackedShowBagIds } from '../../lib/utils/showBag';
+import { SHOW_BAG_DISCLOSURE, getPackedShowBagIds, getUnpackedShowBagIds } from '../../lib/utils/showBag';
+import { toggleChecklistItem } from '../../lib/utils/cardShowModeService';
 import { store } from '../../lib/dal/syncStore';
 import type { TargetWatchlist } from '../../types';
 
@@ -47,6 +48,17 @@ describe('ShowBagPanel', () => {
     expect(checkbox).not.toBeChecked();
     await user.click(checkbox);
     expect(getPackedShowBagIds()).toContain('target:t-wemby');
+  });
+
+  it('unchecks a pre-checked supply from the packing list', async () => {
+    const user = userEvent.setup();
+    toggleChecklistItem('cl-018');
+    render(<ShowBagPanel inventory={[makeCard({ id: 'held' })]} targets={[]} />);
+    const checkbox = screen.getByRole('checkbox', { name: /print want list/i });
+    expect(checkbox).toBeChecked();
+    await user.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+    expect(getUnpackedShowBagIds()).toContain('supply:cl-018');
   });
 
   it('offers an HTML download without pulling jsPDF', async () => {
