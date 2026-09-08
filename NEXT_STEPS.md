@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-08 · Scout-to-Acquire Playwright smoke, thin P2P intent board, `@google/genai` 2.x, adjacent hobby correlation, price-alert haptics, disclosed centering heuristic. Previous edition 2026-09-07: seasonal windows / catalysts / pop weighting / trade proposals / briefing HTML / Auto-Pilot idempotency.
+> Refreshed 2026-09-08 · **Post-#130 / September 2026 Wave-2** (quiet hours, non-MLB PvP, local sparklines, show bag, grading ROI lite, Auto-Pilot NAV/tax preview). Previous edition same day: Scout-to-Acquire Playwright smoke, thin P2P intent board, `@google/genai` 2.x, adjacent hobby correlation, price-alert haptics, disclosed centering heuristic (#130).
 
 ## Current state in one paragraph
 
@@ -18,18 +18,37 @@ MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger acro
 | Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show                      |
 | eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel** (after restore)                 |
 
+## Post-#130 / September 2026 Wave-2 — Shipped (2026-09-08)
+
+Demo/DAL-safe batch on existing Alerts / Profile / Notification Center, Dashboard + NBA/NFL/NHL hubs, Collection, Card Show Mode, and War Room Auto-Pilot. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` flips, no new Labs pages, no Tailwind 4 / `@eslint/js` 10 half-migrate, no jsPDF on these live paths.**
+
+**What already shipped through #130:** Scout-to-Acquire Playwright smoke; thin P2P intent board; `@google/genai` 2.x; adjacent hobby correlation (lite); price-alert haptics; disclosed centering heuristic (lite). Plus the 2026-09-07 engineering batch (seasonal windows, catalysts, MLB PvP, pop weighting, trade proposals, briefing HTML, Auto-Pilot idempotency / collars, Consensus View, Comps Used, tax-lot selector).
+
+| Slice                                  | Label                                           | Where                                                                                                                                                                                                                                                                                                        |
+| -------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Alert quiet hours + channel prefs**  | **lite** (extends #130 haptics)                 | `msi_alert_preferences_v1` via MSI store. Quiet hours, haptic on/off, Notification API on/off. Gated on NotificationService / haptics / watchlist / target-price / syncScheduler. Settings on `/alerts`, Profile Native Experience, Notification Center prefs. In-app alerts still record. **Not** Web Push. |
+| **Non-MLB Performance vs Price**       | **partial** (parity with MLB Dashboard binding) | NBA / NFL / NHL hubs + Dashboard when those leagues are selected. Seeded `getStatLeaders` bound to collection marks. Disclosed heuristic — not a live feed.                                                                                                                                                  |
+| **Local valuation / price sparklines** | **lite**                                        | Collection grid + list from stored snapshots, then dated sold comps. Thin/empty states stay honest. **No** new Supabase `price_history` table.                                                                                                                                                               |
+| **Card-show “show bag”**               | **lite**                                        | Printable/checklist packing list from swipe-triage review + consignment + active targets + Card Show supplies. `/card-show-mode` + Collection mobile. Local-only.                                                                                                                                            |
+| **Grading ROI lite**                   | **lite** (Priority 3.2)                         | Raw vs PSA 9/10 on Collection from sold-comp titles or disclosed multipliers + economy fee. Live PSA owner-held.                                                                                                                                                                                             |
+| **Auto-Pilot NAV + tax preview**       | **lite** (Phase 33 leftover)                    | War Room cycle preview: before/after NAV and rough ST/LT tax via `FiscalService.simulateExit`. Advisory — no live execution.                                                                                                                                                                                 |
+
+**Still owner-held (do not start from this PR):** #77 Supabase restore, eBay/PSA/Stripe keys and smokes, fractional-vault legal flip, custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness.
+
+**Deferred / not this wave:** Tailwind 4; `@eslint/js` 10; jsPDF/html2canvas on live entry graph; Web Push / server push; new Labs pages; live non-MLB sports wires; new `price_history` table; partner show-bag APIs.
+
 ## Engineering-friendly NEXT_STEPS — Shipped (2026-09-08)
 
 Demo/DAL-safe slices. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` flips, no new Labs pages.**
 
-| Slice                                       | Where                                                                                                                                                                                                 |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Scout-to-Acquire Playwright smoke**       | `tests/e2e/scout-to-acquire.spec.ts` — demo login, seeded Collection holding, Dashboard → War Room scout desk, Acquisition campaign persist. Added to `test:e2e:smoke`. No live Gemini refresh click. |
-| **Thin P2P intent board** (roadmap #7 lite) | Collection panel + Liquidity Pool summary. Local bids/asks via `msi_p2p_intents_v1`. **Not** live trading, matching, escrow, or MSI-house inventory.                                                  |
-| **`@google/genai` 2.x**                     | Major bump; `generateContent` / `Type` adapters unchanged (v2 breaks Interactions only).                                                                                                              |
-| **Adjacent hobby correlation** (roadmap #15 lite) | Seeded Pokémon / MTG / memorabilia on existing Cross-Asset Correlation page, dashboard widget, and correlation modals. Disclosed synthetic proxies — **not** live feeds. No new Labs pages. |
-| **Price-alert haptics** (roadmap #2)        | Vibration API on watchlist / target-price / NotificationService paths (`lib/utils/haptics.ts`). No-ops on desktop.                                                                                    |
-| **Centering heuristic** (roadmap #17 lite)  | Disclosed non-CV geometry/metadata stub on Visual Audit + Centering Analyzer. **Not** a production CV model and **not** a PSA prediction. No heavy CV library.                                         |
+| Slice                                             | Where                                                                                                                                                                                                 |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Scout-to-Acquire Playwright smoke**             | `tests/e2e/scout-to-acquire.spec.ts` — demo login, seeded Collection holding, Dashboard → War Room scout desk, Acquisition campaign persist. Added to `test:e2e:smoke`. No live Gemini refresh click. |
+| **Thin P2P intent board** (roadmap #7 lite)       | Collection panel + Liquidity Pool summary. Local bids/asks via `msi_p2p_intents_v1`. **Not** live trading, matching, escrow, or MSI-house inventory.                                                  |
+| **`@google/genai` 2.x**                           | Major bump; `generateContent` / `Type` adapters unchanged (v2 breaks Interactions only).                                                                                                              |
+| **Adjacent hobby correlation** (roadmap #15 lite) | Seeded Pokémon / MTG / memorabilia on existing Cross-Asset Correlation page, dashboard widget, and correlation modals. Disclosed synthetic proxies — **not** live feeds. No new Labs pages.           |
+| **Price-alert haptics** (roadmap #2)              | Vibration API on watchlist / target-price / NotificationService paths (`lib/utils/haptics.ts`). No-ops on desktop.                                                                                    |
+| **Centering heuristic** (roadmap #17 lite)        | Disclosed non-CV geometry/metadata stub on Visual Audit + Centering Analyzer. **Not** a production CV model and **not** a PSA prediction. No heavy CV library.                                        |
 
 **Deferred this pass:** Tailwind 4 (high-risk class/config migration — left on 3.4.19; do not half-migrate). `@eslint/js` 10 (eslint major yak-shave; keep `@eslint/js` 9.x with eslint 10). Full P2P order book / exchange. Production centering CV / PSA-grade model. Custom vanity domain.
 

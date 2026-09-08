@@ -255,6 +255,25 @@ const AutoPilotControl: React.FC = () => {
                             Cash Delta {preview.impact.projectedNetCashDelta >= 0 ? '+' : ''}${preview.impact.projectedNetCashDelta.toFixed(0)}
                         </span>
                     </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[10px] uppercase tracking-widest text-slate-400">
+                        <div>
+                            <p>NAV before</p>
+                            <p className="mt-1 font-mono text-white">${preview.impact.startingValue.toFixed(0)}</p>
+                        </div>
+                        <div>
+                            <p>NAV after</p>
+                            <p className="mt-1 font-mono text-white">${preview.impact.projectedPostCycleValue.toFixed(0)}</p>
+                        </div>
+                        <div>
+                            <p>ST tax (est.)</p>
+                            <p className="mt-1 font-mono text-amber-200">${preview.impact.shortTermTaxDelta.toFixed(0)}</p>
+                        </div>
+                        <div>
+                            <p>LT tax (est.)</p>
+                            <p className="mt-1 font-mono text-cyan-200">${preview.impact.longTermTaxDelta.toFixed(0)}</p>
+                        </div>
+                    </div>
+                    <p className="text-[10px] leading-relaxed text-slate-500">{preview.impact.disclosure}</p>
                     <WhyRecommendationPanel view={buildWhyFromThesis(preview.thesis)} compact />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {preview.actions.map(action => (

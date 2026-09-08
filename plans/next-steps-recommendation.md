@@ -48,7 +48,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
   - **MLB Stats API:** Map player IDs to performance endpoints to power "Performance vs. Price" correlation charts.
 - **Current state:**
   - **eBay:** **Partially shipped** — Vercel handler `api/market/ebay.ts` (OAuth client-credentials, Zod validation, rate limiting, structured logging); client surface `lib/ebayApi.ts` + feature flags (`VITE_FF_REAL_EBAY`, etc.). FMV across the product still mixes AI estimates with optional real calls — next step is **defaulting more flows to sold/comp-backed pricing** where keys are configured.
-  - **MLB:** **Client/API layer present** — `lib/utils/mlbApi.ts` (e.g. player stats by ID/season). **Performance vs Price** chart on Dashboard binds StatsService hitting lines to collection marks when names match (2026-09-07). Production key/ops hardening still owner-held if not env-complete.
+  - **MLB:** **Client/API layer present** — `lib/utils/mlbApi.ts` (e.g. player stats by ID/season). **Performance vs Price** chart on Dashboard binds StatsService hitting lines to collection marks when names match (2026-09-07). **Non-MLB (Wave-2):** NBA / NFL / NHL hubs + Dashboard bind seeded desk stats the same way, with heuristic disclosure. Production key/ops hardening still owner-held if not env-complete.
 - **Status:** **Integration scaffolding live** — shift focus from "can we call the API?" to **coverage** (which screens use real comps by default) and **observability** in deploy.
 
 ### 2.2 Automated Market Sync Scheduler
@@ -60,8 +60,8 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
   - **Price Alerts:** Add browser push notification triggers when a "Watchlist" item drops below its target acquisition price.
 - **Current state:**
   - **Scheduler:** Shipped — `lib/utils/syncScheduler.ts` (`SyncScheduler`, configurable **daily/hourly/weekly/manual**, watchdog heartbeat, `store`-backed config); integrates with `lib/utils/marketSync.ts` (portfolio + watchlist sync helpers, stale checks including 24h semantics).
-  - **Notifications:** **In-app / Notification API + haptics (2026-09-08)** — `syncScheduler` can request notification permission; `lib/utils/haptics.ts` + `notifications.ts` vibrate when a watchlist / target-price threshold fires. Watchlist target UX exists in product surfaces (e.g. alerts/watchlist cards); **dedicated Web Push subscription + server-triggered pushes** remain optional product work if you want off-device alerts at scale.
-- **Status:** **Client scheduling and sync loop implemented** — remaining work is **product defaults** (what runs automatically for signed-in users) and, if required, **full push infrastructure** beyond on-device notifications.
+  - **Notifications:** **In-app / Notification API + haptics (2026-09-08) + quiet hours (Wave-2)** — `syncScheduler` can request notification permission; `lib/utils/haptics.ts` + `notifications.ts` vibrate when a watchlist / target-price threshold fires. Delivery honors `msi_alert_preferences_v1` (quiet hours window, haptic on/off, Notification API on/off). Settings live on `/alerts`, Profile, and Notification Center. Watchlist target UX exists in product surfaces; **dedicated Web Push subscription + server-triggered pushes** remain optional product work if you want off-device alerts at scale.
+- **Status:** **Client scheduling, sync loop, and on-device delivery prefs implemented** — remaining work is **product defaults** (what runs automatically for signed-in users) and, if required, **full push infrastructure** beyond on-device notifications.
 
 ---
 
@@ -83,7 +83,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 - **Actions:**
   - **ROI Simulation:** Build a tool that compares the user's raw card estimated value vs. current PSA 9/10 market prices.
   - **Service Recommendations:** Link to PSA/SGC submission guidelines based on card value brackets.
-- **Status:** Conceptual.
+- **Status:** **Shipped (lite, 2026-09-08 Wave-2)** — Collection `GradingRoiLitePanel` compares raw mark vs PSA 9/10 using sold-comp titles when present, otherwise disclosed multipliers + economy fee. Service recommendations stay on existing Grading Calculator / PreGrade surfaces. **Live PSA remains owner-held.**
 
 ---
 
@@ -199,10 +199,10 @@ Modern Sports Intelligence has successfully reached the "Sentinel" stage (Phase 
 
 **Objective:** Move Auto-Pilot from advisory to controlled execution.
 
-- [ ] Add hard risk collars (daily budget, per-asset cap, max drawdown stop).
-- [ ] Require human approval checkpoints for high-dollar or low-confidence actions.
+- [x] Add hard risk collars (daily budget, per-asset cap, max drawdown stop) (2026-09-07).
+- [x] Require human approval checkpoints for high-dollar or low-confidence actions (2026-09-07).
 - [x] Add local idempotency keys + duplicate-action guards for autonomous actions (2026-09-07). External API retry contracts still open.
-- [ ] Expand simulation mode with before/after NAV and tax impact preview.
+- [x] Expand simulation mode with before/after NAV and tax impact preview (2026-09-08 Wave-2; advisory `FiscalService` / tax-lot helpers). Live marketplace execution still open.
 - **Exit Criteria:** No unapproved high-risk actions; full replayability of autonomous decision history.
 
 ### Phase 34: Guild Economics and Governance

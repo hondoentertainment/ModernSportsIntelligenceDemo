@@ -13,9 +13,13 @@ import type { PerformanceVsPricePoint } from '../lib/analytics/performanceVsPric
 
 interface Props {
   points: PerformanceVsPricePoint[];
+  subtitle?: string;
 }
 
-const PerformanceVsPriceChart: React.FC<Props> = ({ points }) => {
+const PerformanceVsPriceChart: React.FC<Props> = ({
+  points,
+  subtitle = 'MLB Stats API line vs collection mark · not a valuation model',
+}) => {
   if (points.length === 0) return null;
 
   return (
@@ -23,7 +27,7 @@ const PerformanceVsPriceChart: React.FC<Props> = ({ points }) => {
       <div className="mb-4">
         <h3 className="text-xl font-bebas tracking-wide text-white">Performance vs Price</h3>
         <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
-          MLB Stats API line vs collection mark · not a valuation model
+          {subtitle}
         </p>
       </div>
       <div className="h-56 w-full">

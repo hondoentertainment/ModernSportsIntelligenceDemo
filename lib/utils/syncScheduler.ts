@@ -15,6 +15,7 @@ import {
   syncWatchlistPrices,
   WatchlistSyncResult,
 } from './marketSync';
+import { shouldFireBrowserNotification } from './alertPreferences';
 import { vibrateForPriceAlert } from './haptics';
 
 migrateLocalStorageJsonKeyOnce('cardx_sync_config', 'msi_sync_scheduler_config', 'msi_migration_done_sched_cfg_v1');
@@ -324,6 +325,7 @@ export class SyncScheduler {
      * Show browser notification
      */
     private showNotification(title: string, body: string): void {
+        if (!shouldFireBrowserNotification()) return;
         if (Notification.permission === 'granted') {
             new Notification(title, {
                 body,

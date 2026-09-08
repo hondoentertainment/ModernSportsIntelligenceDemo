@@ -32,7 +32,7 @@ import AddAssetModal from '../components/AddAssetModal';
 import OCRIngestionModal from '../components/OCRIngestionModal';
 import { getRarityTier, getTierStyles } from '../lib/utils/rarity';
 import { generatePopData, ScarcityService } from '../lib/analytics/scarcityService';
-import { getPriceTrend, getSparklineData } from '../lib/analytics/priceHistory';
+import { getCardSparkline, getPriceTrend, getPriceTrendForCard, getSparklineData } from '../lib/analytics/priceHistory';
 import ImageLightbox from '../components/ImageLightbox';
 import GradingAuditModal from '../components/GradingAuditModal';
 import { ExitStrategyModal } from '../components/ExitStrategyModal';
@@ -67,6 +67,8 @@ type SortDir = 'asc' | 'desc';
 const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail'));
 const TradeProposalPanel = lazy(() => import('../components/TradeProposalPanel'));
 const P2PIntentBoard = lazy(() => import('../components/P2PIntentBoard'));
+const ShowBagPanel = lazy(() => import('../components/ShowBagPanel'));
+const GradingRoiLitePanel = lazy(() => import('../components/GradingRoiLitePanel'));
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -357,6 +359,16 @@ const Collection: React.FC = () => {
     onOpenConsignment: openConsignment,
   };
 
+  const sparklineForId = useCallback((id: string, limit?: number) => {
+    const card = inventory.find((item) => item.id === id);
+    return card ? getCardSparkline(card, limit).values : getSparklineData(id, limit);
+  }, [inventory]);
+
+  const trendForId = useCallback((id: string) => {
+    const card = inventory.find((item) => item.id === id);
+    return card ? getPriceTrendForCard(card) : getPriceTrend(id);
+  }, [inventory]);
+
   const filteredInventory = useMemo(() => {
     return inventory.filter(c => {
       const matchesSearch = c.player.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -588,6 +600,8 @@ const Collection: React.FC = () => {
               <SeasonalWindowRail inventory={inventory} />
               <TradeProposalPanel inventory={inventory} />
               <P2PIntentBoard inventory={inventory} />
+              <GradingRoiLitePanel inventory={inventory} />
+              <ShowBagPanel inventory={inventory} targets={targets} />
             </Suspense>
           </LazyErrorBoundary>
         </div>
@@ -614,20 +628,24 @@ const Collection: React.FC = () => {
             <button
               type="button"
               aria-label="Grid view"
+              title="Grid view"
               aria-pressed={viewMode === 'grid'}
               onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-muted hover:text-slate-200'}`}
+              className={`inline-flex min-h-[40px] items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'grid' ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-muted hover:text-slate-200'}`}
             >
-              <Grid size={18} />
+              <Grid size={18} aria-hidden />
+              Grid
             </button>
             <button
               type="button"
               aria-label="List view"
+              title="List view"
               aria-pressed={viewMode === 'list'}
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-muted hover:text-slate-200'}`}
+              className={`inline-flex min-h-[40px] items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'list' ? 'bg-brand-charcoal text-white shadow-lg' : 'text-brand-muted hover:text-slate-200'}`}
             >
-              <List size={18} />
+              <List size={18} aria-hidden />
+              List
             </button>
           </div>
         </div>
@@ -713,6 +731,9 @@ const Collection: React.FC = () => {
                   {filterReviewOnly ? 'Show all' : `${reviewIds.length} in review`}
                 </button>
               )}
+              <Link to="/card-show-mode" className="ml-3 underline text-emerald-300">
+                Show bag
+              </Link>
             </div>
 
             {/* Assets Grid */}
@@ -725,8 +746,8 @@ const Collection: React.FC = () => {
                   rowGap={ROW_GAP}
                   getRarityTier={getRarityTier}
                   getTierStyles={getTierStyles}
-                  getSparklineData={getSparklineData}
-                  getPriceTrend={getPriceTrend}
+                  getSparklineData={sparklineForId}
+                  getPriceTrend={trendForId}
                   onOpenLightbox={openLightbox}
                   isItemSelected={(id) => selectedIds.has(id)}
                   onToggleSelect={toggleSelection}
@@ -741,8 +762,8 @@ const Collection: React.FC = () => {
                       card={card}
                       getRarityTier={getRarityTier}
                       getTierStyles={getTierStyles}
-                      getSparklineData={getSparklineData}
-                      getPriceTrend={getPriceTrend}
+                      getSparklineData={sparklineForId}
+                      getPriceTrend={trendForId}
                       onOpenLightbox={openLightbox}
                       isSelected={selectedIds.has(card.id)}
                       onToggleSelect={toggleSelection}
@@ -782,6 +803,7 @@ const Collection: React.FC = () => {
                       <th className="px-8 py-4">Details</th>
                       <th className="px-8 py-4 text-right">P-Price</th>
                       <th className="px-8 py-4 text-right">Market</th>
+                      <th className="px-8 py-4 text-center">Trend</th>
                       <th className="px-8 py-4 text-center">Grade</th>
                       <th className="px-8 py-4 text-center">Liquidity</th>
                       <th className="px-8 py-4"></th>

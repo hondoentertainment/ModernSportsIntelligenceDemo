@@ -81,7 +81,8 @@ import PricingTruthHealthPanel from '../components/PricingTruthHealthPanel.tsx';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice.tsx';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner.tsx';
 import MarketLedgerStrip from '../components/MarketLedgerStrip.tsx';
-import { buildPerformanceVsPriceSeries } from '../lib/analytics/performanceVsPrice.ts';
+import { buildPerformanceVsPriceSeries, leagueToHubSport } from '../lib/analytics/performanceVsPrice.ts';
+import LeaguePerformanceVsPricePanel from '../components/LeaguePerformanceVsPricePanel.tsx';
 import {
   computeFreshVerifiableCoverage,
   FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
@@ -349,8 +350,11 @@ const Dashboard: React.FC = () => {
     if (userSettings?.primarySport === 'Baseball') return 'MLB';
     if (userSettings?.primarySport === 'Basketball') return 'NBA';
     if (userSettings?.primarySport === 'Football') return 'NFL';
+    if (userSettings?.primarySport === 'Hockey') return 'NHL';
     return 'MLB';
   });
+
+  const leagueHubSport = leagueToHubSport(activeLeague);
 
   const leagueData = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -375,7 +379,8 @@ const Dashboard: React.FC = () => {
     MLB: "Market is stabilizing after off-season volatility. High demand for pristine vintage assets.",
     MiLB: "Scouting velocity is up 14%. Focus on AAA breakouts before summer call-ups.",
     NBA: "Liquidity peaking as playoffs approach. Star potential drives extreme parity in mid-tier assets.",
-    NFL: "Seasonal cooldown in effect. Prime accumulation window for defensive anchors and rookie QB variants."
+    NFL: "Seasonal cooldown in effect. Prime accumulation window for defensive anchors and rookie QB variants.",
+    NHL: "Seeded desk only — bind hockey holdings to MacKinnon / McDavid-class names for heuristic Performance vs Price."
   };
 
   return (
@@ -1060,7 +1065,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  {['MLB', 'MiLB', 'NBA', 'NFL'].map((lg) => (
+                  {['MLB', 'MiLB', 'NBA', 'NFL', 'NHL'].map((lg) => (
                     <button
                       key={lg}
                       onClick={() => setActiveLeague(lg)}
@@ -1214,6 +1219,11 @@ const Dashboard: React.FC = () => {
                     <PerformanceVsPriceChart points={performanceVsPrice} />
                   </Suspense>
                 </LazyErrorBoundary>
+              </div>
+            )}
+            {leagueHubSport && (
+              <div className="mt-12">
+                <LeaguePerformanceVsPricePanel sport={leagueHubSport} inventory={inventory} />
               </div>
             )}
           </section>
