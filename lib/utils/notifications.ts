@@ -1,4 +1,5 @@
 import { logger } from '../logger';
+import { shouldFireBrowserNotification, shouldFireHaptic } from './alertPreferences';
 import { PRICE_ALERT_HAPTIC_PATTERN, vibrateIfAvailable } from './haptics';
 
 export class NotificationService {
@@ -17,13 +18,16 @@ export class NotificationService {
         vibrateIfAvailable(pattern);
     }
 
-    static async notify(title: string, options?: NotificationOptions & { vibrate?: boolean }) {
+    static async notify(title: string, options?: NotificationOptions & { vibrate?: boolean; bypassQuietHours?: boolean }) {
+        const bypass = options?.bypassQuietHours === true;
+        if (!bypass && !shouldFireBrowserNotification()) {
+            return;
+        }
         if (!('Notification' in window) || Notification.permission !== 'granted') {
             return;
         }
 
-        // Haptic feedback on mobile when notification fires
-        if (options?.vibrate !== false) {
+        if (options?.vibrate !== false && (bypass || shouldFireHaptic())) {
             this.vibrate();
         }
 
@@ -40,14 +44,15 @@ export class NotificationService {
     }
 
     static async sendPriceAlert(player: string, currentPrice: number, targetPrice: number) {
-        // Strong vibration pattern for price alerts — attention-critical
-        this.vibrate(PRICE_ALERT_HAPTIC_PATTERN);
+        if (shouldFireHaptic()) {
+            this.vibrate(PRICE_ALERT_HAPTIC_PATTERN);
+        }
 
-        this.notify(`Target Hit: ${player}`, {
+        await this.notify(`Target Hit: ${player}`, {
             body: `Current market price is $${currentPrice.toLocaleString()}, reaching your target of $${targetPrice.toLocaleString()}.`,
             tag: `price-alert-${player}`,
             data: { url: '/#/alerts' },
-            vibrate: false // Already vibrated above with custom pattern
+            vibrate: false
         });
     }
 
@@ -61,4 +66,7 @@ export class NotificationService {
 }
 
 export const requestNotificationPermission = () => NotificationService.requestPermission();
-export const sendLocalNotification = (title: string, options?: NotificationOptions) => NotificationService.notify(title, options);
+export const sendLocalNotification = (
+    title: string,
+    options?: NotificationOptions & { vibrate?: boolean; bypassQuietHours?: boolean },
+) => NotificationService.notify(title, options);

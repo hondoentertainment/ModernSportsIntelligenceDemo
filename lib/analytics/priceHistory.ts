@@ -268,20 +268,89 @@ export function getSparklineData(cardId: string, limit: number = 10): number[] {
         .reverse();
 }
 
+export type CardSparklineSource = 'snapshots' | 'comps' | 'thin';
+
+export interface CardSparkline {
+    values: number[];
+    source: CardSparklineSource;
+    disclosure: string;
+}
+
+function trendFromValues(data: number[]): 'up' | 'down' | 'stable' {
+    if (data.length < 2) return 'stable';
+    const first = data[0];
+    const last = data[data.length - 1];
+    if (!first) return 'stable';
+    const changePercent = ((last - first) / first) * 100;
+    if (changePercent > 2) return 'up';
+    if (changePercent < -2) return 'down';
+    return 'stable';
+}
+
+function compsToValues(
+    sales: Array<{ price: number; totalPrice?: number; soldAt: string }> | undefined,
+    limit: number,
+): number[] {
+    if (!sales || sales.length === 0) return [];
+    return [...sales]
+        .filter((row) => {
+            const price = typeof row.totalPrice === 'number' && row.totalPrice > 0 ? row.totalPrice : row.price;
+            return Number.isFinite(price) && price > 0 && Boolean(row.soldAt);
+        })
+        .sort((a, b) => new Date(a.soldAt).getTime() - new Date(b.soldAt).getTime())
+        .map((row) => (typeof row.totalPrice === 'number' && row.totalPrice > 0 ? row.totalPrice : row.price))
+        .slice(-limit);
+}
+
+/**
+ * Local sparkline from stored snapshots, then dated sold comps.
+ * Honest thin state when fewer than two real points exist. No simulated tape.
+ */
+export function getCardSparkline(
+    card: { id: string; salesData?: Array<{ price: number; totalPrice?: number; soldAt: string }> },
+    limit: number = 10,
+): CardSparkline {
+    const snapshots = getSparklineData(card.id, limit);
+    if (snapshots.length >= 2) {
+        return {
+            values: snapshots,
+            source: 'snapshots',
+            disclosure: 'Local valuation snapshots — not a live exchange tape.',
+        };
+    }
+    const comps = compsToValues(card.salesData, limit);
+    if (comps.length >= 2) {
+        return {
+            values: comps,
+            source: 'comps',
+            disclosure: 'Sold/historical comps on this card — not a new price_history feed.',
+        };
+    }
+    return {
+        values: snapshots.length === 1 ? snapshots : comps,
+        source: 'thin',
+        disclosure: 'Not enough local points yet — awaiting snapshots or dated comps.',
+    };
+}
+
+export function getSparklineDataForCard(
+    card: { id: string; salesData?: Array<{ price: number; totalPrice?: number; soldAt: string }> },
+    limit: number = 10,
+): number[] {
+    return getCardSparkline(card, limit).values;
+}
+
+export function getPriceTrendForCard(
+    card: { id: string; salesData?: Array<{ price: number; totalPrice?: number; soldAt: string }> },
+): 'up' | 'down' | 'stable' {
+    return trendFromValues(getCardSparkline(card, 5).values);
+}
+
 /**
  * Calculate trend direction based on price history
  */
 export function getPriceTrend(cardId: string): 'up' | 'down' | 'stable' {
-    const data = getSparklineData(cardId, 5);
-    if (data.length < 2) return 'stable';
-
-    const first = data[0];
-    const last = data[data.length - 1];
-    const changePercent = ((last - first) / first) * 100;
-
-    if (changePercent > 2) return 'up';
-    if (changePercent < -2) return 'down';
-    return 'stable';
+    return trendFromValues(getSparklineData(cardId, 5));
 }
 
 /**

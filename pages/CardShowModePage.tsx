@@ -28,6 +28,8 @@ import {
   type ShowVendor,
   type ShowChecklist,
 } from '../lib/utils/cardShowModeService.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import ShowBagPanel from '../components/ShowBagPanel';
 import {
   BarChart,
   Bar,
@@ -39,6 +41,7 @@ import {
 } from 'recharts';
 
 const CardShowModePage: React.FC = () => {
+  const { inventory, targets } = useSupabaseInventory();
   const [shows, setShows] = useState<CardShow[]>([]);
   const [haul, setHaul] = useState<ShowHaul | null>(null);
   const [deals, setDeals] = useState<ShowDeal[]>([]);
@@ -161,6 +164,8 @@ const CardShowModePage: React.FC = () => {
           PSA: {isFeatureEnabled('USE_REAL_PSA') ? 'live' : 'demo badges'}
         </p>
       </div>
+
+      <ShowBagPanel inventory={inventory} targets={targets} />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

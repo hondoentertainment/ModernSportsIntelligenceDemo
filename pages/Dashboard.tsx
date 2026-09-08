@@ -81,7 +81,8 @@ import PricingTruthHealthPanel from '../components/PricingTruthHealthPanel.tsx';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice.tsx';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner.tsx';
 import MarketLedgerStrip from '../components/MarketLedgerStrip.tsx';
-import { buildPerformanceVsPriceSeries } from '../lib/analytics/performanceVsPrice.ts';
+import { buildLeaguePerformanceVsPriceSeries, buildPerformanceVsPriceSeries, leagueToHubSport, SEEDED_LEAGUE_PVP_DISCLOSURE } from '../lib/analytics/performanceVsPrice.ts';
+import { getStatLeaders } from '../lib/social/leagueHubService.ts';
 import {
   computeFreshVerifiableCoverage,
   FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
@@ -349,8 +350,18 @@ const Dashboard: React.FC = () => {
     if (userSettings?.primarySport === 'Baseball') return 'MLB';
     if (userSettings?.primarySport === 'Basketball') return 'NBA';
     if (userSettings?.primarySport === 'Football') return 'NFL';
+    if (userSettings?.primarySport === 'Hockey') return 'NHL';
     return 'MLB';
   });
+
+  const leagueHubSport = leagueToHubSport(activeLeague);
+  const leaguePerformanceVsPrice = useMemo(
+    () =>
+      leagueHubSport
+        ? buildLeaguePerformanceVsPriceSeries(inventory, getStatLeaders(leagueHubSport), leagueHubSport)
+        : [],
+    [inventory, leagueHubSport],
+  );
 
   const leagueData = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -1212,6 +1223,18 @@ const Dashboard: React.FC = () => {
                 <LazyErrorBoundary compact>
                   <Suspense fallback={<WidgetLoadingFallback />}>
                     <PerformanceVsPriceChart points={performanceVsPrice} />
+                  </Suspense>
+                </LazyErrorBoundary>
+              </div>
+            )}
+            {leagueHubSport && leaguePerformanceVsPrice.length > 0 && (
+              <div className="mt-12">
+                <LazyErrorBoundary compact>
+                  <Suspense fallback={<WidgetLoadingFallback />}>
+                    <PerformanceVsPriceChart
+                      points={leaguePerformanceVsPrice}
+                      subtitle={SEEDED_LEAGUE_PVP_DISCLOSURE}
+                    />
                   </Suspense>
                 </LazyErrorBoundary>
               </div>

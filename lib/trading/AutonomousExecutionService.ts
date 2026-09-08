@@ -12,6 +12,7 @@ import {
     leagueMatchesPreference,
     timeHorizonSellMultiplier,
 } from "../utils/agentPreferences";
+import { simulateAutopilotImpact } from "./autoPilotImpactPreview";
 
 const STORAGE_KEY = 'msi_autopilot_config';
 const ACTIONS_KEY = 'msi_autonomous_actions';
@@ -280,21 +281,7 @@ export class AutonomousExecutionService {
     }
 
     static simulateCycleImpact(inventory: CardInventory[], actions: AutonomousAction[]) {
-        const startingValue = inventory.reduce((sum, c) => sum + (c.currentValue || 0), 0);
-        const buySpend = actions
-            .filter(a => a.type === 'BUY' && a.policyDecision !== 'blocked')
-            .reduce((sum, a) => sum + a.amount, 0);
-        const sellValue = actions
-            .filter(a => a.type === 'SELL' && a.policyDecision !== 'blocked')
-            .reduce((sum, a) => sum + a.amount, 0);
-
-        return {
-            startingValue,
-            projectedBuySpend: buySpend,
-            projectedSellValue: sellValue,
-            projectedNetCashDelta: sellValue - buySpend,
-            projectedPostCycleValue: startingValue + (sellValue - buySpend)
-        };
+        return simulateAutopilotImpact(inventory, actions);
     }
 
     static async persistActionRecommendations(

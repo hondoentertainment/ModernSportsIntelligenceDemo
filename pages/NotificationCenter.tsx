@@ -50,6 +50,7 @@ import {
   NotificationRule,
 } from '../lib/utils/realTimeNotificationService';
 import { useRealtimeNotifications } from '../lib/utils/useRealtimeNotifications';
+import AlertDeliverySettings from '../components/AlertDeliverySettings';
 
 // ---- Helpers ----
 
@@ -456,9 +457,10 @@ const NotificationCenter: React.FC = () => {
 
   const renderPreferences = () => (
     <div className="space-y-6">
+      <AlertDeliverySettings compact />
       <div>
         <h3 className="text-lg font-semibold text-slate-100 mb-1">Channel Preferences</h3>
-        <p className="text-sm text-slate-400 mb-4">Configure how you receive notifications for each channel.</p>
+        <p className="text-sm text-slate-400 mb-4">Configure how you receive notifications for each channel. Global quiet hours above gate haptics and browser alerts.</p>
       </div>
 
       <div className="space-y-3">

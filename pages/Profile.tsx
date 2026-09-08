@@ -8,6 +8,7 @@ import { useToast } from '../contexts/ToastContext';
 import { useAuth } from '../contexts/AuthContext';
 import { MOCK_TEAMS, SPORTS } from '../constants';
 import { requestNotificationPermission, sendLocalNotification } from '../lib/utils/notifications';
+import AlertDeliverySettings from '../components/AlertDeliverySettings';
 import {
   getMigrationConflictPolicy,
   setMigrationConflictPolicy,
@@ -303,7 +304,10 @@ const Profile: React.FC = () => {
                     ...s,
                     notifications: { ...s.notifications, priceAlerts: true }
                   }));
-                  sendLocalNotification('Notifications Enabled!', { body: 'You will now receive institutional price alerts.' });
+                  sendLocalNotification('Notifications Enabled!', {
+                    body: 'You will now receive institutional price alerts.',
+                    bypassQuietHours: true,
+                  });
                 }
               }}
               className={`w-full py-3 rounded-xl font-bold text-xs uppercase transition-all ${settings.notifications.priceAlerts ? 'bg-brand-lime/10 border border-brand-lime/30 text-brand-lime' : 'bg-brand-lime text-brand-charcoal'}`}
@@ -328,6 +332,8 @@ const Profile: React.FC = () => {
             </button>
           </div>
         </div>
+
+        <AlertDeliverySettings compact />
 
         <div className="pt-4 border-t border-slate-800">
           <h3 className="text-xs font-black text-brand-muted uppercase tracking-widest mb-4">Notification Channels</h3>

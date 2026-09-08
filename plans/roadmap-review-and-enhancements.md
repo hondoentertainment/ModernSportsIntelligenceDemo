@@ -1,7 +1,7 @@
 # Roadmap Review & Feature Enhancement Recommendations
 
 **Date:** 2026-03-08
-**Last updated:** 2026-09-08
+**Last updated:** 2026-09-08 (Post-#130 Wave-2)
 **Scope:** Review of the 24-phase roadmap (PRD.md) and strategic next-steps (next-steps-recommendation.md)
 
 ## Status addendum (2026-09-06)
@@ -29,9 +29,15 @@ Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-sa
 | Priority 6.1 Scout-to-Acquire E2E                | **Shipped (demo smoke, 2026-09-08)** — Collection → War Room → Acquisition. No live Gemini refresh.       |
 | #15 Adjacent hobby correlation                   | **Shipped (lite, 2026-09-08)** — seeded Pokémon / MTG / memorabilia on existing correlation surfaces.     |
 | #2 Price-alert haptics                           | **Shipped (2026-09-08)** — Vibration API alongside Notification / watchlist / target-price paths.         |
-| #17 Centering / grade-probability heuristic      | **Shipped (lite, 2026-09-08)** — disclosed non-CV stub on Visual Audit + Centering Analyzer.               |
+| #17 Centering / grade-probability heuristic      | **Shipped (lite, 2026-09-08)** — disclosed non-CV stub on Visual Audit + Centering Analyzer.              |
+| #2 remainder — quiet hours + channel prefs       | **Shipped (lite, Wave-2)** — `msi_alert_preferences_v1`; gates haptic + Notification API. Not Web Push.   |
+| Non-MLB Performance vs Price                     | **Shipped (partial, Wave-2)** — NBA/NFL/NHL desk + Dashboard binding. Seeded/heuristic disclosure.        |
+| Local valuation sparklines                       | **Shipped (lite, Wave-2)** — snapshots then sold comps on Collection. No new `price_history` table.       |
+| Card-show show bag                               | **Shipped (lite, Wave-2)** — review + consignment + targets + supplies packing list.                      |
+| Priority 3.2 Grading ROI lite                    | **Shipped (lite, Wave-2)** — raw vs PSA 9/10 simulated/comp estimate. Live PSA owner-held.                |
+| Phase 33 Auto-Pilot NAV + tax preview            | **Shipped (lite, Wave-2)** — advisory before/after NAV and rough ST/LT tax.                               |
 
-Still **owner-held / open:** tax-lot **regulatory** completeness (#16), full P2P order book / escrow (#7 remainder), **production centering CV** (#17 remainder), live marketplace / Stripe / Supabase restore, custom vanity domain. Tailwind 4 and `@eslint/js` 10 deferred. Schedule D–style (demo) packet and sold-comp consensus shipped 2026-09-06. Seasonal windows (#11), injury/txn catalysts (#9), pop weighting (3.1 lite), trade proposals (4.2 lite), briefing DOM bars + HTML download (5.1 lite), and Auto-Pilot idempotency shipped 2026-09-07. **Engineering shipped 2026-09-07:** Consensus View (#14), Comps Used (#10), FIFO/LIFO/Specific ID selector (demo), Auto-Pilot daily/drawdown collars + human approval. **Engineering shipped 2026-09-08:** thin P2P intent board, Scout-to-Acquire smoke, `@google/genai` 2.x, adjacent hobby correlation, price-alert haptics, centering heuristic.
+Still **owner-held / open:** #77 Supabase restore, eBay/PSA/Stripe, fractional-vault legal, custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness. Tailwind 4 and `@eslint/js` 10 deferred. **#130 shipped:** thin P2P intent board, Scout-to-Acquire smoke, `@google/genai` 2.x, adjacent hobby correlation, price-alert haptics, centering heuristic. **Wave-2 shipped on top of #130.**
 
 ---
 
@@ -65,7 +71,7 @@ Still **owner-held / open:** tax-lot **regulatory** completeness (#16), full P2P
 
 1. **Barcode/QR Scanner Integration** — Add camera-based barcode scanning (using the existing `CameraFeed.tsx`) to instantly look up cards by UPC or PSA cert number. This turns the phone into a "scanner gun" at card shows and significantly speeds up inventory ingestion at live events.
 
-2. **Haptic Feedback for Price Alerts** — **Shipped (2026-09-08):** Vibration API fires with watchlist / target-price / NotificationService paths (`lib/utils/haptics.ts`). No-ops when the API is missing. Dedicated Web Push remains optional.
+2. **Haptic Feedback for Price Alerts** — **Shipped (2026-09-08) + Wave-2 quiet hours:** Vibration API fires with watchlist / target-price / NotificationService paths (`lib/utils/haptics.ts`) and honors `msi_alert_preferences_v1`. No-ops when the API is missing. Dedicated Web Push remains optional.
 
 3. **Swipe Gestures for Triage** — Implement swipe-left/right on card items for quick "Add to Watchlist" / "Mark for Sale" actions. Card show use cases demand speed over precision.
 

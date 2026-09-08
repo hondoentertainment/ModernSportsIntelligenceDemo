@@ -15,6 +15,8 @@ import {
   LEAGUE_HUB_DATA_DISCLOSURE,
 } from '../lib/social/leagueHubService.ts';
 import LeagueHubDepthPanels from '../components/LeagueHubDepthPanels';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
+import LeaguePerformanceVsPricePanel from '../components/LeaguePerformanceVsPricePanel';
 
 type NBATab = 'standings' | 'draft' | 'calendar' | 'leaders' | 'market' | 'efficiency' | 'players' | 'teams';
 
@@ -39,6 +41,7 @@ const EVENT_TYPE_STYLES: Record<string, string> = {
 };
 
 const NBAHub: React.FC = () => {
+  const { inventory } = useSupabaseInventory();
   const [activeTab, setActiveTab] = useState<NBATab>('standings');
   const [standings, setStandings] = useState<LeagueStanding[]>([]);
   const [draftClass, setDraftClass] = useState<LeagueDraftClass[]>([]);
@@ -545,6 +548,8 @@ const NBAHub: React.FC = () => {
           </div>
         </div>
       )}
+
+      <LeaguePerformanceVsPricePanel sport="nba" inventory={inventory} />
     </div>
   );
 };

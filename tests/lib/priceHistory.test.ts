@@ -4,7 +4,10 @@ import {
   recordBatchSnapshots,
   getCardHistory,
   getSparklineData,
+  getSparklineDataForCard,
+  getCardSparkline,
   getPriceTrend,
+  getPriceTrendForCard,
   getPortfolioNAVHistory,
   clearPriceHistory,
   initPriceHistory,
@@ -177,6 +180,44 @@ describe('priceHistory', () => {
 
     it('returns empty array for non-existent card', () => {
       expect(getSparklineData('nonexistent')).toEqual([]);
+    });
+  });
+
+  describe('getCardSparkline', () => {
+    it('prefers local snapshots when two or more exist', () => {
+      recordPriceSnapshot('spark-1', 100);
+      recordPriceSnapshot('spark-1', 140);
+      const spark = getCardSparkline({
+        id: 'spark-1',
+        salesData: [
+          { price: 90, soldAt: '2025-01-01' },
+          { price: 95, soldAt: '2025-02-01' },
+        ],
+      });
+      expect(spark.source).toBe('snapshots');
+      expect(spark.values).toEqual([100, 140]);
+      expect(getSparklineDataForCard({ id: 'spark-1' })).toEqual([100, 140]);
+      expect(getPriceTrendForCard({ id: 'spark-1' })).toBe('up');
+    });
+
+    it('falls back to dated sold comps when snapshots are thin', () => {
+      const spark = getCardSparkline({
+        id: 'comp-only',
+        salesData: [
+          { price: 50, soldAt: '2025-01-01' },
+          { price: 80, totalPrice: 90, soldAt: '2025-03-01' },
+          { price: 0, soldAt: '2025-02-01' },
+        ],
+      });
+      expect(spark.source).toBe('comps');
+      expect(spark.values).toEqual([50, 90]);
+    });
+
+    it('stays thin with one snapshot or no dated comps', () => {
+      recordPriceSnapshot('thin-1', 25);
+      expect(getCardSparkline({ id: 'thin-1' }).source).toBe('thin');
+      expect(getCardSparkline({ id: 'empty', salesData: [] }).values).toEqual([]);
+      expect(getPriceTrendForCard({ id: 'empty' })).toBe('stable');
     });
   });
 

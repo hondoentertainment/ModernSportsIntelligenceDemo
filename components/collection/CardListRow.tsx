@@ -18,6 +18,8 @@ import ValuationProvenanceChips from '../ValuationProvenanceChips';
 import CompsUsedPanel from '../CompsUsedPanel';
 import ScarcityBadge from '../ScarcityBadge';
 import SeasonalWindowChip from '../SeasonalWindowChip';
+import Sparkline from '../Sparkline';
+import { getCardSparkline } from '../../lib/analytics/priceHistory';
 import CardItemActionIcons from './CardItemActionIcons';
 import { CardItemActionHandlers } from './cardItemActions';
 
@@ -45,6 +47,7 @@ const CardListRow: React.FC<CardListRowProps> = ({
     rationale: preferred.rationale || card.pricingRationale,
   });
   const displayNav = preferred.value || card.currentValue;
+  const sparkline = getCardSparkline(card);
 
   return (
     <tr className={`hover:bg-brand-lime/5 transition-colors group ${isSelected ? 'bg-brand-lime/10' : ''}`}>
@@ -105,6 +108,12 @@ const CardListRow: React.FC<CardListRowProps> = ({
           title={provenanceTitle}
         />
         <CompsUsedPanel compact view={compsUsedForPreferred(preferred, card.salesData)} />
+      </td>
+      <td className="px-8 py-4">
+        <Sparkline data={sparkline.values} showTrend={true} height={28} />
+        <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-brand-muted">
+          {sparkline.source === 'thin' ? 'Awaiting points' : sparkline.source}
+        </p>
       </td>
       <td className="px-8 py-4 text-center text-[10px] font-black uppercase">
         {card.isGraded ? `${card.gradingCompany} ${card.grade}` : 'Raw'}

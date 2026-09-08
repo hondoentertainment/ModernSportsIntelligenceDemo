@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAlerts } from '../lib/utils/useAlerts.ts';
 import { AlertType } from '../types.ts';
+import AlertDeliverySettings from '../components/AlertDeliverySettings';
 
 const Alerts: React.FC = () => {
   const {
@@ -201,6 +202,7 @@ const Alerts: React.FC = () => {
 
         {/* Sidebar */}
         <div className="space-y-12">
+          <AlertDeliverySettings />
           <section className="bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 shadow-2xl">
             <h2 className="text-2xl font-bebas tracking-widest mb-2 text-white">Alert Stats</h2>
             <p className="text-xs text-brand-muted font-medium mb-8">Your notification summary.</p>
