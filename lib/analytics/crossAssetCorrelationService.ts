@@ -14,7 +14,12 @@ export type AlternativeAsset =
   | 'art'
   | 'wine'
   | 'vintage_cars'
-  | 'sneakers';
+  | 'sneakers'
+  | 'pokemon'
+  | 'mtg'
+  | 'memorabilia';
+
+export const ADJACENT_HOBBY_ALT_IDS: AlternativeAsset[] = ['pokemon', 'mtg', 'memorabilia'];
 
 export type MarketRegime =
   | 'risk_on'
@@ -45,6 +50,9 @@ export interface AssetTimeSeries {
   wine: number;
   vintage_cars: number;
   sneakers: number;
+  pokemon: number;
+  mtg: number;
+  memorabilia: number;
 }
 
 export interface SportMarketLinkage {
@@ -145,6 +153,9 @@ const ALT_LABELS: Record<AlternativeAsset, string> = {
   wine: 'Fine Wine',
   vintage_cars: 'Vintage Cars',
   sneakers: 'Sneakers',
+  pokemon: 'Pokémon TCG (seeded)',
+  mtg: 'Magic: The Gathering (seeded)',
+  memorabilia: 'Sports Memorabilia (seeded)',
 };
 
 const REGIME_LABELS: Record<MarketRegime, string> = {
@@ -249,6 +260,9 @@ function generateMarketReturns(
     wine:         { drift: 0.0001, vol: 0.007, seedOffset: 700 },
     vintage_cars: { drift: 0.0002, vol: 0.009, seedOffset: 800 },
     sneakers:     { drift: 0.0003, vol: 0.020, seedOffset: 900 },
+    pokemon:      { drift: 0.00028, vol: 0.016, seedOffset: 1000 },
+    mtg:          { drift: 0.00024, vol: 0.014, seedOffset: 1100 },
+    memorabilia:  { drift: 0.00021, vol: 0.013, seedOffset: 1200 },
   };
   const p = params[asset] || { drift: 0.0002, vol: 0.01, seedOffset: 999 };
   const returns: number[] = [];
@@ -291,6 +305,7 @@ export function getAssetCorrelations(cards: CardInventory[]): AssetCorrelation[]
   const allAssets: (MarketAsset | AlternativeAsset)[] = [
     'sp500', 'bitcoin', 'gold', 'treasuries', 'realestate',
     'art', 'wine', 'vintage_cars', 'sneakers',
+    'pokemon', 'mtg', 'memorabilia',
   ];
 
   return allAssets.map(asset => {
@@ -332,6 +347,9 @@ function getDefaultCorrelations(): AssetCorrelation[] {
     ['wine', 0.15, 0.18, 0.12, 0.22],
     ['vintage_cars', 0.28, 0.32, 0.25, 0.42],
     ['sneakers', 0.42, 0.48, 0.38, 0.65],
+    ['pokemon', 0.36, 0.41, 0.34, 0.52],
+    ['mtg', 0.32, 0.36, 0.3, 0.46],
+    ['memorabilia', 0.4, 0.44, 0.38, 0.58],
   ];
   return defaults.map(([asset, c30, c90, c365, beta]) => ({
     asset,
@@ -353,6 +371,7 @@ export function getAssetTimeSeries(cards: CardInventory[], days: number = 90): A
   const allAssets: (MarketAsset | AlternativeAsset)[] = [
     'sp500', 'bitcoin', 'gold', 'treasuries', 'realestate',
     'art', 'wine', 'vintage_cars', 'sneakers',
+    'pokemon', 'mtg', 'memorabilia',
   ];
   const assetReturns: Record<string, number[]> = {};
   for (const asset of allAssets) {
@@ -382,6 +401,9 @@ export function getAssetTimeSeries(cards: CardInventory[], days: number = 90): A
       wine: Math.round(baseValues.wine * 100) / 100,
       vintage_cars: Math.round(baseValues.vintage_cars * 100) / 100,
       sneakers: Math.round(baseValues.sneakers * 100) / 100,
+      pokemon: Math.round(baseValues.pokemon * 100) / 100,
+      mtg: Math.round(baseValues.mtg * 100) / 100,
+      memorabilia: Math.round(baseValues.memorabilia * 100) / 100,
     });
   }
   return series;
@@ -628,7 +650,7 @@ export function getAlternativeBenchmarks(cards: CardInventory[]): AlternativeBen
   const seed = portfolioSeed(activeCards);
   const correlations = getAssetCorrelations(cards);
 
-  const alts: AlternativeAsset[] = ['art', 'wine', 'vintage_cars', 'sneakers'];
+  const alts: AlternativeAsset[] = ['art', 'wine', 'vintage_cars', 'sneakers', 'pokemon', 'mtg', 'memorabilia'];
   return alts.map((asset, idx) => {
     const corr = correlations.find(c => c.asset === asset);
     return {

@@ -152,6 +152,8 @@ export default defineConfig(({ command, mode }) => {
         'lib/utils/agentReasoning.ts',
         'lib/utils/taxLotPreferences.ts',
         'lib/utils/p2pIntentBoard.ts',
+        'lib/utils/haptics.ts',
+        'lib/utils/centeringHeuristic.ts',
         'lib/pricing/consensusMarketLedger.ts',
         'lib/htmlEscape.ts',
       ],

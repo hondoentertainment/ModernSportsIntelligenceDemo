@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-08 · Scout-to-Acquire Playwright smoke, thin P2P intent board, `@google/genai` 2.x. Previous edition 2026-09-07: seasonal windows / catalysts / pop weighting / trade proposals / briefing HTML / Auto-Pilot idempotency.
+> Refreshed 2026-09-08 · Scout-to-Acquire Playwright smoke, thin P2P intent board, `@google/genai` 2.x, adjacent hobby correlation, price-alert haptics, disclosed centering heuristic. Previous edition 2026-09-07: seasonal windows / catalysts / pop weighting / trade proposals / briefing HTML / Auto-Pilot idempotency.
 
 ## Current state in one paragraph
 
@@ -27,8 +27,11 @@ Demo/DAL-safe slices. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` fli
 | **Scout-to-Acquire Playwright smoke**       | `tests/e2e/scout-to-acquire.spec.ts` — demo login, seeded Collection holding, Dashboard → War Room scout desk, Acquisition campaign persist. Added to `test:e2e:smoke`. No live Gemini refresh click. |
 | **Thin P2P intent board** (roadmap #7 lite) | Collection panel + Liquidity Pool summary. Local bids/asks via `msi_p2p_intents_v1`. **Not** live trading, matching, escrow, or MSI-house inventory.                                                  |
 | **`@google/genai` 2.x**                     | Major bump; `generateContent` / `Type` adapters unchanged (v2 breaks Interactions only).                                                                                                              |
+| **Adjacent hobby correlation** (roadmap #15 lite) | Seeded Pokémon / MTG / memorabilia on existing Cross-Asset Correlation page, dashboard widget, and correlation modals. Disclosed synthetic proxies — **not** live feeds. No new Labs pages. |
+| **Price-alert haptics** (roadmap #2)        | Vibration API on watchlist / target-price / NotificationService paths (`lib/utils/haptics.ts`). No-ops on desktop.                                                                                    |
+| **Centering heuristic** (roadmap #17 lite)  | Disclosed non-CV geometry/metadata stub on Visual Audit + Centering Analyzer. **Not** a production CV model and **not** a PSA prediction. No heavy CV library.                                         |
 
-**Deferred this pass:** Tailwind 4 (high-risk class/config migration — left on 3.4.19; do not half-migrate). `@eslint/js` 10 (eslint major yak-shave; keep `@eslint/js` 9.x with eslint 10). Full P2P order book / exchange. Production centering CV. Custom vanity domain.
+**Deferred this pass:** Tailwind 4 (high-risk class/config migration — left on 3.4.19; do not half-migrate). `@eslint/js` 10 (eslint major yak-shave; keep `@eslint/js` 9.x with eslint 10). Full P2P order book / exchange. Production centering CV / PSA-grade model. Custom vanity domain.
 
 Still owner-held: Supabase restore, Stripe smoke, eBay/PSA keys, optional Sentry DSN, fractional-vault legal flip.
 

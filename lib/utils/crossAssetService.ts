@@ -4,7 +4,11 @@
 
 /** UI copy: series and stats are seeded/synthetic until live or imported data is wired. */
 export const CROSS_ASSET_DATA_SOURCE =
-  'Synthetic seeded time series and summary statistics for visualization and education—not live broker, exchange, or index feeds. Connecting real or user-imported series is future work.';
+  'Synthetic seeded time series and summary statistics for visualization and education—not live broker, exchange, or index feeds. Adjacent hobby markets (Pokémon, MTG, memorabilia) are disclosed seeded collectible proxies, not live auction or TCG player prices.';
+
+export const ADJACENT_HOBBY_ASSET_IDS = ['pokemon', 'mtg', 'memorabilia'] as const;
+
+export type AdjacentHobbyAssetId = (typeof ADJACENT_HOBBY_ASSET_IDS)[number];
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -301,6 +305,45 @@ export const ASSET_CLASSES: AssetClass[] = [
     sharpeRatio: 1.18,
     color: '#a3e635',
   },
+  {
+    id: 'pokemon',
+    name: 'Pokémon TCG (seeded)',
+    ticker: 'PKMN',
+    category: 'collectible',
+    currentValue: 1426.4,
+    returns1Y: 19.6,
+    returns3Y: 61.2,
+    returns5Y: 174.8,
+    volatility: 31.4,
+    sharpeRatio: 0.88,
+    color: '#facc15',
+  },
+  {
+    id: 'mtg',
+    name: 'Magic: The Gathering (seeded)',
+    ticker: 'MTG',
+    category: 'collectible',
+    currentValue: 1188.2,
+    returns1Y: 16.4,
+    returns3Y: 48.6,
+    returns5Y: 132.4,
+    volatility: 27.8,
+    sharpeRatio: 0.82,
+    color: '#c084fc',
+  },
+  {
+    id: 'memorabilia',
+    name: 'Sports Memorabilia (seeded)',
+    ticker: 'MEM',
+    category: 'collectible',
+    currentValue: 1564.8,
+    returns1Y: 14.8,
+    returns3Y: 44.2,
+    returns5Y: 128.6,
+    volatility: 24.6,
+    sharpeRatio: 0.86,
+    color: '#22d3ee',
+  },
 ];
 
 // ─── Seeded Random Number Generator ──────────────────────────────────────────
@@ -343,6 +386,9 @@ const ASSET_DRIFT: Record<string, number> = {
   cards_basketball: 0.012,
   cards_hockey: 0.009,
   cards_soccer: 0.02,
+  pokemon: 0.012,
+  mtg: 0.01,
+  memorabilia: 0.009,
 };
 
 const ASSET_VOL: Record<string, number> = {
@@ -361,6 +407,9 @@ const ASSET_VOL: Record<string, number> = {
   cards_basketball: 0.088,
   cards_hockey: 0.066,
   cards_soccer: 0.098,
+  pokemon: 0.084,
+  mtg: 0.076,
+  memorabilia: 0.07,
 };
 
 // Correlation seeds between asset pairs (approximate target correlations)
@@ -470,6 +519,39 @@ const CORR_TARGETS: Record<string, number> = {
   'cards_basketball:cards_hockey': 0.52,
   'cards_basketball:cards_soccer': 0.56,
   'cards_hockey:cards_soccer': 0.42,
+  'pokemon:sp500': 0.22,
+  'pokemon:nasdaq': 0.26,
+  'pokemon:btc': 0.18,
+  'pokemon:eth': 0.16,
+  'pokemon:gold': 0.08,
+  'pokemon:cards_all': 0.48,
+  'pokemon:cards_football': 0.36,
+  'pokemon:cards_basketball': 0.41,
+  'pokemon:cards_hockey': 0.28,
+  'pokemon:cards_soccer': 0.32,
+  'mtg:sp500': 0.19,
+  'mtg:nasdaq': 0.23,
+  'mtg:btc': 0.15,
+  'mtg:eth': 0.14,
+  'mtg:gold': 0.06,
+  'mtg:cards_all': 0.44,
+  'mtg:cards_football': 0.3,
+  'mtg:cards_basketball': 0.34,
+  'mtg:cards_hockey': 0.24,
+  'mtg:cards_soccer': 0.28,
+  'memorabilia:sp500': 0.28,
+  'memorabilia:nasdaq': 0.24,
+  'memorabilia:btc': 0.12,
+  'memorabilia:gold': 0.11,
+  'memorabilia:oil': 0.04,
+  'memorabilia:cards_all': 0.52,
+  'memorabilia:cards_football': 0.46,
+  'memorabilia:cards_basketball': 0.44,
+  'memorabilia:cards_hockey': 0.38,
+  'memorabilia:cards_soccer': 0.34,
+  'pokemon:mtg': 0.61,
+  'pokemon:memorabilia': 0.37,
+  'mtg:memorabilia': 0.34,
 };
 
 function getTargetCorrelation(a: string, b: string): number {
@@ -483,7 +565,13 @@ function getTargetCorrelation(a: string, b: string): number {
 let cachedSeries: CrossAssetTimeSeries | null = null;
 
 function generateAllTimeSeries(months: number): CrossAssetTimeSeries {
-  if (cachedSeries && cachedSeries.dates.length === months) return cachedSeries;
+  if (
+    cachedSeries &&
+    cachedSeries.dates.length === months &&
+    cachedSeries.series.length === ASSET_CLASSES.length
+  ) {
+    return cachedSeries;
+  }
 
   const dates = generateDates(months);
   const assetIds = ASSET_CLASSES.map((a) => a.id);
@@ -1078,7 +1166,15 @@ export const DEFAULT_ASSET_IDS = [
   'ust10y',
   'vix',
   'cards_all',
+  'pokemon',
+  'memorabilia',
 ];
+
+export function getAdjacentHobbyAssets(): AssetClass[] {
+  return ADJACENT_HOBBY_ASSET_IDS.map((id) => getAssetById(id)).filter(
+    (asset): asset is AssetClass => Boolean(asset),
+  );
+}
 
 export const CARD_ASSET_IDS = [
   'cards_all',

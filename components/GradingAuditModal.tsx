@@ -3,6 +3,12 @@ import { X, Camera, Upload, AlertCircle, Sparkles, Activity, Search, Target, Lay
 import { auditCardVisuals } from '../lib/utils/gemini.ts';
 import CameraFeed from './CameraFeed.tsx';
 import { VisualAuditResult } from '../types.ts';
+import CenteringHeuristicPanel from './CenteringHeuristicPanel';
+import {
+  estimateCenteringFromDataUrl,
+  estimateCenteringFromFile,
+  type CenteringHeuristicResult,
+} from '../lib/utils/centeringHeuristic';
 
 interface GradingAuditModalProps {
     isOpen: boolean;
@@ -16,6 +22,7 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
     const [error, setError] = useState<string | null>(null);
     const [mode, setMode] = useState<'camera' | 'upload'>('upload');
     const [result, setResult] = useState<VisualAuditResult | null>(null);
+    const [heuristic, setHeuristic] = useState<CenteringHeuristicResult | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,10 +35,12 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
             processImage(reader.result as string, file.type);
         };
         reader.readAsDataURL(file);
+        setHeuristic(await estimateCenteringFromFile(file));
     };
 
     const handleCapture = (base64: string) => {
         setPreviewUrl(base64);
+        void estimateCenteringFromDataUrl(base64, 'image/jpeg').then(setHeuristic);
         processImage(base64, 'image/jpeg');
     };
 
@@ -139,7 +148,8 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
 
                 <div className="flex-1 overflow-y-auto p-8 space-y-8">
                     {!previewUrl ? (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto">
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-2xl mx-auto space-y-4">
+                            <CenteringHeuristicPanel result={heuristic} compact />
                             {mode === 'camera' ? (
                                 <CameraFeed isActive={isOpen} onCapture={handleCapture} />
                             ) : (
@@ -167,6 +177,7 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-4">
+                                <CenteringHeuristicPanel result={heuristic} compact />
                                 <div className="aspect-[3/4] rounded-[2rem] overflow-hidden border border-slate-800 relative bg-brand-charcoal group">
                                     <img src={previewUrl} alt="Preview" className="w-full h-full object-contain" />
 
@@ -279,7 +290,7 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
 
                                     <div className="pt-4 flex gap-3">
                                         <button
-                                            onClick={() => { setPreviewUrl(null); setResult(null); }}
+                                            onClick={() => { setPreviewUrl(null); setResult(null); setHeuristic(null); }}
                                             className="flex-1 px-6 py-4 rounded-xl text-xs font-black uppercase tracking-widest text-white bg-slate-800 hover:bg-slate-700 transition"
                                         >
                                             Reset Scan

@@ -17,6 +17,7 @@ import {
   Globe,
 } from 'lucide-react';
 import { CardInventory } from '../types';
+import AdjacentHobbyMarketsRail from './AdjacentHobbyMarketsRail';
 import {
   getCorrelationMatrix,
   getPortfolioCorrelationAnalysis,
@@ -176,6 +177,9 @@ export const CrossAssetCorrelationModal: React.FC<CrossAssetCorrelationModalProp
           >
             <X size={20} />
           </button>
+        </div>
+        <div className="px-6 pt-4">
+          <AdjacentHobbyMarketsRail compact />
         </div>
 
         {/* Tabs */}

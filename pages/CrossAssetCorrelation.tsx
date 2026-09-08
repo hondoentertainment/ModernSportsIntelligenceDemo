@@ -60,6 +60,7 @@ import {
   type RollingCorrelationPoint,
   CROSS_ASSET_DATA_SOURCE,
 } from '../lib/utils/crossAssetService';
+import AdjacentHobbyMarketsRail from '../components/AdjacentHobbyMarketsRail';
 
 // ─── Tab Definitions ─────────────────────────────────────────────────────────
 
@@ -1417,6 +1418,9 @@ const CrossAssetCorrelation: React.FC<CrossAssetCorrelationPageProps> = ({ onBac
           role="status"
         >
           {CROSS_ASSET_DATA_SOURCE}
+        </div>
+        <div className="mb-6">
+          <AdjacentHobbyMarketsRail />
         </div>
         {loading ? (
           <div className="flex items-center justify-center h-96">

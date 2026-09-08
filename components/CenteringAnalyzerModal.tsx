@@ -32,6 +32,8 @@ import {
   GradeEstimate,
   CenteringHistory,
 } from '../lib/analytics/centeringAnalyzerService';
+import { type CenteringHeuristicResult } from '../lib/utils/centeringHeuristic';
+import CenteringHeuristicPanel from './CenteringHeuristicPanel';
 
 interface CenteringAnalyzerModalProps {
   isOpen: boolean;
@@ -42,6 +44,7 @@ type TabId = 'measurements' | 'subgrade' | 'estimates' | 'history';
 
 const CenteringAnalyzerModal: React.FC<CenteringAnalyzerModalProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabId>('measurements');
+  const [heuristic, setHeuristic] = useState<CenteringHeuristicResult | null>(null);
 
   const measurements = useMemo(() => getMeasurements(), []);
   const subGrades = useMemo(() => getSubGradeImpact(), []);
@@ -125,6 +128,11 @@ const CenteringAnalyzerModal: React.FC<CenteringAnalyzerModalProps> = ({ isOpen,
 
   const renderMeasurements = () => (
     <div className="space-y-4">
+      <CenteringHeuristicPanel
+        result={heuristic}
+        onResult={setHeuristic}
+        allowUpload
+      />
       <div className="grid grid-cols-4 gap-3 mb-4">
         <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-3 text-center">
           <div className="text-2xl font-bold text-sky-400">{stats.totalScanned}</div>

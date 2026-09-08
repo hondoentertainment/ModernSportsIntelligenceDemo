@@ -1,4 +1,5 @@
 import { store } from '../dal/syncStore';
+import { vibrateForPriceAlert } from '../utils/haptics';
 
 // ---- Types ----
 
@@ -683,7 +684,8 @@ export async function checkWatchlistPriceAlerts(): Promise<WatchlistPriceCheckRe
       }
       saveAlerts(alerts);
 
-      // Browser notification (requires prior Notification.requestPermission)
+      // Haptic + browser notification when a watchlist threshold fires.
+      vibrateForPriceAlert();
       if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
         try {
           new Notification('MSI Price Alert', { body: message, icon: '/favicon.ico' });

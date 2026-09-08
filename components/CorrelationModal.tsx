@@ -43,7 +43,9 @@ import {
   ALT_LABELS,
   saveCorrelationSettings,
   saveDashboardSnapshot,
+  ADJACENT_HOBBY_ALT_IDS,
 } from '../lib/analytics/crossAssetCorrelationService';
+import AdjacentHobbyMarketsRail from './AdjacentHobbyMarketsRail';
 
 interface CorrelationModalProps {
   isOpen: boolean;
@@ -74,6 +76,9 @@ const ASSET_LINE_COLORS: Record<string, string> = {
   wine: '#dc2626',
   vintage_cars: '#f97316',
   sneakers: '#06b6d4',
+  pokemon: '#facc15',
+  mtg: '#c084fc',
+  memorabilia: '#22d3ee',
 };
 
 function getHeatmapColor(value: number): string {
@@ -208,7 +213,7 @@ const OverlayTab: React.FC<{ dashboard: CorrelationDashboard }> = ({ dashboard }
     );
   };
 
-  const allAssets = ['sp500', 'bitcoin', 'gold', 'treasuries', 'realestate', 'art', 'wine', 'vintage_cars', 'sneakers'];
+  const allAssets = ['sp500', 'bitcoin', 'gold', 'treasuries', 'realestate', 'art', 'wine', 'vintage_cars', 'sneakers', 'pokemon', 'mtg', 'memorabilia'];
 
   return (
     <div className="space-y-5">
@@ -280,7 +285,7 @@ const OverlayTab: React.FC<{ dashboard: CorrelationDashboard }> = ({ dashboard }
                 stroke={ASSET_LINE_COLORS[asset]}
                 strokeWidth={1.5}
                 dot={false}
-                strokeDasharray={['art', 'wine', 'vintage_cars', 'sneakers'].includes(asset) ? '4 2' : undefined}
+                strokeDasharray={['art', 'wine', 'vintage_cars', 'sneakers', 'pokemon', 'mtg', 'memorabilia'].includes(asset) ? '4 2' : undefined}
               />
             ))}
           </LineChart>
@@ -693,6 +698,15 @@ export const CorrelationModal: React.FC<CorrelationModalProps> = ({ isOpen, onCl
                 {formatPct(portfolioReturn)}
               </p>
             </div>
+          </div>
+
+          <div className="mb-4">
+            <AdjacentHobbyMarketsRail
+              compact
+              correlations={dashboard.correlations.filter((row) =>
+                ADJACENT_HOBBY_ALT_IDS.includes(row.asset as (typeof ADJACENT_HOBBY_ALT_IDS)[number]),
+              )}
+            />
           </div>
 
           {/* Tabs */}

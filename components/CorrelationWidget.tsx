@@ -10,9 +10,12 @@ import {
 import { CardInventory } from '../types';
 import {
   getDiversificationReport,
+  getAssetCorrelations,
+  ADJACENT_HOBBY_ALT_IDS,
   REGIME_LABELS,
   DiversificationReport,
 } from '../lib/analytics/crossAssetCorrelationService';
+import AdjacentHobbyMarketsRail from './AdjacentHobbyMarketsRail';
 
 interface CorrelationWidgetProps {
   inventory: CardInventory[];
@@ -44,6 +47,10 @@ function getScoreColor(score: number): string {
 export const CorrelationWidget: React.FC<CorrelationWidgetProps> = ({ inventory, onClick }) => {
   const report: DiversificationReport = useMemo(
     () => getDiversificationReport(inventory),
+    [inventory]
+  );
+  const adjacentCorrelations = useMemo(
+    () => getAssetCorrelations(inventory).filter((row) => ADJACENT_HOBBY_ALT_IDS.includes(row.asset as typeof ADJACENT_HOBBY_ALT_IDS[number])),
     [inventory]
   );
 
@@ -139,6 +146,8 @@ export const CorrelationWidget: React.FC<CorrelationWidgetProps> = ({ inventory,
           </p>
         </div>
       </div>
+
+      <AdjacentHobbyMarketsRail compact nested correlations={adjacentCorrelations} />
 
       {/* CTA */}
       <div className="flex items-center gap-2 text-xs text-slate-500 group-hover:text-indigo-400 transition-colors">
