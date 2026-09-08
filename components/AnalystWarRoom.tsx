@@ -8,6 +8,7 @@ import AutoPilotControl from './AutoPilotControl';
 import WhyRecommendationPanel from './WhyRecommendationPanel';
 import AgentConsensusView from './AgentConsensusView';
 import { buildConsensusView, buildWhyFromThesis } from '../lib/utils/agentReasoning';
+import { Link } from 'react-router-dom';
 import { Brain, RefreshCw, Send, ShieldCheck, Target, TrendingUp, Info, Activity, Zap, Download } from 'lucide-react';
 import { showToast } from '../lib/utils/toast';
 import { store } from '../lib/dal/syncStore';
@@ -105,6 +106,12 @@ const AnalystWarRoom: React.FC = () => {
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
+                    <Link
+                        to="/autonomous-acquisition"
+                        className="flex items-center gap-2 bg-violet-600/80 hover:bg-violet-500 text-white border border-violet-400/30 px-5 py-3 rounded-xl font-bold transition-all"
+                    >
+                        Open acquisition desk
+                    </Link>
                     {thesis && !isGenerating && (
                         <button
                             type="button"

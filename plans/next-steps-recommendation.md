@@ -131,7 +131,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 
 - **Actions:**
   - **Vitest:** Implement unit tests for NAV and ROI math in `lib/portfolioUtils.ts`.
-  - **E2E:** Expand Playwright coverage to include the full "Scout-to-Acquire" flow.
+  - **E2E:** Expand Playwright coverage to include the full "Scout-to-Acquire" flow. **Shipped (demo smoke, 2026-09-08):** `tests/e2e/scout-to-acquire.spec.ts` walks Collection holding → War Room scout desk → Autonomous Acquisition campaign persist. Cloud/live-tape E2E remains owner-held.
 
 ### 6.2 Data Virtualization
 

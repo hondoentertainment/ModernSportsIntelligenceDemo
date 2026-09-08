@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-07 · Seasonal windows, injury/txn catalysts, Performance vs Price, pop/scarcity Alpha, trade proposals, briefing DOM bars + HTML download, Auto-Pilot idempotency. Previous edition same day: Consensus View / Comps Used / tax-lot selector / Auto-Pilot collars (#123).
+> Refreshed 2026-09-08 · Scout-to-Acquire Playwright smoke, thin P2P intent board, `@google/genai` 2.x. Previous edition 2026-09-07: seasonal windows / catalysts / pop weighting / trade proposals / briefing HTML / Auto-Pilot idempotency.
 
 ## Current state in one paragraph
 
@@ -17,6 +17,20 @@ MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger acro
 | Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later                      |
 | Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show                      |
 | eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel** (after restore)                 |
+
+## Engineering-friendly NEXT_STEPS — Shipped (2026-09-08)
+
+Demo/DAL-safe slices. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` flips, no new Labs pages.**
+
+| Slice                                       | Where                                                                                                                                                                                                 |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Scout-to-Acquire Playwright smoke**       | `tests/e2e/scout-to-acquire.spec.ts` — demo login, seeded Collection holding, Dashboard → War Room scout desk, Acquisition campaign persist. Added to `test:e2e:smoke`. No live Gemini refresh click. |
+| **Thin P2P intent board** (roadmap #7 lite) | Collection panel + Liquidity Pool summary. Local bids/asks via `msi_p2p_intents_v1`. **Not** live trading, matching, escrow, or MSI-house inventory.                                                  |
+| **`@google/genai` 2.x**                     | Major bump; `generateContent` / `Type` adapters unchanged (v2 breaks Interactions only).                                                                                                              |
+
+**Deferred this pass:** Tailwind 4 (high-risk class/config migration — left on 3.4.19; do not half-migrate). `@eslint/js` 10 (eslint major yak-shave; keep `@eslint/js` 9.x with eslint 10). Full P2P order book / exchange. Production centering CV. Custom vanity domain.
+
+Still owner-held: Supabase restore, Stripe smoke, eBay/PSA keys, optional Sentry DSN, fractional-vault legal flip.
 
 ## Engineering-friendly NEXT_STEPS — Shipped (2026-09-07, post-#123)
 
@@ -36,7 +50,7 @@ Demo/DAL-safe product slices on existing Dashboard, Collection, Morning Briefing
 | **Tax-lot method selector**                              | FIFO / LIFO / Specific ID / Average persist via MSI store (`msi_tax_lot_preferences`) and drive Fiscal Intelligence + `/tax-report`. Lot-selection math is unit-tested. **Not** IRS regulatory completeness.               |
 | **Auto-Pilot collars + approval**                        | Daily budget, per-asset cap, max drawdown stop; high-dollar or low-confidence actions go to the human approval queue. Acquisition campaigns preview the same collars. Advisory stays default — no live marketplace trades. |
 
-**Deferred / skipped this pass:** Scout-to-Acquire Playwright E2E (no cloud fixtures; existing War Room / collection-add-asset smokes remain). Full P2P order book, production centering CV, custom vanity domain.
+**Deferred / skipped that pass:** Scout-to-Acquire Playwright E2E and thin P2P intent board shipped 2026-09-08. Full P2P order book, production centering CV, custom vanity domain still open.
 
 Still owner-held: Supabase restore, Stripe smoke, eBay/PSA keys, optional Sentry DSN, fractional-vault legal flip.
 

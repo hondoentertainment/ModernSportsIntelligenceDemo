@@ -1,7 +1,7 @@
 # Roadmap Review & Feature Enhancement Recommendations
 
 **Date:** 2026-03-08
-**Last updated:** 2026-09-07
+**Last updated:** 2026-09-08
 **Scope:** Review of the 24-phase roadmap (PRD.md) and strategic next-steps (next-steps-recommendation.md)
 
 ## Status addendum (2026-09-06)
@@ -25,8 +25,10 @@ Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-sa
 | Priority 4.2 Trade proposal / portfolio delta    | **Shipped (lite)** — advisory Card A for Card B + cash from local inventory.                              |
 | Priority 5.1 Morning briefing visual fidelity    | **Shipped (lite)** — DOM league-allocation bars + text/HTML download. No jsPDF on the live briefing path. |
 | Phase 33 Auto-Pilot idempotency                  | **Shipped (stub)** — day-bucketed local keys + duplicate-action guards.                                   |
+| #7 Thin P2P intent board                         | **Shipped (lite, 2026-09-08)** — local bids/asks on Collection + Liquidity summary. Not an exchange.      |
+| Priority 6.1 Scout-to-Acquire E2E                | **Shipped (demo smoke, 2026-09-08)** — Collection → War Room → Acquisition. No live Gemini refresh.       |
 
-Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P marketplace (#7), centering CV (#17), live marketplace / Stripe / Supabase restore, custom vanity domain, Scout-to-Acquire cloud E2E. Schedule D–style (demo) packet and sold-comp consensus shipped 2026-09-06. Seasonal windows (#11), injury/txn catalysts (#9), pop weighting (3.1 lite), trade proposals (4.2 lite), briefing DOM bars + HTML download (5.1 lite), and Auto-Pilot idempotency shipped 2026-09-07. **Engineering shipped 2026-09-07:** Consensus View (#14), Comps Used (#10), FIFO/LIFO/Specific ID selector (demo), Auto-Pilot daily/drawdown collars + human approval.
+Still **owner-held / open:** tax-lot **regulatory** completeness (#16), full P2P order book / escrow (#7 remainder), centering CV (#17), live marketplace / Stripe / Supabase restore, custom vanity domain. Tailwind 4 and `@eslint/js` 10 deferred. Schedule D–style (demo) packet and sold-comp consensus shipped 2026-09-06. Seasonal windows (#11), injury/txn catalysts (#9), pop weighting (3.1 lite), trade proposals (4.2 lite), briefing DOM bars + HTML download (5.1 lite), and Auto-Pilot idempotency shipped 2026-09-07. **Engineering shipped 2026-09-07:** Consensus View (#14), Comps Used (#10), FIFO/LIFO/Specific ID selector (demo), Auto-Pilot daily/drawdown collars + human approval. **Engineering shipped 2026-09-08:** thin P2P intent board, Scout-to-Acquire smoke, `@google/genai` 2.x.
 
 ---
 
@@ -82,7 +84,7 @@ Still **owner-held / open:** tax-lot **regulatory** completeness (#16), P2P mark
 
 **Recommendations:**
 
-7. **Peer-to-Peer Marketplace (P2P Exchange)** — Before building the "MSI House" instant-buy feature, consider a lighter-weight P2P order book where users can post bids/asks. This generates real pricing data, builds community, and validates demand before MSI takes on inventory risk. The "MSI House" can then operate as a market maker within the P2P exchange.
+7. **Peer-to-Peer Marketplace (P2P Exchange)** — **Partial (intent board, 2026-09-08):** collectors can post buy/sell intents from local inventory on Collection (Liquidity Pool shows a summary). Bids/asks are advisory intents with MSI store persistence — **not** order matching, escrow, live trading, or MSI-house inventory. A full P2P order book / exchange remains open before MSI takes inventory risk.
 
 8. **Consignment Tracking** — Many high-value cards are sold through consignment services (PWCC, Goldin). Add a "Consignment" status to the card lifecycle with fields for consignment partner, listing date, reserve price, and seller fees. This fills a gap no competing tool addresses well.
 

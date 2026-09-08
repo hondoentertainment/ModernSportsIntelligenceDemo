@@ -151,6 +151,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/utils/warRoomLedgerContext.ts',
         'lib/utils/agentReasoning.ts',
         'lib/utils/taxLotPreferences.ts',
+        'lib/utils/p2pIntentBoard.ts',
         'lib/pricing/consensusMarketLedger.ts',
         'lib/htmlEscape.ts',
       ],
