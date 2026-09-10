@@ -8,6 +8,8 @@ interface ProtectedRouteProps {
 }
 
 const MIN_DISPLAY_MS = 250;
+/** Matches Auth session fail-safe so a hung profiles fetch cannot brick routes. */
+export const PROFILE_LOADING_WAIT_MS = 6000;
 
 const SessionLoadingShell: React.FC = () => (
     <div className="min-h-screen bg-brand-charcoal flex items-center justify-center overflow-hidden relative">
@@ -29,10 +31,20 @@ const SessionLoadingShell: React.FC = () => (
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const { user, loading, profileLoading } = useAuth();
-    const sessionPending = loading || Boolean(user && profileLoading);
+    const [profileWaitExpired, setProfileWaitExpired] = useState(false);
+    const sessionPending = loading || Boolean(user && profileLoading && !profileWaitExpired);
     const [exitHold, setExitHold] = useState(false);
     const prevLoadingRef = useRef<boolean | null>(null);
     const loadStartedAt = useRef<number | null>(null);
+
+    useEffect(() => {
+        if (!user || !profileLoading) {
+            setProfileWaitExpired(false);
+            return;
+        }
+        const t = setTimeout(() => setProfileWaitExpired(true), PROFILE_LOADING_WAIT_MS);
+        return () => clearTimeout(t);
+    }, [user, profileLoading]);
 
     useEffect(() => {
         const prev = prevLoadingRef.current;

@@ -10,6 +10,7 @@ import {
   setAlertPreferences,
   shouldFireBrowserNotification,
   shouldFireHaptic,
+  subscribeAlertPreferences,
 } from '../../lib/utils/alertPreferences';
 
 describe('alertPreferences', () => {
@@ -85,5 +86,22 @@ describe('alertPreferences', () => {
     expect(shouldFireHaptic(night, { ...quiet, hapticsEnabled: false, quietHoursEnabled: false })).toBe(false);
     expect(shouldFireBrowserNotification(night, { ...quiet, browserNotificationsEnabled: false, quietHoursEnabled: false })).toBe(false);
     expect(shouldFireHaptic(night, DEFAULT_ALERT_PREFERENCES)).toBe(true);
+  });
+
+  it('notifies subscribers on write and isolates listener failures', () => {
+    const seen: boolean[] = [];
+    const unsubscribe = subscribeAlertPreferences((prefs) => {
+      seen.push(prefs.quietHoursEnabled);
+    });
+    const boom = subscribeAlertPreferences(() => {
+      throw new Error('listener boom');
+    });
+    const saved = setAlertPreferences({ quietHoursEnabled: true });
+    expect(saved.quietHoursEnabled).toBe(true);
+    expect(seen).toEqual([true]);
+    unsubscribe();
+    boom();
+    setAlertPreferences({ quietHoursEnabled: false });
+    expect(seen).toEqual([true]);
   });
 });

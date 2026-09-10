@@ -6,6 +6,7 @@ import {
   daysHeld,
   daysToLongTerm,
   holdingTreatment,
+  isSoldLotLoss,
 } from '../../lib/analytics/holdingHorizon';
 
 describe('holdingHorizon', () => {
@@ -33,6 +34,8 @@ describe('holdingHorizon', () => {
           player: 'Mike Trout',
           purchaseDate: '2024-01-01',
           saleDate: '2026-09-02',
+          salePrice: 60,
+          purchasePrice: 100,
           status: 'sold',
           currentValue: 300,
         }),
@@ -78,6 +81,8 @@ describe('holdingHorizon', () => {
           cardNumber: '1',
           purchaseDate: '2024-01-01',
           saleDate: '2026-09-03',
+          salePrice: 40,
+          purchasePrice: 120,
           status: 'sold',
         }),
         makeCard({
@@ -107,5 +112,103 @@ describe('holdingHorizon', () => {
     expect(holdingTreatment('not-a-date', asOf)).toBe('Short-Term');
     expect(daysHeld('2024-01-01', asOf, '2024-01-10')).toBe(9);
     expect(holdingTreatment('2024-01-01', asOf, '2025-02-01')).toBe('Long-Term');
+  });
+
+  it('does not flag profitable sales as wash-sale proximity', () => {
+    const asOf = new Date('2026-09-10T12:00:00Z');
+    const summary = analyzeHoldingHorizon(
+      [
+        makeCard({
+          id: 'replacement',
+          player: 'Mike Trout',
+          purchaseDate: '2026-09-05',
+        }),
+        makeCard({
+          id: 'profit-sale',
+          player: 'Mike Trout',
+          purchaseDate: '2024-01-01',
+          saleDate: '2026-09-02',
+          salePrice: 250,
+          purchasePrice: 100,
+          status: 'sold',
+        }),
+      ],
+      asOf,
+    );
+    expect(isSoldLotLoss(makeCard({ salePrice: 250, purchasePrice: 100 }))).toBe(false);
+    expect(isSoldLotLoss(makeCard({ salePrice: 40, purchasePrice: 100 }))).toBe(true);
+    expect(isSoldLotLoss(makeCard({ realizedGainLoss: -25 }))).toBe(true);
+    expect(isSoldLotLoss(makeCard({ realizedGainLoss: 10 }))).toBe(false);
+    expect(isSoldLotLoss(makeCard({ salePrice: Number.NaN, purchasePrice: 100 }))).toBe(false);
+    expect(isSoldLotLoss(makeCard({ salePrice: undefined, purchasePrice: 100 }))).toBe(false);
+    expect(isSoldLotLoss({ ...makeCard({ salePrice: 10 }), purchasePrice: undefined as unknown as number })).toBe(false);
+    expect(summary.washSaleWatch).toBe(0);
+    expect(summary.rows[0].washSaleProximity).toBe('clear');
+  });
+
+  it('compares disposal date to the replacement purchaseDate, not asOf', () => {
+    const lateAsOf = new Date('2026-10-20T12:00:00Z');
+    const replacement = analyzeHoldingHorizon(
+      [
+        makeCard({
+          id: 'true-replace',
+          player: 'Mike Trout',
+          purchaseDate: '2026-09-05',
+        }),
+        makeCard({
+          id: 'loss-sale',
+          player: 'Mike Trout',
+          purchaseDate: '2024-01-01',
+          saleDate: '2026-09-02',
+          salePrice: 50,
+          purchasePrice: 140,
+          status: 'sold',
+        }),
+      ],
+      lateAsOf,
+    );
+    expect(replacement.rows[0].washSaleProximity).toBe('restricted');
+
+    const oldHolding = analyzeHoldingHorizon(
+      [
+        makeCard({
+          id: 'old-hold',
+          player: 'Mike Trout',
+          purchaseDate: '2024-01-01',
+        }),
+        makeCard({
+          id: 'recent-loss',
+          player: 'Mike Trout',
+          purchaseDate: '2023-01-01',
+          saleDate: '2026-09-08',
+          salePrice: 70,
+          purchasePrice: 200,
+          status: 'sold',
+        }),
+      ],
+      new Date('2026-09-10T12:00:00Z'),
+    );
+    expect(oldHolding.rows[0].washSaleProximity).toBe('clear');
+    expect(oldHolding.washSaleWatch).toBe(0);
+
+    const unparseable = analyzeHoldingHorizon(
+      [
+        makeCard({
+          id: 'bad-date',
+          player: 'Mike Trout',
+          purchaseDate: 'not-a-date',
+        }),
+        makeCard({
+          id: 'loss-near',
+          player: 'Mike Trout',
+          saleDate: '2026-09-02',
+          salePrice: 10,
+          purchasePrice: 80,
+          status: 'sold',
+        }),
+      ],
+      lateAsOf,
+    );
+    expect(unparseable.rows[0].washSaleProximity).toBe('clear');
   });
 });

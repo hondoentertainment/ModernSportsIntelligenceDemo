@@ -4,21 +4,30 @@ import {
   DEFAULT_ALERT_PREFERENCES,
   setAlertPreferences,
 } from '../../lib/utils/alertPreferences';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { createContext, runInContext } from 'node:vm';
 import {
   DEFAULT_WEB_PUSH_RECORD,
   WEB_PUSH_DISCLOSURE,
   WEB_PUSH_SUBSCRIPTION_KEY,
+  WEB_PUSH_SW_PREFS_CACHE,
+  WEB_PUSH_SW_PREFS_MESSAGE,
+  WEB_PUSH_SW_PREFS_URL,
   clearStoredWebPushSubscription,
   disableWebPushClient,
   enableWebPushClient,
   getStoredWebPushSubscription,
+  hydrateWebPushDeliveryPrefs,
   isWebPushSupported,
   normalizeWebPushRecord,
+  persistWebPushDeliveryPrefs,
   readOptionalVapidPublicKey,
   setStoredWebPushSubscription,
   shouldDeliverWebPush,
   shouldOfferWebPush,
   snapshotWebPushSupport,
+  toWebPushDeliveryPrefs,
   webPushStatusCopy,
   readBrowserPushEndpoint,
   type WebPushStatus,
@@ -217,5 +226,138 @@ describe('webPushSubscription', () => {
     });
     const cleared = await disableWebPushClient();
     expect(cleared.status).toBe('permission_needed');
+  });
+
+  it('syncs delivery prefs into Cache + SW postMessage so push can honor quiet hours', async () => {
+    const put = vi.fn(async () => undefined);
+    vi.stubGlobal('caches', {
+      open: vi.fn(async () => ({ put })),
+    });
+    const postMessage = vi.fn();
+    vi.stubGlobal('navigator', {
+      serviceWorker: {
+        controller: { postMessage },
+        ready: Promise.resolve({ active: { postMessage } }),
+      },
+    });
+
+    const muted = setAlertPreferences({
+      browserNotificationsEnabled: false,
+      quietHoursEnabled: true,
+      quietHoursStart: '22:00',
+      quietHoursEnd: '07:00',
+    });
+    const persisted = await persistWebPushDeliveryPrefs(muted);
+    expect(persisted.browserNotificationsEnabled).toBe(false);
+    expect(put).toHaveBeenCalled();
+    const [, response] = put.mock.calls[0] as [string, Response];
+    expect(JSON.parse(await response.text()).quietHoursEnabled).toBe(true);
+    expect(postMessage).toHaveBeenCalledWith({
+      type: WEB_PUSH_SW_PREFS_MESSAGE,
+      prefs: persisted,
+    });
+
+    const hydrated = await hydrateWebPushDeliveryPrefs();
+    expect(hydrated.browserNotificationsEnabled).toBe(false);
+    expect(toWebPushDeliveryPrefs(muted).quietHoursStart).toBe('22:00');
+    expect(toWebPushDeliveryPrefs().browserNotificationsEnabled).toBe(false);
+  });
+
+  it('persistWebPushDeliveryPrefs stays resilient when Cache or SW is unavailable', async () => {
+    vi.stubGlobal('caches', {
+      open: async () => {
+        throw new Error('blocked');
+      },
+    });
+    vi.stubGlobal('navigator', {
+      serviceWorker: {
+        controller: {
+          postMessage: () => {
+            throw new Error('no controller');
+          },
+        },
+        ready: Promise.reject(new Error('no sw')),
+      },
+    });
+    await expect(persistWebPushDeliveryPrefs()).resolves.toMatchObject({
+      browserNotificationsEnabled: true,
+    });
+
+    vi.unstubAllGlobals();
+    const payload = await persistWebPushDeliveryPrefs();
+    expect(payload.quietHoursStart).toBe('22:00');
+  });
+
+  it('SW delivery gate suppresses quiet hours and browser-off before showNotification', () => {
+    const gateSrc = readFileSync(path.join(process.cwd(), 'public/web-push-delivery-gate.js'), 'utf8');
+    const swSrc = readFileSync(path.join(process.cwd(), 'public/sw.js'), 'utf8');
+    expect(swSrc).toContain('importScripts(\'/web-push-delivery-gate.js\')');
+    expect(swSrc).toContain('shouldDeliverWebPushNotification');
+    expect(swSrc).toContain(WEB_PUSH_SW_PREFS_CACHE);
+    expect(swSrc).toContain(WEB_PUSH_SW_PREFS_URL);
+
+    const sandbox: Record<string, unknown> = {};
+    sandbox.self = sandbox;
+    sandbox.globalThis = sandbox;
+    runInContext(gateSrc, createContext(sandbox));
+    const gate = sandbox.MSI_WEB_PUSH_GATE as {
+      PREFS_CACHE: string;
+      PREFS_MESSAGE_TYPE: string;
+      shouldDeliverWebPushNotification: (now: Date, prefs: {
+        browserNotificationsEnabled?: boolean;
+        quietHoursEnabled?: boolean;
+        quietHoursStart?: string;
+        quietHoursEnd?: string;
+      }) => boolean;
+      normalizeWebPushDeliveryPrefs: (raw: unknown) => {
+        browserNotificationsEnabled: boolean;
+        quietHoursEnabled: boolean;
+      };
+    };
+
+    expect(gate.PREFS_CACHE).toBe(WEB_PUSH_SW_PREFS_CACHE);
+    expect(gate.PREFS_MESSAGE_TYPE).toBe(WEB_PUSH_SW_PREFS_MESSAGE);
+    const night = new Date('2026-09-10T23:00:00');
+    expect(gate.shouldDeliverWebPushNotification(night, {
+      browserNotificationsEnabled: true,
+      quietHoursEnabled: true,
+      quietHoursStart: '22:00',
+      quietHoursEnd: '07:00',
+    })).toBe(false);
+    expect(gate.shouldDeliverWebPushNotification(night, {
+      browserNotificationsEnabled: false,
+      quietHoursEnabled: false,
+    })).toBe(false);
+    expect(gate.shouldDeliverWebPushNotification(new Date('2026-09-10T12:00:00'), {
+      browserNotificationsEnabled: true,
+      quietHoursEnabled: true,
+      quietHoursStart: '22:00',
+      quietHoursEnd: '07:00',
+    })).toBe(true);
+    expect(gate.normalizeWebPushDeliveryPrefs(null).browserNotificationsEnabled).toBe(true);
+    expect(gate.shouldDeliverWebPushNotification(new Date('2026-09-10T10:00:00'), {
+      browserNotificationsEnabled: true,
+      quietHoursEnabled: true,
+      quietHoursStart: '09:00',
+      quietHoursEnd: '17:00',
+    })).toBe(false);
+    expect(gate.shouldDeliverWebPushNotification(new Date('2026-09-10T08:00:00'), {
+      browserNotificationsEnabled: true,
+      quietHoursEnabled: true,
+      quietHoursStart: '09:00',
+      quietHoursEnd: '17:00',
+    })).toBe(true);
+    expect(gate.shouldDeliverWebPushNotification(new Date('2026-09-10T06:00:00'), {
+      browserNotificationsEnabled: true,
+      quietHoursEnabled: true,
+      quietHoursStart: '22:00',
+      quietHoursEnd: '07:00',
+    })).toBe(false);
+    expect(gate.shouldDeliverWebPushNotification(new Date('2026-09-10T12:00:00'), {
+      browserNotificationsEnabled: true,
+      quietHoursEnabled: true,
+      quietHoursStart: '10:00',
+      quietHoursEnd: '10:00',
+    })).toBe(true);
   });
 });

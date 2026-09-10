@@ -1,6 +1,6 @@
 import React from 'react';
-import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import type { User } from '@supabase/supabase-js';
 
@@ -9,7 +9,7 @@ vi.mock('../../contexts/AuthContext', () => ({
   useAuth: () => mockUseAuth(),
 }));
 
-import ProtectedRoute from '../../components/ProtectedRoute';
+import ProtectedRoute, { PROFILE_LOADING_WAIT_MS } from '../../components/ProtectedRoute';
 
 function renderProtected() {
   return render(
@@ -57,5 +57,25 @@ describe('ProtectedRoute', () => {
     mockUseAuth.mockReturnValue({ user: fakeUser, loading: false, profileLoading: false });
     renderProtected();
     expect(screen.getByText('ProtectedPage')).toBeInTheDocument();
+  });
+
+  it('releases the shell if profileLoading stays true past the wait bound', async () => {
+    vi.useFakeTimers();
+    mockUseAuth.mockReturnValue({ user: fakeUser, loading: false, profileLoading: true });
+    renderProtected();
+    expect(screen.getByRole('status')).toHaveTextContent(/session \+ profile/i);
+    expect(screen.queryByText('ProtectedPage')).not.toBeInTheDocument();
+
+    await act(async () => {
+      vi.advanceTimersByTime(PROFILE_LOADING_WAIT_MS);
+      await vi.runOnlyPendingTimersAsync();
+    });
+
+    expect(screen.getByText('ProtectedPage')).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 });

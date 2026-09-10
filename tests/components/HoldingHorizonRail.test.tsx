@@ -28,6 +28,8 @@ describe('HoldingHorizonRail', () => {
             player: 'Mike Trout',
             purchaseDate: '2024-01-01',
             saleDate: '2026-09-02',
+            salePrice: 50,
+            purchasePrice: 120,
             status: 'sold',
           }),
         ]}

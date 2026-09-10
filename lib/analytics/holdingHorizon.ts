@@ -72,13 +72,24 @@ function playerKey(card: CardInventory): string {
   return String(card.player ?? '').trim().toLowerCase();
 }
 
+export function isSoldLotLoss(card: CardInventory): boolean {
+  if (typeof card.realizedGainLoss === 'number' && Number.isFinite(card.realizedGainLoss)) {
+    return card.realizedGainLoss < 0;
+  }
+  const proceeds = card.salePrice;
+  const basis = card.purchasePrice;
+  if (typeof proceeds !== 'number' || typeof basis !== 'number') return false;
+  if (!Number.isFinite(proceeds) || !Number.isFinite(basis)) return false;
+  return proceeds < basis;
+}
+
 function washProximityForActive(
   card: CardInventory,
   sold: CardInventory[],
-  asOf: Date,
 ): { proximity: WashSaleProximity; detail: string | null } {
   const windowMs = WASH_SALE_WINDOW_DAYS * DAY_MS;
-  const asOfMs = asOf.getTime();
+  const acquired = parseTime(card.purchaseDate);
+  if (acquired == null) return { proximity: 'clear', detail: null };
   const selfKey = identityHint(card);
   const selfPlayer = playerKey(card);
 
@@ -87,7 +98,7 @@ function washProximityForActive(
   for (const lot of sold) {
     const soldAt = parseTime(lot.saleDate);
     if (soldAt == null) continue;
-    const delta = Math.abs(asOfMs - soldAt);
+    const delta = Math.abs(acquired - soldAt);
     if (delta > windowMs) continue;
     const sameIdentity = identityHint(lot) === selfKey;
     const samePlayer = playerKey(lot) === selfPlayer && selfPlayer.length > 0;
@@ -118,7 +129,9 @@ export function analyzeHoldingHorizon(
   inventory: CardInventory[],
   asOf: Date = new Date(),
 ): HoldingHorizonSummary {
-  const sold = inventory.filter((card) => card.status === 'sold' && Boolean(card.saleDate));
+  const sold = inventory.filter(
+    (card) => card.status === 'sold' && Boolean(card.saleDate) && isSoldLotLoss(card),
+  );
   const active = inventory.filter((card) => card.status !== 'sold');
 
   const rows = active
@@ -126,7 +139,7 @@ export function analyzeHoldingHorizon(
     .map((card) => {
       const held = daysHeld(card.purchaseDate, asOf);
       const treatment = holdingTreatment(card.purchaseDate, asOf);
-      const wash = washProximityForActive(card, sold, asOf);
+      const wash = washProximityForActive(card, sold);
       return {
         cardId: card.id,
         player: card.player,

@@ -1,8 +1,15 @@
 // Bump when shell/offline behavior changes so clients drop stale caches (see PRODUCTION_READINESS PWA notes).
-const CACHE_VERSION = 'msi-v5';
+importScripts('/web-push-delivery-gate.js');
+
+const CACHE_VERSION = 'msi-v6';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 const API_CACHE = `api-${CACHE_VERSION}`;
+const WEB_PUSH_PREFS_CACHE = self.MSI_WEB_PUSH_GATE.PREFS_CACHE;
+const WEB_PUSH_PREFS_URL = self.MSI_WEB_PUSH_GATE.PREFS_URL;
+const WEB_PUSH_PREFS_MESSAGE = self.MSI_WEB_PUSH_GATE.PREFS_MESSAGE_TYPE;
+
+let cachedPushPrefs = self.MSI_WEB_PUSH_GATE.normalizeWebPushDeliveryPrefs(null);
 
 // Core shell assets that enable offline usage
 const STATIC_ASSETS = [
@@ -32,7 +39,12 @@ self.addEventListener('activate', (event) => {
         caches.keys().then((keys) =>
             Promise.all(
                 keys
-                    .filter((key) => key !== STATIC_CACHE && key !== DYNAMIC_CACHE && key !== API_CACHE)
+                    .filter((key) =>
+                        key !== STATIC_CACHE &&
+                        key !== DYNAMIC_CACHE &&
+                        key !== API_CACHE &&
+                        key !== WEB_PUSH_PREFS_CACHE
+                    )
                     .map((key) => caches.delete(key))
             )
         ).then(() => self.clients.claim())
@@ -147,29 +159,63 @@ self.addEventListener('fetch', (event) => {
 });
 
 // ─── Push notifications ─────────────────────────────────────────────────────
-self.addEventListener('push', (event) => {
-    const data = event.data?.json() ?? {};
-    const title = data.title || 'MSI Intelligence Alert';
-    const options = {
-        body: data.body || 'New alpha signal detected in your portfolio.',
-        icon: '/pwa-192x192.png',
-        badge: '/pwa-192x192.png',
-        vibrate: [200, 100, 200, 100, 300],
-        data: {
-            url: data.url || '/',
-            type: data.type || 'general'
-        },
-        actions: [
-            { action: 'view', title: 'View Details' },
-            { action: 'dismiss', title: 'Dismiss' }
-        ],
-        tag: data.tag || 'msi-alert',
-        renotify: true
-    };
+async function persistPushPrefs(prefs) {
+    cachedPushPrefs = self.MSI_WEB_PUSH_GATE.normalizeWebPushDeliveryPrefs(prefs);
+    try {
+        const cache = await caches.open(WEB_PUSH_PREFS_CACHE);
+        await cache.put(
+            WEB_PUSH_PREFS_URL,
+            new Response(JSON.stringify(cachedPushPrefs), {
+                headers: { 'Content-Type': 'application/json' },
+            })
+        );
+    } catch {
+        // Cache may be unavailable in some SW environments.
+    }
+    return cachedPushPrefs;
+}
 
-    event.waitUntil(
-        self.registration.showNotification(title, options)
-    );
+async function loadPushPrefs() {
+    try {
+        const cache = await caches.open(WEB_PUSH_PREFS_CACHE);
+        const res = await cache.match(WEB_PUSH_PREFS_URL);
+        if (res) {
+            cachedPushPrefs = self.MSI_WEB_PUSH_GATE.normalizeWebPushDeliveryPrefs(await res.json());
+        }
+    } catch {
+        // Keep the in-memory snapshot when Cache API is unavailable.
+    }
+    return cachedPushPrefs;
+}
+
+self.addEventListener('push', (event) => {
+    event.waitUntil((async () => {
+        const prefs = await loadPushPrefs();
+        if (!self.MSI_WEB_PUSH_GATE.shouldDeliverWebPushNotification(new Date(), prefs)) {
+            return;
+        }
+
+        const data = event.data?.json() ?? {};
+        const title = data.title || 'MSI Intelligence Alert';
+        const options = {
+            body: data.body || 'New alpha signal detected in your portfolio.',
+            icon: '/pwa-192x192.png',
+            badge: '/pwa-192x192.png',
+            vibrate: [200, 100, 200, 100, 300],
+            data: {
+                url: data.url || '/',
+                type: data.type || 'general'
+            },
+            actions: [
+                { action: 'view', title: 'View Details' },
+                { action: 'dismiss', title: 'Dismiss' }
+            ],
+            tag: data.tag || 'msi-alert',
+            renotify: true
+        };
+
+        await self.registration.showNotification(title, options);
+    })());
 });
 
 // ─── Notification click ─────────────────────────────────────────────────────
@@ -211,5 +257,9 @@ self.addEventListener('sync', (event) => {
 self.addEventListener('message', (event) => {
     if (event.data?.type === 'SKIP_WAITING') {
         self.skipWaiting();
+        return;
+    }
+    if (event.data?.type === WEB_PUSH_PREFS_MESSAGE) {
+        event.waitUntil(persistPushPrefs(event.data.prefs));
     }
 });

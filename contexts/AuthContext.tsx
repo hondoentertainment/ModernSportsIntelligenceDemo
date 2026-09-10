@@ -71,6 +71,9 @@ const SESSION_REFRESH_TIMEOUT_MS = 8000;
 // of staring at an indefinite "Secure Uplink…" screen on slow networks or
 // upstream Supabase outages.
 const INITIAL_AUTH_TIMEOUT_MS = 6000;
+// Hard ceiling on the profiles row fetch. A hung `.from('profiles')` must not
+// leave `profileLoading` true after the session fail-safe has released `loading`.
+const PROFILE_FETCH_TIMEOUT_MS = 6000;
 
 /**
  * Wraps supabase.auth.refreshSession() with a hard timeout so a slow or
@@ -109,6 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // because we just switched accounts).
     const profileLoading = !!user && loadedProfileForUserId !== user.id;
     const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const profileFailsafeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Proactive session refresh to prevent token expiry
     const startSessionRefreshTimer = useCallback(() => {
@@ -353,6 +357,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         if (!user) return;
         const targetUserId = user.id;
+        if (profileFailsafeRef.current) clearTimeout(profileFailsafeRef.current);
+        profileFailsafeRef.current = setTimeout(() => {
+            logger.warn(`[Auth] Profile fetch exceeded ${PROFILE_FETCH_TIMEOUT_MS}ms; releasing profileLoading.`);
+            setUserTier('free');
+            setOperatorRole('member');
+            setLoadedProfileForUserId(targetUserId);
+        }, PROFILE_FETCH_TIMEOUT_MS);
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -381,6 +392,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUserTier('free');
             setOperatorRole('member');
         } finally {
+            if (profileFailsafeRef.current) {
+                clearTimeout(profileFailsafeRef.current);
+                profileFailsafeRef.current = null;
+            }
             // Mark the profile fetch complete FOR THIS USER ID. On the first
             // render after a session is adopted, `user?.id !==
             // loadedProfileForUserId`, so `profileLoading === true`; this
@@ -393,7 +408,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (!user) return;
         fetchUserProfile();
         const interval = setInterval(fetchUserProfile, 5 * 60 * 1000);
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            if (profileFailsafeRef.current) {
+                clearTimeout(profileFailsafeRef.current);
+                profileFailsafeRef.current = null;
+            }
+        };
     }, [user, fetchUserProfile]);
 
     const demoLogin = () => {

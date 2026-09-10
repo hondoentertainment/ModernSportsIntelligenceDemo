@@ -75,6 +75,16 @@ function hydrateFromLegacyPrefs(): AlertPreferences | null {
   });
 }
 
+type AlertPreferencesListener = (prefs: AlertPreferences) => void;
+const alertPreferenceListeners = new Set<AlertPreferencesListener>();
+
+export function subscribeAlertPreferences(listener: AlertPreferencesListener): () => void {
+  alertPreferenceListeners.add(listener);
+  return () => {
+    alertPreferenceListeners.delete(listener);
+  };
+}
+
 export function getAlertPreferences(): AlertPreferences {
   const stored = store.get<unknown>(ALERT_PREFERENCES_KEY, null);
   if (stored != null) return normalizeAlertPreferences(stored);
@@ -84,6 +94,13 @@ export function getAlertPreferences(): AlertPreferences {
 export function setAlertPreferences(partial: Partial<AlertPreferences>): AlertPreferences {
   const next = normalizeAlertPreferences({ ...getAlertPreferences(), ...partial });
   store.set(ALERT_PREFERENCES_KEY, next);
+  alertPreferenceListeners.forEach((listener) => {
+    try {
+      listener(next);
+    } catch {
+      // Preference listeners must not break the write path.
+    }
+  });
   return next;
 }
 

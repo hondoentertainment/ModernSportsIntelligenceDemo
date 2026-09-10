@@ -8,10 +8,21 @@ import {
   getAlertPreferences,
   isWithinQuietHours,
   shouldFireBrowserNotification,
+  subscribeAlertPreferences,
   type AlertPreferences,
 } from './alertPreferences';
 
 export const WEB_PUSH_SUBSCRIPTION_KEY = 'msi_web_push_subscription_v1';
+export const WEB_PUSH_SW_PREFS_CACHE = 'msi-web-push-prefs-v1';
+export const WEB_PUSH_SW_PREFS_URL = '/__msi_web_push_prefs';
+export const WEB_PUSH_SW_PREFS_MESSAGE = 'MSI_WEB_PUSH_PREFS';
+
+export interface WebPushDeliveryPrefs {
+  browserNotificationsEnabled: boolean;
+  quietHoursEnabled: boolean;
+  quietHoursStart: string;
+  quietHoursEnd: string;
+}
 
 export type WebPushStatus =
   | 'unsupported'
@@ -118,6 +129,62 @@ export function shouldDeliverWebPush(
   return shouldFireBrowserNotification(now, prefs);
 }
 
+export function toWebPushDeliveryPrefs(
+  prefs: AlertPreferences = getAlertPreferences(),
+): WebPushDeliveryPrefs {
+  return {
+    browserNotificationsEnabled: prefs.browserNotificationsEnabled,
+    quietHoursEnabled: prefs.quietHoursEnabled,
+    quietHoursStart: prefs.quietHoursStart,
+    quietHoursEnd: prefs.quietHoursEnd,
+  };
+}
+
+async function postWebPushPrefsToServiceWorker(prefs: WebPushDeliveryPrefs): Promise<void> {
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+  const message = { type: WEB_PUSH_SW_PREFS_MESSAGE, prefs };
+  try {
+    navigator.serviceWorker.controller?.postMessage(message);
+  } catch {
+    // Controller may be missing before the first SW claims the page.
+  }
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    registration.active?.postMessage(message);
+  } catch {
+    // Ready can reject when no SW is registered (jsdom / unsupported browsers).
+  }
+}
+
+export async function persistWebPushDeliveryPrefs(
+  prefs: AlertPreferences = getAlertPreferences(),
+): Promise<WebPushDeliveryPrefs> {
+  const payload = toWebPushDeliveryPrefs(prefs);
+  if (typeof caches !== 'undefined') {
+    try {
+      const cache = await caches.open(WEB_PUSH_SW_PREFS_CACHE);
+      await cache.put(
+        WEB_PUSH_SW_PREFS_URL,
+        new Response(JSON.stringify(payload), {
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+    } catch {
+      // Cache API can throw in private mode or when SW storage is blocked.
+    }
+  }
+  await postWebPushPrefsToServiceWorker(payload);
+  return payload;
+}
+
+export async function hydrateWebPushDeliveryPrefs(): Promise<WebPushDeliveryPrefs> {
+  return persistWebPushDeliveryPrefs(getAlertPreferences());
+}
+
+subscribeAlertPreferences((prefs) => {
+  void persistWebPushDeliveryPrefs(prefs);
+});
+
 function permissionOf(): NotificationPermission | 'unsupported' {
   if (typeof Notification === 'undefined') return 'unsupported';
   return Notification.permission;
@@ -192,7 +259,7 @@ export async function enableWebPushClient(
   else if (permission === 'granted' && endpoint) status = 'subscribed';
   else if (permission === 'granted') status = 'ready_local';
 
-  return setStoredWebPushSubscription({
+  const record = setStoredWebPushSubscription({
     endpoint,
     permission,
     supported: true,
@@ -200,6 +267,8 @@ export async function enableWebPushClient(
     subscribedAt: permission === 'granted' ? subscribedAt ?? new Date().toISOString() : subscribedAt,
     status,
   });
+  await persistWebPushDeliveryPrefs();
+  return record;
 }
 
 export async function disableWebPushClient(): Promise<WebPushSubscriptionRecord> {
@@ -212,7 +281,7 @@ export async function disableWebPushClient(): Promise<WebPushSubscriptionRecord>
       // Browser may reject unsubscribe when no VAPID-backed subscription exists.
     }
   }
-  return setStoredWebPushSubscription({
+  const record = setStoredWebPushSubscription({
     endpoint: null,
     subscribedAt: null,
     status: isWebPushSupported()
@@ -224,6 +293,8 @@ export async function disableWebPushClient(): Promise<WebPushSubscriptionRecord>
     supported: isWebPushSupported(),
     vapidConfigured: Boolean(readOptionalVapidPublicKey()),
   });
+  await persistWebPushDeliveryPrefs();
+  return record;
 }
 
 export function webPushStatusCopy(record: WebPushSubscriptionRecord): string {
