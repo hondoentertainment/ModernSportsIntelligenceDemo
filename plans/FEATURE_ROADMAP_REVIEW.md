@@ -28,7 +28,7 @@
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Feature catalog** | Core catalog + auto route supplement; `DISCOVERABLE_FEATURE_CATALOG` hides `beta` and `demo` by default                                        |
 | **Routing**         | 100+ lazy-loaded pages in `App.tsx` (full vertical: portfolio, trading, intelligence, frontier); many route supplements are explicitly `demo`  |
-| **Data**            | DAL + `useSupabaseInventory`; local → cloud **migration** with merge summaries in UI; consignment snapshot **embedded in card notes** for sync |
+| **Data**            | DAL + `useSupabaseInventory`; local → cloud **migration** with merge summaries in UI; consignment snapshot **embedded in card notes** for sync. Hosted project `vhbsokjqchaafluimgjh` is **INACTIVE** (#77) |
 | **Auth**            | Supabase + demo mode; password reset; **ProtectedRoute** loading shell until `INITIAL_SESSION` **and** profile ready (`profileLoading`)        |
 | **Ops**             | Vercel, GitHub Actions, health API, rate limits on serverless routes, optional Sentry, CSP rollout docs                                        |
 | **Tests**           | Vitest (lib/components), Playwright E2E (collection add-asset + Scout-to-Acquire smoke); coverage policy documented                            |
