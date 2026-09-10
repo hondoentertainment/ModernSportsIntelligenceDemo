@@ -4,6 +4,7 @@
  */
 
 import type { CardInventory, TargetWatchlist } from '../../types';
+import { diffCardFields, diffTargetFields, type FieldConflict } from './migrationFieldDiff';
 
 export type MigrationConflictPolicy = 'prefer_local' | 'prefer_cloud' | 'merge_newer';
 
@@ -50,6 +51,7 @@ export interface DuplicateOutcome {
   outcome: DuplicateOutcomeAction;
   localFreshness?: string;
   cloudFreshness?: string;
+  fieldConflicts?: FieldConflict[];
 }
 
 export interface MigrationDuplicatePreview {
@@ -102,6 +104,7 @@ export function listCardDuplicateOutcomes(
       outcome: decideOutcome(policy, freshnessMs(loc), freshnessMs(cloudRow)),
       localFreshness: loc.lastValuationDate || loc.purchaseDate,
       cloudFreshness: cloudRow.lastValuationDate || cloudRow.purchaseDate,
+      fieldConflicts: diffCardFields(loc, cloudRow),
     });
   }
   return outcomes;
@@ -128,6 +131,7 @@ export function listTargetDuplicateOutcomes(
       outcome: decideOutcome(policy, targetFreshnessMs(loc), targetFreshnessMs(cloudRow)),
       localFreshness: loc.createdAt,
       cloudFreshness: cloudRow.createdAt,
+      fieldConflicts: diffTargetFields(loc, cloudRow),
     });
   }
   return outcomes;

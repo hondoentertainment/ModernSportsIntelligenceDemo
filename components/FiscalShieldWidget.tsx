@@ -4,6 +4,7 @@ import { CardInventory } from '../types';
 import { FiscalService } from '../lib/utils/FiscalService';
 import { TaxStrategyAgent } from '../lib/utils/TaxStrategyAgent';
 import { Shield, TrendingDown, AlertTriangle, Info } from 'lucide-react';
+import HoldingHorizonRail from './HoldingHorizonRail';
 
 interface FiscalShieldWidgetProps {
     inventory: CardInventory[];
@@ -56,6 +57,8 @@ export const FiscalShieldWidget: React.FC<FiscalShieldWidgetProps> = ({ inventor
             </div>
 
             {/* Agent Insights Swarm */}
+            {inventory.length > 0 && <div className="mb-6"><HoldingHorizonRail inventory={inventory} compact /></div>}
+
             <div className="insights-swarm space-y-3">
                 {insights.map((insight, idx) => (
                     <div key={idx} className={`p-3 rounded-lg flex gap-3 items-start border ${insight.sentiment === 'negative' ? 'bg-red-500/10 border-red-500/20 text-red-200' :

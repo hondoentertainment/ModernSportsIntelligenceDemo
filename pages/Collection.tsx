@@ -71,6 +71,7 @@ const PortfolioConcentrationRail = lazy(() => import('../components/PortfolioCon
 const P2PIntentBoard = lazy(() => import('../components/P2PIntentBoard'));
 const ShowBagPanel = lazy(() => import('../components/ShowBagPanel'));
 const GradingRoiLitePanel = lazy(() => import('../components/GradingRoiLitePanel'));
+const HoldingHorizonRail = lazy(() => import('../components/HoldingHorizonRail'));
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -607,6 +608,7 @@ const Collection: React.FC = () => {
               <TradeProposalPanel inventory={inventory} />
               <P2PIntentBoard inventory={inventory} />
               <GradingRoiLitePanel inventory={inventory} />
+              <HoldingHorizonRail inventory={inventory} />
               <ShowBagPanel inventory={inventory} targets={targets} />
             </Suspense>
           </LazyErrorBoundary>

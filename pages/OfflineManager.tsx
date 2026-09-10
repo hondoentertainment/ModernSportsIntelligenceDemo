@@ -139,7 +139,7 @@ function timeAgo(ts: number | null): string {
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 const OfflineManager: React.FC = () => {
-  const { isOnline: online, status, syncQueue: liveQueue, isSyncing, triggerSync, pendingCount, failedCount } = useOfflineStatus();
+  const { isOnline: online, status, syncQueue: liveQueue, isSyncing, triggerSync, retryFailed, pendingCount, failedCount } = useOfflineStatus();
   const [storageStats, setStorageStats] = useState<OfflineStorageStats>(getStorageStats());
   const [conflicts, setConflicts] = useState<ConflictResolution[]>(getConflicts());
   const [capabilities] = useState<OfflineCapability[]>(getOfflineCapabilities());
@@ -315,6 +315,16 @@ const OfflineManager: React.FC = () => {
                 {isSyncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
                 {isSyncing ? 'Syncing...' : 'Sync Now'}
               </button>
+              {failedCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => void retryFailed()}
+                  disabled={isSyncing || !online}
+                  className="flex items-center gap-2 px-3 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold transition-colors"
+                >
+                  Requeue failed
+                </button>
+              )}
               <button
                 onClick={handleClearQueue}
                 className="flex items-center gap-2 px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg text-sm font-semibold transition-colors"

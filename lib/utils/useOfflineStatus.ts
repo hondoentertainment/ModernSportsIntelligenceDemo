@@ -11,6 +11,7 @@ import {
   getSyncQueue,
   processSyncQueue,
   onStatusChange,
+  retryFailedSyncItems,
 } from './offlineService';
 
 export interface UseOfflineStatusReturn {
@@ -21,6 +22,7 @@ export interface UseOfflineStatusReturn {
   syncProgress: SyncProgress | null;
   isSyncing: boolean;
   triggerSync: () => Promise<void>;
+  retryFailed: () => Promise<void>;
   pendingCount: number;
   failedCount: number;
 }
@@ -53,6 +55,12 @@ export function useOfflineStatus(): UseOfflineStatusReturn {
       setIsSyncing(false);
     }
   }, [refreshQueue]);
+
+  const retryFailed = useCallback(async () => {
+    retryFailedSyncItems();
+    refreshQueue();
+    await triggerSync();
+  }, [refreshQueue, triggerSync]);
 
   // Listen for status changes
   useEffect(() => {
@@ -110,6 +118,7 @@ export function useOfflineStatus(): UseOfflineStatusReturn {
     syncProgress,
     isSyncing,
     triggerSync,
+    retryFailed,
     pendingCount,
     failedCount,
   };

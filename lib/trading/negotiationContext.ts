@@ -55,12 +55,16 @@ export function estimateSellerFirmness(
   if (playbook.id === 'fair_market_anchor') score = Math.max(0, score - 0.05);
 
   score = Math.round(Math.min(1, Math.max(0, score)) * 100) / 100;
-  const label: SellerFirmnessHint['label'] = score >= 0.75 ? 'Firm' : score >= 0.45 ? 'Measured' : 'Flexible';
   return {
     score,
-    label,
+    label: firmnessLabelFromScore(score),
     rationale: `${Math.round(gap * 100)}% gap vs ${playbook.label} accept/${Math.round(thresholds.lowballGapPct * 100)}% lowball bands.`,
   };
+}
+
+export function firmnessLabelFromScore(score: number): SellerFirmnessHint['label'] {
+  const s = Number.isFinite(score) ? Math.min(1, Math.max(0, score)) : 0.5;
+  return s >= 0.75 ? 'Firm' : s >= 0.45 ? 'Measured' : 'Flexible';
 }
 
 export function buildSellerPromptAddendum(

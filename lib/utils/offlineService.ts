@@ -233,6 +233,17 @@ export function getSyncQueue(): SyncQueueItem[] {
   return safeGetItem<SyncQueueItem[]>(KEYS.SYNC_QUEUE, []);
 }
 
+export function retryFailedSyncItems(): SyncQueueItem[] {
+  const queue = getSyncQueue();
+  const next = queue.map((item) =>
+    item.status === 'failed'
+      ? { ...item, status: 'pending' as const, error: undefined }
+      : item,
+  );
+  safeSetItem(KEYS.SYNC_QUEUE, next);
+  return next;
+}
+
 export async function processSyncQueue(): Promise<SyncProgress> {
   const queue = safeGetItem<SyncQueueItem[]>(KEYS.SYNC_QUEUE, []);
   const pending = queue.filter((i) => i.status === 'pending' || i.status === 'failed');

@@ -31,6 +31,7 @@ import {
 import { getTaxLotPreferences, toggleSpecificLotId } from '../lib/utils/taxLotPreferences';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
 import CapitalGainsExitStrip from '../components/CapitalGainsExitStrip';
+import HoldingHorizonRail from '../components/HoldingHorizonRail';
 
 const TAX_YEARS: TaxYear[] = [2023, 2024, 2025, 2026];
 const CHART_COLORS = ['#f97316', '#60a5fa', '#f87171', '#34d399', '#a78bfa', '#fbbf24', '#22d3ee', '#fb923c'];
@@ -309,6 +310,7 @@ const TaxReport: React.FC = () => {
           </div>
 
           {inventory.length > 0 && <CapitalGainsExitStrip inventory={inventory} />}
+          {inventory.length > 0 && <HoldingHorizonRail inventory={inventory} />}
 
           {/* Monthly Breakdown Chart */}
           <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">

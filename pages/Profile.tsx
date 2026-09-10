@@ -9,6 +9,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { MOCK_TEAMS, SPORTS } from '../constants';
 import { requestNotificationPermission, sendLocalNotification } from '../lib/utils/notifications';
 import AlertDeliverySettings from '../components/AlertDeliverySettings';
+import MigrationFieldDiffList from '../components/MigrationFieldDiffList';
+import OfflineSyncStatusPanel from '../components/OfflineSyncStatusPanel';
 import {
   getMigrationConflictPolicy,
   setMigrationConflictPolicy,
@@ -394,13 +396,9 @@ const Profile: React.FC = () => {
               </p>
             )}
             {conflictPreview?.reason === 'ok' && conflictPreview.outcomes.length > 0 && (
-              <ul className="text-[10px] text-slate-500 leading-snug text-left mx-auto md:mx-0 max-w-xl space-y-0.5">
-                {conflictPreview.outcomes.slice(0, 8).map((row) => (
-                  <li key={`${row.kind}-${row.identityKey}`}>
-                    {row.outcome === 'merge' ? 'Merge local over cloud' : 'Skip — keep cloud'} · {row.label}
-                  </li>
-                ))}
-              </ul>
+              <div className="text-left mx-auto md:mx-0 max-w-xl">
+                <MigrationFieldDiffList outcomes={conflictPreview.outcomes} limit={8} />
+              </div>
             )}
             {lastResult?.success && lastMergeSummary && (
               <p className="text-[10px] text-slate-400 font-semibold leading-snug border-l-2 border-brand-teal/40 pl-2 pt-1 text-left mx-auto md:mx-0 max-w-xl">
@@ -461,6 +459,7 @@ const Profile: React.FC = () => {
               {isMigrating ? 'Syncing...' : 'Force Sync'}
             </button>
             <p className="text-[8px] font-black text-brand-muted text-center uppercase tracking-[0.3em]">Institutional Uplink</p>
+            <OfflineSyncStatusPanel />
           </div>
         </div>
       </section>

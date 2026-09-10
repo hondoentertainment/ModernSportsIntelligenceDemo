@@ -22,7 +22,7 @@ import {
     getSelectedPlaybookId,
     setSelectedPlaybookId,
 } from '../lib/trading/negotiationPlaybooks';
-import { counterSourceLabel } from '../lib/trading/negotiationContext';
+import { counterSourceLabel, firmnessLabelFromScore } from '../lib/trading/negotiationContext';
 import {
   buildLotNegotiableItem,
   collectLotLines,
@@ -439,10 +439,15 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
                                     </div>
                                 ))}
                                 {agentThinking && (
-                                    <div className="flex justify-start">
-                                        <div className="p-4 rounded-2xl rounded-bl-none bg-slate-800 border border-slate-700 flex items-center gap-3">
-                                            <Loader2 className="w-5 h-5 text-brand-teal animate-spin" />
-                                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Agent thinking...</span>
+                                    <div className="flex justify-start" role="status" aria-live="polite">
+                                        <div className="p-4 rounded-2xl rounded-bl-none bg-slate-800 border border-brand-teal/30 flex items-center gap-3">
+                                            <div className="flex items-center gap-1" aria-hidden>
+                                                <span className="h-2 w-2 rounded-full bg-brand-teal animate-bounce [animation-delay:-0.2s]" />
+                                                <span className="h-2 w-2 rounded-full bg-brand-teal/80 animate-bounce [animation-delay:-0.1s]" />
+                                                <span className="h-2 w-2 rounded-full bg-brand-teal/60 animate-bounce" />
+                                            </div>
+                                            <Loader2 className="w-4 h-4 text-brand-teal animate-spin" />
+                                            <span className="text-xs font-bold text-slate-300 uppercase tracking-widest">Agent thinking · comparing ask vs max</span>
                                         </div>
                                     </div>
                                 )}
@@ -451,6 +456,39 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
 
                             {/* Controls */}
                             <div className="pt-4 border-t border-slate-800 space-y-3">
+                                {(() => {
+                                    const lastSeller = [...session.messages].reverse().find((msg) => msg.sender === 'seller');
+                                    const score = session.sellerFirmness ?? 0.5;
+                                    const label = session.sellerFirmnessLabel || firmnessLabelFromScore(score);
+                                    const sentiment = lastSeller?.sentiment || 'neutral';
+                                    return (
+                                        <div
+                                            className="rounded-xl border border-slate-800 bg-slate-950/50 px-3 py-2"
+                                            aria-label="Seller firmness and sentiment"
+                                        >
+                                            <div className="flex items-center justify-between gap-2">
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
+                                                    Seller firmness · {label}
+                                                </p>
+                                                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                                    {SENTIMENT_ICONS[sentiment as keyof typeof SENTIMENT_ICONS] || SENTIMENT_ICONS.neutral}
+                                                    {sentiment}
+                                                </span>
+                                            </div>
+                                            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-800">
+                                                <div
+                                                    className={`h-full ${score >= 0.75 ? 'bg-amber-400' : score >= 0.45 ? 'bg-sky-400' : 'bg-brand-lime'}`}
+                                                    style={{ width: `${Math.round(score * 100)}%` }}
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-[10px] text-slate-500">
+                                                {session.counterSource === 'gemini'
+                                                    ? 'Gemini-backed firmness when the generate path is available.'
+                                                    : 'Deterministic demo fallback — advisory only, not live trading.'}
+                                            </p>
+                                        </div>
+                                    );
+                                })()}
                                 <div className="flex items-center gap-2">
                                     <div className="relative flex-1">
                                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
@@ -494,11 +532,11 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
                                         {session.sellerFirmnessLabel ? ` | Seller: ${session.sellerFirmnessLabel}` : ''}
                                     </span>
                                 </div>
-                                {agentThinking && session.messages.some(m => m.content.includes('[AGENT]')) && (
+                                {agentThinking && (
                                     <div className="bg-brand-blue/5 border border-brand-blue/10 p-3 rounded-xl animate-in fade-in slide-in-from-bottom-2">
                                         <p className="text-[9px] font-black uppercase tracking-widest text-brand-blue mb-1">Agent Strategy</p>
                                         <p className="text-[10px] text-slate-400 leading-relaxed italic">
-                                            Comparing seller ask against market velocity. Staying within budget while maintaining deal momentum.
+                                            Comparing seller ask against market velocity. Staying within budget while maintaining deal momentum. Simulated seller — not live marketplace execution.
                                         </p>
                                     </div>
                                 )}

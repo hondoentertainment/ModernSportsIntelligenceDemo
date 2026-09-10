@@ -4,6 +4,7 @@ import {
   buildSellerPromptAddendum,
   counterSourceLabel,
   estimateSellerFirmness,
+  firmnessLabelFromScore,
   playbookCounterThresholds,
 } from '../../lib/trading/negotiationContext';
 
@@ -22,6 +23,8 @@ describe('negotiationContext', () => {
     expect(estimateSellerFirmness(0.02, fair).label).toBe('Flexible');
     expect(estimateSellerFirmness(0.55, fair).label).toBe('Firm');
     expect(estimateSellerFirmness(0.2, fair).label).toBe('Measured');
+    expect(firmnessLabelFromScore(0.8)).toBe('Firm');
+    expect(firmnessLabelFromScore(0.2)).toBe('Flexible');
   });
 
   it('lowball playbook is firmer than fair-market at the same gap', () => {

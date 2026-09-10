@@ -5,6 +5,7 @@ import {
     buildAgentPromptAddendum,
     buildSellerPromptAddendum,
     estimateSellerFirmness,
+    firmnessLabelFromScore,
     playbookCounterThresholds,
 } from './negotiationContext';
 
@@ -160,7 +161,7 @@ export class NegotiationService {
             const next = this.applySellerResponse(session, offerAttributes, geminiResponse);
             next.counterSource = 'gemini';
             next.sellerFirmness = geminiResponse.sellerFirmness ?? firmness.score;
-            next.sellerFirmnessLabel = firmness.label;
+            next.sellerFirmnessLabel = firmnessLabelFromScore(next.sellerFirmness);
             return next;
         }
         return this.processUserOffer(session, offerAttributes, playbook);
