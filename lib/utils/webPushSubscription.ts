@@ -181,6 +181,19 @@ export async function hydrateWebPushDeliveryPrefs(): Promise<WebPushDeliveryPref
   return persistWebPushDeliveryPrefs(getAlertPreferences());
 }
 
+/** App-startup seed so quiet hours / browser-off apply before settings mount. */
+export async function initWebPushDeliveryPrefs(): Promise<WebPushDeliveryPrefs> {
+  const first = await hydrateWebPushDeliveryPrefs();
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return first;
+  try {
+    await navigator.serviceWorker.ready;
+    return hydrateWebPushDeliveryPrefs();
+  } catch {
+    // No SW registered yet (dev / jsdom). Cache write above still seeds prefs.
+    return first;
+  }
+}
+
 subscribeAlertPreferences((prefs) => {
   void persistWebPushDeliveryPrefs(prefs);
 });

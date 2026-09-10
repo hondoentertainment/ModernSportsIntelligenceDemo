@@ -44,3 +44,6 @@ root.render(
 );
 
 initWebVitals();
+void import('./lib/utils/webPushSubscription').then(({ initWebPushDeliveryPrefs }) => {
+  initWebPushDeliveryPrefs();
+});
