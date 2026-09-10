@@ -50,4 +50,14 @@ describe('offlineSyncStatus', () => {
     expect(retried.find((row) => row.id === 'f')?.error).toBeUndefined();
     expect(retried.find((row) => row.id === 'p')?.status).toBe('pending');
   });
+
+  it('describes completed-only queues without inventing pendings', () => {
+    const one = summarizeSyncQueue([item({ id: 'c', status: 'completed' })]);
+    expect(formatOfflineSyncLine(one)).toBe('1 queued item (none pending).');
+    const many = summarizeSyncQueue([
+      item({ id: 'c1', status: 'completed' }),
+      item({ id: 'c2', status: 'completed' }),
+    ]);
+    expect(formatOfflineSyncLine(many)).toBe('2 queued items (none pending).');
+  });
 });

@@ -36,6 +36,6 @@ describe('HoldingHorizonRail', () => {
     expect(screen.getByRole('region', { name: /holding horizon/i })).toBeInTheDocument();
     expect(screen.getByText(HOLDING_HORIZON_DISCLOSURE)).toBeInTheDocument();
     expect(screen.getByText(/Mike Trout/)).toBeInTheDocument();
-    expect(screen.getByText(/wash-sale/i)).toBeInTheDocument();
+    expect(screen.getByText(/same lot is within the 30-day wash-sale window/i)).toBeInTheDocument();
   });
 });

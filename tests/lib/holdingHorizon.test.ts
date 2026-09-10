@@ -13,7 +13,7 @@ describe('holdingHorizon', () => {
     const asOf = new Date('2026-09-10T12:00:00Z');
     expect(holdingTreatment('2026-08-01', asOf)).toBe('Short-Term');
     expect(holdingTreatment('2025-01-01', asOf)).toBe('Long-Term');
-    expect(daysHeld('2026-09-01', asOf)).toBe(9);
+    expect(daysHeld('2026-09-01T12:00:00Z', asOf)).toBe(9);
     expect(daysToLongTerm('2026-08-01', asOf)).toBeGreaterThan(300);
     expect(HOLDING_HORIZON_DISCLOSURE).toMatch(/not tax advice/i);
   });
@@ -60,5 +60,52 @@ describe('holdingHorizon', () => {
     ]);
     expect(summary.washSaleWatch).toBe(0);
     expect(summary.active).toBe(1);
+  });
+
+  it('watches same-player different-lot sales and sorts restricted first', () => {
+    const asOf = new Date('2026-09-10T12:00:00Z');
+    const summary = analyzeHoldingHorizon(
+      [
+        makeCard({
+          id: 'watch-hold',
+          player: 'Shohei Ohtani',
+          cardNumber: '99',
+          purchaseDate: '2026-09-08',
+        }),
+        makeCard({
+          id: 'sold-other-lot',
+          player: 'Shohei Ohtani',
+          cardNumber: '1',
+          purchaseDate: '2024-01-01',
+          saleDate: '2026-09-03',
+          status: 'sold',
+        }),
+        makeCard({
+          id: 'clear-hold',
+          player: 'Unrelated',
+          purchaseDate: '2025-08-01',
+        }),
+        makeCard({
+          id: 'stale-sold',
+          player: 'Unrelated',
+          saleDate: '2025-01-01',
+          status: 'sold',
+        }),
+        makeCard({
+          id: 'bad-sale',
+          player: 'Shohei Ohtani',
+          saleDate: 'not-a-date',
+          status: 'sold',
+        }),
+      ],
+      asOf,
+    );
+    expect(summary.rows[0].washSaleProximity).toBe('watch');
+    expect(summary.rows[0].washSaleDetail).toMatch(/repurchase proximity/i);
+    expect(summary.rows.some((row) => row.washSaleProximity === 'clear')).toBe(true);
+    expect(daysHeld('not-a-date', asOf)).toBe(0);
+    expect(holdingTreatment('not-a-date', asOf)).toBe('Short-Term');
+    expect(daysHeld('2024-01-01', asOf, '2024-01-10')).toBe(9);
+    expect(holdingTreatment('2024-01-01', asOf, '2025-02-01')).toBe('Long-Term');
   });
 });
