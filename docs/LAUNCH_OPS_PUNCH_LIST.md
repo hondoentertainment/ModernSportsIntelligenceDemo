@@ -44,7 +44,9 @@ Point any uptime service (UptimeRobot, Checkly, Vercel checks) at `GET /api/heal
 Server-side env (Vercel), never `VITE_*`:
 
 - eBay: `EBAY_CLIENT_ID` / `EBAY_CLIENT_SECRET`, then set `VITE_FF_REAL_EBAY=true`
-- PSA: `PSA_API_KEY` (consumed by `api/grading/psa/cert.ts`), then `VITE_FF_REAL_PSA=true`
+- PSA: set `PSA_API_KEY` in **both** places, then `VITE_FF_REAL_PSA=true`
+  - Vercel (server) — `api/grading/psa/cert.ts`
+  - Supabase Edge Function secret — `verify-psa-cert` (`supabase secrets set PSA_API_KEY=…` + confirm the function is deployed). `/slab-verification` calls this via `lookupPsaCert` and **silently mocks** if the secret is missing.
 
 The adapters now tag every response `source: 'live' | 'mock'` with a `degradedReason` on live failures — UI surfaces can trust the label.
 

@@ -1,8 +1,10 @@
 # Roadmap Review & Feature Enhancement Recommendations
 
 **Date:** 2026-03-08
-**Last updated:** 2026-09-10 (Wave-4 on top of Wave-3 #133 and Wave-2 #131/#132)
+**Last updated:** 2026-09-10 (Wave-5 `#139` / `b1a6ca5` on top of Wave-4 #136/#137/#138)
 **Scope:** Review of the 24-phase roadmap (PRD.md) and strategic next-steps (next-steps-recommendation.md)
+
+> **Sequencing superseded.** This file remains the historical enhancement inventory. Owner-facing order after Wave-5 is [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) (Phases A–E, **T0 = Phase A complete** / #77 closed). Do not use §4 below as the current execution order.
 
 ## Status addendum (2026-09-06)
 
@@ -48,8 +50,15 @@ Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-sa
 | Holding horizon / wash-sale rail                 | **Shipped (lite, Wave-4)** — ST/LT + 30-day proximity on Collection / Fiscal / Tax. Not IRS completeness.|
 | Priority 1.1 ProtectedRoute profile hold         | **Shipped (Wave-4)** — shell until INITIAL_SESSION + profile ready.                                      |
 | Offline queue retry                              | **Shipped (lite, Wave-4)** — pending/failed counts + retry on banner + Profile.                          |
+| Ratio intelligence                               | **Shipped (Wave-5)** — grade / player / variation rails on Collection / Dashboard / War Room. Thin tape disclosed. |
+| Collection & Favorites Top Movers                | **Shipped (Wave-5)** — snapshot/comp movers. Not a live SCI feed.                                        |
+| Deal Finder lite                                 | **Shipped (Wave-5)** — watchlist / target / scan vs consensus or fee-aware break-even.                   |
+| Market Pulse multi-segment                       | **Shipped (Wave-5)** — sport / era / sealed-vs-singles. Seeded + local. Not live SCI Pulse.              |
+| Card Compare desk (2–3)                          | **Shipped (Wave-5)** — `/compare` + Collection wire-up.                                                  |
+| Whale Collection list (Priority 6.2)             | **Shipped (Wave-5)** — tanstack virtual list above 24 rows.                                              |
+| Adjacent wax / TCG on core desks                 | **Shipped (lite, Wave-5)** — Dashboard + Collection rail. Disclosed proxies.                             |
 
-Still **owner-held / open:** #77 Supabase restore, Stripe/eBay/PSA keys, Sentry DSN, fractional-vault legal, custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness. Tailwind 4 and `@eslint/js` 10 deferred. **#130 shipped:** thin P2P intent board, Scout-to-Acquire smoke, `@google/genai` 2.x, adjacent hobby correlation, price-alert haptics, centering heuristic. **Wave-2 shipped on top of #130. Wave-3 shipped on top of Wave-2. Wave-4 shipped on top of Wave-3.**
+Still **owner-held / open:** #77 Supabase restore, Stripe/eBay/PSA keys, Sentry DSN, fractional-vault legal, custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness, server Web Push (VAPID + backend). Tailwind 4 and `@eslint/js` 10 deferred. **Waves 2–5 shipped** on top of #123/#124/#130. Forward order is Phase A (#77) → B (pricing default) → C (push/wires) → D (trading moat) → E (platform) — not §4 below.
 
 ---
 
@@ -66,11 +75,12 @@ Still **owner-held / open:** #77 Supabase restore, Stripe/eBay/PSA keys, Sentry 
 
 | Area                     | Gap                                                                                              | Risk Level |
 | ------------------------ | ------------------------------------------------------------------------------------------------ | ---------- |
-| **Data freshness**       | Prices still rely heavily on AI estimation rather than live market feeds                         | High       |
-| **Offline reliability**  | PWA/Service Worker work is in-progress but not battle-tested                                     | Medium     |
-| **Test coverage**        | Limited unit and E2E tests for financial calculation paths                                       | High       |
-| **Multi-sport breadth**  | Feature depth is MLB-centric; NBA, NFL, Soccer, Hockey have thinner integrations                 | Medium     |
-| **Social moat**          | Hype Feed exists but no peer-to-peer marketplace or community trading                            | Medium     |
+| **Trusted book (#77)**   | Supabase `vhbsokjqchaafluimgjh` INACTIVE; live eBay/PSA tape and Stripe smoke owner-held         | High       |
+| **Data freshness**       | Sold-comp consensus + Comps Used shipped; **default-on live comps** still wait for eBay flag     | High       |
+| **Offline reliability**  | PWA + pending/failed queue retry shipped (Wave-4); not battle-tested on restored cloud           | Medium     |
+| **Test coverage**        | NAV / fiscal / Scout-to-Acquire smoke shipped; cloud/live-tape E2E still owner-held              | Medium     |
+| **Multi-sport breadth**  | NBA/NFL/NHL/Soccer desks + PvP binds shipped (seeded); live non-MLB wires still open             | Medium     |
+| **Social moat**          | Thin P2P intent board shipped; matching / escrow / exchange still open (Phase D)                 | Medium     |
 | **Regulatory readiness** | FIFO/LIFO/Specific ID **selector** exists (demo); IRS/CRA **regulatory completeness** still open | High       |
 
 ---
@@ -199,7 +209,7 @@ Track the cost vs. return of wax/hobby box breaks. Input the break cost and log 
 
 ## 4. Recommended Priority Reordering
 
-Based on the analysis above, the suggested execution order for maximum impact:
+**Superseded (2026-09-10).** Items 1–10 below were the March 2026 impact order. Most are now shipped (lite/deepen) or owner-held. Current order is Phase A–E in [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md). Kept for history:
 
 | Order | Item                                           | Rationale                                                                                  |
 | ----- | ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
@@ -242,10 +252,10 @@ Based on the analysis above, the suggested execution order for maximum impact:
 
 ## 6. Summary
 
-The existing 24-phase roadmap is ambitious and well-structured. The enhancements above focus on three themes:
+The existing 24-phase roadmap is ambitious and well-structured. The enhancements above focused on three themes (now largely shipped at lite/deepen on the local book):
 
-1. **Close the data gap** — Move from AI-estimated prices to market-verified data (eBay comps, PSA certs, MLB transactions).
-2. **Complete the lifecycle** — Add features for every stage: discovery, acquisition, management, optimization, exit, and tax reporting.
-3. **Build trust through transparency** — Agent audit trails, comp-backed predictions, and insurance-grade reports make the platform credible for serious collectors managing real capital.
+1. **Close the data gap** — Sold-comp consensus + Comps Used shipped; live eBay/PSA still #77.
+2. **Complete the lifecycle** — Discovery through tax reporting exists on existing desks; execution/P2P remain Phase D.
+3. **Build trust through transparency** — Agent why/consensus, audit trails, insurance packet, Schedule D–style export shipped (advisory).
 
-The platform's positioning as "Bloomberg for sports cards" is achievable. The key constraint is not features — it's data quality and financial accuracy. Prioritize the foundation (verified pricing, tax compliance, test coverage) before scaling to more speculative features.
+**Sep 2026:** Bloomberg positioning is engineering-complete. The constraint is no longer feature inventory — it is **owner-held #77** (restore + keys), then pricing-truth default, then always-on wires and a real trading moat. Do not add Labs pages or treat Tailwind 4 / eslint majors as roadmap work.

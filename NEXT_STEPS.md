@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-10 · **September 2026 Wave-5** (ratio intelligence, collection/favorites movers, deal finder lite, Market Pulse segments, compare desk, whale list virtualization, wax/TCG discoverability). Builds on Wave-4 (#136/#137/#138) and Wave-3 (#133).
+> Refreshed 2026-09-10 · **September 2026 Wave-5 shipped** (`#139` / `b1a6ca5`). Forward plan (post-eng-safe) is below and in [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). Builds on Wave-4 (#136/#137/#138) and Wave-3 (#133).
 
 ## Current state in one paragraph
 
@@ -39,6 +39,79 @@ MSI now covers **ratio intel + collection/favorites movers + deals + multi-segme
 **Still owner-held (do not start from this PR):** #77 Supabase restore, Stripe / eBay / PSA keys, Sentry DSN, fractional-vault legal, vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness, server-triggered Web Push (VAPID + backend).
 
 **Deferred / not this wave:** Tailwind 4; `@eslint/js` 10; jsPDF/html2canvas on live entry graph; new Labs pages; live non-MLB sports wires; new `price_history` table; partner show-bag APIs; full P2P matching/escrow; production CV; IRS completeness.
+
+## Forward roadmap (post-eng-safe)
+
+Waves 2–5 closed the engineering-safe consumer-intel gap. Remaining unlock is owner-held [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77). Owner narrative: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). If #77 slips, **Phase A is the only critical path**.
+
+### Competitive positioning
+
+| Capability | MSI | Market Movers / Sports Card Investor |
+| ---------- | --- | ------------------------------------ |
+| Agents, War Room, why / consensus | **Lead** | Absent |
+| Tax / fiscal (lots, ST/LT, wash-sale, Fiscal Shield) | **Lead** (advisory; not IRS-complete) | Thin or absent |
+| Audit dossier + admin trail | **Lead** | Absent |
+| Card-show floor loop | **Lead** | Absent |
+| Ratio intel, movers, deals, compare, whale list, wax/TCG | **Parity-plus on local book** (Wave-5) | Strong on live tape |
+| Live multi-marketplace sold comps | Behind #77 | **They lead until Phase A** |
+| Live Market Pulse / hobby indexes | Seeded + local Δ | **They lead until Phase A** |
+
+### Phase A — Unlock trusted book (#77) — OWNER ONLY
+
+Do not implement keys or restore the project from this (or any engineering) PR. Ordered:
+
+1. Restore Supabase `vhbsokjqchaafluimgjh` + Vercel / GitHub env sync — [`docs/DEPLOY_ENV_CHECKLIST.md`](docs/DEPLOY_ENV_CHECKLIST.md)
+2. Stripe lifecycle smoke — [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md) item 6
+3. eBay → server keys, then `VITE_FF_REAL_EBAY` (observe deployed-E2E + pricing-truth)
+4. PSA (after eBay is stable) — **both** runtimes, then `VITE_FF_REAL_PSA`:
+   - Vercel `PSA_API_KEY` → `api/grading/psa/cert.ts`
+   - Supabase secret `PSA_API_KEY` + `verify-psa-cert` deployed → `/slab-verification` (`lookupPsaCert`). Missing this secret falls back to mock.
+5. Optional: Sentry DSN, `/audit-trail/admin` confirm, `fractional-vault` legal, full key-rotation drill
+
+Track on [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77).
+
+### Phase B — Pricing truth default (eng, after eBay live)
+
+Phase 32 style. Consensus / Comps Used / Collection chips already exist.
+
+- Sold comps **default** on apply + core desks once live tape is on
+- Stale / low-liquidity badges **everywhere**
+- Provenance SLA (source, timestamp, confidence, freshness)
+- Optional `price_history` once cloud is restored — not before
+
+### Phase C — Always-on alerts & wires
+
+- Server Web Push (VAPID + backend). Client Push readiness shipped Wave-4
+- Live sports catalysts / PvP wires — **MLB first**
+
+### Phase D — Real trading moat
+
+- P2P matching + reputation + escrow (intent board is lite only)
+- Execution adapters + Auto-Pilot **controlled** fills
+- Show-floor field loop / partner APIs
+- Production CV **only if** it beats the disclosed heuristic
+
+### Phase E — Platform
+
+- Real Alpha API keys + webhooks
+- Alpha Guilds
+- Risk / compliance depth (not IRS theater)
+- Multi-tenant scale
+
+### 30 / 60 / 90 — T0 = Phase A complete
+
+**T0** is the day [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closes: restore + Vercel env sync + Stripe smoke + eBay live. PSA may still be pending (eBay-first). If #77 slips, **the clock does not start** — Phase A stays the only critical path.
+
+| Window | Outcome |
+| ------ | ------- |
+| **Pre-T0** | Phase A only. No B–E, no Labs, no both-flags-at-once. |
+| **T0 + 30** | eBay tape observed. PSA on **both** runtimes only if eBay is stable. Phase B started. |
+| **T0 + 60** | Phase B default-on + freshness SLA. Phase C started (Web Push or MLB wire). |
+| **T0 + 90** | Phase C usable. Phase D scoped. Phase E waits until A–C are boring. |
+
+### Explicit non-goals (still)
+
+No new Labs pages. No Tailwind 4 / `@eslint/js` 10 as roadmap items. Do not flip both real-data flags at once. Do not restore Supabase from engineering PRs. Do not promote `fractional-vault` without legal. Do not claim live SCI / Market Movers Pulse parity before Phase A.
 
 ## September 2026 Wave-4 — Shipped (2026-09-10)
 
@@ -215,7 +288,7 @@ upgrade** — `npm ci` will refuse the engine constraint.
 Check readiness anytime after restore: `npm run ops:check-real-data`.
 
 1. Set `EBAY_CLIENT_ID`/`EBAY_CLIENT_SECRET` + `VITE_FF_REAL_EBAY=true`; watch Deployed E2E + pricing-truth for a few days. Stale-comp fallback already labels `source: 'stale'`.
-2. Then `PSA_API_KEY` + `VITE_FF_REAL_PSA=true`; cert badges switch from demo to live.
+2. Then PSA on **both** runtimes (`PSA_API_KEY` on Vercel **and** Supabase `verify-psa-cert`) + `VITE_FF_REAL_PSA=true`. Cert badges and `/slab-verification` switch from demo/mock to live.
 
 ## Priority 3 — Last beta exit
 
@@ -253,3 +326,5 @@ Check readiness anytime after restore: `npm run ops:check-real-data`.
 | Rollback runbook                | `docs/ROLLBACK_AND_STABILIZATION.md`                                     |
 | Coverage policy                 | `docs/COVERAGE_POLICY.md`                                                |
 | Labs boundary                   | `lib/productionLaunch.ts`                                                |
+| Forward roadmap (post Wave-5)   | `plans/PRODUCT_ROADMAP_2026Q4.md`                                        |
+| Feature inventory vs catalog    | `plans/FEATURE_ROADMAP_REVIEW.md`                                        |
