@@ -230,7 +230,13 @@ export function getValuationSourceChipForTarget(
   label: string;
   className: string;
 } {
-  return honestSourceChip(preferredValuationForTarget(target));
+  const preferred = preferredValuationForTarget(target);
+  if (preferred.method !== 'unavailable') {
+    return honestSourceChip(preferred);
+  }
+  return getValuationSourceChipForSource(
+    target.valuationSource || ((target.salesData?.length || 0) >= 3 ? 'historical-comps' : 'fallback'),
+  );
 }
 
 /**

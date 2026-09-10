@@ -6,6 +6,7 @@ import {
   assemblePricingTruth,
   buildPricingTruthForCard,
   buildPricingTruthForTarget,
+  chipsFromPricingTruth,
   classifyLowLiquidity,
   classifySourceTier,
   classifyStaleData,
@@ -19,7 +20,7 @@ import type { CardInventory, TargetWatchlist } from '../../types';
 const NOW = Date.parse('2026-09-10T12:00:00.000Z');
 
 function sale(price: number, soldAt: string) {
-  return { price, soldAt };
+  return { title: `Comp ${price}`, condition: 'Raw', price, soldAt };
 }
 
 function freshComps() {
@@ -220,5 +221,28 @@ describe('pricingTruth disclosed confidence + provenance', () => {
     const targetTruth = buildPricingTruthForTarget(target as TargetWatchlist, NOW);
     expect(targetTruth.value).toBe(250);
     expect(targetTruth.sourceChip.label).toBe('Sold comps');
+  });
+
+  it('labels stored marks, unavailable estimates, and stored historical comps honestly', () => {
+    const stored = selectPreferredValuation({ storedValue: 80, storedSource: 'fallback', nowMs: NOW });
+    expect(classifySourceTier(stored)).toBe('ai-estimate-fallback');
+    expect(honestSourceChip(stored).label).toBe('Stored mark');
+
+    const historicalStored = selectPreferredValuation({
+      storedValue: 80,
+      storedSource: 'historical-comps',
+      nowMs: NOW,
+    });
+    expect(honestSourceChip(historicalStored).label).toBe('Historical comps');
+
+    const none = selectPreferredValuation({ nowMs: NOW });
+    expect(classifySourceTier(none)).toBe('unavailable');
+    expect(honestSourceChip(none).label).toBe('Estimate');
+
+    const assembled = assemblePricingTruth(none);
+    const chips = chipsFromPricingTruth(assembled);
+    expect(chips.compsCount).toBe(0);
+    expect(chips.title).toMatch(/Estimate/);
+    expect(chips.title).toMatch(CONFIDENCE_UNKNOWN_LABEL);
   });
 });

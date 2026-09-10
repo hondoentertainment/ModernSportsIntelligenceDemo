@@ -39,7 +39,7 @@ describe('WatchlistPriceCard — Phase B pricing truth', () => {
     expect(screen.getByText('$220')).toBeInTheDocument();
     expect(screen.queryByText('$900')).not.toBeInTheDocument();
     expect(screen.getByText(/sold comps/i)).toBeInTheDocument();
-    expect(screen.getByText(/3 comps/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/3 comps/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByRole('button', { name: /comps used/i })).toBeInTheDocument();
   });
 

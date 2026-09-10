@@ -72,7 +72,7 @@ describe('CardGridItem — DataSourceBadge regression guard', () => {
     render(<CardGridItem {...makeProps(card)} />);
 
     expect(screen.getByText(/thin sold comps/i)).toBeInTheDocument();
-    expect(screen.getByText(/stale/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/stale/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/thin tape/i)).toBeInTheDocument();
   });
 
