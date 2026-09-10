@@ -19,6 +19,7 @@ import {
   enableWebPushClient,
   getStoredWebPushSubscription,
   hydrateWebPushDeliveryPrefs,
+  initWebPushDeliveryPrefs,
   isWebPushSupported,
   normalizeWebPushRecord,
   persistWebPushDeliveryPrefs,
@@ -261,6 +262,57 @@ describe('webPushSubscription', () => {
     expect(hydrated.browserNotificationsEnabled).toBe(false);
     expect(toWebPushDeliveryPrefs(muted).quietHoursStart).toBe('22:00');
     expect(toWebPushDeliveryPrefs().browserNotificationsEnabled).toBe(false);
+  });
+
+  it('initWebPushDeliveryPrefs seeds Cache and re-hydrates after SW ready', async () => {
+    const put = vi.fn(async () => undefined);
+    vi.stubGlobal('caches', {
+      open: vi.fn(async () => ({ put })),
+    });
+    const postMessage = vi.fn();
+    vi.stubGlobal('navigator', {
+      serviceWorker: {
+        controller: { postMessage },
+        ready: Promise.resolve({ active: { postMessage } }),
+      },
+    });
+    await initWebPushDeliveryPrefs();
+    expect(put.mock.calls.length).toBeGreaterThanOrEqual(2);
+    expect(postMessage).toHaveBeenCalled();
+
+    vi.stubGlobal('navigator', {
+      serviceWorker: {
+        ready: Promise.reject(new Error('no sw')),
+      },
+    });
+    await expect(initWebPushDeliveryPrefs()).resolves.toMatchObject({
+      quietHoursStart: '22:00',
+    });
+
+    vi.stubGlobal('navigator', {});
+    await expect(initWebPushDeliveryPrefs()).resolves.toMatchObject({
+      quietHoursStart: '22:00',
+    });
+  });
+
+  it('can seed Cache before mount without waiting for serviceWorker.ready', async () => {
+    const put = vi.fn(async () => undefined);
+    vi.stubGlobal('caches', {
+      open: vi.fn(async () => ({ put })),
+    });
+    let resolveReady: (value: { active: { postMessage: () => void } }) => void = () => undefined;
+    vi.stubGlobal('navigator', {
+      serviceWorker: {
+        controller: { postMessage: vi.fn() },
+        ready: new Promise((resolve) => {
+          resolveReady = resolve;
+        }),
+      },
+    });
+    const seeded = await initWebPushDeliveryPrefs({ waitForServiceWorker: false });
+    expect(seeded.quietHoursStart).toBe('22:00');
+    expect(put).toHaveBeenCalled();
+    resolveReady({ active: { postMessage: vi.fn() } });
   });
 
   it('persistWebPushDeliveryPrefs stays resilient when Cache or SW is unavailable', async () => {

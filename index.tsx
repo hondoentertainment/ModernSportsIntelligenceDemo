@@ -35,12 +35,25 @@ if (!rootElement) {
 }
 
 const root = createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </React.StrictMode>
-);
 
-initWebVitals();
+async function mountApp() {
+  try {
+    const { initWebPushDeliveryPrefs } = await import('./lib/utils/webPushSubscription');
+    // Cache must be written before first paint so a cold-start push honors prefs.
+    await initWebPushDeliveryPrefs({ waitForServiceWorker: false });
+    void initWebPushDeliveryPrefs();
+  } catch (error) {
+    logger.warn('[WebPush] Startup pref seed failed:', error);
+  }
+
+  root.render(
+    <React.StrictMode>
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    </React.StrictMode>
+  );
+  initWebVitals();
+}
+
+void mountApp();

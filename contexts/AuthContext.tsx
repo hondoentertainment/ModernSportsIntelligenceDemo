@@ -75,6 +75,14 @@ const INITIAL_AUTH_TIMEOUT_MS = 6000;
 // leave `profileLoading` true after the session fail-safe has released `loading`.
 const PROFILE_FETCH_TIMEOUT_MS = 6000;
 
+/** Hung refresh must not clobber an already-loaded tier/role. */
+export function shouldApplyProfileLoadTimeoutDefaults(
+    loadedProfileForUserId: string | null,
+    targetUserId: string,
+): boolean {
+    return loadedProfileForUserId !== targetUserId;
+}
+
 /**
  * Wraps supabase.auth.refreshSession() with a hard timeout so a slow or
  * hung network request cannot stall the refresh timer indefinitely.
@@ -112,7 +120,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // because we just switched accounts).
     const profileLoading = !!user && loadedProfileForUserId !== user.id;
     const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-    const profileFailsafeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const loadedProfileForUserIdRef = useRef<string | null>(null);
+    const profileFailsafesRef = useRef(new Set<ReturnType<typeof setTimeout>>());
+    loadedProfileForUserIdRef.current = loadedProfileForUserId;
 
     // Proactive session refresh to prevent token expiry
     const startSessionRefreshTimer = useCallback(() => {
@@ -357,13 +367,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         if (!user) return;
         const targetUserId = user.id;
-        if (profileFailsafeRef.current) clearTimeout(profileFailsafeRef.current);
-        profileFailsafeRef.current = setTimeout(() => {
-            logger.warn(`[Auth] Profile fetch exceeded ${PROFILE_FETCH_TIMEOUT_MS}ms; releasing profileLoading.`);
-            setUserTier('free');
-            setOperatorRole('member');
-            setLoadedProfileForUserId(targetUserId);
-        }, PROFILE_FETCH_TIMEOUT_MS);
+        // Background refreshes must not clobber an already-established tier/role
+        // if they hang. The failsafe only releases an unresolved *initial* load.
+        const alreadyLoaded = !shouldApplyProfileLoadTimeoutDefaults(
+            loadedProfileForUserIdRef.current,
+            targetUserId,
+        );
+        let failsafe: ReturnType<typeof setTimeout> | null = null;
+        if (!alreadyLoaded) {
+            failsafe = setTimeout(() => {
+                if (!shouldApplyProfileLoadTimeoutDefaults(loadedProfileForUserIdRef.current, targetUserId)) return;
+                logger.warn(`[Auth] Profile fetch exceeded ${PROFILE_FETCH_TIMEOUT_MS}ms; releasing profileLoading.`);
+                setUserTier('free');
+                setOperatorRole('member');
+                setLoadedProfileForUserId(targetUserId);
+            }, PROFILE_FETCH_TIMEOUT_MS);
+            profileFailsafesRef.current.add(failsafe);
+        }
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -392,9 +412,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUserTier('free');
             setOperatorRole('member');
         } finally {
-            if (profileFailsafeRef.current) {
-                clearTimeout(profileFailsafeRef.current);
-                profileFailsafeRef.current = null;
+            if (failsafe) {
+                clearTimeout(failsafe);
+                profileFailsafesRef.current.delete(failsafe);
             }
             // Mark the profile fetch complete FOR THIS USER ID. On the first
             // render after a session is adopted, `user?.id !==
@@ -410,10 +430,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const interval = setInterval(fetchUserProfile, 5 * 60 * 1000);
         return () => {
             clearInterval(interval);
-            if (profileFailsafeRef.current) {
-                clearTimeout(profileFailsafeRef.current);
-                profileFailsafeRef.current = null;
-            }
+            for (const timer of profileFailsafesRef.current) clearTimeout(timer);
+            profileFailsafesRef.current.clear();
         };
     }, [user, fetchUserProfile]);
 

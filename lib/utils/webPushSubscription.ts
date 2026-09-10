@@ -148,12 +148,14 @@ async function postWebPushPrefsToServiceWorker(prefs: WebPushDeliveryPrefs): Pro
   } catch {
     // Controller may be missing before the first SW claims the page.
   }
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    registration.active?.postMessage(message);
-  } catch {
-    // Ready can reject when no SW is registered (jsdom / unsupported browsers).
-  }
+  // Do not await ready here — a hung SW must not block the pre-mount Cache seed.
+  void navigator.serviceWorker.ready
+    .then((registration) => {
+      registration.active?.postMessage(message);
+    })
+    .catch(() => {
+      // Ready can reject when no SW is registered (jsdom / unsupported browsers).
+    });
 }
 
 export async function persistWebPushDeliveryPrefs(
@@ -179,6 +181,27 @@ export async function persistWebPushDeliveryPrefs(
 
 export async function hydrateWebPushDeliveryPrefs(): Promise<WebPushDeliveryPrefs> {
   return persistWebPushDeliveryPrefs(getAlertPreferences());
+}
+
+export interface InitWebPushDeliveryPrefsOptions {
+  /** When false, only the Cache write runs — safe to await before first paint. */
+  waitForServiceWorker?: boolean;
+}
+
+/** App-startup seed so quiet hours / browser-off apply before settings mount. */
+export async function initWebPushDeliveryPrefs(
+  options: InitWebPushDeliveryPrefsOptions = {},
+): Promise<WebPushDeliveryPrefs> {
+  const first = await hydrateWebPushDeliveryPrefs();
+  if (options.waitForServiceWorker === false) return first;
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return first;
+  try {
+    await navigator.serviceWorker.ready;
+    return hydrateWebPushDeliveryPrefs();
+  } catch {
+    // No SW registered yet (dev / jsdom). Cache write above still seeds prefs.
+    return first;
+  }
 }
 
 subscribeAlertPreferences((prefs) => {
