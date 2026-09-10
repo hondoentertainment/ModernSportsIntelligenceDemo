@@ -2,7 +2,7 @@
 
 This document outlines the prioritized next steps for transitioning **Modern Sports Intelligence** from a high-fidelity prototype to a production-ready asset management platform.
 
-> **Sep 2026 refresh.** Eng-safe Waves 2–5 are shipped (`#139` / `b1a6ca5` on `main`). Owner-facing order is [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md). **T0 = #77 land date.** If #77 slips, Phase A stays the only critical path. This file keeps Priority 1–6 history and Phases 31–42; 30/60/90 below is T0-relative.
+> **Sep 2026 refresh.** Eng-safe Waves 2–5 are shipped (`#139` / `b1a6ca5` on `main`). Owner-facing order is [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md). **T0 = Phase A complete** (#77 closed). If #77 slips, the 30/60/90 clock does not start. This file keeps Priority 1–6 history and Phases 31–42.
 
 ---
 
@@ -187,10 +187,11 @@ Modern Sports Intelligence reached the "Sentinel" stage (Phase 24) and then ship
 
 **Objective:** Make MSI production-safe for real users and paid tiers.
 
-**Status (Sep 2026):** Engineering complete (July). Hosted project is **INACTIVE** — remaining checks are Phase A / #77 after restore.
+**Status (Sep 2026):** Viewer + RLS + runbooks shipped (July). Hosted project is **INACTIVE**. **Immutability residual:** `audit_events` RLS is still `FOR ALL` (user UPDATE/DELETE). Remaining checks are Phase A / #77 after restore.
 
 - [x] Enforce public/private social visibility with validated Supabase RLS rollout and migration checklist (applied 2026-07-18 on `vhbsokjqchaafluimgjh`; re-verify after restore).
-- [x] Immutable audit trails for valuation updates, auto-actions, and portfolio edits (`/audit-trail` + admin viewer).
+- [x] Audit trail **viewer** for valuation updates, auto-actions, and portfolio edits (`/audit-trail` + admin viewer).
+- [ ] **Append-only / immutable rows** — `00001_rls_audit_events.sql` still uses `FOR ALL` (“Users can CRUD own audit events”), so an authenticated user can UPDATE/DELETE their own history. Restrict to INSERT + SELECT (or revoke UPDATE/DELETE) after restore. Do not treat the trail as immutable until that lands.
 - [x] Secret hygiene: startup env validation, key rotation runbook, leaked-key kill switch.
 - [x] Incident playbooks for auth lockout, sync drift, and failed pricing syncs.
 - **Exit Criteria:** Zero critical auth/RLS findings in security review; all critical actions are auditable. **Re-confirm after restore.**
@@ -261,13 +262,14 @@ Modern Sports Intelligence reached the "Sentinel" stage (Phase 24) and then ship
 
 ## 30/60/90 Day Execution Plan
 
-**T0 = #77 land date** (Supabase restored + Vercel env sync + Stripe smoke + eBay live, PSA only if eBay is stable). If #77 slips, **do not start the clocks below** — stay on Phase A.
+**T0 = Phase A complete** — the day [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closes (restore + Vercel env sync + Stripe smoke + eBay live). PSA may still be off (eBay-first). If #77 slips, **the clocks below do not start**.
 
-### Days T0–T0+30 (Unlock + observe)
+### Days T0–T0+30 (Observe + start Phase B)
 
-- Close Phase A: restore `vhbsokjqchaafluimgjh`, Stripe lifecycle smoke, `VITE_FF_REAL_EBAY`, watch deployed-E2E + pricing-truth.
-- PSA (`VITE_FF_REAL_PSA`) only after eBay is stable — never both flags on day one.
-- Optional: Sentry DSN, admin-audit confirm, key-rotation drill with Stripe staging keys.
+- eBay tape observed (deployed-E2E + pricing-truth). Do not re-do restore/Stripe — those are pre-T0.
+- PSA on **both** runtimes (Vercel `api/grading/psa/cert.ts` **and** Supabase `verify-psa-cert`) + `VITE_FF_REAL_PSA` only if eBay is stable — never both flags on day one.
+- Optional leftover Phase A tails: Sentry DSN, admin-audit confirm, key-rotation drill with Stripe staging keys, audit-events append-only RLS.
+- Phase B started (sold-comps default on live tape).
 - Do **not** start Guilds, API keys, or new Labs.
 
 ### Days T0+31–T0+60 (Pricing truth default)
@@ -302,7 +304,7 @@ The July plan (RLS rollout, Autopilot safeguards, guild MVP in 90 days) is **don
 
 ## Phase Execution Log
 
-### Phase 31 (Complete)
+### Phase 31 (Viewer shipped; immutability residual)
 
 Completed in this iteration:
 
@@ -346,6 +348,7 @@ Remaining for Phase 31 hardening (procedural, non-code) — **blocked on #77 res
 - ~~First key-rotation drill (Supabase cutover)~~ — logged 2026-07-18. Full multi-provider quarterly drill still needs Stripe staging keys (Phase A optional).
 - ~~First admin bootstrap~~ — `msi-launch-admin@example.com` promoted. Promote a personal operator after signup.
 - Confirm `/audit-trail/admin` writes `audit.cross_user_read` while signed in as an operator (Priority 1 item 0.3). **Restore the paused project first.**
+- Restrict `audit_events` RLS from `FOR ALL` to append/select (INSERT + SELECT) so valuation / portfolio / auto-action history cannot be rewritten by the subject user.
 
 ---
 

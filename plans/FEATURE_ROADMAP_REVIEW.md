@@ -209,7 +209,7 @@ Inventory above is **what exists**. Sequencing of what to do next lives in [`NEX
 
 | Phase | Intent | Blocked on |
 | ----- | ------ | ---------- |
-| **A** | Restore cloud + Stripe / eBay / PSA (#77) | Owner only |
+| **A** | Restore cloud + Stripe / eBay / PSA on **both** PSA runtimes (#77). **T0 = this phase complete.** | Owner only |
 | **B** | Sold-comps default, stale/liquidity everywhere, provenance SLA | eBay live |
 | **C** | Server Web Push + MLB catalyst/PvP wires | Phase A (+ owner VAPID) |
 | **D** | P2P match/escrow, execution adapters, field APIs, CV-if-better | Phase B |
@@ -230,7 +230,7 @@ Inventory above is **what exists**. Sequencing of what to do next lives in [`NEX
 - `PRD.md` — full feature table & §14 roadmap
 - `lib/utils/featureCatalog.ts` — canonical registry plus route supplement
 - `PRODUCTION_READINESS.md` — engineering/production phases
-- `plans/PRODUCT_ROADMAP_2026Q4.md` — owner-facing forward plan (Phases A–E, T0 = #77)
+- `plans/PRODUCT_ROADMAP_2026Q4.md` — owner-facing forward plan (Phases A–E, T0 = Phase A / #77 closed)
 - `plans/next-steps-recommendation.md` — Priority 1–6 + Phases 31–42 (T0-relative 30/60/90)
 - `plans/roadmap-review-and-enhancements.md` — historical enhancement inventory (sequencing superseded)
 - `docs/BETA_FEATURE_EXIT_CRITERIA.md` — how to exit beta

@@ -63,7 +63,9 @@ Do not implement keys or restore the project from this (or any engineering) PR. 
 1. Restore Supabase `vhbsokjqchaafluimgjh` + Vercel / GitHub env sync — [`docs/DEPLOY_ENV_CHECKLIST.md`](docs/DEPLOY_ENV_CHECKLIST.md)
 2. Stripe lifecycle smoke — [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md) item 6
 3. eBay → server keys, then `VITE_FF_REAL_EBAY` (observe deployed-E2E + pricing-truth)
-4. PSA → server key, then `VITE_FF_REAL_PSA` (only after eBay is stable)
+4. PSA (after eBay is stable) — **both** runtimes, then `VITE_FF_REAL_PSA`:
+   - Vercel `PSA_API_KEY` → `api/grading/psa/cert.ts`
+   - Supabase secret `PSA_API_KEY` + `verify-psa-cert` deployed → `/slab-verification` (`lookupPsaCert`). Missing this secret falls back to mock.
 5. Optional: Sentry DSN, `/audit-trail/admin` confirm, `fractional-vault` legal, full key-rotation drill
 
 Track on [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77).
@@ -96,15 +98,16 @@ Phase 32 style. Consensus / Comps Used / Collection chips already exist.
 - Risk / compliance depth (not IRS theater)
 - Multi-tenant scale
 
-### 30 / 60 / 90 — T0 = #77 land date
+### 30 / 60 / 90 — T0 = Phase A complete
+
+**T0** is the day [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closes: restore + Vercel env sync + Stripe smoke + eBay live. PSA may still be pending (eBay-first). If #77 slips, **the clock does not start** — Phase A stays the only critical path.
 
 | Window | Outcome |
 | ------ | ------- |
-| **T0 + 30** | Phase A closed. eBay observed. Stripe smoke green. PSA only if eBay is stable. |
+| **Pre-T0** | Phase A only. No B–E, no Labs, no both-flags-at-once. |
+| **T0 + 30** | eBay tape observed. PSA on **both** runtimes only if eBay is stable. Phase B started. |
 | **T0 + 60** | Phase B default-on + freshness SLA. Phase C started (Web Push or MLB wire). |
 | **T0 + 90** | Phase C usable. Phase D scoped. Phase E waits until A–C are boring. |
-
-If #77 slips: stay on Phase A. No new Labs, no both-flags-at-once, no restore from eng PRs.
 
 ### Explicit non-goals (still)
 
@@ -285,7 +288,7 @@ upgrade** — `npm ci` will refuse the engine constraint.
 Check readiness anytime after restore: `npm run ops:check-real-data`.
 
 1. Set `EBAY_CLIENT_ID`/`EBAY_CLIENT_SECRET` + `VITE_FF_REAL_EBAY=true`; watch Deployed E2E + pricing-truth for a few days. Stale-comp fallback already labels `source: 'stale'`.
-2. Then `PSA_API_KEY` + `VITE_FF_REAL_PSA=true`; cert badges switch from demo to live.
+2. Then PSA on **both** runtimes (`PSA_API_KEY` on Vercel **and** Supabase `verify-psa-cert`) + `VITE_FF_REAL_PSA=true`. Cert badges and `/slab-verification` switch from demo/mock to live.
 
 ## Priority 3 — Last beta exit
 

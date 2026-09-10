@@ -4,7 +4,7 @@
 **Last updated:** 2026-09-10 (Wave-5 `#139` / `b1a6ca5` on top of Wave-4 #136/#137/#138)
 **Scope:** Review of the 24-phase roadmap (PRD.md) and strategic next-steps (next-steps-recommendation.md)
 
-> **Sequencing superseded.** This file remains the historical enhancement inventory. Owner-facing order after Wave-5 is [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) (Phases A–E, T0 = #77). Do not use §4 below as the current execution order.
+> **Sequencing superseded.** This file remains the historical enhancement inventory. Owner-facing order after Wave-5 is [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) (Phases A–E, **T0 = Phase A complete** / #77 closed). Do not use §4 below as the current execution order.
 
 ## Status addendum (2026-09-06)
 

@@ -58,7 +58,9 @@ Ordered. Do not implement keys in a docs or feature PR.
 1. Restore Supabase `vhbsokjqchaafluimgjh` + Vercel / GitHub env sync
 2. Stripe lifecycle smoke (subscribe → upgrade → downgrade → cancel → failed-payment)
 3. eBay → set server keys, then `VITE_FF_REAL_EBAY` (watch deployed-E2E + pricing-truth)
-4. PSA → set server key, then `VITE_FF_REAL_PSA` (after eBay has been observed)
+4. PSA (after eBay is stable) — **both** runtimes, then `VITE_FF_REAL_PSA`:
+   - Vercel `PSA_API_KEY` → `api/grading/psa/cert.ts`
+   - Supabase secret `PSA_API_KEY` + `verify-psa-cert` deployed → `/slab-verification` (`lookupPsaCert`). Absent secret → silent mock fallback.
 5. Optional: Sentry DSN, `/audit-trail/admin` confirm, `fractional-vault` legal sign-off, full multi-provider key-rotation drill
 
 Refs: [`docs/DEPLOY_ENV_CHECKLIST.md`](../docs/DEPLOY_ENV_CHECKLIST.md) · [`docs/LAUNCH_OPS_PUNCH_LIST.md`](../docs/LAUNCH_OPS_PUNCH_LIST.md) · [issue #77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)
@@ -95,13 +97,14 @@ Already known; do not invent Labs pages.
 
 ---
 
-## 4. 30 / 60 / 90 — T0 = #77 land date
+## 4. 30 / 60 / 90 — T0 = Phase A complete
 
-If #77 slips, **stay on Phase A**. Do not start B–E, do not add Labs, do not flip both real-data flags.
+**T0** = [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closed (restore + env sync + Stripe smoke + eBay live). PSA may lag (eBay-first). If #77 slips, **the clock does not start**.
 
 | Window | Outcome |
 | ------ | ------- |
-| **T0 + 30** | Phase A closed. eBay observed. Stripe smoke green. PSA only if eBay is stable. |
+| **Pre-T0** | Phase A only. No B–E, no Labs, no both-flags-at-once. |
+| **T0 + 30** | eBay tape observed. PSA on both runtimes only if eBay is stable. Phase B started. |
 | **T0 + 60** | Phase B default-on + freshness SLA. Phase C Web Push or MLB wire started. |
 | **T0 + 90** | Phase C usable. Phase D design / lite matching scoped. Phase E not started unless A–C are boring. |
 
