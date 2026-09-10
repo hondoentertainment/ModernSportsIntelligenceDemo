@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-08 · **September 2026 Wave-3** (concentration rail, fee-aware break-even strip, soccer desk/PvP parity, capital-gains year-vs-next, Auto-Pilot decision replay, SyncScheduler product defaults). Builds on Wave-2 (#131/#132) and #130.
+> Refreshed 2026-09-10 · **September 2026 Wave-4** (Web Push client readiness, Negotiation Arena firmness UX, field-level migration diffs, holding-horizon / wash-sale rail, ProtectedRoute profile hold, offline queue retry). Builds on Wave-3 (6a7edc8 / #133) and Wave-2 (#131/#132).
 
 ## Current state in one paragraph
 
@@ -17,6 +17,23 @@ MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger acro
 | Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later                      |
 | Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show                      |
 | eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel** (after restore)                 |
+
+## September 2026 Wave-4 — Shipped (2026-09-10)
+
+Demo/DAL-safe deepenings on existing Alerts / Profile / Notification Center, Negotiation Arena, Migration Banner / Profile, Collection / Fiscal / Tax, ProtectedRoute, and the offline banner. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` flips, no new Labs pages, no Tailwind 4 / `@eslint/js` 10 half-migrate, no jsPDF on these live paths.**
+
+| Slice | Label | Where |
+| --- | --- | --- |
+| **Web Push subscription lite** | **lite** (Priority 2.2 remainder) | Client Push API / service-worker readiness on Alert delivery (Alerts / Profile / Notification Center). Endpoint persisted via `msi_web_push_subscription_v1`. Quiet hours + browser-notification prefs still gate delivery. Honest copy: **server-triggered push still needs owner-held VAPID keys + a backend** — no VAPID secrets in git. |
+| **Negotiation Arena UX** | **deepen** (Priority 4.1) | Agent-thinking animation + seller-firmness / sentiment meter on the existing Arena modal. Gemini firmness when the generate path returns a score; deterministic demo fallback otherwise. Still advisory — not live marketplace trading. |
+| **Field-level migration merge** | **deepen** (Priority 1.2 leftover) | Duplicate inventory / target preview now lists key field conflicts (mark, cost, dates, grade, notes, status) on Migration Banner + Profile. Demo-safe when cloud is unavailable. No restore. |
+| **Holding horizon / wash-sale rail** | **lite** | Days held, ST vs LT, and 30-day repurchase proximity on Collection, Fiscal Shield, and Tax Report. Uses local lot dates. **Not** tax advice or IRS completeness. |
+| **ProtectedRoute loading polish** | **leftover** (Priority 1.1) | Session shell stays up until `INITIAL_SESSION` **and** profile are ready (`loading` or `profileLoading`). Auth security model unchanged. |
+| **Offline sync status** | **lite** | Pending / failed counts + retry / requeue on the offline banner and Profile Data Management. Real MSI-store queue only — no mock pending rows. |
+
+**Still owner-held (do not start from this PR):** #77 Supabase restore, Stripe / eBay / PSA keys, Sentry DSN, fractional-vault legal, vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness.
+
+**Deferred / not this wave:** Tailwind 4; `@eslint/js` 10; jsPDF/html2canvas on live entry graph; new Labs pages; live non-MLB sports wires; new `price_history` table; partner show-bag APIs; full P2P matching/escrow; production CV; IRS completeness; server-triggered Web Push (VAPID + backend).
 
 ## September 2026 Wave-3 — Shipped (2026-09-08)
 

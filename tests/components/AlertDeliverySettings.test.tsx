@@ -9,6 +9,7 @@ import {
 } from '../../lib/utils/alertPreferences';
 import { getSyncConfig } from '../../lib/utils/syncScheduler';
 import { SYNC_PRODUCT_DEFAULTS_DISCLOSURE } from '../../lib/utils/syncProductDefaults';
+import { WEB_PUSH_DISCLOSURE } from '../../lib/utils/webPushSubscription';
 import { store } from '../../lib/dal/syncStore';
 
 describe('AlertDeliverySettings', () => {
@@ -34,6 +35,8 @@ describe('AlertDeliverySettings', () => {
     expect(prefs.browserNotificationsEnabled).toBe(false);
 
     expect(screen.getByText(SYNC_PRODUCT_DEFAULTS_DISCLOSURE)).toBeInTheDocument();
+    expect(screen.getByText(WEB_PUSH_DISCLOSURE)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /enable web push client readiness/i })).toBeInTheDocument();
     await user.click(screen.getByLabelText(/enable daily portfolio and watchlist sync/i));
     expect(getSyncConfig().interval).toBe('manual');
   });

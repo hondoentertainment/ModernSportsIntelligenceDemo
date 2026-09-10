@@ -1,7 +1,7 @@
 # Roadmap Review & Feature Enhancement Recommendations
 
 **Date:** 2026-03-08
-**Last updated:** 2026-09-08 (Wave-3 on top of Wave-2 #131/#132)
+**Last updated:** 2026-09-10 (Wave-4 on top of Wave-3 #133 and Wave-2 #131/#132)
 **Scope:** Review of the 24-phase roadmap (PRD.md) and strategic next-steps (next-steps-recommendation.md)
 
 ## Status addendum (2026-09-06)
@@ -42,8 +42,14 @@ Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-sa
 | Phase 27 capital gains year-vs-next              | **Shipped (lite, Wave-3)** — Fiscal / Tax Report / Collection sell ST/LT compare. Not IRS completeness.   |
 | Phase 33 Auto-Pilot decision replay              | **Shipped (lite, Wave-3)** — day-bucketed considered/collar/approval/NAV replay. No live execution.       |
 | Priority 2.2 SyncScheduler product defaults      | **Shipped (lite, Wave-3)** — daily signed-in/demo opt-in remembered via MSI store. Not Web Push.          |
+| Priority 2.2 Web Push client readiness           | **Shipped (lite, Wave-4)** — Push API / SW subscription UX + local endpoint. Server VAPID owner-held.    |
+| Priority 4.1 Negotiation Arena firmness UX       | **Shipped (deepen, Wave-4)** — thinking animation + seller-firmness / sentiment meter. Advisory only.    |
+| Priority 1.2 field-level migration diffs         | **Shipped (Wave-4)** — key-field local/cloud conflicts on Migration Banner + Profile.                    |
+| Holding horizon / wash-sale rail                 | **Shipped (lite, Wave-4)** — ST/LT + 30-day proximity on Collection / Fiscal / Tax. Not IRS completeness.|
+| Priority 1.1 ProtectedRoute profile hold         | **Shipped (Wave-4)** — shell until INITIAL_SESSION + profile ready.                                      |
+| Offline queue retry                              | **Shipped (lite, Wave-4)** — pending/failed counts + retry on banner + Profile.                          |
 
-Still **owner-held / open:** #77 Supabase restore, eBay/PSA/Stripe, fractional-vault legal, custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness. Tailwind 4 and `@eslint/js` 10 deferred. **#130 shipped:** thin P2P intent board, Scout-to-Acquire smoke, `@google/genai` 2.x, adjacent hobby correlation, price-alert haptics, centering heuristic. **Wave-2 shipped on top of #130. Wave-3 shipped on top of Wave-2.**
+Still **owner-held / open:** #77 Supabase restore, Stripe/eBay/PSA keys, Sentry DSN, fractional-vault legal, custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness. Tailwind 4 and `@eslint/js` 10 deferred. **#130 shipped:** thin P2P intent board, Scout-to-Acquire smoke, `@google/genai` 2.x, adjacent hobby correlation, price-alert haptics, centering heuristic. **Wave-2 shipped on top of #130. Wave-3 shipped on top of Wave-2. Wave-4 shipped on top of Wave-3.**
 
 ---
 
@@ -77,7 +83,7 @@ Still **owner-held / open:** #77 Supabase restore, eBay/PSA/Stripe, fractional-v
 
 1. **Barcode/QR Scanner Integration** — Add camera-based barcode scanning (using the existing `CameraFeed.tsx`) to instantly look up cards by UPC or PSA cert number. This turns the phone into a "scanner gun" at card shows and significantly speeds up inventory ingestion at live events.
 
-2. **Haptic Feedback for Price Alerts** — **Shipped (2026-09-08) + Wave-2 quiet hours:** Vibration API fires with watchlist / target-price / NotificationService paths (`lib/utils/haptics.ts`) and honors `msi_alert_preferences_v1`. No-ops when the API is missing. Dedicated Web Push remains optional.
+2. **Haptic Feedback for Price Alerts** — **Shipped (2026-09-08) + Wave-2 quiet hours + Wave-4 Web Push client readiness:** Vibration API fires with watchlist / target-price / NotificationService paths (`lib/utils/haptics.ts`) and honors `msi_alert_preferences_v1`. Client Push API can persist a local endpoint. Server-triggered push still needs owner-held VAPID keys.
 
 3. **Swipe Gestures for Triage** — Implement swipe-left/right on card items for quick "Add to Watchlist" / "Mark for Sale" actions. Card show use cases demand speed over precision.
 
@@ -87,7 +93,7 @@ Still **owner-held / open:** #77 Supabase restore, eBay/PSA/Stripe, fractional-v
 
 **Recommendations:**
 
-4. **Negotiation Playbook Templates** — **Shipped** (playbooks + Arena selector). Gemini counters now receive the selected playbook and a seller-firmness hint; deterministic demo bands apply when AI is unavailable. Not live marketplace trading.
+4. **Negotiation Playbook Templates** — **Shipped** (playbooks + Arena selector). Gemini counters now receive the selected playbook and a seller-firmness hint; **Wave-4** adds the Arena thinking animation + firmness/sentiment meter. Deterministic demo bands apply when AI is unavailable. Not live marketplace trading.
 
 5. **Multi-Item Bundle Negotiation** — Extend the negotiation modal to handle "lot" purchases (e.g., "I'll take all 5 of your Bowman Chrome autos for $X"). Bundle deals are the highest-value transactions at card shows and online.
 

@@ -14,7 +14,7 @@ interface OfflineIndicatorProps {
 }
 
 const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ compact = false }) => {
-  const { isOnline, status, isSyncing, pendingCount, failedCount, triggerSync, syncProgress } = useOfflineStatus();
+  const { isOnline, status, isSyncing, pendingCount, failedCount, triggerSync, retryFailed, syncProgress } = useOfflineStatus();
   const [dismissed, setDismissed] = useState(false);
   const [prevOnline, setPrevOnline] = useState(isOnline);
 
@@ -41,8 +41,10 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ compact = false }) 
         {!isOnline && (
           <span className="text-xs font-medium text-red-400">Offline</span>
         )}
-        {pendingCount > 0 && (
-          <span className="text-xs text-amber-400 font-medium">{pendingCount} queued</span>
+        {(pendingCount > 0 || failedCount > 0) && (
+          <span className="text-xs text-amber-400 font-medium">
+            {pendingCount} pending{failedCount > 0 ? ` · ${failedCount} failed` : ''}
+          </span>
         )}
         {isSyncing && (
           <Loader2 size={12} className="text-blue-400 animate-spin" />
@@ -81,31 +83,32 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ compact = false }) 
         <div className="min-w-0">
           <p className={`text-sm font-semibold ${textColor}`}>
             {isOffline
-              ? 'You are offline'
+              ? `You are offline${pendingCount + failedCount > 0 ? ` · ${pendingCount} pending · ${failedCount} failed` : ''}`
               : isSyncing
               ? 'Syncing data...'
-              : `${pendingCount} action${pendingCount !== 1 ? 's' : ''} queued`}
+              : `${pendingCount} pending · ${failedCount} failed`}
           </p>
           <p className={`text-xs ${isOffline ? 'text-red-300' : isSyncing ? 'text-blue-300' : 'text-amber-300'}`}>
             {isOffline
-              ? 'Changes will be saved locally and synced when you reconnect.'
+              ? 'Changes stay on this device. Retry uses the real local queue — no mock pending rows.'
               : isSyncing && syncProgress
               ? `${syncProgress.completed}/${syncProgress.total} items synced`
               : failedCount > 0
-              ? `${failedCount} failed item${failedCount !== 1 ? 's' : ''} need attention`
+              ? `${failedCount} failed item${failedCount !== 1 ? 's' : ''} can be requeued`
               : 'Items will sync automatically when possible.'}
           </p>
         </div>
       </div>
 
       <div className="flex items-center gap-2 flex-shrink-0">
-        {!isOffline && pendingCount > 0 && !isSyncing && (
+        {!isOffline && (pendingCount > 0 || failedCount > 0) && !isSyncing && (
           <button
-            onClick={() => triggerSync()}
+            type="button"
+            onClick={() => (failedCount > 0 ? retryFailed() : triggerSync())}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-colors"
           >
             <RefreshCw size={12} />
-            Sync Now
+            {failedCount > 0 ? 'Retry failed' : 'Sync Now'}
           </button>
         )}
         <button

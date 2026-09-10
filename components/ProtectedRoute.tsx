@@ -21,23 +21,24 @@ const SessionLoadingShell: React.FC = () => (
             <h1 className="font-bebas text-3xl tracking-[0.2em] text-white mb-2">MODERN SPORTS INTELLIGENCE</h1>
             <div className="flex items-center gap-3" role="status" aria-live="polite">
                 <Loader2 className="w-4 h-4 text-brand-lime animate-spin" aria-hidden />
-                <p className="text-slate-500 font-mono text-xs uppercase tracking-widest">Secure Uplink...</p>
+                <p className="text-slate-500 font-mono text-xs uppercase tracking-widest">Secure Uplink · session + profile...</p>
             </div>
         </div>
     </div>
 );
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-    const { user, loading } = useAuth();
+    const { user, loading, profileLoading } = useAuth();
+    const sessionPending = loading || Boolean(user && profileLoading);
     const [exitHold, setExitHold] = useState(false);
     const prevLoadingRef = useRef<boolean | null>(null);
     const loadStartedAt = useRef<number | null>(null);
 
     useEffect(() => {
         const prev = prevLoadingRef.current;
-        prevLoadingRef.current = loading;
+        prevLoadingRef.current = sessionPending;
 
-        if (loading) {
+        if (sessionPending) {
             loadStartedAt.current = Date.now();
             setExitHold(false);
             return;
@@ -54,9 +55,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             loadStartedAt.current = null;
         }, remaining);
         return () => clearTimeout(t);
-    }, [loading]);
+    }, [sessionPending]);
 
-    if (loading || exitHold) {
+    if (sessionPending || exitHold) {
         return <SessionLoadingShell />;
     }
 

@@ -12,6 +12,7 @@ import {
     formatConflictPreviewLine,
 } from '../lib/utils/migration';
 import { MIGRATION_CONFLICT_POLICY_OPTIONS } from '../lib/utils/migrationPolicyOptions';
+import MigrationFieldDiffList from './MigrationFieldDiffList';
 
 /**
  * Banner shown when user has local data and can sync to cloud.
@@ -83,16 +84,7 @@ const MigrationBanner: React.FC = () => {
                         </p>
                     )}
                     {conflictPreview?.reason === 'ok' && conflictPreview.outcomes.length > 0 && !lastResult?.success && (
-                        <ul className="mt-1.5 space-y-0.5 max-h-24 overflow-y-auto text-[10px] text-slate-500 normal-case tracking-normal">
-                            {conflictPreview.outcomes.slice(0, 6).map((row) => (
-                                <li key={`${row.kind}-${row.identityKey}`}>
-                                    {row.outcome === 'merge' ? 'Merge' : 'Skip'} · {row.kind} · {row.label}
-                                </li>
-                            ))}
-                            {conflictPreview.outcomes.length > 6 && (
-                                <li>+{conflictPreview.outcomes.length - 6} more duplicate keys</li>
-                            )}
-                        </ul>
+                        <MigrationFieldDiffList outcomes={conflictPreview.outcomes} />
                     )}
                     {lastResult?.success && lastMergeSummary && (
                         <p className="text-[10px] text-slate-400 font-semibold normal-case tracking-normal mt-1.5 leading-snug border-l-2 border-brand-teal/40 pl-2">

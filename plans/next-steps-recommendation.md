@@ -17,7 +17,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 - **Current state (aligned with PRD 4.3 / production hardening):**
   - **Password reset:** Shipped — `pages/ForgotPassword.tsx`, route `/#/forgot-password`, `AuthContext` `resetPassword` + demo-mode messaging.
   - **Error handling:** Shipped — `lib/utils/authErrors.ts` (`getFriendlyAuthMessage`) wired on `Login.tsx` and `Signup.tsx`.
-  - **Route protection:** Core guards and Supabase session handling are in place across protected routes; optional polish remains (e.g. loading-state UX to avoid any perceived flicker on slow networks).
+  - **Route protection:** **Shipped (Wave-4)** — `ProtectedRoute` holds the session shell until `INITIAL_SESSION` **and** the profile fetch (`profileLoading`) resolve, then redirects unsigned users. Security model unchanged (UX gate only).
 - **Status:** **Largely complete for demo → subscriber path** — treat remaining work as UX hardening and edge-case messaging, not greenfield implementation.
 
 ### 1.2 Multi-Tenant Data Migration
@@ -33,7 +33,8 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
   - **Manual sync:** Shipped — `components/MigrationBanner.tsx` ("Sync Now"), `pages/Profile.tsx` institutional sync control, both call `triggerMigration()`.
   - **Persistence stack:** DAL + `store` (`lib/dal/syncStore.ts`, `lib/dal.ts`, `initDAL`) — see `docs/DAL_MIGRATION.md` and `PRODUCTION_READINESS.md`.
   - **Conflict resolution:** **Shipped** (2026-09-06) — `planMigrationPreview` + banner/Profile show merge vs skip / duplicate-key outcomes before sync; demo-safe when Supabase is unavailable.
-- **Status:** **Operational** for first-time cloud sync and duplicate-policy UX. Remaining work is field-level merge UI, not the policy plumbing.
+  - **Field-level diffs:** **Shipped (Wave-4)** — key inventory / target column conflicts (mark, cost, dates, grade, notes, status) render on Migration Banner + Profile. No restore.
+- **Status:** **Operational** for first-time cloud sync, duplicate-policy UX, and field-level conflict preview.
 
 ---
 
@@ -60,8 +61,8 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
   - **Price Alerts:** Add browser push notification triggers when a "Watchlist" item drops below its target acquisition price.
 - **Current state:**
   - **Scheduler:** Shipped — `lib/utils/syncScheduler.ts` (`SyncScheduler`, configurable **daily/hourly/weekly/manual**, watchdog heartbeat, `store`-backed config); integrates with `lib/utils/marketSync.ts` (portfolio + watchlist sync helpers, stale checks including 24h semantics).
-  - **Notifications:** **In-app / Notification API + haptics (2026-09-08) + quiet hours (Wave-2)** — `syncScheduler` can request notification permission; `lib/utils/haptics.ts` + `notifications.ts` vibrate when a watchlist / target-price threshold fires. Delivery honors `msi_alert_preferences_v1` (quiet hours window, haptic on/off, Notification API on/off). Settings live on `/alerts`, Profile, and Notification Center. Watchlist target UX exists in product surfaces; **dedicated Web Push subscription + server-triggered pushes** remain optional product work if you want off-device alerts at scale.
-  - **Status:** **Client scheduling, sync loop, on-device delivery prefs, and product defaults implemented (Wave-3)** — signed-in / demo daily portfolio+watchlist opt-in is remembered via `msi_sync_product_defaults_v1` and honors quiet hours. Remaining work, if required, is **full push infrastructure** beyond on-device notifications.
+  - **Notifications:** **In-app / Notification API + haptics (2026-09-08) + quiet hours (Wave-2) + Web Push client readiness (Wave-4)** — `syncScheduler` can request notification permission; `lib/utils/haptics.ts` + `notifications.ts` vibrate when a watchlist / target-price threshold fires. Delivery honors `msi_alert_preferences_v1`. Client Push API persists an endpoint via `msi_web_push_subscription_v1` when the browser already has one. **Server-triggered push still needs owner-held VAPID keys + a backend** — no VAPID secrets in git.
+  - **Status:** **Client scheduling, sync loop, on-device delivery prefs, product defaults (Wave-3), and Web Push client readiness (Wave-4) implemented.** Remaining work, if required, is **owner-held full push infrastructure** (VAPID + server).
 
 ---
 
@@ -97,7 +98,7 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
   - **Gemini Strategy:** Replace mock negotiation logic with Gemini-driven sentiment analysis (detecting seller firmness).
   - **Counter-Proposal Engine:** Implement logic that generates counter-offers based on the user's "Max Willing to Pay" and market FMV.
   - **Arena UI:** Enhance `NegotiationModal` with "Agent Thinking" animations and sentiment indicators.
-- **Status:** Prototype in test (`negotiation.spec.ts`).
+- **Status:** **Shipped (deepen, Wave-4)** — Gemini seller-firmness when the generate path is available; deterministic demo fallback otherwise. Arena shows an agent-thinking animation plus a seller-firmness / sentiment meter. Still advisory — not live marketplace trading. Covered by `negotiation.spec.ts` + unit tests.
 
 ### 4.2 Trade Proposal Logic
 

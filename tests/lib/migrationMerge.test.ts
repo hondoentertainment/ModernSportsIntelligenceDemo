@@ -97,6 +97,19 @@ describe('migrationMerge', () => {
     expect(preview.wouldMerge).toBe(0);
     expect(preview.wouldInsert).toBe(1);
     expect(preview.outcomes.every((o) => o.outcome === 'skip')).toBe(true);
+    expect(preview.outcomes[0].fieldConflicts).toEqual([]);
+  });
+
+  it('attaches field-level diffs when local and cloud marks disagree', () => {
+    const preview = planMigrationPreview(
+      [baseCard({ id: 'l1', currentValue: 999, notes: 'local' })],
+      [baseCard({ id: 'c1', currentValue: 100, notes: 'cloud' })],
+      [],
+      [],
+      'prefer_local',
+    );
+    expect(preview.outcomes[0].fieldConflicts?.some((row) => row.field === 'currentValue')).toBe(true);
+    expect(preview.outcomes[0].fieldConflicts?.some((row) => row.field === 'notes')).toBe(true);
   });
 
   it('targetIdentityKey and prefer_cloud', () => {
