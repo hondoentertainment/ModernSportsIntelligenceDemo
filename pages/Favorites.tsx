@@ -15,6 +15,8 @@ import { computeFreshVerifiableCoverage, FRESH_VERIFIABLE_COVERAGE_TARGET_PCT } 
 import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAlerts';
 import { showToast } from '../lib/utils/toast';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner';
+import PortfolioMoversRail from '../components/PortfolioMoversRail';
+import DealFinderLiteRail from '../components/DealFinderLiteRail';
 
 const Favorites: React.FC = () => {
   // MLB Player favorites (existing)
@@ -247,6 +249,16 @@ const Favorites: React.FC = () => {
               )}
             </div>
           </div>
+
+          {(activeTab === 'targets' || activeTab === 'cards') && (
+            <div className="space-y-4 mb-6">
+              <PortfolioMoversRail
+                inventory={inventory}
+                favoriteIds={cardFavorites.map((row) => row.cardId)}
+              />
+              <DealFinderLiteRail inventory={inventory} targets={targets} />
+            </div>
+          )}
 
           {/* Acquisition Targets Tab */}
           {activeTab === 'targets' && (

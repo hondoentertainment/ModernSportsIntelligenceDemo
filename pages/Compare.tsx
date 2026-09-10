@@ -3,7 +3,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   GitCompare,
-  ArrowRightLeft,
   TrendingUp,
   Trophy,
   ChevronDown,
@@ -25,8 +24,10 @@ import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import { CardInventory } from '../types.ts';
 import { generateCompareAnalysis } from '../lib/analytics/compareAnalysis.ts';
 import { getCardHistory } from '../lib/analytics/priceHistory';
+import { selectCompareCards } from '../lib/analytics/cardCompareDesk.ts';
 import CardImage from '../components/CardImage.tsx';
 import ImageLightbox from '../components/ImageLightbox.tsx';
+import CardCompareDeskPanel from '../components/CardCompareDeskPanel.tsx';
 
 const Compare: React.FC = () => {
   const { inventory, loading: inventoryLoading } = useSupabaseInventory();
@@ -35,8 +36,10 @@ const Compare: React.FC = () => {
   // Initialize from URL params if present
   const [card1Id, setCard1Id] = useState<string | null>(searchParams.get('card1'));
   const [card2Id, setCard2Id] = useState<string | null>(searchParams.get('card2'));
+  const [card3Id, setCard3Id] = useState<string | null>(searchParams.get('card3'));
   const [dropdown1Open, setDropdown1Open] = useState(false);
   const [dropdown2Open, setDropdown2Open] = useState(false);
+  const [dropdown3Open, setDropdown3Open] = useState(false);
 
   // AI Analysis State
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
@@ -44,54 +47,56 @@ const Compare: React.FC = () => {
   const [linkCopied, setLinkCopied] = useState(false);
   const [lightboxCard, setLightboxCard] = useState<CardInventory | null>(null);
 
-  const card1 = useMemo(() => inventory.find(c => c.id === card1Id), [inventory, card1Id]);
-  const card2 = useMemo(() => inventory.find(c => c.id === card2Id), [inventory, card2Id]);
+  const selectedCards = useMemo(
+    () => selectCompareCards(inventory, [card1Id, card2Id, card3Id]),
+    [inventory, card1Id, card2Id, card3Id],
+  );
+  const card1 = selectedCards[0];
+  const card2 = selectedCards[1];
+  const card3 = selectedCards[2];
 
   // Update URL params when selections change
   useEffect(() => {
     const params: Record<string, string> = {};
     if (card1Id) params.card1 = card1Id;
     if (card2Id) params.card2 = card2Id;
+    if (card3Id) params.card3 = card3Id;
     setSearchParams(params, { replace: true });
-  }, [card1Id, card2Id, setSearchParams]);
+  }, [card1Id, card2Id, card3Id, setSearchParams]);
 
   // Generate historical data for chart from real price history
   const historicalData = useMemo(() => {
-    if (!card1 || !card2) return [];
+    if (selectedCards.length < 2) return [];
 
-    // Get real history for both cards
-    const history1 = [...getCardHistory(card1.id)].reverse(); // reverse for chronological order
-    const history2 = [...getCardHistory(card2.id)].reverse();
+    const histories = selectedCards.map((card) => ({
+      card,
+      points: [...getCardHistory(card.id)].reverse(),
+    }));
 
-    // If no history exists, fall back to a single point (current value)
-    if (history1.length === 0 && history2.length === 0) {
-      return [{
-        month: 'Current',
-        [card1.player]: card1.currentValue || card1.purchasePrice,
-        [card2.player]: card2.currentValue || card2.purchasePrice
-      }];
+    if (histories.every((row) => row.points.length === 0)) {
+      const current: Record<string, string | number> = { month: 'Current' };
+      for (const { card } of histories) {
+        current[`${card.player} ${card.year}`] = card.currentValue || card.purchasePrice;
+      }
+      return [current];
     }
 
-    // Combine and sort all unique timestamps
-    const allTimestamps = Array.from(new Set([
-      ...history1.map(s => s.timestamp.split('T')[0]),
-      ...history2.map(s => s.timestamp.split('T')[0])
-    ])).sort();
+    const allTimestamps = Array.from(new Set(
+      histories.flatMap((row) => row.points.map((s) => s.timestamp.split('T')[0])),
+    )).sort();
 
-    // Map timestamps to chart data points
-    return allTimestamps.map(date => {
-      // Find the latest snapshot for each card on or before this date
-      const s1 = history1.filter(s => s.timestamp.split('T')[0] <= date).slice(-1)[0];
-      const s2 = history2.filter(s => s.timestamp.split('T')[0] <= date).slice(-1)[0];
-
+    return allTimestamps.map((date) => {
       const d = new Date(date);
-      return {
+      const point: Record<string, string | number> = {
         month: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        [card1.player]: s1?.value ?? card1.purchasePrice,
-        [card2.player]: s2?.value ?? card2.purchasePrice,
       };
+      for (const { card, points } of histories) {
+        const snap = points.filter((s) => s.timestamp.split('T')[0] <= date).slice(-1)[0];
+        point[`${card.player} ${card.year}`] = snap?.value ?? card.purchasePrice;
+      }
+      return point;
     });
-  }, [card1, card2]);
+  }, [selectedCards]);
 
   const getROI = (card: CardInventory) => {
     if (!card.purchasePrice || !card.currentValue) return null;
@@ -115,7 +120,12 @@ const Compare: React.FC = () => {
   };
 
   const handleShareComparison = () => {
-    const url = `${window.location.origin}${window.location.pathname}#/compare?card1=${card1Id}&card2=${card2Id}`;
+    const qs = [
+      card1Id ? `card1=${card1Id}` : '',
+      card2Id ? `card2=${card2Id}` : '',
+      card3Id ? `card3=${card3Id}` : '',
+    ].filter(Boolean).join('&');
+    const url = `${window.location.origin}${window.location.pathname}#/compare?${qs}`;
     navigator.clipboard.writeText(url);
     setLinkCopied(true);
     setTimeout(() => setLinkCopied(false), 2000);
@@ -126,14 +136,14 @@ const Compare: React.FC = () => {
     onSelect,
     isOpen,
     setIsOpen,
-    excludeId,
+    excludeIds,
     label
   }: {
     selectedCard: CardInventory | undefined;
     onSelect: (_id: string) => void;
     isOpen: boolean;
     setIsOpen: (_open: boolean) => void;
-    excludeId: string | null;
+    excludeIds: Array<string | null | undefined>;
     label: string;
   }) => (
     <div className="relative">
@@ -163,7 +173,7 @@ const Compare: React.FC = () => {
 
       {isOpen && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-brand-slate border border-slate-800 rounded-2xl shadow-2xl z-50 max-h-80 overflow-y-auto">
-          {inventory.filter(c => c.id !== excludeId).map(card => (
+          {inventory.filter(c => !excludeIds.includes(c.id)).map(card => (
             <button
               key={card.id}
               onClick={() => { onSelect(card.id); setIsOpen(false); }}
@@ -249,46 +259,44 @@ const Compare: React.FC = () => {
           Asset <span className="text-brand-lime">Compare</span>
         </h1>
         <p className="text-brand-muted max-w-xl mx-auto font-medium">
-          Side-by-side comparison of portfolio assets to inform buy/sell decisions.
+          Side-by-side desk for two or three holdings: preferred marks, comps used, grade ratios, ST/LT horizon, and concentration impact.
         </p>
       </div>
 
       {/* Card Selectors */}
-      <div className="grid grid-cols-1 lg:grid-cols-7 gap-8 items-start">
-        <div className="lg:col-span-3">
-          <CardSelector
-            selectedCard={card1}
-            onSelect={setCard1Id}
-            isOpen={dropdown1Open}
-            setIsOpen={setDropdown1Open}
-            excludeId={card2Id}
-            label="Select First Asset"
-          />
-        </div>
-
-        <div className="lg:col-span-1 flex items-center justify-center">
-          <div className="p-4 bg-brand-lime rounded-full shadow-2xl shadow-brand-lime/30">
-            <ArrowRightLeft className="text-brand-charcoal" size={24} />
-          </div>
-        </div>
-
-        <div className="lg:col-span-3">
-          <CardSelector
-            selectedCard={card2}
-            onSelect={setCard2Id}
-            isOpen={dropdown2Open}
-            setIsOpen={setDropdown2Open}
-            excludeId={card1Id}
-            label="Select Second Asset"
-          />
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <CardSelector
+          selectedCard={card1}
+          onSelect={setCard1Id}
+          isOpen={dropdown1Open}
+          setIsOpen={setDropdown1Open}
+          excludeIds={[card2Id, card3Id]}
+          label="Select first asset"
+        />
+        <CardSelector
+          selectedCard={card2}
+          onSelect={setCard2Id}
+          isOpen={dropdown2Open}
+          setIsOpen={setDropdown2Open}
+          excludeIds={[card1Id, card3Id]}
+          label="Select second asset"
+        />
+        <CardSelector
+          selectedCard={card3}
+          onSelect={setCard3Id}
+          isOpen={dropdown3Open}
+          setIsOpen={setDropdown3Open}
+          excludeIds={[card1Id, card2Id]}
+          label="Optional third asset"
+        />
       </div>
 
       {/* Comparison Results */}
       {card1 && card2 ? (
         <div className="space-y-8">
+          <CardCompareDeskPanel cards={selectedCards} universe={inventory} />
           {/* Cards Display */}
-          <div className="grid grid-cols-1 lg:grid-cols-7 gap-8">
+          <div className={`grid grid-cols-1 gap-8 ${card3 ? 'lg:grid-cols-3' : 'lg:grid-cols-7'}`}>
             <div className="lg:col-span-3 bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 text-center">
               <div className="w-32 h-40 rounded-2xl border-2 border-slate-800 mx-auto mb-4 overflow-hidden">
                 <CardImage
@@ -336,13 +344,31 @@ const Compare: React.FC = () => {
                 </div>
               )}
             </div>
+            {card3 && (
+              <div className="bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8 text-center">
+                <div className="w-32 h-40 rounded-2xl border-2 border-slate-800 mx-auto mb-4 overflow-hidden">
+                  <CardImage
+                    src={card3.image}
+                    playerName={card3.player}
+                    year={card3.year}
+                    manufacturer={card3.manufacturer}
+                    className="w-full h-full"
+                    enableLightbox={true}
+                    onImageClick={() => setLightboxCard(card3)}
+                  />
+                </div>
+                <h3 className="text-2xl font-bold text-white">{card3.player}</h3>
+                <p className="text-[10px] text-brand-muted font-black uppercase tracking-widest mt-1">{card3.year} {card3.manufacturer}</p>
+                <p className="text-sm text-slate-400 mt-2">{card3.set}</p>
+              </div>
+            )}
           </div>
 
           {/* Historical Trend Chart */}
           <div className="bg-brand-slate border border-slate-800 rounded-[2.5rem] p-8">
             <h2 className="text-2xl font-bebas tracking-widest text-white mb-6 flex items-center gap-3">
               <TrendingUp className="text-brand-lime" size={24} />
-              Price History (Simulated)
+              Local snapshot / comp history
             </h2>
             <ResponsiveContainer width="100%" height={280}>
               <AreaChart data={historicalData}>
@@ -364,8 +390,11 @@ const Compare: React.FC = () => {
                   itemStyle={{ fontWeight: 'bold' }}
                 />
                 <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                <Area type="monotone" dataKey={card1.player} stroke="#D9F99D" strokeWidth={3} fillOpacity={1} fill="url(#colorCard1)" />
-                <Area type="monotone" dataKey={card2.player} stroke="#38BDF8" strokeWidth={3} fillOpacity={1} fill="url(#colorCard2)" />
+                <Area type="monotone" dataKey={`${card1.player} ${card1.year}`} stroke="#D9F99D" strokeWidth={3} fillOpacity={1} fill="url(#colorCard1)" />
+                <Area type="monotone" dataKey={`${card2.player} ${card2.year}`} stroke="#38BDF8" strokeWidth={3} fillOpacity={1} fill="url(#colorCard2)" />
+                {card3 && (
+                  <Area type="monotone" dataKey={`${card3.player} ${card3.year}`} stroke="#F472B6" strokeWidth={3} fillOpacity={0.35} fill="#F472B6" />
+                )}
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -423,9 +452,9 @@ const Compare: React.FC = () => {
             <GitCompare className="text-brand-lime" size={32} />
           </div>
           <div className="text-center space-y-2">
-            <h3 className="text-3xl font-bebas tracking-widest text-white">Select Two Assets</h3>
+            <h3 className="text-3xl font-bebas tracking-widest text-white">Select two or three assets</h3>
             <p className="text-brand-muted max-w-sm font-medium">
-              Choose two cards from your portfolio above to compare their performance metrics side-by-side.
+              Choose holdings from your collection to open the compare desk. Collection actions and multi-select also deep-link here.
             </p>
           </div>
         </div>

@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, TrendingUp, TrendingDown, AlertTriangle, ShieldAlert, Cpu } from 'lucide-react';
-import { MacroSignal, MacroTrend } from '../types.ts';
+import { CardInventory, MacroSignal, MacroTrend } from '../types.ts';
 import { fetchMacroSignals, analyzeMacroImpactOnPortfolio } from '../lib/analytics/macroSentinel.ts';
 import { computeHobbyHealthIndex } from '../lib/utils/hobbyHealthIndex';
+import { computeMarketPulse } from '../lib/analytics/marketPulse';
 import { logger } from '../lib/logger';
 
 interface Props {
     portfolioValue: number;
+    inventory?: CardInventory[];
 }
 
-const MacroSentinelWidget: React.FC<Props> = ({ portfolioValue }) => {
+const MacroSentinelWidget: React.FC<Props> = ({ portfolioValue, inventory = [] }) => {
     const [signals, setSignals] = useState<MacroSignal[]>([]);
     const [analysis, setAnalysis] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(true);
     const hobbyHealth = computeHobbyHealthIndex({ portfolioNav: portfolioValue });
+    const pulse = computeMarketPulse({ inventory, portfolioNav: portfolioValue });
+    const pulseChips = pulse.segments.filter((row) => row.cardCount > 0).slice(0, 6);
 
     useEffect(() => {
         const loadMacroData = async () => {
@@ -99,6 +103,19 @@ const MacroSentinelWidget: React.FC<Props> = ({ portfolioValue }) => {
                     {hobbyHealth.band} · seeded composite
                 </p>
                 <p className="text-[10px] text-slate-500 leading-relaxed">{hobbyHealth.disclosure}</p>
+                {pulseChips.length > 0 && (
+                    <ul className="mt-3 flex flex-wrap gap-2">
+                        {pulseChips.map((row) => (
+                            <li
+                                key={row.id}
+                                className="rounded-full border border-white/10 bg-black/40 px-2.5 py-1 text-[10px] text-slate-200"
+                            >
+                                {row.label} · {row.score}
+                                {row.thin ? ' · thin' : ''}
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
 
             <div className="space-y-4 mb-6 relative z-10">

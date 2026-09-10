@@ -31,7 +31,7 @@ export interface CardListRowProps extends CardItemActionHandlers {
   onOpenLightbox?: (_card: CardInventory) => void;
 }
 
-const CardListRow: React.FC<CardListRowProps> = ({
+const CardListRow: React.FC<CardListRowProps> = React.memo(({
   card,
   isSelected,
   onToggleSelect,
@@ -135,7 +135,7 @@ const CardListRow: React.FC<CardListRowProps> = ({
       </td>
     </tr>
   );
-};
+});
 
 CardListRow.displayName = 'CardListRow';
 

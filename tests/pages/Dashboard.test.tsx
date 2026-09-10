@@ -204,6 +204,11 @@ vi.mock('../../components/PerformanceVsPriceChart.tsx', () => ({ default: () => 
 vi.mock('../../components/SeasonalWindowRail.tsx', () => ({ default: () => null }));
 vi.mock('../../components/PortfolioConcentrationRail.tsx', () => ({ default: () => null }));
 vi.mock('../../components/HoldingsCatalystRail.tsx', () => ({ default: () => null }));
+vi.mock('../../components/RatioIntelligenceRail.tsx', () => ({ default: () => null }));
+vi.mock('../../components/PortfolioMoversRail.tsx', () => ({ default: () => null }));
+vi.mock('../../components/DealFinderLiteRail.tsx', () => ({ default: () => null }));
+vi.mock('../../components/MarketPulseRail.tsx', () => ({ default: () => null }));
+vi.mock('../../components/AdjacentHobbyMarketsRail.tsx', () => ({ default: () => null }));
 
 async function loadDashboard() {
     const mod = await import('../../pages/Dashboard.tsx');

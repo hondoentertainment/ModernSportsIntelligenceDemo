@@ -53,6 +53,7 @@ import { detectSignals } from '../lib/utils/signals.ts';
 import { syncPortfolio, SyncProgress } from '../lib/utils/marketSync.ts';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory.ts';
 import { useAlerts } from '../lib/utils/useAlerts.ts';
+import { useFavorites } from '../lib/utils/useFavorites.ts';
 const ReportModal = lazy(() => import('../components/ReportModal.tsx'));
 import MorningBriefingModal from '../components/MorningBriefingModal.tsx';
 import ShareAlphaModal from '../components/ShareAlphaModal.tsx';
@@ -99,6 +100,11 @@ import type { CardInventory, UserProfile } from '../types';
 const HoldingsCatalystRail = lazy(() => import('../components/HoldingsCatalystRail.tsx'));
 const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail.tsx'));
 const PortfolioConcentrationRail = lazy(() => import('../components/PortfolioConcentrationRail.tsx'));
+const RatioIntelligenceRail = lazy(() => import('../components/RatioIntelligenceRail.tsx'));
+const PortfolioMoversRail = lazy(() => import('../components/PortfolioMoversRail.tsx'));
+const DealFinderLiteRail = lazy(() => import('../components/DealFinderLiteRail.tsx'));
+const MarketPulseRail = lazy(() => import('../components/MarketPulseRail.tsx'));
+const AdjacentHobbyMarketsRail = lazy(() => import('../components/AdjacentHobbyMarketsRail.tsx'));
 const PerformanceVsPriceChart = lazy(() => import('../components/PerformanceVsPriceChart.tsx'));
 const BreakoutRadar = lazy(() => import('../components/BreakoutRadar.tsx'));
 const AgentInsightsPanel = lazy(() => import('../components/AgentInsightsPanel.tsx'));
@@ -134,6 +140,8 @@ const Dashboard: React.FC = () => {
     syncStatus,
     lastSyncError
   } = useSupabaseInventory();
+  const { favorites } = useFavorites();
+  const favoriteIds = useMemo(() => favorites.map((row) => row.cardId), [favorites]);
 
   const [realMlbStats, setRealMlbStats] = useState<any[]>([]);
 
@@ -415,6 +423,12 @@ const Dashboard: React.FC = () => {
               <SeasonalWindowRail inventory={inventory} />
               <PortfolioConcentrationRail inventory={inventory} />
               <HoldingsCatalystRail inventory={inventory} />
+              <RatioIntelligenceRail inventory={inventory} />
+              <PortfolioMoversRail inventory={inventory} />
+              <PortfolioMoversRail inventory={inventory} favoriteIds={favoriteIds} compact />
+              <DealFinderLiteRail inventory={inventory} targets={targets} />
+              <MarketPulseRail inventory={inventory} />
+              <AdjacentHobbyMarketsRail compact />
             </Suspense>
           </LazyErrorBoundary>
         </div>
@@ -704,7 +718,7 @@ const Dashboard: React.FC = () => {
                     <div className="p-1.5 bg-brand-lime/10 rounded-lg text-brand-lime">
                       <Activity size={16} />
                     </div>
-                    <h3 className="text-lg font-bebas tracking-wide text-white">Live Market Quotes</h3>
+                    <h3 className="text-lg font-bebas tracking-wide text-white">Local Market Quotes</h3>
                   </div>
                   <div className="flex gap-2">
                     <span className="px-2 py-0.5 rounded bg-brand-charcoal border border-slate-800 text-[9px] font-black text-slate-500 uppercase tracking-widest">Streaming</span>
@@ -907,7 +921,7 @@ const Dashboard: React.FC = () => {
 
           {/* Macro-Sentinel Monitoring (Phase 24) */}
           <div className="reveal-section mb-12 animate-in slide-in-from-bottom-8 duration-700 order-last" style={{ animationDelay: '450ms' }}>
-            <MacroSentinelWidget portfolioValue={portfolioMetrics.totalValue} />
+            <MacroSentinelWidget portfolioValue={portfolioMetrics.totalValue} inventory={inventory} />
           </div>
 
           {/* Arbitrage & Tactical Execution (Phase 22) */}
