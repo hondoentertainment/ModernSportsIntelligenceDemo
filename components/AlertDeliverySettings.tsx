@@ -16,6 +16,7 @@ import {
   WEB_PUSH_DISCLOSURE,
   disableWebPushClient,
   enableWebPushClient,
+  hydrateWebPushDeliveryPrefs,
   shouldOfferWebPush,
   snapshotWebPushSupport,
   webPushStatusCopy,
@@ -32,6 +33,7 @@ const AlertDeliverySettings: React.FC<{ compact?: boolean }> = ({ compact }) => 
 
   useEffect(() => {
     setPushRecord(snapshotWebPushSupport());
+    void hydrateWebPushDeliveryPrefs();
   }, [prefs.browserNotificationsEnabled, prefs.quietHoursEnabled, prefs.quietHoursStart, prefs.quietHoursEnd]);
 
   const patch = (partial: Partial<AlertPreferences>) => {

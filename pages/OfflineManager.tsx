@@ -139,7 +139,7 @@ function timeAgo(ts: number | null): string {
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
 const OfflineManager: React.FC = () => {
-  const { isOnline: online, status, syncQueue: liveQueue, isSyncing, triggerSync, retryFailed, pendingCount, failedCount } = useOfflineStatus();
+  const { isOnline: online, status, syncQueue: liveQueue, isSyncing, retryFailed, pendingCount, failedCount } = useOfflineStatus();
   const [storageStats, setStorageStats] = useState<OfflineStorageStats>(getStorageStats());
   const [conflicts, setConflicts] = useState<ConflictResolution[]>(getConflicts());
   const [capabilities] = useState<OfflineCapability[]>(getOfflineCapabilities());

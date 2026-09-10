@@ -14,7 +14,7 @@ interface OfflineIndicatorProps {
 }
 
 const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ compact = false }) => {
-  const { isOnline, status, isSyncing, pendingCount, failedCount, triggerSync, retryFailed, syncProgress } = useOfflineStatus();
+  const { isOnline, isSyncing, pendingCount, failedCount, triggerSync, retryFailed, syncProgress } = useOfflineStatus();
   const [dismissed, setDismissed] = useState(false);
   const [prevOnline, setPrevOnline] = useState(isOnline);
 
