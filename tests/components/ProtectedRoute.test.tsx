@@ -67,8 +67,7 @@ describe('ProtectedRoute', () => {
     expect(screen.queryByText('ProtectedPage')).not.toBeInTheDocument();
 
     await act(async () => {
-      vi.advanceTimersByTime(PROFILE_LOADING_WAIT_MS);
-      await vi.runOnlyPendingTimersAsync();
+      await vi.advanceTimersByTimeAsync(PROFILE_LOADING_WAIT_MS);
     });
 
     expect(screen.getByText('ProtectedPage')).toBeInTheDocument();

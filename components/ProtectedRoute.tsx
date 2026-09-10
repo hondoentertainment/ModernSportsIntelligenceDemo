@@ -69,7 +69,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
         return () => clearTimeout(t);
     }, [sessionPending]);
 
-    if (sessionPending || exitHold) {
+    if (sessionPending || (exitHold && !profileWaitExpired)) {
         return <SessionLoadingShell />;
     }
 

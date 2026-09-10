@@ -293,8 +293,10 @@ describe('webPushSubscription', () => {
     const swSrc = readFileSync(path.join(process.cwd(), 'public/sw.js'), 'utf8');
     expect(swSrc).toContain('importScripts(\'/web-push-delivery-gate.js\')');
     expect(swSrc).toContain('shouldDeliverWebPushNotification');
-    expect(swSrc).toContain(WEB_PUSH_SW_PREFS_CACHE);
-    expect(swSrc).toContain(WEB_PUSH_SW_PREFS_URL);
+    expect(swSrc).toContain('WEB_PUSH_PREFS_CACHE');
+    expect(swSrc).toContain('PREFS_URL');
+    expect(gateSrc).toContain(WEB_PUSH_SW_PREFS_CACHE);
+    expect(gateSrc).toContain(WEB_PUSH_SW_PREFS_URL);
 
     const sandbox: Record<string, unknown> = {};
     sandbox.self = sandbox;
