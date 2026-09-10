@@ -295,6 +295,26 @@ describe('webPushSubscription', () => {
     });
   });
 
+  it('can seed Cache before mount without waiting for serviceWorker.ready', async () => {
+    const put = vi.fn(async () => undefined);
+    vi.stubGlobal('caches', {
+      open: vi.fn(async () => ({ put })),
+    });
+    let resolveReady: (value: { active: { postMessage: () => void } }) => void = () => undefined;
+    vi.stubGlobal('navigator', {
+      serviceWorker: {
+        controller: { postMessage: vi.fn() },
+        ready: new Promise((resolve) => {
+          resolveReady = resolve;
+        }),
+      },
+    });
+    const seeded = await initWebPushDeliveryPrefs({ waitForServiceWorker: false });
+    expect(seeded.quietHoursStart).toBe('22:00');
+    expect(put).toHaveBeenCalled();
+    resolveReady({ active: { postMessage: vi.fn() } });
+  });
+
   it('persistWebPushDeliveryPrefs stays resilient when Cache or SW is unavailable', async () => {
     vi.stubGlobal('caches', {
       open: async () => {
