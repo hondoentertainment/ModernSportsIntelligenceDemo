@@ -58,6 +58,8 @@ const CardCompareDeskPanel: React.FC<Props> = ({ cards, universe }) => {
                 <td key={`${col.cardId}-comps`} className="py-2 pr-3">
                   {col.compsUsed}
                   {col.thinTape ? ' · thin' : ''}
+                  {col.stale ? ' · stale' : ''}
+                  {col.lowLiquidity && !col.thinTape ? ' · low liq' : ''}
                 </td>
               ))}
             </tr>

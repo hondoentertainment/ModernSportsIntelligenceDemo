@@ -173,6 +173,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/analytics/marketPulse.ts',
         'lib/analytics/cardCompareDesk.ts',
         'lib/pricing/consensusMarketLedger.ts',
+        'lib/pricing/pricingTruth.ts',
         'lib/htmlEscape.ts',
       ],
       // Thresholds track the current aggregate on the whitelist above so CI

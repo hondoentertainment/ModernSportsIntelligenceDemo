@@ -59,6 +59,23 @@ describe('CardGridItem — DataSourceBadge regression guard', () => {
     expect(liveBadges.length).toBeGreaterThanOrEqual(1);
   });
 
+  it('surfaces stale and thin-tape badges from pricing-truth classifiers', () => {
+    const card = makeCard({
+      valuationSource: 'gemini',
+      lastValuationDate: '2026-01-01',
+      valuationTimestamp: '2026-01-01T00:00:00.000Z',
+      liquidityScore: 20,
+      salesData: [
+        { title: 'Thin A', price: 180, condition: 'Raw', soldAt: new Date().toISOString() },
+      ],
+    });
+    render(<CardGridItem {...makeProps(card)} />);
+
+    expect(screen.getByText(/thin sold comps/i)).toBeInTheDocument();
+    expect(screen.getByText(/stale/i)).toBeInTheDocument();
+    expect(screen.getByText(/thin tape/i)).toBeInTheDocument();
+  });
+
   it('exposes a Comps Used control on the card surface', () => {
     const card = makeCard({
       valuationSource: 'historical-comps',
@@ -102,14 +119,15 @@ describe('CardGridItem — DataSourceBadge regression guard', () => {
     expect(screen.getByRole('status', { name: /sample/i })).toBeInTheDocument();
   });
 
-  it('also renders the wordy valuation chip ("Live comps") alongside the badge for ebay-api cards', () => {
+  it('renders an honest sold-comps chip for ebay-api cards when the live eBay flag is off', () => {
     const card = makeCard({
       valuationSource: 'ebay-api',
       valuationTimestamp: new Date().toISOString(),
     });
     render(<CardGridItem {...makeProps(card)} />);
 
-    expect(screen.getByText(/live comps/i)).toBeInTheDocument();
+    expect(screen.getByText(/sold comps/i)).toBeInTheDocument();
+    expect(screen.queryByText(/live comps/i)).not.toBeInTheDocument();
   });
 
   it('renders Audit Dossier when onOpenDossier is wired (Collection already passes this handler)', () => {

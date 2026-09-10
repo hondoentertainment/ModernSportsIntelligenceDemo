@@ -4,6 +4,7 @@
  */
 import type { CardInventory } from '../../types';
 import { preferredValuationForCard, compsUsedForPreferred } from '../pricing/compConsensus';
+import { buildPricingTruthForCard } from '../pricing/pricingTruth';
 import { analyzePortfolioConcentration } from './portfolioConcentration';
 import { daysHeld, holdingTreatment, type HorizonTreatment } from './holdingHorizon';
 import { gradeRatioForCard, type GradeRatioRow } from './ratioIntelligence';
@@ -23,6 +24,8 @@ export interface CompareDeskColumn {
   markLabel: string;
   compsUsed: number;
   thinTape: boolean;
+  stale: boolean;
+  lowLiquidity: boolean;
   compsDisclosure: string;
   gradeRatio: GradeRatioRow | null;
   daysHeld: number;
@@ -75,6 +78,7 @@ export function buildCardCompareDesk(
 
   const columns = picked.map((card) => {
     const preferred = preferredValuationForCard(card);
+    const truth = buildPricingTruthForCard(card);
     const comps = compsUsedForPreferred(preferred, card.salesData);
     const mark = usableMark(preferred.value || card.currentValue || card.purchasePrice);
     const cost = usableMark(card.purchasePrice);
@@ -91,6 +95,8 @@ export function buildCardCompareDesk(
       markLabel: preferred.label,
       compsUsed: comps.rows.length,
       thinTape: preferred.thinMarket || comps.method === 'thin-comp-fallback' || comps.rows.length < 3,
+      stale: truth.flags.stale,
+      lowLiquidity: truth.flags.lowLiquidity,
       compsDisclosure: comps.disclosure,
       gradeRatio: gradeRatioForCard(card),
       daysHeld: daysHeld(card.purchaseDate, asOf, card.saleDate),

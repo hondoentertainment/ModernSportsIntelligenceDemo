@@ -1,7 +1,7 @@
 # Product roadmap — post Wave-5 (2026 Q4)
 
 **Audience:** owner / Kyle  
-**Status:** planning only — no product code, secrets, or flag flips in this document  
+**Status:** planning + Phase B **UI scaffold** (2026-09-10) — no secrets or `VITE_FF_REAL_*` flips. Full Phase B exit still needs #77 live tape.  
 **Canonical ops:** [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap · [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)
 
 Eng-safe Waves 2–5 are on `main` (Wave-5 squash `#139` / `b1a6ca5`). The remaining unlock is **owner-held #77**. If #77 slips, Phase A stays the only critical path.
@@ -10,13 +10,13 @@ Eng-safe Waves 2–5 are on `main` (Wave-5 squash `#139` / `b1a6ca5`). The remai
 
 ## 1. Where we are (Sep 2026)
 
-| Fact | Reality |
-| ---- | ------- |
-| Bloomberg / institutional core | Engineering-complete: consensus ledger, War Room, audit dossier, tax lots (demo-honest), card-show loop, agents |
+| Fact                                  | Reality                                                                                                                                     |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bloomberg / institutional core        | Engineering-complete: consensus ledger, War Room, audit dossier, tax lots (demo-honest), card-show loop, agents                             |
 | Consumer intel vs SCI / Market Movers | Wave-5 shipped: ratio intel, collection/favorites movers, deal finder lite, multi-segment Pulse, 2–3 card compare, whale list, wax/TCG rail |
-| Catalog | Six of seven former betas are `live`. Only `fractional-vault` remains `beta` (legal) |
-| Hosted data | Supabase `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **INACTIVE**. Live tape blocked on #77 |
-| Honest copy | Seeded Pulse / movers / deals are local + disclosed — not live marketplace scrapes |
+| Catalog                               | Six of seven former betas are `live`. Only `fractional-vault` remains `beta` (legal)                                                        |
+| Hosted data                           | Supabase `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **INACTIVE**. Live tape blocked on #77                                      |
+| Honest copy                           | Seeded Pulse / movers / deals are local + disclosed — not live marketplace scrapes                                                          |
 
 Do **not** restore Supabase or set live-data flags from an engineering PR.
 
@@ -24,16 +24,16 @@ Do **not** restore Supabase or set live-data flags from an engineering PR.
 
 ## 2. Competitive positioning
 
-| Capability | MSI | Market Movers / Sports Card Investor |
-| ---------- | --- | ------------------------------------ |
-| Multi-agent War Room + why / consensus | **Lead** | Absent |
-| Tax lots, ST/LT, wash-sale rail, Fiscal Shield | **Lead** (advisory; not IRS-complete) | Thin or absent |
-| Audit dossier + admin audit trail | **Lead** | Absent |
-| Card-show floor loop (scan, swipe, show bag) | **Lead** | Absent |
-| Negotiation Arena / Auto-Pilot (advisory) | **Lead** | Absent |
-| Ratio intel, movers, deals, compare, whale list | **Parity-plus on local book** (Wave-5) | Strong on live tape |
-| Live multi-marketplace sold comps | Behind #77 | **They lead today** |
-| Live Market Pulse / hobby indexes | Seeded + local Δ | **They lead today** |
+| Capability                                      | MSI                                    | Market Movers / Sports Card Investor |
+| ----------------------------------------------- | -------------------------------------- | ------------------------------------ |
+| Multi-agent War Room + why / consensus          | **Lead**                               | Absent                               |
+| Tax lots, ST/LT, wash-sale rail, Fiscal Shield  | **Lead** (advisory; not IRS-complete)  | Thin or absent                       |
+| Audit dossier + admin audit trail               | **Lead**                               | Absent                               |
+| Card-show floor loop (scan, swipe, show bag)    | **Lead**                               | Absent                               |
+| Negotiation Arena / Auto-Pilot (advisory)       | **Lead**                               | Absent                               |
+| Ratio intel, movers, deals, compare, whale list | **Parity-plus on local book** (Wave-5) | Strong on live tape                  |
+| Live multi-marketplace sold comps               | Behind #77                             | **They lead today**                  |
+| Live Market Pulse / hobby indexes               | Seeded + local Δ                       | **They lead today**                  |
 
 MSI wins on **agents, fiscal, War Room, show-floor, audit**. SCI / Market Movers still win on **live comps depth and live Pulse** until Phase A lands.
 
@@ -43,13 +43,13 @@ MSI wins on **agents, fiscal, War Room, show-floor, audit**. SCI / Market Movers
 
 Map to older phase numbers in [`next-steps-recommendation.md`](./next-steps-recommendation.md). Do not start B–E until A is done (or A is explicitly waived by the owner).
 
-| Phase | Name | Who | Older map |
-| ----- | ---- | --- | --------- |
-| **A** | Unlock trusted book | **Owner only** | #77 / punch-list |
-| **B** | Pricing truth default | Eng, after eBay live | Phase 32 |
-| **C** | Always-on alerts & wires | Eng + owner VAPID | Priority 2.2 remainder |
-| **D** | Real trading moat | Eng | Phase 33 leftover, 37, 40 lite |
-| **E** | Platform | Eng | Phases 34, 36, 39, 42 |
+| Phase | Name                     | Who                  | Older map                      |
+| ----- | ------------------------ | -------------------- | ------------------------------ |
+| **A** | Unlock trusted book      | **Owner only**       | #77 / punch-list               |
+| **B** | Pricing truth default    | Eng, after eBay live | Phase 32                       |
+| **C** | Always-on alerts & wires | Eng + owner VAPID    | Priority 2.2 remainder         |
+| **D** | Real trading moat        | Eng                  | Phase 33 leftover, 37, 40 lite |
+| **E** | Platform                 | Eng                  | Phases 34, 36, 39, 42          |
 
 ### Phase A — Unlock trusted book (#77) — OWNER ONLY
 
@@ -69,9 +69,13 @@ Refs: [`docs/DEPLOY_ENV_CHECKLIST.md`](../docs/DEPLOY_ENV_CHECKLIST.md) · [`doc
 
 Phase 32 style. Consensus / Comps Used / collection provenance chips already exist.
 
+**UI scaffold shipped (2026-09-10):** sold-comp default + stale / thin-tape badges + provenance chips on Collection, Dashboard, Favorites, watchlist/targets, and Compare **without** flipping `VITE_FF_REAL_*`. Honest labels while the eBay flag is off.
+
+**Full Phase B exit still needs** #77 live eBay tape + freshness SLA against real comps.
+
 - Sold comps **default** on valuation apply + core desks once live tape is on
-- Stale / low-liquidity badges **everywhere** (not only Collection)
-- Provenance SLA (source, timestamp, confidence, freshness)
+- Stale / low-liquidity badges **everywhere** (scaffold is on the core desks; Pulse / War Room depth can follow live tape)
+- Provenance SLA (source, timestamp, confidence, freshness) — chip scaffold landed; SLA vs live tape is remaining
 - Optional `price_history` table once cloud is restored — not before
 
 ### Phase C — Always-on alerts & wires
@@ -101,11 +105,11 @@ Already known; do not invent Labs pages.
 
 **T0** = [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closed (restore + env sync + Stripe smoke + eBay live). PSA may lag (eBay-first). If #77 slips, **the clock does not start**.
 
-| Window | Outcome |
-| ------ | ------- |
-| **Pre-T0** | Phase A only. No B–E, no Labs, no both-flags-at-once. |
-| **T0 + 30** | eBay tape observed. PSA on both runtimes only if eBay is stable. Phase B started. |
-| **T0 + 60** | Phase B default-on + freshness SLA. Phase C Web Push or MLB wire started. |
+| Window      | Outcome                                                                                           |
+| ----------- | ------------------------------------------------------------------------------------------------- |
+| **Pre-T0**  | Phase A only. No B–E, no Labs, no both-flags-at-once.                                             |
+| **T0 + 30** | eBay tape observed. PSA on both runtimes only if eBay is stable. Phase B started.                 |
+| **T0 + 60** | Phase B default-on + freshness SLA. Phase C Web Push or MLB wire started.                         |
 | **T0 + 90** | Phase C usable. Phase D design / lite matching scoped. Phase E not started unless A–C are boring. |
 
 ---
@@ -123,10 +127,10 @@ Already known; do not invent Labs pages.
 
 ## 6. Doc map
 
-| Doc | Role after this refresh |
-| --- | ----------------------- |
-| [`NEXT_STEPS.md`](../NEXT_STEPS.md) | Shipped Waves 2–5 + Forward A–E |
-| This file | Owner-facing narrative |
-| [`FEATURE_ROADMAP_REVIEW.md`](./FEATURE_ROADMAP_REVIEW.md) | Inventory vs catalog (what exists) |
-| [`next-steps-recommendation.md`](./next-steps-recommendation.md) | Priority 1–6 + Phases 31–42, T0-relative 30/60/90 |
+| Doc                                                                          | Role after this refresh                                      |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| [`NEXT_STEPS.md`](../NEXT_STEPS.md)                                          | Shipped Waves 2–5 + Forward A–E                              |
+| This file                                                                    | Owner-facing narrative                                       |
+| [`FEATURE_ROADMAP_REVIEW.md`](./FEATURE_ROADMAP_REVIEW.md)                   | Inventory vs catalog (what exists)                           |
+| [`next-steps-recommendation.md`](./next-steps-recommendation.md)             | Priority 1–6 + Phases 31–42, T0-relative 30/60/90            |
 | [`roadmap-review-and-enhancements.md`](./roadmap-review-and-enhancements.md) | Historical enhancement inventory — superseded for sequencing |

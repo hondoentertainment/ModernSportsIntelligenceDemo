@@ -25,6 +25,7 @@ import { CardInventory } from '../types.ts';
 import { generateCompareAnalysis } from '../lib/analytics/compareAnalysis.ts';
 import { getCardHistory } from '../lib/analytics/priceHistory';
 import { selectCompareCards } from '../lib/analytics/cardCompareDesk.ts';
+import { preferredValueForCard } from '../lib/pricing/compConsensus';
 import CardImage from '../components/CardImage.tsx';
 import ImageLightbox from '../components/ImageLightbox.tsx';
 import CardCompareDeskPanel from '../components/CardCompareDeskPanel.tsx';
@@ -76,7 +77,7 @@ const Compare: React.FC = () => {
     if (histories.every((row) => row.points.length === 0)) {
       const current: Record<string, string | number> = { month: 'Current' };
       for (const { card } of histories) {
-        current[`${card.player} ${card.year}`] = card.currentValue || card.purchasePrice;
+        current[`${card.player} ${card.year}`] = preferredValueForCard(card) || card.currentValue || card.purchasePrice;
       }
       return [current];
     }
@@ -99,8 +100,9 @@ const Compare: React.FC = () => {
   }, [selectedCards]);
 
   const getROI = (card: CardInventory) => {
-    if (!card.purchasePrice || !card.currentValue) return null;
-    return ((card.currentValue - card.purchasePrice) / card.purchasePrice) * 100;
+    const mark = preferredValueForCard(card) || card.currentValue;
+    if (!card.purchasePrice || !mark) return null;
+    return ((mark - card.purchasePrice) / card.purchasePrice) * 100;
   };
 
   const compareMetric = (val1: number | null | undefined, val2: number | null | undefined, higherIsBetter = true) => {
@@ -191,7 +193,7 @@ const Compare: React.FC = () => {
                 <p className="text-[9px] text-brand-muted uppercase tracking-widest">{card.set}</p>
               </div>
               <span className="text-brand-lime font-mono text-sm">
-                ${card.currentValue?.toLocaleString() || '—'}
+                ${(preferredValueForCard(card) || card.currentValue)?.toLocaleString() || '—'}
               </span>
             </button>
           ))}
@@ -406,7 +408,12 @@ const Compare: React.FC = () => {
               Performance Comparison
             </h2>
 
-            <ComparisonRow label="Market Value" val1={card1.currentValue} val2={card2.currentValue} format="currency" />
+            <ComparisonRow
+              label="Market Value"
+              val1={preferredValueForCard(card1) || card1.currentValue}
+              val2={preferredValueForCard(card2) || card2.currentValue}
+              format="currency"
+            />
             <ComparisonRow label="Purchase Price" val1={card1.purchasePrice} val2={card2.purchasePrice} format="currency" higherIsBetter={false} />
             <ComparisonRow label="ROI" val1={getROI(card1)} val2={getROI(card2)} format="percent" />
             <ComparisonRow label="Year" val1={card1.year} val2={card2.year} />

@@ -4,7 +4,7 @@
 
 `npm run test:coverage` enforces a **baseline threshold** on an explicit **whitelist** in `vite.config.ts` (`test.coverage.include`), with `coverage.all: false` so untested files elsewhere do not dilute the gate.
 
-**Current gate (2026-09-10, Wave-5 whitelist expanded):** `statements 98.4` / `branches 91.5` / `functions 99` / `lines 99` across the explicit `vite.config.ts` include list (now includes ratio intelligence, portfolio movers, deal finder lite, market pulse, and compare desk helpers). Full **100% branches** is often impractical (Vite-inlined `import.meta.env`, unreachable defensive branches, ternary explosion).
+**Current gate (2026-09-10, Phase B pricing-truth whitelist):** `statements 98.4` / `branches 91.5` / `functions 99` / `lines 99` across the explicit `vite.config.ts` include list (now includes `lib/pricing/pricingTruth.ts` plus Wave-5 helpers). Full **100% branches** is often impractical (Vite-inlined `import.meta.env`, unreachable defensive branches, ternary explosion).
 
 Raise thresholds in `vite.config.ts` only after `npm run test:coverage` exceeds them, and leave **~0.15–0.5pp of headroom** under the measured value. The gate is a ratchet, not a high-water mark: set flush against the measurement and a single incidental uncovered statement fails CI with an opaque threshold error instead of a useful signal.
 

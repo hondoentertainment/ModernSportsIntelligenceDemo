@@ -24,14 +24,14 @@
 
 ## 2. Executive snapshot
 
-| Dimension           | State                                                                                                                                          |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Feature catalog** | Core catalog + auto route supplement; `DISCOVERABLE_FEATURE_CATALOG` hides `beta` and `demo` by default                                        |
-| **Routing**         | 100+ lazy-loaded pages in `App.tsx` (full vertical: portfolio, trading, intelligence, frontier); many route supplements are explicitly `demo`  |
+| Dimension           | State                                                                                                                                                                                                       |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Feature catalog** | Core catalog + auto route supplement; `DISCOVERABLE_FEATURE_CATALOG` hides `beta` and `demo` by default                                                                                                     |
+| **Routing**         | 100+ lazy-loaded pages in `App.tsx` (full vertical: portfolio, trading, intelligence, frontier); many route supplements are explicitly `demo`                                                               |
 | **Data**            | DAL + `useSupabaseInventory`; local → cloud **migration** with merge summaries in UI; consignment snapshot **embedded in card notes** for sync. Hosted project `vhbsokjqchaafluimgjh` is **INACTIVE** (#77) |
-| **Auth**            | Supabase + demo mode; password reset; **ProtectedRoute** loading shell until `INITIAL_SESSION` **and** profile ready (`profileLoading`)        |
-| **Ops**             | Vercel, GitHub Actions, health API, rate limits on serverless routes, optional Sentry, CSP rollout docs                                        |
-| **Tests**           | Vitest (lib/components), Playwright E2E (collection add-asset + Scout-to-Acquire smoke); coverage policy documented                            |
+| **Auth**            | Supabase + demo mode; password reset; **ProtectedRoute** loading shell until `INITIAL_SESSION` **and** profile ready (`profileLoading`)                                                                     |
+| **Ops**             | Vercel, GitHub Actions, health API, rate limits on serverless routes, optional Sentry, CSP rollout docs                                                                                                     |
+| **Tests**           | Vitest (lib/components), Playwright E2E (collection add-asset + Scout-to-Acquire smoke); coverage policy documented                                                                                         |
 
 **Strategic gap (Sep 2026):** Eng-safe Waves 2–5 are shipped. Largest remaining risk is **hosted data paused** (Supabase `vhbsokjqchaafluimgjh` INACTIVE — [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)), then **pricing truth default** once eBay is live, then **financial/regulatory depth** (full tax-lot rigor, not IRS theater). Consumer-intel UX vs SCI / Market Movers is local-book complete; live comps / live Pulse still theirs until Phase A.
 
@@ -87,14 +87,14 @@
 
 ### Phase block D — Differentiated & industry-first (catalog ~64–73+)
 
-| Area                                           | Implemented                                            | Open / next                                         |
-| ---------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------- |
-| **Stress testing, grade predict, tax harvest** | Live surfaces + focused Fiscal / NAV / tax-path Vitest | Full tax-lot **regulatory** completeness still open |
-| **Live game impact**                           | **Live** (catalog) — labeled demo/replay, not a broadcast feed | Real play-by-play + pricing link                    |
+| Area                                           | Implemented                                                    | Open / next                                                   |
+| ---------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------- |
+| **Stress testing, grade predict, tax harvest** | Live surfaces + focused Fiscal / NAV / tax-path Vitest         | Full tax-lot **regulatory** completeness still open           |
+| **Live game impact**                           | **Live** (catalog) — labeled demo/replay, not a broadcast feed | Real play-by-play + pricing link                              |
 | **Vision grading lab**                         | **Live** (catalog) — in-session estimates, never persisted     | Production CV / cert integration (only if it beats heuristic) |
-| **Provenance chain**                           | **Live**                                                       | Partner attestations / execution rails              |
-| **Fractional vault**                           | **Beta** (legal/securities) — only remaining catalog beta      | Legal sign-off, then catalog flip — no eng blocker  |
-| **Live breaks**                                | Live route                                                     | Marketplace integrations depth                      |
+| **Provenance chain**                           | **Live**                                                       | Partner attestations / execution rails                        |
+| **Fractional vault**                           | **Beta** (legal/securities) — only remaining catalog beta      | Legal sign-off, then catalog flip — no eng blocker            |
+| **Live breaks**                                | Live route                                                     | Marketplace integrations depth                                |
 
 ---
 
@@ -157,7 +157,7 @@ These were proposed as **high-value additions**; overlap with existing tools is 
 | Hobby health index                              | **Shipped (seeded)** (2026-09-06) — disclosed synthetic composite on Macro-Sentinel. Live feeds remain open.                                                                                                                                                                                                                                                                                                                                                                                      |
 | Gemini-deepened negotiation counters            | **Shipped** (2026-09-06) — playbook + seller-firmness in Gemini prompts; honest deterministic fallback; not live marketplace                                                                                                                                                                                                                                                                                                                                                                      |
 | User-defined agent priorities                   | **Shipped** (2026-09-06) — sliders persist via MSI store; War Room / Auto-Pilot honor them                                                                                                                                                                                                                                                                                                                                                                                                        |
-| Sold-comp consensus / pricing truth             | **Shipped** (2026-09-06) — `compConsensus` prefers sold/historical comps on apply + Collection/Dashboard display; thin tape and AI-only paths stay labeled. Flags not flipped. **Comps Used** (2026-09-07) lists the sold comps that underpin the preferred mark on Collection grid/list.                                                                                                                                                                                                         |
+| Sold-comp consensus / pricing truth             | **Shipped** (2026-09-06) + **Phase B UI scaffold (2026-09-10)** — `compConsensus` prefers sold/historical comps on apply; Collection / Dashboard / Favorites / watchlist / Compare display the preferred mark with stale + thin-tape badges and a provenance chip (`lib/pricing/pricingTruth.ts`). Thin tape and AI-only paths stay labeled. Flags not flipped. **Comps Used** lists the sold comps that underpin the mark. Full Phase B exit still needs #77 live eBay + freshness SLA.          |
 | Schedule D–style export packet                  | **Shipped** (2026-09-06) — ST/LT buckets, totals, methodology disclaimer on `/tax-report` + reportService. **Not** IRS regulatory completeness.                                                                                                                                                                                                                                                                                                                                                   |
 | Non-MLB hub player/team desks                   | **Shipped** (2026-09-06) — NBA / NFL / NHL seeded player + team desks with disclosure. **Soccer Wave-3 parity** (2026-09-08) — `/soccer-hub` desks + Performance vs Price binding. No new Labs pages.                                                                                                                                                                                                                                                                                             |
 | Seasonal buy/sell windows                       | **Shipped (seeded)** (2026-09-07) — Dashboard/Collection rails + per-card chips. Not live tape.                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -207,13 +207,13 @@ Auto-supplemented routes marked `demo` are shipped surfaces, not GA promises. Th
 
 Inventory above is **what exists**. Sequencing of what to do next lives in [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md):
 
-| Phase | Intent | Blocked on |
-| ----- | ------ | ---------- |
-| **A** | Restore cloud + Stripe / eBay / PSA on **both** PSA runtimes (#77). **T0 = this phase complete.** | Owner only |
-| **B** | Sold-comps default, stale/liquidity everywhere, provenance SLA | eBay live |
-| **C** | Server Web Push + MLB catalyst/PvP wires | Phase A (+ owner VAPID) |
-| **D** | P2P match/escrow, execution adapters, field APIs, CV-if-better | Phase B |
-| **E** | Real Alpha keys, Guilds, risk/compliance, multi-tenant | A–C boring |
+| Phase | Intent                                                                                            | Blocked on              |
+| ----- | ------------------------------------------------------------------------------------------------- | ----------------------- |
+| **A** | Restore cloud + Stripe / eBay / PSA on **both** PSA runtimes (#77). **T0 = this phase complete.** | Owner only              |
+| **B** | Sold-comps default, stale/liquidity everywhere, provenance SLA                                    | eBay live               |
+| **C** | Server Web Push + MLB catalyst/PvP wires                                                          | Phase A (+ owner VAPID) |
+| **D** | P2P match/escrow, execution adapters, field APIs, CV-if-better                                    | Phase B                 |
+| **E** | Real Alpha keys, Guilds, risk/compliance, multi-tenant                                            | A–C boring              |
 
 **Non-goals:** new Labs pages; Tailwind 4 / eslint half-migrates; both real-data flags at once; Supabase restore from eng PRs; `fractional-vault` live without legal.
 

@@ -188,24 +188,25 @@ describe('valuationProvenance', () => {
     expect(next.valuationSource).toBe('historical-comps');
   });
 
-  it('renders historical comps chip when source missing but comps exist', () => {
+  it('renders sold-comps chip when source missing but fresh comps exist (flag off)', () => {
+    const now = new Date().toISOString().slice(0, 10);
     const chip = getValuationSourceChipForCard({
       salesData: [
-        { title: 'A', price: 1, condition: 'Raw', soldAt: '2026-03-01' },
-        { title: 'B', price: 2, condition: 'Raw', soldAt: '2026-03-02' },
-        { title: 'C', price: 3, condition: 'Raw', soldAt: '2026-03-03' },
+        { title: 'A', price: 1, condition: 'Raw', soldAt: now },
+        { title: 'B', price: 2, condition: 'Raw', soldAt: now },
+        { title: 'C', price: 3, condition: 'Raw', soldAt: now },
       ],
       valuationSource: undefined,
     });
-    expect(chip.label).toBe('Historical comps');
+    expect(chip.label).toBe('Sold comps');
   });
 
-  it('renders live comps chip for eBay-backed target valuations', () => {
+  it('renders sold-comps chip for eBay-backed target valuations when the live flag is off', () => {
     const chip = getValuationSourceChipForTarget({
       valuationSource: 'ebay-api',
       salesData: [],
     });
-    expect(chip.label).toBe('Live comps');
+    expect(chip.label).toBe('Sold comps');
   });
 
   it('detects fresh verifiable valuations and computes coverage', () => {

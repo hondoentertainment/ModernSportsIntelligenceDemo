@@ -5,7 +5,7 @@
  * Freshness window for sold comps is 90 days (comp tape), distinct from the
  * 7-day valuation-stamp stale chip used in collection UI.
  */
-import type { CardInventory, MarketComp, PricingAnalysis, ValuationSource } from '../../types';
+import type { CardInventory, MarketComp, PricingAnalysis, TargetWatchlist, ValuationSource } from '../../types';
 
 export const MIN_COMPS_FOR_CONSENSUS = 3;
 export const FRESH_COMP_WINDOW_MS = 90 * 24 * 60 * 60 * 1000;
@@ -292,6 +292,26 @@ export function preferredValueForCard(
   nowMs: number = Date.now(),
 ): number {
   return preferredValuationForCard(card, nowMs).value;
+}
+
+export function preferredValuationForTarget(
+  target: Pick<TargetWatchlist, 'currentMarketPrice' | 'valuationSource' | 'valuationTimestamp' | 'salesData'>,
+  nowMs: number = Date.now(),
+): PreferredValuation {
+  return selectPreferredValuation({
+    salesData: target.salesData,
+    storedValue: target.currentMarketPrice,
+    storedSource: target.valuationSource,
+    storedTimestamp: target.valuationTimestamp,
+    nowMs,
+  });
+}
+
+export function preferredValueForTarget(
+  target: Pick<TargetWatchlist, 'currentMarketPrice' | 'valuationSource' | 'valuationTimestamp' | 'salesData'>,
+  nowMs: number = Date.now(),
+): number {
+  return preferredValuationForTarget(target, nowMs).value;
 }
 
 function asCompTitle(sale: SoldCompLike | MarketComp): string {

@@ -4,16 +4,9 @@ import { CardInventory } from '../../types';
 import CardImage from '../CardImage';
 import { LiquidityBadge } from '../LiquidityBadge';
 import { LiquidityService } from '../../lib/analytics/liquidityService';
-import {
-  buildValuationProvenanceTitle,
-  getStaleValuationLabel,
-  isThinLiquidityScore,
-} from '../../lib/utils/valuationFreshness';
-import {
-  getValuationSourceChipForCard,
-  valuationBadgeVariantForEntity,
-} from '../../lib/utils/valuationProvenance';
+import { valuationBadgeVariantForEntity } from '../../lib/utils/valuationProvenance';
 import { compsUsedForPreferred, preferredValuationForCard } from '../../lib/pricing/compConsensus';
+import { buildPricingTruthForCard, chipsFromPricingTruth } from '../../lib/pricing/pricingTruth';
 import ValuationProvenanceChips from '../ValuationProvenanceChips';
 import CompsUsedPanel from '../CompsUsedPanel';
 import ScarcityBadge from '../ScarcityBadge';
@@ -39,15 +32,9 @@ const CardListRow: React.FC<CardListRowProps> = React.memo(({
   ...actionHandlers
 }) => {
   const preferred = preferredValuationForCard(card);
-  const staleLabel = getStaleValuationLabel(card.lastValuationDate);
-  const valuationChip = getValuationSourceChipForCard(card);
-  const provenanceTitle = buildValuationProvenanceTitle({
-    timestamp: card.valuationTimestamp,
-    lastValuationDate: card.lastValuationDate,
-    confidence: preferred.confidence || card.valuationConfidence,
-    rationale: preferred.rationale || card.pricingRationale,
-  });
-  const displayNav = preferred.value || card.currentValue;
+  const truth = buildPricingTruthForCard(card);
+  const truthChips = chipsFromPricingTruth(truth);
+  const displayNav = truth.value || card.currentValue;
   const sparkline = getCardSparkline(card);
 
   return (
@@ -102,11 +89,13 @@ const CardListRow: React.FC<CardListRowProps> = React.memo(({
         <p className="font-mono text-sm text-brand-lime">${displayNav ? displayNav.toLocaleString() : '—'}</p>
         <ValuationProvenanceChips
           className="mt-2 justify-end"
-          sourceChip={valuationChip}
+          sourceChip={truthChips.sourceChip}
           badgeVariant={valuationBadgeVariantForEntity({ ...card, valuationSource: preferred.source })}
-          staleLabel={staleLabel}
-          thinMarket={isThinLiquidityScore(card.liquidityScore) || preferred.thinMarket}
-          title={provenanceTitle}
+          staleLabel={truthChips.staleLabel}
+          thinMarket={truthChips.thinMarket}
+          lowLiquidityLabel={truthChips.lowLiquidityLabel}
+          compsCount={truthChips.compsCount}
+          title={truthChips.title}
         />
         <CompsUsedPanel compact view={compsUsedForPreferred(preferred, card.salesData)} />
         {card.status !== 'sold' && (

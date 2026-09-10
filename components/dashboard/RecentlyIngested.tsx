@@ -2,8 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Activity } from 'lucide-react';
 import CardImage from '../CardImage';
+import ValuationProvenanceChips from '../ValuationProvenanceChips';
 import { getRarityTier, getTierStyles } from '../../lib/utils/rarity';
 import { CardInventory } from '../../types';
+import { buildPricingTruthForCard, chipsFromPricingTruth } from '../../lib/pricing/pricingTruth';
+import { valuationBadgeVariantForEntity } from '../../lib/utils/valuationProvenance';
 
 interface RecentlyIngestedProps {
   inventory: CardInventory[];
@@ -30,6 +33,9 @@ const RecentlyIngested: React.FC<RecentlyIngestedProps> = ({ inventory }) => {
         {recentCards.map(card => {
           const tier = getRarityTier(card);
           const styles = getTierStyles(tier);
+          const truth = buildPricingTruthForCard(card);
+          const truthChips = chipsFromPricingTruth(truth);
+          const displayNav = truth.value || card.currentValue;
 
           return (
             <div
@@ -64,8 +70,8 @@ const RecentlyIngested: React.FC<RecentlyIngestedProps> = ({ inventory }) => {
                   {card.year} {card.manufacturer} {card.set}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-mono font-black text-slate-100">
-                    ${card.purchasePrice.toLocaleString()}
+                  <span className="text-sm font-mono font-black text-brand-lime">
+                    {displayNav ? `$${Math.round(displayNav).toLocaleString()}` : '—'}
                   </span>
                   <span
                     className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-tighter ${card.isGraded ? 'bg-brand-lime/10 text-brand-lime border border-brand-lime/20' : 'bg-slate-800 text-brand-muted'}`}
@@ -73,6 +79,19 @@ const RecentlyIngested: React.FC<RecentlyIngestedProps> = ({ inventory }) => {
                     {card.isGraded ? `${card.gradingCompany} ${card.grade}` : 'Raw'}
                   </span>
                 </div>
+                <ValuationProvenanceChips
+                  className="mt-2"
+                  sourceChip={truthChips.sourceChip}
+                  badgeVariant={valuationBadgeVariantForEntity({
+                    ...card,
+                    valuationSource: truth.source,
+                  })}
+                  staleLabel={truthChips.staleLabel}
+                  thinMarket={truthChips.thinMarket}
+                  lowLiquidityLabel={truthChips.lowLiquidityLabel}
+                  compsCount={truthChips.compsCount}
+                  title={truthChips.title}
+                />
               </div>
             </div>
           );
