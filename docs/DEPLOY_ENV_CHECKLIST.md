@@ -24,12 +24,12 @@ Use this when promoting a build to **production** (Vercel + Supabase + Stripe + 
 
 ## Supabase (project settings)
 
-| Item                  | Action                                                                                                                                                                        |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Migrations            | Apply `supabase/migrations/*.sql` in order (see [SUPABASE_RLS.md](./SUPABASE_RLS.md))                                                                                         |
-| Edge Function secrets | `STRIPE_SECRET_KEY`; `PSA_API_KEY` (for `verify-psa-cert` / `/slab-verification`); auto: `SUPABASE_URL`, `SUPABASE_ANON_KEY` |
+| Item                  | Action                                                                                                                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Migrations            | Apply `supabase/migrations/*.sql` in order (see [SUPABASE_RLS.md](./SUPABASE_RLS.md))                                                                                                             |
+| Edge Function secrets | `STRIPE_SECRET_KEY`; `PSA_API_KEY` (for `verify-psa-cert` / `/slab-verification`); auto: `SUPABASE_URL`, `SUPABASE_ANON_KEY`                                                                      |
 | Deploy functions      | From repo root: `supabase functions deploy create-checkout-session`, `create-billing-portal-session`, and `verify-psa-cert` (see [supabase/functions/README.md](../supabase/functions/README.md)) |
-| Auth redirect URLs    | Add production and preview site URLs                                                                                                                                          |
+| Auth redirect URLs    | Add production and preview site URLs                                                                                                                                                              |
 
 ## Stripe
 
