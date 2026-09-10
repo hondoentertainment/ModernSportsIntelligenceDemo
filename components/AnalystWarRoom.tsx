@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
 import { MultiAgentService } from '../lib/utils/MultiAgentService';
 import { AutonomousExecutionService } from '../lib/trading/AutonomousExecutionService';
@@ -16,12 +16,18 @@ import { safeParseCollaborativeThesis } from '../lib/schemas';
 import { downloadWarRoomThesisJson } from '../lib/utils/warRoomThesisAudit';
 import MarketLedgerStrip from './MarketLedgerStrip';
 import AgentPrioritiesPanel from './AgentPrioritiesPanel';
+import LazyErrorBoundary from './LazyErrorBoundary';
+import { WidgetLoadingFallback } from './LazyLoadFallback';
+
+const RatioIntelligenceRail = lazy(() => import('./RatioIntelligenceRail'));
+const PortfolioMoversRail = lazy(() => import('./PortfolioMoversRail'));
+const DealFinderLiteRail = lazy(() => import('./DealFinderLiteRail'));
 import { formatAgentPreferencesSummary } from '../lib/utils/agentPreferences';
 
 const WAR_ROOM_THESIS_STORAGE_KEY = 'msi_war_room_last_thesis_v1';
 
 const AnalystWarRoom: React.FC = () => {
-    const { inventory } = useSupabaseInventory();
+    const { inventory, targets } = useSupabaseInventory();
     const [thesis, setThesis] = useState<CollaborativeThesis | null>(() => {
         const raw = store.get<unknown>(WAR_ROOM_THESIS_STORAGE_KEY, null);
         const parsed = safeParseCollaborativeThesis(raw);
@@ -142,6 +148,15 @@ const AnalystWarRoom: React.FC = () => {
             </div>
 
             {inventory.length > 0 && <MarketLedgerStrip inventory={inventory} />}
+            {inventory.length > 0 && (
+                <LazyErrorBoundary compact>
+                    <Suspense fallback={<WidgetLoadingFallback />}>
+                        <RatioIntelligenceRail inventory={inventory} compact />
+                        <PortfolioMoversRail inventory={inventory} compact />
+                        <DealFinderLiteRail inventory={inventory} targets={targets} compact />
+                    </Suspense>
+                </LazyErrorBoundary>
+            )}
 
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start">
                 <div className="flex-1">

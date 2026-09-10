@@ -367,8 +367,8 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
               <a
                 key={action.id}
                 href={action.href}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={action.external ? '_blank' : undefined}
+                rel={action.external ? 'noopener noreferrer' : undefined}
                 className={className}
               >
                 {icon} {action.label}

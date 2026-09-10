@@ -28,6 +28,13 @@ const VirtualizedGrid: React.FC<VirtualizedGridProps> = ({
     estimateSize: () => cardHeight + rowGap,
     overscan: 3,
     gap: rowGap,
+    getItemKey: (index) => {
+      const start = index * columns;
+      return items
+        .slice(start, start + columns)
+        .map((card) => card.id)
+        .join('|') || index;
+    },
   });
 
   return (

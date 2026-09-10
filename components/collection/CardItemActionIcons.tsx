@@ -39,8 +39,8 @@ const CardItemActionIcons: React.FC<CardItemActionIconsProps> = props => {
             <a
               key={action.id}
               href={action.href}
-              target="_blank"
-              rel="noopener noreferrer"
+              target={action.external ? '_blank' : undefined}
+              rel={action.external ? 'noopener noreferrer' : undefined}
               className={className}
               title={action.label}
               aria-label={action.label}

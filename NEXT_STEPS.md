@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-10 · **September 2026 Wave-4** (Web Push client readiness, Negotiation Arena firmness UX, field-level migration diffs, holding-horizon / wash-sale rail, ProtectedRoute profile hold, offline queue retry). Builds on Wave-3 (6a7edc8 / #133) and Wave-2 (#131/#132).
+> Refreshed 2026-09-10 · **September 2026 Wave-5** (ratio intelligence, collection/favorites movers, deal finder lite, Market Pulse segments, compare desk, whale list virtualization, wax/TCG discoverability). Builds on Wave-4 (#136/#137/#138) and Wave-3 (#133).
 
 ## Current state in one paragraph
 
@@ -18,18 +18,40 @@ MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger acro
 | Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show                      |
 | eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel** (after restore)                 |
 
+## September 2026 Wave-5 — Shipped (2026-09-10)
+
+Demo/DAL-safe deepenings so a serious collector/investor prefers MSI over **Sports Card Investor / Market Movers** _before_ #77 live eBay/PSA keys — while keeping disclosures honest. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` flips, no new Labs pages, no Tailwind 4 / `@eslint/js` 10 half-migrate, no jsPDF on these live paths.** `fractional-vault` stays `beta` (legal).
+
+| Slice                                 | Label                                    | Where                                                                                                                                                                                                              |
+| ------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Ratio intelligence reports**        | **deepen** (beat Market Movers headline) | Grade / player / variation price-ratio panels from local + sold-comp / consensus marks on Collection, Dashboard, and War Room. Thin tape and heuristic 9/10 fills stay labeled.                                    |
+| **Collection & Favorites Top Movers** | **lite**                                 | Portfolio-relative and favorites movers (%, $) from stored snapshots then dated comps. Dashboard, Collection, Favorites, War Room. Empty/thin states honest — not a global live feed.                              |
+| **Deal Finder lite**                  | **lite**                                 | Watchlist / target / holding-scan candidates below consensus or fee-aware eBay break-even. Disclosed 15% “great deal” threshold. Existing pricing/comp paths only.                                                 |
+| **Market Pulse / hobby indexes**      | **deepen**                               | Multi-segment Pulse (sport / era / sealed-vs-singles) on Dashboard + Collection; Macro-Sentinel chips; terminal quote table uses local Δ instead of random. Seeded + local — **not** live SCI Market Pulse parity. |
+| **Card Compare desk**                 | **deepen**                               | `/compare` now desks 2–3 cards: marks, comps used, ratios, ST/LT, concentration. Collection per-card action + 2–3 select “Compare desk”. No new Labs route.                                                        |
+| **Whale Collection list**             | **lite** (Priority 6.2)                  | Virtualized list (tanstack) above 24 rows; memoized rows; stable virtual keys on grid + list. Grid was already virtualized.                                                                                        |
+| **Sealed wax / TCG parity lite**      | **lite**                                 | Adjacent hobby rail (Pokémon / MTG / memorabilia) on Dashboard + Collection next to sports Pulse. Disclosed proxies.                                                                                               |
+
+### vs Sports Card Investor / Market Movers
+
+MSI now covers **ratio intel + collection/favorites movers + deals + multi-segment Pulse + 2–3 card compare + whale-scale list** on top of the institutional stack SCI lacks (War Room, Auto-Pilot, tax lots, wash-sale, Negotiation Arena, consensus ledger, audit dossier, card-show loop, agent why/consensus). Live eBay/PSA tape and SCI-style marketplace scrapes remain owner-held (#77) — copy does not claim live Market Movers parity.
+
+**Still owner-held (do not start from this PR):** #77 Supabase restore, Stripe / eBay / PSA keys, Sentry DSN, fractional-vault legal, vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness, server-triggered Web Push (VAPID + backend).
+
+**Deferred / not this wave:** Tailwind 4; `@eslint/js` 10; jsPDF/html2canvas on live entry graph; new Labs pages; live non-MLB sports wires; new `price_history` table; partner show-bag APIs; full P2P matching/escrow; production CV; IRS completeness.
+
 ## September 2026 Wave-4 — Shipped (2026-09-10)
 
 Demo/DAL-safe deepenings on existing Alerts / Profile / Notification Center, Negotiation Arena, Migration Banner / Profile, Collection / Fiscal / Tax, ProtectedRoute, and the offline banner. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` flips, no new Labs pages, no Tailwind 4 / `@eslint/js` 10 half-migrate, no jsPDF on these live paths.**
 
-| Slice | Label | Where |
-| --- | --- | --- |
-| **Web Push subscription lite** | **lite** (Priority 2.2 remainder) | Client Push API / service-worker readiness on Alert delivery (Alerts / Profile / Notification Center). Endpoint persisted via `msi_web_push_subscription_v1`. Quiet hours + browser-notification prefs still gate delivery. Honest copy: **server-triggered push still needs owner-held VAPID keys + a backend** — no VAPID secrets in git. |
-| **Negotiation Arena UX** | **deepen** (Priority 4.1) | Agent-thinking animation + seller-firmness / sentiment meter on the existing Arena modal. Gemini firmness when the generate path returns a score; deterministic demo fallback otherwise. Still advisory — not live marketplace trading. |
-| **Field-level migration merge** | **deepen** (Priority 1.2 leftover) | Duplicate inventory / target preview now lists key field conflicts (mark, cost, dates, grade, notes, status) on Migration Banner + Profile. Demo-safe when cloud is unavailable. No restore. |
-| **Holding horizon / wash-sale rail** | **lite** | Days held, ST vs LT, and 30-day repurchase proximity on Collection, Fiscal Shield, and Tax Report. Uses local lot dates. **Not** tax advice or IRS completeness. |
-| **ProtectedRoute loading polish** | **leftover** (Priority 1.1) | Session shell stays up until `INITIAL_SESSION` **and** profile are ready (`loading` or `profileLoading`). Auth security model unchanged. |
-| **Offline sync status** | **lite** | Pending / failed counts + retry / requeue on the offline banner and Profile Data Management. Real MSI-store queue only — no mock pending rows. |
+| Slice                                | Label                              | Where                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------------------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Web Push subscription lite**       | **lite** (Priority 2.2 remainder)  | Client Push API / service-worker readiness on Alert delivery (Alerts / Profile / Notification Center). Endpoint persisted via `msi_web_push_subscription_v1`. Quiet hours + browser-notification prefs still gate delivery. Honest copy: **server-triggered push still needs owner-held VAPID keys + a backend** — no VAPID secrets in git. |
+| **Negotiation Arena UX**             | **deepen** (Priority 4.1)          | Agent-thinking animation + seller-firmness / sentiment meter on the existing Arena modal. Gemini firmness when the generate path returns a score; deterministic demo fallback otherwise. Still advisory — not live marketplace trading.                                                                                                     |
+| **Field-level migration merge**      | **deepen** (Priority 1.2 leftover) | Duplicate inventory / target preview now lists key field conflicts (mark, cost, dates, grade, notes, status) on Migration Banner + Profile. Demo-safe when cloud is unavailable. No restore.                                                                                                                                                |
+| **Holding horizon / wash-sale rail** | **lite**                           | Days held, ST vs LT, and 30-day repurchase proximity on Collection, Fiscal Shield, and Tax Report. Uses local lot dates. **Not** tax advice or IRS completeness.                                                                                                                                                                            |
+| **ProtectedRoute loading polish**    | **leftover** (Priority 1.1)        | Session shell stays up until `INITIAL_SESSION` **and** profile are ready (`loading` or `profileLoading`). Auth security model unchanged.                                                                                                                                                                                                    |
+| **Offline sync status**              | **lite**                           | Pending / failed counts + retry / requeue on the offline banner and Profile Data Management. Real MSI-store queue only — no mock pending rows.                                                                                                                                                                                              |
 
 **Still owner-held (do not start from this PR):** #77 Supabase restore, Stripe / eBay / PSA keys, Sentry DSN, fractional-vault legal, vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness.
 

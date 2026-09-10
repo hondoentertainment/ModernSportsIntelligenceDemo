@@ -141,6 +141,11 @@ This document outlines the prioritized next steps for transitioning **Modern Spo
 - **Actions:**
   - **Virtual Lists:** Implement `react-window` or similar for high-density inventory tables.
   - **State Management:** Optimize Zustand stores for partial updates.
+- **Status:** **Shipped (lite, Wave-5, 2026-09-10)** — Collection **grid** was already virtualized (`@tanstack/react-virtual`, threshold 24). Wave-5 adds a **virtualized list**, memoized `CardListRow`, and stable `getItemKey` on grid + list so 1k–10k cards stay usable. Partial-update-friendly identity keys; handlers still recreate on some parent renders. Not `react-window`.
+
+## Wave-5 vs Sports Card Investor / Market Movers (2026-09-10)
+
+Engineering-safe consumer-intel gaps closed on existing Dashboard / Collection / Favorites / War Room / Compare surfaces: **ratio intelligence**, **collection + favorites movers**, **deal finder lite**, **multi-segment Market Pulse**, **2–3 card compare desk**, **whale list virtualization**, and **wax/TCG adjacent rail**. Institutional stack (War Room, Auto-Pilot, tax lots, wash-sale, Arena, consensus ledger, audit dossier, card-show loop) remains the MSI differentiator. Live eBay/PSA / SCI tape parity stays owner-held (#77). `fractional-vault` stays legal-gated beta.
 
 ---
 

@@ -1,7 +1,9 @@
-
 import React from 'react';
-import { ArrowUpRight, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { ArrowUpRight, TrendingUp, TrendingDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { CardInventory } from '../types';
+import { getCardSparkline } from '../lib/analytics/priceHistory';
+import { preferredValueForCard } from '../lib/pricing/compConsensus';
 
 interface MarketPulseTableProps {
     items: CardInventory[];
@@ -17,15 +19,21 @@ const MarketPulseTable: React.FC<MarketPulseTableProps> = ({ items }) => {
                             <th className="px-4 py-3 text-[10px] font-black text-brand-muted uppercase tracking-widest whitespace-nowrap">Asset</th>
                             <th className="px-4 py-3 text-[10px] font-black text-brand-muted uppercase tracking-widest whitespace-nowrap">Status</th>
                             <th className="px-4 py-3 text-[10px] font-black text-brand-muted uppercase tracking-widest whitespace-nowrap">Valuation</th>
-                            <th className="px-4 py-3 text-[10px] font-black text-brand-muted uppercase tracking-widest whitespace-nowrap">24h Δ</th>
-                            <th className="px-4 py-3 text-[10px] font-black text-brand-muted uppercase tracking-widest whitespace-nowrap">Liquidity</th>
+                            <th className="px-4 py-3 text-[10px] font-black text-brand-muted uppercase tracking-widest whitespace-nowrap">Local Δ</th>
+                            <th className="px-4 py-3 text-[10px] font-black text-brand-muted uppercase tracking-widest whitespace-nowrap">Tape</th>
                             <th className="px-4 py-3 text-[10px] font-black text-brand-muted uppercase tracking-widest whitespace-nowrap">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {items.map((item) => {
-                            const change = (Math.random() * 4 - 2).toFixed(2);
-                            const isPositive = parseFloat(change) >= 0;
+                            const spark = getCardSparkline(item);
+                            const mark = preferredValueForCard(item) || item.currentValue || 0;
+                            const first = spark.values[0];
+                            const last = spark.values[spark.values.length - 1];
+                            const changePct = spark.values.length >= 2 && first > 0
+                                ? ((last - first) / first) * 100
+                                : null;
+                            const isPositive = (changePct ?? 0) >= 0;
 
                             return (
                                 <tr key={item.id} className="border-b border-slate-900/50 hover:bg-white/[0.02] transition-colors group">
@@ -51,30 +59,30 @@ const MarketPulseTable: React.FC<MarketPulseTableProps> = ({ items }) => {
                                     </td>
                                     <td className="px-4 py-3">
                                         <p className="text-[11px] font-mono font-bold text-white tracking-tight">
-                                            ${item.currentValue.toLocaleString()}
+                                            ${mark.toLocaleString()}
                                         </p>
                                     </td>
                                     <td className="px-4 py-3">
-                                        <div className={`flex items-center gap-1 text-[10px] font-black ${isPositive ? 'text-brand-green' : 'text-brand-red'}`}>
-                                            {isPositive ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                                            {isPositive ? '+' : ''}{change}%
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-12 h-1 bg-slate-800 rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full bg-brand-lime"
-                                                    style={{ width: `${60 + Math.random() * 30}%` }}
-                                                />
+                                        {changePct == null ? (
+                                            <span className="text-[10px] font-bold text-slate-500">Thin</span>
+                                        ) : (
+                                            <div className={`flex items-center gap-1 text-[10px] font-black ${isPositive ? 'text-brand-green' : 'text-brand-red'}`}>
+                                                {isPositive ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                                                {isPositive ? '+' : ''}{changePct.toFixed(2)}%
                                             </div>
-                                            <span className="text-[9px] font-bold text-slate-500">PRO</span>
-                                        </div>
+                                        )}
                                     </td>
                                     <td className="px-4 py-3">
-                                        <button className="p-1.5 hover:bg-brand-lime hover:text-brand-charcoal rounded-md transition-all text-brand-muted">
+                                        <span className="text-[9px] font-bold uppercase text-slate-500">{spark.source}</span>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <Link
+                                            to={`/compare?card1=${encodeURIComponent(item.id)}`}
+                                            className="p-1.5 hover:bg-brand-lime hover:text-brand-charcoal rounded-md transition-all text-brand-muted inline-flex"
+                                            aria-label={`Compare ${item.player}`}
+                                        >
                                             <ArrowUpRight size={14} />
-                                        </button>
+                                        </Link>
                                     </td>
                                 </tr>
                             );
@@ -83,12 +91,12 @@ const MarketPulseTable: React.FC<MarketPulseTableProps> = ({ items }) => {
                 </table>
             </div>
             <div className="p-3 bg-brand-charcoal/30 flex justify-between items-center border-t border-slate-800">
-                <p className="text-[9px] font-bold text-brand-muted uppercase tracking-widest flex items-center gap-2">
-                    <Clock size={10} /> Market latency: 1.4s
+                <p className="text-[9px] font-bold text-brand-muted uppercase tracking-widest">
+                    Local snapshots / dated comps — not a live quote stream
                 </p>
-                <button className="text-[9px] font-black text-brand-lime uppercase tracking-widest hover:text-white transition-colors">
-                    View All Active Quotes
-                </button>
+                <Link to="/collection" className="text-[9px] font-black text-brand-lime uppercase tracking-widest hover:text-white transition-colors">
+                    Open collection
+                </Link>
             </div>
         </div>
     );

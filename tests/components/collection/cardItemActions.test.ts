@@ -73,6 +73,7 @@ describe('getCardItemActions', () => {
       'gradingCalc',
       'consignment',
       'dossier',
+      'compare',
       'ebay',
     ]);
   });
@@ -109,6 +110,16 @@ describe('getCardItemActions', () => {
     expect(getCardItemActionsForSurface(card, handlers, 'list').map(a => a.id)).toContain('exitStrategy');
     expect(getCardItemActionsForSurface(card, handlers, 'body').map(a => a.id)).not.toContain('exitStrategy');
     expect(getCardItemActionsForSurface(card, handlers, 'overlay').map(a => a.id)).not.toContain('exitStrategy');
+  });
+
+  it('wires an in-app compare desk link without treating it as an external eBay tab', () => {
+    const compare = getCardItemActions(makeCard(), collectionWiredHandlers()).find((action) => action.id === 'compare');
+    expect(compare?.href).toBe('#/compare?card1=card-1');
+    expect(compare?.external).toBeUndefined();
+    const ebay = getCardItemActions(makeCard({ searchUrl: 'https://ebay.example/trout' }), collectionWiredHandlers()).find(
+      (action) => action.id === 'ebay',
+    );
+    expect(ebay?.external).toBe(true);
   });
 
   it('includes optional body actions when those handlers are provided', () => {

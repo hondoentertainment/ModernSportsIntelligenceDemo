@@ -18,6 +18,7 @@ import {
   CloudOff,
   Share2,
   BriefcaseBusiness,
+  GitCompare,
 } from 'lucide-react';
 import { CardInventory, TargetWatchlist, League, ExitPlan, UserProfile } from '../types';
 import { Link } from 'react-router-dom';
@@ -41,6 +42,7 @@ import ConsignmentModal from '../components/ConsignmentModal';
 import CardGridItem from '../components/collection/CardGridItem';
 import VirtualizedGrid from '../components/collection/VirtualizedGrid';
 import CardListRow from '../components/collection/CardListRow';
+import VirtualizedList from '../components/collection/VirtualizedList';
 import { CardItemActionHandlers } from '../components/collection/cardItemActions';
 import { LiquidityService } from '../lib/analytics/liquidityService';
 import GradingPremiumTool from '../components/GradingPremiumTool';
@@ -72,6 +74,11 @@ const P2PIntentBoard = lazy(() => import('../components/P2PIntentBoard'));
 const ShowBagPanel = lazy(() => import('../components/ShowBagPanel'));
 const GradingRoiLitePanel = lazy(() => import('../components/GradingRoiLitePanel'));
 const HoldingHorizonRail = lazy(() => import('../components/HoldingHorizonRail'));
+const RatioIntelligenceRail = lazy(() => import('../components/RatioIntelligenceRail'));
+const PortfolioMoversRail = lazy(() => import('../components/PortfolioMoversRail'));
+const DealFinderLiteRail = lazy(() => import('../components/DealFinderLiteRail'));
+const MarketPulseRail = lazy(() => import('../components/MarketPulseRail'));
+const AdjacentHobbyMarketsRail = lazy(() => import('../components/AdjacentHobbyMarketsRail'));
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -127,7 +134,8 @@ const Collection: React.FC = () => {
   }, [inventory, setInventory]);
 
   // Favorites state
-  const { isFavorite, toggleFavorite } = useFavorites();
+  const { isFavorite, toggleFavorite, favorites } = useFavorites();
+  const favoriteIds = useMemo(() => favorites.map((row) => row.cardId), [favorites]);
 
   // Modal states
   const [isTargetModalOpen, setIsTargetModalOpen] = useState(false);
@@ -608,6 +616,12 @@ const Collection: React.FC = () => {
               <TradeProposalPanel inventory={inventory} />
               <P2PIntentBoard inventory={inventory} />
               <GradingRoiLitePanel inventory={inventory} />
+              <RatioIntelligenceRail inventory={inventory} />
+              <PortfolioMoversRail inventory={inventory} />
+              <PortfolioMoversRail inventory={inventory} favoriteIds={favoriteIds} />
+              <DealFinderLiteRail inventory={inventory} targets={targets} />
+              <MarketPulseRail inventory={inventory} compact />
+              <AdjacentHobbyMarketsRail compact />
               <HoldingHorizonRail inventory={inventory} />
               <ShowBagPanel inventory={inventory} targets={targets} />
             </Suspense>
@@ -707,6 +721,17 @@ const Collection: React.FC = () => {
                     >
                       Clear
                     </button>
+                    {selectedIds.size >= 2 && selectedIds.size <= 3 && (
+                      <Link
+                        to={`/compare?${[...selectedIds]
+                          .slice(0, 3)
+                          .map((id, index) => `card${index + 1}=${encodeURIComponent(id)}`)
+                          .join('&')}`}
+                        className="flex items-center gap-2 px-5 py-2 bg-sky-400 text-brand-charcoal rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all active:scale-95"
+                      >
+                        <GitCompare size={14} /> Compare desk
+                      </Link>
+                    )}
                     <button
                       className="flex items-center gap-2 px-5 py-2 bg-brand-lime text-brand-charcoal rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all active:scale-95"
                     >
@@ -781,6 +806,16 @@ const Collection: React.FC = () => {
                   ))}
                 </div>
               )
+            ) : filteredInventory.length > VIRTUAL_THRESHOLD ? (
+              <VirtualizedList
+                items={filteredInventory}
+                isItemSelected={(id) => selectedIds.has(id)}
+                onToggleSelect={toggleSelection}
+                onSelectAll={selectAll}
+                onClearSelection={clearSelection}
+                onOpenLightbox={openLightbox}
+                {...cardActionHandlers}
+              />
             ) : (
               /* List View implementation to handle dense data */
               <div className="bg-brand-slate border border-slate-800 rounded-[2rem] overflow-hidden">

@@ -7,6 +7,7 @@ import {
   Edit3,
   Eye,
   FileText,
+  GitCompare,
   LineChart,
   Package,
   Search,
@@ -66,6 +67,7 @@ export type CardItemActionId =
   | 'anomaly'
   | 'instantBuy'
   | 'dossier'
+  | 'compare'
   | 'ebay';
 
 export type CardItemActionSurface = 'overlay' | 'body' | 'list';
@@ -79,6 +81,7 @@ export interface CardItemAction {
   surfaces: CardItemActionSurface[];
   onClick?: () => void;
   href?: string;
+  external?: boolean;
   busy?: boolean;
   persistVisible?: boolean;
   tone: CardItemActionTone;
@@ -270,11 +273,21 @@ export function getCardItemActions(
       iconClassName: 'text-cyan-300',
     },
     {
+      id: 'compare',
+      label: 'Compare desk',
+      icon: GitCompare,
+      surfaces: ['overlay', 'body', 'list'],
+      href: `#/compare?card1=${encodeURIComponent(card.id)}`,
+      tone: 'default',
+      iconClassName: 'text-sky-300',
+    },
+    {
       id: 'ebay',
       label: 'Verify on eBay',
       icon: Search,
       surfaces: ['body', 'list'],
       href: card.searchUrl,
+      external: true,
       tone: 'lime',
     },
   ];
