@@ -3,7 +3,7 @@
 **Purpose:** Single document to review **what exists in the product**, **what is production-grade vs demo/beta**, and **what remains open**.  
 **Sources:** `PRD.md` §4 & §14, `lib/utils/featureCatalog.ts`, `PRODUCTION_READINESS.md`, `plans/next-steps-recommendation.md`, `plans/roadmap-review-and-enhancements.md`, routing in `App.tsx`.
 
-**Last updated:** September 10, 2026 (Wave-5: ratio intelligence / collection+favorites movers / deal finder lite / Market Pulse segments / compare desk / whale list virtualization / wax-TCG rail; builds on Wave-4 #136/#137/#138)
+**Last updated:** September 10, 2026 (Wave-5 shipped `#139` / `b1a6ca5`; forward plan in [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) and [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap)
 
 ---
 
@@ -33,7 +33,7 @@
 | **Ops**             | Vercel, GitHub Actions, health API, rate limits on serverless routes, optional Sentry, CSP rollout docs                                        |
 | **Tests**           | Vitest (lib/components), Playwright E2E (collection add-asset + Scout-to-Acquire smoke); coverage policy documented                            |
 
-**Strategic gap (from roadmap review):** Largest remaining risk is **pricing truth** (AI + partial real comps vs pervasive verified sold data) and **financial/regulatory depth** (full tax-lot rigor, observability at scale).
+**Strategic gap (Sep 2026):** Eng-safe Waves 2–5 are shipped. Largest remaining risk is **hosted data paused** (Supabase `vhbsokjqchaafluimgjh` INACTIVE — [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)), then **pricing truth default** once eBay is live, then **financial/regulatory depth** (full tax-lot rigor, not IRS theater). Consumer-intel UX vs SCI / Market Movers is local-book complete; live comps / live Pulse still theirs until Phase A.
 
 ---
 
@@ -90,10 +90,11 @@
 | Area                                           | Implemented                                            | Open / next                                         |
 | ---------------------------------------------- | ------------------------------------------------------ | --------------------------------------------------- |
 | **Stress testing, grade predict, tax harvest** | Live surfaces + focused Fiscal / NAV / tax-path Vitest | Full tax-lot **regulatory** completeness still open |
-| **Live game impact**                           | **Beta**                                               | Real play-by-play + pricing link                    |
-| **Vision grading lab**                         | **Beta**                                               | Production model + cert integration                 |
-| **Fractional / provenance**                    | **Beta** / live mix                                    | Execution rails                                     |
-| **Live breaks**                                | Live route                                             | Marketplace integrations depth                      |
+| **Live game impact**                           | **Live** (catalog) — labeled demo/replay, not a broadcast feed | Real play-by-play + pricing link                    |
+| **Vision grading lab**                         | **Live** (catalog) — in-session estimates, never persisted     | Production CV / cert integration (only if it beats heuristic) |
+| **Provenance chain**                           | **Live**                                                       | Partner attestations / execution rails              |
+| **Fractional vault**                           | **Beta** (legal/securities) — only remaining catalog beta      | Legal sign-off, then catalog flip — no eng blocker  |
+| **Live breaks**                                | Live route                                                     | Marketplace integrations depth                      |
 
 ---
 
@@ -202,9 +203,23 @@ Auto-supplemented routes marked `demo` are shipped surfaces, not GA promises. Th
 
 ---
 
-## 8. Suggested review cadence
+## 8. Forward after Wave-5 (do not treat as a feature Wave)
 
-1. **Quarterly:** Pick 5–10 **beta** features and either graduate them (data + tests + copy) or demote scope.
+Inventory above is **what exists**. Sequencing of what to do next lives in [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md):
+
+| Phase | Intent | Blocked on |
+| ----- | ------ | ---------- |
+| **A** | Restore cloud + Stripe / eBay / PSA (#77) | Owner only |
+| **B** | Sold-comps default, stale/liquidity everywhere, provenance SLA | eBay live |
+| **C** | Server Web Push + MLB catalyst/PvP wires | Phase A (+ owner VAPID) |
+| **D** | P2P match/escrow, execution adapters, field APIs, CV-if-better | Phase B |
+| **E** | Real Alpha keys, Guilds, risk/compliance, multi-tenant | A–C boring |
+
+**Non-goals:** new Labs pages; Tailwind 4 / eslint half-migrates; both real-data flags at once; Supabase restore from eng PRs; `fractional-vault` live without legal.
+
+## 9. Suggested review cadence
+
+1. **Quarterly:** The only remaining catalog **beta** is `fractional-vault` (legal). Next sweep ~2026-12 — graduate, hide, or leave gated. Do not invent new betas.
 2. **Per release:** Update this doc’s “Last updated” and the **Open** columns for anything touched.
 3. **Single source of tension:** Keep `featureCatalog.status` in sync with reality across core rows and route supplements; use PRD §4 for the full 180+ inventory.
 
@@ -215,6 +230,7 @@ Auto-supplemented routes marked `demo` are shipped surfaces, not GA promises. Th
 - `PRD.md` — full feature table & §14 roadmap
 - `lib/utils/featureCatalog.ts` — canonical registry plus route supplement
 - `PRODUCTION_READINESS.md` — engineering/production phases
-- `plans/next-steps-recommendation.md` — stabilization & intelligence priorities
-- `plans/roadmap-review-and-enhancements.md` — gap analysis & net-new ideas
+- `plans/PRODUCT_ROADMAP_2026Q4.md` — owner-facing forward plan (Phases A–E, T0 = #77)
+- `plans/next-steps-recommendation.md` — Priority 1–6 + Phases 31–42 (T0-relative 30/60/90)
+- `plans/roadmap-review-and-enhancements.md` — historical enhancement inventory (sequencing superseded)
 - `docs/BETA_FEATURE_EXIT_CRITERIA.md` — how to exit beta

@@ -2,6 +2,8 @@
 
 This document outlines the prioritized next steps for transitioning **Modern Sports Intelligence** from a high-fidelity prototype to a production-ready asset management platform.
 
+> **Sep 2026 refresh.** Eng-safe Waves 2–5 are shipped (`#139` / `b1a6ca5` on `main`). Owner-facing order is [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md). **T0 = #77 land date.** If #77 slips, Phase A stays the only critical path. This file keeps Priority 1–6 history and Phases 31–42; 30/60/90 below is T0-relative.
+
 ---
 
 ## Priority 1: High-Impact Stabilization
@@ -169,13 +171,13 @@ Engineering-safe consumer-intel gaps closed on existing Dashboard / Collection /
 - [x] **Phase 27: Fiscal Shield**: Implement a capital gains simulator to help users plan tax-efficient exits. **Shipped (lite, Wave-3)** — sell this year vs next ST/LT on Fiscal / Tax Report / Collection sell. **Not** IRS regulatory completeness.
 - [ ] **Phase 28: AR Showcase**: Explore WebXR for displaying "Grail" cards in a spatial 3D environment.
 - [ ] **Phase 29: Cross-Sector Nodes**: Expand the correlation engine to ingest data from Luxury Watch and Fine Art marketplaces.
-- [ ] **Phase 30: Auto-Pilot**: Prototype the "Autonomous Trader" agent with strict risk-collars and user-defined budget locks.
+- [x] **Phase 30: Auto-Pilot** (advisory): Risk collars, human approval, local idempotency, NAV/tax preview, decision replay shipped (2026-09-07 → Wave-3). **Live marketplace fills remain Phase D / Phase 33 leftover.**
 
 ---
 
 ## Conclusion
 
-Modern Sports Intelligence has successfully reached the "Sentinel" stage (Phase 24). The next leap involves institutionalizing the infrastructure and deploying autonomous agentic value creation.
+Modern Sports Intelligence reached the "Sentinel" stage (Phase 24) and then shipped Bloomberg-core + Waves 2–5 on the local book. The next leap is **not more Labs surfaces** — it is owner-held #77 (trusted book), then pricing-truth default, then always-on wires and controlled execution.
 
 ---
 
@@ -185,25 +187,32 @@ Modern Sports Intelligence has successfully reached the "Sentinel" stage (Phase 
 
 **Objective:** Make MSI production-safe for real users and paid tiers.
 
-- [ ] Enforce public/private social visibility with validated Supabase RLS rollout and migration checklist.
-- [ ] Add immutable audit trails for valuation updates, auto-actions, and portfolio edits.
-- [ ] Implement secret hygiene: startup env validation, key rotation runbook, and leaked-key kill switch.
-- [ ] Add incident playbooks for auth lockout, sync drift, and failed pricing syncs.
-- **Exit Criteria:** Zero critical auth/RLS findings in security review; all critical actions are auditable.
+**Status (Sep 2026):** Engineering complete (July). Hosted project is **INACTIVE** — remaining checks are Phase A / #77 after restore.
+
+- [x] Enforce public/private social visibility with validated Supabase RLS rollout and migration checklist (applied 2026-07-18 on `vhbsokjqchaafluimgjh`; re-verify after restore).
+- [x] Immutable audit trails for valuation updates, auto-actions, and portfolio edits (`/audit-trail` + admin viewer).
+- [x] Secret hygiene: startup env validation, key rotation runbook, leaked-key kill switch.
+- [x] Incident playbooks for auth lockout, sync drift, and failed pricing syncs.
+- **Exit Criteria:** Zero critical auth/RLS findings in security review; all critical actions are auditable. **Re-confirm after restore.**
 
 ### Phase 32: Pricing Truth Layer
 
 **Objective:** Increase valuation reliability and confidence scoring.
 
-- [ ] Build a source-priority model (eBay solds > historical portfolio comps > AI fallback).
-- [ ] Add stale-data and low-liquidity flags directly in portfolio cards and watchlist rows.
-- [ ] Capture model provenance for each valuation (`source`, `timestamp`, `confidence`, `rationale`).
-- [ ] Add regression tests for pricing and edge-case comp selection.
-- **Exit Criteria:** 95% of active assets priced from verifiable market sources within freshness SLA.
+**Status (Sep 2026):** Partial on the local book. Forward **Phase B** (after eBay live) is the remainder.
+
+- [x] Source-priority model (eBay solds > historical portfolio comps > AI fallback) — `compConsensus` / `preferredValuationForCard` (2026-09-06). Flags not flipped.
+- [x] Stale / thin / source / timestamp / confidence chips on Collection (and consensus ledger strip).
+- [x] Comps Used lists sold/historical comps on Collection grid/list (2026-09-07).
+- [x] Regression tests for pricing / preferred-comp selection (unit coverage on consensus paths).
+- [ ] **Remaining (Phase B):** sold comps **default** on apply + core desks once `VITE_FF_REAL_EBAY` is on; stale / low-liquidity badges **everywhere** (watchlist, Pulse, War Room, Favorites); provenance **SLA** (freshness budget); optional `price_history` table **after** cloud restore.
+- **Exit Criteria:** 95% of active assets priced from verifiable market sources within freshness SLA — **blocked on #77 / live eBay**.
 
 ### Phase 33: Autonomous Execution Safety
 
 **Objective:** Move Auto-Pilot from advisory to controlled execution.
+
+**Status (Sep 2026):** Advisory complete (collars, approval, idempotency, NAV/tax preview, local replay). **Live fills = Forward Phase D.** Do not treat remaining checkboxes as a Wave-6 feature list.
 
 - [x] Add hard risk collars (daily budget, per-asset cap, max drawdown stop) (2026-09-07).
 - [x] Require human approval checkpoints for high-dollar or low-confidence actions (2026-09-07).
@@ -216,6 +225,8 @@ Modern Sports Intelligence has successfully reached the "Sentinel" stage (Phase 
 
 **Objective:** Turn Alpha Guilds into a durable collaboration product.
 
+**Status:** Forward **Phase E**. Do not start before A–C are boring.
+
 - [ ] Add role-based controls (Owner, Analyst, Member) and proposal quorum rules.
 - [ ] Implement escrow-style contribution ledger for joint acquisitions.
 - [ ] Add guild-level performance views (alpha attribution, hit rate, realized ROI).
@@ -225,6 +236,8 @@ Modern Sports Intelligence has successfully reached the "Sentinel" stage (Phase 
 ### Phase 35: Reliability, Scale, and Cost Control
 
 **Objective:** Support high-volume users without degraded UX or runaway spend.
+
+**Status:** Partial — Wave-5 whale list virtualization + existing route splitting. Remaining queue/tracing/capacity work is hygiene after #77, not a Labs wave.
 
 - [ ] Add queue-based background jobs for sync, valuation, and report generation.
 - [ ] Introduce tracing/metrics (P95 latency, sync success %, model cost per user).
@@ -236,6 +249,8 @@ Modern Sports Intelligence has successfully reached the "Sentinel" stage (Phase 
 
 **Objective:** Open MSI as a programmable platform.
 
+**Status:** `/api-licensing` GA with demo metering. Real keys + webhooks = Forward **Phase E**.
+
 - [ ] Launch scoped API tokens with per-endpoint rate limits and usage analytics.
 - [ ] Publish API docs and typed SDK for portfolio, pricing, alerts, and guild insights.
 - [ ] Add webhook events (`valuation.updated`, `alert.triggered`, `autopilot.executed`).
@@ -246,23 +261,31 @@ Modern Sports Intelligence has successfully reached the "Sentinel" stage (Phase 
 
 ## 30/60/90 Day Execution Plan
 
-### Days 0-30 (Stabilize)
+**T0 = #77 land date** (Supabase restored + Vercel env sync + Stripe smoke + eBay live, PSA only if eBay is stable). If #77 slips, **do not start the clocks below** — stay on Phase A.
 
-- Roll out RLS/schema updates and validate social/public portfolio flows.
-- Lock down env/key handling and add runtime config checks.
-- Fix test lane boundaries (Vitest vs Playwright) and enforce in CI.
+### Days T0–T0+30 (Unlock + observe)
 
-### Days 31-60 (Harden)
+- Close Phase A: restore `vhbsokjqchaafluimgjh`, Stripe lifecycle smoke, `VITE_FF_REAL_EBAY`, watch deployed-E2E + pricing-truth.
+- PSA (`VITE_FF_REAL_PSA`) only after eBay is stable — never both flags on day one.
+- Optional: Sentry DSN, admin-audit confirm, key-rotation drill with Stripe staging keys.
+- Do **not** start Guilds, API keys, or new Labs.
 
-- Deploy pricing truth layer with provenance and stale-data controls.
-- Add autonomous action safeguards and simulation-based approvals.
-- Launch observability dashboards and error budgets.
+### Days T0+31–T0+60 (Pricing truth default)
 
-### Days 61-90 (Scale)
+- Phase B: sold-comps default on apply + core desks; stale / low-liquidity everywhere; provenance SLA.
+- Start Phase C: server Web Push (VAPID + backend) **or** MLB live catalyst / PvP wire — not both if staffing is one engineer.
+- Auto-Pilot stays advisory. No live fills.
 
-- Ship guild governance + pooled acquisition ledger MVP.
-- Optimize bundle and data workloads for whale accounts.
-- Prepare API product beta with auth, rate limits, and docs.
+### Days T0+61–T0+90 (Wires + moat design)
+
+- Phase C usable (push and/or MLB wire in production with honest degraded states).
+- Phase D scoped: P2P match/reputation/escrow design, execution-adapter contract, show-floor partner API spike.
+- Whale list already virtualized (Wave-5). Bundle/cost work is hygiene, not a roadmap bet.
+- Phase E (real Alpha keys, Guilds, risk office) **waits** until A–C are boring.
+
+### Superseded (pre-Wave-5) 30/60/90
+
+The July plan (RLS rollout, Autopilot safeguards, guild MVP in 90 days) is **done or re-sequenced**: RLS/runtime/audit shipped as Phase 31; Auto-Pilot collars/replay shipped advisory; guilds moved to Phase E. Kept so older links do not look deleted.
 
 ---
 
@@ -318,13 +341,11 @@ Completed in this iteration:
   Gemini / PSA paths), and the drill-log template. Linked from
   `plans/incidents/README.md`.
 
-Remaining for Phase 31 hardening (procedural, non-code):
+Remaining for Phase 31 hardening (procedural, non-code) — **blocked on #77 restore**:
 
-- Execute the first key-rotation drill against staging and capture the result
-  in the drill log at the bottom of `plans/incidents/key-rotation-drill.md`.
-- Assign the first `support` role via SQL Editor (out-of-band) and validate
-  the `/audit-trail/admin` route lifecycle end-to-end in staging before
-  granting the same role in production.
+- ~~First key-rotation drill (Supabase cutover)~~ — logged 2026-07-18. Full multi-provider quarterly drill still needs Stripe staging keys (Phase A optional).
+- ~~First admin bootstrap~~ — `msi-launch-admin@example.com` promoted. Promote a personal operator after signup.
+- Confirm `/audit-trail/admin` writes `audit.cross_user_read` while signed in as an operator (Priority 1 item 0.3). **Restore the paused project first.**
 
 ---
 
@@ -333,6 +354,8 @@ Remaining for Phase 31 hardening (procedural, non-code):
 ### Phase 37: Execution Integrations
 
 **Objective:** Connect intelligence outputs to real execution channels.
+
+**Status:** Forward **Phase D**. Pre-trade fee-aware strip already lite on Collection.
 
 - [ ] Add broker/marketplace adapters with normalized order intents (`buy`, `list`, `cancel`, `counter`).
 - [ ] Build pre-trade checks (position limits, expected slippage, fee-aware profitability).
@@ -344,6 +367,8 @@ Remaining for Phase 31 hardening (procedural, non-code):
 
 **Objective:** Make strategy design measurable and repeatable.
 
+**Status:** After Phase D. Surfaces exist (rules / what-if); walk-forward backtests are not a Q4 critical path.
+
 - [ ] Build rule-builder for entry/exit conditions and liquidity constraints.
 - [ ] Add historical backtests with walk-forward validation and overfit warnings.
 - [ ] Add benchmark comparisons (buy-and-hold, sector basket, rolling DCA).
@@ -353,6 +378,8 @@ Remaining for Phase 31 hardening (procedural, non-code):
 ### Phase 39: Risk Office and Compliance Layer
 
 **Objective:** Operationalize institutional risk governance.
+
+**Status:** Forward **Phase E** (depth). Concentration rail + Fiscal Shield + audit dossier already lite — not IRS theater.
 
 - [ ] Add portfolio VaR, concentration stress tests, and scenario shocks.
 - [ ] Add policy engine for hard/soft limits by tier, user, and tenant.
@@ -364,6 +391,8 @@ Remaining for Phase 31 hardening (procedural, non-code):
 
 **Objective:** Build defensible marketplace liquidity and trust loops.
 
+**Status:** Forward **Phase D** (P2P match / reputation / escrow). Intent board is lite only.
+
 - [ ] Add reputation engine (execution quality, delivery reliability, dispute rate).
 - [ ] Add verified listing metadata and authenticity confidence badges.
 - [ ] Add referral and affiliate graph for high-signal participant growth.
@@ -373,6 +402,8 @@ Remaining for Phase 31 hardening (procedural, non-code):
 ### Phase 41: Intelligence Copilot and Workflow Automation
 
 **Objective:** Turn MSI into an always-on operator assistant.
+
+**Status:** After Phase C (always-on wires). War Room / briefing / why-panels already shipped — do not add Labs copilot pages.
 
 - [ ] Add Copilot workflows (daily brief, rebalance proposal, risk digest, anomaly alerts).
 - [ ] Add multi-step automation templates with approvals and rollback paths.
@@ -384,6 +415,8 @@ Remaining for Phase 31 hardening (procedural, non-code):
 
 **Objective:** Scale MSI into a broader financial data platform.
 
+**Status:** Forward **Phase E**. Adjacent hobby rail shipped lite (Wave-5); partner marketplace is not Q4.
+
 - [ ] Launch partner app marketplace with secure extension model.
 - [ ] Add institutional data feeds, private datasets, and governance-ready sharing.
 - [ ] Add enterprise admin console (billing controls, policy templates, tenant analytics).
@@ -394,20 +427,24 @@ Remaining for Phase 31 hardening (procedural, non-code):
 
 ## 6-18 Month Horizon
 
-### Months 0-6
+Clock starts at **T0 (#77)**, not at Wave-5 merge. Pre-T0 months do not count as “Months 0–6.”
 
-- Complete Phases 31-36 with production hardening and API beta.
-- Establish reliability SLOs, cost guardrails, and governance adoption.
+### Months 0-6 (after T0)
+
+- Phase A closed; Phase B default-on; Phase C (push + MLB wire) in production.
+- Phase 32 exit criteria measurable on live tape. Phase 33 stays advisory until Phase D.
+- Reliability SLOs and cost guardrails on the restored cloud. No API-product beta until A–C are boring.
 
 ### Months 6-12
 
-- Deliver Phases 37-39 for execution + strategy + risk office capabilities.
-- Expand institutional readiness and compliance package depth.
+- Phase D: execution adapters, controlled Auto-Pilot fills, P2P match/escrow lite, field-loop partner APIs.
+- Phase 37–39 only as far as they serve real fills and risk — not IRS theater, not new Labs.
+- Production CV only if it beats the disclosed heuristic.
 
 ### Months 12-18
 
-- Deliver Phases 40-42 for network effects, copilot automation, and platform distribution.
-- Shift from product feature velocity to ecosystem-scale adoption metrics.
+- Phase E: real Alpha API keys + webhooks, Guilds, multi-tenant scale.
+- Phases 40–42 for network effects and distribution **after** liquidity and execution exist.
 
 ---
 
