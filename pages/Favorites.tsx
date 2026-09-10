@@ -17,6 +17,10 @@ import { showToast } from '../lib/utils/toast';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner';
 import PortfolioMoversRail from '../components/PortfolioMoversRail';
 import DealFinderLiteRail from '../components/DealFinderLiteRail';
+import ValuationProvenanceChips from '../components/ValuationProvenanceChips';
+import { preferredValueForCard, preferredValueForTarget } from '../lib/pricing/compConsensus';
+import { buildPricingTruthForCard, chipsFromPricingTruth } from '../lib/pricing/pricingTruth';
+import { valuationBadgeVariantForEntity } from '../lib/utils/valuationProvenance';
 
 const Favorites: React.FC = () => {
   // MLB Player favorites (existing)
@@ -115,9 +119,12 @@ const Favorites: React.FC = () => {
 
   // Compute acquisition target stats
   const activeTargets = targets.filter(t => t.status === 'active');
-  const targetsWithPrice = activeTargets.filter(t => t.currentMarketPrice != null);
+  const targetMark = (target: (typeof activeTargets)[number]) =>
+    preferredValueForTarget(target) || target.currentMarketPrice;
+  const targetsWithPrice = activeTargets.filter(t => targetMark(t) != null && targetMark(t)! > 0);
   const nearHitTargets = targetsWithPrice.filter(t => {
-    const delta = (t.currentMarketPrice! - t.targetPrice) / t.targetPrice;
+    const mark = targetMark(t)!;
+    const delta = (mark - t.targetPrice) / t.targetPrice;
     return delta <= 0.1; // within 10% of target
   });
   const targetCoverage = useMemo(
@@ -322,6 +329,9 @@ const Favorites: React.FC = () => {
             <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : 'space-y-3'}>
               {cardFavorites.length > 0 ? cardFavorites.map((fav) => {
                 const card = getCardDetails(fav.cardId);
+                const truth = card ? buildPricingTruthForCard(card) : null;
+                const truthChips = truth ? chipsFromPricingTruth(truth) : null;
+                const displayValue = truth?.value || fav.currentValue;
                 return (
                   <div key={fav.id} className="group bg-brand-slate border border-slate-800 rounded-3xl p-5 hover:border-brand-lime/30 transition-all flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -333,10 +343,25 @@ const Favorites: React.FC = () => {
                         <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
                           {fav.year} {fav.set}
                         </p>
-                        {fav.currentValue && (
+                        {displayValue ? (
                           <p className="text-xs text-brand-lime font-bold mt-1">
-                            ${fav.currentValue.toLocaleString()}
+                            ${displayValue.toLocaleString()}
                           </p>
+                        ) : null}
+                        {truthChips && card && (
+                          <ValuationProvenanceChips
+                            className="mt-2"
+                            sourceChip={truthChips.sourceChip}
+                            badgeVariant={valuationBadgeVariantForEntity({
+                              ...card,
+                              valuationSource: truth?.source ?? card.valuationSource,
+                            })}
+                            staleLabel={truthChips.staleLabel}
+                            thinMarket={truthChips.thinMarket}
+                            lowLiquidityLabel={truthChips.lowLiquidityLabel}
+                            compsCount={truthChips.compsCount}
+                            title={truthChips.title}
+                          />
                         )}
                       </div>
                     </div>
@@ -481,14 +506,18 @@ const Favorites: React.FC = () => {
               <div className="flex justify-between items-center pt-2 border-t border-slate-800">
                 <span className="text-slate-400 text-sm">Card Fav Value</span>
                 <span className="font-bold text-brand-lime">
-                  ${cardFavorites.reduce((sum, f) => sum + (f.currentValue || 0), 0).toLocaleString()}
+                  ${cardFavorites.reduce((sum, f) => {
+                    const card = getCardDetails(f.cardId);
+                    const mark = card ? preferredValueForCard(card) || f.currentValue || 0 : f.currentValue || 0;
+                    return sum + mark;
+                  }, 0).toLocaleString()}
                 </span>
               </div>
               {targetsWithPrice.length > 0 && (
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400 text-sm">Avg Market Price</span>
                   <span className="font-bold text-white">
-                    ${Math.round(targetsWithPrice.reduce((sum, t) => sum + (t.currentMarketPrice || 0), 0) / targetsWithPrice.length).toLocaleString()}
+                    ${Math.round(targetsWithPrice.reduce((sum, t) => sum + (targetMark(t) || 0), 0) / targetsWithPrice.length).toLocaleString()}
                   </span>
                 </div>
               )}
@@ -510,7 +539,7 @@ const Favorites: React.FC = () => {
               </h3>
               <div className="space-y-3 text-xs text-slate-400">
                 <p><strong className="text-slate-300">1.</strong> Add cards you want to acquire with a target price.</p>
-                <p><strong className="text-slate-300">2.</strong> Hit <strong className="text-brand-lime">Sync Prices</strong> to fetch live eBay market data.</p>
+                <p><strong className="text-slate-300">2.</strong> Hit <strong className="text-brand-lime">Sync Prices</strong> to refresh marks — sold-comp / consensus when comps exist. Live eBay tape stays owner-held (#77).</p>
                 <p><strong className="text-slate-300">3.</strong> Get alerts when market prices drop below your target.</p>
                 <p><strong className="text-slate-300">4.</strong> Click <strong className="text-green-400">Acquired</strong> when you buy the card.</p>
               </div>

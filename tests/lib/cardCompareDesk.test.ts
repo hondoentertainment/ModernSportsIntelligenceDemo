@@ -63,6 +63,8 @@ describe('cardCompareDesk', () => {
     const desk = buildCardCompareDesk([a, b], [a, b], asOf);
     expect(desk.columns[0].compsUsed).toBe(3);
     expect(desk.columns[0].thinTape).toBe(false);
+    expect(desk.columns[0].stale).toBe(false);
+    expect(typeof desk.columns[0].lowLiquidity).toBe('boolean');
     expect(desk.columns[0].treatment).toBe('Short-Term');
     expect(desk.columns[0].roiPct).toBeGreaterThan(0);
     expect(desk.columns[0].gradeRatio?.psa10Over9).not.toBeNull();

@@ -3,6 +3,11 @@ import { CardInventory } from '../../types';
 import { getCardHistory, PriceSnapshot } from './priceHistory';
 import { LiquidityService } from './liquidityService';
 import { CorrelationService } from './CorrelationService';
+import { preferredValueForCard } from '../pricing/compConsensus';
+
+function preferredMark(card: CardInventory): number {
+    return preferredValueForCard(card) || card.currentValue || 0;
+}
 
 export interface PortfolioMetrics {
     totalValue: number;         // Current market value of active assets
@@ -52,7 +57,7 @@ export const AggregationService = {
 
         const activeMetrics = activeInventory.reduce((acc, card) => {
             const cost = card.purchasePrice + (card.gradingFees || 0) + (card.shippingFees || 0);
-            const current = card.currentValue || 0;
+            const current = preferredMark(card);
 
             acc.totalValue += current;
             acc.totalCostBasis += cost;
@@ -94,8 +99,8 @@ export const AggregationService = {
             const history = getCardHistory(card.id);
             if (history.length === 0) {
                 // If no history, assume purchase price or current value as baseline
-                value7d += card.currentValue || 0;
-                value30d += card.currentValue || 0;
+                value7d += preferredMark(card);
+                value30d += preferredMark(card);
                 return;
             }
 
@@ -113,7 +118,7 @@ export const AggregationService = {
         // Identify Top/Under Performers
         const individualPerformance = inventory.map(card => {
             const cost = card.purchasePrice + (card.gradingFees || 0) + (card.shippingFees || 0);
-            const current = card.currentValue || 0;
+            const current = preferredMark(card);
             const roi = current - cost;
             const roiPercent = cost > 0 ? (roi / cost) * 100 : 0;
             return {
@@ -153,7 +158,7 @@ export const AggregationService = {
         delta: number;
         deltaPercent: number;
     } {
-        const totalValue = inventory.reduce((sum, c) => sum + (c.currentValue || 0), 0);
+        const totalValue = inventory.reduce((sum, c) => sum + preferredMark(c), 0);
         const now = new Date();
         let pastDate: Date;
 

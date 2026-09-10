@@ -1,6 +1,13 @@
 import type { CardInventory, PricingAnalysis, TargetWatchlist, ValuationSource } from '../../types';
 import type { DataSourceVariant } from '../../components/DataSourceBadge';
-import { resolveAnalysisValue, selectPreferredValuation } from '../pricing/compConsensus';
+import { preferRealCompsWhenConfigured } from '../featureFlags';
+import {
+  preferredValuationForCard,
+  preferredValuationForTarget,
+  resolveAnalysisValue,
+  selectPreferredValuation,
+} from '../pricing/compConsensus';
+import { honestSourceChip } from '../pricing/pricingTruth';
 
 const SOURCE_PRIORITY: Record<ValuationSource, number> = {
   'ebay-api': 3,
@@ -187,8 +194,10 @@ export function getValuationSourceChipForSource(source: ValuationSource | undefi
   switch (source) {
     case 'ebay-api':
       return {
-        label: 'Live comps',
-        className: 'text-brand-teal bg-brand-lime/5 border border-brand-teal/25',
+        label: preferRealCompsWhenConfigured() ? 'Live comps' : 'Sold comps',
+        className: preferRealCompsWhenConfigured()
+          ? 'text-brand-teal bg-brand-lime/5 border border-brand-teal/25'
+          : 'text-cyan-300 bg-cyan-500/10 border border-cyan-400/25',
       };
     case 'historical-comps':
       return {
@@ -212,25 +221,22 @@ export function getValuationSourceChipForCard(card: Pick<CardInventory, 'valuati
   label: string;
   className: string;
 } {
-  const preferred = selectPreferredValuation({
-    salesData: card.salesData,
-    storedValue: card.currentValue,
-    storedSource: card.valuationSource,
-    storedTimestamp: card.valuationTimestamp || card.lastValuationDate,
-  });
-  if (preferred.method === 'sold-comp-consensus' || preferred.method === 'thin-comp-fallback') {
-    return getValuationSourceChipForSource(preferred.source);
-  }
-  const source = card.valuationSource || ((card.salesData?.length || 0) >= 3 ? 'historical-comps' : 'fallback');
-  return getValuationSourceChipForSource(source);
+  return honestSourceChip(preferredValuationForCard(card));
 }
 
-export function getValuationSourceChipForTarget(target: Pick<TargetWatchlist, 'valuationSource' | 'salesData'>): {
+export function getValuationSourceChipForTarget(
+  target: Pick<TargetWatchlist, 'valuationSource' | 'salesData' | 'currentMarketPrice' | 'valuationTimestamp'>,
+): {
   label: string;
   className: string;
 } {
-  const source = target.valuationSource || ((target.salesData?.length || 0) >= 3 ? 'historical-comps' : 'fallback');
-  return getValuationSourceChipForSource(source);
+  const preferred = preferredValuationForTarget(target);
+  if (preferred.method !== 'unavailable') {
+    return honestSourceChip(preferred);
+  }
+  return getValuationSourceChipForSource(
+    target.valuationSource || ((target.salesData?.length || 0) >= 3 ? 'historical-comps' : 'fallback'),
+  );
 }
 
 /**

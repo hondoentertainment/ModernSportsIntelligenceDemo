@@ -9,25 +9,31 @@ export interface ValuationProvenanceChipsProps {
   badgeVariant?: DataSourceVariant;
   staleLabel?: string | null;
   thinMarket?: boolean;
-  /** Tooltip: timestamp, confidence, rationale. */
+  /** Phase B: "Thin tape" or "Low liquidity" from disclosed classifiers. */
+  lowLiquidityLabel?: string | null;
+  compsCount?: number;
+  /** Tooltip: source, freshness, confidence (or unknown), comps, rationale. */
   title?: string;
   showBadge?: boolean;
   className?: string;
 }
 
 /**
- * Shared source / freshness / thin-market chips for collection + watchlist.
- * Does not flip real-data flags — labels follow stored valuationSource.
+ * Shared source / freshness / thin-tape chips for collection + watchlist.
+ * Does not flip real-data flags — labels follow preferred sold-comp / consensus.
  */
 const ValuationProvenanceChips: React.FC<ValuationProvenanceChipsProps> = ({
   sourceChip,
   badgeVariant,
   staleLabel,
   thinMarket,
+  lowLiquidityLabel,
+  compsCount,
   title,
   showBadge = true,
   className = '',
 }) => {
+  const liquidityText = lowLiquidityLabel || (thinMarket ? 'Thin market' : null);
   return (
     <div className={`flex flex-wrap items-center gap-1.5 ${className}`} title={title}>
       <span
@@ -37,7 +43,8 @@ const ValuationProvenanceChips: React.FC<ValuationProvenanceChipsProps> = ({
       </span>
       {showBadge && badgeVariant && <DataSourceBadge variant={badgeVariant} size="xs" className="ml-0.5" />}
       {staleLabel && <span className={MUTED}>{staleLabel}</span>}
-      {thinMarket && <span className={MUTED}>Thin market</span>}
+      {liquidityText && <span className={MUTED}>{liquidityText}</span>}
+      {compsCount != null && compsCount > 0 && <span className={MUTED}>{compsCount} comps</span>}
     </div>
   );
 };

@@ -87,8 +87,11 @@ import LeaguePerformanceVsPricePanel from '../components/LeaguePerformanceVsPric
 import {
   computeFreshVerifiableCoverage,
   FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
+  valuationBadgeVariantForEntity,
 } from '../lib/utils/valuationProvenance.ts';
 import { preferredValueForCard } from '../lib/pricing/compConsensus.ts';
+import { buildPricingTruthForCard, chipsFromPricingTruth } from '../lib/pricing/pricingTruth';
+import ValuationProvenanceChips from '../components/ValuationProvenanceChips';
 import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAlerts.ts';
 import { showToast } from '../lib/utils/toast.ts';
 import LazyErrorBoundary from '../components/LazyErrorBoundary.tsx';
@@ -1391,6 +1394,9 @@ const Dashboard: React.FC = () => {
               {recentCards.map(card => {
                 const tier = getRarityTier(card);
                 const styles = getTierStyles(tier);
+                const truth = buildPricingTruthForCard(card);
+                const truthChips = chipsFromPricingTruth(truth);
+                const displayNav = truth.value || card.currentValue;
 
                 return (
                   <div key={card.id} className={`group bg-brand-slate border ${styles.border} rounded-[2rem] p-6 hover:shadow-xl transition-all flex items-center gap-6 relative overflow-hidden`}>
@@ -1416,11 +1422,24 @@ const Dashboard: React.FC = () => {
                       </div>
                       <p className="text-[10px] text-brand-muted font-black uppercase tracking-widest mb-3 truncate">{card.year} {card.manufacturer} {card.set}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-mono font-black text-slate-100">${(card.purchasePrice ?? 0).toLocaleString()}</span>
+                        <span className="text-sm font-mono font-black text-brand-lime">{displayNav ? `$${Math.round(displayNav).toLocaleString()}` : '—'}</span>
                         <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-tighter ${card.isGraded ? 'bg-brand-lime/10 text-brand-lime border border-brand-lime/20' : 'bg-slate-800 text-brand-muted'}`}>
                           {card.isGraded ? `${card.gradingCompany} ${card.grade}` : 'Raw'}
                         </span>
                       </div>
+                      <ValuationProvenanceChips
+                        className="mt-2"
+                        sourceChip={truthChips.sourceChip}
+                        badgeVariant={valuationBadgeVariantForEntity({
+                          ...card,
+                          valuationSource: truth.source,
+                        })}
+                        staleLabel={truthChips.staleLabel}
+                        thinMarket={truthChips.thinMarket}
+                        lowLiquidityLabel={truthChips.lowLiquidityLabel}
+                        compsCount={truthChips.compsCount}
+                        title={truthChips.title}
+                      />
                     </div>
                   </div>
                 );

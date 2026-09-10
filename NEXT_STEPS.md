@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-10 · **September 2026 Wave-5 shipped** (`#139` / `b1a6ca5`). Forward plan (post-eng-safe) is below and in [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). Builds on Wave-4 (#136/#137/#138) and Wave-3 (#133).
+> Refreshed 2026-09-10 · **Phase B pricing-truth UI scaffold** shipped (sold-comp default + stale/thin badges; flags off). Wave-5 (`#139` / `b1a6ca5`) + roadmap `#140` / `17762ff`. Forward plan: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md).
 
 ## Current state in one paragraph
 
@@ -17,6 +17,19 @@ MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger acro
 | Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later                      |
 | Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show                      |
 | eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel** (after restore)                 |
+
+## Phase B pricing-truth UI scaffold — Shipped (2026-09-10)
+
+Demo/DAL-safe. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` flips, no new Labs pages, no Tailwind 4 / `@eslint/js` 10 half-migrate, no jsPDF on live briefing paths.** `fractional-vault` stays `beta` (legal). Copy does **not** claim live Market Movers / multi-marketplace parity.
+
+| Slice                            | Where                                                                                                                                                           |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Source-priority model**        | `lib/pricing/pricingTruth.ts` — eBay/sold comps → historical/thin tape → AI/estimate. Collection, Dashboard, Favorites, watchlist, Compare use preferred marks. |
+| **Stale + low-liquidity badges** | Portfolio cards / list rows, Dashboard recents, Favorites, watchlist targets. Thresholds disclosed (7d stamp, 90d tape, ≤2 comps, score &lt; 40).               |
+| **Provenance chip**              | Source, freshness, confidence if modeled else `conf unknown`, comps count + rationale tooltip. Wired into Comps Used / preferred valuation surfaces.            |
+| **Adapters ready**               | Live eBay flag still off. `Live comps` label only when `VITE_FF_REAL_EBAY` is on.                                                                               |
+
+**Still owner-held:** #77 restore + eBay/PSA keys. Full Phase B exit = live tape + freshness SLA.
 
 ## September 2026 Wave-5 — Shipped (2026-09-10)
 
@@ -46,15 +59,15 @@ Waves 2–5 closed the engineering-safe consumer-intel gap. Remaining unlock is 
 
 ### Competitive positioning
 
-| Capability | MSI | Market Movers / Sports Card Investor |
-| ---------- | --- | ------------------------------------ |
-| Agents, War Room, why / consensus | **Lead** | Absent |
-| Tax / fiscal (lots, ST/LT, wash-sale, Fiscal Shield) | **Lead** (advisory; not IRS-complete) | Thin or absent |
-| Audit dossier + admin trail | **Lead** | Absent |
-| Card-show floor loop | **Lead** | Absent |
-| Ratio intel, movers, deals, compare, whale list, wax/TCG | **Parity-plus on local book** (Wave-5) | Strong on live tape |
-| Live multi-marketplace sold comps | Behind #77 | **They lead until Phase A** |
-| Live Market Pulse / hobby indexes | Seeded + local Δ | **They lead until Phase A** |
+| Capability                                               | MSI                                    | Market Movers / Sports Card Investor |
+| -------------------------------------------------------- | -------------------------------------- | ------------------------------------ |
+| Agents, War Room, why / consensus                        | **Lead**                               | Absent                               |
+| Tax / fiscal (lots, ST/LT, wash-sale, Fiscal Shield)     | **Lead** (advisory; not IRS-complete)  | Thin or absent                       |
+| Audit dossier + admin trail                              | **Lead**                               | Absent                               |
+| Card-show floor loop                                     | **Lead**                               | Absent                               |
+| Ratio intel, movers, deals, compare, whale list, wax/TCG | **Parity-plus on local book** (Wave-5) | Strong on live tape                  |
+| Live multi-marketplace sold comps                        | Behind #77                             | **They lead until Phase A**          |
+| Live Market Pulse / hobby indexes                        | Seeded + local Δ                       | **They lead until Phase A**          |
 
 ### Phase A — Unlock trusted book (#77) — OWNER ONLY
 
@@ -74,10 +87,9 @@ Track on [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDem
 
 Phase 32 style. Consensus / Comps Used / Collection chips already exist.
 
-- Sold comps **default** on apply + core desks once live tape is on
-- Stale / low-liquidity badges **everywhere**
-- Provenance SLA (source, timestamp, confidence, freshness)
-- Optional `price_history` once cloud is restored — not before
+**UI scaffold shipped (2026-09-10, this PR):** sold-comp / consensus is the display default on Collection grid/list, Dashboard recents + NAV, Favorites, watchlist/targets, and Compare when comps exist — **even while `VITE_FF_REAL_EBAY` is off**. Honest labels (`Sold comps` / `Thin sold comps` / `AI estimate`); `Live comps` only if the owner-held flag is on. Stale (7d stamp or 90d tape) and thin-tape / low-liquidity (≤2 comps or score &lt; 40) badges plus a compact provenance tooltip (source, freshness, disclosed confidence or `conf unknown`, comps count) on those surfaces. Classifiers live in `lib/pricing/pricingTruth.ts` with Vitest coverage.
+
+**Full Phase B exit still needs** [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) live eBay tape + freshness SLA against real comps. Optional `price_history` once cloud is restored — not before. Do not flip `VITE_FF_REAL_*` from this class of PR.
 
 ### Phase C — Always-on alerts & wires
 
@@ -102,12 +114,12 @@ Phase 32 style. Consensus / Comps Used / Collection chips already exist.
 
 **T0** is the day [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closes: restore + Vercel env sync + Stripe smoke + eBay live. PSA may still be pending (eBay-first). If #77 slips, **the clock does not start** — Phase A stays the only critical path.
 
-| Window | Outcome |
-| ------ | ------- |
-| **Pre-T0** | Phase A only. No B–E, no Labs, no both-flags-at-once. |
+| Window      | Outcome                                                                               |
+| ----------- | ------------------------------------------------------------------------------------- |
+| **Pre-T0**  | Phase A only. No B–E, no Labs, no both-flags-at-once.                                 |
 | **T0 + 30** | eBay tape observed. PSA on **both** runtimes only if eBay is stable. Phase B started. |
-| **T0 + 60** | Phase B default-on + freshness SLA. Phase C started (Web Push or MLB wire). |
-| **T0 + 90** | Phase C usable. Phase D scoped. Phase E waits until A–C are boring. |
+| **T0 + 60** | Phase B default-on + freshness SLA. Phase C started (Web Push or MLB wire).           |
+| **T0 + 90** | Phase C usable. Phase D scoped. Phase E waits until A–C are boring.                   |
 
 ### Explicit non-goals (still)
 

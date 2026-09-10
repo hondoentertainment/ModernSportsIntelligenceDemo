@@ -12,15 +12,11 @@ import {
 import { TargetWatchlist } from '../types.ts';
 import Sparkline from './Sparkline.tsx';
 import { getSparklineData, getPriceTrend } from '../lib/analytics/priceHistory.ts';
-import {
-  buildValuationProvenanceTitle,
-  getStaleValuationLabel,
-} from '../lib/utils/valuationFreshness.ts';
-import {
-  getValuationSourceChipForTarget,
-  valuationBadgeVariantForEntity,
-} from '../lib/utils/valuationProvenance.ts';
+import { valuationBadgeVariantForEntity } from '../lib/utils/valuationProvenance.ts';
+import { compsUsedForPreferred, preferredValuationForTarget } from '../lib/pricing/compConsensus';
+import { buildPricingTruthForTarget, chipsFromPricingTruth } from '../lib/pricing/pricingTruth';
 import ValuationProvenanceChips from './ValuationProvenanceChips';
+import CompsUsedPanel from './CompsUsedPanel';
 
 interface WatchlistPriceCardProps {
     target: TargetWatchlist;
@@ -35,25 +31,22 @@ const PRIORITY_STYLES: Record<string, { bg: string; text: string; border: string
 };
 
 const WatchlistPriceCard: React.FC<WatchlistPriceCardProps> = ({ target, onDelete, onMarkAcquired }) => {
-    const priceHit = target.currentMarketPrice != null && target.currentMarketPrice <= target.targetPrice;
+    const preferred = preferredValuationForTarget(target);
+    const truth = buildPricingTruthForTarget(target);
+    const truthChips = chipsFromPricingTruth(truth);
+    const displayMarket = truth.value > 0 ? truth.value : target.currentMarketPrice;
+    const priceHit = displayMarket != null && displayMarket <= target.targetPrice;
     const sparklineData = getSparklineData(`target_${target.id}`);
     const trend = getPriceTrend(`target_${target.id}`);
     const priorityStyle = PRIORITY_STYLES[target.priority] || PRIORITY_STYLES.Medium;
-    const valuationChip = getValuationSourceChipForTarget(target);
-    const staleLabel = getStaleValuationLabel(target.valuationTimestamp);
-    const provenanceTitle = buildValuationProvenanceTitle({
-      timestamp: target.valuationTimestamp,
-      confidence: undefined,
-      rationale: target.pricingRationale,
-    });
 
     // Calculate how close the market price is to the target
-    const proximityPercent = target.currentMarketPrice != null
-        ? Math.min(100, Math.round((target.targetPrice / target.currentMarketPrice) * 100))
+    const proximityPercent = displayMarket != null
+        ? Math.min(100, Math.round((target.targetPrice / displayMarket) * 100))
         : 0;
 
-    const priceDelta = target.currentMarketPrice != null
-        ? target.currentMarketPrice - target.targetPrice
+    const priceDelta = displayMarket != null
+        ? displayMarket - target.targetPrice
         : null;
 
     return (
@@ -124,21 +117,28 @@ const WatchlistPriceCard: React.FC<WatchlistPriceCardProps> = ({ target, onDelet
                                 trend === 'down' ? <TrendingDown size={10} className="inline mr-1 text-red-400" /> : null}
                             Market
                         </p>
-                        <p className={`text-lg font-black ${target.currentMarketPrice != null ? (priceHit ? 'text-green-400' : 'text-white') : 'text-slate-600'}`}>
-                            {target.currentMarketPrice != null ? `$${target.currentMarketPrice.toLocaleString()}` : '—'}
+                        <p className={`text-lg font-black ${displayMarket != null ? (priceHit ? 'text-green-400' : 'text-white') : 'text-slate-600'}`}>
+                            {displayMarket != null ? `$${displayMarket.toLocaleString()}` : '—'}
                         </p>
                         <ValuationProvenanceChips
                             className="mt-2"
-                            sourceChip={valuationChip}
-                            badgeVariant={valuationBadgeVariantForEntity(target)}
-                            staleLabel={staleLabel}
-                            title={provenanceTitle}
+                            sourceChip={truthChips.sourceChip}
+                            badgeVariant={valuationBadgeVariantForEntity({
+                                ...target,
+                                valuationSource: preferred.source,
+                            })}
+                            staleLabel={truthChips.staleLabel}
+                            thinMarket={truthChips.thinMarket}
+                            lowLiquidityLabel={truthChips.lowLiquidityLabel}
+                            compsCount={truthChips.compsCount}
+                            title={truthChips.title}
                         />
+                        <CompsUsedPanel compact view={compsUsedForPreferred(preferred, target.salesData)} />
                     </div>
                 </div>
 
                 {/* Proximity Bar */}
-                {target.currentMarketPrice != null && (
+                {displayMarket != null && (
                     <div className="mb-4">
                         <div className="flex items-center justify-between mb-1.5">
                             <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Price Proximity</span>

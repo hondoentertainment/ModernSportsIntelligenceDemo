@@ -18,16 +18,9 @@ import { LiquidityBadge } from '../LiquidityBadge';
 import { OpportunityBadge } from '../OpportunityBadge';
 import Sparkline from '../Sparkline';
 import { LiquidityService } from '../../lib/analytics/liquidityService';
-import {
-  buildValuationProvenanceTitle,
-  getStaleValuationLabel,
-  isThinLiquidityScore,
-} from '../../lib/utils/valuationFreshness';
-import {
-  getValuationSourceChipForCard,
-  valuationBadgeVariantForEntity,
-} from '../../lib/utils/valuationProvenance';
+import { valuationBadgeVariantForEntity } from '../../lib/utils/valuationProvenance';
 import { compsUsedForPreferred, preferredValuationForCard } from '../../lib/pricing/compConsensus';
+import { buildPricingTruthForCard, chipsFromPricingTruth } from '../../lib/pricing/pricingTruth';
 import ValuationProvenanceChips from '../ValuationProvenanceChips';
 import CompsUsedPanel from '../CompsUsedPanel';
 import CertVerifiedBadge from '../CertVerifiedBadge';
@@ -84,20 +77,13 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
   const tier = getRarityTier(card);
   const styles = getTierStyles(tier);
   const preferred = preferredValuationForCard(card);
-  const valuationChip = getValuationSourceChipForCard(card);
+  const truth = buildPricingTruthForCard(card);
+  const truthChips = chipsFromPricingTruth(truth);
   const valuationBadgeVariant = valuationBadgeVariantForEntity({
     ...card,
     valuationSource: preferred.source,
   });
-  const staleLabel = getStaleValuationLabel(card.lastValuationDate);
-  const showThinMarket = isThinLiquidityScore(card.liquidityScore) || preferred.thinMarket;
-  const provenanceTitle = buildValuationProvenanceTitle({
-    timestamp: card.valuationTimestamp,
-    lastValuationDate: card.lastValuationDate,
-    confidence: preferred.confidence || card.valuationConfidence,
-    rationale: preferred.rationale || card.pricingRationale,
-  });
-  const displayNav = preferred.value || card.currentValue;
+  const displayNav = truth.value || card.currentValue;
   const bodyActions = getCardItemActionsForSurface(card, {
     isFavorite,
     toggleFavorite,
@@ -278,11 +264,13 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
             </div>
             <ValuationProvenanceChips
               className="mt-2"
-              sourceChip={valuationChip}
+              sourceChip={truthChips.sourceChip}
               badgeVariant={valuationBadgeVariant}
-              staleLabel={staleLabel}
-              thinMarket={showThinMarket}
-              title={provenanceTitle}
+              staleLabel={truthChips.staleLabel}
+              thinMarket={truthChips.thinMarket}
+              lowLiquidityLabel={truthChips.lowLiquidityLabel}
+              compsCount={truthChips.compsCount}
+              title={truthChips.title}
             />
             <CompsUsedPanel compact view={compsUsedForPreferred(preferred, card.salesData)} />
           </div>

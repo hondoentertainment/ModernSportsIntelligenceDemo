@@ -125,7 +125,7 @@ describe('CardListRow — grid action parity', () => {
       }),
     );
     expect(screen.getByText('Historical comps')).toBeInTheDocument();
-    expect(screen.getByText('Thin market')).toBeInTheDocument();
+    expect(screen.getByText('Low liquidity')).toBeInTheDocument();
     expect(screen.getByTitle(/70% conf/)).toBeInTheDocument();
   });
 
