@@ -82,7 +82,8 @@ import PricingTruthHealthPanel from '../components/PricingTruthHealthPanel.tsx';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice.tsx';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner.tsx';
 import MarketLedgerStrip from '../components/MarketLedgerStrip.tsx';
-import { buildPerformanceVsPriceSeries, leagueToHubSport } from '../lib/analytics/performanceVsPrice.ts';
+import { leagueToHubSport } from '../lib/analytics/performanceVsPrice.ts';
+import { resolveMlbPvpSync } from '../lib/integrations/mlbLiveWire.ts';
 import LeaguePerformanceVsPricePanel from '../components/LeaguePerformanceVsPricePanel.tsx';
 import {
   computeFreshVerifiableCoverage,
@@ -210,10 +211,11 @@ const Dashboard: React.FC = () => {
       tier: tier.title,
     };
   }, [user, userProfile, alphaScore, syncMeta.totalValue, tier.title]);
-  const performanceVsPrice = useMemo(
-    () => buildPerformanceVsPriceSeries(inventory, realMlbStats),
+  const mlbPvp = useMemo(
+    () => resolveMlbPvpSync(inventory, realMlbStats),
     [inventory, realMlbStats],
   );
+  const performanceVsPrice = mlbPvp.points;
   const dnaData = useMemo(() => getPortfolioDNA(inventory), [inventory]);
   const signals = useMemo(() => detectSignals(targets, inventory), [targets, inventory]);
   const [marketSentiment, setMarketSentiment] = useState('Analyzing portfolio alpha signals...');
@@ -1235,7 +1237,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <LazyErrorBoundary compact>
                   <Suspense fallback={<WidgetLoadingFallback />}>
-                    <PerformanceVsPriceChart points={performanceVsPrice} />
+                    <PerformanceVsPriceChart points={performanceVsPrice} subtitle={mlbPvp.status.disclosure} />
                   </Suspense>
                 </LazyErrorBoundary>
               </div>
@@ -1435,6 +1437,7 @@ const Dashboard: React.FC = () => {
                           valuationSource: truth.source,
                         })}
                         staleLabel={truthChips.staleLabel}
+                        slaLabel={truthChips.slaLabel}
                         thinMarket={truthChips.thinMarket}
                         lowLiquidityLabel={truthChips.lowLiquidityLabel}
                         compsCount={truthChips.compsCount}

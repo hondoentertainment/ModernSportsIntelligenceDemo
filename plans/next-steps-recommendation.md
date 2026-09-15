@@ -207,7 +207,10 @@ Modern Sports Intelligence reached the "Sentinel" stage (Phase 24) and then ship
 - [x] Comps Used lists sold/historical comps on Collection grid/list (2026-09-07).
 - [x] Regression tests for pricing / preferred-comp selection (unit coverage on consensus paths).
 - [x] **Phase B UI scaffold (2026-09-10):** sold-comp display default + stale / thin-tape / low-liquidity badges + provenance chip (source, freshness, disclosed confidence or unknown, comps count) on Collection, Dashboard recents, Favorites, watchlist/targets, Compare. `lib/pricing/pricingTruth.ts`. Flags not flipped.
-- [ ] **Remaining (Phase B exit):** sold comps **default** on apply + core desks once `VITE_FF_REAL_EBAY` is on; freshness **SLA against live tape**; Pulse / War Room badge depth if still thin; optional `price_history` table **after** cloud restore.
+- [x] **Freshness SLA helpers + Pulse / War Room badges (2026-09-15)** — `lib/pricing/freshnessSla.ts`. Live-tape SLA still needs #77 eBay.
+- [x] **Provenance completeness (2026-09-15)** — confidence only when a sold/thin formula (or stored model score) exists.
+- [x] **`price_history` SLA SQL file only** — `00011_price_history_freshness_sla.sql` (owner apply after env sync; not applied from engineering).
+- [ ] **Remaining (Phase B exit):** sold comps **default** on apply + core desks once `VITE_FF_REAL_EBAY` is on; freshness **SLA against live tape**.
 - **Exit Criteria:** 95% of active assets priced from verifiable market sources within freshness SLA — **blocked on #77 / live eBay**.
 
 ### Phase 33: Autonomous Execution Safety

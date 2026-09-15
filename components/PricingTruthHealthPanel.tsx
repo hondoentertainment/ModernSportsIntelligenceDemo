@@ -9,6 +9,8 @@ import { isValuationStale } from '../lib/utils/valuationFreshness';
 import { getCoverageHistory } from '../lib/utils/valuationCoverageAlerts';
 import { preferredValuationForCard } from '../lib/pricing/compConsensus';
 import { PRICING_TRUTH_SLA_NOTE, PRICING_TRUTH_THRESHOLDS } from '../lib/pricing/pricingTruth';
+import { summarizeInventorySla } from '../lib/pricing/freshnessSla';
+import FreshnessSlaBadge from './FreshnessSlaBadge';
 
 interface PricingTruthHealthPanelProps {
   inventory: CardInventory[];
@@ -53,6 +55,7 @@ const PricingTruthHealthPanel: React.FC<PricingTruthHealthPanelProps> = ({ inven
     return `${delta > 0 ? '+' : ''}${delta}% vs prior snapshot`;
   }, [coverage.coveragePct, coverage.total]);
 
+  const sla = useMemo(() => summarizeInventorySla(activeCards), [activeCards]);
   const healthy = coverage.coveragePct >= FRESH_VERIFIABLE_COVERAGE_TARGET_PCT;
 
   return (
@@ -94,8 +97,11 @@ const PricingTruthHealthPanel: React.FC<PricingTruthHealthPanelProps> = ({ inven
           <p className="text-[9px] text-slate-500 flex items-center gap-1"><DatabaseZap size={10} /> {trendText}</p>
         </div>
       </div>
+      <div className="mt-4">
+        <FreshnessSlaBadge inventory={activeCards} />
+      </div>
       <p className="mt-4 text-[11px] leading-relaxed text-slate-500">
-        Source priority: sold comps → historical/thin tape → AI estimate. Stale after {PRICING_TRUTH_THRESHOLDS.valuationStaleAfterDays}d stamp or {PRICING_TRUTH_THRESHOLDS.soldCompFreshWindowDays}d tape; thin tape ≤{PRICING_TRUTH_THRESHOLDS.thinTapeMaxComps} comps; low liquidity score &lt; {PRICING_TRUTH_THRESHOLDS.lowLiquidityScoreBelow}. {PRICING_TRUTH_SLA_NOTE}
+        Source priority: sold comps → historical/thin tape → AI estimate. Stale after {PRICING_TRUTH_THRESHOLDS.valuationStaleAfterDays}d stamp or {PRICING_TRUTH_THRESHOLDS.soldCompFreshWindowDays}d tape; thin tape ≤{PRICING_TRUTH_THRESHOLDS.thinTapeMaxComps} comps; low liquidity score &lt; {PRICING_TRUTH_THRESHOLDS.lowLiquidityScoreBelow}. SLA fresh {sla.slaPct}% of active marks. {PRICING_TRUTH_SLA_NOTE}
       </p>
     </div>
   );

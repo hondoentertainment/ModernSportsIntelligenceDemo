@@ -128,6 +128,7 @@ const WatchlistPriceCard: React.FC<WatchlistPriceCardProps> = ({ target, onDelet
                                 valuationSource: preferred.source,
                             })}
                             staleLabel={truthChips.staleLabel}
+                            slaLabel={truthChips.slaLabel}
                             thinMarket={truthChips.thinMarket}
                             lowLiquidityLabel={truthChips.lowLiquidityLabel}
                             compsCount={truthChips.compsCount}

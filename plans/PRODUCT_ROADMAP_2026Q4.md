@@ -1,22 +1,22 @@
 # Product roadmap — post Wave-5 (2026 Q4)
 
 **Audience:** owner / Kyle  
-**Status:** planning + Phase B **UI scaffold** (2026-09-10) — no secrets or `VITE_FF_REAL_*` flips. Full Phase B exit still needs #77 live tape.  
+**Status:** planning + Phase B–D **eng-safe code scaffolds** (2026-09-15) — no secrets or `VITE_FF_REAL_*` flips. Supabase restore is done. Full Phase B exit still needs #77 live tape.  
 **Canonical ops:** [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap · [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)
 
-Eng-safe Waves 2–5 are on `main` (Wave-5 squash `#139` / `b1a6ca5`). The remaining unlock is **owner-held #77**. If #77 slips, Phase A stays the only critical path.
+Eng-safe Waves 2–5 plus the 2026-09-15 B–D scaffolds are on the engineering branch. Remaining unlock is **owner-held #77 keys / env sync**. If #77 slips, Phase A (cloud ops) stays the only critical path.
 
 ---
 
 ## 1. Where we are (Sep 2026)
 
-| Fact                                  | Reality                                                                                                                                     |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Bloomberg / institutional core        | Engineering-complete: consensus ledger, War Room, audit dossier, tax lots (demo-honest), card-show loop, agents                             |
-| Consumer intel vs SCI / Market Movers | Wave-5 shipped: ratio intel, collection/favorites movers, deal finder lite, multi-segment Pulse, 2–3 card compare, whale list, wax/TCG rail |
-| Catalog                               | Six of seven former betas are `live`. Only `fractional-vault` remains `beta` (legal)                                                        |
-| Hosted data                           | Supabase `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **INACTIVE**. Live tape blocked on #77                                      |
-| Honest copy                           | Seeded Pulse / movers / deals are local + disclosed — not live marketplace scrapes                                                          |
+| Fact                                  | Reality                                                                                                                                                                                 |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bloomberg / institutional core        | Engineering-complete: consensus ledger, War Room, audit dossier, tax lots (demo-honest), card-show loop, agents                                                                         |
+| Consumer intel vs SCI / Market Movers | Wave-5 shipped: ratio intel, collection/favorites movers, deal finder lite, multi-segment Pulse, 2–3 card compare, whale list, wax/TCG rail                                             |
+| Catalog                               | Six of seven former betas are `live`. Only `fractional-vault` remains `beta` (legal)                                                                                                    |
+| Hosted data                           | Supabase `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) restore **complete (ACTIVE_HEALTHY)**. Remaining #77 = Vercel env sync + Stripe/eBay/PSA/Sentry/admin-audit/legal/rotation |
+| Honest copy                           | Seeded Pulse / movers / deals are local + disclosed — not live marketplace scrapes                                                                                                      |
 
 Do **not** restore Supabase or set live-data flags from an engineering PR.
 
@@ -55,7 +55,7 @@ Map to older phase numbers in [`next-steps-recommendation.md`](./next-steps-reco
 
 Ordered. Do not implement keys in a docs or feature PR.
 
-1. Restore Supabase `vhbsokjqchaafluimgjh` + Vercel / GitHub env sync
+1. ~~Restore Supabase `vhbsokjqchaafluimgjh`~~ **done (ACTIVE_HEALTHY)**. Remaining: Vercel / GitHub env sync
 2. Stripe lifecycle smoke (subscribe → upgrade → downgrade → cancel → failed-payment)
 3. eBay → set server keys, then `VITE_FF_REAL_EBAY` (watch deployed-E2E + pricing-truth)
 4. PSA (after eBay is stable) — **both** runtimes, then `VITE_FF_REAL_PSA`:
@@ -71,30 +71,33 @@ Phase 32 style. Consensus / Comps Used / collection provenance chips already exi
 
 **UI scaffold shipped (2026-09-10):** sold-comp default + stale / thin-tape badges + provenance chips on Collection, Dashboard, Favorites, watchlist/targets, and Compare **without** flipping `VITE_FF_REAL_*`. Honest labels while the eBay flag is off.
 
+**Code remainder shipped (2026-09-15):** freshness SLA policy + Pulse / War Room / chip badges; confidence only with a formula; `00011_price_history_freshness_sla.sql` **file only** (owner apply after env sync).
+
 **Full Phase B exit still needs** #77 live eBay tape + freshness SLA against real comps.
 
 - Sold comps **default** on valuation apply + core desks once live tape is on
-- Stale / low-liquidity badges **everywhere** (scaffold is on the core desks; Pulse / War Room depth can follow live tape)
-- Provenance SLA (source, timestamp, confidence, freshness) — chip scaffold landed; SLA vs live tape is remaining
-- Optional `price_history` table once cloud is restored — not before
+- Stale / low-liquidity / SLA badges on core desks + Pulse / War Room (live-tape SLA remaining)
+- Provenance SLA (source, timestamp, confidence, freshness) — chip + policy landed; SLA vs live tape is remaining
+- Optional `price_history` SLA columns — SQL in-repo, **not applied from engineering**
 
 ### Phase C — Always-on alerts & wires
 
-- Server Web Push (owner VAPID + backend). Client Push readiness already shipped (Wave-4)
-- Live sports catalysts / PvP wires — **MLB first** (seeded rails already shipped)
+- **Server Web Push scaffold shipped.** Owner VAPID keys still required. Client Push readiness shipped Wave-4 and now calls `/api/push/subscribe`
+- **MLB catalyst / PvP wire adapters shipped** — seeded fallback default; live structure behind owner sports flag
 
 ### Phase D — Real trading moat
 
 Already known; do not invent Labs pages.
 
-- P2P matching + reputation + escrow (intent board is lite only)
-- Execution adapters + Auto-Pilot **controlled** fills (collars / replay already advisory)
-- Show-floor field loop / partner APIs (show bag is local-only)
+- **P2P matching lite shipped** (local suggestions + reputation stub + escrow UI/ledger stubs — no real money)
+- **Execution adapter stub + kill-switch / global pause shipped** (still no live fills)
+- **Show-floor partner client stubs shipped** (local bag remains source of truth)
 - Production CV **only if** it beats the disclosed heuristic
 
 ### Phase E — Platform
 
-- Real Alpha API keys + webhooks (`/api-licensing` is demo-metered today)
+- **Lite shipped:** scoped demo tokens + watermarked metering; `valuation.updated` / `alert.triggered` no-op dispatcher
+- Real Alpha API keys + partner webhook delivery still need cloud ops
 - Alpha Guilds (governance / pooled ledger)
 - Risk / compliance depth — not IRS theater
 - Multi-tenant scale
@@ -103,7 +106,7 @@ Already known; do not invent Labs pages.
 
 ## 4. 30 / 60 / 90 — T0 = Phase A complete
 
-**T0** = [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closed (restore + env sync + Stripe smoke + eBay live). PSA may lag (eBay-first). If #77 slips, **the clock does not start**.
+**T0** = [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closed (restore **done**; remaining = env sync + Stripe smoke + eBay live). PSA may lag (eBay-first). If #77 slips, **the clock does not start**.
 
 | Window      | Outcome                                                                                           |
 | ----------- | ------------------------------------------------------------------------------------------------- |

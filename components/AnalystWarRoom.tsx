@@ -15,6 +15,7 @@ import { store } from '../lib/dal/syncStore';
 import { safeParseCollaborativeThesis } from '../lib/schemas';
 import { downloadWarRoomThesisJson } from '../lib/utils/warRoomThesisAudit';
 import MarketLedgerStrip from './MarketLedgerStrip';
+import FreshnessSlaBadge from './FreshnessSlaBadge';
 import AgentPrioritiesPanel from './AgentPrioritiesPanel';
 import LazyErrorBoundary from './LazyErrorBoundary';
 import { WidgetLoadingFallback } from './LazyLoadFallback';
@@ -148,6 +149,7 @@ const AnalystWarRoom: React.FC = () => {
             </div>
 
             {inventory.length > 0 && <MarketLedgerStrip inventory={inventory} />}
+            {inventory.length > 0 && <FreshnessSlaBadge inventory={inventory} />}
             {inventory.length > 0 && (
                 <LazyErrorBoundary compact>
                     <Suspense fallback={<WidgetLoadingFallback />}>

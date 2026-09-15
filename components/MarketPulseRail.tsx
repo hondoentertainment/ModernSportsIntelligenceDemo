@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Activity } from 'lucide-react';
 import type { CardInventory } from '../types';
 import { computeMarketPulse, MARKET_PULSE_DISCLOSURE } from '../lib/analytics/marketPulse';
+import FreshnessSlaBadge from './FreshnessSlaBadge';
 
 interface Props {
   inventory: CardInventory[];
@@ -33,6 +34,7 @@ const MarketPulseRail: React.FC<Props> = ({ inventory, compact }) => {
             </p>
           </div>
         </div>
+        <FreshnessSlaBadge inventory={inventory} compact />
       </div>
       {!compact && <p className="mb-4 text-[11px] leading-relaxed text-slate-400">{MARKET_PULSE_DISCLOSURE}</p>}
       <div className={`grid grid-cols-1 gap-4 ${compact ? '' : 'md:grid-cols-3'}`}>

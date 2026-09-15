@@ -2,9 +2,9 @@
 
 Engineering work for the world-class pass is in the repo (Labs route gating, domain-split bundles, Lighthouse a11y fix, honest adapter sourcing). The items below need credentials or accounts only the project owner holds. Each is small; together they complete `docs/PRODUCTION_ROLLOUT_PHASES.md`.
 
-> **2026-09-05 caveat:** Hosted project `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **INACTIVE / paused** so Pulse can use the free-plan slot. July checkmarks below record the last successful runs — they are not a claim that the project is live today. **Restore the project and re-sync Vercel/GitHub env** (`docs/DEPLOY_ENV_CHECKLIST.md`) before Stripe smoke, eBay/PSA flags, health/RLS re-checks, or admin-audit confirm. Do not restore/pause or set `VITE_FF_REAL_*` from an engineering PR.
+> **2026-09-15:** Hosted project `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) restore is **complete (ACTIVE_HEALTHY)**. July checkmarks below record the last successful activation; **re-sync Vercel/GitHub env** (`docs/DEPLOY_ENV_CHECKLIST.md`) before Stripe smoke, eBay/PSA flags, health/RLS re-checks, or admin-audit confirm. Do not pause or set `VITE_FF_REAL_*` from an engineering PR. Optional `supabase/migrations/00011_price_history_freshness_sla.sql` is file-only until the owner applies it after env sync.
 
-**Still open:** eBay keys · PSA key · Stripe lifecycle smoke · optional `VITE_SENTRY_DSN`. **Closed in-repo (2026-09):** quarterly catalog sweep (`fractional-vault` stays beta).
+**Still open (#77 remainder):** Vercel env sync · eBay keys · PSA key (both runtimes) · Stripe lifecycle smoke · optional `VITE_SENTRY_DSN` · admin-audit confirm · fractional-vault legal · rotation drill. **Closed in-repo (2026-09):** quarterly catalog sweep (`fractional-vault` stays beta) · restore · eng-safe Phase B–D scaffolds.
 
 ## 1. RLS verification with real users (Phase A2)
 

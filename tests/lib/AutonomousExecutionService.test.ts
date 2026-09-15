@@ -295,4 +295,15 @@ describe('AutonomousExecutionService', () => {
         expect(candidates.find((row) => row.type === 'REBALANCE')?.inventoryCardId).toBe('lot-99');
         expect(candidates.find((row) => row.type === 'BUY')?.inventoryCardId).toBe('lot-99');
     });
+
+    it('skips a live cycle when global pause or kill-switch is on', async () => {
+        const { setAutopilotGlobalPause } = await import('../../lib/trading/executionAdapterStub');
+        const { ExecutionService } = await import('../../lib/utils/executionService');
+        setAutopilotGlobalPause(true);
+        expect(await AutonomousExecutionService.runAutonomousCycle([])).toEqual([]);
+        setAutopilotGlobalPause(false);
+        ExecutionService.setKillSwitch(true);
+        expect(await AutonomousExecutionService.runAutonomousCycle([])).toEqual([]);
+        ExecutionService.setKillSwitch(false);
+    });
 });

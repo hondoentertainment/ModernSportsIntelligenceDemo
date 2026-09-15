@@ -92,6 +92,7 @@ const CardListRow: React.FC<CardListRowProps> = React.memo(({
           sourceChip={truthChips.sourceChip}
           badgeVariant={valuationBadgeVariantForEntity({ ...card, valuationSource: preferred.source })}
           staleLabel={truthChips.staleLabel}
+          slaLabel={truthChips.slaLabel}
           thinMarket={truthChips.thinMarket}
           lowLiquidityLabel={truthChips.lowLiquidityLabel}
           compsCount={truthChips.compsCount}

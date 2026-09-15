@@ -7,6 +7,13 @@ import WhyRecommendationPanel from './WhyRecommendationPanel';
 import { buildWhyFromAction, buildWhyFromThesis } from '../lib/utils/agentReasoning';
 import AutoPilotReplayLog from './AutoPilotReplayLog';
 import { listAutopilotReplay } from '../lib/trading/autoPilotReplay';
+import {
+  EXECUTION_ADAPTER_DISCLOSURE,
+  ensureAdvisoryStubAdapter,
+  isAutopilotGloballyPaused,
+  setAutopilotGlobalPause,
+} from '../lib/trading/executionAdapterStub';
+import { ExecutionService } from '../lib/utils/executionService';
 
 const AutoPilotControl: React.FC = () => {
     const { inventory } = useSupabaseInventory();
@@ -15,6 +22,12 @@ const AutoPilotControl: React.FC = () => {
     const [preview, setPreview] = useState<Awaited<ReturnType<typeof AutonomousExecutionService.previewAutonomousCycle>> | null>(null);
     const [isPreviewing, setIsPreviewing] = useState(false);
     const [replayEntries, setReplayEntries] = useState(() => listAutopilotReplay());
+    const [paused, setPaused] = useState(() => isAutopilotGloballyPaused());
+    const [killSwitch, setKillSwitch] = useState(() => ExecutionService.getKillSwitch());
+
+    useEffect(() => {
+        ensureAdvisoryStubAdapter();
+    }, []);
 
     const toggleActive = () => {
         const newConfig = { ...config, isActive: !config.isActive };
@@ -72,7 +85,7 @@ const AutoPilotControl: React.FC = () => {
                     </div>
                     <div>
                         <h2 className="text-2xl font-bebas tracking-wide text-white">Auto-Pilot Command</h2>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Phase 30: Autonomous Execution</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Phase 30: Autonomous Execution · advisory stub</p>
                     </div>
                 </div>
                 <button
@@ -83,6 +96,29 @@ const AutoPilotControl: React.FC = () => {
                 </button>
             </div>
 
+            <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{EXECUTION_ADAPTER_DISCLOSURE}</p>
+            <div className="mb-6 flex flex-wrap gap-3">
+                <button
+                    type="button"
+                    onClick={() => setPaused(setAutopilotGlobalPause(!paused))}
+                    className={`rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest ${paused ? 'bg-amber-400 text-brand-charcoal' : 'border border-slate-700 text-slate-300'}`}
+                    aria-pressed={paused}
+                >
+                    {paused ? 'Global pause on' : 'Global pause off'}
+                </button>
+                <button
+                    type="button"
+                    onClick={() => {
+                        const next = !killSwitch;
+                        ExecutionService.setKillSwitch(next);
+                        setKillSwitch(next);
+                    }}
+                    className={`rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest ${killSwitch ? 'bg-rose-400 text-brand-charcoal' : 'border border-slate-700 text-slate-300'}`}
+                    aria-pressed={killSwitch}
+                >
+                    {killSwitch ? 'Kill-switch armed' : 'Kill-switch off'}
+                </button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 {/* Risk Collar Settings */}
                 <div className="space-y-6">

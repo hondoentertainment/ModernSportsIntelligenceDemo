@@ -54,7 +54,7 @@ Use this when promoting a build to **production** (Vercel + Supabase + Stripe + 
 
 **Current production project:** `ModernSportsIntelligence` — ref `vhbsokjqchaafluimgjh` (`https://vhbsokjqchaafluimgjh.supabase.co`). The older paused project `iwxqemiqtusgmemlnrby` is not used.
 
-**Status (2026-09-05):** `vhbsokjqchaafluimgjh` is **INACTIVE / paused** so Pulse can occupy the free-plan slot. July 18 cutover (migrations, Edge Functions, Vercel/GitHub env) is the last successful activation. Restore this project, then re-sync Vercel env, before owner-held live-data steps (Stripe smoke, eBay/PSA flags, admin-audit confirm). Do **not** restore or pause from an engineering PR.
+**Status (2026-09-15):** `vhbsokjqchaafluimgjh` restore is **complete (ACTIVE_HEALTHY)**. July 18 cutover (migrations `00001`–`00010`, Edge Functions, Vercel/GitHub env) is the last successful activation. **Re-sync Vercel env** before owner-held live-data steps (Stripe smoke, eBay/PSA flags, admin-audit confirm). Optional `00011_price_history_freshness_sla.sql` is in-repo as a file only — owner applies after env sync. Do **not** pause from an engineering PR.
 
 ## Supabase unpause + Vercel env sync
 

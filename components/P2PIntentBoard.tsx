@@ -11,6 +11,14 @@ import {
   type IntentSide,
   type P2PIntent,
 } from '../lib/utils/p2pIntentBoard';
+import {
+  P2P_MATCH_DISCLOSURE,
+  applyEscrowEvent,
+  escrowLabel,
+  listEscrowStubs,
+  localReputation,
+  suggestMatches,
+} from '../lib/trading/p2pMatchingEngine';
 
 interface Props {
   inventory: CardInventory[];
@@ -40,6 +48,13 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
   }, [hydrated]);
 
   const openIntents = intents.filter((intent) => intent.status === 'open');
+  const matches = useMemo(() => suggestMatches(openIntents), [openIntents]);
+  const reputation = useMemo(() => localReputation(), [intents]);
+  const [escrowTick, setEscrowTick] = useState(0);
+  const escrowByMatch = useMemo(() => {
+    const map = new Map(listEscrowStubs().map((row) => [row.matchId, row]));
+    return map;
+  }, [escrowTick, matches.length]);
 
   const applyCard = (id: string) => {
     setCardId(id);
@@ -184,7 +199,7 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
             className="mt-1 w-full rounded-lg border border-slate-700 bg-brand-slate px-3 py-2 text-sm text-white"
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="Advisory only — no matching"
+            placeholder="Advisory only — local matching lite"
           />
         </label>
 
@@ -202,6 +217,45 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
           )}
         </div>
       </form>
+
+      <div className="mb-5 rounded-xl border border-slate-800/80 bg-brand-slate/20 px-4 py-3">
+        <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
+          Reputation stub {reputation.score} · {reputation.band}
+        </p>
+        <p className="mt-1 text-[11px] text-slate-500">{P2P_MATCH_DISCLOSURE}</p>
+        {matches.length === 0 ? (
+          <p className="mt-2 text-xs text-brand-muted">No local bid/ask crossings yet.</p>
+        ) : (
+          <ul className="mt-3 space-y-2" aria-label="Local match suggestions">
+            {matches.map((match) => {
+              const escrow = escrowByMatch.get(match.id);
+              return (
+                <li key={match.id} className="flex flex-col gap-2 rounded-lg border border-slate-800 px-3 py-2 md:flex-row md:items-center md:justify-between">
+                  <p className="text-xs text-white">
+                    {match.player} · bid ${match.bidPrice.toLocaleString()} / ask ${match.askPrice.toLocaleString()} · {match.quality}
+                    {escrow ? ` · ${escrowLabel(escrow.state)}` : ''}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {(['offer', 'fund_stub', 'release_stub'] as const).map((event) => (
+                      <button
+                        key={event}
+                        type="button"
+                        onClick={() => {
+                          applyEscrowEvent(match, event);
+                          setEscrowTick((value) => value + 1);
+                        }}
+                        className="rounded-lg border border-slate-700 px-2 py-1 text-[9px] font-black uppercase tracking-widest text-brand-muted hover:text-white"
+                      >
+                        {event.replace('_', ' ')}
+                      </button>
+                    ))}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
 
       {openIntents.length === 0 ? (
         <p className="text-xs text-brand-muted">No open intents. Post a bid or ask from local holdings.</p>

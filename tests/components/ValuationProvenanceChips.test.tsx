@@ -25,6 +25,7 @@ describe('ValuationProvenanceChips', () => {
       <ValuationProvenanceChips
         sourceChip={{ label: 'Sold comps', className: 'text-cyan-300' }}
         staleLabel="Stale · 12d"
+        slaLabel="SLA stale"
         thinMarket
         lowLiquidityLabel="Thin tape"
         compsCount={2}
@@ -33,6 +34,7 @@ describe('ValuationProvenanceChips', () => {
     );
     expect(screen.getByText('Sold comps')).toBeInTheDocument();
     expect(screen.getByText('Stale · 12d')).toBeInTheDocument();
+    expect(screen.getByText('SLA stale')).toBeInTheDocument();
     expect(screen.getByText('Thin tape')).toBeInTheDocument();
     expect(screen.getByText('2 comps')).toBeInTheDocument();
     expect(screen.queryByText('Thin market')).not.toBeInTheDocument();

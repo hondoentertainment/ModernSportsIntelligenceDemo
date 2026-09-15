@@ -9,7 +9,7 @@ export type CatalystType =
     | 'transaction'
     | 'scarcity_spike';
 export type CatalystBias = 'bullish' | 'neutral' | 'defensive';
-export type CatalystDataSource = 'holdings_heuristic' | 'seeded_demo';
+export type CatalystDataSource = 'holdings_heuristic' | 'seeded_demo' | 'live_mlb_wire';
 
 export interface CatalystScenario {
     id: string;

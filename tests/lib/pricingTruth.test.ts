@@ -11,6 +11,7 @@ import {
   classifySourceTier,
   classifyStaleData,
   honestSourceChip,
+  hasDisclosedConfidenceFormula,
   resolveDisclosedConfidence,
 } from '../../lib/pricing/pricingTruth';
 import { selectPreferredValuation } from '../../lib/pricing/compConsensus';
@@ -162,14 +163,22 @@ describe('pricingTruth stale + low-liquidity classifiers', () => {
 });
 
 describe('pricingTruth disclosed confidence + provenance', () => {
-  it('surfaces sold-comp formula confidence and discloses unknown on AI-only', () => {
+  it('surfaces sold-comp and thin-tape formula confidence and discloses unknown on AI-only', () => {
     const consensus = selectPreferredValuation({ salesData: freshComps(), nowMs: NOW });
     const known = resolveDisclosedConfidence(consensus);
     expect(known.known).toBe(true);
     expect(known.label).toMatch(/% conf/);
 
+    const thin = selectPreferredValuation({
+      salesData: [sale(175, '2026-08-15')],
+      nowMs: NOW,
+    });
+    expect(hasDisclosedConfidenceFormula(thin.method)).toBe(true);
+    expect(resolveDisclosedConfidence(thin).known).toBe(true);
+
     const ai = selectPreferredValuation({ aiEstimate: 400, nowMs: NOW });
     const unknown = resolveDisclosedConfidence(ai);
+    expect(hasDisclosedConfidenceFormula(ai.method)).toBe(false);
     expect(unknown.known).toBe(false);
     expect(unknown.value).toBeNull();
     expect(unknown.label).toBe(CONFIDENCE_UNKNOWN_LABEL);
@@ -244,5 +253,7 @@ describe('pricingTruth disclosed confidence + provenance', () => {
     expect(chips.compsCount).toBe(0);
     expect(chips.title).toMatch(/Estimate/);
     expect(chips.title).toMatch(CONFIDENCE_UNKNOWN_LABEL);
+    expect(chips.slaLabel).toMatch(/SLA/);
+    expect(assembled.slaBand).toBeTruthy();
   });
 });
