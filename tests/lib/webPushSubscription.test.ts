@@ -493,7 +493,21 @@ describe('webPushSubscription', () => {
         json: async () => ({ configured: true }),
       }) as unknown as typeof fetch,
     );
-    expect(posted.status).toBe('configured');
+    expect(posted.status).toBe('accepted_scaffold');
+    expect(posted.persisted).toBe(false);
+    expect(posted.message).toMatch(/not persisted/i);
+
+    const durable = await syncWebPushSubscriptionToServer(
+      record,
+      { p256dh: 'pk', auth: 'ak' },
+      async () => ({
+        ok: true,
+        status: 200,
+        json: async () => ({ configured: true, persisted: true, endpointStored: true }),
+      }) as unknown as typeof fetch,
+    );
+    expect(durable.status).toBe('configured');
+    expect(durable.persisted).toBe(true);
 
     const missing = await syncWebPushSubscriptionToServer({ ...DEFAULT_WEB_PUSH_RECORD });
     expect(missing.status).toBe('skipped');

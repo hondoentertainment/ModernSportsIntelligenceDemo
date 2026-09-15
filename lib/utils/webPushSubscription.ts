@@ -42,11 +42,12 @@ export interface WebPushSubscriptionRecord {
 
 export const WEB_PUSH_SUBSCRIBE_PATH = '/api/push/subscribe';
 
-export type WebPushServerSyncStatus = 'skipped' | 'configured' | 'vapid_unset' | 'error';
+export type WebPushServerSyncStatus = 'skipped' | 'configured' | 'accepted_scaffold' | 'vapid_unset' | 'error';
 
 export interface WebPushServerSync {
   status: WebPushServerSyncStatus;
   configured: boolean;
+  persisted?: boolean;
   message: string;
 }
 
@@ -419,9 +420,31 @@ export async function syncWebPushSubscriptionToServer(
         },
       }),
     });
-    const body = (await response.json().catch(() => ({}))) as { configured?: boolean; error?: string; code?: string };
+    const body = (await response.json().catch(() => ({}))) as {
+      configured?: boolean;
+      persisted?: boolean;
+      endpointStored?: boolean;
+      scaffold?: boolean;
+      error?: string;
+      code?: string;
+    };
     if (response.ok && body.configured) {
-      return { status: 'configured', configured: true, message: 'Local endpoint registered with the server scaffold.' };
+      const persisted = body.persisted === true || body.endpointStored === true;
+      if (persisted) {
+        return {
+          status: 'configured',
+          configured: true,
+          persisted: true,
+          message: 'Local endpoint registered with a durable server store.',
+        };
+      }
+      return {
+        status: 'accepted_scaffold',
+        configured: true,
+        persisted: false,
+        message:
+          'VAPID is armed and the subscription was validated. Not persisted — no durable store until owner cloud ops after #77.',
+      };
     }
     if (body.code === 'VAPID_UNSET' || response.status === 503) {
       return {
