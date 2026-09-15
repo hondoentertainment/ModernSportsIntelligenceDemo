@@ -106,6 +106,7 @@ describe('freshnessSla', () => {
       rationale: 'synthetic',
       compCount: 2,
       freshCompCount: 0,
+      newestSoldAt: '2026-07-20T12:00:00.000Z',
     };
     const aging = resolveFreshnessSla({ preferred, nowMs: NOW });
     expect(aging.tapeBand).toBe('aging');
@@ -135,14 +136,35 @@ describe('freshnessSla', () => {
       rationale: 'synthetic',
       compCount: 3,
       freshCompCount: 1,
+      newestSoldAt: '2026-04-01T12:00:00.000Z',
     };
     expect(freshnessSlaFromPreferred(staleSold, { nowMs: NOW }).tapeBand).toBe('stale');
-    const staleNoFresh = { ...staleSold, freshCompCount: 0 };
+    const staleNoFresh = { ...staleSold, freshCompCount: 0, newestSoldAt: undefined };
     expect(freshnessSlaFromPreferred(staleNoFresh, {
       lastValuationDate: '2026-01-01',
       nowMs: NOW,
     }).tapeBand).toBe('stale');
     expect(freshnessSlaForCard(makeCard({ id: 'now' })).band).toBeTruthy();
     expect(summarizeInventorySla([makeCard({ id: 'now' })]).total).toBe(1);
+  });
+
+  it('uses the newest sold-comp stamp so 31–89 day tape is aging, not fake-fresh', () => {
+    const preferred = selectPreferredValuation({
+      salesData: [sale(240, '2026-07-22'), sale(250, '2026-07-28')],
+      nowMs: NOW,
+    });
+    expect(preferred.newestSoldAt).toBeTruthy();
+    const sla = resolveFreshnessSla({ preferred, nowMs: NOW });
+    expect(sla.tapeBand).toBe('aging');
+    expect(sla.tapeDays).toBeGreaterThan(30);
+    expect(sla.tapeDays).toBeLessThan(90);
+    expect(resolveFreshnessSla({
+      preferred: { ...preferred, newestSoldAt: '   ', stale: false },
+      nowMs: NOW,
+    }).tapeBand).toBe('unknown');
+    expect(resolveFreshnessSla({
+      preferred: { ...preferred, newestSoldAt: 'not-a-date', stale: false, compCount: 2 },
+      nowMs: NOW,
+    }).tapeBand).toBe('unknown');
   });
 });

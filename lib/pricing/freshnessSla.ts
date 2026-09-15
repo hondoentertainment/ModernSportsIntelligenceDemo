@@ -65,18 +65,26 @@ function parseStampDays(iso: string | undefined, nowMs: number): number | null {
   return valuationAgeDays(iso, nowMs);
 }
 
+function tapeAgeDaysFromStamp(soldAt: string, nowMs: number): number | null {
+  const trimmed = soldAt.trim();
+  if (!trimmed) return null;
+  const withTime = trimmed.includes('T') ? trimmed : `${trimmed}T12:00:00`;
+  const ts = Date.parse(withTime);
+  if (Number.isNaN(ts)) return null;
+  const days = (nowMs - ts) / (24 * 60 * 60 * 1000);
+  if (days < 0 && days >= -0.5) return 0;
+  return days;
+}
+
 function parseTapeDays(preferred: PreferredValuation, nowMs: number): number | null {
   if (preferred.method !== 'sold-comp-consensus' && preferred.method !== 'thin-comp-fallback') {
     return null;
   }
-  if (preferred.freshCompCount > 0) {
-    return preferred.stale ? FRESHNESS_SLA_POLICY.tapeStaleAfterDays : FRESHNESS_SLA_POLICY.tapeFreshMaxDays;
+  if (preferred.newestSoldAt) {
+    return tapeAgeDaysFromStamp(preferred.newestSoldAt, nowMs);
   }
   if (preferred.compCount > 0 && preferred.stale) {
     return FRESHNESS_SLA_POLICY.tapeStaleAfterDays;
-  }
-  if (preferred.compCount > 0) {
-    return FRESHNESS_SLA_POLICY.tapeAgingMaxDays;
   }
   return null;
 }

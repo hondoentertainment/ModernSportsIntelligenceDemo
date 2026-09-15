@@ -105,8 +105,13 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   return res.status(200).json({
     ok: true,
     configured: true,
-    endpointStored: true,
+    accepted: true,
+    persisted: false,
+    endpointStored: false,
+    scaffold: true,
     endpoint: parsed.data.endpoint,
     publicKey: vapid.publicKey,
+    disclosure:
+      'Validated only — no durable subscription store until owner cloud ops after #77. This scaffold never writes VAPID or push keys to git.',
   });
 }
