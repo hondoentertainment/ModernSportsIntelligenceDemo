@@ -12,11 +12,12 @@ import {
   listEscrowStubs,
   localReputation,
   scoreReputation,
+  intentsShareCardIdentity,
   suggestMatches,
   transitionEscrow,
   writeReputationStats,
 } from '../../lib/trading/p2pMatchingEngine';
-import { P2P_INTENT_BOARD_KEY, postIntent } from '../../lib/utils/p2pIntentBoard';
+import { P2P_INTENT_BOARD_KEY, listOpenIntents, postIntent } from '../../lib/utils/p2pIntentBoard';
 import { makeCard } from '../helpers';
 
 describe('p2pMatchingEngine', () => {
@@ -31,7 +32,7 @@ describe('p2pMatchingEngine', () => {
   it('suggests crossings and near misses on the same player', () => {
     const card = makeCard({ id: 'c1', player: 'Juan Soto', currentValue: 200 });
     postIntent({ side: 'ask', cardId: 'c1', limitPrice: 200 }, [card]);
-    postIntent({ side: 'bid', player: 'Juan Soto', limitPrice: 220 });
+    postIntent({ side: 'bid', player: 'Juan Soto', year: card.year, set: card.set, limitPrice: 220 });
     const matches = suggestMatches();
     expect(matches).toHaveLength(1);
     expect(matches[0]?.quality).toBe('crosses');
@@ -81,11 +82,37 @@ describe('p2pMatchingEngine', () => {
     expect(listEscrowLedger()).toEqual([]);
   });
 
+  it('does not cross different sets of the same player and year', () => {
+    const chrome = makeCard({
+      id: 'c4',
+      player: 'Juan Soto',
+      year: 2022,
+      set: 'Chrome',
+      manufacturer: 'Topps',
+      currentValue: 200,
+    });
+    postIntent({ side: 'ask', cardId: 'c4', limitPrice: 200 }, [chrome]);
+    postIntent({
+      side: 'bid',
+      player: 'Juan Soto',
+      year: 2022,
+      set: 'Update',
+      manufacturer: 'Topps',
+      limitPrice: 220,
+    });
+    expect(suggestMatches()).toHaveLength(0);
+  });
+
   it('skips player mismatches and tolerates junk reputation storage', () => {
     const trout = makeCard({ id: 'c3', player: 'Mike Trout', currentValue: 180 });
     postIntent({ side: 'ask', cardId: 'c3', limitPrice: 180 }, [trout]);
     postIntent({ side: 'bid', player: 'Juan Soto', limitPrice: 220 });
     expect(suggestMatches()).toHaveLength(0);
+    postIntent({ side: 'bid', player: 'Juan Soto', limitPrice: 220 });
+    expect(suggestMatches()).toHaveLength(0);
+    const ask = listOpenIntents().find((row) => row.side === 'ask');
+    const bareBid = listOpenIntents().find((row) => row.side === 'bid' && !row.year);
+    if (ask && bareBid) expect(intentsShareCardIdentity(bareBid, ask)).toBe(false);
     store.set(P2P_REPUTATION_KEY, { completed: 'x', disputed: null, withdrawn: '2' } as never);
     expect(localReputation().stats.withdrawn).toBe(2);
     expect(localReputation().stats.completed).toBe(0);
@@ -94,5 +121,26 @@ describe('p2pMatchingEngine', () => {
     const created = applyEscrowEvent({ id: 'match-noid', bidPrice: 10, askPrice: 10 }, 'offer');
     expect(created?.escrow.id).toMatch(/^escrow-/);
     Object.defineProperty(crypto, 'randomUUID', { configurable: true, value: uuid });
+  });
+
+  it('does not cross different sets of the same player and year', () => {
+    const chrome = makeCard({
+      id: 'c4',
+      player: 'Juan Soto',
+      year: 2022,
+      set: 'Chrome',
+      manufacturer: 'Topps',
+      currentValue: 200,
+    });
+    postIntent({ side: 'ask', cardId: 'c4', limitPrice: 200 }, [chrome]);
+    postIntent({
+      side: 'bid',
+      player: 'Juan Soto',
+      year: 2022,
+      set: 'Update',
+      manufacturer: 'Topps',
+      limitPrice: 220,
+    });
+    expect(suggestMatches()).toHaveLength(0);
   });
 });

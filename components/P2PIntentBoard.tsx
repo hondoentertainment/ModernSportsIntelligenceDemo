@@ -39,6 +39,7 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
   const [side, setSide] = useState<IntentSide>('ask');
   const [cardId, setCardId] = useState(held[0]?.id ?? '');
   const [player, setPlayer] = useState(held[0]?.player ?? '');
+  const [year, setYear] = useState(held[0]?.year ? String(held[0].year) : '');
   const [limitPrice, setLimitPrice] = useState(String(held[0] ? suggestAskFromCard(held[0]).limitPrice : ''));
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -47,10 +48,10 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
     setIntents(listIntents());
   }, [hydrated]);
 
+  const [escrowTick, setEscrowTick] = useState(0);
   const openIntents = intents.filter((intent) => intent.status === 'open');
   const matches = useMemo(() => suggestMatches(openIntents), [openIntents]);
-  const reputation = useMemo(() => localReputation(), [intents]);
-  const [escrowTick, setEscrowTick] = useState(0);
+  const reputation = useMemo(() => localReputation(), [intents, escrowTick]);
   const escrowByMatch = useMemo(() => {
     const map = new Map(listEscrowStubs().map((row) => [row.matchId, row]));
     return map;
@@ -61,6 +62,7 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
     const card = held.find((item) => item.id === id);
     if (!card) return;
     setPlayer(card.player);
+    setYear(card.year ? String(card.year) : '');
     setLimitPrice(String(suggestAskFromCard(card).limitPrice));
   };
 
@@ -70,6 +72,7 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
       // Typed bids must not inherit the preselected holding — otherwise
       // postIntent overwrites the player with the held card.
       setCardId('');
+      setYear('');
       return;
     }
     setCardId((current) => {
@@ -77,6 +80,7 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
       const fallback = held[0];
       if (fallback) {
         setPlayer(fallback.player);
+        setYear(fallback.year ? String(fallback.year) : '');
         setLimitPrice(String(suggestAskFromCard(fallback).limitPrice));
         return fallback.id;
       }
@@ -93,6 +97,7 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
           side,
           player,
           cardId: cardId || null,
+          year: year ? Number(year) : null,
           limitPrice: Number(limitPrice),
           note,
           source: cardId ? 'local_inventory' : 'manual',
@@ -177,6 +182,19 @@ const P2PIntentBoard: React.FC<Props> = ({ inventory }) => {
             onChange={(e) => setPlayer(e.target.value)}
             placeholder="e.g. Shohei Ohtani"
             required
+          />
+        </label>
+
+        <label className="block text-xs text-brand-muted">
+          Year
+          <input
+            className="mt-1 w-full rounded-lg border border-slate-700 bg-brand-slate px-3 py-2 text-sm text-white"
+            type="number"
+            min="1900"
+            max="2100"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            placeholder="Required to match a specific card"
           />
         </label>
 

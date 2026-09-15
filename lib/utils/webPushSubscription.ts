@@ -254,15 +254,43 @@ export function snapshotWebPushSupport(
   };
 }
 
-export async function readBrowserPushEndpoint(): Promise<string | null> {
+function bytesToBase64Url(bytes: Uint8Array): string {
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += 1) binary += String.fromCharCode(bytes[i]);
+  const b64 = typeof btoa === 'function' ? btoa(binary) : Buffer.from(bytes).toString('base64');
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+export function pushKeysFromSubscription(
+  sub: { getKey?: (name: 'p256dh' | 'auth') => ArrayBuffer | null } | null | undefined,
+): { p256dh?: string; auth?: string } {
+  if (!sub || typeof sub.getKey !== 'function') return {};
+  const p256dh = sub.getKey('p256dh');
+  const auth = sub.getKey('auth');
+  return {
+    p256dh: p256dh ? bytesToBase64Url(new Uint8Array(p256dh)) : undefined,
+    auth: auth ? bytesToBase64Url(new Uint8Array(auth)) : undefined,
+  };
+}
+
+export async function readBrowserPushSubscription(): Promise<{
+  endpoint: string;
+  keys: { p256dh?: string; auth?: string };
+} | null> {
   if (!isWebPushSupported()) return null;
   try {
     const registration = await navigator.serviceWorker.ready;
     const existing = await registration.pushManager.getSubscription();
-    return existing?.endpoint ?? null;
+    if (!existing?.endpoint) return null;
+    return { endpoint: existing.endpoint, keys: pushKeysFromSubscription(existing) };
   } catch {
     return null;
   }
+}
+
+export async function readBrowserPushEndpoint(): Promise<string | null> {
+  const existing = await readBrowserPushSubscription();
+  return existing?.endpoint ?? null;
 }
 
 /**
@@ -287,7 +315,8 @@ export async function enableWebPushClient(
   }
 
   const vapidConfigured = Boolean(readOptionalVapidPublicKey(env));
-  const endpoint = await readBrowserPushEndpoint();
+  const existing = await readBrowserPushSubscription();
+  const endpoint = existing?.endpoint ?? null;
   const subscribedAt = endpoint ? new Date().toISOString() : getStoredWebPushSubscription().subscribedAt;
 
   let status: WebPushStatus = 'permission_needed';
@@ -305,7 +334,7 @@ export async function enableWebPushClient(
   });
   await persistWebPushDeliveryPrefs();
   if (record.endpoint) {
-    await syncWebPushSubscriptionToServer(record);
+    await syncWebPushSubscriptionToServer(record, existing?.keys ?? {});
   }
   return record;
 }

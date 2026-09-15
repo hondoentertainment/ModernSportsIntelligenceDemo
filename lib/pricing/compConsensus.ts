@@ -48,6 +48,8 @@ export interface PreferredValuation {
   rationale: string;
   compCount: number;
   freshCompCount: number;
+  /** Newest dated sold-comp stamp when tape exists; used by freshness SLA. */
+  newestSoldAt?: string | null;
 }
 
 export interface CompUsedRow {
@@ -218,6 +220,7 @@ export function selectPreferredValuation(input: {
       rationale: `Median of ${consensus.count} sold comps (${consensus.freshCount} within 90d). Range $${consensus.low}–$${consensus.high}.`,
       compCount: consensus.count,
       freshCompCount: consensus.freshCount,
+      newestSoldAt: consensus.newestSoldAt,
     };
   }
 
@@ -237,6 +240,7 @@ export function selectPreferredValuation(input: {
         : `Sold comps exist but none cleared in the last 90 days. Using stale tape median $${consensus.median}.`,
       compCount: consensus.count,
       freshCompCount: consensus.freshCount,
+      newestSoldAt: consensus.newestSoldAt,
     };
   }
 
