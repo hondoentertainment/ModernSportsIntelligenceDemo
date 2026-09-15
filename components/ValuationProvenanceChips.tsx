@@ -12,6 +12,8 @@ export interface ValuationProvenanceChipsProps {
   /** Phase B: "Thin tape" or "Low liquidity" from disclosed classifiers. */
   lowLiquidityLabel?: string | null;
   compsCount?: number;
+  /** Phase B remainder: freshness SLA band (fresh / aging / stale). */
+  slaLabel?: string | null;
   /** Tooltip: source, freshness, confidence (or unknown), comps, rationale. */
   title?: string;
   showBadge?: boolean;
@@ -29,6 +31,7 @@ const ValuationProvenanceChips: React.FC<ValuationProvenanceChipsProps> = ({
   thinMarket,
   lowLiquidityLabel,
   compsCount,
+  slaLabel,
   title,
   showBadge = true,
   className = '',
@@ -43,6 +46,7 @@ const ValuationProvenanceChips: React.FC<ValuationProvenanceChipsProps> = ({
       </span>
       {showBadge && badgeVariant && <DataSourceBadge variant={badgeVariant} size="xs" className="ml-0.5" />}
       {staleLabel && <span className={MUTED}>{staleLabel}</span>}
+      {slaLabel && slaLabel !== staleLabel && <span className={MUTED}>{slaLabel}</span>}
       {liquidityText && <span className={MUTED}>{liquidityText}</span>}
       {compsCount != null && compsCount > 0 && <span className={MUTED}>{compsCount} comps</span>}
     </div>

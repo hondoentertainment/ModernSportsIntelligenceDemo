@@ -18,6 +18,7 @@ interface ImportMetaEnv {
     readonly VITE_FF_REAL_SPORTS?: string;
     readonly VITE_FF_REAL_COMC?: string;
     readonly VITE_FF_REAL_GEMINI?: string;
+    readonly VITE_WEB_PUSH_VAPID_PUBLIC?: string;
 }
 
 interface ImportMeta {

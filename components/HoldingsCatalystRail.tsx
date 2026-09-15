@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Flame, ChevronRight } from 'lucide-react';
 import type { CardInventory } from '../types';
-import { CatalystEngine } from '../lib/utils/catalystEngine';
+import { resolveMlbCatalystsSync } from '../lib/integrations/mlbLiveWire';
 
 interface Props {
   inventory: CardInventory[];
@@ -15,11 +15,17 @@ interface Props {
  * Uses CatalystEngine scenarios derived from the caller's inventory (not a global news dump).
  */
 const HoldingsCatalystRail: React.FC<Props> = ({ inventory, limit = 4 }) => {
-  const scenarios = useMemo(
-    () => CatalystEngine.generateScenarios(inventory).slice(0, limit),
-    [inventory, limit],
-  );
-  const summary = useMemo(() => CatalystEngine.summarizeScenarios(scenarios), [scenarios]);
+  const feed = useMemo(() => resolveMlbCatalystsSync(inventory), [inventory]);
+  const scenarios = useMemo(() => feed.scenarios.slice(0, limit), [feed.scenarios, limit]);
+  const summary = useMemo(() => {
+    const bullish = scenarios.filter((scenario) => scenario.bias === 'bullish').length;
+    const defensive = scenarios.filter((scenario) => scenario.bias === 'defensive').length;
+    const avgMove =
+      scenarios.length > 0
+        ? scenarios.reduce((sum, scenario) => sum + scenario.expectedMovePct, 0) / scenarios.length
+        : 0;
+    return { bullish, defensive, avgMove };
+  }, [scenarios]);
 
   if (inventory.length === 0 || scenarios.length === 0) return null;
 
@@ -35,7 +41,7 @@ const HoldingsCatalystRail: React.FC<Props> = ({ inventory, limit = 4 }) => {
             <h3 className="text-sm font-semibold text-white">Holdings catalysts</h3>
             <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
               {summary.bullish} bullish · {summary.defensive} defensive · avg move{' '}
-              {summary.avgMove.toFixed(1)}% · seeded injury / txn when holdings match
+              {summary.avgMove.toFixed(1)}% · {feed.status.armed ? 'live wire armed' : 'seeded fallback'}
             </p>
           </div>
         </div>
@@ -69,8 +75,8 @@ const HoldingsCatalystRail: React.FC<Props> = ({ inventory, limit = 4 }) => {
             <p className="mt-1 text-xs text-brand-muted">
               {s.catalyst.replace('_', ' ')} · {s.assetName} · {s.triggerWindow} · +{s.expectedMovePct}% / −{s.downsidePct}%
             </p>
-            {s.disclosure && (
-              <p className="mt-1 text-[10px] text-slate-500">{s.disclosure}</p>
+            {(s.disclosure || feed.status.disclosure) && (
+              <p className="mt-1 text-[10px] text-slate-500">{s.disclosure || feed.status.disclosure}</p>
             )}
           </li>
         ))}

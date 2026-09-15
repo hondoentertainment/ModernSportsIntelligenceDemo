@@ -267,6 +267,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
               sourceChip={truthChips.sourceChip}
               badgeVariant={valuationBadgeVariant}
               staleLabel={truthChips.staleLabel}
+              slaLabel={truthChips.slaLabel}
               thinMarket={truthChips.thinMarket}
               lowLiquidityLabel={truthChips.lowLiquidityLabel}
               compsCount={truthChips.compsCount}

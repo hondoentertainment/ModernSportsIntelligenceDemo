@@ -14,12 +14,15 @@ import {
 } from '../lib/utils/syncProductDefaults';
 import {
   WEB_PUSH_DISCLOSURE,
+  WEB_PUSH_SERVER_DISCLOSURE,
   disableWebPushClient,
   enableWebPushClient,
+  fetchWebPushServerStatus,
   hydrateWebPushDeliveryPrefs,
   shouldOfferWebPush,
   snapshotWebPushSupport,
   webPushStatusCopy,
+  type WebPushServerSync,
   type WebPushSubscriptionRecord,
 } from '../lib/utils/webPushSubscription';
 import { isDemoMode } from '../lib/supabase';
@@ -30,10 +33,12 @@ const AlertDeliverySettings: React.FC<{ compact?: boolean }> = ({ compact }) => 
   const [dailySync, setDailySync] = useState(() => getSyncProductDefaults()?.optedIn !== false);
   const [pushRecord, setPushRecord] = useState<WebPushSubscriptionRecord>(() => snapshotWebPushSupport());
   const [pushBusy, setPushBusy] = useState(false);
+  const [serverPush, setServerPush] = useState<WebPushServerSync | null>(null);
 
   useEffect(() => {
     setPushRecord(snapshotWebPushSupport());
     void hydrateWebPushDeliveryPrefs();
+    void fetchWebPushServerStatus().then(setServerPush);
   }, [prefs.browserNotificationsEnabled, prefs.quietHoursEnabled, prefs.quietHoursStart, prefs.quietHoursEnd]);
 
   const patch = (partial: Partial<AlertPreferences>) => {
@@ -125,7 +130,13 @@ const AlertDeliverySettings: React.FC<{ compact?: boolean }> = ({ compact }) => 
             <p className="text-sm font-semibold text-white">Web Push (client)</p>
           </div>
           <p className="text-[11px] leading-relaxed text-slate-400">{WEB_PUSH_DISCLOSURE}</p>
+          <p className="text-[11px] leading-relaxed text-slate-500">{WEB_PUSH_SERVER_DISCLOSURE}</p>
           <p className="text-[11px] text-slate-300">{webPushStatusCopy(pushRecord)}</p>
+          {serverPush && (
+            <p className="text-[11px] text-amber-200/90">
+              Server: {serverPush.configured ? 'VAPID armed' : serverPush.status} — {serverPush.message}
+            </p>
+          )}
           {pushRecord.endpoint && (
             <p className="break-all font-mono text-[10px] text-slate-500">Endpoint stored: {pushRecord.endpoint}</p>
           )}

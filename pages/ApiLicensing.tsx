@@ -25,6 +25,15 @@ import {
   type APIRequest,
 } from '../lib/utils/apiLicensingService.ts';
 import {
+  API_LICENSE_SCOPES,
+  DEMO_LICENSE_DISCLOSURE,
+  issueDemoScopedToken,
+  listDemoTokens,
+  meterDemoRequest,
+  watermarkedDemoPayload,
+} from '../lib/platform/apiLicenseModel';
+import { PRODUCT_WEBHOOK_EVENTS, WEBHOOK_DISPATCH_DISCLOSURE } from '../lib/platform/webhookEvents';
+import {
   AreaChart,
   Area,
   XAxis,
@@ -46,6 +55,8 @@ const ApiLicensing: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('Production (live)');
   const [showDemoMetering, setShowDemoMetering] = useState(false);
+  const [demoTokens, setDemoTokens] = useState(() => listDemoTokens());
+  const [demoMeterNote, setDemoMeterNote] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -131,10 +142,48 @@ const ApiLicensing: React.FC = () => {
         <p className="font-semibold">Live now — call with Supabase Bearer JWT</p>
         <p className="mt-1 text-cyan-100/90">
           <code>/api/health</code>, <code>/api/market/ebay</code>, <code>/api/market/consensus</code>,{' '}
-          <code>/api/grading/psa/cert</code>, <code>/api/me/export</code>. Demo API keys below are{' '}
+          <code>/api/grading/psa/cert</code>, <code>/api/me/export</code>, <code>/api/push/subscribe</code>,{' '}
+          <code>/api/webhooks/dispatch</code>. Demo API keys below are{' '}
           <strong>not</strong> accepted by these routes. Mock <code>/v1/*</code> stubs are design reference
           only.
         </p>
+      </div>
+
+      <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-sm text-amber-100/90">
+        <p className="font-semibold">Scoped demo tokens + webhook stubs</p>
+        <p className="mt-1 text-xs text-amber-100/80">{DEMO_LICENSE_DISCLOSURE}</p>
+        <p className="mt-1 text-xs text-slate-400">{WEBHOOK_DISPATCH_DISCLOSURE}</p>
+        <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
+          Events: {PRODUCT_WEBHOOK_EVENTS.join(', ')} · scopes: {API_LICENSE_SCOPES.join(', ')}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              issueDemoScopedToken(['valuation.read']);
+              setDemoTokens(listDemoTokens());
+              setDemoMeterNote(null);
+            }}
+            className="rounded-lg bg-cyan-500/20 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-cyan-200"
+          >
+            Issue demo valuation token
+          </button>
+          {demoTokens[0] && (
+            <button
+              type="button"
+              onClick={() => {
+                const result = meterDemoRequest(demoTokens[0].token, 'valuation.read');
+                setDemoMeterNote(
+                  `${watermarkedDemoPayload({ remaining: result.remaining }).watermark} · remaining ${result.remaining}`,
+                );
+              }}
+              className="rounded-lg border border-slate-600 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-300"
+            >
+              Meter watermarked demo call
+            </button>
+          )}
+        </div>
+        {demoMeterNote && <p className="mt-2 font-mono text-[11px] text-cyan-200">{demoMeterNote}</p>}
       </div>
 
       <div className="flex items-center justify-between gap-3">

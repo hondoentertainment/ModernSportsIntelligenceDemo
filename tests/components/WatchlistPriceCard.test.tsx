@@ -57,7 +57,7 @@ describe('WatchlistPriceCard — Phase B pricing truth', () => {
       />,
     );
 
-    expect(screen.getByText(/stale/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/stale/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/ai estimate/i)).toBeInTheDocument();
   });
 });

@@ -10,6 +10,7 @@ import { createContext, runInContext } from 'node:vm';
 import {
   DEFAULT_WEB_PUSH_RECORD,
   WEB_PUSH_DISCLOSURE,
+  WEB_PUSH_SERVER_DISCLOSURE,
   WEB_PUSH_SUBSCRIPTION_KEY,
   WEB_PUSH_SW_PREFS_CACHE,
   WEB_PUSH_SW_PREFS_MESSAGE,
@@ -31,6 +32,9 @@ import {
   toWebPushDeliveryPrefs,
   webPushStatusCopy,
   readBrowserPushEndpoint,
+  fetchWebPushServerStatus,
+  syncWebPushSubscriptionToServer,
+  WEB_PUSH_SUBSCRIBE_PATH,
   type WebPushStatus,
 } from '../../lib/utils/webPushSubscription';
 
@@ -39,6 +43,14 @@ describe('webPushSubscription', () => {
     localStorage.clear();
     store.clear();
     vi.unstubAllGlobals();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: false,
+        status: 503,
+        json: async () => ({ configured: false, code: 'VAPID_UNSET', error: 'Server VAPID is unset.' }),
+      })),
+    );
   });
 
   it('normalizes junk and never invents a VAPID secret', () => {
@@ -413,5 +425,111 @@ describe('webPushSubscription', () => {
       quietHoursStart: '10:00',
       quietHoursEnd: '10:00',
     })).toBe(true);
+  });
+
+  it('probes /api/push/subscribe and refuses loudly when VAPID is unset', async () => {
+    const fetcher = vi.fn(async () => ({
+      ok: false,
+      status: 503,
+      json: async () => ({ configured: false, code: 'VAPID_UNSET', error: 'Server VAPID is unset.' }),
+    })) as unknown as typeof fetch;
+    const unset = await fetchWebPushServerStatus(fetcher);
+    expect(unset.status).toBe('vapid_unset');
+    expect(unset.configured).toBe(false);
+
+    const ready = await fetchWebPushServerStatus(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ configured: true }),
+    }) as Response);
+    expect(ready.status).toBe('configured');
+
+    const skipped = await fetchWebPushServerStatus(null);
+    expect(skipped.status).toBe('skipped');
+
+    const exploded = await fetchWebPushServerStatus(async () => {
+      throw new Error('offline');
+    });
+    expect(exploded.status).toBe('error');
+    expect(WEB_PUSH_SUBSCRIBE_PATH).toBe('/api/push/subscribe');
+  });
+
+  it('POSTs a local subscription only when VAPID keys and push keys are present', async () => {
+    const record = { ...DEFAULT_WEB_PUSH_RECORD, endpoint: 'https://push.example/sub', status: 'subscribed' as const };
+    const statusOnly = await syncWebPushSubscriptionToServer(record, {}, async () => ({
+      ok: false,
+      status: 503,
+      json: async () => ({ configured: false, code: 'VAPID_UNSET' }),
+    }) as unknown as typeof fetch);
+    expect(statusOnly.status).toBe('vapid_unset');
+
+    const posted = await syncWebPushSubscriptionToServer(
+      record,
+      { p256dh: 'pk', auth: 'ak' },
+      async () => ({
+        ok: true,
+        status: 200,
+        json: async () => ({ configured: true }),
+      }) as unknown as typeof fetch,
+    );
+    expect(posted.status).toBe('configured');
+
+    const missing = await syncWebPushSubscriptionToServer({ ...DEFAULT_WEB_PUSH_RECORD });
+    expect(missing.status).toBe('skipped');
+
+    const rejected = await syncWebPushSubscriptionToServer(
+      record,
+      { p256dh: 'pk', auth: 'ak' },
+      async () => ({
+        ok: false,
+        status: 400,
+        json: async () => ({ error: 'Invalid push subscription' }),
+      }) as unknown as typeof fetch,
+    );
+    expect(rejected.status).toBe('error');
+
+    const boom = await syncWebPushSubscriptionToServer(
+      record,
+      { p256dh: 'pk', auth: 'ak' },
+      async () => {
+        throw new Error('offline');
+      },
+    );
+    expect(boom.status).toBe('error');
+
+    const oddStatus = await fetchWebPushServerStatus(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ configured: false, error: 'not ready' }),
+    }) as Response);
+    expect(oddStatus.status).toBe('error');
+
+    const viaDefault = await fetchWebPushServerStatus();
+    expect(viaDefault.status).toBe('vapid_unset');
+
+    const badJson = await fetchWebPushServerStatus(async () => ({
+      ok: false,
+      status: 500,
+      json: async () => {
+        throw new Error('no json');
+      },
+    }) as Response);
+    expect(badJson.status).toBe('error');
+
+    const refused = await syncWebPushSubscriptionToServer(
+      record,
+      { p256dh: 'pk', auth: 'ak' },
+      async () => ({
+        ok: false,
+        status: 503,
+        json: async () => ({ code: 'VAPID_UNSET' }),
+      }) as unknown as typeof fetch,
+    );
+    expect(refused.status).toBe('vapid_unset');
+
+    vi.stubGlobal('fetch', undefined);
+    const noFetch = await syncWebPushSubscriptionToServer(record, { p256dh: 'pk', auth: 'ak' });
+    expect(noFetch.status).toBe('skipped');
+    expect(WEB_PUSH_SERVER_DISCLOSURE).toMatch(/VAPID_UNSET/);
   });
 });

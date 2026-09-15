@@ -357,6 +357,7 @@ const Favorites: React.FC = () => {
                               valuationSource: truth?.source ?? card.valuationSource,
                             })}
                             staleLabel={truthChips.staleLabel}
+                            slaLabel={truthChips.slaLabel}
                             thinMarket={truthChips.thinMarket}
                             lowLiquidityLabel={truthChips.lowLiquidityLabel}
                             compsCount={truthChips.compsCount}

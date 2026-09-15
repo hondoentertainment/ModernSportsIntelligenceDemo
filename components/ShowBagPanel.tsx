@@ -9,6 +9,7 @@ import {
   type ShowBagSectionId,
 } from '../lib/utils/showBag';
 import { getTriageReviewIds } from '../lib/utils/collectionTriage';
+import { SHOW_FLOOR_PARTNER_DISCLOSURE } from '../lib/integrations/showFloorPartner';
 
 interface Props {
   inventory: CardInventory[];
@@ -50,7 +51,8 @@ const ShowBagPanel: React.FC<Props> = ({ inventory, targets = [] }) => {
           Download HTML
         </button>
       </div>
-      <p className="mb-4 text-[11px] leading-relaxed text-slate-400">{SHOW_BAG_DISCLOSURE}</p>
+      <p className="mb-2 text-[11px] leading-relaxed text-slate-400">{SHOW_BAG_DISCLOSURE}</p>
+      <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{SHOW_FLOOR_PARTNER_DISCLOSURE}</p>
       {doc.items.length === 0 ? (
         <p className="text-xs text-slate-500">Nothing queued yet — swipe cards to review, add targets, or consign holdings.</p>
       ) : (

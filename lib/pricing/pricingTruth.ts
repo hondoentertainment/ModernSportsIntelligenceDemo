@@ -30,6 +30,7 @@ import {
   isValuationStale,
   valuationAgeDays,
 } from '../utils/valuationFreshness';
+import { freshnessSlaFromPreferred, type FreshnessSlaBand } from './freshnessSla';
 
 export const PRICING_TRUTH_SOURCE_PRIORITY = [
   'ebay-sold-comps',
@@ -87,6 +88,8 @@ export interface PricingTruthProvenance {
   freshCompCount: number;
   flags: PricingTruthFlags;
   title: string;
+  slaBand: FreshnessSlaBand;
+  slaLabel: string;
 }
 
 const CHIP_SOLD = 'text-cyan-300 bg-cyan-500/10 border border-cyan-400/25';
@@ -188,6 +191,10 @@ export function classifyLowLiquidity(input: {
   return { lowLiquidity, thinTape, lowLiquidityReasons, lowLiquidityLabel };
 }
 
+export function hasDisclosedConfidenceFormula(method: CompSelectionMethod): boolean {
+  return method === 'sold-comp-consensus' || method === 'thin-comp-fallback';
+}
+
 /**
  * Surface confidence only when a disclosed formula or stored model score exists.
  * Hardcoded AI / stored fallbacks in selectPreferredValuation stay internal.
@@ -196,7 +203,7 @@ export function resolveDisclosedConfidence(
   preferred: PreferredValuation,
   storedConfidence?: number,
 ): { value: number | null; known: boolean; label: string } {
-  if (preferred.method === 'sold-comp-consensus') {
+  if (preferred.method === 'sold-comp-consensus' || preferred.method === 'thin-comp-fallback') {
     const label = formatValuationConfidence(preferred.confidence);
     return {
       value: preferred.confidence,
@@ -241,11 +248,17 @@ export function assemblePricingTruth(
   const confidence = resolveDisclosedConfidence(preferred, extras.storedConfidence);
   const sourceChip = honestSourceChip(preferred);
   const rationale = (preferred.rationale || extras.storedRationale || '').trim();
+  const sla = freshnessSlaFromPreferred(preferred, {
+    timestamp: freshnessTimestamp,
+    lastValuationDate: extras.lastValuationDate,
+    nowMs,
+  });
   const titleParts = [
     sourceChip.label,
     freshnessLabel,
     confidence.label,
     preferred.compCount > 0 ? `${preferred.compCount} comps` : null,
+    sla.label,
     rationale ? rationale.slice(0, 160) : null,
   ].filter(Boolean) as string[];
 
@@ -265,6 +278,8 @@ export function assemblePricingTruth(
     freshCompCount: preferred.freshCompCount,
     flags,
     title: titleParts.join(' · '),
+    slaBand: sla.band,
+    slaLabel: sla.label,
   };
 }
 
@@ -313,6 +328,7 @@ export function chipsFromPricingTruth(truth: PricingTruthProvenance): {
   lowLiquidityLabel: string | null;
   compsCount: number;
   title: string;
+  slaLabel: string;
 } {
   return {
     sourceChip: truth.sourceChip,
@@ -321,5 +337,6 @@ export function chipsFromPricingTruth(truth: PricingTruthProvenance): {
     lowLiquidityLabel: truth.flags.lowLiquidityLabel,
     compsCount: truth.compCount,
     title: truth.title,
+    slaLabel: truth.slaLabel,
   };
 }

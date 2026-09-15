@@ -14,6 +14,7 @@ import {
 } from "../utils/agentPreferences";
 import { simulateAutopilotImpact } from "./autoPilotImpactPreview";
 import { recordAutopilotReplay } from "./autoPilotReplay";
+import { ensureAdvisoryStubAdapter, isAutopilotGloballyPaused } from "./executionAdapterStub";
 
 const STORAGE_KEY = 'msi_autopilot_config';
 const ACTIONS_KEY = 'msi_autonomous_actions';
@@ -613,6 +614,7 @@ export class AutonomousExecutionService {
     }
 
     static async previewAutonomousCycle(inventory: CardInventory[]) {
+        ensureAdvisoryStubAdapter();
         const config = this.getConfig();
         let thesis = await MultiAgentService.getCollaborativeThesis(inventory, config.isActive, 'autopilot-preview');
         if (!thesis) {
@@ -644,8 +646,13 @@ export class AutonomousExecutionService {
     }
 
     static async runAutonomousCycle(inventory: CardInventory[]): Promise<AutonomousAction[]> {
+        ensureAdvisoryStubAdapter();
         const config = this.getConfig();
         if (!config.isActive) return [];
+        if (isAutopilotGloballyPaused() || ExecutionService.getKillSwitch()) {
+            showToast('info', 'Auto-Pilot is paused or kill-switched — no live or local fills.');
+            return [];
+        }
 
         let thesis = await MultiAgentService.getCollaborativeThesis(inventory, true, 'autopilot-cycle');
         if (!thesis) {

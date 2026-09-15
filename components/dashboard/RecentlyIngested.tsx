@@ -87,6 +87,7 @@ const RecentlyIngested: React.FC<RecentlyIngestedProps> = ({ inventory }) => {
                     valuationSource: truth.source,
                   })}
                   staleLabel={truthChips.staleLabel}
+                  slaLabel={truthChips.slaLabel}
                   thinMarket={truthChips.thinMarket}
                   lowLiquidityLabel={truthChips.lowLiquidityLabel}
                   compsCount={truthChips.compsCount}

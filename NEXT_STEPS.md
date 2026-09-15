@@ -1,10 +1,10 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed 2026-09-10 · **Phase B pricing-truth UI scaffold** shipped (sold-comp default + stale/thin badges; flags off). Wave-5 (`#139` / `b1a6ca5`) + roadmap `#140` / `17762ff`. Forward plan: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md).
+> Refreshed 2026-09-15 · **Eng-safe Phase B–D scaffolds** shipped (freshness SLA, Web Push server route, P2P matching lite, Auto-Pilot pause). Supabase `vhbsokjqchaafluimgjh` restore is **done**. Wave-5 `#139` / roadmap `#140` / Phase B UI `#141`. Forward plan: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md).
 
 ## Current state in one paragraph
 
-MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger across Dashboard, War Room, and Audit Dossier; holdings catalysts; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; command palette keeps `/scan` on dashboard. Coverage whitelist includes ledger + War Room context. The toolchain is current — Node ≥22.22.2, TypeScript 7.0.2 (side-by-side with the TS 6 API for ESLint), jsdom 30 — and `npm audit --audit-level=high` was clean at the August pass. **#115** (2026-09-05, `760def1`) closed Collection list/grid action parity. Six of seven catalog betas are `live`; only `fractional-vault` remains on legal (2026-09 quarterly sweep confirmed — no promotions, no new hides). **Hosted data is paused:** Supabase project `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **INACTIVE** so Pulse can use the free-plan slot. Restore that project and re-sync Vercel/GitHub env before any owner-held live-data step. **Still owner-held (blocking “trusted book”):** Stripe smoke, **eBay then PSA live keys**, optional Sentry DSN, personal admin promote, admin-audit confirm — check `npm run ops:check-real-data` only after restore.
+MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger across Dashboard, War Room, and Audit Dossier; holdings catalysts; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; command palette keeps `/scan` on dashboard. Coverage whitelist includes ledger + War Room context. The toolchain is current — Node ≥22.22.2, TypeScript 7.0.2 (side-by-side with the TS 6 API for ESLint), jsdom 30 — and `npm audit --audit-level=high` was clean at the August pass. **#115** (2026-09-05, `760def1`) closed Collection list/grid action parity. Six of seven catalog betas are `live`; only `fractional-vault` remains on legal (2026-09 quarterly sweep confirmed — no promotions, no new hides). **Hosted data restore is complete:** Supabase project `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **ACTIVE_HEALTHY** again. Remaining #77 is **owner-held cloud ops**, not another restore: Vercel/GitHub env sync, Stripe smoke, eBay then PSA (both runtimes), optional Sentry DSN, admin-audit confirm, legal, rotation drill. **Still do not claim live Market Movers / SCI Pulse parity.** Check `npm run ops:check-real-data` only after env sync.
 
 ## Bloomberg program — status
 
@@ -16,7 +16,27 @@ MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger acro
 | Institutional export      | ✅ `/audit-dossier` + consensus ledger strip + Schedule D–style packet             | Full IRS regulatory completeness still legal-gated |
 | Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later                      |
 | Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show                      |
-| eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel** (after restore)                 |
+| eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Keys on Vercel** (after env sync)                |
+
+## Eng-safe Phase B–D scaffolds — Shipped (2026-09-15)
+
+Demo/DAL-safe. **No secrets, no `VITE_FF_REAL_*` flips, no new Labs pages, no Tailwind 4 / `@eslint/js` 10, no jsPDF on live briefing paths, no `fractional-vault` promotion.** Copy does **not** claim live Market Movers / SCI Pulse parity. Last big engineering PR before T0 (#77 keys).
+
+| Slice                                   | Where                                                                                                                                                                |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Freshness SLA helpers + UI**          | `lib/pricing/freshnessSla.ts` — stamp (≤2d / 3–6d / ≥7d) + tape (≤30d / 31–89d / ≥90d). Badges on Pulse, War Room, Pricing Truth Health, and provenance chips.       |
+| **Provenance completeness**             | Confidence only when a sold-comp / thin-tape formula exists (or a stored model score). Preferred valuation stays sold → historical → AI.                             |
+| **`price_history` SLA SQL (file only)** | `supabase/migrations/00011_price_history_freshness_sla.sql` — **not applied here**. Owner applies after Vercel env sync.                                             |
+| **Server Web Push scaffold**            | `GET/POST /api/push/subscribe` reads `WEB_PUSH_VAPID_*` at runtime, **503 VAPID_UNSET** when missing. Wave-4 client calls the route when configured. No keys in git. |
+| **MLB catalyst / PvP wire adapters**    | `lib/integrations/mlbLiveWire.ts` — seeded fallback default; live path structured behind owner sports flag/env. Honest disclosure.                                   |
+| **P2P matching lite**                   | Local crossings + reputation stub + escrow **state machine / ledger stubs** on `msi_p2p_intents_v1`. No real money.                                                  |
+| **Auto-Pilot adapter + pause**          | Advisory execution stub, kill-switch, global pause. Collars/replay wired. Still no live marketplace fills.                                                           |
+| **Show-floor partner stubs**            | Typed show-bag contracts; local bag remains source of truth.                                                                                                         |
+| **API licensing + webhooks (lite)**     | Scoped demo tokens + watermarked metering. `valuation.updated` / `alert.triggered` no-op dispatcher gated by `MSI_WEBHOOK_DISPATCH`.                                 |
+
+**Still owner-held (#77 remainder):** Vercel/GitHub env sync, Stripe lifecycle smoke, eBay keys then `VITE_FF_REAL_EBAY`, PSA on **both** runtimes then `VITE_FF_REAL_PSA`, optional Sentry DSN, `/audit-trail/admin` confirm, `fractional-vault` legal, full key-rotation drill.
+
+**Deferred / not this PR:** Tailwind 4; `@eslint/js` 10; jsPDF on live briefing; new Labs pages; applying `00011` from this agent; live non-MLB sports wires; production CV; IRS completeness; real Alpha key issuance DB.
 
 ## Phase B pricing-truth UI scaffold — Shipped (2026-09-10)
 
@@ -29,7 +49,7 @@ Demo/DAL-safe. **No Supabase restore, no secrets, no `VITE_FF_REAL_*` flips, no 
 | **Provenance chip**              | Source, freshness, confidence if modeled else `conf unknown`, comps count + rationale tooltip. Wired into Comps Used / preferred valuation surfaces.            |
 | **Adapters ready**               | Live eBay flag still off. `Live comps` label only when `VITE_FF_REAL_EBAY` is on.                                                                               |
 
-**Still owner-held:** #77 restore + eBay/PSA keys. Full Phase B exit = live tape + freshness SLA.
+**Still owner-held:** #77 Vercel env sync + eBay/PSA keys (restore is done). Full Phase B exit = live tape + freshness SLA.
 
 ## September 2026 Wave-5 — Shipped (2026-09-10)
 
@@ -49,7 +69,7 @@ Demo/DAL-safe deepenings so a serious collector/investor prefers MSI over **Spor
 
 MSI now covers **ratio intel + collection/favorites movers + deals + multi-segment Pulse + 2–3 card compare + whale-scale list** on top of the institutional stack SCI lacks (War Room, Auto-Pilot, tax lots, wash-sale, Negotiation Arena, consensus ledger, audit dossier, card-show loop, agent why/consensus). Live eBay/PSA tape and SCI-style marketplace scrapes remain owner-held (#77) — copy does not claim live Market Movers parity.
 
-**Still owner-held (do not start from this PR):** #77 Supabase restore, Stripe / eBay / PSA keys, Sentry DSN, fractional-vault legal, vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness, server-triggered Web Push (VAPID + backend).
+**Still owner-held (do not start from this PR):** #77 Vercel env sync, Stripe / eBay / PSA keys, Sentry DSN, admin-audit confirm, fractional-vault legal, vanity DNS, production centering CV, IRS tax-lot regulatory completeness, owner VAPID values.
 
 **Deferred / not this wave:** Tailwind 4; `@eslint/js` 10; jsPDF/html2canvas on live entry graph; new Labs pages; live non-MLB sports wires; new `price_history` table; partner show-bag APIs; full P2P matching/escrow; production CV; IRS completeness.
 
@@ -73,7 +93,7 @@ Waves 2–5 closed the engineering-safe consumer-intel gap. Remaining unlock is 
 
 Do not implement keys or restore the project from this (or any engineering) PR. Ordered:
 
-1. Restore Supabase `vhbsokjqchaafluimgjh` + Vercel / GitHub env sync — [`docs/DEPLOY_ENV_CHECKLIST.md`](docs/DEPLOY_ENV_CHECKLIST.md)
+1. ~~Restore Supabase `vhbsokjqchaafluimgjh`~~ — **done (ACTIVE_HEALTHY, 2026-09-15)**. Remaining: Vercel / GitHub env sync — [`docs/DEPLOY_ENV_CHECKLIST.md`](docs/DEPLOY_ENV_CHECKLIST.md)
 2. Stripe lifecycle smoke — [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md) item 6
 3. eBay → server keys, then `VITE_FF_REAL_EBAY` (observe deployed-E2E + pricing-truth)
 4. PSA (after eBay is stable) — **both** runtimes, then `VITE_FF_REAL_PSA`:
@@ -89,18 +109,18 @@ Phase 32 style. Consensus / Comps Used / Collection chips already exist.
 
 **UI scaffold shipped (2026-09-10, this PR):** sold-comp / consensus is the display default on Collection grid/list, Dashboard recents + NAV, Favorites, watchlist/targets, and Compare when comps exist — **even while `VITE_FF_REAL_EBAY` is off**. Honest labels (`Sold comps` / `Thin sold comps` / `AI estimate`); `Live comps` only if the owner-held flag is on. Stale (7d stamp or 90d tape) and thin-tape / low-liquidity (≤2 comps or score &lt; 40) badges plus a compact provenance tooltip (source, freshness, disclosed confidence or `conf unknown`, comps count) on those surfaces. Classifiers live in `lib/pricing/pricingTruth.ts` with Vitest coverage.
 
-**Full Phase B exit still needs** [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) live eBay tape + freshness SLA against real comps. Optional `price_history` once cloud is restored — not before. Do not flip `VITE_FF_REAL_*` from this class of PR.
+**Code remainder shipped (2026-09-15):** freshness SLA helpers + Pulse / War Room / chip badges; confidence only when a formula exists; `00011_price_history_freshness_sla.sql` **file only** (owner apply after env sync). **Full Phase B exit still needs** [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) live eBay tape + SLA against real comps. Do not flip `VITE_FF_REAL_*` from this class of PR.
 
 ### Phase C — Always-on alerts & wires
 
-- Server Web Push (VAPID + backend). Client Push readiness shipped Wave-4
-- Live sports catalysts / PvP wires — **MLB first**
+- **Server Web Push scaffold shipped (2026-09-15):** `/api/push/subscribe` refuses loudly without owner VAPID. Client Wave-4 path calls it when configured. **Keys still owner-held.**
+- **MLB catalyst / PvP wire adapters shipped:** seeded fallback default; live structure behind owner sports flag. Honest disclosure — not a live tape.
 
 ### Phase D — Real trading moat
 
-- P2P matching + reputation + escrow (intent board is lite only)
-- Execution adapters + Auto-Pilot **controlled** fills
-- Show-floor field loop / partner APIs
+- **P2P matching lite shipped:** local suggestions + reputation stub + escrow state-machine UI / ledger stubs. No real money.
+- **Execution adapter stub + kill-switch / global pause shipped.** Still no live marketplace fills.
+- **Show-floor partner client stubs shipped.** Local show bag remains source of truth.
 - Production CV **only if** it beats the disclosed heuristic
 
 ### Phase E — Platform
@@ -278,7 +298,7 @@ upgrade** — `npm ci` will refuse the engine constraint.
 
 ## Priority 1 — Remaining owner-held launch actions
 
-> **Supabase (2026-09-05):** Project `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **INACTIVE / paused** so Pulse can occupy the free-plan slot. July 18 cutover (schema + migrations `00001`–`00010`, Edge Functions, auth `site_url` + redirect allowlist, Vercel/GitHub env) still stands as the last successful activation — it is **not** currently live. Old abandoned project `iwxqemiqtusgmemlnrby` is unused. **Do not restore or pause from an engineering PR.** Owner: restore in the Supabase dashboard, then `docs/DEPLOY_ENV_CHECKLIST.md` § Supabase unpause + Vercel env sync, before Stripe smoke, eBay/PSA flags, or admin-audit confirm.
+> **Supabase (2026-09-15):** Project `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) restore is **complete — ACTIVE_HEALTHY**. July 18 cutover (schema + migrations `00001`–`00010`, Edge Functions, auth `site_url` + redirect allowlist) still stands. Optional `00011_price_history_freshness_sla.sql` is in-repo only — owner applies after Vercel env sync. Old abandoned project `iwxqemiqtusgmemlnrby` is unused. **Do not pause from an engineering PR.** Remaining #77: Vercel/GitHub env sync (`docs/DEPLOY_ENV_CHECKLIST.md`), Stripe smoke, eBay/PSA flags, Sentry, admin-audit confirm, legal, rotation drill.
 
 **CI hygiene shipped (engineering):** Deployed E2E on push to `main`; RLS verification fails closed when secrets missing; all workflows now run Node 22 via `.nvmrc`. Tracked in [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77).
 
@@ -295,7 +315,7 @@ upgrade** — `npm ci` will refuse the engine constraint.
 
 ## Priority 2 — Turn on real data (eBay, then PSA)
 
-**Prerequisite:** restore `vhbsokjqchaafluimgjh` and sync Vercel env (`docs/DEPLOY_ENV_CHECKLIST.md`). Do not set keys or flip `VITE_FF_REAL_*` from an engineering PR.
+**Prerequisite:** project is restored; **sync Vercel env** (`docs/DEPLOY_ENV_CHECKLIST.md`). Do not set keys or flip `VITE_FF_REAL_*` from an engineering PR.
 
 Check readiness anytime after restore: `npm run ops:check-real-data`.
 

@@ -40,8 +40,21 @@ export interface WebPushSubscriptionRecord {
   status: WebPushStatus;
 }
 
+export const WEB_PUSH_SUBSCRIBE_PATH = '/api/push/subscribe';
+
+export type WebPushServerSyncStatus = 'skipped' | 'configured' | 'vapid_unset' | 'error';
+
+export interface WebPushServerSync {
+  status: WebPushServerSyncStatus;
+  configured: boolean;
+  message: string;
+}
+
 export const WEB_PUSH_DISCLOSURE =
   'Client Web Push readiness only. This device can request permission and remember a browser subscription endpoint locally. Server-triggered push still needs owner-held VAPID keys and a backend — none are stored in this repo.';
+
+export const WEB_PUSH_SERVER_DISCLOSURE =
+  'Server scaffold at /api/push/subscribe reads WEB_PUSH_VAPID_PUBLIC + WEB_PUSH_VAPID_PRIVATE at runtime and refuses with VAPID_UNSET when they are missing. Private keys are never committed.';
 
 export const DEFAULT_WEB_PUSH_RECORD: WebPushSubscriptionRecord = {
   endpoint: null,
@@ -291,6 +304,9 @@ export async function enableWebPushClient(
     status,
   });
   await persistWebPushDeliveryPrefs();
+  if (record.endpoint) {
+    await syncWebPushSubscriptionToServer(record);
+  }
   return record;
 }
 
@@ -320,6 +336,77 @@ export async function disableWebPushClient(): Promise<WebPushSubscriptionRecord>
   return record;
 }
 
+export async function fetchWebPushServerStatus(
+  fetcher?: typeof fetch | null,
+): Promise<WebPushServerSync> {
+  const impl = fetcher === undefined
+    ? typeof fetch === 'function' ? fetch : undefined
+    : fetcher ?? undefined;
+  if (!impl) {
+    return { status: 'skipped', configured: false, message: 'Fetch is unavailable in this environment.' };
+  }
+  try {
+    const response = await impl(WEB_PUSH_SUBSCRIBE_PATH, { method: 'GET' });
+    const body = (await response.json().catch(() => ({}))) as { configured?: boolean; error?: string; code?: string };
+    if (body.configured) {
+      return { status: 'configured', configured: true, message: 'Server VAPID is armed.' };
+    }
+    if (body.code === 'VAPID_UNSET' || response.status === 503) {
+      return {
+        status: 'vapid_unset',
+        configured: false,
+        message: body.error || 'Server VAPID is unset — scaffold refuses delivery.',
+      };
+    }
+    return { status: 'error', configured: false, message: body.error || `Server status ${response.status}` };
+  } catch {
+    return { status: 'error', configured: false, message: 'Could not reach /api/push/subscribe.' };
+  }
+}
+
+export async function syncWebPushSubscriptionToServer(
+  record: WebPushSubscriptionRecord,
+  keys: { p256dh?: string; auth?: string } = {},
+  fetcher: typeof fetch | undefined = typeof fetch === 'function' ? fetch : undefined,
+): Promise<WebPushServerSync> {
+  if (!record.endpoint) {
+    return { status: 'skipped', configured: false, message: 'No local endpoint to register.' };
+  }
+  if (!keys.p256dh || !keys.auth) {
+    return fetchWebPushServerStatus(fetcher);
+  }
+  if (!fetcher) {
+    return { status: 'skipped', configured: false, message: 'Fetch is unavailable in this environment.' };
+  }
+  try {
+    const response = await fetcher(WEB_PUSH_SUBSCRIBE_PATH, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        endpoint: record.endpoint,
+        keys: {
+          p256dh: keys.p256dh,
+          auth: keys.auth,
+        },
+      }),
+    });
+    const body = (await response.json().catch(() => ({}))) as { configured?: boolean; error?: string; code?: string };
+    if (response.ok && body.configured) {
+      return { status: 'configured', configured: true, message: 'Local endpoint registered with the server scaffold.' };
+    }
+    if (body.code === 'VAPID_UNSET' || response.status === 503) {
+      return {
+        status: 'vapid_unset',
+        configured: false,
+        message: body.error || 'Server refused: VAPID unset.',
+      };
+    }
+    return { status: 'error', configured: false, message: body.error || `Server sync failed (${response.status}).` };
+  } catch {
+    return { status: 'error', configured: false, message: 'Could not reach /api/push/subscribe.' };
+  }
+}
+
 export function webPushStatusCopy(record: WebPushSubscriptionRecord): string {
   switch (record.status) {
     case 'unsupported':
@@ -333,7 +420,7 @@ export function webPushStatusCopy(record: WebPushSubscriptionRecord): string {
         ? 'Permission granted. No browser subscription endpoint yet — owner VAPID can complete subscribe later.'
         : 'Permission granted on this device. No VAPID key in env, so server-triggered push is not armed.';
     case 'subscribed':
-      return 'Browser subscription endpoint stored locally. Server-triggered delivery still needs owner-held VAPID + backend.';
+      return 'Browser subscription endpoint stored locally. /api/push/subscribe is called when configured; owner-held VAPID still required for server delivery.';
     default:
       return WEB_PUSH_DISCLOSURE;
   }
