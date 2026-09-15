@@ -189,12 +189,14 @@ describe('valuationProvenance', () => {
   });
 
   it('renders sold-comps chip when source missing but fresh comps exist (flag off)', () => {
-    const now = new Date().toISOString().slice(0, 10);
+    // Date-only soldAt is parsed as local noon. Use a day already in the past so
+    // morning UTC CI (before 12:00) does not treat "today" as a future stamp.
+    const soldAt = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString().slice(0, 10);
     const chip = getValuationSourceChipForCard({
       salesData: [
-        { title: 'A', price: 1, condition: 'Raw', soldAt: now },
-        { title: 'B', price: 2, condition: 'Raw', soldAt: now },
-        { title: 'C', price: 3, condition: 'Raw', soldAt: now },
+        { title: 'A', price: 1, condition: 'Raw', soldAt },
+        { title: 'B', price: 2, condition: 'Raw', soldAt },
+        { title: 'C', price: 3, condition: 'Raw', soldAt },
       ],
       valuationSource: undefined,
     });

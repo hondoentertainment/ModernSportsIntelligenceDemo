@@ -28,6 +28,26 @@ describe('compConsensus selection + freshness', () => {
     expect(isFreshSoldComp('not-a-date', NOW)).toBe(false);
   });
 
+  it('treats date-only soldAt as fresh when local noon is still ahead of now', () => {
+    const localNoon = Date.parse('2026-09-15T12:00:00');
+    const morningBeforeNoon = localNoon - 7 * 60 * 60 * 1000;
+    expect(isFreshSoldComp('2026-09-15', morningBeforeNoon)).toBe(true);
+    expect(isFreshSoldComp('2026-09-16', morningBeforeNoon)).toBe(false);
+
+    const consensus = computeSoldCompConsensus(
+      [sale(1, '2026-09-15'), sale(2, '2026-09-15'), sale(3, '2026-09-15')],
+      morningBeforeNoon,
+    );
+    expect(consensus?.freshCount).toBe(3);
+    expect(consensus?.stale).toBe(false);
+
+    const preferred = selectPreferredValuation({
+      salesData: [sale(1, '2026-09-15'), sale(2, '2026-09-15'), sale(3, '2026-09-15')],
+      nowMs: morningBeforeNoon,
+    });
+    expect(preferred.method).toBe('sold-comp-consensus');
+  });
+
   it('flags thin tape at 1–2 usable comps', () => {
     expect(isThinCompSet([sale(100, '2026-08-01')])).toBe(true);
     expect(isThinCompSet([sale(100, '2026-08-01'), sale(110, '2026-08-02')])).toBe(true);

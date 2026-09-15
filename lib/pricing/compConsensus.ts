@@ -81,6 +81,9 @@ export const COMPS_USED_THIN =
 export const COMPS_USED_CONSENSUS =
   'These sold/historical comps drive the preferred mark (median). Seeded or stale tape is labeled — this is not a live marketplace book.';
 
+/** Date-only stamps are anchored at local noon; morning clocks can see them as slightly future. */
+const DATE_ONLY_NOON_SLACK_MS = 12 * 60 * 60 * 1000;
+
 function parseSoldAt(soldAt: string | undefined): number | null {
   if (!soldAt) return null;
   const trimmed = soldAt.trim();
@@ -88,6 +91,13 @@ function parseSoldAt(soldAt: string | undefined): number | null {
   const withTime = trimmed.includes('T') ? trimmed : `${trimmed}T12:00:00`;
   const ts = Date.parse(withTime);
   return Number.isNaN(ts) ? null : ts;
+}
+
+/** Age of a sold-comp timestamp. Date-only "today" before local noon counts as age 0. */
+function soldCompAgeMs(nowMs: number, ts: number): number {
+  const age = nowMs - ts;
+  if (age < 0 && age >= -DATE_ONLY_NOON_SLACK_MS) return 0;
+  return age;
 }
 
 function usablePrice(price: number | undefined): number | null {
@@ -120,7 +130,8 @@ function roundCents(value: number): number {
 export function isFreshSoldComp(soldAt: string | undefined, nowMs: number = Date.now()): boolean {
   const ts = parseSoldAt(soldAt);
   if (ts === null) return false;
-  return nowMs - ts < FRESH_COMP_WINDOW_MS && nowMs - ts >= 0;
+  const age = soldCompAgeMs(nowMs, ts);
+  return age >= 0 && age < FRESH_COMP_WINDOW_MS;
 }
 
 export function isThinCompSet(sales: SoldCompLike[] | undefined): boolean {
@@ -145,7 +156,10 @@ export function computeSoldCompConsensus(
 
   const prices = rows.map((r) => r.price);
   const dated = rows.filter((r) => r.ts !== null) as { price: number; ts: number; soldAt: string }[];
-  const fresh = dated.filter((r) => nowMs - r.ts < FRESH_COMP_WINDOW_MS && nowMs - r.ts >= 0);
+  const fresh = dated.filter((r) => {
+    const age = soldCompAgeMs(nowMs, r.ts);
+    return age >= 0 && age < FRESH_COMP_WINDOW_MS;
+  });
   const oldest = dated.length ? dated.reduce((a, b) => (a.ts < b.ts ? a : b)) : null;
   const newest = dated.length ? dated.reduce((a, b) => (a.ts > b.ts ? a : b)) : null;
 
