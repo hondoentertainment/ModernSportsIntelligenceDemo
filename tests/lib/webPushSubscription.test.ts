@@ -32,6 +32,8 @@ import {
   toWebPushDeliveryPrefs,
   webPushStatusCopy,
   readBrowserPushEndpoint,
+  readBrowserPushSubscription,
+  pushKeysFromSubscription,
   fetchWebPushServerStatus,
   syncWebPushSubscriptionToServer,
   WEB_PUSH_SUBSCRIBE_PATH,
@@ -163,7 +165,15 @@ describe('webPushSubscription', () => {
     vi.stubGlobal('Notification', { permission: opts.permission, requestPermission });
     const getSubscription =
       opts.getSubscription ??
-      (async () => (opts.endpoint ? { endpoint: opts.endpoint, unsubscribe: async () => true } : null));
+      (async () =>
+        opts.endpoint
+          ? {
+              endpoint: opts.endpoint,
+              unsubscribe: async () => true,
+              getKey: (name: 'p256dh' | 'auth') =>
+                name === 'p256dh' ? new Uint8Array([1, 2, 3]).buffer : new Uint8Array([4, 5, 6]).buffer,
+            }
+          : null);
     vi.stubGlobal('navigator', {
       serviceWorker: {
         ready: opts.readyReject
@@ -197,10 +207,21 @@ describe('webPushSubscription', () => {
       permission: 'granted',
       endpoint: 'https://push.example/live',
     });
+    const posted = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ configured: true, persisted: false }),
+    }));
+    vi.stubGlobal('fetch', posted);
     const subscribed = await enableWebPushClient({ VITE_WEB_PUSH_VAPID_PUBLIC: 'pub' });
     expect(subscribed.status).toBe('subscribed');
     expect(subscribed.endpoint).toBe('https://push.example/live');
     expect(subscribed.vapidConfigured).toBe(true);
+    expect(posted).toHaveBeenCalled();
+    const postCall = posted.mock.calls.find((call) => (call[1] as RequestInit | undefined)?.method === 'POST');
+    expect(String(postCall?.[1]?.body ?? '')).toMatch(/p256dh/);
+    expect(pushKeysFromSubscription(null)).toEqual({});
+    expect(await readBrowserPushSubscription()).toMatchObject({ endpoint: 'https://push.example/live' });
 
     stubPush({
       permission: 'default',
@@ -472,7 +493,21 @@ describe('webPushSubscription', () => {
         json: async () => ({ configured: true }),
       }) as unknown as typeof fetch,
     );
-    expect(posted.status).toBe('configured');
+    expect(posted.status).toBe('accepted_scaffold');
+    expect(posted.persisted).toBe(false);
+    expect(posted.message).toMatch(/not persisted/i);
+
+    const durable = await syncWebPushSubscriptionToServer(
+      record,
+      { p256dh: 'pk', auth: 'ak' },
+      async () => ({
+        ok: true,
+        status: 200,
+        json: async () => ({ configured: true, persisted: true, endpointStored: true }),
+      }) as unknown as typeof fetch,
+    );
+    expect(durable.status).toBe('configured');
+    expect(durable.persisted).toBe(true);
 
     const missing = await syncWebPushSubscriptionToServer({ ...DEFAULT_WEB_PUSH_RECORD });
     expect(missing.status).toBe('skipped');

@@ -42,11 +42,12 @@ export interface WebPushSubscriptionRecord {
 
 export const WEB_PUSH_SUBSCRIBE_PATH = '/api/push/subscribe';
 
-export type WebPushServerSyncStatus = 'skipped' | 'configured' | 'vapid_unset' | 'error';
+export type WebPushServerSyncStatus = 'skipped' | 'configured' | 'accepted_scaffold' | 'vapid_unset' | 'error';
 
 export interface WebPushServerSync {
   status: WebPushServerSyncStatus;
   configured: boolean;
+  persisted?: boolean;
   message: string;
 }
 
@@ -254,15 +255,43 @@ export function snapshotWebPushSupport(
   };
 }
 
-export async function readBrowserPushEndpoint(): Promise<string | null> {
+function bytesToBase64Url(bytes: Uint8Array): string {
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += 1) binary += String.fromCharCode(bytes[i]);
+  const b64 = typeof btoa === 'function' ? btoa(binary) : Buffer.from(bytes).toString('base64');
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+export function pushKeysFromSubscription(
+  sub: { getKey?: (name: 'p256dh' | 'auth') => ArrayBuffer | null } | null | undefined,
+): { p256dh?: string; auth?: string } {
+  if (!sub || typeof sub.getKey !== 'function') return {};
+  const p256dh = sub.getKey('p256dh');
+  const auth = sub.getKey('auth');
+  return {
+    p256dh: p256dh ? bytesToBase64Url(new Uint8Array(p256dh)) : undefined,
+    auth: auth ? bytesToBase64Url(new Uint8Array(auth)) : undefined,
+  };
+}
+
+export async function readBrowserPushSubscription(): Promise<{
+  endpoint: string;
+  keys: { p256dh?: string; auth?: string };
+} | null> {
   if (!isWebPushSupported()) return null;
   try {
     const registration = await navigator.serviceWorker.ready;
     const existing = await registration.pushManager.getSubscription();
-    return existing?.endpoint ?? null;
+    if (!existing?.endpoint) return null;
+    return { endpoint: existing.endpoint, keys: pushKeysFromSubscription(existing) };
   } catch {
     return null;
   }
+}
+
+export async function readBrowserPushEndpoint(): Promise<string | null> {
+  const existing = await readBrowserPushSubscription();
+  return existing?.endpoint ?? null;
 }
 
 /**
@@ -287,7 +316,8 @@ export async function enableWebPushClient(
   }
 
   const vapidConfigured = Boolean(readOptionalVapidPublicKey(env));
-  const endpoint = await readBrowserPushEndpoint();
+  const existing = await readBrowserPushSubscription();
+  const endpoint = existing?.endpoint ?? null;
   const subscribedAt = endpoint ? new Date().toISOString() : getStoredWebPushSubscription().subscribedAt;
 
   let status: WebPushStatus = 'permission_needed';
@@ -305,7 +335,7 @@ export async function enableWebPushClient(
   });
   await persistWebPushDeliveryPrefs();
   if (record.endpoint) {
-    await syncWebPushSubscriptionToServer(record);
+    await syncWebPushSubscriptionToServer(record, existing?.keys ?? {});
   }
   return record;
 }
@@ -390,9 +420,31 @@ export async function syncWebPushSubscriptionToServer(
         },
       }),
     });
-    const body = (await response.json().catch(() => ({}))) as { configured?: boolean; error?: string; code?: string };
+    const body = (await response.json().catch(() => ({}))) as {
+      configured?: boolean;
+      persisted?: boolean;
+      endpointStored?: boolean;
+      scaffold?: boolean;
+      error?: string;
+      code?: string;
+    };
     if (response.ok && body.configured) {
-      return { status: 'configured', configured: true, message: 'Local endpoint registered with the server scaffold.' };
+      const persisted = body.persisted === true || body.endpointStored === true;
+      if (persisted) {
+        return {
+          status: 'configured',
+          configured: true,
+          persisted: true,
+          message: 'Local endpoint registered with a durable server store.',
+        };
+      }
+      return {
+        status: 'accepted_scaffold',
+        configured: true,
+        persisted: false,
+        message:
+          'VAPID is armed and the subscription was validated. Not persisted — no durable store until owner cloud ops after #77.',
+      };
     }
     if (body.code === 'VAPID_UNSET' || response.status === 503) {
       return {

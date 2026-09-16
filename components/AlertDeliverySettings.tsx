@@ -134,7 +134,8 @@ const AlertDeliverySettings: React.FC<{ compact?: boolean }> = ({ compact }) => 
           <p className="text-[11px] text-slate-300">{webPushStatusCopy(pushRecord)}</p>
           {serverPush && (
             <p className="text-[11px] text-amber-200/90">
-              Server: {serverPush.configured ? 'VAPID armed' : serverPush.status} — {serverPush.message}
+              Server: {serverPush.configured ? 'VAPID armed' : serverPush.status}
+              {serverPush.persisted === false ? ' · not persisted' : ''} — {serverPush.message}
             </p>
           )}
           {pushRecord.endpoint && (

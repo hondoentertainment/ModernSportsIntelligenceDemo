@@ -70,6 +70,33 @@ describe('P2PIntentBoard', () => {
     expect(listOpenIntents()[0]?.cardId).toBeNull();
   });
 
+  it('refreshes the reputation stub after an escrow release', async () => {
+    const user = userEvent.setup();
+    const inventory = [
+      makeCard({ id: 'c1', player: 'Juan Soto', year: 2022, set: 'Chrome', currentValue: 240 }),
+    ];
+    render(<P2PIntentBoard inventory={inventory} />);
+
+    await user.clear(screen.getByLabelText(/limit price/i));
+    await user.type(screen.getByLabelText(/limit price/i), '200');
+    await user.click(screen.getByRole('button', { name: /post sell intent/i }));
+
+    await user.click(screen.getByRole('button', { name: /buy intent/i }));
+    await user.clear(screen.getByLabelText(/^player$/i));
+    await user.type(screen.getByLabelText(/^player$/i), 'Juan Soto');
+    await user.clear(screen.getByLabelText(/^year$/i));
+    await user.type(screen.getByLabelText(/^year$/i), '2022');
+    await user.clear(screen.getByLabelText(/limit price/i));
+    await user.type(screen.getByLabelText(/limit price/i), '220');
+    await user.click(screen.getByRole('button', { name: /post buy intent/i }));
+
+    expect(screen.getByLabelText(/local match suggestions/i)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /^offer$/i }));
+    await user.click(screen.getByRole('button', { name: /fund stub/i }));
+    await user.click(screen.getByRole('button', { name: /release stub/i }));
+    expect(screen.getByText(/reputation stub/i)).toHaveTextContent(/[1-9]/);
+  });
+
   it('rejects a sell intent when no held card is selected', async () => {
     const user = userEvent.setup();
     render(

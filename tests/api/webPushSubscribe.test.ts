@@ -67,7 +67,9 @@ describe('GET/POST /api/push/subscribe', () => {
       ok,
     );
     expect(ok.statusCode).toBe(200);
-    expect((ok.body as { endpointStored?: boolean }).endpointStored).toBe(true);
+    expect((ok.body as { accepted?: boolean; persisted?: boolean; endpointStored?: boolean }).accepted).toBe(true);
+    expect((ok.body as { persisted?: boolean }).persisted).toBe(false);
+    expect((ok.body as { endpointStored?: boolean }).endpointStored).toBe(false);
 
     const del = makeRes();
     await handler({ method: 'DELETE' }, del);

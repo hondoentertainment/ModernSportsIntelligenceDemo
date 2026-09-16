@@ -78,6 +78,30 @@ function playerKey(player: string): string {
   return player.trim().toLowerCase();
 }
 
+function fieldKey(value: string | null | undefined): string {
+  return (value ?? '').trim().toLowerCase();
+}
+
+function hasCardIdentity(intent: P2PIntent): boolean {
+  return Boolean(intent.cardId || intent.year || intent.set || intent.manufacturer);
+}
+
+/** Player plus any shared year / set / manufacturer / cardId — never player-only. */
+export function intentsShareCardIdentity(bid: P2PIntent, ask: P2PIntent): boolean {
+  if (playerKey(bid.player) !== playerKey(ask.player)) return false;
+  if (!hasCardIdentity(bid) || !hasCardIdentity(ask)) return false;
+  if (bid.cardId && ask.cardId && bid.cardId !== ask.cardId) return false;
+  if (bid.year && ask.year && bid.year !== ask.year) return false;
+  if ((bid.year && !ask.year) || (!bid.year && ask.year)) return false;
+  if (fieldKey(bid.manufacturer) && fieldKey(ask.manufacturer) && fieldKey(bid.manufacturer) !== fieldKey(ask.manufacturer)) {
+    return false;
+  }
+  if (fieldKey(bid.set) && fieldKey(ask.set) && fieldKey(bid.set) !== fieldKey(ask.set)) {
+    return false;
+  }
+  return true;
+}
+
 export function classifyMatchQuality(spread: number): MatchQuality {
   if (spread >= 0) return 'crosses';
   if (spread >= -25) return 'near';
@@ -93,8 +117,7 @@ export function suggestMatches(intents: P2PIntent[] = listOpenIntents()): P2PMat
 
   for (const bid of bids) {
     for (const ask of asks) {
-      if (playerKey(bid.player) !== playerKey(ask.player)) continue;
-      if (bid.year && ask.year && bid.year !== ask.year) continue;
+      if (!intentsShareCardIdentity(bid, ask)) continue;
       const id = `match-${bid.id}-${ask.id}`;
       if (seen.has(id)) continue;
       seen.add(id);
