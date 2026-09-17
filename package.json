@@ -67,31 +67,30 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@google/genai": "^2.22.0",
+    "@google/genai": "^2.23.0",
     "@stripe/stripe-js": "^9.16.0",
     "@supabase/supabase-js": "^2.116.0",
-    "@tanstack/react-virtual": "^3.14.12",
+    "@tanstack/react-virtual": "^3.14.13",
     "dompurify": "^3.4.15",
     "jspdf": "^4.1.0",
     "lucide-react": "1.8.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-is": "^19.3.0",
-    "react-router-dom": "7.18.3",
+    "react-router-dom": "7.18.4",
     "recharts": "3.10.1",
     "stripe": "^22.6.2",
-    "web-vitals": "^6.2.1",
-    "zod": "^4.6.2"
+    "web-vitals": "^6.2.2",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9.39.5",
     "@playwright/test": "^1.63.0",
-    "@testing-library/dom": "^10.4.1",
+    "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@typescript-eslint/eslint-plugin": "^8.70.0",
@@ -100,7 +99,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "@vitest/coverage-v8": "^4.1.11",
     "@vitest/ui": "^5.0.0",
-    "autoprefixer": "^10.5.6",
+    "autoprefixer": "^10.6.1",
     "cross-env": "^10.1.0",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
@@ -118,7 +117,7 @@
     "vitest": "^4.1.11"
   },
   "optionalDependencies": {
-    "@sentry/react": "^10.74.0"
+    "@sentry/react": "^10.75.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
