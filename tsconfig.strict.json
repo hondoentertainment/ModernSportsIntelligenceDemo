@@ -2,7 +2,7 @@
   "extends": "./tsconfig.release.json",
   "compilerOptions": {
     "strict": true,
-    "types": ["node", "react", "react-dom", "vitest/globals", "@testing-library/jest-dom"]
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom/vitest"]
   },
   "exclude": [
     "scripts/**",
