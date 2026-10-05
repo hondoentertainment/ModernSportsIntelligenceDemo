@@ -118,7 +118,7 @@ const PremiumTableTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
               ? `${selectedCard.player} - ${selectedCard.year} ${selectedCard.manufacturer} #${selectedCard.cardNumber}`
               : 'Select a card'}
           </span>
-          <ChevronDown size={16} className="text-slate-400 flex-shrink-0" />
+          <ChevronDown size={16} className="text-slate-400 shrink-0" />
         </button>
         {showDropdown && (
           <div className="absolute z-50 top-full mt-1 w-full bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-xl max-h-60 overflow-y-auto">
@@ -140,7 +140,7 @@ const PremiumTableTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
                   {card.player} - {card.year} {card.manufacturer} #{card.cardNumber}
                 </span>
                 {card.isGraded && (
-                  <span className="flex-shrink-0 text-[10px] font-bold text-purple-400 bg-purple-500/15 px-1.5 py-0.5 rounded">
+                  <span className="shrink-0 text-[10px] font-bold text-purple-400 bg-purple-500/15 px-1.5 py-0.5 rounded-sm">
                     {card.gradingCompany} {card.grade}
                   </span>
                 )}
@@ -292,7 +292,7 @@ const PremiumTableTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
                     ${row.sgcValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </td>
                   <td className="py-2.5 px-3 text-right">
-                    <span className="text-[10px] font-bold text-purple-400 bg-purple-500/15 px-1.5 py-0.5 rounded">
+                    <span className="text-[10px] font-bold text-purple-400 bg-purple-500/15 px-1.5 py-0.5 rounded-sm">
                       {row.bestGrader}
                     </span>
                   </td>
@@ -427,7 +427,7 @@ const CrossoverTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
                 ${opp.currentValue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
               </p>
             </div>
-            <ArrowRightLeft size={18} className="text-purple-400 flex-shrink-0" />
+            <ArrowRightLeft size={18} className="text-purple-400 shrink-0" />
             <div className="text-center flex-1">
               <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Target</p>
               <p className="text-sm font-bold text-purple-400">
@@ -563,7 +563,7 @@ const PortfolioTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
       {/* Upgrade Value Potential */}
       {analysis.upgradeValuePotential > 0 && (
         <div className="flex items-center gap-3 p-4 bg-green-500/5 border border-green-500/20 rounded-2xl">
-          <TrendingUp size={18} className="text-green-400 flex-shrink-0" />
+          <TrendingUp size={18} className="text-green-400 shrink-0" />
           <div>
             <p className="text-sm font-bold text-white">Upgrade Value Potential</p>
             <p className="text-xs text-slate-400">
@@ -641,12 +641,12 @@ const PortfolioTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
               const color = GRADER_COLORS[entry.grader] ?? '#64748b';
               return (
                 <div key={entry.grader} className="flex items-center gap-3 text-xs">
-                  <span className="w-12 text-right text-slate-400 font-bold flex-shrink-0">
+                  <span className="w-12 text-right text-slate-400 font-bold shrink-0">
                     {entry.grader}
                   </span>
-                  <div className="flex-1 h-5 bg-slate-700/50 rounded overflow-hidden">
+                  <div className="flex-1 h-5 bg-slate-700/50 rounded-sm overflow-hidden">
                     <div
-                      className="h-full rounded transition-all duration-500"
+                      className="h-full rounded-sm transition-all duration-500"
                       style={{ width: `${barWidth}%`, backgroundColor: color }}
                     />
                   </div>
@@ -670,7 +670,7 @@ const PortfolioTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
                 key={`${opp.cardId}-${opp.targetGrader}`}
                 className="flex items-center gap-3 px-4 py-3 bg-slate-900/30 rounded-xl"
               >
-                <ArrowRightLeft size={14} className="text-purple-400 flex-shrink-0" />
+                <ArrowRightLeft size={14} className="text-purple-400 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-white font-medium truncate">{opp.player}</p>
                   <p className="text-[10px] text-slate-500">
@@ -722,7 +722,7 @@ export const GradePremiumModal: React.FC<GradePremiumModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-purple-500/5">

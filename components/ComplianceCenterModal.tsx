@@ -513,7 +513,7 @@ const StateTaxesTab: React.FC = () => {
             <ul className="space-y-2">
               {guidance.exemptions.map((ex, i) => (
                 <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                  <CheckCircle2 size={12} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 size={12} className="text-emerald-400 mt-0.5 shrink-0" />
                   <span>{ex}</span>
                 </li>
               ))}
@@ -613,12 +613,12 @@ export const ComplianceCenterModal: React.FC<ComplianceCenterModalProps> = ({ is
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center">
+    <div className="fixed inset-0 z-100 flex items-start justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-5xl mx-4 mt-8 mb-8 max-h-[90vh] flex flex-col bg-brand-charcoal border border-slate-800 rounded-[2rem] shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 overflow-hidden">
+      <div className="relative w-full max-w-5xl mx-4 mt-8 mb-8 max-h-[90vh] flex flex-col bg-brand-charcoal border border-slate-800 rounded-4xl shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-800">
           <div className="flex items-center gap-3">

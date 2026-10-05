@@ -167,12 +167,12 @@ const MemeticPropagation: React.FC = () => {
                 {/* Channel Propagation Bar */}
                 <div className="flex gap-1">
                   {narrative.infectedChannels.map(ch => (
-                    <span key={ch} className={`px-2 py-0.5 rounded text-[10px] font-bold ${getChannelColor(ch)}`}>
+                    <span key={ch} className={`px-2 py-0.5 rounded-sm text-[10px] font-bold ${getChannelColor(ch)}`}>
                       {ch}
                     </span>
                   ))}
                   {narrative.susceptibleChannels.map(ch => (
-                    <span key={ch} className="px-2 py-0.5 rounded text-[10px] font-bold text-slate-600 bg-slate-800 border border-slate-700">
+                    <span key={ch} className="px-2 py-0.5 rounded-sm text-[10px] font-bold text-slate-600 bg-slate-800 border border-slate-700">
                       {ch}
                     </span>
                   ))}

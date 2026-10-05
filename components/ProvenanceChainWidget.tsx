@@ -94,12 +94,12 @@ const ProvenanceChainWidget: React.FC<Props> = ({ onOpenModal }) => {
                 key={alert.id}
                 className="flex items-start gap-3 p-3 bg-red-500/5 border border-red-500/20 rounded-xl text-xs"
               >
-                <ShieldAlert size={14} className="text-red-400 flex-shrink-0 mt-0.5" />
+                <ShieldAlert size={14} className="text-red-400 shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-medium truncate">{alert.cardName}</p>
                   <p className="text-[10px] text-red-400/80 mt-0.5 line-clamp-1">{alert.description}</p>
                 </div>
-                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full flex-shrink-0 ${
+                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full shrink-0 ${
                   alert.severity === 'critical'
                     ? 'bg-red-500/20 text-red-400'
                     : 'bg-amber-500/20 text-amber-400'

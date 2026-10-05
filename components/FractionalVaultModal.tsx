@@ -24,7 +24,7 @@ const FractionalVaultModal: React.FC<Props> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
@@ -189,7 +189,7 @@ const FractionalVaultModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 <div key={collector.id} className="bg-slate-800/50 border border-slate-700/30 rounded-xl p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
+                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
                         {collector.displayName.charAt(0)}
                       </div>
                       <div>
@@ -233,7 +233,7 @@ const FractionalVaultModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Recent Moves</p>
                     {collector.recentMoves.slice(0, 2).map(move => (
                       <div key={move.id} className="flex items-center gap-2 bg-slate-900/50 rounded-lg p-2">
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${move.type === 'buy' || move.type === 'fractional_buy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold ${move.type === 'buy' || move.type === 'fractional_buy' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
                           {move.type.toUpperCase().replace('_', ' ')}
                         </span>
                         <span className="text-xs text-slate-300 truncate flex-1">{move.playerName}</span>

@@ -103,7 +103,7 @@ const NotificationPipelineModal: React.FC<NotificationPipelineModalProps> = ({ i
       }}
     >
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden animate-fade-in z-10">
@@ -162,7 +162,7 @@ const NotificationPipelineModal: React.FC<NotificationPipelineModalProps> = ({ i
                   }`}
                 >
                   {/* Channel icon */}
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
                     n.isRead ? 'bg-slate-800 text-slate-500' : 'bg-blue-500/10 text-blue-400'
                   }`}>
                     {CHANNEL_ICONS[n.channel]}
@@ -174,7 +174,7 @@ const NotificationPipelineModal: React.FC<NotificationPipelineModalProps> = ({ i
                       <h4 className={`text-xs font-semibold ${n.isRead ? 'text-slate-400' : 'text-slate-100'}`}>
                         {n.title}
                       </h4>
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         <span className={`text-[9px] px-1.5 py-0.5 rounded-full border ${PRIORITY_COLORS[n.priority]}`}>
                           {n.priority}
                         </span>
@@ -189,7 +189,7 @@ const NotificationPipelineModal: React.FC<NotificationPipelineModalProps> = ({ i
                         {!n.isRead && (
                           <button
                             onClick={() => markAsRead(n.id)}
-                            className="p-1 rounded text-blue-400 hover:bg-blue-500/10 transition-colors"
+                            className="p-1 rounded-sm text-blue-400 hover:bg-blue-500/10 transition-colors"
                             title="Mark as read"
                           >
                             <Check size={10} />
@@ -197,7 +197,7 @@ const NotificationPipelineModal: React.FC<NotificationPipelineModalProps> = ({ i
                         )}
                         <button
                           onClick={() => dismiss(n.id)}
-                          className="p-1 rounded text-slate-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                          className="p-1 rounded-sm text-slate-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                           title="Dismiss"
                         >
                           <X size={10} />
@@ -208,7 +208,7 @@ const NotificationPipelineModal: React.FC<NotificationPipelineModalProps> = ({ i
 
                   {/* Unread indicator */}
                   {!n.isRead && (
-                    <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${PRIORITY_DOTS[n.priority]}`} />
+                    <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${PRIORITY_DOTS[n.priority]}`} />
                   )}
                 </div>
               ))}

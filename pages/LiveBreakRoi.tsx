@@ -250,7 +250,7 @@ const LiveBreakRoi: React.FC = () => {
         <select
           value={platformFilter}
           onChange={(e) => setPlatformFilter(e.target.value)}
-          className="bg-gray-700 text-gray-200 text-sm rounded px-2 py-1 border border-gray-600"
+          className="bg-gray-700 text-gray-200 text-sm rounded-sm px-2 py-1 border border-gray-600"
         >
           <option value="all">All Platforms</option>
           {platforms.map((p) => (
@@ -260,7 +260,7 @@ const LiveBreakRoi: React.FC = () => {
         <select
           value={sportFilter}
           onChange={(e) => setSportFilter(e.target.value)}
-          className="bg-gray-700 text-gray-200 text-sm rounded px-2 py-1 border border-gray-600"
+          className="bg-gray-700 text-gray-200 text-sm rounded-sm px-2 py-1 border border-gray-600"
         >
           <option value="all">All Sports</option>
           {sports.map((s) => (
@@ -270,7 +270,7 @@ const LiveBreakRoi: React.FC = () => {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="bg-gray-700 text-gray-200 text-sm rounded px-2 py-1 border border-gray-600"
+          className="bg-gray-700 text-gray-200 text-sm rounded-sm px-2 py-1 border border-gray-600"
         >
           <option value="all">All Break Types</option>
           {breakTypes.map((t) => (
@@ -581,7 +581,7 @@ function BreakCard({ brk }: { brk: LiveBreak }) {
           </div>
         </div>
         {isLive && (
-          <span className="flex-shrink-0 w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+          <span className="shrink-0 w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
         )}
       </div>
 
@@ -590,7 +590,7 @@ function BreakCard({ brk }: { brk: LiveBreak }) {
         <span className="text-white font-medium">{brk.breaker}</span>
         <span>({brk.breakerRating})</span>
         {brk.breakerVerified && (
-          <span className="text-[10px] px-1 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Verified</span>
+          <span className="text-[10px] px-1 py-0.5 rounded-sm bg-emerald-500/20 text-emerald-400">Verified</span>
         )}
       </div>
 
@@ -701,13 +701,13 @@ function HitCard({ hit }: { hit: BreakHit }) {
       <div className="text-xs text-gray-400 mb-1">{hit.player} | {hit.year} {hit.set}</div>
       <div className="flex flex-wrap items-center gap-1.5 mb-2">
         {hit.parallel && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-400">{hit.parallel}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-purple-500/20 text-purple-400">{hit.parallel}</span>
         )}
         {hit.isAutographed && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">Auto</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-amber-500/20 text-amber-400">Auto</span>
         )}
         {hit.isNumbered && hit.printRun && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400">/{hit.printRun}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-blue-500/20 text-blue-400">/{hit.printRun}</span>
         )}
       </div>
       <div className="text-sm font-bold text-emerald-400">{formatCurrency(hit.estimatedValue)}</div>
@@ -724,14 +724,14 @@ function BreakerRow({ profile, rank }: { profile: BreakerProfile; rank: number }
   return (
     <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/50 flex flex-col sm:flex-row sm:items-center gap-3">
       <div className="flex items-center gap-3 min-w-0 flex-1">
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold text-white">
+        <div className="shrink-0 w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold text-white">
           {rank}
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-semibold text-white truncate">{profile.name}</span>
             {profile.verified && (
-              <span className="text-[10px] px-1 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Verified</span>
+              <span className="text-[10px] px-1 py-0.5 rounded-sm bg-emerald-500/20 text-emerald-400">Verified</span>
             )}
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-400 mt-0.5">
@@ -743,7 +743,7 @@ function BreakerRow({ profile, rank }: { profile: BreakerProfile; rank: number }
         </div>
       </div>
 
-      <div className="flex items-center gap-4 text-xs flex-shrink-0">
+      <div className="flex items-center gap-4 text-xs shrink-0">
         <div className="text-center">
           <div className="text-gray-400">Rating</div>
           <div className="text-white font-bold flex items-center gap-0.5">

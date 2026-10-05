@@ -204,7 +204,7 @@ function DNAAnalysisTab({ dna }: { dna: PortfolioDNA }) {
                 <div key={a.category} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1.5">
                     <span
-                      className="w-2.5 h-2.5 rounded-sm inline-block"
+                      className="w-2.5 h-2.5 rounded-xs inline-block"
                       style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }}
                     />
                     <span className="text-slate-400 truncate max-w-[140px]">{a.label}</span>
@@ -322,7 +322,7 @@ function ModelPortfoliosTab({
                     <div key={t.category} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-1.5">
                         <span
-                          className="w-2 h-2 rounded-sm inline-block"
+                          className="w-2 h-2 rounded-xs inline-block"
                           style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }}
                         />
                         <span className="text-slate-400 truncate max-w-[130px]">{t.label}</span>

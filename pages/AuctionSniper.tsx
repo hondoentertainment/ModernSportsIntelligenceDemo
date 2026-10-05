@@ -313,13 +313,13 @@ const AuctionSniper: React.FC = () => {
           {alerts.map((alert, idx) => (
             <div key={idx} className="flex items-center justify-between p-3 bg-slate-900/50 border border-emerald-500/20 rounded-xl">
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <Zap size={16} className={`flex-shrink-0 ${alert.priority === 'high' ? 'text-red-400' : alert.priority === 'medium' ? 'text-amber-400' : 'text-blue-400'}`} />
+                <Zap size={16} className={`shrink-0 ${alert.priority === 'high' ? 'text-red-400' : alert.priority === 'medium' ? 'text-amber-400' : 'text-blue-400'}`} />
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-white truncate">{alert.auctionTitle}</p>
                   <p className="text-[10px] text-slate-500">{alert.platform} &middot; {alert.triggerReason}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+              <div className="flex items-center gap-3 shrink-0 ml-2">
                 <span className="text-sm font-bold text-white">{formatCurrency(alert.currentPrice)}</span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${alert.priority === 'high' ? 'bg-red-500/10 text-red-400' : alert.priority === 'medium' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}`}>
                   {alert.priority.toUpperCase()}
@@ -407,7 +407,7 @@ const AuctionSniper: React.FC = () => {
                     <p className="text-[10px] text-slate-500">{w.platform} &middot; {formatTimeRemaining(w.timeRemaining)}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+                <div className="flex items-center gap-3 shrink-0 ml-2">
                   <div className="text-right">
                     <p className="text-sm font-bold text-white">{formatCurrency(w.currentBid)}</p>
                     <p className="text-[10px] text-slate-500">Max: {formatCurrency(w.maxBid)}</p>

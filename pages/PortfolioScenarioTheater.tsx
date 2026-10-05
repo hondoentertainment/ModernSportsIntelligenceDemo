@@ -43,7 +43,7 @@ const PortfolioScenarioTheater: React.FC = () => {
             <select
               value={scenarioId}
               onChange={e => setScenarioId(e.target.value)}
-              className="mt-2 rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2 text-sm text-white focus:border-cyan-500/50 focus:outline-none"
+              className="mt-2 rounded-xl border border-slate-700 bg-slate-950/70 px-3 py-2 text-sm text-white focus:border-cyan-500/50 focus:outline-hidden"
             >
               {scenarios.map(scenario => (
                 <option key={scenario.id} value={scenario.id}>{scenario.name}</option>

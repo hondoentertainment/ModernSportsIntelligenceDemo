@@ -284,7 +284,7 @@ export default function MarketMakerArena() {
                 className="flex items-center gap-4 rounded-xl border border-gray-800 bg-gray-900/80 p-4 transition-colors hover:border-gray-700 hover:bg-gray-900"
               >
                 {/* Rank */}
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gray-800 text-lg font-bold text-gray-300">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-800 text-lg font-bold text-gray-300">
                   {entry.rank <= 3 ? ['🥇', '🥈', '🥉'][entry.rank - 1] : `#${entry.rank}`}
                 </div>
 
@@ -297,7 +297,7 @@ export default function MarketMakerArena() {
                       <span className={`h-2 w-2 rounded-full ${STATUS_DOT[bot.status]}`} />
                     </div>
                     <span
-                      className={`inline-block rounded border px-1.5 py-0.5 text-[10px] font-medium ${STRATEGY_BG[bot.strategy]}`}
+                      className={`inline-block rounded-sm border px-1.5 py-0.5 text-[10px] font-medium ${STRATEGY_BG[bot.strategy]}`}
                     >
                       {bot.strategy}
                     </span>
@@ -333,7 +333,7 @@ export default function MarketMakerArena() {
                     setSelectedBotId(entry.botId);
                     setActiveTab('deep-dive');
                   }}
-                  className="flex-shrink-0 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-500"
+                  className="shrink-0 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-500"
                 >
                   Inspect
                 </button>
@@ -368,7 +368,7 @@ export default function MarketMakerArena() {
           <span className={`h-2.5 w-2.5 rounded-full ${STATUS_DOT[selectedBot.status]}`} />
           <span className="text-xs capitalize text-gray-400">{selectedBot.status}</span>
           <span
-            className={`rounded border px-2 py-0.5 text-xs font-medium ${STRATEGY_BG[selectedBot.strategy]}`}
+            className={`rounded-sm border px-2 py-0.5 text-xs font-medium ${STRATEGY_BG[selectedBot.strategy]}`}
           >
             {selectedBot.strategy}
           </span>
@@ -961,10 +961,10 @@ export default function MarketMakerArena() {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-950/80 px-6 py-4 backdrop-blur">
+      <header className="border-b border-gray-800 bg-gray-950/80 px-6 py-4 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 text-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-purple-600 text-lg">
               🤖
             </div>
             <div>

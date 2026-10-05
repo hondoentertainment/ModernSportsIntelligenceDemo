@@ -153,7 +153,7 @@ export const SeasonalModal: React.FC<SeasonalModalProps> = ({ isOpen, onClose, c
 
   // ---- Render ----
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col">
 
         {/* Header */}
@@ -325,19 +325,19 @@ export const SeasonalModal: React.FC<SeasonalModalProps> = ({ isOpen, onClose, c
                 {/* Legend */}
                 <div className="flex items-center gap-4 mt-4 text-[10px] text-slate-400">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-green-500/30 border border-green-500/40" />
+                    <div className="w-3 h-3 rounded-sm bg-green-500/30 border border-green-500/40" />
                     <span>Peak (118+)</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-emerald-500/20 border border-emerald-500/30" />
+                    <div className="w-3 h-3 rounded-sm bg-emerald-500/20 border border-emerald-500/30" />
                     <span>Rising (105-117)</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-amber-500/20 border border-amber-500/30" />
+                    <div className="w-3 h-3 rounded-sm bg-amber-500/20 border border-amber-500/30" />
                     <span>Falling (90-104)</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded bg-red-500/20 border border-red-500/30" />
+                    <div className="w-3 h-3 rounded-sm bg-red-500/20 border border-red-500/30" />
                     <span>Trough (&lt;90)</span>
                   </div>
                   <div className="flex items-center gap-1.5 ml-2">
@@ -629,7 +629,7 @@ export const SeasonalModal: React.FC<SeasonalModalProps> = ({ isOpen, onClose, c
               {/* Strategy Notes */}
               <div className="bg-teal-500/5 border border-teal-500/20 rounded-2xl p-5">
                 <div className="flex items-start gap-3">
-                  <Target size={18} className="text-teal-400 flex-shrink-0 mt-0.5" />
+                  <Target size={18} className="text-teal-400 shrink-0 mt-0.5" />
                   <div className="text-xs text-slate-300 leading-relaxed space-y-1">
                     <p className="font-bold text-white">How the seasonal strategy works</p>
                     <p>The strategy increases position size during historically favorable months and reduces exposure during weak periods. It does not predict future returns but uses multi-year seasonal patterns to time entries and exits.</p>
@@ -672,7 +672,7 @@ export const SeasonalModal: React.FC<SeasonalModalProps> = ({ isOpen, onClose, c
                       >
                         <div className="flex items-start justify-between gap-3 mb-2">
                           <div className="flex items-center gap-2">
-                            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${pc.dot}`} />
+                            <span className={`w-2 h-2 rounded-full shrink-0 ${pc.dot}`} />
                             {alert.windowType === 'buy' && <ShoppingCart size={14} className="text-green-400" />}
                             {alert.windowType === 'sell' && <DollarSign size={14} className="text-amber-400" />}
                             {!alert.windowType && <Bell size={14} className="text-slate-400" />}

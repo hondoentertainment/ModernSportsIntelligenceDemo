@@ -126,7 +126,7 @@ const LiveGameImpactEngineModal: React.FC<Props> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-6xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
@@ -297,7 +297,7 @@ const LiveGameImpactEngineModal: React.FC<Props> = ({ isOpen, onClose }) => {
                         <div className="space-y-3">
                           {selectedGameEvents.map(evt => (
                             <div key={evt.id} className="flex gap-3 p-3 bg-slate-900/50 rounded-lg">
-                              <div className={`w-1 rounded-full flex-shrink-0 ${
+                              <div className={`w-1 rounded-full shrink-0 ${
                                 evt.cardValueDelta > 3 ? 'bg-emerald-500' :
                                 evt.cardValueDelta < -1 ? 'bg-red-500' : 'bg-slate-600'
                               }`} />
@@ -305,7 +305,7 @@ const LiveGameImpactEngineModal: React.FC<Props> = ({ isOpen, onClose }) => {
                                 <div className="flex items-center justify-between mb-1">
                                   <div className="flex items-center gap-2">
                                     <span className="text-xs font-bold text-white">{evt.playerName}</span>
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">{evt.eventType.replace(/_/g, ' ')}</span>
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-slate-700 text-slate-400">{evt.eventType.replace(/_/g, ' ')}</span>
                                     {evt.isHighlight && <Zap size={10} className="text-amber-400" />}
                                   </div>
                                   <span className="text-[10px] text-slate-600">{evt.period} {evt.clock}</span>
@@ -336,12 +336,12 @@ const LiveGameImpactEngineModal: React.FC<Props> = ({ isOpen, onClose }) => {
                       <div className="space-y-2">
                         {milestones.filter(m => m.isLiveRelevant).map(ms => (
                           <div key={ms.id} className="flex items-center gap-3 p-3 bg-slate-900/50 rounded-lg">
-                            <Trophy size={16} className="text-amber-400 flex-shrink-0" />
+                            <Trophy size={16} className="text-amber-400 shrink-0" />
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-bold text-white">{ms.playerName}: {ms.milestoneType}</p>
                               <p className="text-[10px] text-slate-400">{ms.description}</p>
                             </div>
-                            <div className="text-right flex-shrink-0">
+                            <div className="text-right shrink-0">
                               <p className="text-xs font-bold text-amber-400">+{ms.potentialPriceImpact}%</p>
                               <p className="text-[10px] text-slate-500">{ms.progressPercent.toFixed(0)}% there</p>
                             </div>
@@ -415,7 +415,7 @@ const LiveGameImpactEngineModal: React.FC<Props> = ({ isOpen, onClose }) => {
                             <p className="text-xs text-slate-400 truncate flex-1 mr-3">{card.latestEvent}</p>
                             <button
                               onClick={() => handleProjectionSelect(card)}
-                              className="text-[10px] text-brand-lime hover:underline flex-shrink-0"
+                              className="text-[10px] text-brand-lime hover:underline shrink-0"
                             >
                               View Projections
                             </button>
@@ -545,10 +545,10 @@ const LiveGameImpactEngineModal: React.FC<Props> = ({ isOpen, onClose }) => {
                         </div>
                         <div className="flex items-center justify-center gap-6 mt-3 text-[10px] text-slate-500">
                           <span className="flex items-center gap-1">
-                            <span className="w-3 h-0.5 bg-brand-lime rounded" /> Projected Price
+                            <span className="w-3 h-0.5 bg-brand-lime rounded-sm" /> Projected Price
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="w-3 h-3 bg-emerald-500/15 rounded" /> Confidence Band
+                            <span className="w-3 h-3 bg-emerald-500/15 rounded-sm" /> Confidence Band
                           </span>
                         </div>
                       </div>
@@ -559,7 +559,7 @@ const LiveGameImpactEngineModal: React.FC<Props> = ({ isOpen, onClose }) => {
                         <div className="space-y-2">
                           {selectedProjection.projections.map(proj => (
                             <div key={proj.window} className="flex gap-3 p-2">
-                              <span className="text-xs font-bold text-slate-400 w-10 flex-shrink-0">{proj.window}</span>
+                              <span className="text-xs font-bold text-slate-400 w-10 shrink-0">{proj.window}</span>
                               <p className="text-xs text-slate-500">{proj.reasoning}</p>
                             </div>
                           ))}

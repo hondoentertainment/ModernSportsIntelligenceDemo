@@ -94,7 +94,7 @@ const WatchlistPriceCard: React.FC<WatchlistPriceCardProps> = ({ target, onDelet
                     </div>
 
                     {/* Sparkline */}
-                    <div className="w-20 h-10 flex-shrink-0 ml-3">
+                    <div className="w-20 h-10 shrink-0 ml-3">
                         <Sparkline data={sparklineData} showTrend={true} />
                     </div>
                 </div>

@@ -138,7 +138,7 @@ const CardAnalysisTab: React.FC<{
         <select
           value={cardId}
           onChange={e => setCardId(e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white appearance-none focus:outline-none focus:border-cyan-500/50 cursor-pointer"
+          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white appearance-none focus:outline-hidden focus:border-cyan-500/50 cursor-pointer"
         >
           {activeCards.map(c => (
             <option key={c.id} value={c.id}>
@@ -386,7 +386,7 @@ const PortfolioTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
               </div>
               <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-700"
+                  className="h-full rounded-full bg-linear-to-r from-cyan-500 to-blue-500 transition-all duration-700"
                   style={{ width: `${row.pct}%` }}
                 />
               </div>
@@ -664,7 +664,7 @@ const EmergencyTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
               value={targetAmount}
               onChange={e => setTargetAmount(Math.max(0, Number(e.target.value)))}
               onBlur={handleSave}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/50"
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-cyan-500/50"
             />
           </div>
           <div>
@@ -676,7 +676,7 @@ const EmergencyTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
               value={targetDays}
               onChange={e => setTargetDays(Math.max(1, Number(e.target.value)))}
               onBlur={handleSave}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500/50"
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-cyan-500/50"
             />
           </div>
         </div>
@@ -783,7 +783,7 @@ export const LiquidityModal: React.FC<LiquidityModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-brand-slate border border-slate-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden">

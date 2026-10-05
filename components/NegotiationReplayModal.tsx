@@ -105,10 +105,10 @@ const NegotiationReplayModal: React.FC<Props> = ({ isOpen, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-gradient-to-r from-orange-500/10 to-slate-900 px-6 py-5 border-b border-slate-700/40">
+        <div className="bg-linear-to-r from-orange-500/10 to-slate-900 px-6 py-5 border-b border-slate-700/40">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
@@ -234,7 +234,7 @@ const NegotiationReplayModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   {/* Tags */}
                   <div className="flex items-center gap-2 mb-3">
                     {replay.tags.map((tag) => (
-                      <span key={tag} className="px-2 py-0.5 rounded bg-slate-700/50 text-slate-400 text-[10px] font-medium">
+                      <span key={tag} className="px-2 py-0.5 rounded-sm bg-slate-700/50 text-slate-400 text-[10px] font-medium">
                         #{tag}
                       </span>
                     ))}
@@ -267,7 +267,7 @@ const NegotiationReplayModal: React.FC<Props> = ({ isOpen, onClose }) => {
                               <span className={`text-[10px] font-bold uppercase ${move.actor === 'buyer' ? 'text-orange-400' : 'text-slate-400'}`}>
                                 {move.actor === 'buyer' ? 'You' : 'Seller'}
                               </span>
-                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border ${getMoveTypeColor(move.type)}`}>
+                              <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-bold uppercase border ${getMoveTypeColor(move.type)}`}>
                                 {move.type.replace('-', ' ')}
                               </span>
                               <span className={`text-[10px] font-medium ${getToneColor(move.emotionalTone)}`}>

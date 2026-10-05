@@ -61,7 +61,7 @@ const VisionGradingWidget: React.FC<Props> = ({ onOpenModal }) => {
                     <p className="text-white font-medium truncate">{scan.playerName}</p>
                     <p className="text-[10px] text-slate-500 truncate">{scan.cardDescription}</p>
                   </div>
-                  <div className="flex items-center gap-1 flex-shrink-0">
+                  <div className="flex items-center gap-1 shrink-0">
                     <Star size={10} className="text-amber-400" />
                     <span className="font-mono text-white font-bold">PSA {scan.predictedGrade.psa.grade}</span>
                   </div>

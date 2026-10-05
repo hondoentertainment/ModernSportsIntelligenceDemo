@@ -369,8 +369,8 @@ const ContagionMapper: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs text-slate-500">
-          <span className="px-2 py-1 rounded bg-slate-800">{nodes.length} nodes</span>
-          <span className="px-2 py-1 rounded bg-slate-800">{scenarios.length} scenarios</span>
+          <span className="px-2 py-1 rounded-sm bg-slate-800">{nodes.length} nodes</span>
+          <span className="px-2 py-1 rounded-sm bg-slate-800">{scenarios.length} scenarios</span>
         </div>
       </div>
 
@@ -405,7 +405,7 @@ const ContagionMapper: React.FC = () => {
             <div className="flex flex-wrap gap-3 mt-3 text-[10px] text-slate-400">
               {(Object.entries(RELATIONSHIP_COLORS) as [RelationshipType, string][]).map(([rel, color]) => (
                 <span key={rel} className="flex items-center gap-1">
-                  <span className="w-3 h-0.5 inline-block rounded" style={{ backgroundColor: color }} />
+                  <span className="w-3 h-0.5 inline-block rounded-sm" style={{ backgroundColor: color }} />
                   {rel}
                 </span>
               ))}
@@ -466,14 +466,14 @@ const ContagionMapper: React.FC = () => {
                         >
                           <div className="flex items-center gap-2">
                             <span
-                              className="w-2 h-2 rounded-full flex-shrink-0"
+                              className="w-2 h-2 rounded-full shrink-0"
                               style={{ backgroundColor: RELATIONSHIP_COLORS[c.relationship] }}
                             />
                             <span className="text-[11px] text-slate-300 truncate max-w-[140px]">
                               {target?.player ?? c.targetCardId}
                             </span>
                           </div>
-                          <div className="flex items-center gap-1.5 text-[10px] text-slate-500 flex-shrink-0">
+                          <div className="flex items-center gap-1.5 text-[10px] text-slate-500 shrink-0">
                             <span>{(c.transmissionRate * 100).toFixed(0)}%</span>
                             <span>{c.lag_days}d</span>
                             <ChevronRight size={10} />
@@ -490,7 +490,7 @@ const ContagionMapper: React.FC = () => {
                   <div className="space-y-1">
                     {selectedNode.vulnerabilityFactors.map((f, i) => (
                       <div key={i} className="flex items-start gap-1.5 text-[11px] text-slate-400">
-                        <AlertTriangle size={10} className="text-amber-400 mt-0.5 flex-shrink-0" />
+                        <AlertTriangle size={10} className="text-amber-400 mt-0.5 shrink-0" />
                         <span>{f}</span>
                       </div>
                     ))}
@@ -517,7 +517,7 @@ const ContagionMapper: React.FC = () => {
                 <select
                   value={selectedScenarioId}
                   onChange={(e) => setSelectedScenarioId(e.target.value)}
-                  className="w-full bg-slate-700 border border-slate-600 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-brand-lime"
+                  className="w-full bg-slate-700 border border-slate-600 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-hidden focus:ring-1 focus:ring-brand-lime"
                 >
                   {scenarios.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -621,7 +621,7 @@ const ContagionMapper: React.FC = () => {
                 <select
                   value={customTriggerId}
                   onChange={(e) => setCustomTriggerId(e.target.value)}
-                  className="w-full bg-slate-700 border border-slate-600 text-slate-200 text-xs rounded-lg px-2 py-1.5 focus:outline-none"
+                  className="w-full bg-slate-700 border border-slate-600 text-slate-200 text-xs rounded-lg px-2 py-1.5 focus:outline-hidden"
                 >
                   <option value="">Select card...</option>
                   {nodes.map((n) => (
@@ -637,7 +637,7 @@ const ContagionMapper: React.FC = () => {
                   type="number"
                   value={customImpact}
                   onChange={(e) => setCustomImpact(Number(e.target.value))}
-                  className="w-full bg-slate-700 border border-slate-600 text-slate-200 text-xs rounded-lg px-2 py-1.5 focus:outline-none"
+                  className="w-full bg-slate-700 border border-slate-600 text-slate-200 text-xs rounded-lg px-2 py-1.5 focus:outline-hidden"
                 />
               </div>
               <button
@@ -807,7 +807,7 @@ const ContagionMapper: React.FC = () => {
                   <div className="space-y-0.5">
                     {hs.secondaryRisks.map((r, i) => (
                       <p key={i} className="text-[11px] text-slate-400 flex items-center gap-1">
-                        <Eye size={9} className="text-amber-400 flex-shrink-0" />
+                        <Eye size={9} className="text-amber-400 shrink-0" />
                         {r}
                       </p>
                     ))}
@@ -954,7 +954,7 @@ const ContagionMapper: React.FC = () => {
                       key={i}
                       className="flex items-start gap-2 p-2 rounded-lg bg-red-500/10 border border-red-500/20"
                     >
-                      <AlertTriangle size={14} className="text-red-400 mt-0.5 flex-shrink-0" />
+                      <AlertTriangle size={14} className="text-red-400 mt-0.5 shrink-0" />
                       <div>
                         <p className="text-xs font-medium text-red-300">{spof}</p>
                         <p className="text-[10px] text-red-400/70 mt-0.5">
@@ -991,7 +991,7 @@ const ContagionMapper: React.FC = () => {
                 <select
                   value={selectedScenarioId}
                   onChange={(e) => setSelectedScenarioId(e.target.value)}
-                  className="w-full bg-slate-700 border border-slate-600 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-brand-lime"
+                  className="w-full bg-slate-700 border border-slate-600 text-slate-200 text-sm rounded-lg px-3 py-2 focus:outline-hidden focus:ring-1 focus:ring-brand-lime"
                 >
                   {scenarios.map((s) => (
                     <option key={s.id} value={s.id}>

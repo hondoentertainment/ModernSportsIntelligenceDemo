@@ -250,7 +250,7 @@ const ErrorCard: React.FC = () => {
               placeholder="Search player, set, type..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="pl-8 pr-4 py-1.5 text-xs bg-slate-900/50 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-red-500/50"
+              className="pl-8 pr-4 py-1.5 text-xs bg-slate-900/50 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-red-500/50"
             />
           </div>
         </div>

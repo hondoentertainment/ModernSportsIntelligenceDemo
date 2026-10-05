@@ -41,11 +41,11 @@ const GradingArbitrageWidget: React.FC<Props> = ({ onOpenModal }) => {
             </div>
             <p className="text-[10px] text-slate-500 truncate mb-2">{topOpp.cardDescription}</p>
             <div className="flex items-center gap-1.5 text-[10px]">
-              <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 rounded font-medium">
+              <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-300 rounded-sm font-medium">
                 {topOpp.currentCompany} {topOpp.currentGrade}
               </span>
               <ArrowRightLeft size={10} className="text-slate-500" />
-              <span className="px-1.5 py-0.5 bg-lime-500/20 text-lime-300 rounded font-medium">
+              <span className="px-1.5 py-0.5 bg-lime-500/20 text-lime-300 rounded-sm font-medium">
                 {topOpp.targetCompany} {topOpp.expectedGrade}
               </span>
               <span className={`ml-auto ${riskColors[topOpp.riskLevel]}`}>

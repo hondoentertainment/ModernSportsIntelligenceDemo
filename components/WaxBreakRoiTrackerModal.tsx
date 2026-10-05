@@ -73,7 +73,7 @@ const WaxBreakRoiTrackerModal: React.FC<Props> = ({ isOpen, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs">
       <div className="bg-brand-charcoal border border-slate-700 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-700/50">
@@ -141,7 +141,7 @@ const WaxBreakRoiTrackerModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-slate-500">{brk.date}</span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-700/50 text-slate-300 capitalize">{brk.breakType.replace('-', ' ')}</span>
+                        <span className="px-2 py-0.5 rounded-sm text-[10px] font-medium bg-slate-700/50 text-slate-300 capitalize">{brk.breakType.replace('-', ' ')}</span>
                         <span className="text-xs text-slate-400">{brk.sport}</span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -168,14 +168,14 @@ const WaxBreakRoiTrackerModal: React.FC<Props> = ({ isOpen, onClose }) => {
                         {brk.hits.map(hit => (
                           <div key={hit.id} className="flex items-center justify-between bg-slate-800/30 rounded-lg p-2 text-sm">
                             <div className="flex items-center gap-2">
-                              <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${hitTypeColors[hit.hitType]}`}>
+                              <span className={`px-1.5 py-0.5 rounded-sm text-[10px] font-medium ${hitTypeColors[hit.hitType]}`}>
                                 {hit.hitType.toUpperCase()}
                               </span>
                               <span className="text-slate-200">{hit.cardName}</span>
                               {hit.numbered && <span className="text-xs text-red-400 font-medium">{hit.numbered}</span>}
                             </div>
                             <div className="flex items-center gap-3">
-                              {hit.sold && <span className="text-[10px] text-green-400 bg-green-500/20 px-1.5 py-0.5 rounded">SOLD ${hit.soldPrice}</span>}
+                              {hit.sold && <span className="text-[10px] text-green-400 bg-green-500/20 px-1.5 py-0.5 rounded-sm">SOLD ${hit.soldPrice}</span>}
                               <span className="text-slate-200 font-medium">${hit.estimatedValue}</span>
                             </div>
                           </div>

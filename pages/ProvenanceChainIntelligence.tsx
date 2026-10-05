@@ -362,7 +362,7 @@ const ProvenanceChainIntelligence: React.FC = () => {
                     value={verifyQuery}
                     onChange={e => setVerifyQuery(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleVerify()}
-                    className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-cyan-500/50"
                   />
                 </div>
                 <button
@@ -474,7 +474,7 @@ const ProvenanceChainIntelligence: React.FC = () => {
                 <button
                   key={c.id}
                   onClick={() => setSelectedCardId(c.cardId)}
-                  className={`flex-shrink-0 px-4 py-2 text-sm font-medium rounded-xl transition-colors ${
+                  className={`shrink-0 px-4 py-2 text-sm font-medium rounded-xl transition-colors ${
                     (selectedCardId ?? cards[0]?.cardId) === c.cardId
                       ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
                       : 'text-slate-400 hover:bg-slate-800 border border-transparent'
@@ -692,9 +692,9 @@ const ProvenanceChainIntelligence: React.FC = () => {
                       className="w-full text-left flex items-start gap-3 p-4"
                     >
                       {alert.severity === 'critical' ? (
-                        <FileWarning size={20} className="text-red-400 flex-shrink-0 mt-0.5" />
+                        <FileWarning size={20} className="text-red-400 shrink-0 mt-0.5" />
                       ) : (
-                        <ShieldAlert size={20} className="flex-shrink-0 mt-0.5" />
+                        <ShieldAlert size={20} className="shrink-0 mt-0.5" />
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -706,7 +706,7 @@ const ProvenanceChainIntelligence: React.FC = () => {
                         <p className="text-xs text-slate-500">{fraudTypeLabels[alert.fraudType] ?? alert.fraudType}</p>
                         <p className="text-sm text-slate-400 mt-1">{alert.description}</p>
                       </div>
-                      <div className="flex-shrink-0 text-right space-y-1">
+                      <div className="shrink-0 text-right space-y-1">
                         <p className="text-xs text-slate-400">{fmtFullDate(alert.detectedAt)}</p>
                         <p className="text-sm font-mono text-red-400">{fmtCurrency(alert.estimatedValueAtRisk)}</p>
                         {expanded ? <ChevronUp size={14} className="text-slate-500 ml-auto" /> : <ChevronDown size={14} className="text-slate-500 ml-auto" />}
@@ -752,7 +752,7 @@ const ProvenanceChainIntelligence: React.FC = () => {
                   { pattern: 'Color-shifted reprints sold as "error cards"', frequency: 'Moderate', era: '2015+' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-2 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl text-xs">
-                    <FileWarning size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                    <FileWarning size={14} className="text-amber-400 shrink-0 mt-0.5" />
                     <div>
                       <p className="text-slate-300">{item.pattern}</p>
                       <p className="text-[10px] text-slate-500 mt-0.5">
@@ -833,7 +833,7 @@ const ProvenanceChainIntelligence: React.FC = () => {
                         placeholder={f.placeholder}
                         value={(regForm as Record<string, string>)[f.key]}
                         onChange={e => setRegForm(prev => ({ ...prev, [f.key]: e.target.value }))}
-                        className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500/50"
+                        className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-cyan-500/50"
                       />
                     </div>
                   ))}

@@ -35,7 +35,7 @@ const PriceWhispererModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const formatCurrency = (n: number) => `$${n.toLocaleString()}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
@@ -110,7 +110,7 @@ const PriceWhispererModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     </div>
                   </div>
                   <div className="mt-3 flex items-start gap-2 bg-blue-500/5 border border-blue-500/20 rounded-lg p-3">
-                    <MessageCircle className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                    <MessageCircle className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
                     <p className="text-sm text-blue-300">{q.reasoning}</p>
                   </div>
                 </div>

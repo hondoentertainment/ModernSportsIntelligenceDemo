@@ -160,7 +160,7 @@ const CollectorBurnoutIndexModal: React.FC<CollectorBurnoutIndexModalProps> = ({
       ].map((rec, idx) => (
         <div key={idx} className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50">
           <div className="flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-lime-500/20 flex-shrink-0">{rec.icon}</div>
+            <div className="p-2 rounded-lg bg-lime-500/20 shrink-0">{rec.icon}</div>
             <div>
               <h4 className="text-sm font-semibold text-slate-200 mb-1">{rec.title}</h4>
               <p className="text-xs text-slate-400 leading-relaxed">{rec.desc}</p>
@@ -182,9 +182,9 @@ const CollectorBurnoutIndexModal: React.FC<CollectorBurnoutIndexModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-5xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
-        <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-gradient-to-r from-slate-900 via-slate-800/50 to-slate-900">
+        <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-linear-to-r from-slate-900 via-slate-800/50 to-slate-900">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-lime-500/20">
               <Battery size={24} className="text-lime-400" />

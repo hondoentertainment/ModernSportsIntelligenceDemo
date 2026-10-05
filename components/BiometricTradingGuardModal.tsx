@@ -268,7 +268,7 @@ const BiometricTradingGuardModal: React.FC<BiometricTradingGuardModalProps> = ({
             className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/40 relative"
           >
             {/* Timeline dot */}
-            <div className="absolute -left-0 top-5 w-2 h-2 rounded-full bg-rose-400 -translate-x-1/2 hidden sm:block" />
+            <div className="absolute left-0 top-5 w-2 h-2 rounded-full bg-rose-400 -translate-x-1/2 hidden sm:block" />
 
             <div className="flex items-start justify-between mb-2">
               <div>
@@ -331,7 +331,7 @@ const BiometricTradingGuardModal: React.FC<BiometricTradingGuardModalProps> = ({
                 <Timer size={12} className="text-slate-400" />
                 <span className="text-slate-400 text-xs">{event.cooldownDuration}m cooldown</span>
                 {event.userOverride && (
-                  <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[10px] font-medium">
+                  <span className="px-1.5 py-0.5 rounded-sm bg-amber-500/20 text-amber-400 text-[10px] font-medium">
                     Overridden
                   </span>
                 )}
@@ -494,12 +494,12 @@ const BiometricTradingGuardModal: React.FC<BiometricTradingGuardModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-slate-900 rounded-2xl border border-slate-700/60 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Gradient Header */}
-        <div className="bg-gradient-to-r from-rose-500/10 to-slate-900 px-6 py-5 border-b border-slate-700/40">
+        <div className="bg-linear-to-r from-rose-500/10 to-slate-900 px-6 py-5 border-b border-slate-700/40">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center">

@@ -61,12 +61,12 @@ const OfflineManagerModal: React.FC<OfflineManagerModalProps> = ({ isOpen, onClo
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700 p-4 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-slate-900/95 backdrop-blur-xs border-b border-slate-700 p-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-xl ${isOnline ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}>
               {isOnline ? <Wifi size={20} className="text-emerald-400" /> : <WifiOff size={20} className="text-red-400" />}
@@ -150,7 +150,7 @@ const OfflineManagerModal: React.FC<OfflineManagerModalProps> = ({ isOpen, onClo
             </div>
             <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all"
+                className="h-full bg-linear-to-r from-blue-500 to-blue-400 rounded-full transition-all"
                 style={{ width: `${Math.min(100, (stats.usedBytes / stats.totalBytes) * 100)}%` }}
               />
             </div>
@@ -167,14 +167,14 @@ const OfflineManagerModal: React.FC<OfflineManagerModalProps> = ({ isOpen, onClo
                 {queue.slice(0, 5).map((item) => (
                   <div key={item.id} className="flex items-center justify-between py-1.5">
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                         item.status === 'pending' ? 'bg-amber-400' : item.status === 'failed' ? 'bg-red-400' : 'bg-emerald-400'
                       }`} />
                       <span className="text-xs text-slate-300 truncate">
                         <span className="uppercase font-bold text-slate-500">{item.action}</span> {item.entity}
                       </span>
                     </div>
-                    <span className="text-xs text-slate-600 flex-shrink-0">{timeAgo(item.timestamp)}</span>
+                    <span className="text-xs text-slate-600 shrink-0">{timeAgo(item.timestamp)}</span>
                   </div>
                 ))}
                 {queue.length > 5 && (

@@ -276,7 +276,7 @@ const NotificationCenter: React.FC = () => {
             placeholder="Search notifications..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
           />
         </div>
 
@@ -285,7 +285,7 @@ const NotificationCenter: React.FC = () => {
           <select
             value={selectedChannel}
             onChange={(e) => setSelectedChannel(e.target.value as NotificationChannel | 'all')}
-            className="appearance-none pl-3 pr-8 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-blue-500"
+            className="appearance-none pl-3 pr-8 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-hidden focus:border-blue-500"
           >
             <option value="all">All Channels</option>
             {ALL_CHANNELS.map((ch) => (
@@ -300,7 +300,7 @@ const NotificationCenter: React.FC = () => {
           <select
             value={selectedPriority}
             onChange={(e) => setSelectedPriority(e.target.value as NotificationPriority | 'all')}
-            className="appearance-none pl-3 pr-8 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-blue-500"
+            className="appearance-none pl-3 pr-8 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-hidden focus:border-blue-500"
           >
             <option value="all">All Priorities</option>
             <option value="critical">Critical</option>
@@ -391,10 +391,10 @@ const NotificationCenter: React.FC = () => {
             }`}
           >
             {/* Priority dot */}
-            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${PRIORITY_DOTS[n.priority]}`} />
+            <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${PRIORITY_DOTS[n.priority]}`} />
 
             {/* Channel icon */}
-            <div className={`flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center ${
+            <div className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center ${
               n.isRead ? 'bg-slate-800 text-slate-500' : 'bg-blue-500/10 text-blue-400'
             }`}>
               {CHANNEL_ICONS[n.channel]}
@@ -411,7 +411,7 @@ const NotificationCenter: React.FC = () => {
                     {n.body}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
                   <span className={`text-[10px] px-2 py-0.5 rounded-full border ${PRIORITY_COLORS[n.priority]}`}>
                     {n.priority}
                   </span>
@@ -506,7 +506,7 @@ const NotificationCenter: React.FC = () => {
                   onChange={(e) =>
                     handleSetQuietHours(pref.channel, e.target.value, pref.quietHoursEnd || '07:00')
                   }
-                  className="w-20 px-1.5 py-1 text-xs bg-slate-900 border border-slate-700 rounded text-slate-300 focus:outline-none focus:border-blue-500"
+                  className="w-20 px-1.5 py-1 text-xs bg-slate-900 border border-slate-700 rounded-sm text-slate-300 focus:outline-hidden focus:border-blue-500"
                   placeholder="Start"
                 />
                 <span className="text-xs text-slate-600">-</span>
@@ -516,7 +516,7 @@ const NotificationCenter: React.FC = () => {
                   onChange={(e) =>
                     handleSetQuietHours(pref.channel, pref.quietHoursStart || '22:00', e.target.value)
                   }
-                  className="w-20 px-1.5 py-1 text-xs bg-slate-900 border border-slate-700 rounded text-slate-300 focus:outline-none focus:border-blue-500"
+                  className="w-20 px-1.5 py-1 text-xs bg-slate-900 border border-slate-700 rounded-sm text-slate-300 focus:outline-hidden focus:border-blue-500"
                   placeholder="End"
                 />
               </div>
@@ -569,7 +569,7 @@ const NotificationCenter: React.FC = () => {
                 value={newRuleName}
                 onChange={(e) => setNewRuleName(e.target.value)}
                 placeholder="e.g., Big Price Drop"
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-600 focus:outline-hidden focus:border-blue-500"
               />
             </div>
             <div>
@@ -577,7 +577,7 @@ const NotificationCenter: React.FC = () => {
               <select
                 value={newRuleChannel}
                 onChange={(e) => setNewRuleChannel(e.target.value as NotificationChannel)}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-hidden focus:border-blue-500"
               >
                 {ALL_CHANNELS.map((ch) => (
                   <option key={ch} value={ch}>{CHANNEL_LABELS[ch]}</option>
@@ -591,7 +591,7 @@ const NotificationCenter: React.FC = () => {
                 value={newRuleCondition}
                 onChange={(e) => setNewRuleCondition(e.target.value)}
                 placeholder="e.g., price_drop > 15%"
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-600 focus:outline-hidden focus:border-blue-500"
               />
             </div>
             <div>
@@ -600,7 +600,7 @@ const NotificationCenter: React.FC = () => {
                 type="number"
                 value={newRuleThreshold}
                 onChange={(e) => setNewRuleThreshold(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-200 focus:outline-hidden focus:border-blue-500"
               />
             </div>
           </div>
@@ -826,7 +826,7 @@ const NotificationCenter: React.FC = () => {
                   <p className="text-xs font-medium text-slate-200 truncate">{n.title}</p>
                   <p className="text-[10px] text-slate-500 truncate">{n.body}</p>
                 </div>
-                <span className="text-[10px] text-slate-500 flex-shrink-0">{formatTimeAgo(n.timestamp)}</span>
+                <span className="text-[10px] text-slate-500 shrink-0">{formatTimeAgo(n.timestamp)}</span>
               </div>
             ))}
           </div>
@@ -842,7 +842,7 @@ const NotificationCenter: React.FC = () => {
           <div className="space-y-2">
             {digest.highlights.map((n) => (
               <div key={n.id} className="flex items-center gap-3 py-2 border-b border-slate-800 last:border-0">
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-700/60 text-slate-400 flex-shrink-0">
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-slate-700/60 text-slate-400 shrink-0">
                   {CHANNEL_ICONS[n.channel]}
                 </div>
                 <div className="flex-1 min-w-0">

@@ -429,7 +429,7 @@ const NBAHub: React.FC = () => {
                     <p className="text-[10px] text-slate-500 mt-0.5">{rookie.team} &bull; {rookie.position} &bull; Hype: {rookie.hypeScore}/100</p>
                     <p className="text-[10px] text-slate-600 mt-0.5">{rookie.recentPerformance}</p>
                   </div>
-                  <div className="text-right flex-shrink-0 ml-3">
+                  <div className="text-right shrink-0 ml-3">
                     <p className="text-sm font-bold text-white">${rookie.topCardValue}</p>
                     <p className={`text-xs ${rookie.weeklyChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                       {rookie.weeklyChange >= 0 ? '+' : ''}{rookie.weeklyChange}%

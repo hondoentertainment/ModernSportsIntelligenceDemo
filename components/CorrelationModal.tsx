@@ -182,19 +182,19 @@ const MatrixTab: React.FC<{ correlations: AssetCorrelation[]; window: TimeWindow
       {/* Legend */}
       <div className="flex items-center gap-4 text-[10px] text-slate-500">
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded bg-red-500/40" />
+          <div className="w-3 h-3 rounded-sm bg-red-500/40" />
           <span>High (+)</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded bg-amber-500/30" />
+          <div className="w-3 h-3 rounded-sm bg-amber-500/30" />
           <span>Moderate (+)</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded bg-slate-700/50" />
+          <div className="w-3 h-3 rounded-sm bg-slate-700/50" />
           <span>Neutral</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded bg-green-500/30" />
+          <div className="w-3 h-3 rounded-sm bg-green-500/30" />
           <span>Negative (-)</span>
         </div>
       </div>
@@ -652,10 +652,10 @@ export const CorrelationModal: React.FC<CorrelationModalProps> = ({ isOpen, onCl
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-6xl mx-4 my-8 bg-brand-slate border border-slate-800 rounded-3xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-brand-slate/95 backdrop-blur-sm border-b border-slate-800 p-6">
+        <div className="sticky top-0 z-10 bg-brand-slate/95 backdrop-blur-xs border-b border-slate-800 p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-400">
@@ -751,7 +751,7 @@ export const CorrelationModal: React.FC<CorrelationModalProps> = ({ isOpen, onCl
 
           {/* Hedge Recommendation */}
           <div className="mt-6 p-4 bg-indigo-500/5 border border-indigo-500/20 rounded-2xl flex items-start gap-3">
-            <CheckCircle2 size={16} className="text-indigo-400 mt-0.5 flex-shrink-0" />
+            <CheckCircle2 size={16} className="text-indigo-400 mt-0.5 shrink-0" />
             <div>
               <p className="text-xs font-bold text-indigo-400 mb-1">Hedge Recommendation</p>
               <p className="text-xs text-slate-400 leading-relaxed">{report.hedgeRecommendation}</p>

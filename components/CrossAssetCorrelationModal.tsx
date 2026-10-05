@@ -149,7 +149,7 @@ export const CrossAssetCorrelationModal: React.FC<CrossAssetCorrelationModalProp
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300"
+      className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300"
       onClick={onClose}
     >
       <div
@@ -157,7 +157,7 @@ export const CrossAssetCorrelationModal: React.FC<CrossAssetCorrelationModalProp
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-6 border-b border-slate-700 flex items-center justify-between flex-shrink-0">
+        <div className="p-6 border-b border-slate-700 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-400">
               <GitBranch size={22} />
@@ -183,7 +183,7 @@ export const CrossAssetCorrelationModal: React.FC<CrossAssetCorrelationModalProp
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-slate-700 px-6 gap-1 overflow-x-auto flex-shrink-0">
+        <div className="flex border-b border-slate-700 px-6 gap-1 overflow-x-auto shrink-0">
           {TABS.map(tab => (
             <button
               key={tab.key}
@@ -314,19 +314,19 @@ export const CrossAssetCorrelationModal: React.FC<CrossAssetCorrelationModalProp
               <div className="flex items-center gap-3 text-[10px] text-slate-500">
                 <span>Legend:</span>
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 rounded bg-red-500/40" /> Strong +
+                  <span className="w-3 h-3 rounded-sm bg-red-500/40" /> Strong +
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 rounded bg-orange-500/30" /> Moderate +
+                  <span className="w-3 h-3 rounded-sm bg-orange-500/30" /> Moderate +
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 rounded bg-slate-600/30" /> Neutral
+                  <span className="w-3 h-3 rounded-sm bg-slate-600/30" /> Neutral
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 rounded bg-cyan-500/20" /> Negative
+                  <span className="w-3 h-3 rounded-sm bg-cyan-500/20" /> Negative
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 rounded bg-blue-500/30" /> Strong -
+                  <span className="w-3 h-3 rounded-sm bg-blue-500/30" /> Strong -
                 </span>
               </div>
             </>
@@ -337,7 +337,7 @@ export const CrossAssetCorrelationModal: React.FC<CrossAssetCorrelationModalProp
             <>
               {/* Diversification Score */}
               <div className="flex items-center gap-6 bg-slate-800/50 rounded-2xl p-6 border border-slate-700">
-                <div className="relative flex-shrink-0">
+                <div className="relative shrink-0">
                   <svg width={120} height={120} viewBox="0 0 120 120">
                     <circle cx="60" cy="60" r="52" fill="none" stroke="#334155" strokeWidth="8" />
                     <circle
@@ -438,7 +438,7 @@ export const CrossAssetCorrelationModal: React.FC<CrossAssetCorrelationModalProp
                       key={i}
                       className="flex items-start gap-2 text-xs text-slate-400 bg-slate-800/20 rounded-lg p-3"
                     >
-                      <CheckCircle2 size={14} className="text-indigo-400 flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 size={14} className="text-indigo-400 shrink-0 mt-0.5" />
                       {tip}
                     </div>
                   ))}
@@ -790,7 +790,7 @@ export const CrossAssetCorrelationModal: React.FC<CrossAssetCorrelationModalProp
                     type="number"
                     value={budget}
                     onChange={e => setBudget(Math.max(100, Number(e.target.value)))}
-                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
               </div>

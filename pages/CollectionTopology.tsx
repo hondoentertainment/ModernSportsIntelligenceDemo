@@ -142,7 +142,7 @@ const CollectionTopology: React.FC = () => {
                         className="w-3 h-3 rounded-full border border-white/20 transition-transform hover:scale-150"
                         style={{ backgroundColor: cluster?.color || '#64748b' }}
                       />
-                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-700 rounded px-2 py-0.5 text-[9px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-700 rounded-sm px-2 py-0.5 text-[9px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
                         {node.cardName} (${node.value.toLocaleString()})
                       </div>
                     </div>
@@ -189,12 +189,12 @@ const CollectionTopology: React.FC = () => {
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${getSeverityColor(hole.severity)}`}>
+                      <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${getSeverityColor(hole.severity)}`}>
                         {hole.severity}
                       </span>
                       <div className="flex gap-1">
                         {hole.dimensions.map(d => (
-                          <span key={d} className="px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 text-[10px]">{getDimensionLabel(d)}</span>
+                          <span key={d} className="px-1.5 py-0.5 rounded-sm bg-indigo-500/10 text-indigo-400 text-[10px]">{getDimensionLabel(d)}</span>
                         ))}
                       </div>
                     </div>

@@ -114,7 +114,7 @@ const ShillBadge: React.FC<{ risk: number }> = ({ risk }) => {
     ? 'bg-red-500/20 text-red-400 border-red-500/30'
     : 'bg-amber-500/20 text-amber-400 border-amber-500/30';
   return (
-    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded border ${cls}`}>
+    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${cls}`}>
       <AlertTriangle size={9} />
       {risk}%
     </span>
@@ -144,7 +144,7 @@ const LiveAuctionsTab: React.FC<{ auctions: AuctionListing[]; onSelect: (_a: Auc
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span className="text-sm font-semibold text-white truncate">{auction.player}</span>
                   <span className={`text-[10px] font-bold ${PLATFORM_COLOR[auction.platform] ?? 'text-slate-400'}`}>{auction.platform}</span>
-                  <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded border ${patt.bg} ${patt.color} ${patt.border}`}>
+                  <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded-sm border ${patt.bg} ${patt.color} ${patt.border}`}>
                     {patt.label.toUpperCase()}
                   </span>
                   <ShillBadge risk={auction.shillRisk} />
@@ -157,7 +157,7 @@ const LiveAuctionsTab: React.FC<{ auctions: AuctionListing[]; onSelect: (_a: Auc
                   <span className="text-[10px] text-slate-500">{auction.watchers} watching</span>
                 </div>
               </div>
-              <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+              <div className="flex flex-col items-end gap-1.5 shrink-0">
                 <span className={`text-xs font-mono font-semibold flex items-center gap-1 ${urgencyColor(auction.timeRemaining)}`}>
                   <Clock size={10} />
                   {formatTime(auction.timeRemaining)}
@@ -209,7 +209,7 @@ const BidForensicsTab: React.FC<{ auctions: AuctionListing[] }> = ({ auctions })
         <select
           value={selectedId}
           onChange={e => setSelectedId(e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
         >
           {auctions.map(a => (
             <option key={a.id} value={a.id}>
@@ -349,7 +349,7 @@ const StrategyTab: React.FC<{ auctions: AuctionListing[] }> = ({ auctions }) => 
         <select
           value={selectedId}
           onChange={e => setSelectedId(e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
         >
           {auctions.map(a => (
             <option key={a.id} value={a.id}>
@@ -366,7 +366,7 @@ const StrategyTab: React.FC<{ auctions: AuctionListing[] }> = ({ auctions }) => 
           type="number"
           value={maxBudget}
           onChange={e => setMaxBudget(Number(e.target.value))}
-          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
           min={0}
         />
       </div>
@@ -381,7 +381,7 @@ const StrategyTab: React.FC<{ auctions: AuctionListing[] }> = ({ auctions }) => 
                 <h4 className="text-sm font-bold text-white">AI Bid Strategy</h4>
               </div>
               {stratLabel && (
-                <span className={`px-2 py-0.5 text-xs font-bold rounded ${stratLabel.color} bg-slate-700`}>
+                <span className={`px-2 py-0.5 text-xs font-bold rounded-sm ${stratLabel.color} bg-slate-700`}>
                   {stratLabel.label.toUpperCase()}
                 </span>
               )}
@@ -523,16 +523,16 @@ const HistoryTab: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     {record.won ? (
-                      <Award size={12} className="text-emerald-400 flex-shrink-0" />
+                      <Award size={12} className="text-emerald-400 shrink-0" />
                     ) : (
-                      <X size={12} className="text-red-400 flex-shrink-0" />
+                      <X size={12} className="text-red-400 shrink-0" />
                     )}
                     <span className="text-sm font-semibold text-white truncate">{record.player}</span>
                     <span className={`text-[10px] font-bold ${PLATFORM_COLOR[record.platform] ?? 'text-slate-400'}`}>{record.platform}</span>
                   </div>
                   <p className="text-xs text-slate-400 truncate ml-5">{record.cardDescription} &middot; {record.grade}</p>
                 </div>
-                <div className="flex flex-col items-end flex-shrink-0">
+                <div className="flex flex-col items-end shrink-0">
                   <span className="text-sm font-bold text-white">${record.finalPrice.toFixed(0)}</span>
                   {record.won && record.savings > 0 && (
                     <span className="text-[10px] font-semibold text-emerald-400">
@@ -566,11 +566,11 @@ const AuctionSniperModal: React.FC<AuctionSniperModalProps> = ({ isOpen, onClose
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
 
         {/* Header */}
-        <div className="p-5 border-b border-slate-700 bg-gradient-to-r from-slate-800/80 to-slate-900 flex-shrink-0">
+        <div className="p-5 border-b border-slate-700 bg-linear-to-r from-slate-800/80 to-slate-900 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-lime-500/20">

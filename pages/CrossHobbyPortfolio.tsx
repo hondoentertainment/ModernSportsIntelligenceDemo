@@ -252,19 +252,19 @@ const CrossHobbyPortfolio: React.FC = () => {
         </div>
         <div className="flex items-center gap-4 mt-4 justify-center">
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-emerald-500 opacity-50" />
+            <div className="w-3 h-3 rounded-sm bg-emerald-500 opacity-50" />
             <span className="text-[10px] text-slate-400">Low (0-0.2)</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-yellow-500 opacity-60" />
+            <div className="w-3 h-3 rounded-sm bg-yellow-500 opacity-60" />
             <span className="text-[10px] text-slate-400">Moderate (0.2-0.4)</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-amber-500 opacity-70" />
+            <div className="w-3 h-3 rounded-sm bg-amber-500 opacity-70" />
             <span className="text-[10px] text-slate-400">High (0.4-0.6)</span>
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-red-500 opacity-90" />
+            <div className="w-3 h-3 rounded-sm bg-red-500 opacity-90" />
             <span className="text-[10px] text-slate-400">Very High (0.8+)</span>
           </div>
         </div>

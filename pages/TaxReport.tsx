@@ -433,7 +433,7 @@ const TaxReport: React.FC = () => {
             {Object.entries(form8949ByBox).map(([box, entries]) => (
               <div key={box} className="mb-8">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 text-xs font-bold">
+                  <span className="px-2 py-1 rounded-sm bg-emerald-500/20 text-emerald-300 text-xs font-bold">
                     Box {box}
                   </span>
                   <span className="text-xs text-slate-500">
@@ -630,13 +630,13 @@ const TaxReport: React.FC = () => {
                 placeholder="Search cards, players, platforms..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+                className="w-full px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-emerald-500/50"
               />
             </div>
             <select
               value={holdingFilter}
               onChange={(e) => setHoldingFilter(e.target.value as 'all' | 'short_term' | 'long_term')}
-              className="px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-emerald-500/50"
+              className="px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-hidden focus:border-emerald-500/50"
             >
               <option value="all">All Periods</option>
               <option value="short_term">Short-Term</option>
@@ -645,7 +645,7 @@ const TaxReport: React.FC = () => {
             <select
               value={platformFilter}
               onChange={(e) => setPlatformFilter(e.target.value)}
-              className="px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-emerald-500/50"
+              className="px-3 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 focus:outline-hidden focus:border-emerald-500/50"
             >
               {platforms.map((p) => (
                 <option key={p} value={p}>
@@ -692,7 +692,7 @@ const TaxReport: React.FC = () => {
                         {tx.gainLoss >= 0 ? '+' : ''}{formatCurrency(tx.gainLoss)}
                       </td>
                       <td className="py-2.5 pr-2 text-center">
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${tx.holdingPeriod === 'short_term' ? 'bg-amber-500/20 text-amber-300' : 'bg-blue-500/20 text-blue-300'}`}>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-semibold ${tx.holdingPeriod === 'short_term' ? 'bg-amber-500/20 text-amber-300' : 'bg-blue-500/20 text-blue-300'}`}>
                           {tx.holdingPeriod === 'short_term' ? 'ST' : 'LT'}
                         </span>
                       </td>
@@ -748,7 +748,7 @@ const TaxReport: React.FC = () => {
                           {opt.risk} risk
                         </span>
                         {opt.implemented && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-emerald-500/20 text-emerald-300 flex items-center gap-0.5">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-sm font-semibold bg-emerald-500/20 text-emerald-300 flex items-center gap-0.5">
                             <CheckCircle size={10} /> Implemented
                           </span>
                         )}
@@ -843,7 +843,7 @@ const TaxReport: React.FC = () => {
                 <select
                   value={settings.filingStatus}
                   onChange={(e) => handleSettingChange('filingStatus', e.target.value as FilingStatus)}
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-emerald-500/50"
+                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-hidden focus:border-emerald-500/50"
                 >
                   <option value="single">Single</option>
                   <option value="married_joint">Married Filing Jointly</option>
@@ -858,7 +858,7 @@ const TaxReport: React.FC = () => {
                 <select
                   value={settings.taxBracket}
                   onChange={(e) => handleSettingChange('taxBracket', e.target.value as TaxBracket)}
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-emerald-500/50"
+                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-hidden focus:border-emerald-500/50"
                 >
                   {(['10%', '12%', '22%', '24%', '32%', '35%', '37%'] as TaxBracket[]).map((b) => (
                     <option key={b} value={b}>{b}</option>
@@ -872,7 +872,7 @@ const TaxReport: React.FC = () => {
                 <select
                   value={settings.state}
                   onChange={(e) => handleSettingChange('state', e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-emerald-500/50"
+                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-hidden focus:border-emerald-500/50"
                 >
                   {['California', 'New York', 'New Jersey', 'Texas', 'Florida', 'Washington', 'Nevada', 'Illinois', 'Pennsylvania', 'Ohio', 'Massachusetts', 'Oregon', 'Minnesota', 'Hawaii', 'Georgia', 'Arizona', 'Colorado', 'North Carolina', 'Michigan', 'Virginia'].map((s) => (
                     <option key={s} value={s}>{s}</option>
@@ -887,7 +887,7 @@ const TaxReport: React.FC = () => {
                 <select
                   value={settings.costBasisMethod}
                   onChange={(e) => handleSettingChange('costBasisMethod', e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-emerald-500/50"
+                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 rounded-lg text-sm text-slate-200 focus:outline-hidden focus:border-emerald-500/50"
                 >
                   <option value="fifo">FIFO (First In, First Out)</option>
                   <option value="lifo">LIFO (Last In, First Out)</option>

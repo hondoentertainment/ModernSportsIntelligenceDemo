@@ -141,10 +141,10 @@ const DraftWarRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs" onClick={onClose}>
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[88vh] overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-gradient-to-r from-brand-lime/5 to-slate-900">
+        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-linear-to-r from-brand-lime/5 to-slate-900">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-brand-lime/20">
               <Users size={20} className="text-brand-lime" />
@@ -254,7 +254,7 @@ const DraftWarRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                           <div className="flex items-center gap-2 mb-0.5">
                             <span className="text-sm font-bold text-slate-100">{p.name}</span>
                             <span className={`text-[9px] font-bold ${SPORT_COLOR[p.sport] || 'text-slate-400'}`}>{p.sport}</span>
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded border font-bold ${PRESENCE_BADGE[p.cardPresence].cls}`}>
+                            <span className={`text-[9px] px-1.5 py-0.5 rounded-sm border font-bold ${PRESENCE_BADGE[p.cardPresence].cls}`}>
                               {PRESENCE_BADGE[p.cardPresence].label}
                             </span>
                           </div>
@@ -417,7 +417,7 @@ const DraftWarRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                             <div className="flex items-center gap-2">
                               <Shield size={14} className={fitCfg.color} />
                               <span className="text-sm font-bold text-slate-200">{ls.team}</span>
-                              <span className={`text-[9px] px-2 py-0.5 rounded font-bold ${fitCfg.bg} ${fitCfg.color}`}>
+                              <span className={`text-[9px] px-2 py-0.5 rounded-sm font-bold ${fitCfg.bg} ${fitCfg.color}`}>
                                 {fitCfg.label} FIT
                               </span>
                             </div>
@@ -459,7 +459,7 @@ const DraftWarRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className={`text-[9px] px-2 py-1 rounded border font-bold ${cfg.bg} ${cfg.color} ${cfg.border}`}>
+                        <span className={`text-[9px] px-2 py-1 rounded-sm border font-bold ${cfg.bg} ${cfg.color} ${cfg.border}`}>
                           {cfg.label}
                         </span>
                         <span className="text-sm font-bold text-slate-200">{s.prospect}</span>

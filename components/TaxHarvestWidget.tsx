@@ -82,7 +82,7 @@ export const TaxHarvestWidget: React.FC<TaxHarvestWidgetProps> = ({ cards, onCli
       {/* Approaching Long-Term */}
       {summary.cardsApproachingLongTerm > 0 && (
         <div className="flex items-center gap-3 p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl text-xs">
-          <Clock size={14} className="text-amber-400 flex-shrink-0" />
+          <Clock size={14} className="text-amber-400 shrink-0" />
           <span className="text-amber-300 font-medium">
             {summary.cardsApproachingLongTerm} card{summary.cardsApproachingLongTerm !== 1 ? 's' : ''} approaching 1-year threshold
           </span>
@@ -97,7 +97,7 @@ export const TaxHarvestWidget: React.FC<TaxHarvestWidgetProps> = ({ cards, onCli
         <div className="space-y-2">
           <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Top Harvest</p>
           <div className="flex items-center gap-3 p-3 bg-rose-500/5 border border-rose-500/15 rounded-xl">
-            <AlertTriangle size={14} className="text-rose-400 flex-shrink-0" />
+            <AlertTriangle size={14} className="text-rose-400 shrink-0" />
             <div className="flex-1 min-w-0">
               <span className="text-white text-xs font-medium truncate block">
                 {topRec.player} - {topRec.set} {topRec.year}
@@ -106,7 +106,7 @@ export const TaxHarvestWidget: React.FC<TaxHarvestWidgetProps> = ({ cards, onCli
                 {topRec.holdingClass} | -{topRec.lossAmount.toLocaleString()} loss
               </span>
             </div>
-            <div className="text-right flex-shrink-0">
+            <div className="text-right shrink-0">
               <span className="text-green-400 font-mono font-bold text-sm block">
                 +${topRec.taxBenefit.toFixed(0)}
               </span>
@@ -119,7 +119,7 @@ export const TaxHarvestWidget: React.FC<TaxHarvestWidgetProps> = ({ cards, onCli
       {/* Wash Sale Warning */}
       {summary.washSaleRestrictions > 0 && (
         <div className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl text-xs">
-          <ShieldAlert size={14} className="text-amber-400 flex-shrink-0" />
+          <ShieldAlert size={14} className="text-amber-400 shrink-0" />
           <span className="text-slate-400">Wash sale restrictions:</span>
           <span className="text-amber-400 font-mono font-bold">{summary.washSaleRestrictions} active</span>
         </div>

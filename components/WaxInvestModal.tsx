@@ -108,7 +108,7 @@ const PortfolioTab: React.FC<{
               </div>
 
               {/* Value + ROI */}
-              <div className="text-right flex-shrink-0">
+              <div className="text-right shrink-0">
                 <p className="text-sm font-mono text-white">
                   ${entry.currentTotalValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
@@ -204,7 +204,7 @@ const BrowseTab: React.FC<{
             >
               <div className="flex items-start gap-3">
                 {/* Sport Badge */}
-                <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex-shrink-0 ${sc.text} ${sc.bg} border ${sc.border}`}>
+                <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shrink-0 ${sc.text} ${sc.bg} border ${sc.border}`}>
                   {product.sport.slice(0, 3)}
                 </span>
 
@@ -215,7 +215,7 @@ const BrowseTab: React.FC<{
                   </p>
                 </div>
 
-                <div className="text-right flex-shrink-0">
+                <div className="text-right shrink-0">
                   <p className="text-xs text-slate-500">MSRP ${product.msrp}</p>
                   <p className="text-sm font-mono text-white">${product.currentValue.toLocaleString()}</p>
                   <p className={`text-xs font-bold ${appreciation >= 0 ? 'text-green-400' : 'text-red-400'}`}>
@@ -227,7 +227,7 @@ const BrowseTab: React.FC<{
               {/* Key Rookies */}
               <div className="flex flex-wrap gap-1.5">
                 {product.keyRookies.map(rookie => (
-                  <span key={rookie} className="px-2 py-0.5 bg-slate-700/50 border border-slate-600 rounded text-[10px] text-slate-300">
+                  <span key={rookie} className="px-2 py-0.5 bg-slate-700/50 border border-slate-600 rounded-sm text-[10px] text-slate-300">
                     {rookie}
                   </span>
                 ))}
@@ -243,7 +243,7 @@ const BrowseTab: React.FC<{
                       min={1}
                       value={quantity}
                       onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-full mt-0.5 px-2 py-1.5 bg-slate-800 border border-slate-600 rounded-lg text-sm text-white focus:border-blue-500 focus:outline-none"
+                      className="w-full mt-0.5 px-2 py-1.5 bg-slate-800 border border-slate-600 rounded-lg text-sm text-white focus:border-blue-500 focus:outline-hidden"
                     />
                   </div>
                   <div className="flex-1">
@@ -253,7 +253,7 @@ const BrowseTab: React.FC<{
                       min={1}
                       value={costBasis}
                       onChange={e => setCostBasis(Math.max(0, parseFloat(e.target.value) || 0))}
-                      className="w-full mt-0.5 px-2 py-1.5 bg-slate-800 border border-slate-600 rounded-lg text-sm text-white focus:border-blue-500 focus:outline-none"
+                      className="w-full mt-0.5 px-2 py-1.5 bg-slate-800 border border-slate-600 rounded-lg text-sm text-white focus:border-blue-500 focus:outline-hidden"
                     />
                   </div>
                   <div className="flex gap-1.5 pt-4">
@@ -324,7 +324,7 @@ const AnalysisTab: React.FC = () => {
           className="w-full flex items-center justify-between gap-2 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white hover:border-slate-600 transition-colors"
         >
           <span className="truncate">{selectedProduct?.name ?? 'Select a product...'}</span>
-          <ChevronDown size={16} className="text-slate-400 flex-shrink-0" />
+          <ChevronDown size={16} className="text-slate-400 shrink-0" />
         </button>
         {showDropdown && (
           <div className="absolute z-50 top-full mt-1 w-full max-h-60 overflow-y-auto bg-slate-800 border border-slate-700 rounded-xl shadow-xl">
@@ -338,7 +338,7 @@ const AnalysisTab: React.FC = () => {
                     p.id === selectedProductId ? 'text-blue-400 bg-slate-700/50' : 'text-white'
                   }`}
                 >
-                  <span className={`px-1.5 py-0.5 rounded text-[9px] font-black uppercase ${sc.text} ${sc.bg}`}>
+                  <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-black uppercase ${sc.text} ${sc.bg}`}>
                     {p.sport.slice(0, 3)}
                   </span>
                   <span className="truncate">{p.name}</span>
@@ -406,11 +406,11 @@ const AnalysisTab: React.FC = () => {
               {analysis.keyPulls.map((pull, idx) => (
                 <div key={idx} className="flex items-center gap-3 px-3 py-2 bg-slate-700/30 rounded-xl text-xs">
                   <span className="text-white font-medium flex-1 truncate">{pull.card}</span>
-                  <span className="text-slate-400 flex-shrink-0">
+                  <span className="text-slate-400 shrink-0">
                     {(pull.pullRate * 100).toFixed(2)}%
                   </span>
-                  <span className="text-slate-300 font-mono flex-shrink-0">${pull.value.toFixed(0)}</span>
-                  <span className="text-green-400 font-mono font-bold flex-shrink-0">${pull.ev.toFixed(2)} EV</span>
+                  <span className="text-slate-300 font-mono shrink-0">${pull.value.toFixed(0)}</span>
+                  <span className="text-green-400 font-mono font-bold shrink-0">${pull.ev.toFixed(2)} EV</span>
                 </div>
               ))}
             </div>
@@ -477,7 +477,7 @@ const CalendarTab: React.FC = () => {
             className="flex items-start gap-4 p-4 bg-slate-800/30 border border-slate-700 rounded-2xl hover:bg-slate-800/50 transition-colors"
           >
             {/* Date Column */}
-            <div className="text-center flex-shrink-0 w-16">
+            <div className="text-center shrink-0 w-16">
               <p className="text-lg font-bebas tracking-wider text-white">{releaseDate.toLocaleDateString('en-US', { month: 'short' })}</p>
               <p className="text-2xl font-bebas tracking-wider text-white leading-tight">{releaseDate.getDate()}</p>
               <p className={`text-[10px] font-bold mt-0.5 ${
@@ -487,15 +487,15 @@ const CalendarTab: React.FC = () => {
               </p>
             </div>
 
-            <div className="h-full w-px bg-slate-700 self-stretch flex-shrink-0" />
+            <div className="h-full w-px bg-slate-700 self-stretch shrink-0" />
 
             {/* Release Info */}
             <div className="flex-1 min-w-0 space-y-2">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${sc.text} ${sc.bg} border ${sc.border}`}>
+                <span className={`px-2 py-0.5 rounded-sm text-[10px] font-black uppercase tracking-widest ${sc.text} ${sc.bg} border ${sc.border}`}>
                   {release.sport}
                 </span>
-                <span className="px-2 py-0.5 rounded bg-slate-700/50 border border-slate-600 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+                <span className="px-2 py-0.5 rounded-sm bg-slate-700/50 border border-slate-600 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
                   {getProductTypeLabel(release.productType)}
                 </span>
               </div>
@@ -511,7 +511,7 @@ const CalendarTab: React.FC = () => {
               {release.keyRookies.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {release.keyRookies.map(rookie => (
-                    <span key={rookie} className="px-1.5 py-0.5 bg-slate-700/50 border border-slate-600 rounded text-[10px] text-slate-300">
+                    <span key={rookie} className="px-1.5 py-0.5 bg-slate-700/50 border border-slate-600 rounded-sm text-[10px] text-slate-300">
                       {rookie}
                     </span>
                   ))}
@@ -554,7 +554,7 @@ export const WaxInvestModal: React.FC<WaxInvestModalProps> = ({ isOpen, onClose 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">

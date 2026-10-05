@@ -83,7 +83,7 @@ export default function NarrativeArcEngine() {
     <div className="min-h-screen bg-gray-950 text-gray-100 p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-linear-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
             Narrative Arc Engine
           </h1>
           <p className="text-gray-400 mt-1">Quantifying how storytelling drives collectible value</p>
@@ -91,7 +91,7 @@ export default function NarrativeArcEngine() {
         <div className="flex gap-2">
           {sports.map(s => (
             <button key={s} onClick={() => setSportFilter(s)}
-              className={`px-3 py-1 rounded text-sm ${sportFilter === s ? 'bg-amber-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}>
+              className={`px-3 py-1 rounded-sm text-sm ${sportFilter === s ? 'bg-amber-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}>
               {s}
             </button>
           ))}
@@ -102,7 +102,7 @@ export default function NarrativeArcEngine() {
       <div className="flex gap-1 bg-gray-900 rounded-lg p-1">
         {TABS.map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
-            className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === tab ? 'bg-amber-600 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'}`}>
+            className={`flex-1 px-3 py-2 rounded-sm text-sm font-medium transition-colors ${activeTab === tab ? 'bg-amber-600 text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'}`}>
             {tab}
           </button>
         ))}
@@ -113,10 +113,10 @@ export default function NarrativeArcEngine() {
         <div className="space-y-4">
           <div className="flex gap-4 items-center">
             <select value={selectedArcId} onChange={e => setSelectedArcId(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm">
+              className="bg-gray-800 border border-gray-700 rounded-sm px-3 py-2 text-sm">
               {filteredArcs.map(a => <option key={a.id} value={a.id}>{a.playerName} ({a.sport})</option>)}
             </select>
-            <span className="px-3 py-1 rounded text-sm font-medium" style={{ backgroundColor: ARC_COLORS[selectedArc.arcType] + '30', color: ARC_COLORS[selectedArc.arcType] }}>
+            <span className="px-3 py-1 rounded-sm text-sm font-medium" style={{ backgroundColor: ARC_COLORS[selectedArc.arcType] + '30', color: ARC_COLORS[selectedArc.arcType] }}>
               {selectedArc.arcType.toUpperCase()}
             </span>
             <span className="text-gray-400 text-sm">
@@ -189,7 +189,7 @@ export default function NarrativeArcEngine() {
                 {ch.keyCards.length > 0 && (
                   <div className="mt-2 flex gap-2 flex-wrap">
                     {ch.keyCards.map((card, i) => (
-                      <span key={i} className="px-2 py-0.5 bg-gray-800 rounded text-xs text-amber-400">{card}</span>
+                      <span key={i} className="px-2 py-0.5 bg-gray-800 rounded-sm text-xs text-amber-400">{card}</span>
                     ))}
                   </div>
                 )}
@@ -270,12 +270,12 @@ export default function NarrativeArcEngine() {
         <div className="space-y-4">
           <div className="flex gap-4">
             <select value={compareArcId1} onChange={e => setCompareArcId1(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm flex-1">
+              className="bg-gray-800 border border-gray-700 rounded-sm px-3 py-2 text-sm flex-1">
               {arcs.map(a => <option key={a.id} value={a.id}>{a.playerName}</option>)}
             </select>
             <span className="text-gray-500 self-center">vs</span>
             <select value={compareArcId2} onChange={e => setCompareArcId2(e.target.value)}
-              className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm flex-1">
+              className="bg-gray-800 border border-gray-700 rounded-sm px-3 py-2 text-sm flex-1">
               {arcs.map(a => <option key={a.id} value={a.id}>{a.playerName}</option>)}
             </select>
           </div>
@@ -398,12 +398,12 @@ export default function NarrativeArcEngine() {
                   </div>
                 </div>
                 <p className="text-sm text-gray-400 mb-2">{t.description}</p>
-                <div className="bg-gray-800 rounded p-2 text-xs text-gray-300 mb-2">
+                <div className="bg-gray-800 rounded-sm p-2 text-xs text-gray-300 mb-2">
                   <span className="text-amber-400 font-medium">Thesis:</span> {t.investmentThesis}
                 </div>
                 <div className="flex gap-1 flex-wrap">
                   {t.players.map(p => (
-                    <span key={p} className="px-2 py-0.5 bg-gray-800 rounded text-xs text-gray-300">{p}</span>
+                    <span key={p} className="px-2 py-0.5 bg-gray-800 rounded-sm text-xs text-gray-300">{p}</span>
                   ))}
                 </div>
               </div>
@@ -449,7 +449,7 @@ export default function NarrativeArcEngine() {
                       <td className="p-3 font-semibold text-white">{v.playerName}</td>
                       <td className="p-3">
                         {arc && (
-                          <span className="px-2 py-0.5 rounded text-xs font-medium" style={{ backgroundColor: ARC_COLORS[arc.arcType] + '30', color: ARC_COLORS[arc.arcType] }}>
+                          <span className="px-2 py-0.5 rounded-sm text-xs font-medium" style={{ backgroundColor: ARC_COLORS[arc.arcType] + '30', color: ARC_COLORS[arc.arcType] }}>
                             {arc.arcType}
                           </span>
                         )}

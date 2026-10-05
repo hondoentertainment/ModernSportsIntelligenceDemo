@@ -43,7 +43,7 @@ const FundReporting: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
         {/* Fund Summary */}
-        <div className="bg-gradient-to-r from-slate-900 via-slate-900/95 to-emerald-900/20 rounded-xl border border-emerald-500/20 p-6">
+        <div className="bg-linear-to-r from-slate-900 via-slate-900/95 to-emerald-900/20 rounded-xl border border-emerald-500/20 p-6">
           <h3 className="text-emerald-400 font-bold text-sm mb-4">{fund.fundName}</h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div><p className="text-slate-500 text-[10px] uppercase">AUM</p><p className="text-white font-bold text-2xl">${(fund.aum / 1000000).toFixed(2)}M</p></div>
@@ -155,7 +155,7 @@ const FundReporting: React.FC = () => {
                   <div>
                     <h4 className="text-white font-semibold text-sm">{r.title}</h4>
                     <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
-                      <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]">{getReportTypeLabel(r.type)}</span>
+                      <span className="px-1.5 py-0.5 rounded-sm bg-slate-800 text-slate-400 text-[10px]">{getReportTypeLabel(r.type)}</span>
                       <span>{r.period}</span>
                       <span>{r.pageCount} pages</span>
                       {r.recipientCount > 0 && <span>{r.recipientCount} recipients</span>}
@@ -163,7 +163,7 @@ const FundReporting: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${getReportStatusColor(r.status)}`}>{r.status}</span>
+                  <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold ${getReportStatusColor(r.status)}`}>{r.status}</span>
                   <p className="text-slate-500 text-[10px] mt-1">{r.generatedDate}</p>
                 </div>
               </div>

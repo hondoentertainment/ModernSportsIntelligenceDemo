@@ -196,7 +196,7 @@ export function ResponsiveTabs<T extends string>({
         <select
           value={activeTab}
           onChange={(e) => onTabChange(e.target.value as T)}
-          className="w-full appearance-none bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-500/50 cursor-pointer"
+          className="w-full appearance-none bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-100 focus:outline-hidden focus:ring-2 focus:ring-amber-500/50 cursor-pointer"
           aria-label="Select tab"
         >
           {normalised.map((t) => (
@@ -282,7 +282,7 @@ export const ScrollableTable: React.FC<ScrollableTableProps> = ({
       </div>
       {/* Right fade indicator */}
       {showRightFade && (
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-950 to-transparent pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-gray-950 to-transparent pointer-events-none" />
       )}
     </div>
   );

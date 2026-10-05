@@ -72,7 +72,7 @@ const DecisionFatigue: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
         {/* Live Energy Meter */}
-        <div className={`bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-800/50 rounded-xl border p-6 ${
+        <div className={`bg-linear-to-r from-slate-900 via-slate-900/95 to-slate-800/50 rounded-xl border p-6 ${
           live.fatigueLevel === 'exhausted' || live.fatigueLevel === 'impaired' ? 'border-red-500/50' : 'border-slate-800'
         }`}>
           <div className="flex items-center justify-between flex-wrap gap-4">

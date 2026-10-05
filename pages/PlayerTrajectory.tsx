@@ -111,21 +111,21 @@ const PlayerTrajectory: React.FC = () => {
         <>
           {/* ── Score Summary Cards ─────────────────────────────────── */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-brand-slate border border-slate-800 rounded-[2rem] p-6 text-center space-y-2">
+            <div className="bg-brand-slate border border-slate-800 rounded-4xl p-6 text-center space-y-2">
               <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Trajectory Score</p>
               <p className="text-5xl font-bebas text-white leading-none">{player.trajectoryScore}</p>
               <span className={`inline-block px-3 py-0.5 rounded-full border text-[9px] font-black uppercase tracking-widest ${badge.cls}`}>
                 {badge.label}
               </span>
             </div>
-            <div className="bg-brand-slate border border-slate-800 rounded-[2rem] p-6 text-center space-y-2">
+            <div className="bg-brand-slate border border-slate-800 rounded-4xl p-6 text-center space-y-2">
               <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Current Card Value</p>
               <p className="text-5xl font-bebas text-white leading-none">${player.currentCardValue}</p>
               <p className="text-[10px] font-bold text-brand-muted">
                 {player.sport} &middot; {player.position} &middot; Age {player.age}
               </p>
             </div>
-            <div className="bg-brand-slate border border-slate-800 rounded-[2rem] p-6 text-center space-y-2">
+            <div className="bg-brand-slate border border-slate-800 rounded-4xl p-6 text-center space-y-2">
               <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Peak Projection</p>
               <p className="text-5xl font-bebas text-emerald-400 leading-none">${player.peakProjectedValue}</p>
               <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-brand-muted">
@@ -133,7 +133,7 @@ const PlayerTrajectory: React.FC = () => {
                 Age {player.peakProjectedAge}
               </div>
             </div>
-            <div className="bg-brand-slate border border-slate-800 rounded-[2rem] p-6 text-center space-y-2">
+            <div className="bg-brand-slate border border-slate-800 rounded-4xl p-6 text-center space-y-2">
               <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Max Upside</p>
               <p className="text-5xl font-bebas text-brand-lime leading-none">
                 +{Math.round(((player.peakProjectedValue - player.currentCardValue) / player.currentCardValue) * 100)}%
@@ -248,7 +248,7 @@ const PlayerTrajectory: React.FC = () => {
               {player.factors.map((f) => (
                 <div key={f.label} className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
                   <div className="flex items-center gap-4 mb-2">
-                    <div className="w-32 flex-shrink-0">
+                    <div className="w-32 shrink-0">
                       <p className="text-sm font-bold text-white">{f.label}</p>
                     </div>
                     <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">

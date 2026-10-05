@@ -576,7 +576,7 @@ const ROITab: React.FC<{
                 key={idx}
                 className="flex items-center gap-2 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl text-sm text-slate-400"
               >
-                <ChevronDown size={14} className="text-slate-600 rotate-[-90deg]" />
+                <ChevronDown size={14} className="text-slate-600 -rotate-90" />
                 {action}
               </div>
             ))}
@@ -805,7 +805,7 @@ const PreGradeIntelligenceModal: React.FC<PreGradeIntelligenceModalProps> = ({ i
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-3xl bg-brand-dark border border-slate-800 rounded-3xl shadow-2xl overflow-hidden">

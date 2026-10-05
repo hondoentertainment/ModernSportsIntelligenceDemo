@@ -199,7 +199,7 @@ const OptionsDesk: React.FC = () => {
             <select
               value={selectedCardId}
               onChange={e => setSelectedCardId(e.target.value)}
-              className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-sm text-slate-200 appearance-none cursor-pointer focus:outline-none focus:border-brand-lime/50"
+              className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-sm text-slate-200 appearance-none cursor-pointer focus:outline-hidden focus:border-brand-lime/50"
             >
               {cards.map(c => (
                 <option key={c.id} value={c.id}>{c.name} — {formatCurrency(c.currentPrice)}</option>
@@ -214,7 +214,7 @@ const OptionsDesk: React.FC = () => {
             <select
               value={selectedExpiration}
               onChange={e => setSelectedExpiration(e.target.value)}
-              className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-sm text-slate-200 appearance-none cursor-pointer focus:outline-none focus:border-brand-lime/50"
+              className="w-full bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-2.5 text-sm text-slate-200 appearance-none cursor-pointer focus:outline-hidden focus:border-brand-lime/50"
             >
               {expirations.map(exp => (
                 <option key={exp} value={exp}>{exp}</option>
@@ -763,7 +763,7 @@ function StrategyTab({
               }`}>{strat.name}</p>
               <p className="text-[10px] text-slate-400 line-clamp-2">{strat.description}</p>
               <div className="flex items-center gap-2 mt-2">
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">
+                <span className="text-[9px] px-1.5 py-0.5 rounded-sm bg-slate-700/50 text-slate-400">
                   {strat.legs.length} leg{strat.legs.length > 1 ? 's' : ''}
                 </span>
               </div>

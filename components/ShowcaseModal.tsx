@@ -102,7 +102,7 @@ const ShowcasesTab: React.FC<{
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div
-                  className="w-8 h-8 rounded-lg flex-shrink-0"
+                  className="w-8 h-8 rounded-lg shrink-0"
                   style={{ background: theme.background, border: `1px solid ${theme.cardBorder}40` }}
                 />
                 <div>
@@ -318,7 +318,7 @@ const BuilderTab: React.FC<{
             type="text"
             value={showcaseName}
             onChange={e => handleNameChange(e.target.value)}
-            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50"
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-purple-500/50"
             placeholder="My Showcase"
           />
         </div>
@@ -382,7 +382,7 @@ const BuilderTab: React.FC<{
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50"
+              className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-purple-500/50"
               placeholder="Search cards..."
             />
           </div>
@@ -405,12 +405,12 @@ const BuilderTab: React.FC<{
                       {card.isGraded && card.grade ? ` - ${card.gradingCompany ?? ''} ${card.grade}` : ''}
                     </span>
                   </div>
-                  <span className="text-slate-400 flex-shrink-0">
+                  <span className="text-slate-400 shrink-0">
                     ${(card.currentValue ?? card.purchasePrice).toLocaleString()}
                   </span>
                   <button
                     onClick={() => (inShowcase ? handleRemoveCard(card.id) : handleAddCard(card.id))}
-                    className={`p-1 rounded-md transition-colors flex-shrink-0 ${
+                    className={`p-1 rounded-md transition-colors shrink-0 ${
                       inShowcase
                         ? 'text-red-400 hover:bg-red-500/10'
                         : 'text-purple-400 hover:bg-purple-500/10'
@@ -442,7 +442,7 @@ const BuilderTab: React.FC<{
                   if (updated) onShowcaseUpdate(updated);
                 }
               }}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 resize-none h-20"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-purple-500/50 resize-none h-20"
               placeholder="Tell the story behind your featured card..."
             />
           </div>
@@ -494,7 +494,7 @@ const BuilderTab: React.FC<{
                 </div>
                 <div className="flex items-center justify-center gap-2 mt-2">
                   <span
-                    className="text-[10px] font-bold px-2 py-0.5 rounded"
+                    className="text-[10px] font-bold px-2 py-0.5 rounded-sm"
                     style={{ background: theme.cardBorder, color: '#000' }}
                   >
                     {grade}
@@ -554,7 +554,7 @@ const BuilderTab: React.FC<{
                     <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 group-hover/card:opacity-100 transition-opacity">
                       <button
                         onClick={() => handleToggleFeatured(sc.cardId)}
-                        className="p-1 rounded hover:bg-white/10"
+                        className="p-1 rounded-sm hover:bg-white/10"
                         title="Set as featured"
                       >
                         <Star size={10} style={{ color: theme.accentColor }} />
@@ -564,14 +564,14 @@ const BuilderTab: React.FC<{
                           setEditingCaption(sc.cardId);
                           setCaptionText(sc.caption ?? '');
                         }}
-                        className="p-1 rounded hover:bg-white/10"
+                        className="p-1 rounded-sm hover:bg-white/10"
                         title="Edit caption"
                       >
                         <Edit3 size={10} style={{ color: theme.accentColor }} />
                       </button>
                       <button
                         onClick={() => handleRemoveCard(sc.cardId)}
-                        className="p-1 rounded hover:bg-white/10"
+                        className="p-1 rounded-sm hover:bg-white/10"
                         title="Remove"
                       >
                         <Trash2 size={10} style={{ color: '#f87171' }} />
@@ -586,7 +586,7 @@ const BuilderTab: React.FC<{
                     </div>
                     <div className="flex items-center gap-1.5 mt-1.5">
                       <span
-                        className="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                        className="text-[9px] font-bold px-1.5 py-0.5 rounded-sm"
                         style={{ background: theme.cardBorder, color: '#000' }}
                       >
                         {grade}
@@ -603,7 +603,7 @@ const BuilderTab: React.FC<{
                           type="text"
                           value={captionText}
                           onChange={e => setCaptionText(e.target.value)}
-                          className="flex-1 px-1.5 py-0.5 bg-black/30 border border-white/20 rounded text-[10px] text-white focus:outline-none"
+                          className="flex-1 px-1.5 py-0.5 bg-black/30 border border-white/20 rounded-sm text-[10px] text-white focus:outline-hidden"
                           placeholder="Caption..."
                           autoFocus
                           onKeyDown={e => {
@@ -613,7 +613,7 @@ const BuilderTab: React.FC<{
                         />
                         <button
                           onClick={() => handleSaveCaption(sc.cardId)}
-                          className="p-0.5 rounded hover:bg-white/10"
+                          className="p-0.5 rounded-sm hover:bg-white/10"
                         >
                           <CheckCircle2 size={12} style={{ color: theme.accentColor }} />
                         </button>
@@ -835,7 +835,7 @@ export const ShowcaseModal: React.FC<ShowcaseModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-purple-500/5">

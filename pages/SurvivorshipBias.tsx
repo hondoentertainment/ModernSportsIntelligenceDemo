@@ -147,7 +147,7 @@ const SurvivorshipBias: React.FC = () => {
                       <p className="text-slate-500 text-xs">{set.year} • {set.totalCardsInSet} total cards</p>
                     </div>
                     <div className="text-right">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${biasGap.bg} ${biasGap.color}`}>
+                      <span className={`px-2 py-1 rounded-sm text-xs font-bold ${biasGap.bg} ${biasGap.color}`}>
                         {set.biasGap}% bias gap
                       </span>
                     </div>
@@ -164,7 +164,7 @@ const SurvivorshipBias: React.FC = () => {
                           style={{ width: `${o.percentage}%` }}
                           title={`${getOutcomeLabel(o.outcome)}: ${o.count} cards (${o.percentage}%)`}
                         >
-                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-700 rounded px-2 py-0.5 text-[9px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-700 rounded-sm px-2 py-0.5 text-[9px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
                             {getOutcomeLabel(o.outcome)}: {o.count} ({o.percentage}%)
                           </div>
                         </div>

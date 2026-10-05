@@ -124,7 +124,7 @@ export const BenchmarkWidget: React.FC<BenchmarkWidgetProps> = ({ inventory, onC
       {/* Best Category */}
       {bestCategory && (
         <div className="flex items-center gap-3 px-4 py-3 bg-brand-lime/5 border border-brand-lime/15 rounded-xl">
-          <Target size={14} className="text-brand-lime flex-shrink-0" />
+          <Target size={14} className="text-brand-lime shrink-0" />
           <span className="text-xs text-slate-400">Strongest:</span>
           <span className="text-xs text-brand-lime font-bold">
             {CATEGORY_LABELS[bestCategory.category]}

@@ -197,7 +197,7 @@ function MemberCard({ member }: { key?: React.Key; member: SquadMember }) {
       </div>
 
       <div className="flex items-center gap-1.5 text-xs text-slate-400">
-        <MapPin size={12} className="text-slate-500 flex-shrink-0" />
+        <MapPin size={12} className="text-slate-500 shrink-0" />
         <span className="truncate">{member.location}</span>
       </div>
 
@@ -329,7 +329,7 @@ function LiveShowView({ show }: { show: CardShow }) {
   return (
     <div className="space-y-6">
       {/* Live banner */}
-      <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/5 border border-green-500/20 rounded-xl p-4 flex items-center justify-between">
+      <div className="bg-linear-to-r from-green-500/10 to-emerald-500/5 border border-green-500/20 rounded-xl p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="relative">
             <Radio size={20} className="text-green-400" />
@@ -623,7 +623,7 @@ export default function CardShowSquad() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl">
+          <div className="p-2.5 bg-linear-to-br from-blue-500 to-purple-600 rounded-xl">
             <MapPin size={22} className="text-white" />
           </div>
           <div>

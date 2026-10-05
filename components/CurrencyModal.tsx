@@ -165,12 +165,12 @@ const ConverterTab: React.FC<{
                 type="number"
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500 transition-colors"
+                className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white font-mono focus:outline-hidden focus:border-emerald-500 transition-colors"
               />
               <select
                 value={fromCurrency}
                 onChange={e => setFromCurrency(e.target.value as CurrencyCode)}
-                className="bg-slate-900 border border-slate-600 rounded-xl px-2 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+                className="bg-slate-900 border border-slate-600 rounded-xl px-2 py-2.5 text-sm text-white focus:outline-hidden focus:border-emerald-500"
               >
                 {CURRENCY_CODES.map(c => (
                   <option key={c} value={c}>{c}</option>
@@ -203,7 +203,7 @@ const ConverterTab: React.FC<{
               <select
                 value={toCurrency}
                 onChange={e => setToCurrency(e.target.value as CurrencyCode)}
-                className="bg-slate-900 border border-slate-600 rounded-xl px-2 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+                className="bg-slate-900 border border-slate-600 rounded-xl px-2 py-2.5 text-sm text-white focus:outline-hidden focus:border-emerald-500"
               >
                 {CURRENCY_CODES.map(c => (
                   <option key={c} value={c}>{c}</option>
@@ -290,7 +290,7 @@ const ComparisonTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
             <button
               key={card.id}
               onClick={() => setSelectedCardIdx(idx)}
-              className={`flex-shrink-0 px-4 py-2 rounded-xl border text-xs font-medium transition-all ${
+              className={`shrink-0 px-4 py-2 rounded-xl border text-xs font-medium transition-all ${
                 idx === selectedCardIdx
                   ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400'
                   : 'bg-slate-800/30 border-slate-700 text-slate-400 hover:text-white'
@@ -307,7 +307,7 @@ const ComparisonTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
           {/* Best Deal Banner */}
           {comparison.maxSavingsUSD > 0 && (
             <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
-              <TrendingDown size={18} className="text-emerald-400 flex-shrink-0" />
+              <TrendingDown size={18} className="text-emerald-400 shrink-0" />
               <div>
                 <p className="text-sm font-bold text-emerald-400">
                   Save {formatCurrency(comparison.maxSavingsUSD, 'USD')} ({comparison.savingsPercent}%)
@@ -337,7 +337,7 @@ const ComparisonTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
                   }`}
                 >
                   {listing.isBestDeal && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex-shrink-0">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shrink-0">
                       Best
                     </span>
                   )}
@@ -347,7 +347,7 @@ const ComparisonTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
                       Price: {formatCurrency(listing.localPrice, listing.currency)} + {formatCurrency(listing.shippingLocal, listing.currency)} shipping
                     </p>
                   </div>
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-right shrink-0">
                     <p className="text-sm font-mono text-white">
                       {formatCurrency(listing.totalUSD, 'USD')}
                     </p>
@@ -396,7 +396,7 @@ const DutyTab: React.FC = () => {
                 type="number"
                 value={itemValue}
                 onChange={e => setItemValue(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500 transition-colors"
+                className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white font-mono focus:outline-hidden focus:border-emerald-500 transition-colors"
                 placeholder="250"
               />
             </div>
@@ -406,7 +406,7 @@ const DutyTab: React.FC = () => {
             <select
               value={destination}
               onChange={e => setDestination(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+              className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-hidden focus:border-emerald-500"
             >
               {countries.map(c => (
                 <option key={c.code} value={c.code}>{c.name}</option>
@@ -529,7 +529,7 @@ const TrendsTab: React.FC<{ cards: CardInventory[]; activeCurrency: CurrencyCode
           <button
             key={code}
             onClick={() => setTrendCurrency(code)}
-            className={`flex-shrink-0 px-4 py-2 rounded-xl border text-xs font-bold transition-all ${
+            className={`shrink-0 px-4 py-2 rounded-xl border text-xs font-bold transition-all ${
               code === trendCurrency
                 ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400'
                 : 'bg-slate-800/30 border-slate-700 text-slate-400 hover:text-white'
@@ -675,11 +675,11 @@ const TrendsTab: React.FC<{ cards: CardInventory[]; activeCurrency: CurrencyCode
             : 'bg-slate-800/30 border-slate-700'
       }`}>
         {impact.trend === 'favorable' ? (
-          <TrendingUp size={18} className="text-green-400 flex-shrink-0" />
+          <TrendingUp size={18} className="text-green-400 shrink-0" />
         ) : impact.trend === 'unfavorable' ? (
-          <TrendingDown size={18} className="text-red-400 flex-shrink-0" />
+          <TrendingDown size={18} className="text-red-400 shrink-0" />
         ) : (
-          <ArrowRightLeft size={18} className="text-slate-400 flex-shrink-0" />
+          <ArrowRightLeft size={18} className="text-slate-400 shrink-0" />
         )}
         <div>
           <p className={`text-sm font-bold ${
@@ -739,7 +739,7 @@ const AlertsTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
             className={`p-4 rounded-2xl border ${config.bg} ${config.border}`}
           >
             <div className="flex items-start gap-3">
-              <div className={`flex-shrink-0 mt-0.5 ${config.text}`}>
+              <div className={`shrink-0 mt-0.5 ${config.text}`}>
                 {typeIcons[alert.type] ?? <AlertCircle size={16} />}
               </div>
               <div className="flex-1 min-w-0">
@@ -783,7 +783,7 @@ const CurrencyModal: React.FC<CurrencyModalProps> = ({ isOpen, onClose, cards })
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-emerald-500/5">

@@ -227,7 +227,7 @@ const CardShowModePage: React.FC = () => {
               </div>
               <div className="flex flex-wrap gap-1 mt-2">
                 {show.features.slice(0, 2).map(f => (
-                  <span key={f} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded">
+                  <span key={f} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded-sm">
                     {f}
                   </span>
                 ))}
@@ -301,8 +301,8 @@ const CardShowModePage: React.FC = () => {
                 </ResponsiveContainer>
               </div>
               <div className="flex items-center justify-center gap-6 text-[10px] text-slate-500 mt-2">
-                <span className="flex items-center gap-1"><span className="w-3 h-3 bg-amber-500 rounded" /> Spent</span>
-                <span className="flex items-center gap-1"><span className="w-3 h-3 bg-emerald-400 rounded" /> Est. Value</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-3 bg-amber-500 rounded-sm" /> Spent</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-3 bg-emerald-400 rounded-sm" /> Est. Value</span>
               </div>
             </div>
           ) : (
@@ -330,7 +330,7 @@ const CardShowModePage: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {vendor.specialties.slice(0, 3).map(s => (
-                    <span key={s} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded">{s}</span>
+                    <span key={s} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded-sm">{s}</span>
                   ))}
                 </div>
               </div>

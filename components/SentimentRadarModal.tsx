@@ -127,7 +127,7 @@ const SentimentRadarModal: React.FC<Props> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
@@ -302,7 +302,7 @@ const SentimentRadarModal: React.FC<Props> = ({ isOpen, onClose }) => {
                               {p.sources.forums.score > 0 ? '+' : ''}{p.sources.forums.score}
                             </div>
                           </div>
-                          <span className={`text-sm font-black px-2 py-1 rounded border ${sentimentBg(p.overallSentiment)} ${sentimentColor(p.overallSentiment)}`}>
+                          <span className={`text-sm font-black px-2 py-1 rounded-sm border ${sentimentBg(p.overallSentiment)} ${sentimentColor(p.overallSentiment)}`}>
                             {p.overallSentiment > 0 ? '+' : ''}{p.overallSentiment}
                           </span>
                         </div>
@@ -386,7 +386,7 @@ const SentimentRadarModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   {/* Keywords */}
                   <div className="flex flex-wrap gap-1 mt-3">
                     {p.keywords.slice(0, 4).map(kw => (
-                      <span key={kw} className="px-2 py-0.5 bg-slate-700/50 rounded text-[10px] text-slate-400">
+                      <span key={kw} className="px-2 py-0.5 bg-slate-700/50 rounded-sm text-[10px] text-slate-400">
                         #{kw}
                       </span>
                     ))}
@@ -453,7 +453,7 @@ const SentimentRadarModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-sm font-bold text-slate-200">{a.player}</span>
-                      <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border ${severityBadge(a.severity)}`}>
+                      <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-sm border ${severityBadge(a.severity)}`}>
                         {a.severity}
                       </span>
                       <span className={`text-[10px] font-bold ${sentimentColor(a.sentiment)}`}>

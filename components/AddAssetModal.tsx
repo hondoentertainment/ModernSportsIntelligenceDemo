@@ -174,7 +174,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="add-asset-title">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/80 backdrop-blur-xs"
                 onClick={onClose}
             />
 
@@ -218,7 +218,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                 value={player}
                                 onChange={(e) => setPlayer(e.target.value)}
                                 placeholder="e.g. Michael Jordan"
-                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
+                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
                                 required
                             />
                         </div>
@@ -229,7 +229,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                 value={year}
                                 onChange={(e) => setYear(e.target.value)}
                                 placeholder="YYYY"
-                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
+                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
                                 required
                             />
                         </div>
@@ -244,7 +244,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                 value={manufacturer}
                                 onChange={(e) => setManufacturer(e.target.value)}
                                 placeholder="e.g. Panini"
-                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
+                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
                                 required
                             />
                         </div>
@@ -255,7 +255,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                 value={set}
                                 onChange={(e) => setSet(e.target.value)}
                                 placeholder="e.g. Prizm"
-                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
+                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
                                 required
                             />
                         </div>
@@ -268,7 +268,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                     value={cardNumber}
                                     onChange={(e) => setCardNumber(e.target.value)}
                                     placeholder="e.g. 101"
-                                    className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 pl-10 pr-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
+                                    className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 pl-10 pr-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
                                 />
                             </div>
                         </div>
@@ -281,7 +281,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                             <select
                                 value={sport}
                                 onChange={(e) => setSport(e.target.value as Sport)}
-                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white appearance-none cursor-pointer"
+                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white appearance-none cursor-pointer"
                             >
                                 {SPORTS.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
@@ -291,7 +291,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                             <select
                                 value={league}
                                 onChange={(e) => setLeague(e.target.value as League)}
-                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white appearance-none cursor-pointer"
+                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white appearance-none cursor-pointer"
                             >
                                 {LEAGUES.map(l => <option key={l} value={l}>{l}</option>)}
                             </select>
@@ -307,7 +307,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" checked={isGraded} onChange={(e) => setIsGraded(e.target.checked)} className="sr-only peer" />
-                                <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-lime"></div>
+                                <div className="w-11 h-6 bg-slate-800 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-lime"></div>
                             </label>
                         </div>
 
@@ -318,7 +318,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                     <select
                                         value={gradingCompany}
                                         onChange={(e) => setGradingCompany(e.target.value)}
-                                        className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-3 px-4 text-sm font-medium text-white focus:outline-none focus:border-brand-lime/30"
+                                        className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-3 px-4 text-sm font-medium text-white focus:outline-hidden focus:border-brand-lime/30"
                                     >
                                         {GRADERS.filter(g => g !== 'Raw').map(g => <option key={g} value={g}>{g}</option>)}
                                     </select>
@@ -330,7 +330,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                         value={grade}
                                         onChange={(e) => setGrade(e.target.value)}
                                         placeholder="e.g. 10"
-                                        className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-3 px-4 text-sm font-medium text-white focus:outline-none focus:border-brand-lime/30"
+                                        className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-3 px-4 text-sm font-medium text-white focus:outline-hidden focus:border-brand-lime/30"
                                     />
                                 </div>
                                 <div className="col-span-2 space-y-2">
@@ -340,7 +340,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                         value={certNumber}
                                         onChange={(e) => setCertNumber(e.target.value)}
                                         placeholder="e.g. 45892341"
-                                        className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-3 px-4 text-sm font-medium text-white focus:outline-none focus:border-brand-lime/30"
+                                        className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-3 px-4 text-sm font-medium text-white focus:outline-hidden focus:border-brand-lime/30"
                                     />
                                 </div>
                             </div>
@@ -349,7 +349,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
 
                     {/* Autograph Toggle */}
                     <div className="flex items-center gap-3 p-4 bg-slate-900/50 border border-slate-800 rounded-2xl hover:border-brand-lime/30 transition-colors cursor-pointer" onClick={() => setIsAutographed(!isAutographed)}>
-                        <div className={`w-5 h-5 rounded border flex items-center justify-center ${isAutographed ? 'bg-brand-lime border-brand-lime' : 'border-slate-600'}`}>
+                        <div className={`w-5 h-5 rounded-sm border flex items-center justify-center ${isAutographed ? 'bg-brand-lime border-brand-lime' : 'border-slate-600'}`}>
                             {isAutographed && <X size={12} className="text-brand-charcoal" />}
                         </div>
                         <div className="flex items-center gap-2">
@@ -430,7 +430,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                             placeholder="0.00"
                                             min="0"
                                             step="0.01"
-                                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 pl-10 pr-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red/30 transition-all font-mono font-bold text-white placeholder:text-slate-600"
+                                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 pl-10 pr-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red/30 transition-all font-mono font-bold text-white placeholder:text-slate-600"
                                             required={status === 'sold'}
                                         />
                                     </div>
@@ -443,7 +443,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                         type="date"
                                         value={saleDate}
                                         onChange={(e) => setSaleDate(e.target.value)}
-                                        className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red/30 transition-all font-mono font-medium text-white appearance-none"
+                                        className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red/30 transition-all font-mono font-medium text-white appearance-none"
                                         required={status === 'sold'}
                                     />
                                 </div>
@@ -461,7 +461,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                             onChange={(e) => setNotes(e.target.value)}
                             placeholder="Add strategic context, provenance, or liquidity notes..."
                             rows={3}
-                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600 resize-none"
+                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600 resize-none"
                         />
                     </div>
 
@@ -480,7 +480,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                     placeholder="0.00"
                                     min="0"
                                     step="0.01"
-                                    className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 pl-10 pr-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-mono font-bold text-white placeholder:text-slate-600"
+                                    className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 pl-10 pr-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-mono font-bold text-white placeholder:text-slate-600"
                                 />
                             </div>
                         </div>
@@ -492,7 +492,7 @@ const AddAssetModal: React.FC<AddAssetModalProps> = ({ isOpen, onClose, onAdd, e
                                 type="date"
                                 value={purchaseDate}
                                 onChange={(e) => setPurchaseDate(e.target.value)}
-                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-mono font-medium text-white appearance-none"
+                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-mono font-medium text-white appearance-none"
                             />
                         </div>
                     </div>

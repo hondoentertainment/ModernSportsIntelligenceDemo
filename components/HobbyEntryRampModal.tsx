@@ -70,8 +70,8 @@ const HobbyEntryRampModal: React.FC<HobbyEntryRampModalProps> = ({ isOpen, onClo
               return (
                 <div key={sIdx} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-700/30 transition-colors">
                   {completed
-                    ? <CheckCircle2 size={16} className="text-lime-400 flex-shrink-0" />
-                    : <Circle size={16} className="text-slate-600 flex-shrink-0" />}
+                    ? <CheckCircle2 size={16} className="text-lime-400 shrink-0" />
+                    : <Circle size={16} className="text-slate-600 shrink-0" />}
                   <span className={`text-sm ${completed ? 'text-slate-200' : 'text-slate-400'}`}>
                     {step.name || step.title || step.label || step}
                   </span>
@@ -109,7 +109,7 @@ const HobbyEntryRampModal: React.FC<HobbyEntryRampModalProps> = ({ isOpen, onClo
           </div>
           <div className="h-3 bg-slate-700 rounded-full overflow-hidden mb-2">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-lime-600 to-lime-400"
+              className="h-full rounded-full bg-linear-to-r from-lime-600 to-lime-400"
               style={{ width: `${progress?.overall ?? stats?.completionRate ?? 42}%` }}
             />
           </div>
@@ -164,7 +164,7 @@ const HobbyEntryRampModal: React.FC<HobbyEntryRampModalProps> = ({ isOpen, onClo
       ].map((guide, idx) => (
         <div key={idx} className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50">
           <div className="flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-lime-500/20 flex-shrink-0">{guide.icon}</div>
+            <div className="p-2 rounded-lg bg-lime-500/20 shrink-0">{guide.icon}</div>
             <div>
               <h4 className="text-sm font-semibold text-slate-200 mb-1">{guide.title}</h4>
               <p className="text-xs text-slate-400 leading-relaxed">{guide.desc}</p>
@@ -186,9 +186,9 @@ const HobbyEntryRampModal: React.FC<HobbyEntryRampModalProps> = ({ isOpen, onClo
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-5xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
-        <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-gradient-to-r from-slate-900 via-slate-800/50 to-slate-900">
+        <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-linear-to-r from-slate-900 via-slate-800/50 to-slate-900">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-lime-500/20">
               <Map size={24} className="text-lime-400" />

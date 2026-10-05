@@ -177,7 +177,7 @@ function SortableWidget({
                     e.stopPropagation();
                     setShowResize(!showResize);
                   }}
-                  className="p-1 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded transition-colors"
+                  className="p-1 text-slate-500 hover:text-slate-300 hover:bg-slate-700 rounded-sm transition-colors"
                   title="Resize"
                 >
                   <Maximize2 size={11} />
@@ -212,7 +212,7 @@ function SortableWidget({
                   e.stopPropagation();
                   onRemove(widget.id);
                 }}
-                className="p-1 text-slate-500 hover:text-red-400 hover:bg-slate-700 rounded transition-colors"
+                className="p-1 text-slate-500 hover:text-red-400 hover:bg-slate-700 rounded-sm transition-colors"
                 title="Remove"
               >
                 <X size={11} />
@@ -507,7 +507,7 @@ const DashboardBuilder: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
       {/* Top Toolbar */}
-      <div className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b border-slate-700">
+      <div className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700">
         <div className="flex items-center justify-between px-4 py-3">
           {/* Left: Title & Layout name */}
           <div className="flex items-center gap-3">
@@ -652,7 +652,7 @@ const DashboardBuilder: React.FC = () => {
                 <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Widget Catalog</h3>
                 <button
                   onClick={() => setShowCatalog(false)}
-                  className="p-1 text-slate-500 hover:text-slate-300 rounded transition-colors"
+                  className="p-1 text-slate-500 hover:text-slate-300 rounded-sm transition-colors"
                 >
                   <X size={14} />
                 </button>
@@ -666,7 +666,7 @@ const DashboardBuilder: React.FC = () => {
                   value={catalogSearch}
                   onChange={e => setCatalogSearch(e.target.value)}
                   placeholder="Search widgets..."
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-8 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-8 pr-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500 transition-colors"
                 />
               </div>
 
@@ -810,7 +810,7 @@ const DashboardBuilder: React.FC = () => {
                     setShowConfigPanel(false);
                     setSelectedWidgetId(null);
                   }}
-                  className="p-1 text-slate-500 hover:text-slate-300 rounded transition-colors"
+                  className="p-1 text-slate-500 hover:text-slate-300 rounded-sm transition-colors"
                 >
                   <X size={14} />
                 </button>
@@ -836,7 +836,7 @@ const DashboardBuilder: React.FC = () => {
                   type="text"
                   value={selectedWidget.config.title ?? ''}
                   onChange={e => updateWidgetConfig(selectedWidget.id, { title: e.target.value })}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-hidden focus:border-blue-500 transition-colors"
                 />
               </div>
 
@@ -921,8 +921,8 @@ const DashboardBuilder: React.FC = () => {
 
       {/* Save Dialog */}
       {showSaveDialog && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSaveDialog(false)} />
+        <div className="fixed inset-0 z-9999 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={() => setShowSaveDialog(false)} />
           <div className="relative bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-sm mx-4 p-5 shadow-2xl">
             <h3 className="text-sm font-semibold text-slate-200 mb-4 flex items-center gap-2">
               <Save size={16} className="text-blue-400" />
@@ -938,7 +938,7 @@ const DashboardBuilder: React.FC = () => {
                   value={saveName}
                   onChange={e => setSaveName(e.target.value)}
                   placeholder="My Dashboard"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500 transition-colors"
                   autoFocus
                 />
               </div>
@@ -951,7 +951,7 @@ const DashboardBuilder: React.FC = () => {
                   value={saveDescription}
                   onChange={e => setSaveDescription(e.target.value)}
                   placeholder="Optional description"
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500 transition-colors"
                 />
               </div>
             </div>

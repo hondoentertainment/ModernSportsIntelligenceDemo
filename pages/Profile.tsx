@@ -104,7 +104,7 @@ const Profile: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Profile Header */}
       <section className="bg-slate-950 border border-slate-800 rounded-[2.5rem] p-10 flex flex-col md:flex-row gap-10 items-center">
-        <div className="w-32 h-32 rounded-full bg-gradient-to-tr from-brand-teal to-blue-500 p-1">
+        <div className="w-32 h-32 rounded-full bg-linear-to-tr from-brand-teal to-blue-500 p-1">
           <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center border-4 border-slate-950">
             <User size={64} className="text-brand-teal" />
           </div>
@@ -252,7 +252,7 @@ const Profile: React.FC = () => {
               <select
                 value={settings.favoriteTeam}
                 onChange={(e) => setSettings(s => ({ ...s, favoriteTeam: e.target.value }))}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-brand-teal transition-all"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-hidden focus:border-brand-teal transition-all"
               >
                 {MOCK_TEAMS.map(team => (
                   <option key={team.id} value={team.name}>{team.name} ({team.league})</option>
@@ -406,7 +406,7 @@ const Profile: React.FC = () => {
               </p>
             )}
           </div>
-          <div className="flex flex-col gap-3 w-full md:w-auto md:min-w-[14rem]">
+          <div className="flex flex-col gap-3 w-full md:w-auto md:min-w-56">
             <div className="flex flex-col gap-1 w-full">
               <label
                 htmlFor="msi-profile-migration-policy"
@@ -418,7 +418,7 @@ const Profile: React.FC = () => {
                 id="msi-profile-migration-policy"
                 value={conflictPolicy}
                 onChange={(e) => handleConflictPolicyChange(e.target.value as MigrationConflictPolicy)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-brand-teal transition-all"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-hidden focus:border-brand-teal transition-all"
                 aria-describedby="msi-profile-migration-policy-hint msi-profile-migration-policy-banner-note"
               >
                 {MIGRATION_CONFLICT_POLICY_OPTIONS.map((o) => (

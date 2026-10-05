@@ -90,12 +90,12 @@ const LiveGameImpactWidget: React.FC<Props> = ({ onOpenModal, portfolioPlayers =
                   key={game.id}
                   className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl text-xs"
                 >
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-white font-medium truncate">{game.awayTeam} @ {game.homeTeam}</p>
                     <p className="text-[10px] text-slate-500">{game.period} &bull; {game.score.away}-{game.score.home}</p>
                   </div>
-                  <div className="flex items-center gap-1 flex-shrink-0">
+                  <div className="flex items-center gap-1 shrink-0">
                     {game.portfolioImpact >= 0 ? (
                       <TrendingUp size={12} className="text-emerald-400" />
                     ) : (
@@ -113,7 +113,7 @@ const LiveGameImpactWidget: React.FC<Props> = ({ onOpenModal, portfolioPlayers =
           {/* Alert */}
           {snapshot.alerts.length > 0 && (
             <div className="flex items-center gap-3 px-4 py-3 bg-amber-500/5 border border-amber-500/20 rounded-xl">
-              <Zap size={14} className="text-amber-400 flex-shrink-0" />
+              <Zap size={14} className="text-amber-400 shrink-0" />
               <p className="text-xs text-amber-300 truncate">{snapshot.alerts[0].message}</p>
             </div>
           )}

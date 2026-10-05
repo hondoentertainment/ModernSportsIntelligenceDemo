@@ -67,7 +67,7 @@ export const ExitStrategyModal: React.FC<ExitStrategyModalProps> = ({
     const liquidityScore = card.liquidityScore || LiquidityService.calculateLiquidityScore(card);
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
             <div className="w-full max-w-xl bg-brand-slate border border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                 {/* Header */}
                 <div className="p-8 border-b border-slate-800 flex items-center justify-between bg-brand-charcoal/30">
@@ -113,7 +113,7 @@ export const ExitStrategyModal: React.FC<ExitStrategyModalProps> = ({
                                     type="number"
                                     value={targetPrice}
                                     onChange={(e) => setTargetPrice(Number(e.target.value))}
-                                    className="w-full bg-slate-950 border border-slate-800 rounded-2xl py-5 pl-12 pr-6 text-white font-mono focus:outline-none focus:ring-2 focus:ring-brand-lime/20 transition-all text-xl"
+                                    className="w-full bg-slate-950 border border-slate-800 rounded-2xl py-5 pl-12 pr-6 text-white font-mono focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 transition-all text-xl"
                                 />
                             </div>
                             <p className="mt-2 text-[9px] text-brand-muted font-medium">Estimated ROI at target: <span className="text-brand-green">+{Math.round(((targetPrice - (card.purchasePrice || 1)) / (card.purchasePrice || 1)) * 100)}%</span></p>
@@ -127,7 +127,7 @@ export const ExitStrategyModal: React.FC<ExitStrategyModalProps> = ({
                                 <select
                                     value={timeframe}
                                     onChange={(e) => setTimeframe(e.target.value as any)}
-                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl py-4 px-4 text-white hover:border-slate-700 transition-all focus:outline-none"
+                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl py-4 px-4 text-white hover:border-slate-700 transition-all focus:outline-hidden"
                                 >
                                     <option>Short (3m)</option>
                                     <option>Medium (6-12m)</option>
@@ -142,7 +142,7 @@ export const ExitStrategyModal: React.FC<ExitStrategyModalProps> = ({
                                 <select
                                     value={strategy}
                                     onChange={(e) => setStrategy(e.target.value as any)}
-                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl py-4 px-4 text-white hover:border-slate-700 transition-all focus:outline-none"
+                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl py-4 px-4 text-white hover:border-slate-700 transition-all focus:outline-hidden"
                                 >
                                     <option>Take Profit</option>
                                     <option>Cut Loss</option>
@@ -157,7 +157,7 @@ export const ExitStrategyModal: React.FC<ExitStrategyModalProps> = ({
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 placeholder="Why are you targeting this exit?"
-                                className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-6 text-white text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-brand-lime/20 transition-all"
+                                className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-6 text-white text-sm min-h-[100px] focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 transition-all"
                             />
                         </div>
                     </div>

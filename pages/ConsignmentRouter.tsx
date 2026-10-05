@@ -81,7 +81,7 @@ const ScoreBadge: React.FC<{ score: number; size?: 'sm' | 'lg' }> = ({ score, si
     : 'bg-red-500/20 text-red-400 border-red-500/30';
   const sizeClass = size === 'lg' ? 'px-3 py-1 text-sm' : 'px-2 py-0.5 text-xs';
   return (
-    <span className={`inline-flex items-center font-bold rounded border ${color} ${sizeClass}`}>
+    <span className={`inline-flex items-center font-bold rounded-sm border ${color} ${sizeClass}`}>
       {score}
     </span>
   );
@@ -115,11 +115,11 @@ const RecommendationCard: React.FC<{ option: ConsignmentOption; rank: number }> 
               <span className={`text-sm font-bold ${PLATFORM_TEXT_COLORS[opt.platform.id] ?? 'text-white'}`}>
                 {opt.platform.name}
               </span>
-              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${tierBadge.cls}`}>
+              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-sm border ${tierBadge.cls}`}>
                 {tierBadge.label}
               </span>
               {rank === 0 && (
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded border bg-lime-500/20 text-lime-400 border-lime-500/30">
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-sm border bg-lime-500/20 text-lime-400 border-lime-500/30">
                   RECOMMENDED
                 </span>
               )}
@@ -298,7 +298,7 @@ const ConsignmentRouter: React.FC = () => {
               value={cardDescription}
               onChange={(e) => setCardDescription(e.target.value)}
               placeholder="e.g., 2020 Prizm Justin Herbert PSA 10"
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-lime-500/50"
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-lime-500/50"
             />
           </div>
 
@@ -311,7 +311,7 @@ const ConsignmentRouter: React.FC = () => {
                 type="number"
                 value={cardValue}
                 onChange={(e) => setCardValue(Math.max(0, Number(e.target.value)))}
-                className="bg-slate-800 border border-slate-700 rounded-lg pl-7 pr-3 py-2 text-sm text-white w-36 focus:outline-none focus:border-lime-500/50"
+                className="bg-slate-800 border border-slate-700 rounded-lg pl-7 pr-3 py-2 text-sm text-white w-36 focus:outline-hidden focus:border-lime-500/50"
               />
             </div>
           </div>
@@ -337,7 +337,7 @@ const ConsignmentRouter: React.FC = () => {
 
       {/* Top recommendation banner */}
       {best && (
-        <div className="bg-gradient-to-r from-lime-500/10 via-slate-900 to-slate-900 border border-lime-500/30 rounded-2xl p-4">
+        <div className="bg-linear-to-r from-lime-500/10 via-slate-900 to-slate-900 border border-lime-500/30 rounded-2xl p-4">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
               <Award size={20} className="text-lime-400" />

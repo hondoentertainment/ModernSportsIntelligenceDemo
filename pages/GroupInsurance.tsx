@@ -177,7 +177,7 @@ const GroupInsurance: React.FC = () => {
             >
               <ShieldCheck size={16} className={getPoolTierColor(pool.tier)} />
               <span>{pool.name}</span>
-              <span className={`ml-1 px-1.5 py-0.5 rounded text-xs ${getPoolTierBg(pool.tier)} ${getPoolTierColor(pool.tier)}`}>
+              <span className={`ml-1 px-1.5 py-0.5 rounded-sm text-xs ${getPoolTierBg(pool.tier)} ${getPoolTierColor(pool.tier)}`}>
                 {pool.tier.toUpperCase()}
               </span>
             </button>
@@ -277,7 +277,7 @@ const GroupInsurance: React.FC = () => {
                 <div className="flex-1 space-y-2">
                   {selectedPool.coverageTypes.map((ct, i) => (
                     <div key={ct} className="flex items-center gap-2 text-sm">
-                      <span className="w-3 h-3 rounded-sm" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
+                      <span className="w-3 h-3 rounded-xs" style={{ background: CHART_COLORS[i % CHART_COLORS.length] }} />
                       <span className="text-slate-300">{getCoverageIcon(ct)} {getCoverageLabel(ct)}</span>
                     </div>
                   ))}
@@ -388,7 +388,7 @@ const GroupInsurance: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-3 text-sm">
                         <span className="text-slate-300 font-semibold">{formatCurrency(claim.claimValue)}</span>
-                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${getClaimStatusBg(claim.status)} ${getClaimStatusColor(claim.status)}`}>
+                        <span className={`flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium ${getClaimStatusBg(claim.status)} ${getClaimStatusColor(claim.status)}`}>
                           {CLAIM_STATUS_ICONS[claim.status]}
                           {CLAIM_STATUS_LABELS[claim.status]}
                         </span>
@@ -410,7 +410,7 @@ const GroupInsurance: React.FC = () => {
                     {claim.evidence.length > 0 && (
                       <div className="mt-2 flex gap-1.5 flex-wrap">
                         {claim.evidence.map((e) => (
-                          <span key={e} className="text-xs bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
+                          <span key={e} className="text-xs bg-slate-700/50 px-2 py-0.5 rounded-sm text-slate-400">
                             {e}
                           </span>
                         ))}
@@ -455,7 +455,7 @@ const GroupInsurance: React.FC = () => {
                     type="number"
                     value={calcValue}
                     onChange={(e) => setCalcValue(Math.max(0, Number(e.target.value)))}
-                    className="bg-slate-800 border border-slate-700 rounded-lg pl-7 pr-3 py-1.5 text-sm text-slate-200 w-40 focus:outline-none focus:border-cyan-500/50"
+                    className="bg-slate-800 border border-slate-700 rounded-lg pl-7 pr-3 py-1.5 text-sm text-slate-200 w-40 focus:outline-hidden focus:border-cyan-500/50"
                   />
                 </div>
               </div>

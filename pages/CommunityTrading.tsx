@@ -189,14 +189,14 @@ const CommunityTrading: React.FC = () => {
                   placeholder="Search cards, players, tags..."
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-slate-400 focus:outline-hidden focus:border-purple-500"
                 />
               </div>
               <div className="relative">
                 <select
                   value={sportFilter}
                   onChange={e => setSportFilter(e.target.value)}
-                  className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white appearance-none pr-8 focus:outline-none focus:border-purple-500"
+                  className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white appearance-none pr-8 focus:outline-hidden focus:border-purple-500"
                 >
                   {SPORT_FILTERS.map(s => (
                     <option key={s} value={s}>{s}</option>
@@ -208,7 +208,7 @@ const CommunityTrading: React.FC = () => {
                 <select
                   value={typeFilter}
                   onChange={e => setTypeFilter(e.target.value as PostType | 'all')}
-                  className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white appearance-none pr-8 focus:outline-none focus:border-purple-500"
+                  className="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white appearance-none pr-8 focus:outline-hidden focus:border-purple-500"
                 >
                   {TYPE_FILTERS.map(f => (
                     <option key={f.value} value={f.value}>{f.label}</option>
@@ -261,11 +261,11 @@ const CommunityTrading: React.FC = () => {
                     <p className="text-slate-400 text-sm mb-3">{post.description}</p>
 
                     <div className="flex flex-wrap gap-2 mb-3">
-                      <span className="bg-slate-700 px-2 py-1 rounded text-xs text-slate-300">{post.sport}</span>
-                      <span className="bg-slate-700 px-2 py-1 rounded text-xs text-slate-300">{post.year}</span>
-                      <span className="bg-slate-700 px-2 py-1 rounded text-xs text-slate-300">{post.condition}</span>
+                      <span className="bg-slate-700 px-2 py-1 rounded-sm text-xs text-slate-300">{post.sport}</span>
+                      <span className="bg-slate-700 px-2 py-1 rounded-sm text-xs text-slate-300">{post.year}</span>
+                      <span className="bg-slate-700 px-2 py-1 rounded-sm text-xs text-slate-300">{post.condition}</span>
                       {post.tags.map(tag => (
-                        <span key={tag} className="bg-slate-700/50 px-2 py-1 rounded text-xs text-slate-400">#{tag}</span>
+                        <span key={tag} className="bg-slate-700/50 px-2 py-1 rounded-sm text-xs text-slate-400">#{tag}</span>
                       ))}
                     </div>
 
@@ -474,7 +474,7 @@ const CommunityTrading: React.FC = () => {
                       </div>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {trader.badges.map(badge => (
-                          <span key={badge} className="bg-slate-700 px-2 py-0.5 rounded text-xs text-slate-300">
+                          <span key={badge} className="bg-slate-700 px-2 py-0.5 rounded-sm text-xs text-slate-300">
                             {badge}
                           </span>
                         ))}
@@ -519,7 +519,7 @@ const CommunityTrading: React.FC = () => {
                   <label className="block text-sm text-slate-400 mb-1">Cash Difference ($)</label>
                   <input
                     type="number"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-purple-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-hidden focus:border-purple-500"
                     placeholder="0"
                   />
                 </div>
@@ -527,7 +527,7 @@ const CommunityTrading: React.FC = () => {
                 <div className="mb-4">
                   <label className="block text-sm text-slate-400 mb-1">Message</label>
                   <textarea
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-purple-500 h-20 resize-none"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:outline-hidden focus:border-purple-500 h-20 resize-none"
                     placeholder="Add a message to your offer..."
                   />
                 </div>

@@ -108,7 +108,7 @@ export const CardShowWidget: React.FC<CardShowWidgetProps> = ({ onClick }) => {
         </div>
         <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-lime-500 to-emerald-500 rounded-full transition-all duration-500"
+            className="h-full bg-linear-to-r from-lime-500 to-emerald-500 rounded-full transition-all duration-500"
             style={{ width: `${(foundCount / wantList.length) * 100}%` }}
           />
         </div>

@@ -178,7 +178,7 @@ const FrontierLab: React.FC = () => {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
-        <div className="space-y-4 rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-5">
+        <div className="space-y-4 rounded-4xl border border-slate-700/50 bg-slate-900/50 p-5">
           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
             <Filter size={12} />
             Filters
@@ -189,13 +189,13 @@ const FrontierLab: React.FC = () => {
               value={query}
               onChange={event => setQuery(event.target.value)}
               placeholder="Search by moat thesis or feature name"
-              className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-none ring-0 placeholder:text-slate-500 focus:border-brand-lime/40"
+              className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-white outline-hidden ring-0 placeholder:text-slate-500 focus:border-brand-lime/40"
             />
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-1">
               <select
                 value={categoryFilter}
                 onChange={event => setCategoryFilter(event.target.value as 'all' | FrontierFeatureCategory)}
-                className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-200 outline-none"
+                className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-200 outline-hidden"
               >
                 <option value="all">All categories</option>
                 {categories.map(category => (
@@ -206,7 +206,7 @@ const FrontierLab: React.FC = () => {
               <select
                 value={stageFilter}
                 onChange={event => setStageFilter(event.target.value as 'all' | FrontierFeatureStage)}
-                className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-200 outline-none"
+                className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-200 outline-hidden"
               >
                 <option value="all">All stages</option>
                 <option value="recommended">Recommended</option>
@@ -258,7 +258,7 @@ const FrontierLab: React.FC = () => {
         </div>
 
         {selectedFeature ? (
-          <div className="space-y-6 rounded-[2rem] border border-slate-700/50 bg-slate-900/50 p-6">
+          <div className="space-y-6 rounded-4xl border border-slate-700/50 bg-slate-900/50 p-6">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2">
@@ -384,7 +384,7 @@ const FrontierLab: React.FC = () => {
                     onChange={event => setDraftNote(event.target.value)}
                     rows={6}
                     placeholder="Add launch blockers, staffing notes, or execution decisions."
-                    className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-brand-lime/40"
+                    className="w-full rounded-2xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm text-white outline-hidden placeholder:text-slate-500 focus:border-brand-lime/40"
                   />
                   <button
                     onClick={handleSaveNote}
@@ -415,7 +415,7 @@ const FrontierLab: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="rounded-[2rem] border border-dashed border-slate-700 bg-slate-900/30 p-8 text-sm text-slate-400">
+          <div className="rounded-4xl border border-dashed border-slate-700 bg-slate-900/30 p-8 text-sm text-slate-400">
             No frontier features match the current filters.
           </div>
         )}

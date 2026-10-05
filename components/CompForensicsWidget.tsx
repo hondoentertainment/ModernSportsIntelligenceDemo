@@ -71,19 +71,19 @@ const CompForensicsWidget: React.FC<CompForensicsWidgetProps> = ({ onOpenModal }
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate mb-1">{topCard.name}</p>
               <div className="flex items-center gap-2">
-                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded border bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
+                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-sm border bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
                   {topCard.compCount} comps
                 </span>
-                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded border bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-sm border bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
                   {topCard.fmvConfidence}% conf
                 </span>
               </div>
             </div>
-            <div className="flex flex-col items-end gap-1 flex-shrink-0">
+            <div className="flex flex-col items-end gap-1 shrink-0">
               <span className="text-sm font-bold text-white">{formatCurrency(topCard.fmv)}</span>
               <span className="text-[10px] text-slate-500">FMV</span>
             </div>
-            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0" />
+            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
           </button>
         </div>
       )}

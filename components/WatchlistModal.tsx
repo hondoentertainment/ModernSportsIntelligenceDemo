@@ -85,7 +85,7 @@ const MiniSparkline: React.FC<{ data: number[]; positive: boolean }> = ({ data, 
   }).join(' ');
 
   return (
-    <svg width={w} height={h} className="flex-shrink-0">
+    <svg width={w} height={h} className="shrink-0">
       <polyline
         points={points}
         fill="none"
@@ -279,12 +279,12 @@ export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose,
               placeholder="Watchlist name..."
               value={newWlName}
               onChange={e => setNewWlName(e.target.value)}
-              className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+              className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-cyan-500/50"
             />
             <select
               value={newWlCategory}
               onChange={e => setNewWlCategory(e.target.value)}
-              className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-cyan-500/50"
+              className="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white focus:outline-hidden focus:border-cyan-500/50"
             >
               <option value="General">General</option>
               <option value="Rookies">Rookies</option>
@@ -326,7 +326,7 @@ export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose,
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-white truncate">{wl.name}</span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 py-0.5 bg-slate-800 rounded">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-2 py-0.5 bg-slate-800 rounded-sm">
                     {wl.category}
                   </span>
                 </div>
@@ -413,7 +413,7 @@ export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose,
                       <select
                         value={newRuleType}
                         onChange={e => setNewRuleType(e.target.value as PriceAlertRule['type'])}
-                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none"
+                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-hidden"
                       >
                         <option value="below">Price Below</option>
                         <option value="above">Price Above</option>
@@ -426,7 +426,7 @@ export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose,
                           placeholder={newRuleType === 'change_pct' ? 'e.g. 10' : 'e.g. 150.00'}
                           value={newRuleThreshold}
                           onChange={e => setNewRuleThreshold(e.target.value)}
-                          className="flex-1 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none"
+                          className="flex-1 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden"
                         />
                       )}
                       <button
@@ -449,12 +449,12 @@ export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose,
                         placeholder="Player name"
                         value={newItemPlayer}
                         onChange={e => setNewItemPlayer(e.target.value)}
-                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-cyan-500/50"
                       />
                       <select
                         value={newItemSport}
                         onChange={e => setNewItemSport(e.target.value as Sport)}
-                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none"
+                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-hidden"
                       >
                         {SPORTS.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>
@@ -463,28 +463,28 @@ export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose,
                         placeholder="Set name"
                         value={newItemSet}
                         onChange={e => setNewItemSet(e.target.value)}
-                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-cyan-500/50"
                       />
                       <input
                         type="number"
                         placeholder="Year"
                         value={newItemYear}
                         onChange={e => setNewItemYear(e.target.value)}
-                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none"
+                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden"
                       />
                       <input
                         type="number"
                         placeholder="Est. value ($)"
                         value={newItemValue}
                         onChange={e => setNewItemValue(e.target.value)}
-                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-cyan-500/50"
                       />
                       <input
                         type="text"
                         placeholder="Grade (optional)"
                         value={newItemGrade}
                         onChange={e => setNewItemGrade(e.target.value)}
-                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none"
+                        className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden"
                       />
                     </div>
                     <div className="flex gap-2">
@@ -630,7 +630,7 @@ export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose,
           <select
             value={scanSport}
             onChange={e => setScanSport(e.target.value as Sport | '')}
-            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none"
+            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-hidden"
           >
             <option value="">All Sports</option>
             {SPORTS.map(s => <option key={s} value={s}>{s}</option>)}
@@ -640,35 +640,35 @@ export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose,
             placeholder="Min price"
             value={scanMinPrice}
             onChange={e => setScanMinPrice(e.target.value)}
-            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none"
+            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden"
           />
           <input
             type="number"
             placeholder="Max price"
             value={scanMaxPrice}
             onChange={e => setScanMaxPrice(e.target.value)}
-            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none"
+            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden"
           />
           <input
             type="text"
             placeholder="Grade (e.g. PSA 10)"
             value={scanGrade}
             onChange={e => setScanGrade(e.target.value)}
-            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none"
+            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden"
           />
           <input
             type="number"
             placeholder="Min year"
             value={scanMinYear}
             onChange={e => setScanMinYear(e.target.value)}
-            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none"
+            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden"
           />
           <input
             type="number"
             placeholder="Max year"
             value={scanMaxYear}
             onChange={e => setScanMaxYear(e.target.value)}
-            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none"
+            className="px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden"
           />
         </div>
         <button
@@ -942,7 +942,7 @@ export const WatchlistModal: React.FC<WatchlistModalProps> = ({ isOpen, onClose,
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
 
         {/* Header */}

@@ -171,7 +171,7 @@ export const TechnicalAnalysisModal: React.FC<TechnicalAnalysisModalProps> = ({
   const { chartData, rsi, rsiData, macd, macdData, fibonacci, candlesticks, volumeProfile, signals, sentiment } = analysisData;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/80 backdrop-blur-md p-4 pt-8 pb-8">
+    <div className="fixed inset-0 z-100 flex items-start justify-center overflow-y-auto bg-black/80 backdrop-blur-md p-4 pt-8 pb-8">
       <div className="relative w-full max-w-6xl bg-brand-slate border border-slate-800 rounded-3xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-5 border-b border-slate-800">
@@ -204,7 +204,7 @@ export const TechnicalAnalysisModal: React.FC<TechnicalAnalysisModalProps> = ({
               <select
                 value={selectedCardId}
                 onChange={e => setSelectedCardId(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-4 py-2.5 focus:outline-hidden focus:border-blue-500"
               >
                 {cards.map(card => (
                   <option key={card.id} value={card.id}>
@@ -690,7 +690,7 @@ export const TechnicalAnalysisModal: React.FC<TechnicalAnalysisModalProps> = ({
                   </div>
 
                   {/* Strength Bar */}
-                  <div className="w-16 flex-shrink-0">
+                  <div className="w-16 shrink-0">
                     <div className="flex items-center justify-between text-[10px] text-slate-500 mb-0.5">
                       <span>Str</span>
                       <span className="font-mono">{signal.strength}</span>

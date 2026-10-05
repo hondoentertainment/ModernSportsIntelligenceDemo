@@ -163,7 +163,7 @@ function Lane({
 
   return (
     <div
-      className={`flex flex-col bg-brand-slate/50 border rounded-[1.5rem] transition-all min-w-[340px] w-[340px] shrink-0 ${
+      className={`flex flex-col bg-brand-slate/50 border rounded-3xl transition-all min-w-[340px] w-[340px] shrink-0 ${
         isOver ? 'border-brand-lime/60 shadow-[0_0_24px_rgba(217,249,157,0.12)]' : 'border-slate-800/60'
       }`}
     >
@@ -183,7 +183,7 @@ function Lane({
               value={editLabel}
               onChange={e => setEditLabel(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') setIsEditing(false); }}
-              className="flex-1 bg-brand-charcoal border border-slate-700 rounded-lg px-2 py-1 text-sm font-bold text-white focus:outline-none focus:border-brand-lime/40 min-w-0"
+              className="flex-1 bg-brand-charcoal border border-slate-700 rounded-lg px-2 py-1 text-sm font-bold text-white focus:outline-hidden focus:border-brand-lime/40 min-w-0"
             />
             <button onClick={handleSave} className="p-1 text-brand-green hover:bg-brand-green/10 rounded-lg transition-colors">
               <Check size={14} />
@@ -463,7 +463,7 @@ const PortfolioBuilder: React.FC = () => {
       >
         <div className="flex gap-6 flex-1 overflow-x-auto pb-4 no-scrollbar">
           {/* Ungrouped pool */}
-          <div className={`flex flex-col bg-brand-slate/30 border border-slate-800/40 rounded-[1.5rem] min-w-[300px] w-[300px] shrink-0 transition-all ${!poolCollapsed ? 'max-h-full' : ''}`}>
+          <div className={`flex flex-col bg-brand-slate/30 border border-slate-800/40 rounded-3xl min-w-[300px] w-[300px] shrink-0 transition-all ${!poolCollapsed ? 'max-h-full' : ''}`}>
             <div className="p-4 pb-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-xl bg-slate-700/40 flex items-center justify-center text-brand-muted">
@@ -489,7 +489,7 @@ const PortfolioBuilder: React.FC = () => {
                       placeholder="Search cards..."
                       value={poolSearch}
                       onChange={e => setPoolSearch(e.target.value)}
-                      className="w-full bg-brand-charcoal/50 border border-slate-800/50 rounded-xl py-2 pl-9 pr-3 text-xs focus:outline-none focus:border-brand-lime/30 transition-colors"
+                      className="w-full bg-brand-charcoal/50 border border-slate-800/50 rounded-xl py-2 pl-9 pr-3 text-xs focus:outline-hidden focus:border-brand-lime/30 transition-colors"
                     />
                   </div>
                 </div>
@@ -533,14 +533,14 @@ const PortfolioBuilder: React.FC = () => {
           {/* Add lane button */}
           <div className="min-w-[280px] w-[280px] shrink-0">
             {isAddingLane ? (
-              <div className="bg-brand-slate/30 border border-dashed border-brand-lime/30 rounded-[1.5rem] p-6 space-y-4">
+              <div className="bg-brand-slate/30 border border-dashed border-brand-lime/30 rounded-3xl p-6 space-y-4">
                 <input
                   autoFocus
                   value={newLaneName}
                   onChange={e => setNewLaneName(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') handleAddLane(); if (e.key === 'Escape') { setIsAddingLane(false); setNewLaneName(''); } }}
                   placeholder="Lane name..."
-                  className="w-full bg-brand-charcoal border border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-none focus:border-brand-lime/40 placeholder:text-brand-muted"
+                  className="w-full bg-brand-charcoal border border-slate-700 rounded-xl px-4 py-3 text-sm font-bold text-white focus:outline-hidden focus:border-brand-lime/40 placeholder:text-brand-muted"
                 />
                 <div className="flex gap-2">
                   <button
@@ -561,7 +561,7 @@ const PortfolioBuilder: React.FC = () => {
             ) : (
               <button
                 onClick={() => setIsAddingLane(true)}
-                className="w-full h-32 bg-brand-slate/20 border border-dashed border-slate-700 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 text-brand-muted hover:text-brand-lime hover:border-brand-lime/30 transition-all group"
+                className="w-full h-32 bg-brand-slate/20 border border-dashed border-slate-700 rounded-3xl flex flex-col items-center justify-center gap-2 text-brand-muted hover:text-brand-lime hover:border-brand-lime/30 transition-all group"
               >
                 <Plus size={24} strokeWidth={2} className="group-hover:scale-110 transition-transform" />
                 <span className="text-[10px] font-black uppercase tracking-widest">Add Lane</span>

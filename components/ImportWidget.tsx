@@ -75,7 +75,7 @@ export const ImportWidget: React.FC<ImportWidgetProps> = ({ _cards, onClick }) =
       {/* Stats Row */}
       <div className="flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
         <div className="flex items-center gap-2 flex-1">
-          <Package size={14} className="text-blue-400 flex-shrink-0" />
+          <Package size={14} className="text-blue-400 shrink-0" />
           <div>
             <p className="text-xs text-slate-400">Total Imported</p>
             <p className="text-lg font-bebas tracking-wider text-white">
@@ -85,7 +85,7 @@ export const ImportWidget: React.FC<ImportWidgetProps> = ({ _cards, onClick }) =
         </div>
         <div className="h-8 w-px bg-slate-700" />
         <div className="flex items-center gap-2 flex-1">
-          <FileSpreadsheet size={14} className="text-green-400 flex-shrink-0" />
+          <FileSpreadsheet size={14} className="text-green-400 shrink-0" />
           <div>
             <p className="text-xs text-slate-400">Imports</p>
             <p className="text-lg font-bebas tracking-wider text-white">
@@ -98,7 +98,7 @@ export const ImportWidget: React.FC<ImportWidgetProps> = ({ _cards, onClick }) =
       {/* Last Import */}
       {lastImport ? (
         <div className="flex items-center gap-3 px-4 py-3 bg-blue-500/5 border border-blue-500/15 rounded-xl">
-          <Clock size={14} className="text-blue-400 flex-shrink-0" />
+          <Clock size={14} className="text-blue-400 shrink-0" />
           <span className="text-xs text-slate-400">Last import:</span>
           <span className="text-xs text-white font-bold">{lastImportDate}</span>
           <span className="text-xs text-slate-500">via</span>
@@ -109,7 +109,7 @@ export const ImportWidget: React.FC<ImportWidgetProps> = ({ _cards, onClick }) =
         </div>
       ) : (
         <div className="flex items-center gap-3 px-4 py-3 bg-slate-800/30 border border-slate-700 rounded-xl">
-          <Upload size={14} className="text-slate-500 flex-shrink-0" />
+          <Upload size={14} className="text-slate-500 shrink-0" />
           <span className="text-xs text-slate-500">No imports yet — click to get started</span>
         </div>
       )}

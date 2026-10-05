@@ -45,13 +45,13 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, committee, isLoading }) =>
                 <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-full bg-slate-800" />
                     <div className="flex-1">
-                        <div className="h-4 bg-slate-800 rounded w-3/4 mb-2" />
-                        <div className="h-3 bg-slate-800 rounded w-1/2" />
+                        <div className="h-4 bg-slate-800 rounded-sm w-3/4 mb-2" />
+                        <div className="h-3 bg-slate-800 rounded-sm w-1/2" />
                     </div>
                 </div>
                 <div className="space-y-2">
-                    <div className="h-3 bg-slate-800 rounded w-full" />
-                    <div className="h-3 bg-slate-800 rounded w-5/6" />
+                    <div className="h-3 bg-slate-800 rounded-sm w-full" />
+                    <div className="h-3 bg-slate-800 rounded-sm w-5/6" />
                 </div>
             </div>
         );
@@ -84,7 +84,7 @@ const AgentCard: React.FC<AgentCardProps> = ({ agent, committee, isLoading }) =>
                 <p className="text-sm text-slate-300 leading-relaxed italic">
                     "{agent.insight}"
                 </p>
-                <div className="absolute -left-3 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-brand-lime/20 to-transparent rounded-full" />
+                <div className="absolute -left-3 top-0 bottom-0 w-1 bg-linear-to-b from-transparent via-brand-lime/20 to-transparent rounded-full" />
             </div>
             <WhyRecommendationPanel view={buildWhyFromAgent(agent, committee)} compact />
         </div>

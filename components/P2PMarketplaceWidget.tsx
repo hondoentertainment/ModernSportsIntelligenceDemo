@@ -27,7 +27,7 @@ const DealPill: React.FC<{ score: number }> = ({ score }) => {
       ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
       : 'bg-red-500/20 text-red-400 border-red-500/30';
   return (
-    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${cls}`}>
+    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-sm border ${cls}`}>
       {score}
     </span>
   );

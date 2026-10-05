@@ -64,7 +64,7 @@ const IotConditionGuardian: React.FC = () => {
       {/* Critical Alert Banner */}
       {criticalAlerts.length > 0 && (
         <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-bold text-red-400">
               {criticalAlerts.length} Critical Alert{criticalAlerts.length !== 1 ? 's' : ''} Require Attention
@@ -160,13 +160,13 @@ const IotConditionGuardian: React.FC = () => {
                     alert.acknowledged ? 'opacity-60' : ''
                   }`}
                 >
-                  <AlertTriangle className={`w-4 h-4 ${sevColor.text} flex-shrink-0`} />
+                  <AlertTriangle className={`w-4 h-4 ${sevColor.text} shrink-0`} />
                   <div className="flex-1 min-w-0">
                     <span className={`text-xs font-bold uppercase ${sevColor.text}`}>{alert.severity}</span>
                     <span className="text-xs text-slate-500 ml-2">{alert.zoneName}</span>
                     <p className="text-xs text-slate-300 mt-0.5 truncate">{alert.message}</p>
                   </div>
-                  <span className="text-[10px] text-slate-500 flex-shrink-0">
+                  <span className="text-[10px] text-slate-500 shrink-0">
                     {new Date(alert.timestamp).toLocaleTimeString()}
                   </span>
                 </div>

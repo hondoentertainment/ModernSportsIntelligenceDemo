@@ -87,7 +87,7 @@ const OptionsChainTab: React.FC = () => {
         <select
           value={selectedPlayer}
           onChange={e => setSelectedPlayer(e.target.value)}
-          className="bg-slate-800 border border-slate-700/50 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-blue-500/50"
+          className="bg-slate-800 border border-slate-700/50 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:outline-hidden focus:border-blue-500/50"
         >
           {players.map(p => (
             <option key={p} value={p}>{p}</option>
@@ -146,7 +146,7 @@ const OptionsChainTab: React.FC = () => {
                   <td className="py-1.5 px-1 text-right text-slate-300 font-mono">{call ? (call.impliedVolatility * 100).toFixed(1) + '%' : '-'}</td>
                   <td className="py-1.5 px-1 text-right">
                     {call && (
-                      <button className="text-emerald-400 font-semibold hover:bg-emerald-500/20 px-1.5 py-0.5 rounded transition-colors">
+                      <button className="text-emerald-400 font-semibold hover:bg-emerald-500/20 px-1.5 py-0.5 rounded-sm transition-colors">
                         ${call.premium.toFixed(0)}
                       </button>
                     )}
@@ -156,7 +156,7 @@ const OptionsChainTab: React.FC = () => {
                   </td>
                   <td className="py-1.5 px-1 text-left">
                     {put && (
-                      <button className="text-red-400 font-semibold hover:bg-red-500/20 px-1.5 py-0.5 rounded transition-colors">
+                      <button className="text-red-400 font-semibold hover:bg-red-500/20 px-1.5 py-0.5 rounded-sm transition-colors">
                         ${put.premium.toFixed(0)}
                       </button>
                     )}
@@ -448,7 +448,7 @@ const VolSurfaceTab: React.FC = () => {
         <select
           value={selectedPlayer}
           onChange={e => setSelectedPlayer(e.target.value)}
-          className="bg-slate-800 border border-slate-700/50 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-blue-500/50"
+          className="bg-slate-800 border border-slate-700/50 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:outline-hidden focus:border-blue-500/50"
         >
           {players.map(p => <option key={p} value={p}>{p}</option>)}
         </select>
@@ -514,7 +514,7 @@ const VolSurfaceTab: React.FC = () => {
               <div key={i} className="flex-1 flex flex-col items-center gap-1">
                 <span className="text-[10px] text-slate-300 font-mono">{(iv * 100).toFixed(1)}%</span>
                 <div
-                  className="w-full rounded-t-md bg-gradient-to-t from-blue-600 to-blue-400"
+                  className="w-full rounded-t-md bg-linear-to-t from-blue-600 to-blue-400"
                   style={{ height: `${Math.max(10, height)}%` }}
                 />
                 <span className="text-[9px] text-slate-500">{[30, 60, 90, 180][i]}d</span>
@@ -650,10 +650,10 @@ const DerivativesDeskModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const stats = getDerivativesStats();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs" onClick={onClose}>
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-5xl max-h-[88vh] overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-gradient-to-r from-blue-500/10 to-slate-900">
+        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-linear-to-r from-blue-500/10 to-slate-900">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-blue-500/20">
               <Shield size={20} className="text-blue-400" />

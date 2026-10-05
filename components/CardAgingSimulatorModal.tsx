@@ -133,7 +133,7 @@ const CardAgingSimulatorModal: React.FC<CardAgingSimulatorModalProps> = ({ isOpe
             {sim.factors && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {sim.factors.map((f: string, i: number) => (
-                  <span key={i} className="px-2 py-0.5 bg-slate-700/50 text-slate-400 rounded text-xs">{f}</span>
+                  <span key={i} className="px-2 py-0.5 bg-slate-700/50 text-slate-400 rounded-sm text-xs">{f}</span>
                 ))}
               </div>
             )}
@@ -220,7 +220,7 @@ const CardAgingSimulatorModal: React.FC<CardAgingSimulatorModalProps> = ({ isOpe
             <ul className="space-y-2">
               {section.tips.map((tip, i) => (
                 <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                  <CheckCircle2 size={12} className="text-lime-400 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 size={12} className="text-lime-400 mt-0.5 shrink-0" />
                   {tip}
                 </li>
               ))}
@@ -253,7 +253,7 @@ const CardAgingSimulatorModal: React.FC<CardAgingSimulatorModalProps> = ({ isOpe
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-5xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
           <div className="flex items-center gap-3">

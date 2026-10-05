@@ -203,7 +203,7 @@ const ProspectTrends: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {(activeView === 'hottest' ? hottest : activeView === 'movers' ? movers : prospects).map((p, i) => (
-            <div key={i} className="group bg-brand-slate border border-slate-800 rounded-[2rem] p-8 hover:border-brand-lime/40 transition-all flex flex-col relative overflow-hidden active:scale-[0.98]">
+            <div key={i} className="group bg-brand-slate border border-slate-800 rounded-4xl p-8 hover:border-brand-lime/40 transition-all flex flex-col relative overflow-hidden active:scale-[0.98]">
               <div className="flex justify-between items-start mb-8">
                 <div className="flex items-center gap-4">
                   <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-slate-800 group-hover:border-brand-lime/50 transition-colors">
@@ -288,7 +288,7 @@ const ProspectTrends: React.FC = () => {
                 </div>
                 {p.trendScore < 85 && p.breakoutScore > 90 && (
                   <div className="absolute top-4 right-4 animate-bounce">
-                    <div className="px-2 py-1 bg-brand-red text-white text-[8px] font-black uppercase tracking-tighter rounded shadow-lg">Lagging Alpha</div>
+                    <div className="px-2 py-1 bg-brand-red text-white text-[8px] font-black uppercase tracking-tighter rounded-sm shadow-lg">Lagging Alpha</div>
                   </div>
                 )}
               </div>

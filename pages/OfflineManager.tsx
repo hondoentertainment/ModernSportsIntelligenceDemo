@@ -367,7 +367,7 @@ const OfflineManager: React.FC = () => {
                     className="flex items-center justify-between p-3 bg-slate-900/50 rounded-lg border border-slate-700/50"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className={`flex-shrink-0 w-2 h-2 rounded-full ${
+                      <span className={`shrink-0 w-2 h-2 rounded-full ${
                         item.status === 'pending' ? 'bg-amber-400' : item.status === 'completed' ? 'bg-emerald-400' : item.status === 'processing' ? 'bg-blue-400 animate-pulse' : 'bg-red-400'
                       }`} />
                       <div className="min-w-0">
@@ -730,7 +730,7 @@ const OfflineManager: React.FC = () => {
                   value={importText}
                   onChange={(e) => setImportText(e.target.value)}
                   placeholder="Or paste JSON data here..."
-                  className="w-full h-32 bg-slate-900/50 border border-slate-700 rounded-lg p-3 text-sm text-slate-300 placeholder-slate-600 resize-none focus:outline-none focus:border-blue-500"
+                  className="w-full h-32 bg-slate-900/50 border border-slate-700 rounded-lg p-3 text-sm text-slate-300 placeholder-slate-600 resize-none focus:outline-hidden focus:border-blue-500"
                 />
                 <button
                   onClick={handleImport}

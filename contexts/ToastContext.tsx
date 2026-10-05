@@ -171,7 +171,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onDismiss }) =>
 
     return (
         <div
-            className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none max-w-sm w-full"
+            className="fixed bottom-4 right-4 z-9999 flex flex-col gap-2 pointer-events-none max-w-sm w-full"
             aria-live="polite"
             aria-atomic="false"
         >
@@ -183,7 +183,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onDismiss }) =>
                         className={`pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-2xl border backdrop-blur-xl shadow-2xl ${colors.bg} ${colors.border} animate-in slide-in-from-right-5 fade-in duration-300`}
                         role="alert"
                     >
-                        <span className={`mt-0.5 flex-shrink-0 ${colors.icon}`}>
+                        <span className={`mt-0.5 shrink-0 ${colors.icon}`}>
                             {ICON_MAP[toast.type]}
                         </span>
                         <div className="flex-1 min-w-0">
@@ -202,7 +202,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onDismiss }) =>
                         {toast.dismissible && (
                             <button
                                 onClick={() => onDismiss(toast.id)}
-                                className="mt-0.5 flex-shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
+                                className="mt-0.5 shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
                                 aria-label="Dismiss"
                             >
                                 <X size={14} />

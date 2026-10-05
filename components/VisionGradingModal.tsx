@@ -48,7 +48,7 @@ const VisionGradingModal: React.FC<Props> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
@@ -91,11 +91,11 @@ const VisionGradingModal: React.FC<Props> = ({ isOpen, onClose }) => {
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs text-slate-400 mb-1">Player Name *</label>
-                  <input type="text" value={playerName} onChange={e => setPlayerName(e.target.value)} placeholder="e.g., Aaron Judge" className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:border-purple-500/50 focus:outline-none" />
+                  <input type="text" value={playerName} onChange={e => setPlayerName(e.target.value)} placeholder="e.g., Aaron Judge" className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:border-purple-500/50 focus:outline-hidden" />
                 </div>
                 <div>
                   <label className="block text-xs text-slate-400 mb-1">Card Description</label>
-                  <input type="text" value={cardDesc} onChange={e => setCardDesc(e.target.value)} placeholder="e.g., 2017 Topps Chrome Update RC" className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:border-purple-500/50 focus:outline-none" />
+                  <input type="text" value={cardDesc} onChange={e => setCardDesc(e.target.value)} placeholder="e.g., 2017 Topps Chrome Update RC" className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:border-purple-500/50 focus:outline-hidden" />
                 </div>
                 <button onClick={handleAnalyze} disabled={analyzing || !playerName.trim()} className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                   {analyzing ? (

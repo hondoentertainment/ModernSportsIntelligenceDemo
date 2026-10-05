@@ -105,7 +105,7 @@ const RebalanceAlertModal: React.FC<RebalanceAlertModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-xs" onClick={onClose} />
 
       <div className="relative w-full max-w-xl bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-500">
         {/* Severity glow */}
@@ -220,15 +220,15 @@ const RebalanceAlertModal: React.FC<RebalanceAlertModalProps> = ({
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       {isOver ? (
-                        <Tag size={12} className="text-red-400 flex-shrink-0" />
+                        <Tag size={12} className="text-red-400 shrink-0" />
                       ) : (
-                        <ShoppingCart size={12} className="text-blue-400 flex-shrink-0" />
+                        <ShoppingCart size={12} className="text-blue-400 shrink-0" />
                       )}
                       <span className="text-xs text-white truncate">
                         {card.year} {card.player}
                       </span>
                     </div>
-                    <span className="text-xs text-[#ADFF2F] font-bold flex-shrink-0 ml-2">
+                    <span className="text-xs text-[#ADFF2F] font-bold shrink-0 ml-2">
                       ${(card.currentValue ?? card.purchasePrice).toLocaleString()}
                     </span>
                   </div>

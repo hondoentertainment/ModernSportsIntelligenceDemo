@@ -141,7 +141,7 @@ const ProductAnnouncementRadar: React.FC = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="text-sm font-bold text-white">{announcement.productName}</span>
-                        <span className={`px-2 py-0.5 text-[10px] rounded border ${getSignalStrengthColor(announcement.signalStrength)}`}>
+                        <span className={`px-2 py-0.5 text-[10px] rounded-sm border ${getSignalStrengthColor(announcement.signalStrength)}`}>
                           {announcement.signalStrength.toUpperCase()}
                         </span>
                         <span className={`text-xs font-bold capitalize ${getMarketImpactColor(announcement.marketImpact)}`}>
@@ -160,7 +160,7 @@ const ProductAnnouncementRadar: React.FC = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="flex items-center gap-3 shrink-0">
                       {/* Confidence meter */}
                       <div className="text-right">
                         <p className="text-xs text-slate-500 mb-1">Confidence</p>
@@ -190,7 +190,7 @@ const ProductAnnouncementRadar: React.FC = () => {
                         <div className="space-y-1.5">
                           {announcement.predictionBasis.map((reason, idx) => (
                             <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                              <span className="text-emerald-400 mt-0.5 flex-shrink-0">&#x2713;</span>
+                              <span className="text-emerald-400 mt-0.5 shrink-0">&#x2713;</span>
                               {reason}
                             </div>
                           ))}
@@ -221,7 +221,7 @@ const ProductAnnouncementRadar: React.FC = () => {
                         <div className="space-y-2">
                           {productSignals.map((signal) => (
                             <div key={signal.id} className="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg">
-                              <span className={`px-2 py-0.5 text-[10px] rounded border flex-shrink-0 ${getSignalTypeColor(signal.signalType)}`}>
+                              <span className={`px-2 py-0.5 text-[10px] rounded-sm border shrink-0 ${getSignalTypeColor(signal.signalType)}`}>
                                 {getSignalTypeLabel(signal.signalType)}
                               </span>
                               <div className="flex-1 min-w-0">
@@ -253,7 +253,7 @@ const ProductAnnouncementRadar: React.FC = () => {
             {signals.map((signal) => (
               <div key={signal.id} className="bg-slate-900/50 border border-slate-700/30 rounded-xl p-3">
                 <div className="flex items-start gap-2 mb-2">
-                  <span className={`px-2 py-0.5 text-[10px] rounded border flex-shrink-0 ${getSignalTypeColor(signal.signalType)}`}>
+                  <span className={`px-2 py-0.5 text-[10px] rounded-sm border shrink-0 ${getSignalTypeColor(signal.signalType)}`}>
                     {getSignalTypeLabel(signal.signalType)}
                   </span>
                   <div className="flex items-center gap-2 text-[10px] text-slate-500 ml-auto">
@@ -348,7 +348,7 @@ const ProductAnnouncementRadar: React.FC = () => {
                   <td className="py-3 pr-3 text-sm text-right font-bold text-emerald-400">{formatCurrency(opp.expectedPostAnnouncementPrice)}</td>
                   <td className="py-3 pr-3 text-sm text-right font-bold text-amber-400">+{opp.expectedROI.toFixed(1)}%</td>
                   <td className="py-3 pr-3 text-center">
-                    <span className={`px-2 py-0.5 text-[10px] rounded font-bold ${opp.action === 'buy now' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'}`}>
+                    <span className={`px-2 py-0.5 text-[10px] rounded-sm font-bold ${opp.action === 'buy now' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'}`}>
                       {opp.action.toUpperCase()}
                     </span>
                   </td>

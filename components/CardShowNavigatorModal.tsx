@@ -35,7 +35,7 @@ const CardShowNavigatorModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const formatDistance = (d: number) => d >= 100 ? `${d} mi` : `${d} mi`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
@@ -159,7 +159,7 @@ const CardShowNavigatorModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     </div>
                     <div className="flex flex-wrap gap-1.5 mb-2">
                       {booth.specialties.map((s) => (
-                        <span key={s} className="px-2 py-0.5 text-xs bg-slate-700/50 text-slate-300 rounded">{s}</span>
+                        <span key={s} className="px-2 py-0.5 text-xs bg-slate-700/50 text-slate-300 rounded-sm">{s}</span>
                       ))}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-slate-400">

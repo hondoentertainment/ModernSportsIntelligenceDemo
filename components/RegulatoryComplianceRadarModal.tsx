@@ -25,7 +25,7 @@ const RegulatoryComplianceRadarModal: React.FC<Props> = ({ isOpen, onClose }) =>
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         <div className="flex items-center justify-between p-5 border-b border-slate-700/50">
           <div className="flex items-center gap-3">
@@ -64,7 +64,7 @@ const RegulatoryComplianceRadarModal: React.FC<Props> = ({ isOpen, onClose }) =>
                 <div className="bg-slate-900/50 rounded-lg p-2 text-center"><p className="text-[9px] text-slate-500">Effective Date</p><p className="text-sm font-bold text-white">{a.effectiveDate}</p></div>
               </div>
               <div className="flex items-start gap-2 bg-slate-900/50 rounded-lg p-2">
-                <ChevronRight size={12} className="text-red-400 mt-0.5 flex-shrink-0" />
+                <ChevronRight size={12} className="text-red-400 mt-0.5 shrink-0" />
                 <p className="text-[10px] text-slate-300">{a.actionRequired}</p>
               </div>
             </div>

@@ -257,14 +257,14 @@ const CollectorAuditDossier: React.FC = () => {
               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{card.label}</span>
               {card.icon}
             </div>
-            <div className="text-lg font-mono font-bold text-white break-words">{card.value}</div>
+            <div className="text-lg font-mono font-bold text-white wrap-break-word">{card.value}</div>
           </div>
         ))}
       </section>
 
       <div className="space-y-6">
         {report.sections.map((section, index) => (
-          <section key={`${section.title}-${index}`} className="bg-slate-900/70 border border-slate-800 rounded-[2rem] p-6 space-y-4">
+          <section key={`${section.title}-${index}`} className="bg-slate-900/70 border border-slate-800 rounded-4xl p-6 space-y-4">
             <div className="space-y-2">
               <h2 className="text-xl font-bebas tracking-wide text-white">{section.title}</h2>
               {(section.sourceType || section.sourceNote) && (

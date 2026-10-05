@@ -199,7 +199,7 @@ const CatalystMarket: React.FC = () => {
                 value={logTitle}
                 onChange={(e) => setLogTitle(e.target.value)}
                 placeholder="Short headline (e.g. Playoff roster spot)"
-                className="w-full rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-orange-500/50 focus:outline-none"
+                className="w-full rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-orange-500/50 focus:outline-hidden"
               />
               <label htmlFor="catalyst-log-body" className="sr-only">
                 Optional details
@@ -210,7 +210,7 @@ const CatalystMarket: React.FC = () => {
                 onChange={(e) => setLogBody(e.target.value)}
                 placeholder="Optional context…"
                 rows={2}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-orange-500/50 focus:outline-none resize-y min-h-[64px]"
+                className="w-full rounded-xl border border-slate-700 bg-slate-950/80 px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-orange-500/50 focus:outline-hidden resize-y min-h-[64px]"
               />
             </div>
             <button

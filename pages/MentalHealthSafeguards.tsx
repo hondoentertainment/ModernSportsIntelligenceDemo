@@ -136,14 +136,14 @@ const MentalHealthSafeguards: React.FC = () => {
       {/* Motivational Tip Banner */}
       {currentTip && (
         <div className="bg-slate-800/50 border border-emerald-500/20 rounded-xl p-4 flex items-start gap-3">
-          <Heart size={18} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+          <Heart size={18} className="text-emerald-400 shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-sm text-slate-200 italic">"{currentTip.message}"</p>
             <p className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider">{currentTip.category} wellness</p>
           </div>
           <button
             onClick={() => setTipIndex(i => i + 1)}
-            className="text-[10px] text-slate-500 hover:text-slate-300 flex-shrink-0"
+            className="text-[10px] text-slate-500 hover:text-slate-300 shrink-0"
           >
             Next tip
           </button>
@@ -252,7 +252,7 @@ const MentalHealthSafeguards: React.FC = () => {
               'bg-slate-900/50 border-slate-700/30'
             }`}>
               <div className="flex items-start gap-3">
-                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold flex-shrink-0 mt-0.5 ${
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 mt-0.5 ${
                   sig.severity === 'critical' ? 'bg-red-500/20 text-red-300' :
                   sig.severity === 'high' ? 'bg-red-500/20 text-red-400' :
                   sig.severity === 'medium' ? 'bg-amber-500/20 text-amber-400' :
@@ -264,7 +264,7 @@ const MentalHealthSafeguards: React.FC = () => {
                   <p className="text-sm font-bold text-white mb-1">{sig.signal}</p>
                   <p className="text-[10px] text-slate-400 mb-2">{sig.description}</p>
                   <div className="flex items-start gap-1.5">
-                    <CheckCircle size={12} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <CheckCircle size={12} className="text-emerald-400 shrink-0 mt-0.5" />
                     <p className="text-[10px] text-emerald-300">{sig.recommendation}</p>
                   </div>
                   <p className="text-[10px] text-slate-600 mt-1">Detected: {new Date(sig.detectedAt).toLocaleString()}</p>
@@ -406,14 +406,14 @@ const MentalHealthSafeguards: React.FC = () => {
               <div>
                 <label className="text-[10px] text-slate-500 uppercase tracking-wider">Breaker Name</label>
                 <input
-                  className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-slate-500"
+                  className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-slate-500"
                   placeholder="e.g. Grail Card Cap"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[10px] text-slate-500 uppercase tracking-wider">Type</label>
-                  <select className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-slate-500">
+                  <select className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-slate-500">
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
                     <option value="monthly">Monthly</option>
@@ -423,14 +423,14 @@ const MentalHealthSafeguards: React.FC = () => {
                   <label className="text-[10px] text-slate-500 uppercase tracking-wider">Limit ($)</label>
                   <input
                     type="number"
-                    className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-slate-500"
+                    className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-slate-500"
                     placeholder="e.g. 500"
                   />
                 </div>
               </div>
               <div>
                 <label className="text-[10px] text-slate-500 uppercase tracking-wider">Warning Threshold</label>
-                <select className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-slate-500">
+                <select className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-slate-500">
                   <option>80% of limit</option>
                   <option>70% of limit</option>
                   <option>50% of limit</option>
@@ -439,7 +439,7 @@ const MentalHealthSafeguards: React.FC = () => {
               </div>
               <div>
                 <label className="text-[10px] text-slate-500 uppercase tracking-wider">Action on Trigger</label>
-                <select className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-slate-500">
+                <select className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-slate-500">
                   <option>Alert only</option>
                   <option>Block purchases</option>
                   <option>Start cooling-off period</option>

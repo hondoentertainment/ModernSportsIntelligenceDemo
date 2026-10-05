@@ -59,7 +59,7 @@ const PricingTruthHealthPanel: React.FC<PricingTruthHealthPanelProps> = ({ inven
   const healthy = coverage.coveragePct >= FRESH_VERIFIABLE_COVERAGE_TARGET_PCT;
 
   return (
-    <div className="luminous-card rounded-[2rem] p-6 border border-slate-800/70">
+    <div className="luminous-card rounded-4xl p-6 border border-slate-800/70">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Pricing Truth Health</p>

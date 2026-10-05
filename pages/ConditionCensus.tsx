@@ -526,7 +526,7 @@ function PopulationTrendsTab({ cards, selectedCard }: { cards: CensusCard[]; sel
           <select
             value={activeCard?.id || ''}
             onChange={(e) => setActiveCard(cards.find(c => c.id === e.target.value) || null)}
-            className="bg-slate-700 text-slate-200 rounded-lg px-3 py-2 text-sm border border-slate-600 focus:border-lime-500 focus:outline-none"
+            className="bg-slate-700 text-slate-200 rounded-lg px-3 py-2 text-sm border border-slate-600 focus:border-lime-500 focus:outline-hidden"
           >
             {cards.map(c => (
               <option key={c.id} value={c.id}>{c.playerName} — {c.year} {c.manufacturer}</option>
@@ -751,7 +751,7 @@ function OwnerIntelligenceTab({ cards }: { cards: CensusCard[] }) {
                     <span className="text-sm text-slate-400">{example.currentOwner.region}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500 capitalize px-1.5 py-0.5 bg-slate-800 rounded">
+                    <span className="text-xs text-slate-500 capitalize px-1.5 py-0.5 bg-slate-800 rounded-sm">
                       {example.currentOwner.type.replace('_', ' ')}
                     </span>
                     {example.currentOwner.estimatedNetWorth && (
@@ -874,7 +874,7 @@ export default function ConditionCensus() {
               placeholder="Search cards, players, or sports..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-800 text-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm border border-slate-700 focus:border-lime-500 focus:outline-none placeholder-slate-500"
+              className="w-full bg-slate-800 text-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm border border-slate-700 focus:border-lime-500 focus:outline-hidden placeholder-slate-500"
             />
           </div>
           <div className="flex gap-2">
@@ -883,7 +883,7 @@ export default function ConditionCensus() {
               <select
                 value={sportFilter}
                 onChange={(e) => setSportFilter(e.target.value)}
-                className="bg-slate-800 text-slate-200 rounded-xl pl-9 pr-8 py-2.5 text-sm border border-slate-700 focus:border-lime-500 focus:outline-none appearance-none cursor-pointer"
+                className="bg-slate-800 text-slate-200 rounded-xl pl-9 pr-8 py-2.5 text-sm border border-slate-700 focus:border-lime-500 focus:outline-hidden appearance-none cursor-pointer"
               >
                 <option value="all">All Sports</option>
                 {sports.map(s => (
@@ -896,7 +896,7 @@ export default function ConditionCensus() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-slate-800 text-slate-200 rounded-xl pl-9 pr-8 py-2.5 text-sm border border-slate-700 focus:border-lime-500 focus:outline-none appearance-none cursor-pointer"
+                className="bg-slate-800 text-slate-200 rounded-xl pl-9 pr-8 py-2.5 text-sm border border-slate-700 focus:border-lime-500 focus:outline-hidden appearance-none cursor-pointer"
               >
                 <option value="rarity">Sort: Rarity</option>
                 <option value="price">Sort: Price</option>

@@ -47,7 +47,7 @@ const ImageSourceModal: React.FC<Props> = ({ imageUrl, isOpen, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs"
       onClick={onClose}
     >
       <div
@@ -55,7 +55,7 @@ const ImageSourceModal: React.FC<Props> = ({ imageUrl, isOpen, onClose }) => {
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-gradient-to-r from-amber-500/10 to-slate-900">
+        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-linear-to-r from-amber-500/10 to-slate-900">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-amber-500/20">
               <Camera size={20} className="text-amber-400" />
@@ -82,7 +82,7 @@ const ImageSourceModal: React.FC<Props> = ({ imageUrl, isOpen, onClose }) => {
               className="w-full object-cover"
               style={{ maxHeight: '280px' }}
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/90 to-transparent p-4 pt-12">
+            <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-slate-900/90 to-transparent p-4 pt-12">
               <p className="text-sm text-slate-200 italic leading-relaxed">
                 &ldquo;{source.caption}&rdquo;
               </p>
@@ -99,7 +99,7 @@ const ImageSourceModal: React.FC<Props> = ({ imageUrl, isOpen, onClose }) => {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-slate-100">{source.photographer}</p>
-                  <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-medium ${sourceColor}`}>
+                  <span className={`inline-block mt-1 px-2 py-0.5 rounded-sm text-[10px] font-medium ${sourceColor}`}>
                     {source.source}
                   </span>
                 </div>
@@ -153,7 +153,7 @@ const ImageSourceModal: React.FC<Props> = ({ imageUrl, isOpen, onClose }) => {
               <div className="bg-slate-800/50 rounded-xl p-3">
                 <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1.5">Season</p>
                 <p className="text-sm font-semibold text-slate-100">{source.season}</p>
-                <span className={`inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-medium ${eventStyle.className}`}>
+                <span className={`inline-block mt-1.5 px-2 py-0.5 rounded-sm text-[10px] font-medium ${eventStyle.className}`}>
                   {eventStyle.label}
                 </span>
               </div>

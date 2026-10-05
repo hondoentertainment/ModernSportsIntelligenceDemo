@@ -24,7 +24,7 @@ const FiscalHealthWidget: React.FC = () => {
     const thresholdPercent = Math.min(100, (exposure.volume / exposure.threshold) * 100);
 
     return (
-        <div className="luminous-card rounded-[2rem] p-8 border border-slate-800 relative overflow-hidden group shadow-2xl">
+        <div className="luminous-card rounded-4xl p-8 border border-slate-800 relative overflow-hidden group shadow-2xl">
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-lime/5 blur-[100px] rounded-full -mr-16 -mt-16 pointer-events-none" />
 
             <div className="relative z-10 space-y-6">
@@ -110,7 +110,7 @@ const FiscalHealthWidget: React.FC = () => {
             </div>
 
             {selectedCard && (
-                <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setSelectedCardId(null)}>
+                <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4" onClick={() => setSelectedCardId(null)}>
                     <div onClick={(e) => e.stopPropagation()}>
                         <TaxExitSimulator card={selectedCard} onClose={() => setSelectedCardId(null)} />
                     </div>

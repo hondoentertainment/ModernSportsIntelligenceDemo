@@ -55,7 +55,7 @@ const CollectorMatchmakerModal: React.FC<CollectorMatchmakerModalProps> = ({ isO
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
@@ -144,7 +144,7 @@ const CollectorMatchmakerModal: React.FC<CollectorMatchmakerModalProps> = ({ isO
                     <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Cards they have that you need</h4>
                     {currentMatch.gaps.slice(0, 3).map(gap => (
                       <div key={gap.id} className="flex items-center gap-2 text-sm text-blue-300 bg-blue-500/10 rounded-lg px-3 py-1.5 mb-1">
-                        <Check size={12} className="text-blue-400 flex-shrink-0" />
+                        <Check size={12} className="text-blue-400 shrink-0" />
                         {gap.description}
                         <span className="text-blue-400/60 ml-auto text-xs">~{formatCurrency(gap.estimatedCost)}</span>
                       </div>

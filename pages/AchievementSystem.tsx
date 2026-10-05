@@ -184,7 +184,7 @@ const AchievementSystem: React.FC = () => {
       {/* Level Card */}
       <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
         <div className="flex items-center gap-4 mb-4">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center">
             <span className="text-2xl font-bold text-white">{level.level}</span>
           </div>
           <div>
@@ -198,7 +198,7 @@ const AchievementSystem: React.FC = () => {
         </div>
         <div className="w-full h-4 bg-slate-700 rounded-full overflow-hidden">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all"
+            className="h-full rounded-full bg-linear-to-r from-blue-500 to-purple-500 transition-all"
             style={{ width: `${level.progressPercent}%` }}
           />
         </div>

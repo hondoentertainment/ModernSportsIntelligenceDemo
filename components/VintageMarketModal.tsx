@@ -199,7 +199,7 @@ const VintageMarketModal: React.FC<Props> = ({ isOpen, onClose }) => {
               <h4 className="text-sm font-bold text-slate-200">{set.name}</h4>
               <p className="text-[10px] text-slate-500 mt-0.5">{set.description}</p>
             </div>
-            <div className="ml-3 text-right flex-shrink-0">
+            <div className="ml-3 text-right shrink-0">
               <p className="text-xs text-slate-500">Rank</p>
               <p className="text-lg font-bold text-amber-400">#{set.rank}</p>
             </div>
@@ -227,7 +227,7 @@ const VintageMarketModal: React.FC<Props> = ({ isOpen, onClose }) => {
           <div className="flex items-center justify-between">
             <div className="w-full bg-slate-700/30 rounded-full h-2 mr-3">
               <div
-                className="bg-gradient-to-r from-amber-500 to-amber-400 h-2 rounded-full transition-all"
+                className="bg-linear-to-r from-amber-500 to-amber-400 h-2 rounded-full transition-all"
                 style={{ width: `${set.completion}%` }}
               />
             </div>
@@ -370,10 +370,10 @@ const VintageMarketModal: React.FC<Props> = ({ isOpen, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs" onClick={onClose}>
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-5xl max-h-[85vh] overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-gradient-to-r from-amber-500/10 to-slate-900">
+        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-linear-to-r from-amber-500/10 to-slate-900">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-amber-500/20">
               <Clock size={20} className="text-amber-400" />

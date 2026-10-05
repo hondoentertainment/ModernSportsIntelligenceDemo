@@ -82,7 +82,7 @@ const GroupBreaks: React.FC = () => {
                       <div>
                         <h3 className="text-white font-semibold text-sm">{brk.name}</h3>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${getStatusColor(brk.status)}`}>{brk.status}</span>
+                          <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${getStatusColor(brk.status)}`}>{brk.status}</span>
                           <span className="text-slate-500 text-xs">{getFormatLabel(brk.format)}</span>
                           <span className="text-slate-500 text-xs">Host: @{brk.hostHandle}</span>
                         </div>

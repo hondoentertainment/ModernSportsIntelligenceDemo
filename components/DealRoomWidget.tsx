@@ -26,7 +26,7 @@ const DealRoomWidget: React.FC<DealRoomWidgetProps> = ({ onOpenModal }) => {
             <MessageSquare size={16} className="text-blue-400" />
           </div>
           <h3 className="text-sm font-semibold text-slate-200">Deal Room</h3>
-          <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+          <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
             <Lock size={8} />
             ENCRYPTED
           </span>
@@ -58,7 +58,7 @@ const DealRoomWidget: React.FC<DealRoomWidgetProps> = ({ onOpenModal }) => {
               <DollarSign size={12} className="text-amber-400" />
               <span className="text-xs font-medium text-slate-300 truncate max-w-[180px]">{negotiatingRoom.card.player}</span>
             </div>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-medium">
+            <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-amber-500/20 text-amber-300 font-medium">
               {negotiatingRoom.status === 'pending_close' ? 'CLOSING' : 'NEGOTIATING'}
             </span>
           </div>

@@ -99,7 +99,7 @@ const AchievementWidget: React.FC<AchievementWidgetProps> = ({ inventory, onView
                 <span className="text-base">{a.icon}</span>
                 <span className="text-xs font-medium text-white flex-1 truncate">{a.name}</span>
                 <span
-                  className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded"
+                  className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-sm"
                   style={{
                     backgroundColor: TIER_COLORS[a.tier] + '22',
                     color: TIER_COLORS[a.tier],

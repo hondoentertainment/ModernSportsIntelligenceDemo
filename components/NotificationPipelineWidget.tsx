@@ -137,14 +137,14 @@ const NotificationPipelineWidget: React.FC = () => {
                 n.isRead ? 'bg-slate-900/40' : 'bg-slate-700/40 border border-slate-600/50'
               }`}
             >
-              <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${PRIORITY_DOTS[n.priority]}`} />
+              <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${PRIORITY_DOTS[n.priority]}`} />
               <div className="flex-1 min-w-0">
                 <p className={`text-xs font-medium truncate ${n.isRead ? 'text-slate-400' : 'text-slate-200'}`}>
                   {n.title}
                 </p>
                 <p className="text-[10px] text-slate-500 truncate">{n.body}</p>
               </div>
-              <span className="text-[9px] text-slate-600 flex-shrink-0">{formatTimeAgo(n.timestamp)}</span>
+              <span className="text-[9px] text-slate-600 shrink-0">{formatTimeAgo(n.timestamp)}</span>
             </div>
           ))
         )}

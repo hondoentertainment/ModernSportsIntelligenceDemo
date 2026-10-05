@@ -244,7 +244,7 @@ const CardClimateRiskMapper: React.FC = () => {
           <select
             value={selectedZip}
             onChange={e => setSelectedZip(e.target.value)}
-            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-hidden focus:border-cyan-500"
           >
             {profiles.map(p => (
               <option key={p.zip} value={p.zip}>{p.city}, {p.state} ({p.zip})</option>
@@ -370,7 +370,7 @@ const CardClimateRiskMapper: React.FC = () => {
                         <p className="text-lg font-bold text-red-400">{r.overallRiskBefore}</p>
                         <p className="text-[9px] text-slate-600">BEFORE</p>
                       </div>
-                      <div className="flex-1 h-1 bg-gradient-to-r from-red-500 to-green-500 rounded-full" />
+                      <div className="flex-1 h-1 bg-linear-to-r from-red-500 to-green-500 rounded-full" />
                       <div className="text-center">
                         <p className="text-lg font-bold text-green-400">{r.overallRiskAfter}</p>
                         <p className="text-[9px] text-slate-600">AFTER</p>
@@ -447,7 +447,7 @@ const CardClimateRiskMapper: React.FC = () => {
               <select
                 value={compareZip1}
                 onChange={e => setCompareZip1(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-hidden focus:border-cyan-500"
               >
                 {profiles.map(p => (
                   <option key={p.zip} value={p.zip}>{p.city}, {p.state}</option>
@@ -457,7 +457,7 @@ const CardClimateRiskMapper: React.FC = () => {
               <select
                 value={compareZip2}
                 onChange={e => setCompareZip2(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-hidden focus:border-cyan-500"
               >
                 {profiles.map(p => (
                   <option key={p.zip} value={p.zip}>{p.city}, {p.state}</option>
@@ -526,7 +526,7 @@ const CardClimateRiskMapper: React.FC = () => {
               <select
                 value={selectedMaterial}
                 onChange={e => setSelectedMaterial(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 mb-4 focus:outline-none focus:border-cyan-500"
+                className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 mb-4 focus:outline-hidden focus:border-cyan-500"
               >
                 {materials.map(m => (
                   <option key={m.material} value={m.material}>{m.displayName}</option>
@@ -654,7 +654,7 @@ const CardClimateRiskMapper: React.FC = () => {
                 }[rec.priority];
                 return (
                   <div key={i} className="bg-slate-900/50 border border-slate-700/30 rounded-lg p-4 flex items-start gap-4">
-                    <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded border shrink-0 ${priorityColor}`}>
+                    <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-sm border shrink-0 ${priorityColor}`}>
                       {rec.priority}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -683,7 +683,7 @@ const CardClimateRiskMapper: React.FC = () => {
               <select
                 value={projectionYears}
                 onChange={e => setProjectionYears(Number(e.target.value))}
-                className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-hidden focus:border-cyan-500"
               >
                 {[5, 10, 15, 20, 25, 30].map(y => (
                   <option key={y} value={y}>{y} years</option>
@@ -695,7 +695,7 @@ const CardClimateRiskMapper: React.FC = () => {
               <select
                 value={selectedMaterial}
                 onChange={e => setSelectedMaterial(e.target.value)}
-                className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-cyan-500"
+                className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-hidden focus:border-cyan-500"
               >
                 {materials.map(m => (
                   <option key={m.material} value={m.material}>{m.displayName}</option>
@@ -871,7 +871,7 @@ const CardClimateRiskMapper: React.FC = () => {
                 {v.certifications.length > 0 && (
                   <div className="flex gap-1.5">
                     {v.certifications.map(c => (
-                      <span key={c} className="text-[9px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400 border border-slate-600/30">
+                      <span key={c} className="text-[9px] px-1.5 py-0.5 rounded-sm bg-slate-700/50 text-slate-400 border border-slate-600/30">
                         {c}
                       </span>
                     ))}

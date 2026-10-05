@@ -86,7 +86,7 @@ const SwarmFeed: React.FC<SwarmFeedProps> = ({ isOpen, onClose }) => {
             {/* Backdrop */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300"
+                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs animate-in fade-in duration-300"
                     onClick={onClose}
                 />
             )}
@@ -156,7 +156,7 @@ const SwarmFeed: React.FC<SwarmFeedProps> = ({ isOpen, onClose }) => {
                             value={query}
                             onChange={(event) => setQuery(event.target.value)}
                             placeholder="Filter by player, catalyst, or agent..."
-                            className="w-full bg-brand-charcoal border border-slate-800 rounded-xl py-3 px-4 text-[10px] font-mono text-slate-300 focus:outline-none focus:border-brand-lime"
+                            className="w-full bg-brand-charcoal border border-slate-800 rounded-xl py-3 px-4 text-[10px] font-mono text-slate-300 focus:outline-hidden focus:border-brand-lime"
                         />
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700">
                             <MessageSquare size={14} />

@@ -234,7 +234,7 @@ const AiCardScanner: React.FC = () => {
           <button
             onClick={handleScan}
             disabled={isScanning}
-            className={`w-full aspect-[3/4] rounded-xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-4 ${
+            className={`w-full aspect-3/4 rounded-xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-4 ${
               isScanning
                 ? 'border-violet-500/50 bg-violet-500/10 cursor-wait'
                 : 'border-slate-600 bg-slate-800/50 hover:border-brand-lime/50 hover:bg-slate-800 cursor-pointer'
@@ -325,7 +325,7 @@ const AiCardScanner: React.FC = () => {
                       {activeScan.alternatives.map((alt, i) => (
                         <span
                           key={i}
-                          className="text-[10px] px-2 py-1 bg-slate-700/50 text-slate-400 rounded"
+                          className="text-[10px] px-2 py-1 bg-slate-700/50 text-slate-400 rounded-sm"
                         >
                           {alt.player} - {alt.set} ({alt.similarity}%)
                         </span>
@@ -621,15 +621,15 @@ const AiCardScanner: React.FC = () => {
                     <td className="py-2 text-right text-slate-400">{row.breakEvenRate}%</td>
                     <td className="py-2 text-right">
                       {row.avgROI >= 100 ? (
-                        <span className="text-[10px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded">
+                        <span className="text-[10px] px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-sm">
                           Strong
                         </span>
                       ) : row.avgROI >= 0 ? (
-                        <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded">
+                        <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded-sm">
                           Moderate
                         </span>
                       ) : (
-                        <span className="text-[10px] px-1.5 py-0.5 bg-red-500/20 text-red-300 rounded">
+                        <span className="text-[10px] px-1.5 py-0.5 bg-red-500/20 text-red-300 rounded-sm">
                           Avoid
                         </span>
                       )}
@@ -686,7 +686,7 @@ const AiCardScanner: React.FC = () => {
             placeholder="Search sets, manufacturers, players..."
             value={setSearchQuery}
             onChange={(e) => setSetSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-brand-lime/50"
+            className="w-full pl-9 pr-4 py-2 bg-slate-900/50 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-600 focus:outline-hidden focus:border-brand-lime/50"
           />
         </div>
         <div className="overflow-x-auto max-h-72 overflow-y-auto">
@@ -708,7 +708,7 @@ const AiCardScanner: React.FC = () => {
                   <td className="py-2 text-slate-300">{s.manufacturer}</td>
                   <td className="py-2 text-slate-200 font-medium">{s.setName}</td>
                   <td className="py-2">
-                    <span className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded">
+                    <span className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded-sm">
                       {s.sport}
                     </span>
                   </td>
@@ -737,7 +737,7 @@ const AiCardScanner: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-bold text-slate-200">{model.name}</p>
-                <span className="text-[10px] px-1.5 py-0.5 bg-slate-700 text-slate-400 rounded font-mono">
+                <span className="text-[10px] px-1.5 py-0.5 bg-slate-700 text-slate-400 rounded-sm font-mono">
                   v{model.version}
                 </span>
               </div>
@@ -757,7 +757,7 @@ const AiCardScanner: React.FC = () => {
                 {model.supported.map((s) => (
                   <span
                     key={s}
-                    className="text-[9px] px-1.5 py-0.5 bg-slate-900/50 text-slate-500 rounded"
+                    className="text-[9px] px-1.5 py-0.5 bg-slate-900/50 text-slate-500 rounded-sm"
                   >
                     {s}
                   </span>

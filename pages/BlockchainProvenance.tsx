@@ -490,7 +490,7 @@ const BlockchainProvenance: React.FC = () => {
             value={verifyInput}
             onChange={e => setVerifyInput(e.target.value)}
             placeholder="Enter passport ID or token hash to verify..."
-            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm flex-1 focus:outline-none focus:border-violet-500"
+            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm flex-1 focus:outline-hidden focus:border-violet-500"
           />
           <button className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm rounded-lg transition-colors">
             Verify

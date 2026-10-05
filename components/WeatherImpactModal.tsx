@@ -116,13 +116,13 @@ const ForecastTab: React.FC<{ games: WeatherGameImpact[] }> = ({ games }) => (
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     <span className="text-sm font-semibold text-white">{impact.player}</span>
-                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${condColor.bg} ${condColor.text}`}>
+                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm ${condColor.bg} ${condColor.text}`}>
                       {impact.impactType}
                     </span>
                   </div>
                   <p className="text-xs text-slate-400">{impact.description}</p>
                 </div>
-                <span className={`text-sm font-bold flex-shrink-0 ml-3 flex items-center gap-1 ${
+                <span className={`text-sm font-bold shrink-0 ml-3 flex items-center gap-1 ${
                   impact.valueChange >= 0 ? 'text-emerald-400' : 'text-red-400'
                 }`}>
                   {impact.valueChange >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
@@ -160,7 +160,7 @@ const HistoricTab: React.FC<{ events: HistoricWeatherEvent[] }> = ({ events }) =
               <span className={`flex items-center gap-1 ${condColor.text}`}>
                 <Wind className="w-3 h-3" /> {event.weather.windSpeed} mph
               </span>
-              <span className={`px-1.5 py-0.5 text-[10px] font-bold uppercase rounded ${condColor.bg} ${condColor.text}`}>
+              <span className={`px-1.5 py-0.5 text-[10px] font-bold uppercase rounded-sm ${condColor.bg} ${condColor.text}`}>
                 {getConditionLabel(event.weather.condition)}
               </span>
             </div>
@@ -212,7 +212,7 @@ const VenueTab: React.FC<{ venues: VenueWeatherProfile[] }> = ({ venues }) => {
               className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-800/80 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-cyan-400 flex-shrink-0" />
+                <MapPin className="w-4 h-4 text-cyan-400 shrink-0" />
                 <div>
                   <h4 className="text-sm font-bold text-white">{venue.venue}</h4>
                   <p className="text-xs text-slate-400">{venue.city}</p>
@@ -405,11 +405,11 @@ const WeatherImpactModal: React.FC<WeatherImpactModalProps> = ({ isOpen, onClose
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
 
         {/* Header */}
-        <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-slate-800/80 to-slate-900 flex-shrink-0">
+        <div className="p-6 border-b border-slate-700 bg-linear-to-r from-slate-800/80 to-slate-900 shrink-0">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-cyan-500/20">

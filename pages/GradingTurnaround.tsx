@@ -168,7 +168,7 @@ function OverviewTab({ stats, averages }: { stats: TurnaroundStats; averages: Tu
           <div>
             <label className="block text-xs text-slate-400 mb-1">Company</label>
             <select
-              className="bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+              className="bg-slate-700 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
               value={etaCompany}
               onChange={e => setEtaCompany(e.target.value as GradingCompany)}
             >
@@ -180,7 +180,7 @@ function OverviewTab({ stats, averages }: { stats: TurnaroundStats; averages: Tu
           <div>
             <label className="block text-xs text-slate-400 mb-1">Tier</label>
             <select
-              className="bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+              className="bg-slate-700 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
               value={etaTier}
               onChange={e => setEtaTier(e.target.value as TurnaroundTier)}
             >
@@ -191,28 +191,28 @@ function OverviewTab({ stats, averages }: { stats: TurnaroundStats; averages: Tu
           </div>
           <button
             onClick={handlePredict}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-sm text-sm font-medium transition-colors"
           >
             Predict
           </button>
         </div>
         {prediction && (
           <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="bg-slate-700/50 rounded p-3">
+            <div className="bg-slate-700/50 rounded-sm p-3">
               <p className="text-xs text-slate-400">Predicted</p>
               <p className="text-xl font-bold text-white">{formatDays(prediction.predictedDays)}</p>
             </div>
-            <div className="bg-slate-700/50 rounded p-3">
+            <div className="bg-slate-700/50 rounded-sm p-3">
               <p className="text-xs text-slate-400">Confidence</p>
               <p className="text-xl font-bold text-white">{prediction.confidence}%</p>
             </div>
-            <div className="bg-slate-700/50 rounded p-3">
+            <div className="bg-slate-700/50 rounded-sm p-3">
               <p className="text-xs text-slate-400">Range</p>
               <p className="text-xl font-bold text-white">
                 {prediction.range.min}–{prediction.range.max}
               </p>
             </div>
-            <div className="bg-slate-700/50 rounded p-3">
+            <div className="bg-slate-700/50 rounded-sm p-3">
               <p className="text-xs text-slate-400">Based On</p>
               <p className="text-xl font-bold text-white">{prediction.basedOnReports} reports</p>
             </div>
@@ -276,7 +276,7 @@ function ComparisonTab() {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-white">Tier Breakdown</h3>
           <select
-            className="bg-slate-700 text-white px-3 py-1 rounded border border-slate-600 text-sm"
+            className="bg-slate-700 text-white px-3 py-1 rounded-sm border border-slate-600 text-sm"
             value={selectedCompany}
             onChange={e => setSelectedCompany(e.target.value as GradingCompany)}
           >
@@ -322,7 +322,7 @@ function ComparisonTab() {
           <h3 className="text-lg font-semibold text-white">Historical Trend</h3>
           <div className="flex gap-2">
             <select
-              className="bg-slate-700 text-white px-3 py-1 rounded border border-slate-600 text-sm"
+              className="bg-slate-700 text-white px-3 py-1 rounded-sm border border-slate-600 text-sm"
               value={selectedCompany}
               onChange={e => setSelectedCompany(e.target.value as GradingCompany)}
             >
@@ -331,7 +331,7 @@ function ComparisonTab() {
               ))}
             </select>
             <select
-              className="bg-slate-700 text-white px-3 py-1 rounded border border-slate-600 text-sm"
+              className="bg-slate-700 text-white px-3 py-1 rounded-sm border border-slate-600 text-sm"
               value={selectedTier}
               onChange={e => setSelectedTier(e.target.value as TurnaroundTier)}
             >
@@ -392,7 +392,7 @@ function SubmissionsTab() {
               key={sub.id}
               className="bg-slate-800 rounded-lg p-4 border border-slate-700 flex items-center gap-4"
             >
-              <div className="flex-shrink-0">{statusIcon(sub.status)}</div>
+              <div className="shrink-0">{statusIcon(sub.status)}</div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span
@@ -412,7 +412,7 @@ function SubmissionsTab() {
                   <span>Location: {sub.location}</span>
                 </div>
               </div>
-              <div className="text-right flex-shrink-0">
+              <div className="text-right shrink-0">
                 <p className="text-lg font-bold text-white">{formatDays(sub.reportedDays)}</p>
               </div>
             </div>
@@ -461,7 +461,7 @@ function ReportTab({ onReportAdded }: { onReportAdded: () => void }) {
           <div>
             <label className="block text-xs text-slate-400 mb-1">Company</label>
             <select
-              className="w-full bg-slate-800 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+              className="w-full bg-slate-800 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
               value={company}
               onChange={e => setCompany(e.target.value as GradingCompany)}
             >
@@ -473,7 +473,7 @@ function ReportTab({ onReportAdded }: { onReportAdded: () => void }) {
           <div>
             <label className="block text-xs text-slate-400 mb-1">Tier</label>
             <select
-              className="w-full bg-slate-800 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+              className="w-full bg-slate-800 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
               value={tier}
               onChange={e => setTier(e.target.value as TurnaroundTier)}
             >
@@ -489,7 +489,7 @@ function ReportTab({ onReportAdded }: { onReportAdded: () => void }) {
             <input
               type="number"
               min={1}
-              className="w-full bg-slate-800 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+              className="w-full bg-slate-800 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
               value={reportedDays}
               onChange={e => setReportedDays(Number(e.target.value))}
             />
@@ -497,7 +497,7 @@ function ReportTab({ onReportAdded }: { onReportAdded: () => void }) {
           <div>
             <label className="block text-xs text-slate-400 mb-1">Status</label>
             <select
-              className="w-full bg-slate-800 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+              className="w-full bg-slate-800 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
               value={status}
               onChange={e => setStatus(e.target.value as SubmissionStatus)}
             >
@@ -514,7 +514,7 @@ function ReportTab({ onReportAdded }: { onReportAdded: () => void }) {
             <label className="block text-xs text-slate-400 mb-1">Submitted Date</label>
             <input
               type="date"
-              className="w-full bg-slate-800 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+              className="w-full bg-slate-800 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
               value={submittedDate}
               onChange={e => setSubmittedDate(e.target.value)}
             />
@@ -523,7 +523,7 @@ function ReportTab({ onReportAdded }: { onReportAdded: () => void }) {
             <label className="block text-xs text-slate-400 mb-1">Received Date</label>
             <input
               type="date"
-              className="w-full bg-slate-800 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+              className="w-full bg-slate-800 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
               value={receivedDate}
               onChange={e => setReceivedDate(e.target.value)}
             />
@@ -532,7 +532,7 @@ function ReportTab({ onReportAdded }: { onReportAdded: () => void }) {
             <label className="block text-xs text-slate-400 mb-1">Completed Date</label>
             <input
               type="date"
-              className="w-full bg-slate-800 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+              className="w-full bg-slate-800 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
               value={completedDate}
               onChange={e => setCompletedDate(e.target.value)}
             />
@@ -543,14 +543,14 @@ function ReportTab({ onReportAdded }: { onReportAdded: () => void }) {
           <input
             type="text"
             placeholder="e.g. New York, NY"
-            className="w-full bg-slate-800 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+            className="w-full bg-slate-800 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
             value={location}
             onChange={e => setLocation(e.target.value)}
           />
         </div>
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded text-sm font-medium transition-colors"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-sm text-sm font-medium transition-colors"
         >
           Submit Report
         </button>

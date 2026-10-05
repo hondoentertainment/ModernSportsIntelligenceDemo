@@ -235,7 +235,7 @@ const TaxAutopilot: React.FC = () => {
                     <span className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
                     <span className="text-slate-300 text-sm">{cat.label}</span>
                     {cat.scheduleType !== 'none' && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-slate-700 text-slate-400">
                         Sch {cat.scheduleType}
                       </span>
                     )}
@@ -782,7 +782,7 @@ const TaxAutopilot: React.FC = () => {
                     <span className="text-xs font-medium uppercase tracking-wide opacity-70">
                       {rec.priority} priority
                     </span>
-                    <span className="text-xs px-1.5 py-0.5 rounded bg-slate-800/60">{rec.category}</span>
+                    <span className="text-xs px-1.5 py-0.5 rounded-sm bg-slate-800/60">{rec.category}</span>
                   </div>
                   {rec.potentialSavings > 0 && (
                     <span className="text-sm font-semibold whitespace-nowrap">

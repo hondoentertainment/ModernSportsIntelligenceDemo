@@ -56,13 +56,13 @@ const HedgeSimulationModal: React.FC<HedgeSimulationModalProps> = ({ isOpen, onC
   const deployedCount = simulation.nodes.filter(n => deployedNodes.has(n.id)).length;
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-xs z-100 flex items-center justify-center p-4" onClick={onClose}>
       <div
         className="bg-brand-slate border border-slate-800 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto no-scrollbar"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-brand-slate/95 backdrop-blur-sm border-b border-slate-800 p-6 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-brand-slate/95 backdrop-blur-xs border-b border-slate-800 p-6 flex items-center justify-between z-10">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-brand-lime/10 rounded-xl text-brand-lime">
               <Shield size={24} />

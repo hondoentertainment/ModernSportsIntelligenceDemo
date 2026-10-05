@@ -29,7 +29,7 @@ const ConsignmentOptimizerModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const formatAudience = (n: number) => n >= 1000000 ? `${(n / 1000000).toFixed(1)}M` : `${(n / 1000).toFixed(0)}K`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
@@ -126,7 +126,7 @@ const ConsignmentOptimizerModal: React.FC<Props> = ({ isOpen, onClose }) => {
               {comparisons.map((p) => (
                 <div key={p.platform} className="grid grid-cols-7 gap-4 items-center bg-slate-800/50 border border-slate-700/50 rounded-xl px-4 py-3">
                   <span className="text-white font-semibold">{p.platform}</span>
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium w-fit capitalize ${getTierColor(p.tier)}`}>{p.tier}</span>
+                  <span className={`px-2 py-0.5 rounded-sm text-xs font-medium w-fit capitalize ${getTierColor(p.tier)}`}>{p.tier}</span>
                   <span className="text-slate-300">{p.avgCommission}%</span>
                   <span className="text-slate-300 text-sm">{p.avgTimeToSell}</span>
                   <span className="text-blue-400 font-medium">{formatAudience(p.buyerPool)}</span>
@@ -136,7 +136,7 @@ const ConsignmentOptimizerModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {p.specialties.map((s) => (
-                      <span key={s} className="px-1.5 py-0.5 text-xs bg-slate-700/50 text-slate-300 rounded">{s}</span>
+                      <span key={s} className="px-1.5 py-0.5 text-xs bg-slate-700/50 text-slate-300 rounded-sm">{s}</span>
                     ))}
                   </div>
                 </div>

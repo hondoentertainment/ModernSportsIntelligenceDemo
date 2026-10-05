@@ -19,7 +19,7 @@ const MOCK_EVENTS: HypeEvent[] = [
 
 const HypeFeed: React.FC = () => {
     return (
-        <div className="bg-brand-charcoal border border-slate-800 rounded-[2rem] overflow-hidden flex flex-col h-full">
+        <div className="bg-brand-charcoal border border-slate-800 rounded-4xl overflow-hidden flex flex-col h-full">
             <div className="p-4 border-b border-slate-800 bg-brand-charcoal/50 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                     <Activity size={16} className="text-brand-lime animate-pulse" />

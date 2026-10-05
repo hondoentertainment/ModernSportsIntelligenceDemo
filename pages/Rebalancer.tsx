@@ -88,8 +88,8 @@ const Rebalancer: React.FC = () => {
         </div>
 
         {/* Optimization Score Gauge */}
-        <div className="flex items-center gap-6 p-6 bg-brand-charcoal border border-slate-800 rounded-[2rem]">
-          <div className="relative flex-shrink-0">
+        <div className="flex items-center gap-6 p-6 bg-brand-charcoal border border-slate-800 rounded-4xl">
+          <div className="relative shrink-0">
             <svg width={120} height={120} className="-rotate-90">
               <circle cx={60} cy={60} r={52} fill="none" stroke="#1e293b" strokeWidth={8} />
               <circle
@@ -235,7 +235,7 @@ const Rebalancer: React.FC = () => {
           <div className="space-y-2">
             {allocations.map((alloc, i) => (
               <div key={alloc.category} className="flex items-center gap-4 p-3 bg-brand-slate rounded-xl">
-                <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                 <span className="text-sm text-white font-medium flex-1 min-w-0">{alloc.category}</span>
                 <div className="flex items-center gap-4 text-xs font-mono">
                   <span className="text-brand-muted w-12 text-right">{alloc.currentPct}%</span>
@@ -270,7 +270,7 @@ const Rebalancer: React.FC = () => {
             return (
               <div
                 key={rec.id}
-                className={`bg-brand-charcoal border rounded-[2rem] p-6 space-y-4 hover:border-slate-600 transition-all ${pBadge.border}`}
+                className={`bg-brand-charcoal border rounded-4xl p-6 space-y-4 hover:border-slate-600 transition-all ${pBadge.border}`}
               >
                 {/* Top row: action + priority */}
                 <div className="flex items-center justify-between">
@@ -326,7 +326,7 @@ const Rebalancer: React.FC = () => {
           {riskMetrics.map((metric) => (
             <div
               key={metric.category}
-              className="bg-brand-charcoal border border-slate-800 rounded-[2rem] p-6 space-y-4 hover:border-slate-600 transition-all"
+              className="bg-brand-charcoal border border-slate-800 rounded-4xl p-6 space-y-4 hover:border-slate-600 transition-all"
             >
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-bold text-white">{metric.category}</h4>

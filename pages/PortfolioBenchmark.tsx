@@ -96,7 +96,7 @@ function corrColor(v: number): string {
 
 function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="bg-slate-800/60 backdrop-blur border border-slate-700/50 rounded-2xl p-6">
+    <div className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
       <div className="flex items-center gap-2 mb-5">
         {icon}
         <h2 className="text-lg font-bold text-white">{title}</h2>
@@ -238,7 +238,7 @@ const PortfolioBenchmark: React.FC = () => {
         ].map((card, i) => (
           <div
             key={i}
-            className="bg-slate-800/60 backdrop-blur border border-slate-700/50 rounded-xl p-4"
+            className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-xl p-4"
           >
             <div className="flex items-center gap-1.5 text-slate-400 text-xs mb-2">
               {card.icon}
@@ -347,7 +347,7 @@ const PortfolioBenchmark: React.FC = () => {
             { label: 'Bitcoin', color: '#f59e0b' },
           ].map((l) => (
             <div key={l.label} className="flex items-center gap-1.5 text-xs text-slate-400">
-              <span className="w-3 h-0.5 rounded" style={{ backgroundColor: l.color }} />
+              <span className="w-3 h-0.5 rounded-sm" style={{ backgroundColor: l.color }} />
               {l.label}
             </div>
           ))}
@@ -368,7 +368,7 @@ const PortfolioBenchmark: React.FC = () => {
                       const m = months.find((mo) => mo.month === i + 1);
                       if (!m) {
                         return (
-                          <div key={i} className="h-10 rounded bg-slate-800/40 flex items-center justify-center">
+                          <div key={i} className="h-10 rounded-sm bg-slate-800/40 flex items-center justify-center">
                             <span className="text-[9px] text-slate-600">
                               {['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][i]}
                             </span>
@@ -378,7 +378,7 @@ const PortfolioBenchmark: React.FC = () => {
                       return (
                         <div
                           key={i}
-                          className={`h-10 rounded flex flex-col items-center justify-center ${returnBg(m.return_)}`}
+                          className={`h-10 rounded-sm flex flex-col items-center justify-center ${returnBg(m.return_)}`}
                           title={`${m.monthLabel} ${year}: ${formatPercent(m.return_)}`}
                         >
                           <span className="text-[9px] text-slate-400">{m.monthLabel}</span>
@@ -425,7 +425,7 @@ const PortfolioBenchmark: React.FC = () => {
             {allocation.map((a, i) => (
               <div key={i} className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: a.color }} />
+                  <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: a.color }} />
                   <span className="text-slate-300">{a.category}</span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -664,7 +664,7 @@ const PortfolioBenchmark: React.FC = () => {
                   {correlationAssets.map((col) => {
                     const val = correlationLookup.get(`${row}|${col}`) ?? 0;
                     return (
-                      <td key={col} className={`text-center p-1 rounded ${corrColor(val)}`}>
+                      <td key={col} className={`text-center p-1 rounded-sm ${corrColor(val)}`}>
                         <span className="font-mono font-bold">{val.toFixed(2)}</span>
                       </td>
                     );
@@ -683,7 +683,7 @@ const PortfolioBenchmark: React.FC = () => {
             { label: 'Strong -', cls: 'bg-blue-500/30' },
           ].map((l) => (
             <div key={l.label} className="flex items-center gap-1">
-              <span className={`w-3 h-3 rounded ${l.cls}`} />
+              <span className={`w-3 h-3 rounded-sm ${l.cls}`} />
               <span className="text-slate-500">{l.label}</span>
             </div>
           ))}
@@ -698,7 +698,7 @@ const PortfolioBenchmark: React.FC = () => {
           { label: 'Avg Loss', value: formatPercent(performance.avgLoss), icon: <TrendingDown size={14} /> },
           { label: 'Info Ratio', value: performance.informationRatio.toFixed(2), icon: <Activity size={14} /> },
         ].map((stat, i) => (
-          <div key={i} className="bg-slate-800/60 backdrop-blur border border-slate-700/50 rounded-xl p-4 text-center">
+          <div key={i} className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-xl p-4 text-center">
             <div className="flex items-center justify-center gap-1.5 text-slate-400 text-xs mb-1">
               {stat.icon}
               <span>{stat.label}</span>

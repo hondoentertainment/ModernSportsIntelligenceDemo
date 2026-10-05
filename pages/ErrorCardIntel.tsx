@@ -86,14 +86,14 @@ const ErrorCardRow: React.FC<{ card: ErrorCard }> = ({ card }) => {
             </span>
           </div>
         </div>
-        <div className="text-right flex-shrink-0 space-y-1">
+        <div className="text-right shrink-0 space-y-1">
           <p className="text-lg font-bebas tracking-wider text-amber-400">${card.errorValue.toLocaleString()}</p>
           <p className="text-[10px] text-slate-500">Normal: ${card.normalValue.toLocaleString()}</p>
           <p className="px-2 py-0.5 rounded-md text-[10px] font-bold text-green-400 bg-green-500/10 border border-green-500/30 inline-block">
             {card.premiumMultiplier.toLocaleString()}x premium
           </p>
         </div>
-        <div className="flex-shrink-0 pt-1 text-slate-600">
+        <div className="shrink-0 pt-1 text-slate-600">
           {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </div>
       </button>
@@ -119,7 +119,7 @@ const ErrorCardRow: React.FC<{ card: ErrorCard }> = ({ card }) => {
             <ul className="space-y-1.5">
               {card.identificationTips.map((tip, i) => (
                 <li key={i} className="flex items-start gap-2 text-xs text-slate-400">
-                  <span className="flex-shrink-0 w-4 h-4 flex items-center justify-center rounded-full bg-slate-800 text-[9px] font-bold text-slate-500 mt-0.5">
+                  <span className="shrink-0 w-4 h-4 flex items-center justify-center rounded-full bg-slate-800 text-[9px] font-bold text-slate-500 mt-0.5">
                     {i + 1}
                   </span>
                   <span>{tip}</span>
@@ -318,11 +318,11 @@ const ErrorCardIntel: React.FC = () => {
                               </div>
                               <p className="text-[11px] text-slate-400">{v.description}</p>
                               <div className="mt-2 flex items-start gap-1.5">
-                                <Eye size={10} className="text-slate-600 mt-0.5 flex-shrink-0" />
+                                <Eye size={10} className="text-slate-600 mt-0.5 shrink-0" />
                                 <p className="text-[10px] text-slate-500 italic">{v.howToIdentify}</p>
                               </div>
                             </div>
-                            <div className="text-right flex-shrink-0">
+                            <div className="text-right shrink-0">
                               <p className="text-sm font-bebas tracking-wider text-green-400">{v.valueMultiplier}x</p>
                               <p className="text-[10px] text-slate-600">~{v.estimatedPop.toLocaleString()} pop</p>
                             </div>
@@ -358,7 +358,7 @@ const ErrorCardIntel: React.FC = () => {
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className={`flex-shrink-0 p-2 rounded-xl ${
+                  <div className={`shrink-0 p-2 rounded-xl ${
                     alert.urgency === 'critical' ? 'bg-red-500/10 text-red-400' :
                     alert.urgency === 'high' ? 'bg-amber-500/10 text-amber-400' :
                     'bg-blue-500/10 text-blue-400'
@@ -406,7 +406,7 @@ const ErrorCardIntel: React.FC = () => {
                 onChange={e => setSearchPlayer(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
                 placeholder="e.g. Ohtani"
-                className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-600 focus:border-brand-lime/50 focus:outline-none transition-colors"
+                className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-600 focus:border-brand-lime/50 focus:outline-hidden transition-colors"
               />
             </div>
             <div>
@@ -417,7 +417,7 @@ const ErrorCardIntel: React.FC = () => {
                 onChange={e => setSearchYear(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
                 placeholder="e.g. 2018"
-                className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-600 focus:border-brand-lime/50 focus:outline-none transition-colors"
+                className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-600 focus:border-brand-lime/50 focus:outline-hidden transition-colors"
               />
             </div>
             <div>
@@ -428,7 +428,7 @@ const ErrorCardIntel: React.FC = () => {
                 onChange={e => setSearchSet(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleSearch()}
                 placeholder="e.g. Topps"
-                className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-600 focus:border-brand-lime/50 focus:outline-none transition-colors"
+                className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-600 focus:border-brand-lime/50 focus:outline-hidden transition-colors"
               />
             </div>
           </div>

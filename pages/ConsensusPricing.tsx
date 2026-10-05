@@ -180,8 +180,8 @@ const ConsensusPricing: React.FC = () => {
           </LineChart>
         </ResponsiveContainer>
         <div className="flex gap-6 justify-center mt-2 text-xs">
-          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-emerald-500 inline-block rounded" /> Community Price</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-blue-500 inline-block rounded" /> Market Price</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-emerald-500 inline-block rounded-sm" /> Community Price</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-blue-500 inline-block rounded-sm" /> Market Price</span>
         </div>
       </div>
 
@@ -341,7 +341,7 @@ const ConsensusPricing: React.FC = () => {
 
               <div className="flex flex-wrap gap-1 mb-3">
                 {expert.specialties.map(s => (
-                  <span key={s} className="px-2 py-0.5 bg-slate-700/50 text-slate-400 rounded text-xs">{s}</span>
+                  <span key={s} className="px-2 py-0.5 bg-slate-700/50 text-slate-400 rounded-sm text-xs">{s}</span>
                 ))}
               </div>
 
@@ -474,7 +474,7 @@ const ConsensusPricing: React.FC = () => {
             const cardInfo = prices.find(p => p.id === vote.cardId);
             return (
               <div key={vote.id} className="flex items-start gap-3 bg-slate-900/40 rounded-lg p-3 border border-slate-700/30">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   {vote.vote === 'fair_price' ? (
                     <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
                       <ThumbsUp size={14} className="text-emerald-400" />
@@ -494,7 +494,7 @@ const ConsensusPricing: React.FC = () => {
                     <span className="text-sm font-semibold text-slate-200">{vote.username}</span>
                     {vote.expertTier && (
                       <span
-                        className="px-1.5 py-0.5 rounded text-xs font-semibold"
+                        className="px-1.5 py-0.5 rounded-sm text-xs font-semibold"
                         style={{ backgroundColor: getTierColor(vote.expertTier) + '22', color: getTierColor(vote.expertTier) }}
                       >
                         {getTierLabel(vote.expertTier)}

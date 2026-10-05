@@ -87,15 +87,15 @@ function PriceReplayTab() {
           ))}
         </select>
         <div className="flex items-center gap-2">
-          <button onClick={() => setPlayIndex(Math.max(0, playIndex - 10))} className="p-2 bg-slate-700 rounded hover:bg-slate-600"><SkipBack className="w-4 h-4 text-white" /></button>
+          <button onClick={() => setPlayIndex(Math.max(0, playIndex - 10))} className="p-2 bg-slate-700 rounded-sm hover:bg-slate-600"><SkipBack className="w-4 h-4 text-white" /></button>
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className="p-2 bg-blue-600 rounded hover:bg-blue-500"
+            className="p-2 bg-blue-600 rounded-sm hover:bg-blue-500"
           >
             {isPlaying ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white" />}
           </button>
-          <button onClick={() => setPlayIndex(Math.min((timeline?.priceHistory.length || 1) - 1, playIndex + 10))} className="p-2 bg-slate-700 rounded hover:bg-slate-600"><SkipForward className="w-4 h-4 text-white" /></button>
-          <button onClick={() => setSpeed(s => s >= 4 ? 1 : s * 2)} className="p-2 bg-slate-700 rounded hover:bg-slate-600 flex items-center gap-1">
+          <button onClick={() => setPlayIndex(Math.min((timeline?.priceHistory.length || 1) - 1, playIndex + 10))} className="p-2 bg-slate-700 rounded-sm hover:bg-slate-600"><SkipForward className="w-4 h-4 text-white" /></button>
+          <button onClick={() => setSpeed(s => s >= 4 ? 1 : s * 2)} className="p-2 bg-slate-700 rounded-sm hover:bg-slate-600 flex items-center gap-1">
             <FastForward className="w-4 h-4 text-white" />
             <span className="text-xs text-white">{speed}x</span>
           </button>
@@ -227,7 +227,7 @@ function BacktesterTab() {
           <select
             value={selectedStrategy}
             onChange={e => { setSelectedStrategy(e.target.value); setParamOverrides({}); }}
-            className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+            className="w-full bg-slate-700 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
           >
             {strategies.map(s => (
               <option key={s.id} value={s.id}>{s.name}</option>
@@ -242,7 +242,7 @@ function BacktesterTab() {
           <select
             value={selectedCard}
             onChange={e => setSelectedCard(e.target.value)}
-            className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 text-sm"
+            className="w-full bg-slate-700 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm"
           >
             {timelines.map(t => (
               <option key={t.id} value={t.id}>{t.player} - {t.cardName}</option>
@@ -258,7 +258,7 @@ function BacktesterTab() {
                 type="number"
                 value={paramOverrides[key] ?? defaultVal}
                 onChange={e => setParamOverrides(p => ({ ...p, [key]: parseFloat(e.target.value) || 0 }))}
-                className="flex-1 bg-slate-700 text-white px-2 py-1 rounded border border-slate-600 text-sm"
+                className="flex-1 bg-slate-700 text-white px-2 py-1 rounded-sm border border-slate-600 text-sm"
               />
             </div>
           ))}
@@ -397,7 +397,7 @@ function WhatIfTab() {
             <select
               value={selectedCard}
               onChange={e => setSelectedCard(e.target.value)}
-              className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 text-sm mt-1"
+              className="w-full bg-slate-700 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm mt-1"
             >
               {timelines.map(t => (
                 <option key={t.id} value={t.id}>{t.player} - {t.cardName}</option>
@@ -407,16 +407,16 @@ function WhatIfTab() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-slate-400">Buy Date</label>
-              <input type="date" value={buyDate} onChange={e => setBuyDate(e.target.value)} className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 text-sm mt-1" />
+              <input type="date" value={buyDate} onChange={e => setBuyDate(e.target.value)} className="w-full bg-slate-700 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm mt-1" />
             </div>
             <div>
               <label className="text-xs text-slate-400">Sell Date</label>
-              <input type="date" value={sellDate} onChange={e => setSellDate(e.target.value)} className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 text-sm mt-1" />
+              <input type="date" value={sellDate} onChange={e => setSellDate(e.target.value)} className="w-full bg-slate-700 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm mt-1" />
             </div>
           </div>
           <div>
             <label className="text-xs text-slate-400">Fees ($)</label>
-            <input type="number" value={fees} onChange={e => setFees(parseFloat(e.target.value) || 0)} className="w-full bg-slate-700 text-white px-3 py-2 rounded border border-slate-600 text-sm mt-1" />
+            <input type="number" value={fees} onChange={e => setFees(parseFloat(e.target.value) || 0)} className="w-full bg-slate-700 text-white px-3 py-2 rounded-sm border border-slate-600 text-sm mt-1" />
           </div>
           <button
             onClick={handleCalculate}

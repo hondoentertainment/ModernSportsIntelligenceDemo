@@ -178,13 +178,13 @@ const PortfolioCopilot: React.FC = () => {
                 <div key={mover.cardName} className="flex items-center justify-between p-2 bg-slate-900/50 rounded-lg">
                   <div className="flex items-center gap-2 min-w-0">
                     {mover.direction === 'up' ? (
-                      <TrendingUp size={12} className="text-emerald-400 flex-shrink-0" />
+                      <TrendingUp size={12} className="text-emerald-400 shrink-0" />
                     ) : (
-                      <TrendingDown size={12} className="text-red-400 flex-shrink-0" />
+                      <TrendingDown size={12} className="text-red-400 shrink-0" />
                     )}
                     <span className="text-xs text-slate-300 truncate">{mover.cardName}</span>
                   </div>
-                  <span className={`text-xs font-bold flex-shrink-0 ml-2 ${mover.changePct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  <span className={`text-xs font-bold shrink-0 ml-2 ${mover.changePct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {mover.changePct >= 0 ? '+' : ''}{mover.changePct.toFixed(1)}%
                   </span>
                 </div>
@@ -214,7 +214,7 @@ const PortfolioCopilot: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-bold text-white truncate">{thread.title}</span>
-                <ChevronRight size={14} className="text-slate-600 flex-shrink-0" />
+                <ChevronRight size={14} className="text-slate-600 shrink-0" />
               </div>
               <div className="flex items-center gap-2">
                 <span className={`text-[10px] px-1.5 py-0.5 rounded-full border ${intentBadgeColor(thread.intent)}`}>
@@ -246,7 +246,7 @@ const PortfolioCopilot: React.FC = () => {
                           {msg.suggestions.map(sug => (
                             <div key={sug.id} className="p-2 bg-slate-800/80 rounded-lg border border-slate-700/30">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded border ${intentBadgeColor(sug.intent)}`}>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-sm border ${intentBadgeColor(sug.intent)}`}>
                                   {sug.type}
                                 </span>
                                 <span className="text-[10px] font-bold text-white">{sug.title}</span>
@@ -270,7 +270,7 @@ const PortfolioCopilot: React.FC = () => {
                   onChange={e => setInputValue(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSend()}
                   placeholder="Ask the copilot..."
-                  className="flex-1 bg-slate-900/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-brand-lime/50"
+                  className="flex-1 bg-slate-900/50 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-slate-300 placeholder-slate-600 focus:outline-hidden focus:border-brand-lime/50"
                 />
                 <button onClick={handleSend} className="p-2 bg-brand-lime/20 text-brand-lime rounded-lg hover:bg-brand-lime/30 transition-colors">
                   <Send size={16} />

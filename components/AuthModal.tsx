@@ -272,7 +272,7 @@ const OverviewTab: React.FC<{
               }`}
             >
               <div
-                className="w-2 h-2 rounded-full flex-shrink-0"
+                className="w-2 h-2 rounded-full shrink-0"
                 style={{ backgroundColor: getScoreColor(score.overall) }}
               />
               <span className="flex-1 text-white truncate">
@@ -403,7 +403,7 @@ const CardDetailTab: React.FC<{
 
         {/* Notes */}
         <div className="flex items-start gap-2 p-3 bg-slate-700/30 rounded-xl">
-          <Info size={14} className="text-slate-400 mt-0.5 flex-shrink-0" />
+          <Info size={14} className="text-slate-400 mt-0.5 shrink-0" />
           <p className="text-xs text-slate-400 leading-relaxed">{cert.notes}</p>
         </div>
       </div>
@@ -431,7 +431,7 @@ const CardDetailTab: React.FC<{
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed">{factor.description}</p>
                 <div className="flex items-start gap-2 p-2.5 bg-slate-900/50 rounded-xl">
-                  <CheckCircle2 size={12} className="text-blue-400 mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 size={12} className="text-blue-400 mt-0.5 shrink-0" />
                   <p className="text-[11px] text-blue-300">{factor.recommendation}</p>
                 </div>
               </div>
@@ -522,7 +522,7 @@ const ChecklistTab: React.FC = () => {
               }`}
             >
               <div className="flex items-start gap-3">
-                <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
                   isComplete
                     ? 'bg-green-500 border-green-500'
                     : 'border-slate-600'
@@ -535,7 +535,7 @@ const ChecklistTab: React.FC = () => {
                       {step.step}. {step.title}
                     </span>
                     {step.critical && (
-                      <span className="px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest bg-red-500/10 text-red-400 border border-red-500/30 rounded">
+                      <span className="px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest bg-red-500/10 text-red-400 border border-red-500/30 rounded-sm">
                         Required
                       </span>
                     )}
@@ -543,7 +543,7 @@ const ChecklistTab: React.FC = () => {
                   <p className="text-xs text-slate-400 leading-relaxed">{step.description}</p>
                   {step.visualNote && (
                     <div className="flex items-start gap-2 p-2.5 bg-slate-700/30 rounded-xl">
-                      <Eye size={12} className="text-blue-400 mt-0.5 flex-shrink-0" />
+                      <Eye size={12} className="text-blue-400 mt-0.5 shrink-0" />
                       <p className="text-[11px] text-blue-300 leading-relaxed">{step.visualNote}</p>
                     </div>
                   )}
@@ -596,7 +596,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">

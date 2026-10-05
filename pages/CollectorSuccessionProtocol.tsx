@@ -214,7 +214,7 @@ const CollectorSuccessionProtocol: React.FC = () => {
           <div className="space-y-2">
             {readiness?.completedSteps.map((step, i) => (
               <div key={i} className="flex items-start gap-3 p-2.5 bg-emerald-500/5 border border-emerald-500/10 rounded-lg">
-                <CheckCircle size={14} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                <CheckCircle size={14} className="text-emerald-400 shrink-0 mt-0.5" />
                 <p className="text-sm text-slate-300">{step}</p>
               </div>
             ))}
@@ -229,7 +229,7 @@ const CollectorSuccessionProtocol: React.FC = () => {
           <div className="space-y-2 mb-4">
             {readiness?.pendingSteps.map((step, i) => (
               <div key={i} className="flex items-start gap-3 p-2.5 bg-amber-500/5 border border-amber-500/10 rounded-lg">
-                <Clock size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                <Clock size={14} className="text-amber-400 shrink-0 mt-0.5" />
                 <p className="text-sm text-slate-300">{step}</p>
               </div>
             ))}
@@ -240,7 +240,7 @@ const CollectorSuccessionProtocol: React.FC = () => {
               <div className="space-y-2">
                 {readiness.criticalGaps.map((gap, i) => (
                   <div key={i} className="flex items-start gap-3 p-2.5 bg-red-500/10 border border-red-500/20 rounded-lg">
-                    <AlertTriangle size={14} className="text-red-400 flex-shrink-0 mt-0.5" />
+                    <AlertTriangle size={14} className="text-red-400 shrink-0 mt-0.5" />
                     <p className="text-sm text-red-300">{gap}</p>
                   </div>
                 ))}
@@ -414,21 +414,21 @@ const CollectorSuccessionProtocol: React.FC = () => {
               {doc.status === 'generated' ? (
                 <button
                   onClick={() => showToast(`Downloading: ${doc.name}`)}
-                  className="flex items-center gap-1 ml-2 px-3 py-1.5 rounded-lg bg-slate-700/50 border border-slate-600/50 text-slate-300 text-[11px] font-medium hover:bg-slate-700 transition-colors flex-shrink-0"
+                  className="flex items-center gap-1 ml-2 px-3 py-1.5 rounded-lg bg-slate-700/50 border border-slate-600/50 text-slate-300 text-[11px] font-medium hover:bg-slate-700 transition-colors shrink-0"
                 >
                   <Download size={12} /> Download
                 </button>
               ) : doc.status === 'outdated' ? (
                 <button
                   onClick={() => showToast(`Regenerating: ${doc.name}`)}
-                  className="flex items-center gap-1 ml-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[11px] font-medium hover:bg-amber-500/20 transition-colors flex-shrink-0"
+                  className="flex items-center gap-1 ml-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[11px] font-medium hover:bg-amber-500/20 transition-colors shrink-0"
                 >
                   <RefreshCw size={12} /> Refresh
                 </button>
               ) : (
                 <button
                   onClick={() => showToast(`Generating: ${doc.name}`)}
-                  className="flex items-center gap-1 ml-2 px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[11px] font-medium hover:bg-purple-500/20 transition-colors flex-shrink-0"
+                  className="flex items-center gap-1 ml-2 px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 text-[11px] font-medium hover:bg-purple-500/20 transition-colors shrink-0"
                 >
                   <Play size={12} /> Generate
                 </button>
@@ -456,14 +456,14 @@ const CollectorSuccessionProtocol: React.FC = () => {
                   </div>
                 </div>
                 {mod.completed
-                  ? <CheckCircle size={16} className="text-emerald-400 flex-shrink-0 ml-2" />
-                  : <Clock size={16} className="text-slate-500 flex-shrink-0 ml-2" />
+                  ? <CheckCircle size={16} className="text-emerald-400 shrink-0 ml-2" />
+                  : <Clock size={16} className="text-slate-500 shrink-0 ml-2" />
                 }
               </div>
               <ul className="space-y-1 mb-3">
                 {mod.content.map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-[11px] text-slate-400">
-                    <ChevronRight size={10} className="text-slate-600 flex-shrink-0 mt-0.5" />
+                    <ChevronRight size={10} className="text-slate-600 shrink-0 mt-0.5" />
                     {item}
                   </li>
                 ))}

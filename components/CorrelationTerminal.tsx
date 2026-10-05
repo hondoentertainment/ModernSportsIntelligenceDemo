@@ -94,7 +94,7 @@ export const CorrelationTerminal: React.FC<CorrelationTerminalProps> = ({ invent
                 {/* Legend / Metrics */}
                 <div className="lg:col-span-2 space-y-6">
                     <div className="p-6 bg-brand-charcoal/30 border border-slate-800/50 rounded-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-brand-lime/10 blur-[40px] rounded-full"></div>
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-brand-lime/10 blur-2xl rounded-full"></div>
                         <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-4">Risk Exposure</p>
                         <div className="space-y-4">
                             {sports.map(sport => {

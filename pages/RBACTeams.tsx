@@ -91,7 +91,7 @@ const RBACTeams: React.FC = () => {
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="text-white font-semibold">{m.name}</span>
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${getRoleColor(m.role)}`}>{getRoleLabel(m.role)}</span>
+                            <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold ${getRoleColor(m.role)}`}>{getRoleLabel(m.role)}</span>
                             {m.mfaEnabled && <Lock size={10} className="text-green-400" />}
                           </div>
                           <p className="text-slate-500 text-xs">@{m.handle} • {m.email}</p>
@@ -106,7 +106,7 @@ const RBACTeams: React.FC = () => {
                     {/* Permission Grid */}
                     <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
                       {m.permissions.map(p => (
-                        <div key={p.scope} className="bg-slate-800/50 rounded p-2 text-center">
+                        <div key={p.scope} className="bg-slate-800/50 rounded-sm p-2 text-center">
                           <p className="text-slate-500 text-[10px] uppercase mb-1">{p.scope}</p>
                           <p className={`text-xs font-bold capitalize ${getPermissionColor(p.level)}`}>{p.level}</p>
                         </div>

@@ -133,7 +133,7 @@ const AdminAuditTrail: React.FC = () => {
               type="button"
               onClick={runQuery}
               disabled={loading}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
             >
               <RefreshCw size={14} aria-hidden className={loading ? 'animate-spin' : ''} />
               {loading ? 'Loading…' : 'Refresh'}
@@ -154,7 +154,7 @@ const AdminAuditTrail: React.FC = () => {
               value={targetUserId}
               onChange={(e) => setTargetUserId(e.target.value)}
               placeholder="uuid — leave blank for all users"
-              className="w-full bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-rose-500/60"
+              className="w-full bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-rose-500/60"
             />
           </label>
 
@@ -163,7 +163,7 @@ const AdminAuditTrail: React.FC = () => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value as ServerCategory | '')}
-              className="w-full bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500/60"
+              className="w-full bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-hidden focus:border-rose-500/60"
             >
               <option value="">All</option>
               {SERVER_CATEGORIES.map((c) => (
@@ -177,7 +177,7 @@ const AdminAuditTrail: React.FC = () => {
             <select
               value={window}
               onChange={(e) => setWindow(e.target.value as TimeWindow)}
-              className="w-full bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500/60"
+              className="w-full bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-hidden focus:border-rose-500/60"
             >
               <option value="24h">Last 24 hours</option>
               <option value="7d">Last 7 days</option>
@@ -197,7 +197,7 @@ const AdminAuditTrail: React.FC = () => {
                 const n = Number(e.target.value);
                 setLimit(Number.isFinite(n) ? Math.max(1, Math.min(500, Math.floor(n))) : 200);
               }}
-              className="w-full bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500/60"
+              className="w-full bg-slate-800/60 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-hidden focus:border-rose-500/60"
             />
           </label>
         </div>

@@ -89,7 +89,7 @@ const ArbitrageSwarmDashboard: React.FC = () => {
                 <div className="flex items-center gap-3 mb-6">
                     <Layers className="text-indigo-400" size={24} />
                     <h2 className="text-2xl font-bebas tracking-wider text-white">Active Arbitrage Nodes</h2>
-                    <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent"></div>
+                    <div className="h-px flex-1 bg-linear-to-r from-white/10 to-transparent"></div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -100,7 +100,7 @@ const ArbitrageSwarmDashboard: React.FC = () => {
             </div>
 
             {/* Market Correlation Summary */}
-            <div className="card-glass p-8 bg-gradient-to-br from-indigo-500/5 to-transparent border border-white/10">
+            <div className="card-glass p-8 bg-linear-to-br from-indigo-500/5 to-transparent border border-white/10">
                 <div className="flex items-center gap-3 mb-4">
                     <TrendingUp className="text-indigo-400" size={20} />
                     <h3 className="font-bebas text-xl text-white tracking-widest uppercase">Committee Summary</h3>

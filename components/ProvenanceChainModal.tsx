@@ -167,7 +167,7 @@ const RegistryTab: React.FC<{ cards: DigitalTwin[]; onSelectCard: (_id: string) 
                   </span>
                 </div>
               </div>
-              <div className="text-right flex-shrink-0 space-y-1">
+              <div className="text-right shrink-0 space-y-1">
                 <p className={`text-sm font-mono font-bold ${scoreColor(auth.overall)}`}>{auth.overall}%</p>
                 <p className="text-xs text-slate-400">{fmtCurrency(card.currentValue)}</p>
                 <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
@@ -226,7 +226,7 @@ const VerifyTab: React.FC = () => {
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleVerify()}
-              className="w-full pl-9 pr-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+              className="w-full pl-9 pr-4 py-2.5 bg-slate-800/50 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-cyan-500/50"
             />
           </div>
           <button
@@ -367,7 +367,7 @@ const TimelineTab: React.FC<{ selectedCardId: string | null; cards: DigitalTwin[
           <button
             key={c.id}
             onClick={() => setActiveCardId(c.cardId)}
-            className={`flex-shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+            className={`shrink-0 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
               activeCardId === c.cardId ? 'bg-cyan-500/20 text-cyan-300' : 'text-slate-400 hover:bg-slate-800'
             }`}
           >
@@ -483,9 +483,9 @@ const TimelineTab: React.FC<{ selectedCardId: string | null; cards: DigitalTwin[
               sight.flagged ? 'bg-red-500/5 border-red-500/20' : 'bg-slate-800/30 border-slate-700/50'
             }`}>
               {sight.flagged ? (
-                <AlertTriangle size={14} className="text-red-400 flex-shrink-0" />
+                <AlertTriangle size={14} className="text-red-400 shrink-0" />
               ) : (
-                <Eye size={14} className="text-slate-400 flex-shrink-0" />
+                <Eye size={14} className="text-slate-400 shrink-0" />
               )}
               <div className="flex-1 min-w-0">
                 <p className="text-white font-medium">{sight.platform}</p>
@@ -558,9 +558,9 @@ const FraudTab: React.FC = () => {
                 className="w-full text-left flex items-start gap-3 p-4"
               >
                 {alert.severity === 'critical' ? (
-                  <FileWarning size={18} className="text-red-400 flex-shrink-0 mt-0.5" />
+                  <FileWarning size={18} className="text-red-400 shrink-0 mt-0.5" />
                 ) : (
-                  <ShieldAlert size={18} className="flex-shrink-0 mt-0.5" />
+                  <ShieldAlert size={18} className="shrink-0 mt-0.5" />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
@@ -572,7 +572,7 @@ const FraudTab: React.FC = () => {
                   <p className="text-xs text-slate-400">{fraudTypeLabels[alert.fraudType] ?? alert.fraudType}</p>
                   <p className="text-xs text-slate-500 mt-1">{alert.description}</p>
                 </div>
-                <div className="flex-shrink-0 text-right space-y-1">
+                <div className="shrink-0 text-right space-y-1">
                   <p className="text-xs text-slate-400">{fmtFullDate(alert.detectedAt)}</p>
                   <p className="text-xs font-mono text-red-400">{fmtCurrency(alert.estimatedValueAtRisk)}</p>
                   {expanded ? <ChevronUp size={14} className="text-slate-500 ml-auto" /> : <ChevronDown size={14} className="text-slate-500 ml-auto" />}
@@ -717,7 +717,7 @@ const RegisterTab: React.FC = () => {
               placeholder={f.placeholder}
               value={(form as Record<string, string>)[f.key]}
               onChange={e => update(f.key, e.target.value)}
-              className="w-full px-3 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500/50"
+              className="w-full px-3 py-2 bg-slate-800/50 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-cyan-500/50"
             />
           </div>
         ))}
@@ -764,7 +764,7 @@ const ProvenanceChainModal: React.FC<Props> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Separated Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">

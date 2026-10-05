@@ -363,7 +363,7 @@ const PhantomBacktester: React.FC = () => {
                     type="date"
                     value={config.startDate}
                     onChange={(e) => setConfig((prev) => ({ ...prev, startDate: e.target.value }))}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-none"
+                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -372,7 +372,7 @@ const PhantomBacktester: React.FC = () => {
                     type="date"
                     value={config.endDate}
                     onChange={(e) => setConfig((prev) => ({ ...prev, endDate: e.target.value }))}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-none"
+                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -383,7 +383,7 @@ const PhantomBacktester: React.FC = () => {
                       type="number"
                       value={config.initialCapital}
                       onChange={(e) => setConfig((prev) => ({ ...prev, initialCapital: Number(e.target.value) }))}
-                      className="w-full bg-slate-900 border border-slate-600 rounded-xl pl-8 pr-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-none"
+                      className="w-full bg-slate-900 border border-slate-600 rounded-xl pl-8 pr-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                     />
                   </div>
                 </div>
@@ -392,7 +392,7 @@ const PhantomBacktester: React.FC = () => {
                   <select
                     value={config.benchmark}
                     onChange={(e) => setConfig((prev) => ({ ...prev, benchmark: e.target.value as BacktestConfig['benchmark'] }))}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-none"
+                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                   >
                     {benchmarks.map((b) => (
                       <option key={b.id} value={b.id}>{b.name}</option>
@@ -407,7 +407,7 @@ const PhantomBacktester: React.FC = () => {
                   <select
                     value={config.rebalanceFrequency}
                     onChange={(e) => setConfig((prev) => ({ ...prev, rebalanceFrequency: e.target.value as BacktestConfig['rebalanceFrequency'] }))}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-none"
+                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                   >
                     <option value="none">None</option>
                     <option value="monthly">Monthly</option>
@@ -422,7 +422,7 @@ const PhantomBacktester: React.FC = () => {
                     step="0.1"
                     value={config.transactionCostPct}
                     onChange={(e) => setConfig((prev) => ({ ...prev, transactionCostPct: Number(e.target.value) }))}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-none"
+                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -431,7 +431,7 @@ const PhantomBacktester: React.FC = () => {
                     type="number"
                     value={config.gradingFees}
                     onChange={(e) => setConfig((prev) => ({ ...prev, gradingFees: Number(e.target.value) }))}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-none"
+                    className="w-full bg-slate-900 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                   />
                 </div>
               </div>
@@ -453,7 +453,7 @@ const PhantomBacktester: React.FC = () => {
                   placeholder="Search players to add..."
                   value={playerSearch}
                   onChange={(e) => setPlayerSearch(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-600 rounded-xl pl-10 pr-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-none"
+                  className="w-full bg-slate-900 border border-slate-600 rounded-xl pl-10 pr-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                 />
                 {playerSearch && (
                   <div className="absolute z-20 top-full mt-1 w-full bg-slate-900 border border-slate-600 rounded-xl shadow-xl max-h-48 overflow-y-auto">
@@ -501,7 +501,7 @@ const PhantomBacktester: React.FC = () => {
                             max={20}
                             value={pos.quantity}
                             onChange={(e) => updatePosition(pos.player, { quantity: Number(e.target.value) })}
-                            className="w-16 bg-slate-800 border border-slate-600 rounded-lg px-2 py-1.5 text-xs text-white text-center focus:border-brand-lime focus:outline-none"
+                            className="w-16 bg-slate-800 border border-slate-600 rounded-lg px-2 py-1.5 text-xs text-white text-center focus:border-brand-lime focus:outline-hidden"
                           />
                         </div>
                         <div>
@@ -509,7 +509,7 @@ const PhantomBacktester: React.FC = () => {
                           <select
                             value={pos.grade}
                             onChange={(e) => updatePosition(pos.player, { grade: e.target.value })}
-                            className="w-24 bg-slate-800 border border-slate-600 rounded-lg px-2 py-1.5 text-xs text-white focus:border-brand-lime focus:outline-none"
+                            className="w-24 bg-slate-800 border border-slate-600 rounded-lg px-2 py-1.5 text-xs text-white focus:border-brand-lime focus:outline-hidden"
                           >
                             <option>PSA 10</option>
                             <option>PSA 9</option>
@@ -527,7 +527,7 @@ const PhantomBacktester: React.FC = () => {
                             max={2025}
                             value={pos.year}
                             onChange={(e) => updatePosition(pos.player, { year: Number(e.target.value) })}
-                            className="w-20 bg-slate-800 border border-slate-600 rounded-lg px-2 py-1.5 text-xs text-white text-center focus:border-brand-lime focus:outline-none"
+                            className="w-20 bg-slate-800 border border-slate-600 rounded-lg px-2 py-1.5 text-xs text-white text-center focus:border-brand-lime focus:outline-hidden"
                           />
                         </div>
                         <button
@@ -719,7 +719,7 @@ const PhantomBacktester: React.FC = () => {
               <div className="max-w-sm mx-auto">
                 <div className="h-3 bg-slate-900 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-brand-lime to-emerald-400 rounded-full transition-all duration-300"
+                    className="h-full bg-linear-to-r from-brand-lime to-emerald-400 rounded-full transition-all duration-300"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -785,8 +785,8 @@ const PhantomBacktester: React.FC = () => {
                     Equity Curve vs Benchmark
                   </h3>
                   <div className="flex items-center gap-3 text-xs">
-                    <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-brand-lime rounded" /> Portfolio</span>
-                    <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-slate-500 rounded" /> Benchmark</span>
+                    <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-brand-lime rounded-sm" /> Portfolio</span>
+                    <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-slate-500 rounded-sm" /> Benchmark</span>
                   </div>
                 </div>
                 <div className="h-72 md:h-80">
@@ -953,7 +953,7 @@ const PhantomBacktester: React.FC = () => {
                     max={24}
                     value={whatIfMonths}
                     onChange={(e) => setWhatIfMonths(Number(e.target.value))}
-                    className="w-20 bg-slate-900 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white text-center focus:border-brand-lime focus:outline-none"
+                    className="w-20 bg-slate-900 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white text-center focus:border-brand-lime focus:outline-hidden"
                   />
                   <span className="text-sm text-slate-300">months earlier</span>
                   <button

@@ -197,7 +197,7 @@ const CounterpartyFingerprint: React.FC = () => {
                       <p className="text-slate-500 text-[10px] uppercase mb-1">Avoid These Actions</p>
                       <div className="flex flex-wrap gap-1">
                         {selectedIntel.avoidActions.map((a, i) => (
-                          <span key={i} className="px-2 py-1 rounded bg-red-500/10 text-red-400 border border-red-500/30 text-[10px]">{a}</span>
+                          <span key={i} className="px-2 py-1 rounded-sm bg-red-500/10 text-red-400 border border-red-500/30 text-[10px]">{a}</span>
                         ))}
                       </div>
                     </div>

@@ -498,7 +498,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
     <div className="flex h-screen overflow-hidden bg-brand-charcoal text-slate-100 font-sans selection:bg-brand-lime/30 luminous-container">
       <a
         href="#main-content"
-        className="absolute left-[-9999px] w-px h-px overflow-hidden focus:left-4 focus:top-4 focus:z-[100] focus:w-auto focus:h-auto focus:overflow-visible focus:px-4 focus:py-2 focus:bg-brand-lime focus:text-brand-charcoal focus:font-bold focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
+        className="absolute left-[-9999px] w-px h-px overflow-hidden focus:left-4 focus:top-4 focus:z-100 focus:w-auto focus:h-auto focus:overflow-visible focus:px-4 focus:py-2 focus:bg-brand-lime focus:text-brand-charcoal focus:font-bold focus:rounded-lg focus:outline-hidden focus:ring-2 focus:ring-white"
       >
         Skip to main content
       </a>

@@ -279,7 +279,7 @@ const MLBStats: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-3 pl-4 pr-12 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-lime transition-all"
+                  className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-3 pl-4 pr-12 text-sm text-slate-200 focus:outline-hidden focus:ring-1 focus:ring-brand-lime transition-all"
                 />
                 <button
                   onClick={handleSearch}

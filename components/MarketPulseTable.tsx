@@ -36,10 +36,10 @@ const MarketPulseTable: React.FC<MarketPulseTableProps> = ({ items }) => {
                             const isPositive = (changePct ?? 0) >= 0;
 
                             return (
-                                <tr key={item.id} className="border-b border-slate-900/50 hover:bg-white/[0.02] transition-colors group">
+                                <tr key={item.id} className="border-b border-slate-900/50 hover:bg-white/2 transition-colors group">
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-10 bg-slate-900 rounded border border-slate-800 overflow-hidden flex-shrink-0">
+                                            <div className="w-8 h-10 bg-slate-900 rounded-sm border border-slate-800 overflow-hidden shrink-0">
                                                 {item.image ? (
                                                     <img src={item.image} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" />
                                                 ) : (
@@ -53,7 +53,7 @@ const MarketPulseTable: React.FC<MarketPulseTableProps> = ({ items }) => {
                                         </div>
                                     </td>
                                     <td className="px-4 py-3">
-                                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${item.isGraded ? 'bg-brand-blue/10 text-brand-blue' : 'bg-slate-800 text-slate-500'}`}>
+                                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-sm ${item.isGraded ? 'bg-brand-blue/10 text-brand-blue' : 'bg-slate-800 text-slate-500'}`}>
                                             {item.isGraded ? `${item.gradingCompany} ${item.grade}` : 'RAW'}
                                         </span>
                                     </td>

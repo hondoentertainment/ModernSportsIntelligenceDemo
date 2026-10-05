@@ -54,12 +54,12 @@ const PwaUpdateBanner: React.FC = () => {
       aria-live="polite"
     >
       <div className="flex items-center gap-2 min-w-0">
-        <Sparkles size={18} className="text-brand-lime flex-shrink-0" aria-hidden />
+        <Sparkles size={18} className="text-brand-lime shrink-0" aria-hidden />
         <p className="text-sm font-medium truncate">
           A new version of the app is ready. Reload to get the latest fixes and features.
         </p>
       </div>
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
         <button
           type="button"
           onClick={applyUpdate}

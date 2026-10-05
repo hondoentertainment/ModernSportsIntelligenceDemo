@@ -89,7 +89,7 @@ const OpportunityCostPhantom: React.FC = () => {
         </div>
 
         {/* Real vs Phantom Comparison */}
-        <div className="bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-800/50 rounded-xl border border-slate-800 p-6">
+        <div className="bg-linear-to-r from-slate-900 via-slate-900/95 to-slate-800/50 rounded-xl border border-slate-800 p-6">
           <h3 className="text-white font-semibold text-sm mb-4 flex items-center gap-2">
             <BarChart3 size={16} className="text-purple-400" />
             Real Portfolio vs Phantom Portfolio
@@ -182,7 +182,7 @@ const OpportunityCostPhantom: React.FC = () => {
                       <div>
                         <h4 className="text-white font-semibold text-sm">{acq.cardName}</h4>
                         <div className="flex items-center gap-2 text-xs text-slate-500">
-                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${getReasonColor(acq.reason)}`}>
+                          <span className={`px-1.5 py-0.5 rounded-sm text-[10px] font-bold ${getReasonColor(acq.reason)}`}>
                             {getReasonLabel(acq.reason)}
                           </span>
                           <span>{getActionLabel(acq.action)}</span>

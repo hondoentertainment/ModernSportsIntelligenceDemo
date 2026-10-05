@@ -78,7 +78,7 @@ const PriceLevelIndicator: React.FC<{ level: Booth['priceLevel'] }> = ({ level }
   };
   const c = config[level];
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${c.color} ${c.bg}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-bold ${c.color} ${c.bg}`}>
       {c.label}
     </span>
   );
@@ -147,7 +147,7 @@ const ShowMapTab: React.FC<{ showMap: ShowMap; onSelectBooth: (b: Booth) => void
             (spec) => (
               <div key={spec} className="flex items-center gap-1.5">
                 <div
-                  className="w-3 h-3 rounded-sm"
+                  className="w-3 h-3 rounded-xs"
                   style={{ backgroundColor: getSpecialtyColor(spec) }}
                 />
                 <span className="text-xs text-slate-400">{spec}</span>
@@ -240,7 +240,7 @@ const ShowMapTab: React.FC<{ showMap: ShowMap; onSelectBooth: (b: Booth) => void
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span
-                  className="inline-block w-3 h-3 rounded-sm"
+                  className="inline-block w-3 h-3 rounded-xs"
                   style={{ backgroundColor: getSpecialtyColor(selectedBooth.specialty) }}
                 />
                 <h3 className="text-lg font-bold text-slate-100">
@@ -278,7 +278,7 @@ const ShowMapTab: React.FC<{ showMap: ShowMap; onSelectBooth: (b: Booth) => void
             <div className="space-y-1">
               {selectedBooth.inventoryHighlights.map((h, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
-                  <ChevronRight className="w-3 h-3 text-lime-400 flex-shrink-0" />
+                  <ChevronRight className="w-3 h-3 text-lime-400 shrink-0" />
                   {h}
                 </div>
               ))}
@@ -348,14 +348,14 @@ const BoothDirectoryTab: React.FC<{ booths: Booth[] }> = ({ booths }) => {
               placeholder="Search dealers, cards, specialties..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
+              className="w-full pl-10 pr-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-lime-400/50"
             />
           </div>
           <div className="flex gap-2">
             <select
               value={specialtyFilter}
               onChange={(e) => setSpecialtyFilter(e.target.value)}
-              className="px-3 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-sm text-slate-300 focus:outline-none focus:border-lime-400/50"
+              className="px-3 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-sm text-slate-300 focus:outline-hidden focus:border-lime-400/50"
             >
               {specialties.map((s) => (
                 <option key={s} value={s}>
@@ -366,7 +366,7 @@ const BoothDirectoryTab: React.FC<{ booths: Booth[] }> = ({ booths }) => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'rating' | 'deals' | 'name')}
-              className="px-3 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-sm text-slate-300 focus:outline-none focus:border-lime-400/50"
+              className="px-3 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-sm text-slate-300 focus:outline-hidden focus:border-lime-400/50"
             >
               <option value="rating">Sort: Rating</option>
               <option value="deals">Sort: Deal Score</option>
@@ -419,7 +419,7 @@ const BoothDirectoryTab: React.FC<{ booths: Booth[] }> = ({ booths }) => {
               <div className="flex items-center gap-2">
                 <PriceLevelIndicator level={booth.priceLevel} />
                 {booth.dealer.acceptsOffers && (
-                  <span className="text-[10px] px-1.5 py-0.5 bg-emerald-400/10 text-emerald-400 rounded font-medium">
+                  <span className="text-[10px] px-1.5 py-0.5 bg-emerald-400/10 text-emerald-400 rounded-sm font-medium">
                     OFFERS OK
                   </span>
                 )}
@@ -440,7 +440,7 @@ const BoothDirectoryTab: React.FC<{ booths: Booth[] }> = ({ booths }) => {
             <div className="space-y-1 mb-2">
               {booth.inventoryHighlights.map((h, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
-                  <ChevronRight className="w-3 h-3 text-lime-400 flex-shrink-0" />
+                  <ChevronRight className="w-3 h-3 text-lime-400 shrink-0" />
                   {h}
                 </div>
               ))}
@@ -492,7 +492,7 @@ const PriceSightingsTab: React.FC<{ sightings: PriceSighting[] }> = ({ sightings
               placeholder="Search sightings..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
+              className="w-full pl-10 pr-4 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-lime-400/50"
             />
           </div>
           <div className="flex gap-2">
@@ -688,7 +688,7 @@ const RoutePlannerTab: React.FC<{ showId: string }> = ({ showId }) => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleCustomAdd()}
-            className="flex-1 px-3 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-lime-400/50"
+            className="flex-1 px-3 py-2 bg-slate-900/60 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-lime-400/50"
           />
           <button
             onClick={handleCustomAdd}
@@ -820,7 +820,7 @@ const DealAlertsTab: React.FC<{ alerts: DealAlert[] }> = ({ alerts }) => {
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold ${typeColor}`}
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-bold ${typeColor}`}
                     style={{
                       backgroundColor:
                         alert.alertType === 'price_drop'
@@ -958,7 +958,7 @@ const CardShowGps: React.FC = () => {
                 <div className="flex items-center justify-between mb-1">
                   <h3 className="text-sm font-semibold text-slate-200 truncate pr-2">{show.name}</h3>
                   {show.isActive && (
-                    <span className="flex-shrink-0 px-1.5 py-0.5 bg-lime-400/20 text-lime-400 rounded text-[10px] font-bold">
+                    <span className="shrink-0 px-1.5 py-0.5 bg-lime-400/20 text-lime-400 rounded-sm text-[10px] font-bold">
                       LIVE
                     </span>
                   )}

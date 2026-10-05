@@ -73,7 +73,7 @@ const GradeAuditWidget: React.FC<GradeAuditWidgetProps> = ({ inventory, onCardCl
                   onClick={() => onCardClick(candidate.card)}
                   className="w-full flex items-center gap-4 p-4 bg-brand-charcoal/30 border border-slate-800/30 rounded-2xl hover:bg-brand-charcoal/60 hover:border-slate-700 transition-all text-left group/row"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-brand-charcoal border border-slate-800 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-brand-charcoal border border-slate-800 flex items-center justify-center shrink-0">
                     <Award size={16} className="text-brand-lime" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -84,7 +84,7 @@ const GradeAuditWidget: React.FC<GradeAuditWidgetProps> = ({ inventory, onCardCl
                       {candidate.card.year} {candidate.card.manufacturer} — {candidate.predictedGrade}
                     </p>
                   </div>
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-right shrink-0">
                     <p className={`text-xs font-mono font-black ${candidate.expectedValueGain >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
                       {candidate.expectedValueGain >= 0 ? '+' : ''}${candidate.expectedValueGain.toLocaleString()}
                     </p>
@@ -92,7 +92,7 @@ const GradeAuditWidget: React.FC<GradeAuditWidgetProps> = ({ inventory, onCardCl
                       {candidate.recommendation === 'Grade Now' ? 'Grade Now' : candidate.recommendation === 'Hold - Not Worth Grading' ? 'Hold' : 'Re-examine'}
                     </p>
                   </div>
-                  <TrendingUp size={14} className="text-brand-muted group-hover/row:text-brand-lime transition-colors flex-shrink-0" />
+                  <TrendingUp size={14} className="text-brand-muted group-hover/row:text-brand-lime transition-colors shrink-0" />
                 </button>
               );
             })}

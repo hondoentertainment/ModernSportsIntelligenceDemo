@@ -115,7 +115,7 @@ const ForgeryEvolution: React.FC = () => {
                 alert.threatLevel === 'moderate' ? 'border-amber-500/50' : 'border-slate-800'
               }`}>
                 <div className="flex items-start gap-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                     alert.threatLevel === 'critical' ? 'bg-red-500/20' : 'bg-amber-500/20'
                   }`}>
                     <AlertTriangle size={18} className={getThreatColor(alert.threatLevel)} />
@@ -135,7 +135,7 @@ const ForgeryEvolution: React.FC = () => {
                     <p className="text-slate-400 text-xs mb-2">{alert.description}</p>
                     <div className="flex flex-wrap gap-1 mb-2">
                       {alert.affectedCards.map((c, i) => (
-                        <span key={i} className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">{c}</span>
+                        <span key={i} className="px-2 py-0.5 rounded-sm bg-slate-800 text-slate-300 text-[10px]">{c}</span>
                       ))}
                     </div>
                     <p className="text-green-400 text-xs font-medium">
@@ -200,7 +200,7 @@ const ForgeryEvolution: React.FC = () => {
 
                   <div className="flex flex-wrap gap-1">
                     {vector.regions.map((r, i) => (
-                      <span key={i} className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]">
+                      <span key={i} className="px-1.5 py-0.5 rounded-sm bg-slate-800 text-slate-400 text-[10px]">
                         <Globe size={10} className="inline mr-0.5" />{r}
                       </span>
                     ))}
@@ -214,7 +214,7 @@ const ForgeryEvolution: React.FC = () => {
                         <h4 className="text-red-400 font-semibold text-xs uppercase tracking-wide mb-2">Targeted Cards</h4>
                         <div className="space-y-1">
                           {vector.targetedCards.map((c, i) => (
-                            <div key={i} className="flex items-center justify-between bg-slate-800/50 rounded px-3 py-1.5">
+                            <div key={i} className="flex items-center justify-between bg-slate-800/50 rounded-sm px-3 py-1.5">
                               <span className="text-white text-xs">{c.name}</span>
                               <span className="text-red-400 text-xs font-bold">{c.estimatedFakeRate}% fake rate</span>
                             </div>

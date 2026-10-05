@@ -211,7 +211,7 @@ const GradingVisionEngine: React.FC = () => {
         {/* Animated scan line overlay when dragging */}
         {dragActive && (
           <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
-            <div className="absolute w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-pulse top-1/2" />
+            <div className="absolute w-full h-0.5 bg-linear-to-r from-transparent via-cyan-400 to-transparent animate-pulse top-1/2" />
           </div>
         )}
       </div>
@@ -220,7 +220,7 @@ const GradingVisionEngine: React.FC = () => {
       <div className="text-center">
         <button
           onClick={handleDemoAnalysis}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40"
         >
           <Zap size={18} />
           Run Demo Analysis
@@ -299,12 +299,12 @@ const GradingVisionEngine: React.FC = () => {
       {/* Scanning Animation */}
       <div className="relative w-64 h-80 bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
         {/* Simulated card placeholder */}
-        <div className="absolute inset-4 bg-gradient-to-br from-slate-700 to-slate-800 rounded-lg flex items-center justify-center">
+        <div className="absolute inset-4 bg-linear-to-br from-slate-700 to-slate-800 rounded-lg flex items-center justify-center">
           <Camera size={48} className="text-slate-600" />
         </div>
         {/* Scan line animation */}
         <div
-          className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-lg shadow-cyan-400/50"
+          className="absolute left-0 right-0 h-1 bg-linear-to-r from-transparent via-cyan-400 to-transparent shadow-lg shadow-cyan-400/50"
           style={{
             top: `${(analysisProgress % 100)}%`,
             transition: 'top 0.1s linear',
@@ -332,7 +332,7 @@ const GradingVisionEngine: React.FC = () => {
       <div className="w-80 space-y-2">
         <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-200"
+            className="h-full bg-linear-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-200"
             style={{ width: `${analysisProgress}%` }}
           />
         </div>
@@ -555,7 +555,7 @@ const GradingVisionEngine: React.FC = () => {
               </div>
               <div className="h-1.5 bg-slate-700 rounded-full mb-2 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500 transition-all duration-500"
+                  className="h-full rounded-full bg-linear-to-r from-cyan-500 to-emerald-500 transition-all duration-500"
                   style={{ width: `${(sg.score / 10) * 100}%` }}
                 />
               </div>
@@ -589,9 +589,9 @@ const GradingVisionEngine: React.FC = () => {
         {/* Defect Overlay Map */}
         <div className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-6">
           <h3 className="text-sm font-semibold text-slate-200 mb-4">Defect Map — Front</h3>
-          <div className="relative w-full aspect-[2.5/3.5] bg-slate-900 rounded-lg border border-slate-700 overflow-hidden">
+          <div className="relative w-full aspect-2.5/3.5 bg-slate-900 rounded-lg border border-slate-700 overflow-hidden">
             {/* Card outline */}
-            <div className="absolute inset-4 border border-slate-600 rounded opacity-30" />
+            <div className="absolute inset-4 border border-slate-600 rounded-sm opacity-30" />
             {/* Defect markers */}
             {frontDefects.map((defect) => (
               <div
@@ -723,7 +723,7 @@ const GradingVisionEngine: React.FC = () => {
                   <span className="text-xs text-slate-400 w-16">{item.grade}</span>
                   <div className="flex-1 h-3 bg-slate-700 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full"
+                      className="h-full bg-linear-to-r from-purple-500 to-cyan-500 rounded-full"
                       style={{ width: `${item.percentage}%` }}
                     />
                   </div>
@@ -756,7 +756,7 @@ const GradingVisionEngine: React.FC = () => {
 
     return (
       <div className="space-y-6">
-        <div className="bg-gradient-to-r from-slate-800 to-slate-800/60 border border-slate-700 rounded-2xl p-6">
+        <div className="bg-linear-to-r from-slate-800 to-slate-800/60 border border-slate-700 rounded-2xl p-6">
           <h3 className="text-sm font-semibold text-slate-200 mb-4">ROI Projections by Grade Outcome</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -1033,7 +1033,7 @@ const GradingVisionEngine: React.FC = () => {
         <div className="flex gap-3">
           <button
             onClick={resetWorkflow}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-semibold rounded-xl transition-all"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-linear-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white font-semibold rounded-xl transition-all"
           >
             <Camera size={18} />
             Scan Another Card

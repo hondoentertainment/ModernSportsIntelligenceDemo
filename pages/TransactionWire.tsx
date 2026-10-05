@@ -98,7 +98,7 @@ const TopMoverCard: React.FC<{ mover: TopMover }> = ({ mover }) => {
       <div className="flex items-start justify-between mb-2">
         <div>
           <p className="text-sm font-bold text-slate-200">{mover.player}</p>
-          <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${sportBadge.bg} ${sportBadge.text}`}>
+          <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm ${sportBadge.bg} ${sportBadge.text}`}>
             {mover.sport}
           </span>
         </div>
@@ -248,14 +248,14 @@ const TransactionWire: React.FC = () => {
               placeholder="Search player..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="pl-7 pr-3 py-1.5 text-xs bg-slate-900/50 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:border-lime-500/50 w-44"
+              className="pl-7 pr-3 py-1.5 text-xs bg-slate-900/50 border border-slate-700/50 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-lime-500/50 w-44"
             />
           </div>
 
           <select
             value={sportFilter}
             onChange={e => setSportFilter(e.target.value as Sport | 'all')}
-            className="px-3 py-1.5 text-xs bg-slate-900/50 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:border-lime-500/50"
+            className="px-3 py-1.5 text-xs bg-slate-900/50 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-hidden focus:border-lime-500/50"
           >
             <option value="all">All Sports</option>
             <option value="MLB">MLB</option>
@@ -266,7 +266,7 @@ const TransactionWire: React.FC = () => {
           <select
             value={platformFilter}
             onChange={e => setPlatformFilter(e.target.value as Platform | 'all')}
-            className="px-3 py-1.5 text-xs bg-slate-900/50 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:border-lime-500/50"
+            className="px-3 py-1.5 text-xs bg-slate-900/50 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-hidden focus:border-lime-500/50"
           >
             <option value="all">All Platforms</option>
             <option value="eBay">eBay</option>
@@ -280,7 +280,7 @@ const TransactionWire: React.FC = () => {
           <select
             value={priceRange}
             onChange={e => setPriceRange(e.target.value as PriceRange)}
-            className="px-3 py-1.5 text-xs bg-slate-900/50 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-none focus:border-lime-500/50"
+            className="px-3 py-1.5 text-xs bg-slate-900/50 border border-slate-700/50 rounded-lg text-slate-200 focus:outline-hidden focus:border-lime-500/50"
           >
             {PRICE_RANGES.map(r => (
               <option key={r.value} value={r.value}>{r.label}</option>
@@ -306,12 +306,12 @@ const TransactionWire: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       {txn.isNotable && (
-                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-bold rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-bold rounded-sm bg-amber-500/20 text-amber-400 border border-amber-500/30">
                           <Zap size={8} /> NOTABLE
                         </span>
                       )}
                       <span className="text-sm font-semibold text-white">{txn.player}</span>
-                      <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${sportBadge.bg} ${sportBadge.text}`}>
+                      <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm ${sportBadge.bg} ${sportBadge.text}`}>
                         {txn.sport}
                       </span>
                       <span className={`text-[10px] font-bold ${PLATFORM_COLOR[txn.platform]}`}>
@@ -327,7 +327,7 @@ const TransactionWire: React.FC = () => {
                       <span>{formatTimeAgo(txn.timestamp)}</span>
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-right shrink-0">
                     <p className="text-base font-bold text-white">{formatPrice(txn.price)}</p>
                     <div className="flex items-center justify-end gap-1 mt-0.5">
                       {isUp ? (

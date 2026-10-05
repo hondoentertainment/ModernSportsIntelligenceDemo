@@ -184,7 +184,7 @@ const PerformanceDashboard: React.FC = () => {
         {loadTimeData.length === 0 ? (
           <p className="text-slate-500 text-sm">
             No measurements yet. Routes are measured as they are loaded lazily. Use{' '}
-            <code className="bg-slate-700 px-1 rounded">measureRouteLoad(route)</code> to
+            <code className="bg-slate-700 px-1 rounded-sm">measureRouteLoad(route)</code> to
             manually trigger a measurement.
           </p>
         ) : (

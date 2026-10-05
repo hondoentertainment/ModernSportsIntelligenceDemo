@@ -96,7 +96,7 @@ const AsyncAuctionNegotiationModal: React.FC<AsyncAuctionNegotiationModalProps> 
             const isYou = offer.from === 'you' || offer.sender === 'you' || offer.side === 'buyer';
             return (
               <div key={oIdx} className={`flex items-center gap-3 p-2 rounded-lg ${isYou ? 'bg-lime-500/10' : 'bg-slate-700/30'}`}>
-                <div className={`p-1 rounded ${isYou ? 'bg-lime-500/20' : 'bg-slate-600/30'}`}>
+                <div className={`p-1 rounded-sm ${isYou ? 'bg-lime-500/20' : 'bg-slate-600/30'}`}>
                   {isYou ? <ArrowUp size={14} className="text-lime-400" /> : <ArrowDown size={14} className="text-slate-400" />}
                 </div>
                 <div className="flex-1">
@@ -203,9 +203,9 @@ const AsyncAuctionNegotiationModal: React.FC<AsyncAuctionNegotiationModalProps> 
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-5xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
-        <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-gradient-to-r from-slate-900 via-slate-800/50 to-slate-900">
+        <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-linear-to-r from-slate-900 via-slate-800/50 to-slate-900">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-lime-500/20">
               <Gavel size={24} className="text-lime-400" />

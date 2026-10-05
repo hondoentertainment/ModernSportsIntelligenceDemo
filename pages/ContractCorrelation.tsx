@@ -364,7 +364,7 @@ const HistoricalDataTab: React.FC = () => {
             <select
               value={sportFilter}
               onChange={(e) => setSportFilter(e.target.value as Sport | 'all')}
-              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-lime-400"
+              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-hidden focus:ring-1 focus:ring-lime-400"
             >
               <option value="all">All Sports</option>
               <option value="NFL">NFL</option>
@@ -377,7 +377,7 @@ const HistoricalDataTab: React.FC = () => {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as ContractType | 'all')}
-              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-lime-400"
+              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-hidden focus:ring-1 focus:ring-lime-400"
             >
               <option value="all">All Types</option>
               <option value="rookie_extension">Rookie Extension</option>
@@ -392,7 +392,7 @@ const HistoricalDataTab: React.FC = () => {
             <select
               value={sortField}
               onChange={(e) => setSortField(e.target.value as 'date' | 'impact' | 'volume')}
-              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-lime-400"
+              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-hidden focus:ring-1 focus:ring-lime-400"
             >
               <option value="date">Date</option>
               <option value="impact">Impact</option>
@@ -741,7 +741,7 @@ const PredictionsTab: React.FC = () => {
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs text-slate-400">{pred.model}</span>
                         <span
-                          className="text-xs px-1.5 py-0.5 rounded"
+                          className="text-xs px-1.5 py-0.5 rounded-sm"
                           style={{
                             color: pred.confidence === 'high' ? '#84cc16' : pred.confidence === 'medium' ? '#fbbf24' : '#f87171',
                             backgroundColor: pred.confidence === 'high' ? '#84cc1620' : pred.confidence === 'medium' ? '#fbbf2420' : '#f8717120',
@@ -903,7 +903,7 @@ const StrategySignalsTab: React.FC = () => {
                   <div className="bg-slate-900 rounded-lg p-3">
                     <p className="text-slate-500 text-xs">Risk / Horizon</p>
                     <div className="flex items-center gap-1">
-                      <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${riskColors[sig.riskLevel].bg} ${riskColors[sig.riskLevel].text}`}>
+                      <span className={`text-xs font-medium px-1.5 py-0.5 rounded-sm ${riskColors[sig.riskLevel].bg} ${riskColors[sig.riskLevel].text}`}>
                         {sig.riskLevel.toUpperCase()}
                       </span>
                     </div>

@@ -83,7 +83,7 @@ export const HofProbabilityWidget: React.FC<HofProbabilityWidgetProps> = ({ onCl
             key={candidate.id}
             className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl"
           >
-            <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+            <div className="shrink-0 w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
               <span className="text-xs font-bebas text-amber-400">
                 {candidate.playerName
                   .split(' ')
@@ -107,7 +107,7 @@ export const HofProbabilityWidget: React.FC<HofProbabilityWidgetProps> = ({ onCl
               </div>
             </div>
 
-            <span className="flex-shrink-0 text-[10px] font-bold text-slate-500 uppercase px-1.5 py-0.5 bg-slate-700/50 rounded">
+            <span className="shrink-0 text-[10px] font-bold text-slate-500 uppercase px-1.5 py-0.5 bg-slate-700/50 rounded-sm">
               {candidate.sport}
             </span>
           </div>

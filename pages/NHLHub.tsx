@@ -383,7 +383,7 @@ const NHLHub: React.FC = () => {
                     </div>
                     <p className="text-[10px] text-slate-500 mt-0.5">{rookie.team} &bull; {rookie.position}</p>
                   </div>
-                  <div className="text-right flex-shrink-0 ml-3">
+                  <div className="text-right shrink-0 ml-3">
                     <p className="text-sm font-bold text-white">${rookie.topCardValue}</p>
                     <p className={`text-xs ${rookie.weeklyChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                       {rookie.weeklyChange >= 0 ? '+' : ''}{rookie.weeklyChange}%
@@ -523,7 +523,7 @@ const NHLHub: React.FC = () => {
           </div>
 
           {/* Stanley Cup Final */}
-          <div className="bg-gradient-to-r from-slate-800/80 to-slate-900/80 border border-amber-500/30 rounded-xl p-6 text-center">
+          <div className="bg-linear-to-r from-slate-800/80 to-slate-900/80 border border-amber-500/30 rounded-xl p-6 text-center">
             <Award size={32} className="text-amber-400 mx-auto mb-2" />
             <h3 className="text-lg font-bold text-amber-400">Stanley Cup Final</h3>
             <p className="text-sm text-slate-400 mt-1">East Champion vs West Champion</p>

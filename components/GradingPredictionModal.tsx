@@ -36,7 +36,7 @@ const GradingPredictionModal: React.FC<GradingPredictionModalProps> = ({ isOpen,
   const rawValue = card.currentValue || card.purchasePrice || 0;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-2xl bg-brand-slate border border-slate-800 rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
 
         {/* Header */}
@@ -61,7 +61,7 @@ const GradingPredictionModal: React.FC<GradingPredictionModalProps> = ({ isOpen,
 
           {/* Predicted Grade + Confidence */}
           <div className="flex items-center gap-6">
-            <div className="flex-shrink-0 w-24 h-24 rounded-2xl bg-brand-charcoal border border-slate-800 flex flex-col items-center justify-center">
+            <div className="shrink-0 w-24 h-24 rounded-2xl bg-brand-charcoal border border-slate-800 flex flex-col items-center justify-center">
               <span className="text-3xl font-bebas text-brand-lime leading-none">{prediction.predictedGrade.replace('PSA ', '')}</span>
               <span className="text-[9px] font-black text-brand-muted uppercase tracking-widest">PSA</span>
             </div>
@@ -72,7 +72,7 @@ const GradingPredictionModal: React.FC<GradingPredictionModalProps> = ({ isOpen,
               </div>
               <div className="h-2 w-full bg-brand-charcoal rounded-full overflow-hidden border border-slate-800">
                 <div
-                  className="h-full bg-gradient-to-r from-brand-lime to-brand-teal rounded-full transition-all duration-700"
+                  className="h-full bg-linear-to-r from-brand-lime to-brand-teal rounded-full transition-all duration-700"
                   style={{ width: `${prediction.gradeConfidence}%` }}
                 />
               </div>
@@ -108,10 +108,10 @@ const GradingPredictionModal: React.FC<GradingPredictionModalProps> = ({ isOpen,
             <div className="space-y-3">
               {topGrades.map((d) => (
                 <div key={d.grade} className="flex items-center gap-4">
-                  <span className="w-14 text-xs font-black text-white flex-shrink-0">{d.grade}</span>
+                  <span className="w-14 text-xs font-black text-white shrink-0">{d.grade}</span>
                   <div className="flex-1 h-6 bg-brand-charcoal/50 rounded-lg overflow-hidden border border-slate-800/30 relative">
                     <div
-                      className="h-full bg-gradient-to-r from-brand-lime/80 to-brand-teal/80 rounded-lg transition-all duration-700"
+                      className="h-full bg-linear-to-r from-brand-lime/80 to-brand-teal/80 rounded-lg transition-all duration-700"
                       style={{ width: `${(d.probability / maxProb) * 100}%` }}
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono font-black text-white/80">

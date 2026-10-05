@@ -52,7 +52,7 @@ export const ARShowcaseWidget: React.FC<ARShowcaseWidgetProps> = ({ onClick }) =
             }}
           >
             <div
-              className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-800 flex flex-col items-center justify-center p-3 transition-transform duration-500"
+              className="absolute inset-0 bg-linear-to-br from-slate-800 via-slate-700 to-slate-800 flex flex-col items-center justify-center p-3 transition-transform duration-500"
               style={{
                 transform: hoveredCard === featuredCard.id
                   ? 'rotateY(12deg) rotateX(-5deg) translateZ(20px)'
@@ -75,7 +75,7 @@ export const ARShowcaseWidget: React.FC<ARShowcaseWidgetProps> = ({ onClick }) =
               <p className="text-[10px] text-slate-400 mt-0.5">
                 {featuredCard.year} {featuredCard.set}
               </p>
-              <div className="mt-2 px-2 py-0.5 bg-brand-lime/10 border border-brand-lime/30 rounded text-[10px] font-bold text-brand-lime">
+              <div className="mt-2 px-2 py-0.5 bg-brand-lime/10 border border-brand-lime/30 rounded-sm text-[10px] font-bold text-brand-lime">
                 {featuredCard.grade}
               </div>
               <p className="text-sm font-bold text-white mt-2">

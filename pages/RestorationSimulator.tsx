@@ -163,12 +163,12 @@ const GradeSlider: React.FC<{
 
 const LoadingSkeleton: React.FC = () => (
   <div className="animate-pulse space-y-4">
-    <div className="h-8 bg-slate-700/50 rounded w-1/3" />
+    <div className="h-8 bg-slate-700/50 rounded-sm w-1/3" />
     <div className="grid grid-cols-2 gap-4">
-      <div className="h-32 bg-slate-700/50 rounded" />
-      <div className="h-32 bg-slate-700/50 rounded" />
+      <div className="h-32 bg-slate-700/50 rounded-sm" />
+      <div className="h-32 bg-slate-700/50 rounded-sm" />
     </div>
-    <div className="h-64 bg-slate-700/50 rounded" />
+    <div className="h-64 bg-slate-700/50 rounded-sm" />
   </div>
 );
 
@@ -220,7 +220,7 @@ const CardAssessmentTab: React.FC<{ card: CardCondition }> = ({ card }) => {
             <p className="text-sm text-slate-400 mt-0.5">{card.cardName} | {card.year}</p>
             <p className="text-xs text-slate-500 mt-2 max-w-lg leading-relaxed">{card.imageDescription}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <div className="text-3xl font-black text-white">{card.currentGrade}</div>
             <div className="text-xs text-slate-500 uppercase tracking-wider">Current Grade</div>
             <div className="text-lg font-bold text-emerald-400 mt-1">{formatCurrency(card.currentValue)}</div>
@@ -1042,7 +1042,7 @@ const BatchPlannerTab: React.FC<{
                     <div className="text-xs font-medium text-white truncate">{card.player}</div>
                     <div className="text-[10px] text-slate-500 truncate">{card.cardName}</div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                  <div className="flex items-center gap-2 shrink-0 ml-2">
                     <span className="text-xs font-bold text-slate-300">{card.currentGrade}</span>
                     <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
                       isSelected ? 'bg-blue-500 border-blue-500' : 'border-slate-600'
@@ -1150,7 +1150,7 @@ const BatchPlannerTab: React.FC<{
                 entry.success ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-red-500/5 border-red-500/20'
               }`}
             >
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 {entry.success
                   ? <CheckCircle className="w-4 h-4 text-emerald-400" />
                   : <XCircle className="w-4 h-4 text-red-400" />}
@@ -1166,7 +1166,7 @@ const BatchPlannerTab: React.FC<{
                   <span>{entry.techniques.join(', ')}</span>
                 </div>
               </div>
-              <div className="text-right flex-shrink-0">
+              <div className="text-right shrink-0">
                 <div className={`text-xs font-bold ${entry.roi >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {entry.roi >= 0 ? '+' : ''}{entry.roi}% ROI
                 </div>
@@ -1324,7 +1324,7 @@ const RestorationSimulator: React.FC = () => {
                       <div className="text-xs font-medium text-white truncate">{card.player}</div>
                       <div className="text-[10px] text-slate-500 truncate">{card.cardName} ({card.year})</div>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                    <div className="flex items-center gap-2 shrink-0 ml-2">
                       <span className={`text-xs font-bold ${getSubgradeColor(card.currentGrade)}`}>{card.currentGrade}</span>
                       <span className="text-[10px] text-slate-500">{formatCurrency(card.currentValue)}</span>
                     </div>

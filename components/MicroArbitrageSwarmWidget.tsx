@@ -34,11 +34,11 @@ export default function MicroArbitrageSwarmWidget({ onViewAll }: MicroArbitrageS
   if (loading) {
     return (
       <div className="bg-slate-800 rounded-lg border border-slate-700 p-4 animate-pulse">
-        <div className="h-5 w-48 bg-slate-700 rounded mb-4" />
+        <div className="h-5 w-48 bg-slate-700 rounded-sm mb-4" />
         <div className="space-y-3">
-          <div className="h-4 w-full bg-slate-700 rounded" />
-          <div className="h-4 w-3/4 bg-slate-700 rounded" />
-          <div className="h-4 w-1/2 bg-slate-700 rounded" />
+          <div className="h-4 w-full bg-slate-700 rounded-sm" />
+          <div className="h-4 w-3/4 bg-slate-700 rounded-sm" />
+          <div className="h-4 w-1/2 bg-slate-700 rounded-sm" />
         </div>
       </div>
     );

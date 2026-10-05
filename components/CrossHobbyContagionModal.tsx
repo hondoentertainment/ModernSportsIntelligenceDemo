@@ -59,7 +59,7 @@ const CrossHobbyContagionModal: React.FC<Props> = ({ isOpen, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
@@ -288,7 +288,7 @@ const CrossHobbyContagionModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
                     {/* Flow Visual */}
                     <div className="flex items-center gap-3 p-3 bg-slate-800/60 border border-slate-700/30 rounded-xl">
-                      <div className="text-center flex-shrink-0">
+                      <div className="text-center shrink-0">
                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Origin</p>
                         <p className="text-xs font-bold text-white">{sp.originHobby}</p>
                       </div>

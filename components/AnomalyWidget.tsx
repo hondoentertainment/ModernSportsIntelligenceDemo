@@ -141,7 +141,7 @@ export const AnomalyWidget: React.FC<AnomalyWidgetProps> = ({ inventory, onAnoma
                   onClick={() => onAnomalyClick?.(a)}
                   className="w-full flex items-center gap-3 p-3 bg-slate-800/30 hover:bg-slate-800/60 border border-slate-700/50 hover:border-slate-600 rounded-xl text-left transition-all group"
                 >
-                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${severityDot[a.severity]}`} />
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${severityDot[a.severity]}`} />
                   <span className="text-sm text-white font-medium truncate flex-1 group-hover:text-brand-lime transition-colors">
                     {a.player}
                   </span>
@@ -182,7 +182,7 @@ export const AnomalyWidget: React.FC<AnomalyWidgetProps> = ({ inventory, onAnoma
                 key={arb.id}
                 className="flex items-center gap-3 p-3 bg-purple-500/5 border border-purple-500/15 rounded-xl text-xs"
               >
-                <ArrowRightLeft size={14} className="text-purple-400 flex-shrink-0" />
+                <ArrowRightLeft size={14} className="text-purple-400 shrink-0" />
                 <span className="text-white font-medium truncate flex-1">{arb.player}</span>
                 <div className="flex items-center gap-2 text-slate-400">
                   <span className="font-mono text-green-400">${arb.buyPrice.toFixed(2)}</span>

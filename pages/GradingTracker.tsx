@@ -138,7 +138,7 @@ const GradingTracker: React.FC = () => {
                     <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: `${companyColor}20`, color: companyColor, border: `1px solid ${companyColor}40` }}>{getCompanyLabel(s.company)}</span>
                     <span className="text-xs text-slate-500">{getTierLabel(s.tier)}</span>
                   </div>
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${s.status === 'delivered' ? 'bg-emerald-500/20 text-emerald-400' : s.status === 'graded' || s.status === 'shipped_back' ? 'bg-blue-500/20 text-blue-400' : 'bg-amber-500/20 text-amber-400'}`}>{getStatusLabel(s.status)}</span>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-sm ${s.status === 'delivered' ? 'bg-emerald-500/20 text-emerald-400' : s.status === 'graded' || s.status === 'shipped_back' ? 'bg-blue-500/20 text-blue-400' : 'bg-amber-500/20 text-amber-400'}`}>{getStatusLabel(s.status)}</span>
                 </div>
                 <p className="text-sm font-bold text-white mb-2">{s.cardName}</p>
                 <div className="w-full h-1.5 bg-slate-700 rounded-full mb-2">

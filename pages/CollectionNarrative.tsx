@@ -108,7 +108,7 @@ const CollectionNarrative: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       {/* Hero Header */}
-      <div className="bg-gradient-to-b from-slate-900 to-slate-950 border-b border-slate-800">
+      <div className="bg-linear-to-b from-slate-900 to-slate-950 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="flex items-start justify-between">
             <div>
@@ -243,7 +243,7 @@ const CollectionNarrative: React.FC = () => {
                 >
                   <div className="flex items-center gap-3 mb-1">
                     <span
-                      className="text-xs font-bold px-2 py-0.5 rounded"
+                      className="text-xs font-bold px-2 py-0.5 rounded-sm"
                       style={{
                         backgroundColor: section.accentColor + '20',
                         color: section.accentColor,
@@ -350,7 +350,7 @@ const CollectionNarrative: React.FC = () => {
             </div>
 
             {/* Persona Card */}
-            <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-8 border border-slate-700">
+            <div className="bg-linear-to-r from-slate-900 to-slate-800 rounded-2xl p-8 border border-slate-700">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-brand-lime/20 flex items-center justify-center">
                   <Star size={24} className="text-brand-lime" />
@@ -437,14 +437,14 @@ const CollectionNarrative: React.FC = () => {
                     value={memoCardId}
                     onChange={(e) => setMemoCardId(e.target.value)}
                     placeholder="Card ID"
-                    className="bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime"
+                    className="bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime"
                   />
                   <input
                     type="text"
                     value={memoCardLabel}
                     onChange={(e) => setMemoCardLabel(e.target.value)}
                     placeholder="Card label"
-                    className="bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime"
+                    className="bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime"
                   />
                 </div>
                 <textarea
@@ -452,7 +452,7 @@ const CollectionNarrative: React.FC = () => {
                   onChange={(e) => setMemoText(e.target.value)}
                   placeholder="Why does this card matter to you? Tell its story..."
                   rows={4}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime resize-none"
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime resize-none"
                 />
                 <button
                   onClick={handleSaveMemo}

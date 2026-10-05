@@ -113,7 +113,7 @@ const OrderBookTab: React.FC = () => {
         <select
           value={selectedCardId}
           onChange={e => setSelectedCardId(e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50"
+          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-violet-500/50"
         >
           {cards.map(c => (
             <option key={c.id} value={c.id}>
@@ -196,9 +196,9 @@ const OrderBookTab: React.FC = () => {
                 <span>Price</span><span>Qty</span><span>Cum</span><span>Source</span>
               </div>
               {book.bids.map((entry, i) => (
-                <div key={i} className="relative flex justify-between px-1.5 py-1 rounded text-[11px]">
+                <div key={i} className="relative flex justify-between px-1.5 py-1 rounded-sm text-[11px]">
                   <div
-                    className="absolute inset-0 bg-emerald-500/8 rounded"
+                    className="absolute inset-0 bg-emerald-500/8 rounded-sm"
                     style={{ width: `${Math.min(100, entry.cumulative * 10)}%` }}
                   />
                   <span className="relative text-emerald-400 font-mono">${entry.price.toLocaleString()}</span>
@@ -219,9 +219,9 @@ const OrderBookTab: React.FC = () => {
                 <span>Price</span><span>Qty</span><span>Cum</span><span>Source</span>
               </div>
               {book.asks.map((entry, i) => (
-                <div key={i} className="relative flex justify-between px-1.5 py-1 rounded text-[11px]">
+                <div key={i} className="relative flex justify-between px-1.5 py-1 rounded-sm text-[11px]">
                   <div
-                    className="absolute inset-0 bg-red-500/8 rounded"
+                    className="absolute inset-0 bg-red-500/8 rounded-sm"
                     style={{ width: `${Math.min(100, entry.cumulative * 10)}%`, marginLeft: 'auto' }}
                   />
                   <span className="relative text-red-400 font-mono">${entry.price.toLocaleString()}</span>
@@ -337,7 +337,7 @@ const LiquidityTab: React.FC = () => {
             return (
               <div key={card.cardId} className="flex items-center gap-2 py-1.5 border-b border-slate-700/30 last:border-0">
                 <span className="text-xs text-white font-semibold flex-1 min-w-0 truncate">{card.player}</span>
-                <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded border ${badge.cls}`}>{badge.label}</span>
+                <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded-sm border ${badge.cls}`}>{badge.label}</span>
                 <div className="w-12 h-1.5 bg-slate-700 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full ${card.score >= 70 ? 'bg-emerald-500' : card.score >= 40 ? 'bg-amber-500' : 'bg-red-500'}`}
@@ -389,7 +389,7 @@ const PricingOracleTab: React.FC = () => {
         <select
           value={selectedCardId}
           onChange={e => setSelectedCardId(e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50"
+          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-violet-500/50"
         >
           {cards.map(c => (
             <option key={c.id} value={c.id}>
@@ -588,7 +588,7 @@ const SpreadAlertsTab: React.FC = () => {
                     <p className="text-xs text-slate-400">{alert.cardDescription}</p>
                     <p className="text-xs text-slate-500 mt-1">{alert.reason}</p>
                   </div>
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-right shrink-0">
                     <p className="text-xs text-slate-400">
                       {alert.previousSpread.toFixed(1)}% → {alert.currentSpread.toFixed(1)}%
                     </p>
@@ -738,12 +738,12 @@ const PredictiveMarketMakerModal: React.FC<PredictiveMarketMakerModalProps> = ({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[90]"
+        className="fixed inset-0 bg-black/70 backdrop-blur-xs z-90"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="fixed inset-4 sm:inset-8 lg:inset-12 bg-slate-900 border border-slate-700 rounded-2xl z-[100] flex flex-col overflow-hidden shadow-2xl">
+      <div className="fixed inset-4 sm:inset-8 lg:inset-12 bg-slate-900 border border-slate-700 rounded-2xl z-100 flex flex-col overflow-hidden shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50">
           <div className="flex items-center gap-3">

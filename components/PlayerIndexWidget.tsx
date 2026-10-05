@@ -38,7 +38,7 @@ const MiniSparkline: React.FC<{ data: number[]; color: string; width?: number; h
     .join(' ');
 
   return (
-    <svg width={width} height={height} className="flex-shrink-0">
+    <svg width={width} height={height} className="shrink-0">
       <polyline
         points={points}
         fill="none"
@@ -181,7 +181,7 @@ export const PlayerIndexWidget: React.FC<PlayerIndexWidgetProps> = ({ cards, onC
       <div className="flex items-start gap-6">
         {/* Pie chart */}
         {playerExposure.length > 0 && (
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <div className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-2">
               Top Exposure
             </div>

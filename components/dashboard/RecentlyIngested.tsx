@@ -40,14 +40,14 @@ const RecentlyIngested: React.FC<RecentlyIngestedProps> = ({ inventory }) => {
           return (
             <div
               key={card.id}
-              className={`group bg-brand-slate border ${styles.border} rounded-[2rem] p-6 hover:shadow-xl transition-all flex items-center gap-6 relative overflow-hidden`}
+              className={`group bg-brand-slate border ${styles.border} rounded-4xl p-6 hover:shadow-xl transition-all flex items-center gap-6 relative overflow-hidden`}
             >
               <div
-                className={`absolute inset-0 bg-gradient-to-r ${styles.glow || 'from-transparent'} via-transparent to-transparent opacity-30`}
+                className={`absolute inset-0 bg-linear-to-r ${styles.glow || 'from-transparent'} via-transparent to-transparent opacity-30`}
               ></div>
 
               <div
-                className={`w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden border-2 border-slate-800 ${styles.border !== 'border-slate-800' ? styles.border : ''} transition-colors relative z-10`}
+                className={`w-24 h-24 shrink-0 rounded-2xl overflow-hidden border-2 border-slate-800 ${styles.border !== 'border-slate-800' ? styles.border : ''} transition-colors relative z-10`}
               >
                 <CardImage
                   src={card.image}

@@ -345,7 +345,7 @@ const CardWeather: React.FC = () => {
       </div>
 
       {/* Hero Weather Display */}
-      <div className="bg-gradient-to-br from-slate-800 via-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-8">
+      <div className="bg-linear-to-br from-slate-800 via-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left: Main Weather */}
           <div className="lg:col-span-1 flex flex-col items-center justify-center text-center space-y-4">
@@ -502,11 +502,11 @@ const CardWeather: React.FC = () => {
           <div className="flex items-center justify-between mt-4 text-[10px] text-slate-500">
             <span>Cool (Low Activity)</span>
             <div className="flex gap-1">
-              <div className="w-6 h-2 rounded bg-blue-500/30" />
-              <div className="w-6 h-2 rounded bg-sky-500/30" />
-              <div className="w-6 h-2 rounded bg-yellow-500/30" />
-              <div className="w-6 h-2 rounded bg-orange-500/30" />
-              <div className="w-6 h-2 rounded bg-red-500/30" />
+              <div className="w-6 h-2 rounded-sm bg-blue-500/30" />
+              <div className="w-6 h-2 rounded-sm bg-sky-500/30" />
+              <div className="w-6 h-2 rounded-sm bg-yellow-500/30" />
+              <div className="w-6 h-2 rounded-sm bg-orange-500/30" />
+              <div className="w-6 h-2 rounded-sm bg-red-500/30" />
             </div>
             <span>Hot (High Activity)</span>
           </div>
@@ -713,7 +713,7 @@ const CardWeather: React.FC = () => {
                       {Array.from({ length: 10 }, (_, i) => (
                         <div
                           key={i}
-                          className={`w-1.5 h-3 rounded-sm ${
+                          className={`w-1.5 h-3 rounded-xs ${
                             i < ps.strength
                               ? ps.type === 'high'
                                 ? 'bg-emerald-400'

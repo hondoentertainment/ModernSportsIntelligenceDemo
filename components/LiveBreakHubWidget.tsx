@@ -92,7 +92,7 @@ const LiveBreakHubWidget: React.FC<LiveBreakHubWidgetProps> = ({ onOpenModal }) 
                 {(() => {
                   const pc = getPlatformConfig(hottestBreak.platform);
                   return (
-                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${pc.bg} ${pc.text} ${pc.border}`}>
+                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${pc.bg} ${pc.text} ${pc.border}`}>
                       {pc.label}
                     </span>
                   );
@@ -100,7 +100,7 @@ const LiveBreakHubWidget: React.FC<LiveBreakHubWidgetProps> = ({ onOpenModal }) 
                 {(() => {
                   const fc = getFormatConfig(hottestBreak.format);
                   return (
-                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${fc.bg} ${fc.text} ${fc.border}`}>
+                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${fc.bg} ${fc.text} ${fc.border}`}>
                       {fc.label}
                     </span>
                   );
@@ -109,14 +109,14 @@ const LiveBreakHubWidget: React.FC<LiveBreakHubWidgetProps> = ({ onOpenModal }) 
               </div>
             </div>
 
-            <div className="flex flex-col items-end gap-1 flex-shrink-0">
+            <div className="flex flex-col items-end gap-1 shrink-0">
               <span className="text-sm font-bold text-white flex items-center gap-1">
                 <Eye className="w-3 h-3 text-red-400" /> {hottestBreak.viewerCount.toLocaleString()}
               </span>
               <span className="text-[10px] text-slate-500">viewers</span>
             </div>
 
-            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0" />
+            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
           </button>
         </div>
       )}

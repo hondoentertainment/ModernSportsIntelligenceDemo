@@ -315,14 +315,14 @@ const YouthOnboarding: React.FC = () => {
                   {sc.cards.slice(0, 4).map((card, idx) => (
                     <div key={idx} className="flex items-center justify-between text-[10px]">
                       <span className="text-slate-400 truncate mr-2">{card.name}</span>
-                      <span className="text-slate-300 flex-shrink-0">${card.estimatedPrice}</span>
+                      <span className="text-slate-300 shrink-0">${card.estimatedPrice}</span>
                     </div>
                   ))}
                   {sc.cards.length > 4 && <p className="text-[10px] text-slate-600">+{sc.cards.length - 4} more items</p>}
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {sc.tips.slice(0, 2).map((tip, idx) => (
-                    <span key={idx} className="text-[9px] px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-400">{tip}</span>
+                    <span key={idx} className="text-[9px] px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded-sm text-slate-400">{tip}</span>
                   ))}
                 </div>
               </div>
@@ -340,7 +340,7 @@ const YouthOnboarding: React.FC = () => {
         <div className="flex gap-1 flex-wrap mb-4">
           <button
             onClick={() => setSelectedLetter(null)}
-            className={`px-2 py-1 text-[10px] rounded border transition-colors ${!selectedLetter ? 'bg-brand-lime/10 border-brand-lime/50 text-brand-lime' : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'}`}
+            className={`px-2 py-1 text-[10px] rounded-sm border transition-colors ${!selectedLetter ? 'bg-brand-lime/10 border-brand-lime/50 text-brand-lime' : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white'}`}
           >
             All
           </button>
@@ -373,7 +373,7 @@ const YouthOnboarding: React.FC = () => {
               {term.example && <p className="text-[10px] text-slate-500 italic">&ldquo;{term.example}&rdquo;</p>}
               <div className="flex gap-1 mt-1 flex-wrap">
                 {term.relatedTerms.map(rt => (
-                  <span key={rt} className="text-[9px] px-1 py-0.5 bg-slate-800 rounded text-slate-500">{rt}</span>
+                  <span key={rt} className="text-[9px] px-1 py-0.5 bg-slate-800 rounded-sm text-slate-500">{rt}</span>
                 ))}
               </div>
             </div>
@@ -406,7 +406,7 @@ const YouthOnboarding: React.FC = () => {
               <p className="text-[10px] text-slate-500 mb-2 line-clamp-2">{mentor.bio}</p>
               <div className="flex flex-wrap gap-1 mb-2">
                 {mentor.specialties.map(sp => (
-                  <span key={sp} className="text-[9px] px-1.5 py-0.5 bg-purple-500/10 border border-purple-500/20 rounded text-purple-400">{sp}</span>
+                  <span key={sp} className="text-[9px] px-1.5 py-0.5 bg-purple-500/10 border border-purple-500/20 rounded-sm text-purple-400">{sp}</span>
                 ))}
               </div>
               <div className="flex items-center justify-between text-[10px]">
@@ -505,7 +505,7 @@ const YouthOnboarding: React.FC = () => {
                 <div className="space-y-1">
                   {ch.tasks.map((task, idx) => (
                     <div key={idx} className="flex items-center gap-1.5 text-[10px] text-slate-400">
-                      <div className="w-3 h-3 border border-slate-600 rounded-sm flex-shrink-0" />
+                      <div className="w-3 h-3 border border-slate-600 rounded-xs shrink-0" />
                       {task}
                     </div>
                   ))}
@@ -528,7 +528,7 @@ const YouthOnboarding: React.FC = () => {
           <div className="space-y-4">
             {milestones.map(ms => (
               <div key={ms.id} className="flex items-start gap-4 relative">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 z-10 ${ms.completed ? 'bg-emerald-500/20 border-2 border-emerald-500' : 'bg-slate-800 border-2 border-slate-600'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 z-10 ${ms.completed ? 'bg-emerald-500/20 border-2 border-emerald-500' : 'bg-slate-800 border-2 border-slate-600'}`}>
                   {ms.completed ? <Star size={12} className="text-emerald-400 fill-emerald-400" /> : <span className="text-[10px] text-slate-500">{ms.order}</span>}
                 </div>
                 <div className={`flex-1 bg-slate-900/50 border rounded-xl p-3 ${ms.completed ? 'border-emerald-500/30' : 'border-slate-700/30'}`}>

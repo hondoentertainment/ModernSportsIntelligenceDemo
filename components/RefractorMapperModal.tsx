@@ -159,7 +159,7 @@ const RefractorMapperModal: React.FC<RefractorMapperModalProps> = ({ isOpen, onC
 
   const renderLightSignatures = () => (
     <div className="space-y-4">
-      <div className="bg-gradient-to-r from-violet-500/5 via-cyan-500/5 to-emerald-500/5 border border-slate-700/50 rounded-xl p-4 mb-4">
+      <div className="bg-linear-to-r from-violet-500/5 via-cyan-500/5 to-emerald-500/5 border border-slate-700/50 rounded-xl p-4 mb-4">
         <div className="flex items-center gap-2 mb-2">
           <Fingerprint size={16} className="text-violet-400" />
           <h3 className="text-sm font-bold text-white">Light Signature Fingerprinting</h3>
@@ -445,7 +445,7 @@ const RefractorMapperModal: React.FC<RefractorMapperModalProps> = ({ isOpen, onC
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-6xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
         {/* Header */}
         <div className="p-6 border-b border-slate-700/50 flex items-center justify-between">
@@ -455,13 +455,13 @@ const RefractorMapperModal: React.FC<RefractorMapperModalProps> = ({ isOpen, onC
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-gradient-to-r from-violet-500/10 via-cyan-500/10 to-emerald-500/10 text-cyan-400 border border-cyan-500/30">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-linear-to-r from-violet-500/10 via-cyan-500/10 to-emerald-500/10 text-cyan-400 border border-cyan-500/30">
                   <Scan size={10} />
                   Prismatic Analysis
                 </span>
               </div>
               <h2 className="text-2xl font-bold tracking-wide text-white">
-                Refractor <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Mapper</span>
+                Refractor <span className="bg-linear-to-r from-violet-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Mapper</span>
               </h2>
             </div>
           </div>

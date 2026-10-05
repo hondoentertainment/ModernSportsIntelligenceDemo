@@ -179,7 +179,7 @@ const HofProbability: React.FC = () => {
               {/* Stats */}
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {Object.entries(candidate.careerStats).slice(0, 3).map(([key, val]) => (
-                  <span key={key} className="text-[10px] px-2 py-0.5 bg-slate-700/60 rounded text-slate-300">
+                  <span key={key} className="text-[10px] px-2 py-0.5 bg-slate-700/60 rounded-sm text-slate-300">
                     {key}: <span className="text-white font-bold">{typeof val === 'number' && val < 1 ? val.toFixed(3) : val}</span>
                   </span>
                 ))}

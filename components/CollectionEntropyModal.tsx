@@ -55,7 +55,7 @@ const CollectionEntropyModal: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
@@ -132,7 +132,7 @@ const CollectionEntropyModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 <div className="space-y-3">
                   {score.breakdown.map((b) => (
                     <div key={b.category} className="flex items-center gap-4">
-                      <span className="text-sm text-slate-300 w-40 flex-shrink-0">{b.category}</span>
+                      <span className="text-sm text-slate-300 w-40 shrink-0">{b.category}</span>
                       <div className="flex-1 flex items-center gap-2">
                         <div className="flex-1 bg-slate-700 rounded-full h-3 relative">
                           <div className="bg-indigo-500 h-3 rounded-full" style={{ width: `${b.allocation}%` }} />
@@ -161,7 +161,7 @@ const CollectionEntropyModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 <div key={p.id} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium capitalize ${getTypeColor(p.type)}`}>
+                      <span className={`flex items-center gap-1 px-2 py-1 rounded-sm text-xs font-medium capitalize ${getTypeColor(p.type)}`}>
                         {getTypeIcon(p.type)}
                         {p.type}
                       </span>

@@ -94,7 +94,7 @@ const GradingBatchPlannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs">
       <div className="bg-brand-charcoal border border-slate-700 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-700/50">
@@ -173,7 +173,7 @@ const GradingBatchPlannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   <div key={card.id} className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium flex items-center gap-1 ${pc.color}`}>
+                        <span className={`px-2 py-0.5 rounded-sm text-[10px] font-medium flex items-center gap-1 ${pc.color}`}>
                           {pc.icon} {pc.label}
                         </span>
                         <h4 className="text-sm font-semibold text-slate-200">{card.cardName}</h4>
@@ -270,7 +270,7 @@ const GradingBatchPlannerModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
                         <span className="text-sm font-semibold text-slate-200">{h.company} — {h.tier}</span>
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium flex items-center gap-1 ${sc.color}`}>
+                        <span className={`px-2 py-0.5 rounded-sm text-[10px] font-medium flex items-center gap-1 ${sc.color}`}>
                           {sc.icon} {h.status.replace('-', ' ').toUpperCase()}
                         </span>
                       </div>

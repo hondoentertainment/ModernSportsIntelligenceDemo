@@ -130,7 +130,7 @@ function EmergencyDashboard({ plan }: { plan: LiquidationPlan }) {
     <div className="space-y-6">
       {/* Warning Banner */}
       <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-4 flex items-start gap-3">
-        <AlertTriangle className="text-red-400 flex-shrink-0 mt-0.5" size={20} />
+        <AlertTriangle className="text-red-400 shrink-0 mt-0.5" size={20} />
         <div>
           <h3 className="text-red-400 font-semibold text-sm">Emergency Liquidation Analysis</h3>
           <p className="text-slate-400 text-sm mt-1">
@@ -278,7 +278,7 @@ function LiquidationPlanner({ urgency }: { urgency: 'immediate' | 'week' | 'mont
   return (
     <div className="space-y-6">
       <div className="rounded-xl bg-slate-800 border border-slate-700/50 p-4 flex items-start gap-3">
-        <Info className="text-lime-400 flex-shrink-0 mt-0.5" size={18} />
+        <Info className="text-lime-400 shrink-0 mt-0.5" size={18} />
         <p className="text-sm text-slate-400">
           Assets are ordered by optimal liquidation sequence. Sell high-liquidity cards first to maximize
           early cash recovery and minimize market impact on remaining holdings.
@@ -444,7 +444,7 @@ function FireSaleAnalysis() {
                   <span className="text-slate-400 text-sm">{formatCurrency(asset.marketValue)}</span>
                   <ArrowDown size={14} className="text-red-400" />
                   <span className="text-red-400 font-mono font-medium">{formatCurrency(fsv24.value)}</span>
-                  <span className="text-xs text-red-400 bg-red-500/10 px-2 py-0.5 rounded">-{pct}%</span>
+                  <span className="text-xs text-red-400 bg-red-500/10 px-2 py-0.5 rounded-sm">-{pct}%</span>
                 </div>
               </div>
             );
@@ -611,14 +611,14 @@ function RecoveryOptimizer() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h4 className="text-slate-100 font-semibold">{scenario.strategy}</h4>
-                    <span className={`text-xs px-2 py-0.5 rounded ${riskBadge(scenario.riskLevel)}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-sm ${riskBadge(scenario.riskLevel)}`}>
                       {scenario.riskLevel} risk
                     </span>
                   </div>
                   <p className="text-sm text-slate-400 mt-1">{scenario.description}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-6 flex-shrink-0">
+              <div className="flex items-center gap-6 shrink-0">
                 <div className="text-right">
                   <div className="text-lg font-bold text-lime-400">{formatCurrency(scenario.netProceeds)}</div>
                   <div className="text-xs text-slate-500">{scenario.recoveryPercent}% recovery | {scenario.timelineDays}d</div>
@@ -655,7 +655,7 @@ function RecoveryOptimizer() {
                 <ol className="space-y-2">
                   {scenario.steps.map((step, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm text-slate-400">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-300">
+                      <span className="shrink-0 w-5 h-5 rounded-full bg-slate-700 flex items-center justify-center text-xs text-slate-300">
                         {i + 1}
                       </span>
                       {step}
@@ -803,7 +803,7 @@ function CashOutGenerator({ urgency }: { urgency: 'immediate' | 'week' | 'month'
             {plan.steps.map((step) => (
               <div key={step.order} className="p-4 hover:bg-slate-700/20 transition-colors">
                 <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-lime-500/20 flex items-center justify-center">
+                  <div className="shrink-0 w-8 h-8 rounded-full bg-lime-500/20 flex items-center justify-center">
                     <span className="text-sm font-bold text-lime-400">{step.order}</span>
                   </div>
                   <div className="flex-1 min-w-0">
@@ -811,14 +811,14 @@ function CashOutGenerator({ urgency }: { urgency: 'immediate' | 'week' | 'month'
                       <div>
                         <h4 className="text-slate-100 font-medium">{step.action}</h4>
                         <div className="flex items-center gap-3 mt-1">
-                          <span className={`text-xs px-2 py-0.5 rounded border ${tierBadgeColor(step.asset.liquidityTier)}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-sm border ${tierBadgeColor(step.asset.liquidityTier)}`}>
                             Tier {step.asset.liquidityTier}
                           </span>
                           <span className="text-xs text-slate-500">via {step.channel}</span>
                           <span className="text-xs text-slate-500">~{step.estimatedDays}d to sell</span>
                         </div>
                       </div>
-                      <div className="text-right flex-shrink-0">
+                      <div className="text-right shrink-0">
                         <div className="text-lime-400 font-mono font-semibold">{formatCurrency(step.expectedProceeds)}</div>
                         <div className="text-xs text-slate-500">
                           Running: {formatCurrency(step.cumulativeRecovery)}

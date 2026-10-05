@@ -141,7 +141,7 @@ const Sparkline: React.FC<{ data: { value: number }[]; color?: string; width?: n
     })
     .join(' ');
   return (
-    <svg width={width} height={height} className="flex-shrink-0">
+    <svg width={width} height={height} className="shrink-0">
       <polyline points={points} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
     </svg>
   );
@@ -496,7 +496,7 @@ const IndexBuilder: React.FC<{
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="My Custom Index"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-brand-lime/50 focus:outline-none"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-brand-lime/50 focus:outline-hidden"
             />
           </div>
           <div>
@@ -506,7 +506,7 @@ const IndexBuilder: React.FC<{
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe your index thesis..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-brand-lime/50 focus:outline-none"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:border-brand-lime/50 focus:outline-hidden"
             />
           </div>
           <div>
@@ -514,7 +514,7 @@ const IndexBuilder: React.FC<{
             <select
               value={methodology}
               onChange={(e) => setMethodology(e.target.value as IndexMethodology)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-lime/50 focus:outline-none"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-lime/50 focus:outline-hidden"
             >
               <option value="market-cap-weighted">Market Cap Weighted</option>
               <option value="equal-weighted">Equal Weighted</option>
@@ -527,7 +527,7 @@ const IndexBuilder: React.FC<{
             <select
               value={rebalFreq}
               onChange={(e) => setRebalFreq(e.target.value as RebalanceFrequency)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-lime/50 focus:outline-none"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-brand-lime/50 focus:outline-hidden"
             >
               <option value="monthly">Monthly</option>
               <option value="quarterly">Quarterly</option>
@@ -552,7 +552,7 @@ const IndexBuilder: React.FC<{
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by player, card, or sport..."
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder:text-slate-600 focus:border-brand-lime/50 focus:outline-none"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder:text-slate-600 focus:border-brand-lime/50 focus:outline-hidden"
             />
           </div>
           <div className="space-y-1 max-h-[400px] overflow-y-auto pr-1">
@@ -570,7 +570,7 @@ const IndexBuilder: React.FC<{
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <div
-                      className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
+                      className={`w-5 h-5 rounded flex items-center justify-center shrink-0 ${
                         isSelected ? 'bg-brand-lime text-slate-900' : 'bg-slate-700 text-slate-500'
                       }`}
                     >
@@ -581,7 +581,7 @@ const IndexBuilder: React.FC<{
                       <div className="text-slate-500 text-[10px] truncate">{card.cardName}</div>
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0 ml-2">
+                  <div className="text-right shrink-0 ml-2">
                     <div className="text-slate-300">{fmt$(card.currentValue)}</div>
                     <div className="text-slate-600 text-[10px]">{card.sport}</div>
                   </div>
@@ -621,7 +621,7 @@ const IndexBuilder: React.FC<{
                     </div>
                     <button
                       onClick={() => toggleCard(card.cardId)}
-                      className="text-red-400 hover:text-red-300 flex-shrink-0 ml-2"
+                      className="text-red-400 hover:text-red-300 shrink-0 ml-2"
                     >
                       <Minus size={14} />
                     </button>
@@ -798,12 +798,12 @@ const BacktestTab: React.FC<{
                         {Array.from({ length: 12 }, (_, mi) => {
                           const monthStr = `${year}-${String(mi + 1).padStart(2, '0')}`;
                           const entry = months.find((m) => m.month === monthStr);
-                          if (!entry) return <td key={mi} className="px-1 py-0.5"><div className="w-12 h-6 bg-slate-800 rounded" /></td>;
+                          if (!entry) return <td key={mi} className="px-1 py-0.5"><div className="w-12 h-6 bg-slate-800 rounded-sm" /></td>;
                           const v = entry.return;
                           const bg = v >= 5 ? 'bg-emerald-500' : v >= 2 ? 'bg-emerald-700/80' : v >= 0 ? 'bg-green-800/50' : v >= -2 ? 'bg-red-900/50' : v >= -5 ? 'bg-red-700/70' : 'bg-red-500';
                           return (
                             <td key={mi} className="px-1 py-0.5">
-                              <div className={`w-12 h-6 ${bg} rounded flex items-center justify-center text-[10px] font-medium text-white`}>
+                              <div className={`w-12 h-6 ${bg} rounded-sm flex items-center justify-center text-[10px] font-medium text-white`}>
                                 {v.toFixed(1)}%
                               </div>
                             </td>
@@ -1200,7 +1200,7 @@ const ComparisonTab: React.FC<{
                       <td className="py-1 pr-3 text-slate-400 font-medium">{row.name.slice(0, 15)}</td>
                       {comparisonData.correlationMatrix[ri]?.map((corr, ci) => (
                         <td key={ci} className="py-1 px-1 text-center">
-                          <div className={`w-16 h-7 ${heatColor(corr)} rounded flex items-center justify-center text-[10px] font-bold text-white`}>
+                          <div className={`w-16 h-7 ${heatColor(corr)} rounded-sm flex items-center justify-center text-[10px] font-bold text-white`}>
                             {corr.toFixed(2)}
                           </div>
                         </td>

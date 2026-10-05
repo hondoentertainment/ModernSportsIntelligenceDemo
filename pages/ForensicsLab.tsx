@@ -138,7 +138,7 @@ const VerdictBadge: React.FC<{ verdict: ForensicVerdict }> = ({ verdict }) => {
 // ---- Severity Badge Component ----
 
 const SeverityBadge: React.FC<{ severity: AnomalySeverity }> = ({ severity }) => (
-  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase border ${getSeverityBg(severity)} ${getSeverityColor(severity)}`}>
+  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-[10px] font-semibold uppercase border ${getSeverityBg(severity)} ${getSeverityColor(severity)}`}>
     {severity}
   </span>
 );
@@ -326,7 +326,7 @@ const DeepScan: React.FC<{ reports: ForensicReport[]; selectedReportId: string |
         <select
           value={report.id}
           onChange={(e) => onSelectReport(e.target.value)}
-          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
         >
           {reports.map((r) => (
             <option key={r.id} value={r.id}>
@@ -355,7 +355,7 @@ const DeepScan: React.FC<{ reports: ForensicReport[]; selectedReportId: string |
               <p className="text-xs text-red-300/70 mt-1">Source: {report.knownCounterfeitMatch.source} &middot; ID: {report.knownCounterfeitMatch.knownCounterfeitId}</p>
               <div className="flex flex-wrap gap-1 mt-2">
                 {report.knownCounterfeitMatch.matchedFeatures.map((f) => (
-                  <span key={f} className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded">{f}</span>
+                  <span key={f} className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.5 rounded-sm">{f}</span>
                 ))}
               </div>
             </div>
@@ -574,7 +574,7 @@ const CounterfeitDb: React.FC<{ database: CounterfeitDatabase }> = ({ database }
               placeholder="Search counterfeits..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-slate-900 border border-slate-600 rounded-lg pl-9 pr-3 py-1.5 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64"
+              className="bg-slate-900 border border-slate-600 rounded-lg pl-9 pr-3 py-1.5 text-sm text-slate-300 placeholder-slate-600 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 w-64"
             />
           </div>
         </div>
@@ -598,7 +598,7 @@ const CounterfeitDb: React.FC<{ database: CounterfeitDatabase }> = ({ database }
               </div>
               <div className="flex flex-wrap gap-1">
                 {entry.telltaleFeatures.map((f) => (
-                  <span key={f} className="text-[10px] bg-slate-700/50 text-slate-400 px-1.5 py-0.5 rounded">{f}</span>
+                  <span key={f} className="text-[10px] bg-slate-700/50 text-slate-400 px-1.5 py-0.5 rounded-sm">{f}</span>
                 ))}
               </div>
             </div>
@@ -641,7 +641,7 @@ const ComparisonTool: React.FC<{ reports: ForensicReport[] }> = ({ reports }) =>
           <select
             value={card1Id}
             onChange={(e) => setCard1Id(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
           >
             {reports.map((r) => (
               <option key={r.id} value={r.id}>{r.id} — {r.player} ({r.verdict})</option>
@@ -662,7 +662,7 @@ const ComparisonTool: React.FC<{ reports: ForensicReport[] }> = ({ reports }) =>
           <select
             value={card2Id}
             onChange={(e) => setCard2Id(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
           >
             {reports.map((r) => (
               <option key={r.id} value={r.id}>{r.id} — {r.player} ({r.verdict})</option>
@@ -775,7 +775,7 @@ const ChainOfCustodyTab: React.FC<{ reports: ForensicReport[]; selectedReportId:
         <select
           value={report.id}
           onChange={(e) => onSelectReport(e.target.value)}
-          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
         >
           {reports.map((r) => (
             <option key={r.id} value={r.id}>{r.id} — {r.cardName}</option>
@@ -925,7 +925,7 @@ const AnomalyMap: React.FC<{ reports: ForensicReport[]; selectedReportId: string
         <select
           value={report.id}
           onChange={(e) => onSelectReport(e.target.value)}
-          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
         >
           {reports.map((r) => (
             <option key={r.id} value={r.id}>
@@ -941,9 +941,9 @@ const AnomalyMap: React.FC<{ reports: ForensicReport[]; selectedReportId: string
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-slate-300">Card Surface Anomaly Heat Map</h3>
             <div className="flex items-center gap-3 text-[10px]">
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-blue-500/50" /> Info</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-yellow-500/50" /> Warning</span>
-              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-red-500/60" /> Critical</span>
+              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-blue-500/50" /> Info</span>
+              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-yellow-500/50" /> Warning</span>
+              <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-red-500/60" /> Critical</span>
             </div>
           </div>
           <div className="flex justify-center">
@@ -954,7 +954,7 @@ const AnomalyMap: React.FC<{ reports: ForensicReport[]; selectedReportId: string
               {heatMap.map((cell, i) => (
                 <div
                   key={i}
-                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-sm border cursor-pointer transition-all hover:scale-110 ${cellColor(cell.severity)}`}
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xs border cursor-pointer transition-all hover:scale-110 ${cellColor(cell.severity)}`}
                   onMouseEnter={() => cell.severity && setHoveredCell(cell)}
                   onMouseLeave={() => setHoveredCell(null)}
                   title={cell.label || `Row ${cell.row}, Col ${cell.col} — Clear`}
@@ -1086,7 +1086,7 @@ const ForensicsLab: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
       {/* Header */}
-      <div className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-10">
+      <div className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-xs sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">

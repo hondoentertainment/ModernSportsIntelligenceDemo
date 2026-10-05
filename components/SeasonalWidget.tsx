@@ -153,9 +153,9 @@ export const SeasonalWidget: React.FC<SeasonalWidgetProps> = ({ cards, onClick }
                 }`}
               >
                 {w.type === 'buy' ? (
-                  <ShoppingCart size={14} className="text-green-400 flex-shrink-0" />
+                  <ShoppingCart size={14} className="text-green-400 shrink-0" />
                 ) : (
-                  <DollarSign size={14} className="text-amber-400 flex-shrink-0" />
+                  <DollarSign size={14} className="text-amber-400 shrink-0" />
                 )}
                 <span className="text-white font-medium truncate flex-1">{w.sport}: {w.label}</span>
                 <span className={`font-mono font-bold ${w.type === 'buy' ? 'text-green-400' : 'text-amber-400'}`}>
@@ -170,7 +170,7 @@ export const SeasonalWidget: React.FC<SeasonalWidgetProps> = ({ cards, onClick }
       {/* Next Event */}
       {nextEvent && (
         <div className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl text-xs">
-          <Clock size={14} className="text-teal-400 flex-shrink-0" />
+          <Clock size={14} className="text-teal-400 shrink-0" />
           <span className="text-slate-400">Next:</span>
           <span className="text-white font-medium truncate flex-1">{nextEvent.label}</span>
           <span className="text-teal-400 font-mono">{nextEvent.daysUntil}d</span>

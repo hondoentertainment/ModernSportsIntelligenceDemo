@@ -124,7 +124,7 @@ const QuickOffer: React.FC<{ listing: Listing; onClose: () => void }> = ({ listi
             type="number"
             value={amount}
             onChange={e => setAmount(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-600 rounded-lg pl-8 pr-3 py-2 text-sm text-slate-200 focus:border-lime-500/50 focus:outline-none"
+            className="w-full bg-slate-800 border border-slate-600 rounded-lg pl-8 pr-3 py-2 text-sm text-slate-200 focus:border-lime-500/50 focus:outline-hidden"
           />
         </div>
       </div>
@@ -134,7 +134,7 @@ const QuickOffer: React.FC<{ listing: Listing; onClose: () => void }> = ({ listi
           value={message}
           onChange={e => setMessage(e.target.value)}
           rows={2}
-          className="w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:border-lime-500/50 focus:outline-none resize-none"
+          className="w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:border-lime-500/50 focus:outline-hidden resize-none"
           placeholder="Add a message to the seller..."
         />
       </div>
@@ -160,13 +160,13 @@ const ListingCard: React.FC<{ listing: Listing }> = ({ listing }) => {
   return (
     <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl overflow-hidden hover:border-lime-500/30 transition-all group relative">
       {/* Image placeholder */}
-      <div className="h-32 bg-gradient-to-br from-slate-700/80 to-slate-800 flex items-center justify-center relative">
+      <div className="h-32 bg-linear-to-br from-slate-700/80 to-slate-800 flex items-center justify-center relative">
         <span className="text-4xl">{SPORT_ICON[listing.sport]}</span>
-        <div className={`absolute top-2 right-2 px-1.5 py-0.5 rounded border text-[10px] font-bold ${dealBg(score)} ${dealColor(score)}`}>
+        <div className={`absolute top-2 right-2 px-1.5 py-0.5 rounded-sm border text-[10px] font-bold ${dealBg(score)} ${dealColor(score)}`}>
           Deal {score}
         </div>
         {discount > 0 && (
-          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-[10px] font-bold text-emerald-400">
+          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-sm bg-emerald-500/20 border border-emerald-500/30 text-[10px] font-bold text-emerald-400">
             {discount}% below MV
           </div>
         )}
@@ -180,8 +180,8 @@ const ListingCard: React.FC<{ listing: Listing }> = ({ listing }) => {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-300 border border-slate-600/50">{listing.grade}</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-300 border border-slate-600/50">{listing.sport}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-slate-700/60 text-slate-300 border border-slate-600/50">{listing.grade}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-slate-700/60 text-slate-300 border border-slate-600/50">{listing.sport}</span>
         </div>
 
         <div className="flex items-center justify-between">
@@ -212,7 +212,7 @@ const ListingCard: React.FC<{ listing: Listing }> = ({ listing }) => {
 
       {/* Quick Offer Overlay */}
       {showOffer && (
-        <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-sm rounded-xl z-10 flex items-center">
+        <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-xs rounded-xl z-10 flex items-center">
           <div className="w-full">
             <QuickOffer listing={listing} onClose={() => setShowOffer(false)} />
           </div>
@@ -258,7 +258,7 @@ const P2PMarketplaceModal: React.FC<P2PMarketplaceModalProps> = ({ isOpen, onClo
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
@@ -289,7 +289,7 @@ const P2PMarketplaceModal: React.FC<P2PMarketplaceModalProps> = ({ isOpen, onClo
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search players, cards, sellers..."
-                className="w-full bg-slate-800 border border-slate-600 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:border-lime-500/50 focus:outline-none"
+                className="w-full bg-slate-800 border border-slate-600 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:border-lime-500/50 focus:outline-hidden"
               />
             </div>
 
@@ -297,7 +297,7 @@ const P2PMarketplaceModal: React.FC<P2PMarketplaceModalProps> = ({ isOpen, onClo
             <select
               value={sortBy}
               onChange={e => setSortBy(e.target.value as SortOption)}
-              className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:border-lime-500/50 focus:outline-none"
+              className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:border-lime-500/50 focus:outline-hidden"
             >
               {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
@@ -320,7 +320,7 @@ const P2PMarketplaceModal: React.FC<P2PMarketplaceModalProps> = ({ isOpen, onClo
               <select
                 value={sportFilter}
                 onChange={e => setSportFilter(e.target.value as Sport | '')}
-                className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-none"
+                className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-hidden"
               >
                 <option value="">All Sports</option>
                 {SPORTS.map(s => <option key={s} value={s}>{SPORT_ICON[s]} {s}</option>)}
@@ -330,7 +330,7 @@ const P2PMarketplaceModal: React.FC<P2PMarketplaceModalProps> = ({ isOpen, onClo
               <select
                 value={gradeFilter}
                 onChange={e => setGradeFilter(e.target.value as CardGrade | '')}
-                className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-none"
+                className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-hidden"
               >
                 <option value="">All Grades</option>
                 {GRADES.map(g => <option key={g} value={g}>{g}</option>)}

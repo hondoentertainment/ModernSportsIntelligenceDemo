@@ -285,11 +285,11 @@ const DashboardFeatureWidgets: React.FC = () => {
     <div className="reveal-section animate-in slide-in-from-bottom-8 duration-700" style={{ animationDelay: '300ms' }}>
       {/* Section header */}
       <div className="flex items-center gap-3 mb-5">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
+        <div className="h-px flex-1 bg-linear-to-r from-transparent via-slate-700 to-transparent" />
         <h3 className="text-sm font-black uppercase tracking-[0.25em] text-slate-500 whitespace-nowrap">
           Intelligence Signals
         </h3>
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
+        <div className="h-px flex-1 bg-linear-to-r from-transparent via-slate-700 to-transparent" />
       </div>
 
       {/* Widget grid - 4 columns on lg, 2 on md, 1 on sm */}
@@ -305,7 +305,7 @@ const DashboardFeatureWidgets: React.FC = () => {
                 ${cfg.bgColor} hover:border-slate-700
                 px-4 py-3 text-left transition-all duration-200
                 hover:scale-[1.02] hover:shadow-lg hover:shadow-black/20
-                focus:outline-none focus:ring-2 ${cfg.color}
+                focus:outline-hidden focus:ring-2 ${cfg.color}
               `}
               style={{ maxHeight: 120 }}
             >
@@ -346,7 +346,7 @@ const DashboardFeatureWidgets: React.FC = () => {
               )}
 
               {/* Hover glow */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-gradient-to-br from-white/[0.03] to-transparent" />
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none bg-linear-to-br from-white/3 to-transparent" />
             </button>
           );
         })}

@@ -192,13 +192,13 @@ const BidderPsychologyProfiler: React.FC = () => {
                     return (
                       <div
                         key={idx}
-                        className="flex items-center justify-between text-xs py-1.5 border-b border-slate-700/20 last:border-0 cursor-pointer hover:bg-slate-800/30 px-2 rounded"
+                        className="flex items-center justify-between text-xs py-1.5 border-b border-slate-700/20 last:border-0 cursor-pointer hover:bg-slate-800/30 px-2 rounded-sm"
                         onClick={() => setSelectedBidderId(bid.bidderId)}
                       >
                         <div className="flex items-center gap-2">
                           <span className={`font-bold ${PROFILE_COLORS[bidder?.profileType ?? 'strategic']}`}>{bidder?.username ?? bid.bidderId}</span>
                           {bidder && (
-                            <span className={`px-1.5 py-0.5 rounded text-[10px] border ${DANGER_COLORS[bidder.dangerLevel]}`}>
+                            <span className={`px-1.5 py-0.5 rounded-sm text-[10px] border ${DANGER_COLORS[bidder.dangerLevel]}`}>
                               {bidder.dangerLevel.toUpperCase()}
                             </span>
                           )}
@@ -225,7 +225,7 @@ const BidderPsychologyProfiler: React.FC = () => {
               {selectedBidder && (
                 <div className="mb-2 flex items-center gap-2 flex-wrap">
                   <span className={`text-xs font-bold capitalize ${PROFILE_COLORS[selectedBidder.profileType]}`}>{selectedBidder.profileType}</span>
-                  <span className={`px-2 py-0.5 text-[10px] rounded border ${DANGER_COLORS[selectedBidder.dangerLevel]}`}>{selectedBidder.dangerLevel} danger</span>
+                  <span className={`px-2 py-0.5 text-[10px] rounded-sm border ${DANGER_COLORS[selectedBidder.dangerLevel]}`}>{selectedBidder.dangerLevel} danger</span>
                 </div>
               )}
               <div className="h-48">
@@ -274,7 +274,7 @@ const BidderPsychologyProfiler: React.FC = () => {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className={`font-bold text-sm ${PROFILE_COLORS[bidder?.profileType ?? 'strategic']}`}>{bidder?.username}</span>
-                      <span className={`px-2 py-0.5 text-[10px] rounded border capitalize ${DANGER_COLORS[bidder?.dangerLevel ?? 'low']}`}>{bidder?.dangerLevel} danger</span>
+                      <span className={`px-2 py-0.5 text-[10px] rounded-sm border capitalize ${DANGER_COLORS[bidder?.dangerLevel ?? 'low']}`}>{bidder?.dangerLevel} danger</span>
                       <span className="text-[10px] text-slate-500 capitalize">{bidder?.profileType}</span>
                     </div>
                     <span className={`text-xs font-bold ${report.confidence >= 80 ? 'text-emerald-400' : report.confidence >= 65 ? 'text-amber-400' : 'text-slate-400'}`}>
@@ -409,7 +409,7 @@ const BidderPsychologyProfiler: React.FC = () => {
                     <span className="text-xs text-slate-400 capitalize">{p.profileType}</span>
                   </td>
                   <td className="py-3 pr-3 text-center">
-                    <span className={`px-2 py-0.5 text-[10px] rounded border ${DANGER_COLORS[p.dangerLevel]}`}>{p.dangerLevel}</span>
+                    <span className={`px-2 py-0.5 text-[10px] rounded-sm border ${DANGER_COLORS[p.dangerLevel]}`}>{p.dangerLevel}</span>
                   </td>
                   <td className="py-3 pr-3 text-right text-sm font-bold text-emerald-400">{Math.round(p.winRate * 100)}%</td>
                   <td className="py-3 pr-3 text-right text-sm text-slate-400">{p.totalAuctions}</td>
@@ -433,7 +433,7 @@ const BidderPsychologyProfiler: React.FC = () => {
             const bidder = profiles.find(p => p.id === report.bidderId);
             return (
               <div key={idx} className="flex items-start gap-3 p-4 bg-slate-900/50 border border-purple-500/20 rounded-xl">
-                <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${report.dropoutProbability > 0.6 ? 'bg-emerald-400' : report.dropoutProbability > 0.35 ? 'bg-amber-400' : 'bg-red-400'}`} />
+                <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${report.dropoutProbability > 0.6 ? 'bg-emerald-400' : report.dropoutProbability > 0.35 ? 'bg-amber-400' : 'bg-red-400'}`} />
                 <div>
                   <p className="text-sm text-slate-200">{report.recommendation}</p>
                   <div className="flex items-center gap-3 mt-1 text-[10px] text-slate-500">

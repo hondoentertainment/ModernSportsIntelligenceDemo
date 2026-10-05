@@ -213,10 +213,10 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
     const displayName = dealItem.player || dealItem.name || 'Card';
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={handleWalkAway} />
 
-            <div className="relative w-full max-w-2xl bg-brand-charcoal border border-slate-800 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="relative w-full max-w-2xl bg-brand-charcoal border border-slate-800 rounded-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="p-6 border-b border-slate-800 flex justify-between items-center bg-brand-charcoal/50">
                     <div className="flex items-center gap-3">
@@ -367,7 +367,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
                                         setSelectedPlaybookId(e.target.value);
                                         setPlaybookId(e.target.value);
                                     }}
-                                    className="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-brand-blue"
+                                    className="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-hidden focus:border-brand-blue"
                                 >
                                     {getNegotiationPlaybooks().map((book) => (
                                         <option key={book.id} value={book.id}>
@@ -391,7 +391,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
                                             userEditedMax.current = true;
                                             setMaxWilling(e.target.value);
                                         }}
-                                        className="w-full bg-slate-900 border border-slate-800 rounded-xl py-4 pl-12 pr-4 text-white font-mono font-bold focus:outline-none focus:border-brand-blue transition-colors"
+                                        className="w-full bg-slate-900 border border-slate-800 rounded-xl py-4 pl-12 pr-4 text-white font-mono font-bold focus:outline-hidden focus:border-brand-blue transition-colors"
                                         placeholder="0.00"
                                     />
                                 </div>
@@ -496,7 +496,7 @@ const NegotiationModal: React.FC<NegotiationModalProps> = ({
                                             type="number"
                                             value={offerInput}
                                             onChange={e => setOfferInput(e.target.value)}
-                                            className="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 pl-9 pr-3 text-white font-mono text-sm focus:outline-none focus:border-brand-blue"
+                                            className="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 pl-9 pr-3 text-white font-mono text-sm focus:outline-hidden focus:border-brand-blue"
                                             placeholder="Counter offer..."
                                             onKeyDown={e => e.key === 'Enter' && handleSendOffer()}
                                         />

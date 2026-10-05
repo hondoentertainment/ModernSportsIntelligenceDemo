@@ -249,7 +249,7 @@ return screen(universe);`
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-7xl h-[95vh] bg-slate-950 border border-slate-700/60 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
@@ -423,7 +423,7 @@ const EditorTab: React.FC<EditorTabProps> = ({
             type="text"
             value={strategyName}
             onChange={e => setStrategyName(e.target.value)}
-            className="flex-1 bg-transparent text-sm font-bold text-white placeholder-slate-600 outline-none"
+            className="flex-1 bg-transparent text-sm font-bold text-white placeholder-slate-600 outline-hidden"
             placeholder="Strategy name..."
           />
           <button
@@ -448,7 +448,7 @@ const EditorTab: React.FC<EditorTabProps> = ({
           <div className="absolute inset-0 overflow-auto p-4 bg-slate-950">
             {/* Line numbers */}
             <div className="flex">
-              <div className="select-none pr-4 text-right text-slate-600 font-mono text-[13px] leading-[1.6] min-w-[3rem]">
+              <div className="select-none pr-4 text-right text-slate-600 font-mono text-[13px] leading-[1.6] min-w-12">
                 {code.split('\n').map((_, i) => (
                   <div key={i}>{i + 1}</div>
                 ))}
@@ -456,7 +456,7 @@ const EditorTab: React.FC<EditorTabProps> = ({
               <textarea
                 value={code}
                 onChange={e => setCode(e.target.value)}
-                className="qw-code-area flex-1 bg-transparent text-slate-200 outline-none resize-none w-full min-h-full"
+                className="qw-code-area flex-1 bg-transparent text-slate-200 outline-hidden resize-none w-full min-h-full"
                 spellCheck={false}
                 placeholder="// Write your strategy here..."
               />
@@ -624,7 +624,7 @@ const ScreenerTab: React.FC<ScreenerTabProps> = ({
           </div>
           <button
             onClick={onAddFilter}
-            className="flex items-center gap-1 px-2 py-1 bg-slate-800/60 border border-slate-700/40 rounded text-[10px] font-bold text-slate-400 hover:text-white transition-colors"
+            className="flex items-center gap-1 px-2 py-1 bg-slate-800/60 border border-slate-700/40 rounded-sm text-[10px] font-bold text-slate-400 hover:text-white transition-colors"
           >
             <Plus size={10} />
             Add Filter
@@ -644,7 +644,7 @@ const ScreenerTab: React.FC<ScreenerTabProps> = ({
               <select
                 value={filter.field}
                 onChange={e => onUpdateFilter(idx, { field: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700/50 rounded px-2 py-1.5 text-xs text-white outline-none focus:border-cyan-500/50"
+                className="w-full bg-slate-900 border border-slate-700/50 rounded-sm px-2 py-1.5 text-xs text-white outline-hidden focus:border-cyan-500/50"
               >
                 {SCREENER_FIELDS.map(f => (
                   <option key={f.value} value={f.value}>{f.label}</option>
@@ -654,7 +654,7 @@ const ScreenerTab: React.FC<ScreenerTabProps> = ({
               <select
                 value={filter.operator}
                 onChange={e => onUpdateFilter(idx, { operator: e.target.value as ScreenerFilter['operator'] })}
-                className="w-full bg-slate-900 border border-slate-700/50 rounded px-2 py-1.5 text-xs text-white outline-none focus:border-cyan-500/50"
+                className="w-full bg-slate-900 border border-slate-700/50 rounded-sm px-2 py-1.5 text-xs text-white outline-hidden focus:border-cyan-500/50"
               >
                 {SCREENER_OPERATORS.map(o => (
                   <option key={o.value} value={o.value}>{o.label}</option>
@@ -666,7 +666,7 @@ const ScreenerTab: React.FC<ScreenerTabProps> = ({
                 value={filter.value}
                 onChange={e => onUpdateFilter(idx, { value: e.target.value, label: `${filter.field} ${filter.operator} ${e.target.value}` })}
                 placeholder="Value..."
-                className="w-full bg-slate-900 border border-slate-700/50 rounded px-2 py-1.5 text-xs text-white placeholder-slate-600 outline-none focus:border-cyan-500/50 font-mono"
+                className="w-full bg-slate-900 border border-slate-700/50 rounded-sm px-2 py-1.5 text-xs text-white placeholder-slate-600 outline-hidden focus:border-cyan-500/50 font-mono"
               />
             </div>
           ))}
@@ -697,7 +697,7 @@ const ScreenerTab: React.FC<ScreenerTabProps> = ({
           <BarChart3 size={14} className="text-slate-500" />
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Results</span>
           {result && (
-            <span className="ml-auto px-2 py-0.5 bg-cyan-500/10 rounded text-[10px] font-bold text-cyan-400">
+            <span className="ml-auto px-2 py-0.5 bg-cyan-500/10 rounded-sm text-[10px] font-bold text-cyan-400">
               {result.totalMatches} matches
             </span>
           )}
@@ -738,7 +738,7 @@ const ScreenerTab: React.FC<ScreenerTabProps> = ({
                     <td className="px-3 py-2 text-slate-400 truncate max-w-[150px]">{m.card}</td>
                     <td className="px-3 py-2 text-slate-400">{m.sport}</td>
                     <td className="px-3 py-2">
-                      <span className="px-1.5 py-0.5 bg-slate-700/50 rounded text-[10px] font-mono text-white">{m.grade}</span>
+                      <span className="px-1.5 py-0.5 bg-slate-700/50 rounded-sm text-[10px] font-mono text-white">{m.grade}</span>
                     </td>
                     <td className="px-3 py-2 text-right font-mono text-white">${m.price}</td>
                     <td className={`px-3 py-2 text-right font-mono ${m.change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
@@ -793,7 +793,7 @@ const BacktestTab: React.FC<BacktestTabProps> = ({
               <select
                 value={selectedId}
                 onChange={e => onSelectStrategy(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700/50 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-cyan-500/50"
+                className="w-full bg-slate-900 border border-slate-700/50 rounded-lg px-3 py-2 text-xs text-white outline-hidden focus:border-cyan-500/50"
               >
                 <option value="">Select a strategy...</option>
                 {strategies.map(s => (
@@ -809,7 +809,7 @@ const BacktestTab: React.FC<BacktestTabProps> = ({
                   type="date"
                   value={startDate}
                   onChange={e => onStartDateChange(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700/50 rounded-lg px-2 py-2 text-xs text-white outline-none focus:border-cyan-500/50"
+                  className="w-full bg-slate-900 border border-slate-700/50 rounded-lg px-2 py-2 text-xs text-white outline-hidden focus:border-cyan-500/50"
                 />
               </div>
               <div>
@@ -818,7 +818,7 @@ const BacktestTab: React.FC<BacktestTabProps> = ({
                   type="date"
                   value={endDate}
                   onChange={e => onEndDateChange(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700/50 rounded-lg px-2 py-2 text-xs text-white outline-none focus:border-cyan-500/50"
+                  className="w-full bg-slate-900 border border-slate-700/50 rounded-lg px-2 py-2 text-xs text-white outline-hidden focus:border-cyan-500/50"
                 />
               </div>
             </div>
@@ -934,7 +934,7 @@ const BacktestTab: React.FC<BacktestTabProps> = ({
 
             {/* Trade Log */}
             <div className="flex-1 overflow-auto">
-              <div className="px-4 py-2 border-b border-slate-800/40 flex items-center justify-between sticky top-0 bg-slate-900/80 backdrop-blur-sm">
+              <div className="px-4 py-2 border-b border-slate-800/40 flex items-center justify-between sticky top-0 bg-slate-900/80 backdrop-blur-xs">
                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Trade Log</span>
                 <button
                   onClick={() => setShowTrades(!showTrades)}
@@ -1029,7 +1029,7 @@ const TemplatesTab: React.FC<TemplatesTabProps> = ({ templates, onLoad, onRun })
           return (
             <div key={t.id} className="bg-slate-900/60 border border-slate-700/40 rounded-xl p-5 hover:border-cyan-500/30 transition-all duration-300 flex flex-col">
               <div className="flex items-center justify-between mb-3">
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${badge.bg} ${badge.color} ${badge.border}`}>
+                <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider border ${badge.bg} ${badge.color} ${badge.border}`}>
                   {t.type}
                 </span>
                 <span className="text-[10px] text-slate-600">{t.author}</span>

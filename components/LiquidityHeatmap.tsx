@@ -90,7 +90,7 @@ const LiquidityHeatmap: React.FC<LiquidityHeatmapProps> = ({ inventory, onCardCl
         <div className="flex flex-wrap gap-4 mt-3">
           {report.buckets.filter(b => b.count > 0).map((bucket) => (
             <div key={bucket.label} className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: bucket.color }} />
+              <div className="w-3 h-3 rounded-xs" style={{ backgroundColor: bucket.color }} />
               <span className="text-[9px] font-black text-brand-muted uppercase tracking-widest">
                 {bucket.label} ({bucket.count})
               </span>

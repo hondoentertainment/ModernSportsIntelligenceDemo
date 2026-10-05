@@ -61,7 +61,7 @@ const WidgetContent: React.FC<{
     return (
       <button
         onClick={onToggleMinimize}
-        className="w-14 h-14 rounded-full bg-gradient-to-br from-brand-lime to-emerald-500 shadow-2xl shadow-brand-lime/30 flex items-center justify-center hover:scale-110 transition-transform active:scale-95 group"
+        className="w-14 h-14 rounded-full bg-linear-to-br from-brand-lime to-emerald-500 shadow-2xl shadow-brand-lime/30 flex items-center justify-center hover:scale-110 transition-transform active:scale-95 group"
         title={`Demo: ${step.title} (${stepIndex + 1}/${totalSteps})`}
       >
         <div className="relative">
@@ -106,7 +106,7 @@ const WidgetContent: React.FC<{
       {/* Progress Bar */}
       <div className="h-1 bg-slate-800">
         <div
-          className="h-full bg-gradient-to-r from-brand-lime to-emerald-400 transition-all duration-500"
+          className="h-full bg-linear-to-r from-brand-lime to-emerald-400 transition-all duration-500"
           style={{ width: `${progressPercent}%` }}
         />
       </div>

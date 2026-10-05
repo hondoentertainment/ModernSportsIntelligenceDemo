@@ -67,12 +67,12 @@ export const SealedProductWidget: React.FC<SealedProductWidgetProps> = ({ onOpen
       {/* Top hold highlight */}
       {topHold && (
         <div className="flex items-center gap-3 p-3 bg-violet-500/5 border border-violet-500/20 rounded-xl mb-4">
-          <Star size={14} className="text-violet-400 flex-shrink-0" />
+          <Star size={14} className="text-violet-400 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-violet-400 uppercase tracking-widest">Best Hold</p>
             <p className="text-xs text-white font-medium truncate">{topHold.productName}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <p className="text-xs text-slate-500">ROI</p>
             <p className="text-sm font-bold text-violet-400">+{topHold.roiPercent.toFixed(0)}%</p>
           </div>

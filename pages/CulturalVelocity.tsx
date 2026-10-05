@@ -160,7 +160,7 @@ const CulturalVelocity: React.FC = () => {
                   <span>{event.confidence}% conf</span>
                 </div>
 
-                <div className="bg-slate-800/50 rounded px-3 py-2">
+                <div className="bg-slate-800/50 rounded-sm px-3 py-2">
                   <p className="text-slate-400 text-xs">
                     <Clock size={12} className="inline mr-1" />
                     Monetization window: <span className="text-orange-400 font-semibold">{event.monetizationWindow}</span>
@@ -189,7 +189,7 @@ const CulturalVelocity: React.FC = () => {
                       <p className="text-slate-500 text-[10px] uppercase mb-2">Affected Sets</p>
                       <div className="flex flex-wrap gap-1">
                         {event.affectedSets.map((s, i) => (
-                          <span key={i} className="px-2 py-1 rounded bg-slate-800 text-slate-300 text-xs">{s}</span>
+                          <span key={i} className="px-2 py-1 rounded-sm bg-slate-800 text-slate-300 text-xs">{s}</span>
                         ))}
                       </div>
                       <div className="mt-4 space-y-1">

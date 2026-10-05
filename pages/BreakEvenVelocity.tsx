@@ -265,7 +265,7 @@ function CardAnalysisTab({
         <select
           value={selectedCardId}
           onChange={(e) => onSelectCard(e.target.value)}
-          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-brand-lime"
+          className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-hidden focus:border-brand-lime"
         >
           {cards.map((c) => (
             <option key={c.id} value={c.id}>
@@ -379,7 +379,7 @@ function CardAnalysisTab({
                 <td className="px-4 py-3 text-sm text-slate-300 text-right font-mono">${cost.dailyRate.toFixed(4)}</td>
                 <td className="px-4 py-3 text-sm text-slate-300 text-right font-mono">${cost.monthlyRate.toFixed(2)}</td>
                 <td className="px-4 py-3 text-right">
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${cost.isRecurring ? 'bg-blue-400/10 text-blue-400' : 'bg-slate-700 text-slate-400'}`}>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-sm ${cost.isRecurring ? 'bg-blue-400/10 text-blue-400' : 'bg-slate-700 text-slate-400'}`}>
                     {cost.isRecurring ? 'Recurring' : 'One-time'}
                   </span>
                 </td>
@@ -497,7 +497,7 @@ function CostSimulatorTab({ selectedCardId }: { selectedCardId: string }) {
           <select
             value={storageTier}
             onChange={(e) => setStorageTier(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-brand-lime mb-2"
+            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-hidden focus:border-brand-lime mb-2"
           >
             <option value="basic">Basic ($0.05/day)</option>
             <option value="standard">Standard ($0.25/day)</option>
@@ -515,7 +515,7 @@ function CostSimulatorTab({ selectedCardId }: { selectedCardId: string }) {
           <select
             value={insuranceLevel}
             onChange={(e) => setInsuranceLevel(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-brand-lime mb-2"
+            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-hidden focus:border-brand-lime mb-2"
           >
             <option value="none">None ($0/day)</option>
             <option value="basic">Basic ($0.01/day per $100)</option>
@@ -678,7 +678,7 @@ function ScenarioCompareTab({ selectedCardId }: { selectedCardId: string }) {
                   {s.name}
                 </h4>
                 {isCurrent && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-brand-lime/10 text-brand-lime border border-brand-lime/30">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-sm bg-brand-lime/10 text-brand-lime border border-brand-lime/30">
                     Current
                   </span>
                 )}
@@ -928,7 +928,7 @@ function OptimizationTab() {
                     <p className="text-xs text-slate-400 mt-1 leading-relaxed">{rec.description}</p>
                   </div>
                 </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${pColor.bg} ${pColor.text} border ${pColor.border} whitespace-nowrap`}>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-sm ${pColor.bg} ${pColor.text} border ${pColor.border} whitespace-nowrap`}>
                   {rec.priority.toUpperCase()}
                 </span>
               </div>

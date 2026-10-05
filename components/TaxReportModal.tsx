@@ -40,13 +40,13 @@ const TaxReportModal: React.FC<TaxReportModalProps> = ({ isOpen, onClose, card, 
   const taxImpact = isGain ? gainLoss * taxRate : 0;
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-xs z-100 flex items-center justify-center p-4" onClick={onClose}>
       <div
         className="bg-brand-slate border border-slate-800 rounded-3xl w-full max-w-3xl max-h-[90vh] overflow-y-auto no-scrollbar"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-brand-slate/95 backdrop-blur-sm border-b border-slate-800 p-6 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-brand-slate/95 backdrop-blur-xs border-b border-slate-800 p-6 flex items-center justify-between z-10">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-brand-orange/10 rounded-xl text-brand-orange">
               <FileText size={24} />
@@ -142,7 +142,7 @@ const TaxReportModal: React.FC<TaxReportModalProps> = ({ isOpen, onClose, card, 
                 <p className="text-sm font-bold text-white">{formatDate(card.purchaseDate)}</p>
                 <p className="text-[9px] text-brand-muted">@ ${(card.purchasePrice || 0).toFixed(2)}</p>
               </div>
-              <div className="flex-shrink-0 h-px w-12 bg-slate-700 relative">
+              <div className="shrink-0 h-px w-12 bg-slate-700 relative">
                 <div className="absolute -top-2 left-0 w-4 h-4 rounded-full bg-brand-lime/20 border border-brand-lime/40"></div>
                 <div className={`absolute -top-2 right-0 w-4 h-4 rounded-full ${card.status === 'sold' ? 'bg-brand-red/20 border border-brand-red/40' : 'bg-brand-blue/20 border border-brand-blue/40 animate-pulse'}`}></div>
               </div>
@@ -226,7 +226,7 @@ const TaxReportModal: React.FC<TaxReportModalProps> = ({ isOpen, onClose, card, 
                         {mc.method}
                       </p>
                       {isBest && (
-                        <span className="px-1.5 py-0.5 bg-brand-lime/20 text-brand-lime text-[8px] font-black uppercase tracking-widest rounded">
+                        <span className="px-1.5 py-0.5 bg-brand-lime/20 text-brand-lime text-[8px] font-black uppercase tracking-widest rounded-sm">
                           Optimal
                         </span>
                       )}
@@ -261,7 +261,7 @@ const TaxReportModal: React.FC<TaxReportModalProps> = ({ isOpen, onClose, card, 
                           type="checkbox"
                           checked={checked}
                           onChange={() => setPrefs(toggleSpecificLotId(lot.id))}
-                          className="rounded border-slate-600"
+                          className="rounded-sm border-slate-600"
                         />
                         <span className="flex-1 truncate">
                           {lot.player} · {lot.year} · acquired {lot.purchaseDate}

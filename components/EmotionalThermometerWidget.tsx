@@ -64,9 +64,9 @@ const EmotionalThermometerWidget: React.FC<EmotionalThermometerWidgetProps> = ({
   if (loading) {
     return (
       <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 animate-pulse">
-        <div className="h-4 bg-slate-700 rounded w-2/3 mb-3" />
-        <div className="h-8 bg-slate-700 rounded w-1/2 mb-2" />
-        <div className="h-3 bg-slate-700 rounded w-full" />
+        <div className="h-4 bg-slate-700 rounded-sm w-2/3 mb-3" />
+        <div className="h-8 bg-slate-700 rounded-sm w-1/2 mb-2" />
+        <div className="h-3 bg-slate-700 rounded-sm w-full" />
       </div>
     );
   }
