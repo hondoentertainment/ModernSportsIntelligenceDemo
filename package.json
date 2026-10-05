@@ -68,7 +68,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@google/genai": "^2.27.0",
-    "@stripe/stripe-js": "^9.17.0",
+    "@stripe/stripe-js": "^10.0.0",
     "@supabase/supabase-js": "^2.117.2",
     "@tanstack/react-virtual": "^3.14.13",
     "dompurify": "^3.4.16",
