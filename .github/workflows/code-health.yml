@@ -174,12 +174,18 @@ jobs:
           path: report.md
           retention-days: 90
 
+      # issues: write above is enough for this token. The weekly failure is HTTP 422:
+      # GitHub rejects issue and comment bodies over 65,536 characters. The full
+      # report stays in the artifact; the issue gets a shortened body.
+      - name: Fit report to GitHub issue limit
+        run: node scripts/fit-issue-body.mjs report.md issue-body.md "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
       - name: Create or update issue
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            const report = fs.readFileSync('report.md', 'utf8');
+            const report = fs.readFileSync('issue-body.md', 'utf8');
             const title = '📊 Weekly Code Health Report';
 
             // Find existing open issue
