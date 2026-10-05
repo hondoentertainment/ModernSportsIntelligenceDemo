@@ -114,7 +114,7 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({ cards, onClick }) =>
                 className="flex items-center gap-3 px-3 py-2 bg-slate-800/50 border border-slate-700 rounded-xl"
               >
                 <div
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0"
                   style={{ backgroundColor: match.avatarColor }}
                 >
                   {match.initials}
@@ -141,12 +141,12 @@ export const SocialWidget: React.FC<SocialWidgetProps> = ({ cards, onClick }) =>
           <div className="space-y-1">
             {recentActivity.map((item: ActivityFeedItem) => (
               <div key={item.id} className="flex items-start gap-2 text-xs">
-                <span className="flex-shrink-0">{ACTIVITY_ICONS[item.type] || '📌'}</span>
+                <span className="shrink-0">{ACTIVITY_ICONS[item.type] || '📌'}</span>
                 <span className="text-slate-400 truncate flex-1">
                   <span className="text-slate-300 font-medium">{item.collectorName}</span>{' '}
                   {item.description.replace(item.collectorName, '').trim()}
                 </span>
-                <span className="text-slate-600 flex-shrink-0">{timeAgo(item.timestamp)}</span>
+                <span className="text-slate-600 shrink-0">{timeAgo(item.timestamp)}</span>
               </div>
             ))}
           </div>

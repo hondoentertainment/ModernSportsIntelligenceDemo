@@ -80,7 +80,7 @@ const ZoneOverviewTab: React.FC<{ zones: EnvironmentZone[]; readings: SensorRead
 
           {/* Health Score Ring */}
           <div className="p-4 flex items-center gap-4">
-            <div className="relative w-16 h-16 flex-shrink-0">
+            <div className="relative w-16 h-16 shrink-0">
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                 <path
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
@@ -287,7 +287,7 @@ const AlertsTab: React.FC<{ alerts: ConditionAlert[] }> = ({ alerts }) => {
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
-                  <div className={`p-1.5 rounded-lg ${sevColor.bg} border ${sevColor.border} flex-shrink-0 mt-0.5`}>
+                  <div className={`p-1.5 rounded-lg ${sevColor.bg} border ${sevColor.border} shrink-0 mt-0.5`}>
                     {alert.severity === 'critical' ? (
                       <AlertTriangle className={`w-4 h-4 ${sevColor.text}`} />
                     ) : alert.severity === 'warning' ? (
@@ -314,7 +314,7 @@ const AlertsTab: React.FC<{ alerts: ConditionAlert[] }> = ({ alerts }) => {
                     </p>
                   </div>
                 </div>
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   {alert.acknowledged ? (
                     <div className="flex items-center gap-1 text-emerald-400">
                       <CheckCircle2 className="w-4 h-4" />
@@ -333,15 +333,15 @@ const AlertsTab: React.FC<{ alerts: ConditionAlert[] }> = ({ alerts }) => {
                 <div className="mt-3 pt-3 border-t border-slate-700/50">
                   <p className="text-[10px] uppercase tracking-wider text-slate-500 mb-1.5">Escalation Chain</p>
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="px-2 py-0.5 bg-red-500/10 border border-red-500/20 rounded text-red-300">
+                    <span className="px-2 py-0.5 bg-red-500/10 border border-red-500/20 rounded-sm text-red-300">
                       Immediate: SMS + Push
                     </span>
                     <ChevronRight className="w-3 h-3 text-slate-600" />
-                    <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded text-amber-300">
+                    <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 rounded-sm text-amber-300">
                       15min: Email + Call
                     </span>
                     <ChevronRight className="w-3 h-3 text-slate-600" />
-                    <span className="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded text-blue-300">
+                    <span className="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-sm text-blue-300">
                       30min: Insurance Provider
                     </span>
                   </div>
@@ -568,12 +568,12 @@ const IotConditionGuardianModal: React.FC<IotConditionGuardianModalProps> = ({ i
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden flex flex-col">
         {/* Gradient Header */}
-        <div className="bg-gradient-to-r from-emerald-500/10 to-slate-900 p-6 border-b border-slate-700">
+        <div className="bg-linear-to-r from-emerald-500/10 to-slate-900 p-6 border-b border-slate-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30">

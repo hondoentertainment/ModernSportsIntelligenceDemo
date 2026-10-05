@@ -146,7 +146,7 @@ export const ShowcaseWidget: React.FC<ShowcaseWidgetProps> = ({ cards, onClick }
       {/* Empty state */}
       {showcases.length === 0 && (
         <div className="flex items-center gap-3 px-4 py-3 bg-purple-500/5 border border-purple-500/15 rounded-xl">
-          <Eye size={14} className="text-purple-400 flex-shrink-0" />
+          <Eye size={14} className="text-purple-400 shrink-0" />
           <span className="text-xs text-slate-400">
             Create your first showcase to display your best cards
           </span>

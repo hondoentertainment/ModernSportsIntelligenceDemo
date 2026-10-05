@@ -120,7 +120,7 @@ function countdownLabel(isoDate: string): string {
 function Skeleton({ className = '' }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse rounded bg-slate-700/50 ${className}`}
+      className={`animate-pulse rounded-sm bg-slate-700/50 ${className}`}
     />
   );
 }
@@ -225,7 +225,7 @@ function YieldPoolsTab({ pools }: { pools: YieldPool[] }) {
               <span>Min {pool.minLockPeriod}d lock</span>
             </div>
 
-            <button className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:from-blue-500 hover:to-indigo-500">
+            <button className="w-full rounded-lg bg-linear-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:from-blue-500 hover:to-indigo-500">
               Deposit Cards
             </button>
           </div>
@@ -830,7 +830,7 @@ function LendingMarketTab({
             return (
               <div key={t.tier} className="flex flex-col items-center">
                 <div
-                  className={`flex w-36 flex-col items-center justify-end rounded-t-xl bg-gradient-to-t ${colors[i]} p-3`}
+                  className={`flex w-36 flex-col items-center justify-end rounded-t-xl bg-linear-to-t ${colors[i]} p-3`}
                   style={{ height }}
                 >
                   <p className="text-lg font-bold text-white">{t.multiplier}x</p>
@@ -1157,7 +1157,7 @@ export default function CardYieldFarming() {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
       {/* Header */}
-      <div className="border-b border-slate-700 bg-slate-900/80 backdrop-blur">
+      <div className="border-b border-slate-700 bg-slate-900/80 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>

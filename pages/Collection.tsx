@@ -592,7 +592,7 @@ const Collection: React.FC = () => {
             meta: `${freshVerifiedCoverage.covered}/${freshVerifiedCoverage.total}`,
           },
         ].map((s, i) => (
-          <div key={i} className="bg-brand-slate border border-slate-800 p-6 rounded-[1.5rem] relative overflow-hidden group">
+          <div key={i} className="bg-brand-slate border border-slate-800 p-6 rounded-3xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-24 h-24 bg-brand-lime/5 blur-3xl rounded-full group-hover:bg-brand-lime/10 transition-all"></div>
             <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1 relative z-10">{s.label}</p>
             <p className={`text-2xl md:text-3xl font-mono font-bold ${s.color} relative z-10`}>
@@ -683,7 +683,7 @@ const Collection: React.FC = () => {
                   placeholder="Query collection players, manufacturers, or sets..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-brand-slate border border-slate-800 rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium"
+                  className="w-full bg-brand-slate border border-slate-800 rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium"
                 />
               </div>
 
@@ -818,7 +818,7 @@ const Collection: React.FC = () => {
               />
             ) : (
               /* List View implementation to handle dense data */
-              <div className="bg-brand-slate border border-slate-800 rounded-[2rem] overflow-hidden">
+              <div className="bg-brand-slate border border-slate-800 rounded-4xl overflow-hidden">
                 <table className="w-full text-left">
                   <thead className="bg-brand-charcoal/50 text-[10px] font-black text-brand-muted uppercase tracking-widest border-b border-slate-800">
                     <tr>
@@ -906,7 +906,7 @@ const Collection: React.FC = () => {
                 {targets.map((target) => (
                   <div
                     key={target.id}
-                    className={`group bg-brand-slate border rounded-[2rem] overflow-hidden transition-all hover:shadow-xl ${target.status === 'acquired' ? 'border-brand-green/40' : 'border-slate-800 hover:border-brand-lime/40'
+                    className={`group bg-brand-slate border rounded-4xl overflow-hidden transition-all hover:shadow-xl ${target.status === 'acquired' ? 'border-brand-green/40' : 'border-slate-800 hover:border-brand-lime/40'
                       }`}
                   >
                     <div className="p-6 space-y-4">
@@ -1087,7 +1087,7 @@ const Collection: React.FC = () => {
         )}
 
         {/* Grading Premium Modal */}
-        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all duration-500 ${isPremiumModalOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
+        <div className={`fixed inset-0 z-100 flex items-center justify-center p-4 transition-all duration-500 ${isPremiumModalOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
           <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => setIsPremiumModalOpen(false)} />
           <div className="relative w-full max-w-lg bg-brand-charcoal border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="p-6 border-b border-slate-800 flex justify-between items-center">

@@ -217,7 +217,7 @@ export default function PortfolioNarrator() {
           <ul className="space-y-2">
             {report.marketInsights.map((insight, idx) => (
               <li key={idx} className="flex items-start gap-2 text-slate-300">
-                <ChevronRight className="w-4 h-4 mt-0.5 text-blue-400 flex-shrink-0" />
+                <ChevronRight className="w-4 h-4 mt-0.5 text-blue-400 shrink-0" />
                 <span className="text-sm">{insight}</span>
               </li>
             ))}
@@ -389,7 +389,7 @@ export default function PortfolioNarrator() {
             {actionItems.map((item, idx) => (
               <div key={idx} className="flex items-center gap-3 bg-slate-900 rounded-lg p-3">
                 <span
-                  className={`${getPriorityColor(item.priority)} text-white text-xs font-bold px-2 py-0.5 rounded uppercase`}
+                  className={`${getPriorityColor(item.priority)} text-white text-xs font-bold px-2 py-0.5 rounded-sm uppercase`}
                 >
                   {item.priority}
                 </span>

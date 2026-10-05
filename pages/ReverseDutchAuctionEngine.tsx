@@ -298,8 +298,8 @@ const ReverseDutchAuctionEngine: React.FC = () => {
                   </ResponsiveContainer>
                 </div>
                 <div className="flex gap-3 mt-2 justify-center text-[10px] text-slate-400">
-                  <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-orange-400 inline-block rounded" />Dutch Price</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-blue-400 inline-block rounded border-dashed" />FMV</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-orange-400 inline-block rounded-sm" />Dutch Price</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-blue-400 inline-block rounded-sm border-dashed" />FMV</span>
                 </div>
               </div>
             )}
@@ -427,7 +427,7 @@ const ReverseDutchAuctionEngine: React.FC = () => {
 
       {/* Create Dutch Auction Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs">
           <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
@@ -446,7 +446,7 @@ const ReverseDutchAuctionEngine: React.FC = () => {
                   value={form.cardName}
                   onChange={e => setForm(f => ({ ...f, cardName: e.target.value }))}
                   placeholder="e.g. 2023 Prizm Victor Wembanyama Rookie PSA 10"
-                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50"
+                  className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-orange-500/50"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -457,7 +457,7 @@ const ReverseDutchAuctionEngine: React.FC = () => {
                     value={form.openingPrice}
                     onChange={e => setForm(f => ({ ...f, openingPrice: e.target.value }))}
                     placeholder="5000"
-                    className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50"
+                    className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-orange-500/50"
                   />
                 </div>
                 <div>
@@ -467,7 +467,7 @@ const ReverseDutchAuctionEngine: React.FC = () => {
                     value={form.floorPrice}
                     onChange={e => setForm(f => ({ ...f, floorPrice: e.target.value }))}
                     placeholder="2500"
-                    className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50"
+                    className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-orange-500/50"
                   />
                 </div>
                 <div>
@@ -477,7 +477,7 @@ const ReverseDutchAuctionEngine: React.FC = () => {
                     value={form.decrementAmount}
                     onChange={e => setForm(f => ({ ...f, decrementAmount: e.target.value }))}
                     placeholder="250"
-                    className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50"
+                    className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-orange-500/50"
                   />
                 </div>
                 <div>
@@ -485,7 +485,7 @@ const ReverseDutchAuctionEngine: React.FC = () => {
                   <select
                     value={form.decrementInterval}
                     onChange={e => setForm(f => ({ ...f, decrementInterval: e.target.value }))}
-                    className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500/50"
+                    className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-orange-500/50"
                   >
                     <option>4 hours</option>
                     <option>6 hours</option>

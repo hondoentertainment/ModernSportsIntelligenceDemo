@@ -263,8 +263,8 @@ const CarbonFootprintTracker: React.FC = () => {
           </ResponsiveContainer>
         </div>
         <div className="flex gap-4 justify-center mt-2 text-[11px] text-slate-400">
-          <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-red-400 inline-block rounded" />Emissions</span>
-          <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-emerald-400 inline-block rounded" />Offsets</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-red-400 inline-block rounded-sm" />Emissions</span>
+          <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-emerald-400 inline-block rounded-sm" />Offsets</span>
         </div>
       </div>
 
@@ -335,7 +335,7 @@ const CarbonFootprintTracker: React.FC = () => {
             <div className="flex flex-wrap gap-2 mt-2 justify-center">
               {categoryPieData.map((entry, idx) => (
                 <span key={entry.name} className="text-[9px] text-slate-400 flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
                   {entry.name.split(' ')[0]}
                 </span>
               ))}
@@ -350,17 +350,17 @@ const CarbonFootprintTracker: React.FC = () => {
             {categories.map((cat, idx) => (
               <div key={idx} className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-slate-300 truncate">{cat.category}</p>
                     <p className="text-[9px] text-slate-500">{cat.transactions} transactions</p>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0 ml-2">
+                <div className="text-right shrink-0 ml-2">
                   <p className="text-sm font-bold text-slate-200">{formatCo2(cat.co2Kg)}</p>
                   <p className="text-[9px] text-slate-500">{cat.percentage}%</p>
                 </div>
-                <span className={`ml-3 text-[9px] px-1.5 py-0.5 rounded-full font-bold flex-shrink-0 ${cat.trend === 'down' ? 'bg-emerald-500/10 text-emerald-400' : cat.trend === 'up' ? 'bg-red-500/10 text-red-400' : 'bg-slate-700/30 text-slate-400'}`}>
+                <span className={`ml-3 text-[9px] px-1.5 py-0.5 rounded-full font-bold shrink-0 ${cat.trend === 'down' ? 'bg-emerald-500/10 text-emerald-400' : cat.trend === 'up' ? 'bg-red-500/10 text-red-400' : 'bg-slate-700/30 text-slate-400'}`}>
                   {cat.trend === 'down' ? 'down' : cat.trend === 'up' ? 'up' : 'stable'}
                 </span>
               </div>
@@ -535,7 +535,7 @@ const CarbonFootprintTracker: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {tips.map((tip, idx) => (
             <div key={idx} className="bg-slate-900/50 border border-slate-700/30 rounded-xl p-4 flex items-start gap-3">
-              <span className="text-xl flex-shrink-0">{tip.icon}</span>
+              <span className="text-xl shrink-0">{tip.icon}</span>
               <p className="text-xs text-slate-400 leading-relaxed">{tip.tip}</p>
             </div>
           ))}

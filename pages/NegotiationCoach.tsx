@@ -721,17 +721,17 @@ const NegotiationCoach: React.FC = () => {
                   <div>
                     <label className="block text-xs text-slate-400 mb-1">Asking Price ($)</label>
                     <input type="number" value={askingPrice} onChange={(e) => setAskingPrice(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20" />
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-hidden focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20" />
                   </div>
                   <div>
                     <label className="block text-xs text-slate-400 mb-1">Listing Age (days)</label>
                     <input type="number" value={listingAge} onChange={(e) => setListingAge(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20" />
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-hidden focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20" />
                   </div>
                   <div>
                     <label className="block text-xs text-slate-400 mb-1">Price Drops (#)</label>
                     <input type="number" value={priceDropCount} onChange={(e) => setPriceDropCount(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20" />
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-hidden focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20" />
                   </div>
                 </div>
 
@@ -794,10 +794,10 @@ const NegotiationCoach: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-center gap-6 mt-3 text-xs text-slate-400">
                   <span className="flex items-center gap-1">
-                    <span className="w-3 h-3 rounded bg-emerald-500/40 inline-block" /> Acceptance Rate
+                    <span className="w-3 h-3 rounded-sm bg-emerald-500/40 inline-block" /> Acceptance Rate
                   </span>
                   <span className="flex items-center gap-1">
-                    <span className="w-3 h-3 rounded bg-lime-500/40 inline-block" /> Optimal Value Zone
+                    <span className="w-3 h-3 rounded-sm bg-lime-500/40 inline-block" /> Optimal Value Zone
                   </span>
                 </div>
               </div>
@@ -852,11 +852,11 @@ const NegotiationCoach: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-4 mt-4 text-xs text-slate-400">
                   <span>Acceptance:</span>
-                  <span className="flex items-center gap-1"><span className="w-4 h-3 rounded bg-red-900 inline-block" /> Low</span>
-                  <span className="flex items-center gap-1"><span className="w-4 h-3 rounded bg-orange-700 inline-block" /> Medium</span>
-                  <span className="flex items-center gap-1"><span className="w-4 h-3 rounded bg-yellow-600 inline-block" /> Good</span>
-                  <span className="flex items-center gap-1"><span className="w-4 h-3 rounded bg-lime-600 inline-block" /> Great</span>
-                  <span className="flex items-center gap-1"><span className="w-4 h-3 rounded bg-lime-500 inline-block" /> Peak</span>
+                  <span className="flex items-center gap-1"><span className="w-4 h-3 rounded-sm bg-red-900 inline-block" /> Low</span>
+                  <span className="flex items-center gap-1"><span className="w-4 h-3 rounded-sm bg-orange-700 inline-block" /> Medium</span>
+                  <span className="flex items-center gap-1"><span className="w-4 h-3 rounded-sm bg-yellow-600 inline-block" /> Good</span>
+                  <span className="flex items-center gap-1"><span className="w-4 h-3 rounded-sm bg-lime-600 inline-block" /> Great</span>
+                  <span className="flex items-center gap-1"><span className="w-4 h-3 rounded-sm bg-lime-500 inline-block" /> Peak</span>
                 </div>
               </div>
 
@@ -882,8 +882,8 @@ const NegotiationCoach: React.FC = () => {
                   </ResponsiveContainer>
                 </div>
                 <div className="flex items-center justify-center gap-6 mt-3 text-xs text-slate-400">
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-lime-500 inline-block" /> Buyer Power</span>
-                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-cyan-500 inline-block" /> Seller Urgency</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm bg-lime-500 inline-block" /> Buyer Power</span>
+                  <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm bg-cyan-500 inline-block" /> Seller Urgency</span>
                 </div>
               </div>
 
@@ -1068,7 +1068,7 @@ const NegotiationCoach: React.FC = () => {
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleChatSend(); }}
                   placeholder="Ask about a negotiation..."
-                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20"
+                  className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20"
                 />
                 <button
                   onClick={handleChatSend}

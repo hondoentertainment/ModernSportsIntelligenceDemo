@@ -67,12 +67,12 @@ export const ErrorCardWidget: React.FC<ErrorCardWidgetProps> = ({ onOpenModal })
       {/* Top error card highlight */}
       {topError && (
         <div className="flex items-center gap-3 p-3 bg-red-500/5 border border-red-500/20 rounded-xl mb-4">
-          <AlertOctagon size={14} className="text-red-400 flex-shrink-0" />
+          <AlertOctagon size={14} className="text-red-400 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-red-400 uppercase tracking-widest">Highest Premium</p>
             <p className="text-xs text-white font-medium truncate">{topError.cardName}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <p className="text-xs text-slate-500">Premium</p>
             <p className="text-sm font-bold text-red-400">+{topError.premiumPercent.toFixed(0)}%</p>
           </div>

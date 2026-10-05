@@ -66,12 +66,12 @@ export const AuctionSniperWidget: React.FC<AuctionSniperWidgetProps> = ({ onOpen
       {/* Best deal highlight */}
       {bestDeal && (
         <div className="flex items-center gap-3 p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl mb-4">
-          <Crosshair size={14} className="text-emerald-400 flex-shrink-0" />
+          <Crosshair size={14} className="text-emerald-400 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Best Deal</p>
             <p className="text-xs text-white font-medium truncate">{bestDeal.itemName}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <p className="text-xs text-slate-500">Save</p>
             <p className="text-sm font-bold text-emerald-400">{formatCurrency(bestDeal.potentialSavings)}</p>
           </div>

@@ -99,7 +99,7 @@ const PlayerDataView: React.FC<{ data: any }> = ({ data }) => {
             <div className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1" style={MONO}>Recent Sales</div>
             <div className="space-y-1">
               {data.recentSales.map((sale: any, i: number) => (
-                <div key={i} className="flex justify-between text-xs bg-slate-900/50 rounded px-2 py-1">
+                <div key={i} className="flex justify-between text-xs bg-slate-900/50 rounded-sm px-2 py-1">
                   <span className="text-slate-400 truncate flex-1">{sale.card}</span>
                   <span className="text-emerald-400 ml-2" style={MONO}>${sale.price.toLocaleString()}</span>
                   <span className="text-slate-600 ml-2 text-[10px]">{sale.date}</span>
@@ -113,7 +113,7 @@ const PlayerDataView: React.FC<{ data: any }> = ({ data }) => {
         {data.priceHistory && (
           <div>
             <div className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1" style={MONO}>Price History (90d)</div>
-            <div className="h-40 bg-slate-950/50 rounded p-1">
+            <div className="h-40 bg-slate-950/50 rounded-sm p-1">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data.priceHistory}>
                   <defs>
@@ -196,7 +196,7 @@ const MarketDataView: React.FC<{ data: any }> = ({ data }) => {
           <MetricBox label="Volume" value={data.volume} color="blue" />
         </div>
         {data.chartData && (
-          <div className="h-44 bg-slate-950/50 rounded p-1">
+          <div className="h-44 bg-slate-950/50 rounded-sm p-1">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data.chartData}>
                 <defs>
@@ -222,7 +222,7 @@ const MarketDataView: React.FC<{ data: any }> = ({ data }) => {
             <div className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1" style={MONO}>Sectors</div>
             <div className="space-y-1">
               {data.sectors.map((s: any, i: number) => (
-                <div key={i} className="flex items-center justify-between bg-slate-900/50 rounded px-2 py-1 text-xs">
+                <div key={i} className="flex items-center justify-between bg-slate-900/50 rounded-sm px-2 py-1 text-xs">
                   <span className="text-white">{s.name}</span>
                   <div className="flex items-center gap-3">
                     <span className="text-slate-500" style={MONO}>{s.weight}%</span>
@@ -270,7 +270,7 @@ const MarketDataView: React.FC<{ data: any }> = ({ data }) => {
           </div>
         </div>
         {data.chartData && (
-          <div className="h-36 bg-slate-950/50 rounded p-1">
+          <div className="h-36 bg-slate-950/50 rounded-sm p-1">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data.chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
@@ -334,7 +334,7 @@ const ChartView: React.FC<{ data: any }> = ({ data }) => {
     return (
       <div className="space-y-2">
         <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>{data.player} — Price History (90d)</div>
-        <div className="h-52 bg-slate-950/50 rounded p-1">
+        <div className="h-52 bg-slate-950/50 rounded-sm p-1">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data.history}>
               <defs>
@@ -363,7 +363,7 @@ const ChartView: React.FC<{ data: any }> = ({ data }) => {
     return (
       <div className="space-y-2">
         <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>Portfolio Allocation</div>
-        <div className="h-52 bg-slate-950/50 rounded p-1">
+        <div className="h-52 bg-slate-950/50 rounded-sm p-1">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -389,7 +389,7 @@ const ChartView: React.FC<{ data: any }> = ({ data }) => {
     return (
       <div className="space-y-2">
         <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>Monte Carlo Simulation ({data.iterations?.toLocaleString()} iterations)</div>
-        <div className="h-52 bg-slate-950/50 rounded p-1">
+        <div className="h-52 bg-slate-950/50 rounded-sm p-1">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data.scenarios}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
@@ -447,8 +447,8 @@ const TableView: React.FC<{ data: any }> = ({ data }) => {
           <p className="text-xs text-slate-500" style={MONO}>No commands in history.</p>
         ) : (
           data.history.slice(0, 20).map((h: any, i: number) => (
-            <div key={i} className="flex items-center gap-3 text-xs bg-slate-900/30 rounded px-2 py-1">
-              <span className="text-slate-600 w-16 flex-shrink-0" style={MONO}>{new Date(h.timestamp).toLocaleTimeString()}</span>
+            <div key={i} className="flex items-center gap-3 text-xs bg-slate-900/30 rounded-sm px-2 py-1">
+              <span className="text-slate-600 w-16 shrink-0" style={MONO}>{new Date(h.timestamp).toLocaleTimeString()}</span>
               <span className="text-emerald-400 flex-1" style={MONO}>{h.input}</span>
               <span className="text-slate-600 text-[10px]" style={MONO}>{h.resultType}</span>
             </div>
@@ -464,7 +464,7 @@ const TableView: React.FC<{ data: any }> = ({ data }) => {
       <div className="space-y-2">
         <div className="text-xs text-emerald-600 uppercase tracking-wider mb-2" style={MONO}>System Status</div>
         {Object.entries(data).map(([k, v]) => (
-          <div key={k} className="flex justify-between bg-slate-900/30 rounded px-3 py-1.5">
+          <div key={k} className="flex justify-between bg-slate-900/30 rounded-sm px-3 py-1.5">
             <span className="text-xs text-slate-400 uppercase" style={MONO}>{k.replace(/([A-Z])/g, ' $1').trim()}</span>
             <span className="text-xs text-emerald-400 font-bold" style={MONO}>{String(v)}</span>
           </div>
@@ -482,7 +482,7 @@ const TableView: React.FC<{ data: any }> = ({ data }) => {
           <p className="text-xs text-slate-500" style={MONO}>No saved workspaces. Use WS SAVE &lt;name&gt; to create one.</p>
         ) : (
           data.workspaces.map((ws: any, i: number) => (
-            <div key={i} className="flex justify-between bg-slate-900/30 rounded px-3 py-1.5">
+            <div key={i} className="flex justify-between bg-slate-900/30 rounded-sm px-3 py-1.5">
               <span className="text-xs text-white" style={MONO}>{ws.name}</span>
               <span className="text-xs text-slate-500" style={MONO}>{new Date(ws.createdAt).toLocaleDateString()}</span>
             </div>
@@ -543,7 +543,7 @@ const TableView: React.FC<{ data: any }> = ({ data }) => {
         <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>Portfolio Attribution</div>
         <div className="space-y-1">
           {data.bySport?.map((s: any, i: number) => (
-            <div key={i} className="flex items-center justify-between bg-slate-900/30 rounded px-3 py-2">
+            <div key={i} className="flex items-center justify-between bg-slate-900/30 rounded-sm px-3 py-2">
               <span className="text-xs text-white">{s.sport}</span>
               <div className="flex items-center gap-4">
                 <span className="text-xs text-slate-500" style={MONO}>{s.weight}% wt</span>
@@ -565,8 +565,8 @@ const TableView: React.FC<{ data: any }> = ({ data }) => {
       <div className="space-y-3">
         <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>Portfolio Optimization</div>
         {data.suggestions?.map((s: any, i: number) => (
-          <div key={i} className="bg-slate-900/30 rounded px-3 py-2 flex items-start gap-3">
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${actionColors[s.action] || 'text-slate-400'}`} style={MONO}>{s.action}</span>
+          <div key={i} className="bg-slate-900/30 rounded-sm px-3 py-2 flex items-start gap-3">
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-sm border ${actionColors[s.action] || 'text-slate-400'}`} style={MONO}>{s.action}</span>
             <div className="flex-1">
               <span className="text-xs text-white font-bold">{s.player}</span>
               <p className="text-[10px] text-slate-400">{s.reason}</p>
@@ -650,8 +650,8 @@ const TableView: React.FC<{ data: any }> = ({ data }) => {
       <div className="space-y-2">
         <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>{data.player} — News Feed</div>
         {data.articles?.map((a: any, i: number) => (
-          <div key={i} className="bg-slate-900/30 rounded px-3 py-2 flex items-start gap-2">
-            <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${a.impact === 'positive' ? 'bg-emerald-500' : a.impact === 'negative' ? 'bg-red-500' : 'bg-slate-500'}`} />
+          <div key={i} className="bg-slate-900/30 rounded-sm px-3 py-2 flex items-start gap-2">
+            <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${a.impact === 'positive' ? 'bg-emerald-500' : a.impact === 'negative' ? 'bg-red-500' : 'bg-slate-500'}`} />
             <div className="flex-1 min-w-0">
               <p className="text-xs text-white leading-tight">{a.headline}</p>
               <div className="flex items-center gap-2 mt-1">
@@ -731,7 +731,7 @@ const TableView: React.FC<{ data: any }> = ({ data }) => {
         <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>{data.player} — Trend Signals</div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {Object.entries(data.signals || {}).map(([k, v]) => (
-            <div key={k} className="bg-slate-900/50 border border-slate-800/50 rounded p-2">
+            <div key={k} className="bg-slate-900/50 border border-slate-800/50 rounded-sm p-2">
               <div className="text-[9px] text-slate-500 uppercase" style={MONO}>{k}</div>
               <div className={`text-xs font-bold ${typeof v === 'string' && ['BULLISH', 'BUY', 'INCREASING'].includes(v) ? 'text-emerald-400' : typeof v === 'string' && ['BEARISH', 'SELL', 'DECLINING'].includes(v) ? 'text-red-400' : 'text-white'}`} style={MONO}>
                 {typeof v === 'number' ? `$${v.toLocaleString()}` : String(v)}
@@ -795,7 +795,7 @@ const TableView: React.FC<{ data: any }> = ({ data }) => {
       <div className="space-y-2">
         <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>Sector Performance</div>
         {data.sectors?.map((s: any, i: number) => (
-          <div key={i} className="flex items-center justify-between bg-slate-900/30 rounded px-3 py-2">
+          <div key={i} className="flex items-center justify-between bg-slate-900/30 rounded-sm px-3 py-2">
             <span className="text-xs text-white">{s.name}</span>
             <div className="flex items-center gap-3">
               <span className="text-xs text-slate-500" style={MONO}>{s.weight}%</span>
@@ -925,13 +925,13 @@ const HelpView: React.FC<{ data: any }> = ({ data }) => {
       <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>MSI Terminal — {data.total} Commands Available</div>
       {Object.entries(data.grouped || {}).map(([category, cmds]) => (
         <div key={category}>
-          <div className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded border mb-2 inline-block ${categoryColors[category] || ''}`} style={MONO}>
+          <div className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm border mb-2 inline-block ${categoryColors[category] || ''}`} style={MONO}>
             {categoryTitle[category] || category}
           </div>
           <div className="space-y-1 ml-1">
             {(cmds as any[]).map((cmd, i) => (
               <div key={i} className="flex items-start gap-3 text-xs">
-                <span className="text-emerald-400 w-28 flex-shrink-0 font-bold" style={MONO}>{cmd.usage}</span>
+                <span className="text-emerald-400 w-28 shrink-0 font-bold" style={MONO}>{cmd.usage}</span>
                 <span className="text-slate-400">{cmd.description}</span>
               </div>
             ))}
@@ -969,7 +969,7 @@ const MetricBox: React.FC<{ label: string; value: string | number; color: string
     purple: 'text-purple-400 border-purple-500/30 bg-purple-500/5',
   };
   return (
-    <div className={`rounded border p-2 ${colorMap[color] || colorMap.slate}`}>
+    <div className={`rounded-sm border p-2 ${colorMap[color] || colorMap.slate}`}>
       <div className="text-[9px] text-slate-500 uppercase" style={MONO}>{label}</div>
       <div className="text-sm font-bold" style={MONO}>{value}</div>
     </div>
@@ -983,7 +983,7 @@ const MoverList: React.FC<{ title: string; items: any[]; color: string }> = ({ t
       <div className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${titleColor}`} style={MONO}>{title}</div>
       <div className="space-y-1">
         {items?.map((item: any, i: number) => (
-          <div key={i} className="flex justify-between bg-slate-900/30 rounded px-2 py-1 text-xs">
+          <div key={i} className="flex justify-between bg-slate-900/30 rounded-sm px-2 py-1 text-xs">
             <span className="text-white truncate">{item.name}</span>
             <span className={`${item.change >= 0 ? 'text-emerald-400' : 'text-red-400'} font-bold`} style={MONO}>
               {item.change >= 0 ? '+' : ''}{item.change}%
@@ -1156,7 +1156,7 @@ const MSITerminalModal: React.FC<MSITerminalModalProps> = ({ isOpen, onClose }) 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-xs">
       <div className="w-full h-full max-w-[98vw] max-h-[98vh] mx-auto flex flex-col bg-slate-950 border border-emerald-500/30 rounded-lg overflow-hidden shadow-2xl shadow-emerald-500/10">
 
         {/* Title bar */}
@@ -1175,7 +1175,7 @@ const MSITerminalModal: React.FC<MSITerminalModalProps> = ({ isOpen, onClose }) 
           </div>
           <div className="flex items-center gap-3">
             {/* Split mode toggles */}
-            <div className="flex items-center gap-1 border border-emerald-900/30 rounded overflow-hidden">
+            <div className="flex items-center gap-1 border border-emerald-900/30 rounded-sm overflow-hidden">
               {([1, 2, 4] as const).map(n => (
                 <button
                   key={n}
@@ -1189,7 +1189,7 @@ const MSITerminalModal: React.FC<MSITerminalModalProps> = ({ isOpen, onClose }) 
             </div>
             <button
               onClick={() => setShowHistory(!showHistory)}
-              className={`p-1 rounded transition-colors ${showHistory ? 'bg-emerald-500/20 text-emerald-400' : 'text-emerald-700 hover:text-emerald-400'}`}
+              className={`p-1 rounded-sm transition-colors ${showHistory ? 'bg-emerald-500/20 text-emerald-400' : 'text-emerald-700 hover:text-emerald-400'}`}
               title="Toggle history sidebar"
             >
               {showHistory ? <PanelLeftClose size={14} /> : <PanelLeftOpen size={14} />}
@@ -1203,7 +1203,7 @@ const MSITerminalModal: React.FC<MSITerminalModalProps> = ({ isOpen, onClose }) 
         {/* Command input bar */}
         <div className="px-4 py-2 bg-slate-950 border-b border-emerald-500/20 relative">
           <div className="flex items-center gap-2">
-            <ChevronRight size={14} className="text-emerald-500 flex-shrink-0" />
+            <ChevronRight size={14} className="text-emerald-500 shrink-0" />
             <input
               ref={inputRef}
               type="text"
@@ -1211,12 +1211,12 @@ const MSITerminalModal: React.FC<MSITerminalModalProps> = ({ isOpen, onClose }) 
               onChange={(e) => setInput(e.target.value.toUpperCase())}
               onKeyDown={handleKeyDown}
               placeholder="Enter command... (e.g., MAHOMES GO, PORT, MSI500, HELP)"
-              className="bg-transparent flex-1 outline-none text-sm placeholder-emerald-800/50"
+              className="bg-transparent flex-1 outline-hidden text-sm placeholder-emerald-800/50"
               style={{ ...MONO, color: TERM_GREEN }}
             />
             <button
               onClick={handleExecute}
-              className="px-3 py-1 bg-emerald-500/20 border border-emerald-500/40 rounded text-emerald-400 text-xs hover:bg-emerald-500/30 transition-colors"
+              className="px-3 py-1 bg-emerald-500/20 border border-emerald-500/40 rounded-sm text-emerald-400 text-xs hover:bg-emerald-500/30 transition-colors"
               style={MONO}
             >
               GO
@@ -1244,7 +1244,7 @@ const MSITerminalModal: React.FC<MSITerminalModalProps> = ({ isOpen, onClose }) 
         <div className="flex-1 flex overflow-hidden">
           {/* History sidebar */}
           {showHistory && (
-            <div className="w-64 border-r border-emerald-500/20 bg-black/50 flex flex-col overflow-hidden flex-shrink-0">
+            <div className="w-64 border-r border-emerald-500/20 bg-black/50 flex flex-col overflow-hidden shrink-0">
               <div className="px-3 py-2 border-b border-emerald-900/30 flex items-center justify-between">
                 <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider" style={MONO}>History</span>
                 <button
@@ -1295,7 +1295,7 @@ const MSITerminalModal: React.FC<MSITerminalModalProps> = ({ isOpen, onClose }) 
                     <button
                       key={cmd}
                       onClick={() => { setInput(cmd); inputRef.current?.focus(); }}
-                      className="text-[10px] text-emerald-600 px-2 py-1 border border-emerald-900/40 rounded hover:border-emerald-500/40 hover:text-emerald-400 transition-colors"
+                      className="text-[10px] text-emerald-600 px-2 py-1 border border-emerald-900/40 rounded-sm hover:border-emerald-500/40 hover:text-emerald-400 transition-colors"
                       style={MONO}
                     >
                       {cmd}
@@ -1326,7 +1326,7 @@ const MSITerminalModal: React.FC<MSITerminalModalProps> = ({ isOpen, onClose }) 
               // Multi-panel — show last N entries in separate panels
               entries.slice(-splitMode).map((entry, i) => (
                 <div key={i} className="border border-emerald-900/20 rounded-lg overflow-hidden flex flex-col min-h-0">
-                  <div className="flex items-center gap-2 px-2 py-1 bg-black/50 border-b border-emerald-900/20 flex-shrink-0">
+                  <div className="flex items-center gap-2 px-2 py-1 bg-black/50 border-b border-emerald-900/20 shrink-0">
                     <ChevronRight size={10} className="text-emerald-600" />
                     <span className="text-[10px] text-emerald-400 flex-1 truncate" style={MONO}>{entry.input}</span>
                   </div>

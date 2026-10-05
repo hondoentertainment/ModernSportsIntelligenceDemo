@@ -148,11 +148,11 @@ const QuickOffer: React.FC<{ listing: Listing; onClose: () => void }> = ({ listi
         <div className="relative mt-1">
           <DollarSign size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
           <input type="number" value={amount} onChange={e => setAmount(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-600 rounded-lg pl-8 pr-3 py-2 text-sm text-slate-200 focus:border-lime-500/50 focus:outline-none" />
+            className="w-full bg-slate-800 border border-slate-600 rounded-lg pl-8 pr-3 py-2 text-sm text-slate-200 focus:border-lime-500/50 focus:outline-hidden" />
         </div>
       </div>
       <textarea value={message} onChange={e => setMessage(e.target.value)} rows={2}
-        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:border-lime-500/50 focus:outline-none resize-none"
+        className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:border-lime-500/50 focus:outline-hidden resize-none"
         placeholder="Add a message..." />
       <button onClick={handleSend}
         className="w-full flex items-center justify-center gap-2 bg-lime-600 hover:bg-lime-500 text-white font-semibold text-sm py-2 rounded-lg transition-colors">
@@ -174,13 +174,13 @@ const ListingCard: React.FC<{ listing: Listing }> = ({ listing }) => {
   return (
     <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl overflow-hidden hover:border-lime-500/30 transition-all relative">
       {/* Image area */}
-      <div className="h-36 bg-gradient-to-br from-slate-700/80 to-slate-800 flex items-center justify-center relative">
+      <div className="h-36 bg-linear-to-br from-slate-700/80 to-slate-800 flex items-center justify-center relative">
         <span className="text-5xl opacity-70">{SPORT_ICON[listing.sport]}</span>
-        <div className={`absolute top-2 right-2 px-1.5 py-0.5 rounded border text-[10px] font-bold ${dealBg(score)} ${dealColor(score)}`}>
+        <div className={`absolute top-2 right-2 px-1.5 py-0.5 rounded-sm border text-[10px] font-bold ${dealBg(score)} ${dealColor(score)}`}>
           Deal {score}
         </div>
         {discount > 0 && (
-          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-[10px] font-bold text-emerald-400">
+          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded-sm bg-emerald-500/20 border border-emerald-500/30 text-[10px] font-bold text-emerald-400">
             {discount}% below MV
           </div>
         )}
@@ -201,9 +201,9 @@ const ListingCard: React.FC<{ listing: Listing }> = ({ listing }) => {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-300 border border-slate-600/50">{listing.grade}</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-300 border border-slate-600/50">{listing.sport}</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/60 text-slate-300 border border-slate-600/50">{listing.year}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-slate-700/60 text-slate-300 border border-slate-600/50">{listing.grade}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-slate-700/60 text-slate-300 border border-slate-600/50">{listing.sport}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-slate-700/60 text-slate-300 border border-slate-600/50">{listing.year}</span>
         </div>
 
         <div className="flex items-center justify-between">
@@ -233,7 +233,7 @@ const ListingCard: React.FC<{ listing: Listing }> = ({ listing }) => {
 
       {/* Offer overlay */}
       {showOffer && (
-        <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-sm rounded-xl z-10 flex items-center">
+        <div className="absolute inset-0 bg-slate-900/95 backdrop-blur-xs rounded-xl z-10 flex items-center">
           <div className="w-full"><QuickOffer listing={listing} onClose={() => setShowOffer(false)} /></div>
         </div>
       )}
@@ -251,7 +251,7 @@ const SellerCard: React.FC<{ seller: SellerProfile }> = ({ seller }) => (
         <p className="text-sm font-semibold text-slate-200 flex items-center gap-1.5 truncate">
           {seller.username}
           {seller.verified && (
-            <span className="px-1.5 py-0.5 rounded bg-lime-500/20 border border-lime-500/30 text-[9px] text-lime-400 font-bold">VERIFIED</span>
+            <span className="px-1.5 py-0.5 rounded-sm bg-lime-500/20 border border-lime-500/30 text-[9px] text-lime-400 font-bold">VERIFIED</span>
           )}
         </p>
         <div className="flex items-center gap-1 text-xs text-slate-400">
@@ -289,9 +289,9 @@ const OfferRow: React.FC<{ offer: Offer }> = ({ offer }) => {
         <p className="text-xs text-slate-400 mt-0.5">{offer.message}</p>
         <p className="text-[10px] text-slate-500 mt-1">From: {offer.buyer} &middot; {timeAgo(offer.createdAt)}</p>
       </div>
-      <div className="text-right flex-shrink-0">
+      <div className="text-right shrink-0">
         <p className="text-sm font-bold text-slate-100">{fmtPrice(offer.amount)}</p>
-        <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded border mt-1 ${badge.cls}`}>
+        <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-sm border mt-1 ${badge.cls}`}>
           {badge.icon} {badge.label}
         </span>
       </div>
@@ -365,7 +365,7 @@ const FilterSidebar: React.FC<{ filters: FilterState; onChange: (_f: FilterState
           <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
           <input type="text" value={filters.search} onChange={e => update({ search: e.target.value })}
             placeholder="Player, card, seller..."
-            className="w-full bg-slate-800 border border-slate-600 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:border-lime-500/50 focus:outline-none" />
+            className="w-full bg-slate-800 border border-slate-600 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:border-lime-500/50 focus:outline-hidden" />
         </div>
       </div>
 
@@ -391,10 +391,10 @@ const FilterSidebar: React.FC<{ filters: FilterState; onChange: (_f: FilterState
         <label className="text-[10px] text-slate-500 uppercase tracking-wider">Price Range</label>
         <div className="flex items-center gap-2 mt-1">
           <input type="number" value={filters.minPrice} onChange={e => update({ minPrice: e.target.value })}
-            placeholder="Min" className="w-full bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-none" />
+            placeholder="Min" className="w-full bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-hidden" />
           <span className="text-slate-500 text-xs">-</span>
           <input type="number" value={filters.maxPrice} onChange={e => update({ maxPrice: e.target.value })}
-            placeholder="Max" className="w-full bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-none" />
+            placeholder="Max" className="w-full bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-hidden" />
         </div>
       </div>
 
@@ -402,7 +402,7 @@ const FilterSidebar: React.FC<{ filters: FilterState; onChange: (_f: FilterState
       <div>
         <label className="text-[10px] text-slate-500 uppercase tracking-wider">Grade</label>
         <select value={filters.grade} onChange={e => update({ grade: e.target.value as CardGrade | '' })}
-          className="w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-none">
+          className="w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-hidden">
           <option value="">All Grades</option>
           {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
         </select>
@@ -412,7 +412,7 @@ const FilterSidebar: React.FC<{ filters: FilterState; onChange: (_f: FilterState
       <div>
         <label className="text-[10px] text-slate-500 uppercase tracking-wider">Condition</label>
         <select value={filters.condition} onChange={e => update({ condition: e.target.value as CardCondition | '' })}
-          className="w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-none">
+          className="w-full mt-1 bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-hidden">
           <option value="">All Conditions</option>
           {CONDITIONS.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
@@ -529,7 +529,7 @@ const P2PMarketplace: React.FC = () => {
       {activeTab === 'browse' && (
         <div className="flex gap-6">
           {/* Sidebar */}
-          <div className="w-56 flex-shrink-0 hidden lg:block">
+          <div className="w-56 shrink-0 hidden lg:block">
             <div className="bg-slate-900 border border-slate-700/50 rounded-xl p-4 sticky top-6">
               <FilterSidebar filters={filters} onChange={setFilters} />
             </div>
@@ -549,7 +549,7 @@ const P2PMarketplace: React.FC = () => {
             <div className="flex items-center justify-between">
               <p className="text-sm text-slate-400">{filteredListings.length} listings found</p>
               <select value={sortBy} onChange={e => setSortBy(e.target.value as SortOption)}
-                className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-none">
+                className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:border-lime-500/50 focus:outline-hidden">
                 <option value="newest">Newest First</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>

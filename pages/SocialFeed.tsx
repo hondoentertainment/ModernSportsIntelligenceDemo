@@ -244,7 +244,7 @@ const SocialFeed: React.FC = () => {
           value={commentTexts[post.id] || ''}
           onChange={e => setCommentTexts(prev => ({ ...prev, [post.id]: e.target.value }))}
           placeholder="Add a comment..."
-          className="flex-1 bg-slate-700/50 text-white text-xs rounded-lg px-3 py-2 placeholder-slate-500 border border-slate-600 focus:outline-none focus:border-blue-500"
+          className="flex-1 bg-slate-700/50 text-white text-xs rounded-lg px-3 py-2 placeholder-slate-500 border border-slate-600 focus:outline-hidden focus:border-blue-500"
         />
         <button onClick={() => handleComment(post.id)} className="text-blue-400 hover:text-blue-300 transition">
           <Send size={16} />
@@ -268,13 +268,13 @@ const SocialFeed: React.FC = () => {
               value={searchQuery}
               onChange={e => { setSearchQuery(e.target.value); setTypeFilter(''); }}
               placeholder="Search posts, players, tags..."
-              className="w-full bg-slate-800 text-white text-sm rounded-lg pl-10 pr-4 py-2.5 placeholder-slate-500 border border-slate-700 focus:outline-none focus:border-blue-500"
+              className="w-full bg-slate-800 text-white text-sm rounded-lg pl-10 pr-4 py-2.5 placeholder-slate-500 border border-slate-700 focus:outline-hidden focus:border-blue-500"
             />
           </div>
           <select
             value={typeFilter}
             onChange={e => { setTypeFilter(e.target.value as PostType | ''); setSearchQuery(''); }}
-            className="bg-slate-800 text-white text-sm rounded-lg px-4 py-2.5 border border-slate-700 focus:outline-none focus:border-blue-500"
+            className="bg-slate-800 text-white text-sm rounded-lg px-4 py-2.5 border border-slate-700 focus:outline-hidden focus:border-blue-500"
           >
             <option value="">All Types</option>
             <option value="pickup">Pickups</option>
@@ -477,7 +477,7 @@ const SocialFeed: React.FC = () => {
             </p>
             <p className="text-slate-500 text-xs mt-1">{formatTimestamp(n.timestamp)}</p>
           </div>
-          {!n.read && <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0" />}
+          {!n.read && <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0" />}
         </div>
       ))}
       {notifications.length === 0 && (

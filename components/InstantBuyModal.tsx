@@ -84,11 +84,11 @@ const InstantBuyModal: React.FC<InstantBuyModalProps> = ({ isOpen, onClose, card
     : quote.netPayout;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-2xl bg-brand-slate border border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
 
         {/* Header */}
-        <div className="p-8 border-b border-slate-800 flex items-center justify-between bg-gradient-to-r from-brand-charcoal/60 to-brand-charcoal/30">
+        <div className="p-8 border-b border-slate-800 flex items-center justify-between bg-linear-to-r from-brand-charcoal/60 to-brand-charcoal/30">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-brand-lime/10 rounded-2xl border border-brand-lime/20">
               <Zap size={24} className="text-brand-lime" />

@@ -91,7 +91,7 @@ const RBACManager: React.FC = () => {
                         <div>
                           <div className="flex items-center gap-2">
                             <span className="text-white font-semibold">{m.name}</span>
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${getRoleColor(m.role)}`}>{getRoleLabel(m.role)}</span>
+                            <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold ${getRoleColor(m.role)}`}>{getRoleLabel(m.role)}</span>
                             {m.mfaEnabled && <Lock size={12} className="text-green-400" />}
                             {!m.mfaEnabled && <AlertTriangle size={12} className="text-amber-400" />}
                           </div>
@@ -116,7 +116,7 @@ const RBACManager: React.FC = () => {
                     {/* Permission Row */}
                     <div className="flex items-center gap-2 flex-wrap">
                       {m.permissions.map(p => (
-                        <div key={p.scope} className="flex items-center gap-1 bg-slate-800/50 rounded px-2 py-1">
+                        <div key={p.scope} className="flex items-center gap-1 bg-slate-800/50 rounded-sm px-2 py-1">
                           <span className="text-slate-500 text-[10px] uppercase">{p.scope}</span>
                           <span className={`text-[10px] font-bold ${getPermissionColor(p.level)}`}>{p.level}</span>
                         </div>
@@ -146,7 +146,7 @@ const RBACManager: React.FC = () => {
                 {teams.flatMap(t => t.members).map(m => (
                   <tr key={m.id} className="border-b border-slate-800/50">
                     <td className="py-3 pr-4 text-white font-semibold">@{m.handle}</td>
-                    <td className="py-3 pr-4"><span className={`px-2 py-0.5 rounded text-[10px] font-bold ${getRoleColor(m.role)}`}>{getRoleLabel(m.role)}</span></td>
+                    <td className="py-3 pr-4"><span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold ${getRoleColor(m.role)}`}>{getRoleLabel(m.role)}</span></td>
                     {m.permissions.map(p => (
                       <td key={p.scope} className="py-3 px-2 text-center">
                         <span className={`text-[10px] font-bold ${getPermissionColor(p.level)}`}>

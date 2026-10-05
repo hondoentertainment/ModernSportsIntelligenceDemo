@@ -260,7 +260,7 @@ const BreakEvenCalculator: React.FC = () => {
                 type="text"
                 value={cardName}
                 onChange={(e) => setCardName(e.target.value)}
-                className="w-full bg-slate-700 text-white rounded px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none"
+                className="w-full bg-slate-700 text-white rounded-sm px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 placeholder="e.g. 2023 Topps Chrome RC #1"
               />
             </div>
@@ -271,7 +271,7 @@ const BreakEvenCalculator: React.FC = () => {
                   type="text"
                   value={player}
                   onChange={(e) => setPlayer(e.target.value)}
-                  className="w-full bg-slate-700 text-white rounded px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="w-full bg-slate-700 text-white rounded-sm px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 />
               </div>
               <div>
@@ -279,7 +279,7 @@ const BreakEvenCalculator: React.FC = () => {
                 <select
                   value={sport}
                   onChange={(e) => setSport(e.target.value)}
-                  className="w-full bg-slate-700 text-white rounded px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="w-full bg-slate-700 text-white rounded-sm px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 >
                   <option>Baseball</option>
                   <option>Basketball</option>
@@ -296,7 +296,7 @@ const BreakEvenCalculator: React.FC = () => {
                   type="number"
                   value={year}
                   onChange={(e) => setYear(parseInt(e.target.value) || 2024)}
-                  className="w-full bg-slate-700 text-white rounded px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="w-full bg-slate-700 text-white rounded-sm px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 />
               </div>
               <div>
@@ -305,7 +305,7 @@ const BreakEvenCalculator: React.FC = () => {
                   type="text"
                   value={set}
                   onChange={(e) => setSet(e.target.value)}
-                  className="w-full bg-slate-700 text-white rounded px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="w-full bg-slate-700 text-white rounded-sm px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -346,7 +346,7 @@ const BreakEvenCalculator: React.FC = () => {
                     const firstTier = gradingTiers.find((t) => t.company === e.target.value);
                     if (firstTier) setGradingTierName(firstTier.tier);
                   }}
-                  className="w-full bg-slate-700 text-white rounded px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="w-full bg-slate-700 text-white rounded-sm px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 >
                   {[...new Set(gradingTiers.map((t) => t.company))].map((c) => (
                     <option key={c}>{c}</option>
@@ -358,7 +358,7 @@ const BreakEvenCalculator: React.FC = () => {
                 <select
                   value={gradingTierName}
                   onChange={(e) => setGradingTierName(e.target.value)}
-                  className="w-full bg-slate-700 text-white rounded px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="w-full bg-slate-700 text-white rounded-sm px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 >
                   {companyTiers.map((t) => (
                     <option key={t.tier} value={t.tier}>
@@ -373,7 +373,7 @@ const BreakEvenCalculator: React.FC = () => {
               <select
                 value={platform}
                 onChange={(e) => setPlatform(e.target.value)}
-                className="w-full bg-slate-700 text-white rounded px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none"
+                className="w-full bg-slate-700 text-white rounded-sm px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-hidden"
               >
                 {platformFees.map((p) => (
                   <option key={p.platform}>{p.platform}</option>
@@ -387,7 +387,7 @@ const BreakEvenCalculator: React.FC = () => {
                   type="number"
                   value={shippingCost}
                   onChange={(e) => setShippingCost(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-slate-700 text-white rounded px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="w-full bg-slate-700 text-white rounded-sm px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 />
               </div>
               <div>
@@ -396,7 +396,7 @@ const BreakEvenCalculator: React.FC = () => {
                   type="number"
                   value={insuranceCost}
                   onChange={(e) => setInsuranceCost(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-slate-700 text-white rounded px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="w-full bg-slate-700 text-white rounded-sm px-3 py-2 border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -416,7 +416,7 @@ const BreakEvenCalculator: React.FC = () => {
                   value={entry.grade}
                   onChange={(e) => updateGradeEntry(i, 'grade', e.target.value)}
                   placeholder="Grade"
-                  className="col-span-4 bg-slate-700 text-white rounded px-2 py-1.5 text-sm border border-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="col-span-4 bg-slate-700 text-white rounded-sm px-2 py-1.5 text-sm border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 />
                 <input
                   type="number"
@@ -424,14 +424,14 @@ const BreakEvenCalculator: React.FC = () => {
                   onChange={(e) => updateGradeEntry(i, 'probability', e.target.value)}
                   placeholder="Prob"
                   step="0.01"
-                  className="col-span-3 bg-slate-700 text-white rounded px-2 py-1.5 text-sm border border-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="col-span-3 bg-slate-700 text-white rounded-sm px-2 py-1.5 text-sm border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 />
                 <input
                   type="number"
                   value={entry.marketValue}
                   onChange={(e) => updateGradeEntry(i, 'marketValue', e.target.value)}
                   placeholder="Value"
-                  className="col-span-3 bg-slate-700 text-white rounded px-2 py-1.5 text-sm border border-slate-600 focus:border-blue-500 focus:outline-none"
+                  className="col-span-3 bg-slate-700 text-white rounded-sm px-2 py-1.5 text-sm border border-slate-600 focus:border-blue-500 focus:outline-hidden"
                 />
                 <button
                   onClick={() => removeGradeEntry(i)}
@@ -443,7 +443,7 @@ const BreakEvenCalculator: React.FC = () => {
             ))}
             <button
               onClick={addGradeEntry}
-              className="w-full py-1.5 text-sm text-blue-400 hover:text-blue-300 border border-dashed border-slate-600 rounded"
+              className="w-full py-1.5 text-sm text-blue-400 hover:text-blue-300 border border-dashed border-slate-600 rounded-sm"
             >
               + Add Grade
             </button>
@@ -522,13 +522,13 @@ const BreakEvenCalculator: React.FC = () => {
               </div>
               <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 bg-green-900/50 rounded" /> Profitable
+                  <span className="w-3 h-3 bg-green-900/50 rounded-sm" /> Profitable
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 bg-blue-600 rounded" /> Break-Even
+                  <span className="w-3 h-3 bg-blue-600 rounded-sm" /> Break-Even
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 bg-red-900/50 rounded" /> Loss
+                  <span className="w-3 h-3 bg-red-900/50 rounded-sm" /> Loss
                 </span>
               </div>
             </div>
@@ -898,23 +898,23 @@ const BreakEvenCalculator: React.FC = () => {
           </h3>
           <ul className="space-y-2 text-sm text-slate-300">
             <li className="flex items-start gap-2">
-              <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
               Always factor in insurance for cards worth over $200 raw.
             </li>
             <li className="flex items-start gap-2">
-              <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
               COMC has the lowest total fees but requires consignment.
             </li>
             <li className="flex items-start gap-2">
-              <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
               BGS 9.5 often commands a premium over PSA 10 for modern cards.
             </li>
             <li className="flex items-start gap-2">
-              <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
               Economy grading tiers are best for cards under $100 raw value.
             </li>
             <li className="flex items-start gap-2">
-              <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
               Consider SGC for vintage cards - growing market acceptance and lower fees.
             </li>
           </ul>

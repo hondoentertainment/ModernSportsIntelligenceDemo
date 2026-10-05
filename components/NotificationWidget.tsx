@@ -155,12 +155,12 @@ export const NotificationWidget: React.FC<NotificationWidgetProps> = ({ cards, o
                 key={n.id}
                 className="flex items-center gap-3 px-3 py-2.5 bg-slate-800/30 hover:bg-slate-800/60 border border-slate-700/50 rounded-xl text-left transition-all"
               >
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${pCfg.dot} ${n.priority === 'critical' ? 'animate-pulse' : ''}`} />
+                <span className={`w-2 h-2 rounded-full shrink-0 ${pCfg.dot} ${n.priority === 'critical' ? 'animate-pulse' : ''}`} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-white font-medium truncate">{n.title}</p>
                   <p className="text-[11px] text-slate-500 truncate">{n.message}</p>
                 </div>
-                <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+                <div className="flex flex-col items-end gap-0.5 shrink-0">
                   <span className={`text-[9px] font-black uppercase tracking-widest ${pCfg.text}`}>
                     {n.priority}
                   </span>
@@ -175,7 +175,7 @@ export const NotificationWidget: React.FC<NotificationWidgetProps> = ({ cards, o
       {/* Empty State */}
       {topNotifications.length === 0 && (
         <div className="flex items-center gap-3 px-4 py-3 bg-green-500/5 border border-green-500/15 rounded-xl">
-          <Bell size={14} className="text-green-400 flex-shrink-0" />
+          <Bell size={14} className="text-green-400 shrink-0" />
           <span className="text-xs text-slate-400">All caught up — no unread notifications</span>
         </div>
       )}

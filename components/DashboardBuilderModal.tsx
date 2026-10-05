@@ -86,9 +86,9 @@ const DashboardBuilderModal: React.FC<DashboardBuilderModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg mx-4 shadow-2xl max-h-[80vh] flex flex-col">
@@ -214,12 +214,12 @@ const DashboardBuilderModal: React.FC<DashboardBuilderModalProps> = ({
                   <p className="text-xs text-slate-400">{preset.description}</p>
                   <div className="flex gap-1 mt-2 flex-wrap">
                     {preset.layout.widgets.slice(0, 5).map((w, i) => (
-                      <span key={i} className="text-[9px] px-1.5 py-0.5 bg-slate-700/50 text-slate-500 rounded">
+                      <span key={i} className="text-[9px] px-1.5 py-0.5 bg-slate-700/50 text-slate-500 rounded-sm">
                         {w.config.title}
                       </span>
                     ))}
                     {preset.layout.widgets.length > 5 && (
-                      <span className="text-[9px] px-1.5 py-0.5 bg-slate-700/50 text-slate-500 rounded">
+                      <span className="text-[9px] px-1.5 py-0.5 bg-slate-700/50 text-slate-500 rounded-sm">
                         +{preset.layout.widgets.length - 5} more
                       </span>
                     )}

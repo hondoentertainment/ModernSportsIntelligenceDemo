@@ -75,10 +75,10 @@ const CardMaterialSpectrometryModal: React.FC<Props> = ({ isOpen, onClose }) => 
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-500/10 to-slate-900 px-6 py-5 border-b border-slate-700/40">
+        <div className="bg-linear-to-r from-indigo-500/10 to-slate-900 px-6 py-5 border-b border-slate-700/40">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center">
@@ -232,7 +232,7 @@ const CardMaterialSpectrometryModal: React.FC<Props> = ({ isOpen, onClose }) => 
                         {scan.flags.map((flag, i) => (
                           <div key={i} className="bg-slate-700/30 rounded-lg p-3">
                             <div className="flex items-center gap-2 mb-1.5">
-                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border ${getFlagTypeColor(flag.type)}`}>
+                              <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-bold uppercase border ${getFlagTypeColor(flag.type)}`}>
                                 {flag.type.replace('-', ' ')}
                               </span>
                               <span className="text-red-400 text-[10px] font-mono">{flag.confidence}% confidence</span>

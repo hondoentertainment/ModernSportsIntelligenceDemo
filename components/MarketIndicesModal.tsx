@@ -76,7 +76,7 @@ export const MarketIndicesModal: React.FC<MarketIndicesModalProps> = ({ isOpen, 
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-6 pb-6 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       <div className="relative bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-6xl shadow-2xl max-h-[90vh] flex flex-col">
         {/* Header */}

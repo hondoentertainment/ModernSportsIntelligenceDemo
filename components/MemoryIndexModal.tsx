@@ -144,7 +144,7 @@ export default function MemoryIndexModal({ isOpen, onClose }: MemoryIndexModalPr
           placeholder="Search players or sports..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
+          className="w-full bg-slate-800/60 border border-slate-700/50 rounded-lg pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:ring-1 focus:ring-indigo-500/50"
         />
       </div>
 
@@ -182,7 +182,7 @@ export default function MemoryIndexModal({ isOpen, onClose }: MemoryIndexModalPr
               <div className="flex items-center gap-3">
                 <div className="flex-1 bg-slate-900/60 rounded-full h-3 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-indigo-600 to-indigo-400 transition-all duration-500"
+                    className="h-full rounded-full bg-linear-to-r from-indigo-600 to-indigo-400 transition-all duration-500"
                     style={{ width: `${score.overallScore}%` }}
                   />
                 </div>
@@ -239,7 +239,7 @@ export default function MemoryIndexModal({ isOpen, onClose }: MemoryIndexModalPr
               </div>
               <div className="w-full bg-slate-900/60 rounded-full h-2 mb-2">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-indigo-600 to-indigo-400"
+                  className="h-full rounded-full bg-linear-to-r from-indigo-600 to-indigo-400"
                   style={{ width: `${pct}%` }}
                 />
               </div>
@@ -365,7 +365,7 @@ export default function MemoryIndexModal({ isOpen, onClose }: MemoryIndexModalPr
             className="bg-slate-800/40 border border-slate-700/40 rounded-xl p-5 hover:border-indigo-500/30 transition-colors"
           >
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-16 h-16 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
+              <div className="w-16 h-16 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shrink-0">
                 <Crown size={28} className="text-indigo-400" />
               </div>
               <div className="flex-1 min-w-0">
@@ -380,7 +380,7 @@ export default function MemoryIndexModal({ isOpen, onClose }: MemoryIndexModalPr
                 </p>
                 <p className="text-xs text-indigo-300 mt-1">{player.careerHighlight}</p>
               </div>
-              <div className="text-right flex-shrink-0">
+              <div className="text-right shrink-0">
                 <div className="text-2xl font-bold text-indigo-300">{player.memoryScore}</div>
                 <p className="text-xs text-slate-500">Memory Score</p>
               </div>
@@ -413,7 +413,7 @@ export default function MemoryIndexModal({ isOpen, onClose }: MemoryIndexModalPr
               <p className="text-xs text-slate-500 mb-1">Signature Card</p>
               <p className="text-sm font-medium text-slate-200">{player.signatureCard}</p>
               <div className="mt-2 flex items-start gap-2">
-                <span className="text-xs text-slate-500 flex-shrink-0">Why Iconic:</span>
+                <span className="text-xs text-slate-500 shrink-0">Why Iconic:</span>
                 <span className="text-xs text-indigo-300">
                   Memory score of {player.memoryScore} with {formatNumber(player.socialMentions)} monthly social mentions and {formatNumber(player.mediaAppearances)} lifetime media appearances create an unmatched cultural footprint.
                 </span>
@@ -427,7 +427,7 @@ export default function MemoryIndexModal({ isOpen, onClose }: MemoryIndexModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50 bg-slate-900/95">
           <div className="flex items-center gap-3">

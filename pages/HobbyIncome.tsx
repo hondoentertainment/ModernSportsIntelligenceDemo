@@ -398,7 +398,7 @@ export default function HobbyIncome() {
                 </div>
                 {tax.isApproachingLimit && (
                   <div className="flex items-start gap-2 p-3 bg-amber-900/30 border border-amber-700 rounded-lg">
-                    <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+                    <AlertTriangle className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
                     <p className="text-sm text-amber-200">{tax.recommendation}</p>
                   </div>
                 )}

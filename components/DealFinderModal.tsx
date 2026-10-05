@@ -203,7 +203,7 @@ const DealsTab: React.FC<{
               {/* Top Row */}
               <div className="flex items-start gap-3">
                 {/* Score */}
-                <div className={`flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-xl border ${getScoreBg(deal.dealScore)}`}>
+                <div className={`shrink-0 w-12 h-12 flex items-center justify-center rounded-xl border ${getScoreBg(deal.dealScore)}`}>
                   <span className={`font-bebas text-xl tracking-wider ${getScoreColor(deal.dealScore)}`}>
                     {deal.dealScore}
                   </span>
@@ -233,7 +233,7 @@ const DealsTab: React.FC<{
                 </div>
 
                 {/* Price & Savings */}
-                <div className="text-right flex-shrink-0">
+                <div className="text-right shrink-0">
                   <p className="text-lg font-bebas tracking-wider text-white">
                     ${deal.listing.listPrice.toFixed(2)}
                   </p>
@@ -354,7 +354,7 @@ const ArbitrageTab: React.FC<{
               </div>
 
               {/* Arrow */}
-              <div className="flex-shrink-0 p-2 text-brand-lime">
+              <div className="shrink-0 p-2 text-brand-lime">
                 <ArrowRight size={18} />
               </div>
 
@@ -422,7 +422,7 @@ const AlertsTab: React.FC<{
             className="p-4 bg-slate-800/30 border border-green-500/20 rounded-2xl space-y-3"
           >
             <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 p-2 bg-green-500/10 rounded-xl text-green-400">
+              <div className="shrink-0 p-2 bg-green-500/10 rounded-xl text-green-400">
                 <Bell size={18} />
               </div>
               <div className="flex-1 min-w-0">
@@ -438,7 +438,7 @@ const AlertsTab: React.FC<{
                   </span>
                 </div>
               </div>
-              <div className="text-right flex-shrink-0">
+              <div className="text-right shrink-0">
                 <p className="text-lg font-bebas tracking-wider text-green-400">
                   ${alert.currentPrice.toFixed(2)}
                 </p>
@@ -503,7 +503,7 @@ const HistoryTab: React.FC<{
             className="flex items-center gap-3 p-4 bg-slate-800/30 border border-slate-700/50 rounded-xl"
           >
             {/* Action Icon */}
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               {actionIcons[entry.action]}
             </div>
 
@@ -513,7 +513,7 @@ const HistoryTab: React.FC<{
                 <span className={`text-xs font-bold ${actionInfo.color}`}>
                   {actionInfo.label}
                 </span>
-                <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${platColors.text} ${platColors.bg} border ${platColors.border}`}>
+                <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-bold ${platColors.text} ${platColors.bg} border ${platColors.border}`}>
                   {entry.listing.platform}
                 </span>
               </div>
@@ -527,7 +527,7 @@ const HistoryTab: React.FC<{
             </div>
 
             {/* Score & Price */}
-            <div className="text-right flex-shrink-0">
+            <div className="text-right shrink-0">
               <span className={`font-bebas text-lg tracking-wider ${getScoreColor(entry.dealScore)}`}>
                 {entry.dealScore}
               </span>
@@ -588,7 +588,7 @@ export const DealFinderModal: React.FC<DealFinderModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-green-500/5">

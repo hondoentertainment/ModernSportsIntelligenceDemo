@@ -155,7 +155,7 @@ export const CrossAssetCorrelationWidget: React.FC<CrossAssetCorrelationWidgetPr
                     return (
                       <td key={asset} className="px-0.5 py-0.5">
                         <div
-                          className={`${correlationColor(val)} bg-opacity-30 rounded px-1 py-0.5 text-center ${correlationTextColor(val)} font-mono`}
+                          className={`${correlationColor(val)} bg-opacity-30 rounded-sm px-1 py-0.5 text-center ${correlationTextColor(val)} font-mono`}
                         >
                           {val > 0 ? '+' : ''}
                           {val.toFixed(2)}
@@ -172,7 +172,7 @@ export const CrossAssetCorrelationWidget: React.FC<CrossAssetCorrelationWidgetPr
 
       {/* Diversification Score Gauge */}
       <div className="flex items-center gap-4">
-        <div className="relative flex-shrink-0">
+        <div className="relative shrink-0">
           <svg width={80} height={80} viewBox="0 0 80 80">
             <circle
               cx="40"
@@ -251,7 +251,7 @@ export const CrossAssetCorrelationWidget: React.FC<CrossAssetCorrelationWidgetPr
               </p>
             </div>
             <span
-              className={`text-xs font-mono flex-shrink-0 ${
+              className={`text-xs font-mono shrink-0 ${
                 topAlert.historicalCardImpact >= 0
                   ? 'text-green-400'
                   : 'text-red-400'
@@ -268,7 +268,7 @@ export const CrossAssetCorrelationWidget: React.FC<CrossAssetCorrelationWidgetPr
       {topHedge && (
         <div className="rounded-xl p-3 border bg-indigo-500/5 border-indigo-500/20">
           <div className="flex items-start gap-2">
-            <Shield size={14} className="text-indigo-400 flex-shrink-0 mt-0.5" />
+            <Shield size={14} className="text-indigo-400 shrink-0 mt-0.5" />
             <div className="flex-1 min-w-0">
               <p className="text-xs text-white font-medium">Hedge Signal</p>
               <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-2">

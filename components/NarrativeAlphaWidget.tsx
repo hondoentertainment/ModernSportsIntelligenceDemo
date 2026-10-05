@@ -101,9 +101,9 @@ export const NarrativeAlphaWidget: React.FC<NarrativeAlphaWidgetProps> = ({ onCl
             key={mention.id}
             className="flex items-center gap-2 text-[11px] bg-slate-800/20 rounded-lg px-3 py-1.5"
           >
-            <span className="flex-shrink-0 w-4 text-center">{sourceIcon[mention.source] || '📄'}</span>
+            <span className="shrink-0 w-4 text-center">{sourceIcon[mention.source] || '📄'}</span>
             <span className="text-slate-400 truncate flex-1">{mention.headline}</span>
-            <span className={`flex-shrink-0 font-bold ${mention.sentimentScore > 0.5 ? 'text-green-400' : mention.sentimentScore > 0 ? 'text-amber-400' : 'text-red-400'}`}>
+            <span className={`shrink-0 font-bold ${mention.sentimentScore > 0.5 ? 'text-green-400' : mention.sentimentScore > 0 ? 'text-amber-400' : 'text-red-400'}`}>
               {mention.sentimentScore > 0 ? '+' : ''}{(mention.sentimentScore * 100).toFixed(0)}
             </span>
           </div>

@@ -141,7 +141,7 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <ConfirmDialog
         isOpen={confirmReturnOpen}
         title="Return to collection?"
@@ -242,7 +242,7 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
                       >
                         <td className="p-3 text-white font-medium flex items-center gap-2">
                           {isOptimal && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-brand-lime/10 border border-brand-lime/30 rounded text-brand-lime text-[8px] font-black uppercase tracking-widest">
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-brand-lime/10 border border-brand-lime/30 rounded-sm text-brand-lime text-[8px] font-black uppercase tracking-widest">
                               <Award size={10} /> Best
                             </span>
                           )}
@@ -288,7 +288,7 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
                 <select
                   value={selectedHouseId}
                   onChange={(e) => setSelectedHouseId(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-lime/50 transition-colors"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-hidden focus:border-brand-lime/50 transition-colors"
                 >
                   <option value="">Select a house...</option>
                   {houses.map((h) => (
@@ -307,7 +307,7 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
                   type="number"
                   value={askingPrice}
                   onChange={(e) => setAskingPrice(Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-brand-lime/50 transition-colors"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-hidden focus:border-brand-lime/50 transition-colors"
                 />
               </div>
 
@@ -319,7 +319,7 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
                   type="number"
                   value={shippingCost}
                   onChange={(e) => setShippingCost(Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-brand-lime/50 transition-colors"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-hidden focus:border-brand-lime/50 transition-colors"
                 />
               </div>
 
@@ -331,7 +331,7 @@ export const ConsignmentModal: React.FC<ConsignmentModalProps> = ({
                   type="number"
                   value={insuranceCost}
                   onChange={(e) => setInsuranceCost(Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-brand-lime/50 transition-colors"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-mono focus:outline-hidden focus:border-brand-lime/50 transition-colors"
                 />
               </div>
 

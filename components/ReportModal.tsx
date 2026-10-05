@@ -223,11 +223,11 @@ export const ReportModal: React.FC<ReportModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
 
         {/* Header */}
-        <div className="p-8 pb-0 flex items-center justify-between flex-shrink-0">
+        <div className="p-8 pb-0 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-blue-500/10 rounded-xl text-blue-400">
               <FileText size={22} />
@@ -250,7 +250,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
         </div>
 
         {/* Tabs */}
-        <div className="px-8 pt-6 flex gap-1 flex-shrink-0">
+        <div className="px-8 pt-6 flex gap-1 shrink-0">
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -294,7 +294,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
                             : 'bg-slate-800/30 border-slate-700/50 hover:border-slate-600'
                         }`}
                       >
-                        <div className={`p-2 rounded-lg ${cfg.bg} ${cfg.color} flex-shrink-0 mt-0.5`}>
+                        <div className={`p-2 rounded-lg ${cfg.bg} ${cfg.color} shrink-0 mt-0.5`}>
                           {cfg.icon}
                         </div>
                         <div className="min-w-0">
@@ -324,7 +324,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
                         type="date"
                         value={dateStart}
                         onChange={e => setDateStart(e.target.value)}
-                        className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 transition-colors"
+                        className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-hidden focus:border-blue-500 transition-colors"
                       />
                     </div>
                     <div className="flex items-center gap-2">
@@ -333,7 +333,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
                         type="date"
                         value={dateEnd}
                         onChange={e => setDateEnd(e.target.value)}
-                        className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500 transition-colors"
+                        className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-hidden focus:border-blue-500 transition-colors"
                       />
                     </div>
                   </div>
@@ -457,7 +457,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
                             <span className="text-xs text-white font-medium block">{dateStr} at {timeStr}</span>
                             <span className="text-[10px] text-slate-500">{entry.cardCount} cards analyzed</span>
                           </div>
-                          <div className="flex items-center gap-1.5 flex-shrink-0">
+                          <div className="flex items-center gap-1.5 shrink-0">
                             {cached && (
                               <button
                                 onClick={() => handleViewFromHistory(entry.id)}

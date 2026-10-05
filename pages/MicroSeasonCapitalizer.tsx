@@ -345,11 +345,11 @@ function CalendarHeatMapTab() {
                 <div className="text-[10px] text-slate-500 font-medium flex items-center">W{week}</div>
                 {monthNames.map((_, mIdx) => {
                   const entry = heatMap.find(e => e.month === mIdx + 1 && e.week === week);
-                  if (!entry) return <div key={mIdx} className="h-10 rounded bg-slate-800" />;
+                  if (!entry) return <div key={mIdx} className="h-10 rounded-sm bg-slate-800" />;
                   return (
                     <div
                       key={mIdx}
-                      className="h-10 rounded flex items-center justify-center cursor-pointer transition-transform hover:scale-110 group relative"
+                      className="h-10 rounded-sm flex items-center justify-center cursor-pointer transition-transform hover:scale-110 group relative"
                       style={{ backgroundColor: intensityToColor(entry.intensity) + '33', border: `1px solid ${intensityToColor(entry.intensity)}44` }}
                     >
                       <span className="text-[10px] font-bold" style={{ color: intensityToColor(entry.intensity) }}>
@@ -378,7 +378,7 @@ function CalendarHeatMapTab() {
                 { label: 'Peak', color: '#22c55e' },
               ].map(l => (
                 <div key={l.label} className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded" style={{ backgroundColor: l.color + '55' }} />
+                  <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: l.color + '55' }} />
                   <span className="text-[10px] text-slate-400">{l.label}</span>
                 </div>
               ))}
@@ -943,7 +943,7 @@ const MicroSeasonCapitalizer: React.FC = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
               activeTab === tab.id
-                ? 'bg-slate-700/70 text-slate-100 shadow-sm'
+                ? 'bg-slate-700/70 text-slate-100 shadow-xs'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
             }`}
           >

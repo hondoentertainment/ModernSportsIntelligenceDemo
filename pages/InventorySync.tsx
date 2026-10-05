@@ -241,7 +241,7 @@ const InventorySync: React.FC = () => {
                   <p className="text-sm font-bold text-white truncate">{card.card_name}</p>
                   <p className="text-[10px] text-slate-500">{card.player} &bull; {card.grade} &bull; {card.year}</p>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+                <div className="flex items-center gap-3 shrink-0 ml-4">
                   <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ backgroundColor: `${PLATFORM_COLORS[card.platform]}20`, color: PLATFORM_COLORS[card.platform] }}>
                     {connections.find((c) => c.platform === card.platform)?.platformLabel || card.platform}
                   </span>
@@ -392,9 +392,9 @@ const InventorySync: React.FC = () => {
             {syncHistory.map((entry) => (
               <div key={entry.id} className="flex items-start gap-3 p-2 bg-slate-900/50 border border-slate-700/30 rounded-lg">
                 {entry.success ? (
-                  <CheckCircle size={14} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                  <CheckCircle size={14} className="text-emerald-400 mt-0.5 shrink-0" />
                 ) : (
-                  <XCircle size={14} className="text-red-400 mt-0.5 flex-shrink-0" />
+                  <XCircle size={14} className="text-red-400 mt-0.5 shrink-0" />
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="text-[11px] text-white">{entry.description}</p>
@@ -422,7 +422,7 @@ const InventorySync: React.FC = () => {
             value={scanCodes}
             onChange={(e) => setScanCodes(e.target.value)}
             placeholder={'PSA-78341201\neb-394821\ncomc-881204'}
-            className="w-full h-28 px-3 py-2 text-sm bg-slate-900/50 border border-slate-700/50 text-slate-300 rounded-lg resize-none placeholder:text-slate-600 focus:outline-none focus:border-purple-500/50"
+            className="w-full h-28 px-3 py-2 text-sm bg-slate-900/50 border border-slate-700/50 text-slate-300 rounded-lg resize-none placeholder:text-slate-600 focus:outline-hidden focus:border-purple-500/50"
           />
           <button
             onClick={() => {
@@ -441,7 +441,7 @@ const InventorySync: React.FC = () => {
 
       {scannerOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-100 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-xs p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="inventory-scan-title"

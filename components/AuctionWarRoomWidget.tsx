@@ -81,7 +81,7 @@ const AuctionWarRoomWidget: React.FC<AuctionWarRoomWidgetProps> = ({ onOpenModal
                 {(() => {
                   const pc = getPlatformConfig(topWatched.platform);
                   return (
-                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${pc.bg} ${pc.text} ${pc.border}`}>
+                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${pc.bg} ${pc.text} ${pc.border}`}>
                       {pc.label}
                     </span>
                   );
@@ -89,7 +89,7 @@ const AuctionWarRoomWidget: React.FC<AuctionWarRoomWidgetProps> = ({ onOpenModal
                 {(() => {
                   const sc = getStrategyConfig(topWatched.strategy);
                   return (
-                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${sc.bg} ${sc.text} ${sc.border}`}>
+                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${sc.bg} ${sc.text} ${sc.border}`}>
                       {sc.label}
                     </span>
                   );
@@ -100,14 +100,14 @@ const AuctionWarRoomWidget: React.FC<AuctionWarRoomWidgetProps> = ({ onOpenModal
               </div>
             </div>
 
-            <div className="flex flex-col items-end gap-1 flex-shrink-0">
+            <div className="flex flex-col items-end gap-1 shrink-0">
               <span className="text-sm font-bold text-white">
                 {formatCurrency(topWatched.currentBid)}
               </span>
               <span className="text-[10px] text-slate-500">current bid</span>
             </div>
 
-            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0" />
+            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
           </button>
         </div>
       )}
@@ -128,12 +128,12 @@ const AuctionWarRoomWidget: React.FC<AuctionWarRoomWidgetProps> = ({ onOpenModal
                   className="flex items-center justify-between p-2.5 rounded-lg border bg-amber-500/5 border-amber-500/20 text-xs"
                 >
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${pc.bg} ${pc.text} ${pc.border}`}>
+                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${pc.bg} ${pc.text} ${pc.border}`}>
                       {pc.label}
                     </span>
                     <span className="text-white font-medium truncate">{auction.title}</span>
                   </div>
-                  <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+                  <div className="flex items-center gap-3 shrink-0 ml-2">
                     <span className="text-white font-bold">{formatCurrency(auction.currentBid)}</span>
                     <span className="text-amber-400 font-bold flex items-center gap-1">
                       <Clock className="w-3 h-3" /> {auction.timeRemaining}

@@ -35,7 +35,7 @@ const LiveGameImpactModal: React.FC<Props> = ({ isOpen, onClose, portfolioPlayer
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
@@ -123,7 +123,7 @@ const LiveGameImpactModal: React.FC<Props> = ({ isOpen, onClose, portfolioPlayer
                     <div className="mt-3 space-y-2 border-t border-slate-700/30 pt-3">
                       {game.events.map(event => (
                         <div key={event.id} className="flex items-start gap-3 bg-slate-900/50 rounded-lg p-2">
-                          <div className={`p-1 rounded ${event.cardValueDelta >= 0 ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}>
+                          <div className={`p-1 rounded-sm ${event.cardValueDelta >= 0 ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}>
                             {event.cardValueDelta >= 0 ? <TrendingUp size={12} className="text-emerald-400" /> : <TrendingDown size={12} className="text-red-400" />}
                           </div>
                           <div className="flex-1 min-w-0">

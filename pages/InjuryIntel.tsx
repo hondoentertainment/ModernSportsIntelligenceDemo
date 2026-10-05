@@ -215,7 +215,7 @@ const InjuryIntel: React.FC = () => {
                     {ci.urgency}
                   </span>
                   <span className="text-sm font-bold text-white">{ci.playerName}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-slate-700 text-slate-400">
                     {ci.eventType.replace(/_/g, ' ')}
                   </span>
                 </div>

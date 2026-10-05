@@ -31,9 +31,9 @@ const InsuranceAppraisalWidget: React.FC<InsuranceAppraisalWidgetProps> = ({ onN
   if (loading) {
     return (
       <div className="bg-slate-800 rounded-lg border border-slate-700 p-4 animate-pulse">
-        <div className="h-4 bg-slate-700 rounded w-1/2 mb-3" />
-        <div className="h-8 bg-slate-700 rounded w-3/4 mb-2" />
-        <div className="h-3 bg-slate-700 rounded w-full" />
+        <div className="h-4 bg-slate-700 rounded-sm w-1/2 mb-3" />
+        <div className="h-8 bg-slate-700 rounded-sm w-3/4 mb-2" />
+        <div className="h-3 bg-slate-700 rounded-sm w-full" />
       </div>
     );
   }

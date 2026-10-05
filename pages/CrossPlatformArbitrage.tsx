@@ -353,12 +353,12 @@ const CrossPlatformArbitrage: React.FC = () => {
                     <div className="text-xs text-slate-500">{opp.grade} &middot; {getTypeLabel(opp.type)}</div>
                   </td>
                   <td className="py-3 px-3">
-                    <span className="px-2 py-0.5 rounded text-xs font-bold" style={{ backgroundColor: getPlatformColor(opp.buyPlatform) + '20', color: getPlatformColor(opp.buyPlatform) }}>
+                    <span className="px-2 py-0.5 rounded-sm text-xs font-bold" style={{ backgroundColor: getPlatformColor(opp.buyPlatform) + '20', color: getPlatformColor(opp.buyPlatform) }}>
                       {getPlatformLabel(opp.buyPlatform)}
                     </span>
                   </td>
                   <td className="py-3 px-3">
-                    <span className="px-2 py-0.5 rounded text-xs font-bold" style={{ backgroundColor: getPlatformColor(opp.sellPlatform) + '20', color: getPlatformColor(opp.sellPlatform) }}>
+                    <span className="px-2 py-0.5 rounded-sm text-xs font-bold" style={{ backgroundColor: getPlatformColor(opp.sellPlatform) + '20', color: getPlatformColor(opp.sellPlatform) }}>
                       {getPlatformLabel(opp.sellPlatform)}
                     </span>
                   </td>
@@ -372,7 +372,7 @@ const CrossPlatformArbitrage: React.FC = () => {
                     {formatPercent(opp.profitMargin)}
                   </td>
                   <td className="py-3 px-3 text-center">
-                    <span className={`px-2 py-0.5 rounded text-xs font-bold ${RISK_BADGE[opp.riskLevel]}`}>
+                    <span className={`px-2 py-0.5 rounded-sm text-xs font-bold ${RISK_BADGE[opp.riskLevel]}`}>
                       {opp.riskLevel.toUpperCase()}
                     </span>
                   </td>
@@ -599,7 +599,7 @@ const CrossPlatformArbitrage: React.FC = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${ALERT_PRIORITY_BADGE[alert.priority]}`}>
+                  <span className={`px-1.5 py-0.5 rounded-sm text-[10px] font-bold uppercase ${ALERT_PRIORITY_BADGE[alert.priority]}`}>
                     {alert.priority}
                   </span>
                   <span className="text-xs text-slate-500">

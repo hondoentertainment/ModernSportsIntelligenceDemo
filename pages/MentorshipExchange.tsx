@@ -114,7 +114,7 @@ const MentorshipExchange: React.FC = () => {
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
               {mentor.name.split(' ').map(n => n[0]).join('')}
             </div>
             <div>
@@ -270,7 +270,7 @@ const MentorshipExchange: React.FC = () => {
                 )}
                 <span className={completed ? 'text-slate-300' : 'text-slate-500'}>{skill.name}</span>
                 <span
-                  className="text-xs px-1.5 py-0.5 rounded ml-auto shrink-0"
+                  className="text-xs px-1.5 py-0.5 rounded-sm ml-auto shrink-0"
                   style={{ color: getSkillLevelColor(skill.level), backgroundColor: `${getSkillLevelColor(skill.level)}15` }}
                 >
                   {skill.level}
@@ -461,7 +461,7 @@ const MentorshipExchange: React.FC = () => {
                           <span className="text-xs text-slate-500 block mb-1">Prerequisites:</span>
                           <div className="flex flex-wrap gap-1">
                             {prereqs.map((p) => (
-                              <span key={p.id} className="text-xs px-2 py-0.5 rounded bg-slate-700 text-slate-300 flex items-center gap-1">
+                              <span key={p.id} className="text-xs px-2 py-0.5 rounded-sm bg-slate-700 text-slate-300 flex items-center gap-1">
                                 <CheckCircle size={10} className="text-green-400" />
                                 {p.name}
                               </span>

@@ -83,7 +83,7 @@ const ScoreBadge: React.FC<{ score: number }> = ({ score }) => {
     : score >= 50 ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
     : 'bg-red-500/20 text-red-400 border-red-500/30';
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 text-xs font-bold rounded border ${color}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 text-xs font-bold rounded-sm border ${color}`}>
       {score}
     </span>
   );
@@ -357,7 +357,7 @@ const ConsignmentRouterModal: React.FC<ConsignmentRouterModalProps> = ({ isOpen,
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
@@ -390,7 +390,7 @@ const ConsignmentRouterModal: React.FC<ConsignmentRouterModalProps> = ({ isOpen,
                 type="number"
                 value={cardValue}
                 onChange={(e) => setCardValue(Math.max(0, Number(e.target.value)))}
-                className="bg-slate-800 border border-slate-700 rounded-lg pl-7 pr-3 py-1.5 text-sm text-white w-32 focus:outline-none focus:border-lime-500/50"
+                className="bg-slate-800 border border-slate-700 rounded-lg pl-7 pr-3 py-1.5 text-sm text-white w-32 focus:outline-hidden focus:border-lime-500/50"
               />
             </div>
           </div>

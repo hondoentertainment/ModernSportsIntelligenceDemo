@@ -168,7 +168,7 @@ const EstateSuccessionModal: React.FC<EstateSuccessionModalProps> = ({ isOpen, o
               <div className="flex-1">
                 <div className="w-full bg-slate-700/50 rounded-full h-3 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400"
+                    className="h-full rounded-full bg-linear-to-r from-amber-500 to-yellow-400"
                     style={{ width: `${heir.allocatedPercentage}%` }}
                   />
                 </div>
@@ -233,7 +233,7 @@ const EstateSuccessionModal: React.FC<EstateSuccessionModalProps> = ({ isOpen, o
           <div key={heir.id} className="bg-slate-800/40 border border-slate-700/50 rounded-xl p-5 hover:border-amber-500/30 transition-all">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-amber-500/20 to-yellow-500/20 rounded-xl flex items-center justify-center border border-amber-500/30">
+                <div className="w-12 h-12 bg-linear-to-br from-amber-500/20 to-yellow-500/20 rounded-xl flex items-center justify-center border border-amber-500/30">
                   <User size={20} className="text-amber-400" />
                 </div>
                 <div>
@@ -453,7 +453,7 @@ const EstateSuccessionModal: React.FC<EstateSuccessionModalProps> = ({ isOpen, o
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-6xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
         {/* Header */}
         <div className="p-6 border-b border-slate-700/50 flex items-center justify-between">

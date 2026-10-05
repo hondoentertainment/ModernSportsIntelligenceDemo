@@ -177,8 +177,8 @@ const HypeRadar: React.FC = () => {
           </ResponsiveContainer>
         </div>
         <div className="flex items-center justify-center gap-6 text-[10px] text-slate-500 mt-2">
-          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-emerald-500 rounded" /> Bullish</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-red-500 rounded" /> Bearish</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-emerald-500 rounded-sm" /> Bullish</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-red-500 rounded-sm" /> Bearish</span>
         </div>
       </div>
 
@@ -257,7 +257,7 @@ const HypeRadar: React.FC = () => {
                   </div>
                   <div className="flex gap-2">
                     {v.platforms.map(p => (
-                      <span key={p.platform} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded">
+                      <span key={p.platform} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded-sm">
                         {getPlatformLabel(p.platform)} ({p.mentionCount.toLocaleString()})
                       </span>
                     ))}
@@ -318,7 +318,7 @@ const HypeRadar: React.FC = () => {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-bold text-white">{inf.name}</p>
-                  {inf.isVerified && <span className="text-[8px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded">V</span>}
+                  {inf.isVerified && <span className="text-[8px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded-sm">V</span>}
                 </div>
                 <span className={`text-[10px] font-bold uppercase ${getTierColor(inf.tier)}`}>{inf.tier}</span>
               </div>

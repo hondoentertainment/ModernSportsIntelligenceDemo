@@ -59,7 +59,7 @@ const ForgotPassword: React.FC = () => {
             <div className="w-full max-w-md">
                 {/* Logo */}
                 <div className="flex items-center gap-3 mb-8 justify-center">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-lime to-brand-teal flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-linear-to-br from-brand-lime to-brand-teal flex items-center justify-center">
                         <TrendingUp className="w-6 h-6 text-brand-charcoal" />
                     </div>
                     <span className="font-bebas text-3xl tracking-wider text-white">MSI</span>
@@ -101,7 +101,7 @@ const ForgotPassword: React.FC = () => {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 pl-12 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all"
+                                className="w-full px-4 py-3 pl-12 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all"
                                 placeholder="investor@example.com"
                                 required
                             />
@@ -111,7 +111,7 @@ const ForgotPassword: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-lg tracking-wider hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="w-full py-3 px-4 rounded-xl bg-linear-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-lg tracking-wider hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                         {loading ? (
                             <>

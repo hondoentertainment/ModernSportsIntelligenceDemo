@@ -136,7 +136,7 @@ const AuctionWarRoom: React.FC = () => {
                 <div className="flex items-center justify-between mb-2">
                   <span className={`text-[10px] px-2 py-0.5 rounded-full ${platform.bg} ${platform.text} ${platform.border} border`}>{platform.label}</span>
                   <div className="flex items-center gap-2">
-                    {strat && <span className={`text-[10px] px-1.5 py-0.5 rounded ${strat.bg} ${strat.text}`}>{strat.label}</span>}
+                    {strat && <span className={`text-[10px] px-1.5 py-0.5 rounded-sm ${strat.bg} ${strat.text}`}>{strat.label}</span>}
                     <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${status.bg} ${status.text}`}>{status.label}</span>
                   </div>
                 </div>
@@ -265,13 +265,13 @@ const AuctionWarRoom: React.FC = () => {
             return (
               <div key={r.auctionId} className="flex items-center justify-between p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${platform.bg} ${platform.text} border ${platform.border} flex-shrink-0`}>{platform.label}</span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${platform.bg} ${platform.text} border ${platform.border} shrink-0`}>{platform.label}</span>
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-white truncate">{r.title}</p>
                     <p className="text-[10px] text-slate-500">{r.totalBids} bids | Est: {formatCurrency(r.estimateLow)}&ndash;{formatCurrency(r.estimateHigh)}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 flex-shrink-0">
+                <div className="flex items-center gap-4 shrink-0">
                   <div className="text-right">
                     <p className="text-sm font-bold text-white">{formatCurrency(r.hammerPrice)}</p>
                     {r.won && r.overpayPercent !== 0 && (
@@ -281,7 +281,7 @@ const AuctionWarRoom: React.FC = () => {
                       </p>
                     )}
                   </div>
-                  <span className={`text-xs font-bold px-2 py-1 rounded ${r.won ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                  <span className={`text-xs font-bold px-2 py-1 rounded-sm ${r.won ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
                     {r.won ? 'WON' : 'LOST'}
                   </span>
                 </div>

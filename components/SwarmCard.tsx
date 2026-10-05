@@ -65,7 +65,7 @@ const SwarmCard: React.FC<SwarmCardProps> = ({ insight }) => {
 
                 <div className="flex flex-wrap gap-2">
                     {insight.tags.map((tag, i) => (
-                        <span key={i} className="px-2 py-0.5 bg-slate-900/50 border border-slate-800 rounded text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
+                        <span key={i} className="px-2 py-0.5 bg-slate-900/50 border border-slate-800 rounded-sm text-[9px] font-bold text-slate-500 uppercase tracking-tighter">
                             #{tag}
                         </span>
                     ))}

@@ -228,7 +228,7 @@ const PortfolioStressTest: React.FC = () => {
                 </div>
                 <div className="flex flex-wrap gap-1 mb-4">
                   {scenario.affectedSports.map((sport) => (
-                    <span key={sport} className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded">
+                    <span key={sport} className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-sm">
                       {sport}
                     </span>
                   ))}
@@ -526,7 +526,7 @@ const PortfolioStressTest: React.FC = () => {
                   <ul className="space-y-2">
                     {resilience.recommendations.map((r, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-slate-300">
-                        <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                        <ChevronRight className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
                         {r}
                       </li>
                     ))}
@@ -600,7 +600,7 @@ const PortfolioStressTest: React.FC = () => {
                   </span>
                   <div className="flex gap-1">
                     {crash.affectedMarkets.map((m) => (
-                      <span key={m} className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded">
+                      <span key={m} className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-sm">
                         {m}
                       </span>
                     ))}

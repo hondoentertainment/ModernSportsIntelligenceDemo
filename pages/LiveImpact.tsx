@@ -128,7 +128,7 @@ const LiveImpact: React.FC = () => {
               <div className="mt-3 space-y-2">
                 {game.events.map(event => (
                   <div key={event.id} className="flex items-start gap-2 bg-slate-900/50 rounded-lg p-2">
-                    <div className={`p-1 rounded mt-0.5 ${event.cardValueDelta >= 0 ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}>
+                    <div className={`p-1 rounded-sm mt-0.5 ${event.cardValueDelta >= 0 ? 'bg-emerald-500/20' : 'bg-red-500/20'}`}>
                       {event.cardValueDelta >= 0 ? <TrendingUp size={10} className="text-emerald-400" /> : <TrendingDown size={10} className="text-red-400" />}
                     </div>
                     <div className="flex-1 min-w-0">

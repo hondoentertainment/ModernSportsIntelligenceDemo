@@ -64,7 +64,7 @@ export const WaxIntelligenceWidget: React.FC<WaxIntelligenceWidgetProps> = ({ on
             <p className="text-sm font-medium text-white truncate">{topEvProduct.name}</p>
           </div>
           <div className="h-10 w-px bg-slate-700" />
-          <div className="flex-shrink-0 text-right">
+          <div className="shrink-0 text-right">
             <div className="flex items-center gap-1">
               <Percent size={12} className="text-brand-lime" />
               <span className="text-2xl font-bebas tracking-wider text-brand-lime">
@@ -92,7 +92,7 @@ export const WaxIntelligenceWidget: React.FC<WaxIntelligenceWidgetProps> = ({ on
               Best Break
             </p>
             <div className="flex items-center gap-1">
-              <TrendingUp size={12} className="text-brand-lime flex-shrink-0" />
+              <TrendingUp size={12} className="text-brand-lime shrink-0" />
               <p className="text-xs text-white font-medium truncate">{bestBreak.name.split(' ').slice(0, 3).join(' ')}</p>
             </div>
           </div>
@@ -102,12 +102,12 @@ export const WaxIntelligenceWidget: React.FC<WaxIntelligenceWidgetProps> = ({ on
       {/* Best ROI */}
       {stats.bestProductByROI && (
         <div className="flex items-center gap-3 px-4 py-3 bg-green-500/5 border border-green-500/15 rounded-xl">
-          <TrendingUp size={14} className="text-green-400 flex-shrink-0" />
-          <span className="text-xs text-slate-400 flex-shrink-0">Best ROI:</span>
+          <TrendingUp size={14} className="text-green-400 shrink-0" />
+          <span className="text-xs text-slate-400 shrink-0">Best ROI:</span>
           <span className="text-xs text-white font-medium truncate">
             {stats.bestProductByROI.name}
           </span>
-          <span className="ml-auto text-xs font-bold text-green-400 flex-shrink-0">
+          <span className="ml-auto text-xs font-bold text-green-400 shrink-0">
             +{stats.bestProductByROI.roi.toFixed(1)}%
           </span>
         </div>

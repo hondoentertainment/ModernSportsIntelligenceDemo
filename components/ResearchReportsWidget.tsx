@@ -67,7 +67,7 @@ export const ResearchReportsWidget: React.FC<ResearchReportsWidgetProps> = ({ on
         <div className="mb-3">
           <div className="flex items-center gap-2 mb-1">
             {badge && (
-              <span className={`px-1.5 py-0.5 ${badge.bg} ${badge.color} text-[10px] font-medium rounded`}>
+              <span className={`px-1.5 py-0.5 ${badge.bg} ${badge.color} text-[10px] font-medium rounded-sm`}>
                 {badge.label}
               </span>
             )}

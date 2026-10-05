@@ -95,7 +95,7 @@ const AgentConsensusView: React.FC<AgentConsensusViewProps> = ({ view, compact =
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <span
-                  className={`inline-flex min-w-[4.5rem] justify-center rounded-lg border px-2 py-1 text-[10px] font-black uppercase tracking-widest ${STANCE_STYLES[row.stance]}`}
+                  className={`inline-flex min-w-18 justify-center rounded-lg border px-2 py-1 text-[10px] font-black uppercase tracking-widest ${STANCE_STYLES[row.stance]}`}
                 >
                   {stanceLabel(row.stance)}
                 </span>

@@ -128,7 +128,7 @@ const PredictTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
               ? `${selectedCard.player} - ${selectedCard.year} ${selectedCard.manufacturer} #${selectedCard.cardNumber}`
               : 'Select a card'}
           </span>
-          <ChevronDown size={16} className="text-slate-400 flex-shrink-0" />
+          <ChevronDown size={16} className="text-slate-400 shrink-0" />
         </button>
         {showDropdown && (
           <div className="absolute z-50 top-full mt-1 w-full bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-xl max-h-60 overflow-y-auto">
@@ -150,7 +150,7 @@ const PredictTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
                   {card.player} - {card.year} {card.manufacturer} #{card.cardNumber}
                 </span>
                 {!card.isGraded && (
-                  <span className="flex-shrink-0 text-[10px] font-bold text-cyan-400 bg-cyan-500/15 px-1.5 py-0.5 rounded">
+                  <span className="shrink-0 text-[10px] font-bold text-cyan-400 bg-cyan-500/15 px-1.5 py-0.5 rounded-sm">
                     RAW
                   </span>
                 )}
@@ -377,7 +377,7 @@ const BulkQueueTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
       {/* Batch Discount Banner */}
       {batch.batchDiscount > 0 && (
         <div className="flex items-center gap-3 p-4 bg-green-500/5 border border-green-500/20 rounded-2xl">
-          <Sparkles size={18} className="text-green-400 flex-shrink-0" />
+          <Sparkles size={18} className="text-green-400 shrink-0" />
           <div>
             <p className="text-sm font-bold text-white">Bulk Discount: {batch.batchDiscount}% off</p>
             <p className="text-xs text-slate-400">
@@ -421,7 +421,7 @@ const BulkQueueTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
                   : 'bg-slate-800/30 border-slate-700/50'
               }`}
             >
-              <span className="text-[10px] text-slate-600 font-mono w-5 text-right flex-shrink-0">
+              <span className="text-[10px] text-slate-600 font-mono w-5 text-right shrink-0">
                 {idx + 1}
               </span>
               <div className="flex-1 min-w-0">
@@ -430,7 +430,7 @@ const BulkQueueTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
                   {roi.cardDescription} &middot; {roi.bestCompany} &middot; Pred. {roi.predictedGrade}
                 </p>
               </div>
-              <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="flex items-center gap-3 shrink-0">
                 <span className={`text-xs font-bold font-mono ${
                   roi.expectedROI >= 0 ? 'text-green-400' : 'text-red-400'
                 }`}>
@@ -514,7 +514,7 @@ const CompanyTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
               ? `${selectedCard.player} - ${selectedCard.year} ${selectedCard.manufacturer} #${selectedCard.cardNumber}`
               : 'Select a card'}
           </span>
-          <ChevronDown size={16} className="text-slate-400 flex-shrink-0" />
+          <ChevronDown size={16} className="text-slate-400 shrink-0" />
         </button>
         {showDropdown && (
           <div className="absolute z-50 top-full mt-1 w-full bg-slate-800 border border-slate-700 rounded-xl overflow-hidden shadow-xl max-h-60 overflow-y-auto">
@@ -787,7 +787,7 @@ const AccuracyTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
 
       {/* Overall Accuracy */}
       <div className="flex items-center gap-3 p-4 bg-cyan-500/5 border border-cyan-500/20 rounded-2xl">
-        <Target size={18} className="text-cyan-400 flex-shrink-0" />
+        <Target size={18} className="text-cyan-400 shrink-0" />
         <div>
           <p className="text-sm font-bold text-white">Model Accuracy Rate</p>
           <p className="text-xs text-slate-400">
@@ -878,9 +878,9 @@ const AccuracyTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
                 className="flex items-center gap-3 px-4 py-2.5 bg-slate-900/30 rounded-xl"
               >
                 {accurate ? (
-                  <CheckCircle2 size={14} className="text-green-400 flex-shrink-0" />
+                  <CheckCircle2 size={14} className="text-green-400 shrink-0" />
                 ) : (
-                  <AlertTriangle size={14} className={diff <= 1.0 ? 'text-amber-400 flex-shrink-0' : 'text-red-400 flex-shrink-0'} />
+                  <AlertTriangle size={14} className={diff <= 1.0 ? 'text-amber-400 shrink-0' : 'text-red-400 shrink-0'} />
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-white font-medium truncate">{point.player}</p>
@@ -922,7 +922,7 @@ export const GradePredictModal: React.FC<GradePredictModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-cyan-500/5">

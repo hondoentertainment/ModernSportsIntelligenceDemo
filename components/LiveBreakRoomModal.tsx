@@ -38,7 +38,7 @@ const LiveBreakRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
@@ -95,10 +95,10 @@ const LiveBreakRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         {brk.status === 'live' && <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />}
-                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${brk.status === 'live' ? 'bg-red-500/20 text-red-300' : brk.status === 'upcoming' ? 'bg-blue-500/20 text-blue-300' : 'bg-slate-600/20 text-slate-400'}`}>
+                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded-sm ${brk.status === 'live' ? 'bg-red-500/20 text-red-300' : brk.status === 'upcoming' ? 'bg-blue-500/20 text-blue-300' : 'bg-slate-600/20 text-slate-400'}`}>
                           {brk.status.toUpperCase()}
                         </span>
-                        <span className="px-2 py-0.5 text-[10px] bg-slate-700/50 text-slate-400 rounded">{brk.sport}</span>
+                        <span className="px-2 py-0.5 text-[10px] bg-slate-700/50 text-slate-400 rounded-sm">{brk.sport}</span>
                       </div>
                       <div className="flex items-center gap-2 text-[10px] text-slate-500">
                         <span className="flex items-center gap-0.5"><Users size={10} /> {brk.viewers}</span>
@@ -134,7 +134,7 @@ const LiveBreakRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                         {brk.hits.slice(0, 3).map(hit => (
                           <div key={hit.id} className="flex items-center justify-between bg-slate-900/50 rounded-lg p-2">
                             <div className="flex items-center gap-2">
-                              <span className={`px-1.5 py-0.5 text-[9px] rounded font-bold ${hit.hitType === 'auto' ? 'bg-purple-500/20 text-purple-400' : hit.hitType === 'numbered' ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-600/20 text-slate-400'}`}>
+                              <span className={`px-1.5 py-0.5 text-[9px] rounded-sm font-bold ${hit.hitType === 'auto' ? 'bg-purple-500/20 text-purple-400' : hit.hitType === 'numbered' ? 'bg-blue-500/20 text-blue-400' : 'bg-slate-600/20 text-slate-400'}`}>
                                 {hit.hitType.toUpperCase()}
                               </span>
                               <span className="text-xs text-slate-300 truncate">{hit.cardDescription}</span>
@@ -201,9 +201,9 @@ const LiveBreakRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     <img src={auction.image} alt={auction.playerName} className="w-14 h-18 rounded-lg object-cover bg-slate-700" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="px-2 py-0.5 text-[10px] bg-slate-700/50 text-slate-400 rounded">{auction.platform}</span>
-                        {auction.status === 'ending_soon' && <span className="px-2 py-0.5 text-[10px] bg-red-500/20 text-red-300 rounded animate-pulse">ENDING SOON</span>}
-                        {auction.sniperAlert && <span className="px-2 py-0.5 text-[10px] bg-amber-500/20 text-amber-300 rounded flex items-center gap-0.5"><Crosshair size={8} /> SNIPER</span>}
+                        <span className="px-2 py-0.5 text-[10px] bg-slate-700/50 text-slate-400 rounded-sm">{auction.platform}</span>
+                        {auction.status === 'ending_soon' && <span className="px-2 py-0.5 text-[10px] bg-red-500/20 text-red-300 rounded-sm animate-pulse">ENDING SOON</span>}
+                        {auction.sniperAlert && <span className="px-2 py-0.5 text-[10px] bg-amber-500/20 text-amber-300 rounded-sm flex items-center gap-0.5"><Crosshair size={8} /> SNIPER</span>}
                       </div>
                       <p className="text-sm font-semibold text-slate-200">{auction.title}</p>
 
@@ -244,7 +244,7 @@ const LiveBreakRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                         <p className="text-[10px] text-slate-400">Win probability: <span className="text-slate-200">{auction.intelligence.winProbability}%</span> · Snipe window: <span className="text-slate-200">{auction.intelligence.snipeWindow}</span></p>
                         {auction.intelligence.riskFactors.length > 0 && (
                           <div className="flex items-start gap-1 mt-1">
-                            <AlertTriangle size={8} className="text-amber-400 mt-0.5 flex-shrink-0" />
+                            <AlertTriangle size={8} className="text-amber-400 mt-0.5 shrink-0" />
                             <p className="text-[10px] text-amber-400">{auction.intelligence.riskFactors[0]}</p>
                           </div>
                         )}
@@ -293,7 +293,7 @@ const LiveBreakRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <Crosshair size={14} className="text-amber-400" />
-                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${bot.status === 'armed' ? 'bg-amber-500/20 text-amber-300 animate-pulse' : 'bg-slate-600/20 text-slate-400'}`}>
+                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded-sm ${bot.status === 'armed' ? 'bg-amber-500/20 text-amber-300 animate-pulse' : 'bg-slate-600/20 text-slate-400'}`}>
                           {bot.status.toUpperCase()}
                         </span>
                       </div>

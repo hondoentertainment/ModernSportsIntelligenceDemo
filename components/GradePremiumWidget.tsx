@@ -76,7 +76,7 @@ export const GradePremiumWidget: React.FC<GradePremiumWidgetProps> = ({ cards, o
               key={opp.cardId}
               className="flex items-center gap-3 px-4 py-3 bg-slate-800/30 border border-slate-700/50 rounded-xl"
             >
-              <ArrowRightLeft size={14} className="text-purple-400 flex-shrink-0" />
+              <ArrowRightLeft size={14} className="text-purple-400 shrink-0" />
               <div className="flex-1 min-w-0">
                 <span className="text-xs text-white font-medium truncate block">
                   {opp.player}
@@ -97,7 +97,7 @@ export const GradePremiumWidget: React.FC<GradePremiumWidgetProps> = ({ cards, o
         </div>
       ) : (
         <div className="flex items-center gap-3 px-4 py-3 bg-purple-500/5 border border-purple-500/15 rounded-xl">
-          <ArrowRightLeft size={14} className="text-purple-400 flex-shrink-0" />
+          <ArrowRightLeft size={14} className="text-purple-400 shrink-0" />
           <span className="text-xs text-slate-400">
             No crossover opportunities found. Add graded cards from BGS or SGC to find potential crossovers.
           </span>

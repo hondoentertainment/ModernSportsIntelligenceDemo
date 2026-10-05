@@ -116,7 +116,7 @@ const StrategyMap: React.FC<StrategyMapProps> = ({ inventory }) => {
                         className="absolute -translate-x-1/2 -translate-y-1/2 group/node cursor-pointer"
                         style={{ left: `${node.x}%`, top: `${node.y}%` }}
                     >
-                        <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${node.color} p-0.5 shadow-lg group-hover/node:scale-110 transition-transform duration-500`}>
+                        <div className={`w-12 h-12 rounded-full bg-linear-to-br ${node.color} p-0.5 shadow-lg group-hover/node:scale-110 transition-transform duration-500`}>
                             <div className="w-full h-full bg-brand-charcoal rounded-full flex items-center justify-center text-xs font-black text-white">
                                 {node.value}
                             </div>

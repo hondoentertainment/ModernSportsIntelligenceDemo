@@ -56,7 +56,7 @@ const CircadianOptimizer: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
         {/* Live Market Phase */}
-        <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-800/50 rounded-xl border border-slate-800 p-6">
+        <div className="bg-linear-to-r from-slate-900 via-slate-900/90 to-slate-800/50 rounded-xl border border-slate-800 p-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <p className="text-slate-400 text-xs uppercase tracking-wide mb-1">Current Market Phase</p>
@@ -150,11 +150,11 @@ const CircadianOptimizer: React.FC = () => {
                   return (
                     <div
                       key={i}
-                      className={`h-8 rounded-sm ${bg} relative group cursor-pointer`}
+                      className={`h-8 rounded-xs ${bg} relative group cursor-pointer`}
                       style={{ opacity: 0.3 + (intensity / 100) * 0.7 }}
                       title={`${i}:00 — Buyers: ${slot.buyerActivity}% | Sellers: ${slot.sellerActivity}% | Competition: ${slot.bidCompetition}%`}
                     >
-                      <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-slate-700 rounded px-2 py-1 text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
+                      <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-slate-700 rounded-sm px-2 py-1 text-[10px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
                         <p className="text-white font-bold">{i}:00</p>
                         <p className="text-slate-300">Buy: {slot.buyerActivity}% Sell: {slot.sellerActivity}%</p>
                         <p className="text-slate-300">Comp: {slot.bidCompetition}% Impulse: {slot.impulseBuyerConcentration}%</p>

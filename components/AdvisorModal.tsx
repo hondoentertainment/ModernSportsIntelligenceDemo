@@ -158,11 +158,11 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({ isOpen, onClose, inv
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
 
         {/* Header */}
-        <div className="p-8 border-b border-slate-700 flex items-center justify-between flex-shrink-0">
+        <div className="p-8 border-b border-slate-700 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-amber-500/10 text-amber-400 rounded-2xl border border-amber-500/30">
               <Lightbulb size={24} />
@@ -190,7 +190,7 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({ isOpen, onClose, inv
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-1 px-8 pt-4 pb-0 flex-shrink-0 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1 px-8 pt-4 pb-0 shrink-0 overflow-x-auto no-scrollbar">
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -415,7 +415,7 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({ isOpen, onClose, inv
                         </span>
                         <span className="text-sm text-white font-medium">{gap.description}</span>
                       </div>
-                      <div className="flex items-center gap-1 flex-shrink-0 ml-4">
+                      <div className="flex items-center gap-1 shrink-0 ml-4">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <span
                             key={i}
@@ -427,7 +427,7 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({ isOpen, onClose, inv
                       </div>
                     </div>
                     <div className="flex items-start gap-2 p-3 bg-brand-lime/5 border border-brand-lime/15 rounded-xl">
-                      <Zap size={14} className="text-brand-lime flex-shrink-0 mt-0.5" />
+                      <Zap size={14} className="text-brand-lime shrink-0 mt-0.5" />
                       <p className="text-[11px] text-slate-300 leading-relaxed">{gap.suggestion}</p>
                     </div>
                   </div>
@@ -480,7 +480,7 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({ isOpen, onClose, inv
                 <div className="space-y-2">
                   {risk.mitigations.map((mitigation, idx) => (
                     <div key={idx} className="flex items-start gap-3 p-4 bg-slate-800/30 border border-slate-700/50 rounded-xl">
-                      <AlertTriangle size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                      <AlertTriangle size={14} className="text-amber-400 shrink-0 mt-0.5" />
                       <p className="text-xs text-slate-300 leading-relaxed">{mitigation}</p>
                     </div>
                   ))}
@@ -603,7 +603,7 @@ export const AdvisorModal: React.FC<AdvisorModalProps> = ({ isOpen, onClose, inv
                     </div>
                     <p className="text-xs text-slate-300 mb-2">{digest.gapToFill.description}</p>
                     <div className="flex items-start gap-2 p-2 bg-brand-lime/5 rounded-lg">
-                      <Zap size={12} className="text-brand-lime flex-shrink-0 mt-0.5" />
+                      <Zap size={12} className="text-brand-lime shrink-0 mt-0.5" />
                       <p className="text-[10px] text-slate-400">{digest.gapToFill.suggestion}</p>
                     </div>
                   </div>

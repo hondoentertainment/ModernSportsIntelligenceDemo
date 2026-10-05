@@ -141,7 +141,7 @@ const RulesTab: React.FC<{
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <h4 className="text-sm font-bold text-white truncate">{rule.name}</h4>
-                  <span className="text-[10px] font-mono text-slate-600 flex-shrink-0">
+                  <span className="text-[10px] font-mono text-slate-600 shrink-0">
                     P{rule.priority}
                   </span>
                 </div>
@@ -151,7 +151,7 @@ const RulesTab: React.FC<{
               </div>
 
               {/* Status Toggle */}
-              <div className="relative flex-shrink-0">
+              <div className="relative shrink-0">
                 <button
                   onClick={() => setStatusDropdown(statusDropdown === rule.id ? null : rule.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors ${
@@ -302,7 +302,7 @@ const CreateTab: React.FC<{
           value={form.name}
           onChange={e => updateField('name', e.target.value)}
           placeholder="e.g., Stop Loss at -20%"
-          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 focus:border-blue-500 focus:outline-none transition-colors"
+          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 focus:border-blue-500 focus:outline-hidden transition-colors"
         />
       </div>
 
@@ -328,7 +328,7 @@ const CreateTab: React.FC<{
                 <select
                   value={cond.operator}
                   onChange={e => updateCondition(idx, 'operator', e.target.value)}
-                  className="px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-amber-400 font-bold focus:border-blue-500 focus:outline-none"
+                  className="px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-amber-400 font-bold focus:border-blue-500 focus:outline-hidden"
                 >
                   <option value="AND">AND</option>
                   <option value="OR">OR</option>
@@ -339,7 +339,7 @@ const CreateTab: React.FC<{
               <select
                 value={cond.type}
                 onChange={e => updateCondition(idx, 'type', e.target.value)}
-                className="flex-1 px-3 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:border-blue-500 focus:outline-none"
+                className="flex-1 px-3 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:border-blue-500 focus:outline-hidden"
               >
                 {CONDITION_TYPES.map(ct => (
                   <option key={ct} value={ct}>{CONDITION_LABELS[ct]}</option>
@@ -349,7 +349,7 @@ const CreateTab: React.FC<{
                 type="number"
                 value={cond.value}
                 onChange={e => updateCondition(idx, 'value', e.target.value)}
-                className="w-28 px-3 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white text-center focus:border-blue-500 focus:outline-none"
+                className="w-28 px-3 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white text-center focus:border-blue-500 focus:outline-hidden"
               />
               {form.conditions.length > 1 && (
                 <button
@@ -372,7 +372,7 @@ const CreateTab: React.FC<{
         <select
           value={form.actionType}
           onChange={e => updateField('actionType', e.target.value as ActionType)}
-          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:border-blue-500 focus:outline-none"
+          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:border-blue-500 focus:outline-hidden"
         >
           {ACTION_TYPES.map(at => (
             <option key={at} value={at}>{ACTION_LABELS[at]}</option>
@@ -392,7 +392,7 @@ const CreateTab: React.FC<{
             max={10}
             value={form.priority}
             onChange={e => updateField('priority', Math.min(10, Math.max(1, parseInt(e.target.value) || 1)))}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white text-center focus:border-blue-500 focus:outline-none"
+            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white text-center focus:border-blue-500 focus:outline-hidden"
           />
         </div>
         <div className="space-y-2">
@@ -405,7 +405,7 @@ const CreateTab: React.FC<{
             max={100}
             value={form.maxTriggersPerDay}
             onChange={e => updateField('maxTriggersPerDay', Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
-            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white text-center focus:border-blue-500 focus:outline-none"
+            className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white text-center focus:border-blue-500 focus:outline-hidden"
           />
         </div>
       </div>
@@ -473,7 +473,7 @@ const TemplatesTab: React.FC<{
           >
             <div className="flex items-start justify-between gap-2">
               <h4 className="text-sm font-bold text-white">{template.name}</h4>
-              <span className={`flex-shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${catColor.text} ${catColor.bg} border ${catColor.border}`}>
+              <span className={`shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${catColor.text} ${catColor.bg} border ${catColor.border}`}>
                 {template.category}
               </span>
             </div>
@@ -536,7 +536,7 @@ const HistoryTab: React.FC<{
             <div className="flex items-center gap-2 mb-0.5">
               <span className="text-white font-medium truncate">{trigger.cardName}</span>
               {trigger.isDryRun && (
-                <span className="px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[9px] font-bold rounded uppercase">
+                <span className="px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[9px] font-bold rounded-sm uppercase">
                   Dry Run
                 </span>
               )}
@@ -547,7 +547,7 @@ const HistoryTab: React.FC<{
               <span className="text-blue-400">{trigger.actionLabel}</span>
             </div>
           </div>
-          <span className="text-slate-600 flex items-center gap-1 flex-shrink-0">
+          <span className="text-slate-600 flex items-center gap-1 shrink-0">
             <Clock size={11} />
             {formatTimeAgo(trigger.timestamp)}
           </span>
@@ -757,7 +757,7 @@ export const RulesEngineModal: React.FC<RulesEngineModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">

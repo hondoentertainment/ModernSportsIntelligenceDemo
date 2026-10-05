@@ -65,12 +65,12 @@ export const VendingMachineWidget: React.FC<VendingMachineWidgetProps> = ({ onOp
       {/* Featured daily deal highlight */}
       {featuredDeal && (
         <div className="flex items-center gap-3 p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl mb-4">
-          <Zap size={14} className="text-amber-400 flex-shrink-0" />
+          <Zap size={14} className="text-amber-400 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-amber-400 uppercase tracking-widest">Featured Deal</p>
             <p className="text-xs text-white font-medium truncate">{featuredDeal.packName}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <p className="text-xs text-slate-500 line-through">{formatCurrency(featuredDeal.originalPrice)}</p>
             <p className="text-sm font-bold text-amber-400">{formatCurrency(featuredDeal.dealPrice)}</p>
           </div>

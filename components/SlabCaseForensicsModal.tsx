@@ -140,7 +140,7 @@ const SlabCaseForensicsModal: React.FC<SlabCaseForensicsModalProps> = ({ isOpen,
             <p className="text-sm text-slate-300 mb-3">{alert.description || alert.details}</p>
             {alert.recommendation && (
               <div className="bg-slate-900/50 rounded-lg p-3 flex items-start gap-2">
-                <Eye size={14} className="text-lime-400 mt-0.5 flex-shrink-0" />
+                <Eye size={14} className="text-lime-400 mt-0.5 shrink-0" />
                 <p className="text-xs text-slate-300">{alert.recommendation}</p>
               </div>
             )}
@@ -164,7 +164,7 @@ const SlabCaseForensicsModal: React.FC<SlabCaseForensicsModalProps> = ({ isOpen,
           <input
             type="text"
             placeholder="Search cert number or card name..."
-            className="flex-1 bg-transparent text-sm text-slate-200 placeholder-slate-500 outline-none"
+            className="flex-1 bg-transparent text-sm text-slate-200 placeholder-slate-500 outline-hidden"
             readOnly
           />
         </div>
@@ -211,10 +211,10 @@ const SlabCaseForensicsModal: React.FC<SlabCaseForensicsModalProps> = ({ isOpen,
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-5xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-gradient-to-r from-slate-900 via-slate-800/50 to-slate-900">
+        <div className="flex items-center justify-between p-6 border-b border-slate-700/50 bg-linear-to-r from-slate-900 via-slate-800/50 to-slate-900">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-lime-500/20">
               <Fingerprint size={24} className="text-lime-400" />

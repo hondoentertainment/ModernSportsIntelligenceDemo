@@ -148,14 +148,14 @@ const CreateGoalForm: React.FC<{
           value={title}
           onChange={e => setTitle(e.target.value)}
           placeholder="Goal title"
-          className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+          className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500"
         />
         <input
           type="text"
           value={description}
           onChange={e => setDescription(e.target.value)}
           placeholder="Description (optional)"
-          className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+          className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500"
         />
       </div>
 
@@ -167,14 +167,14 @@ const CreateGoalForm: React.FC<{
             value={targetValue}
             onChange={e => setTargetValue(e.target.value)}
             placeholder={`Target (${GOAL_TYPE_UNITS[type]})`}
-            className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+            className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500"
           />
         </div>
         <input
           type="date"
           value={targetDate}
           onChange={e => setTargetDate(e.target.value)}
-          className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:border-emerald-500"
+          className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white focus:outline-hidden focus:border-emerald-500"
         />
       </div>
 
@@ -327,7 +327,7 @@ const GoalsTab: React.FC<{
       {/* Achievement integration callout */}
       {goals.length > 0 && (
         <div className="flex items-center gap-3 p-4 bg-amber-500/5 border border-amber-500/15 rounded-xl">
-          <Trophy size={18} className="text-amber-400 flex-shrink-0" />
+          <Trophy size={18} className="text-amber-400 shrink-0" />
           <div>
             <p className="text-xs font-bold text-amber-400">Achievement Integration</p>
             <p className="text-[10px] text-slate-400">
@@ -753,7 +753,7 @@ const GoalModal: React.FC<GoalModalProps> = ({ isOpen, onClose, cards }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">

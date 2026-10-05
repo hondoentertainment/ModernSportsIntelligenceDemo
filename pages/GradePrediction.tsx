@@ -253,7 +253,7 @@ function PredictionCard({ prediction }: { prediction: GradePredictionType }) {
             <ul className="space-y-1">
               {prediction.conditionNotes.map((note, i) => (
                 <li key={i} className="text-xs text-slate-400 flex items-start gap-1.5">
-                  <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-slate-500 flex-shrink-0" />
+                  <span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />
                   {note}
                 </li>
               ))}
@@ -412,9 +412,9 @@ function PopulationReport() {
               {pop.grades.map((g, gi) => (
                 <div key={g.grade} className="flex items-center gap-2">
                   <span className="text-xs text-slate-400 w-8 text-right">{g.grade}</span>
-                  <div className="flex-1 h-5 bg-slate-700/50 rounded overflow-hidden relative">
+                  <div className="flex-1 h-5 bg-slate-700/50 rounded-sm overflow-hidden relative">
                     <div
-                      className="h-full rounded"
+                      className="h-full rounded-sm"
                       style={{ width: `${g.percentOfTotal}%`, backgroundColor: pieColors[gi % pieColors.length] }}
                     />
                     <span className="absolute right-2 top-0 h-full flex items-center text-xs text-white font-medium">
@@ -586,7 +586,7 @@ function SubmissionTrackerView() {
                 <div className="text-xs text-slate-400 mt-1">{getStatusLabel(step)}</div>
               </div>
               {i < STATUS_STEPS.length - 1 && (
-                <div className="w-8 h-0.5 bg-slate-600 flex-shrink-0" />
+                <div className="w-8 h-0.5 bg-slate-600 shrink-0" />
               )}
             </React.Fragment>
           ))}
@@ -720,7 +720,7 @@ const GradePrediction: React.FC = () => {
       {/* Page header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20">
+          <div className="p-2 rounded-xl bg-linear-to-br from-amber-500/20 to-orange-500/20">
             <Award className="w-6 h-6 text-amber-400" />
           </div>
           Grade Prediction with Confidence Score

@@ -73,7 +73,7 @@ const AddTargetModal: React.FC<AddTargetModalProps> = ({ isOpen, onClose, onAdd,
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/80 backdrop-blur-xs"
                 onClick={onClose}
             />
 
@@ -117,7 +117,7 @@ const AddTargetModal: React.FC<AddTargetModalProps> = ({ isOpen, onClose, onAdd,
                             value={player}
                             onChange={(e) => setPlayer(e.target.value)}
                             placeholder="e.g. Shohei Ohtani"
-                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
+                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
                             required
                         />
                     </div>
@@ -132,7 +132,7 @@ const AddTargetModal: React.FC<AddTargetModalProps> = ({ isOpen, onClose, onAdd,
                             value={cardDescription}
                             onChange={(e) => setCardDescription(e.target.value)}
                             placeholder="e.g. 2018 Bowman Chrome Auto PSA 10"
-                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
+                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600"
                             required
                         />
                     </div>
@@ -152,7 +152,7 @@ const AddTargetModal: React.FC<AddTargetModalProps> = ({ isOpen, onClose, onAdd,
                                     placeholder="0.00"
                                     min="0"
                                     step="0.01"
-                                    className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 pl-10 pr-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-mono font-bold text-white placeholder:text-slate-600"
+                                    className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 pl-10 pr-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-mono font-bold text-white placeholder:text-slate-600"
                                     required
                                 />
                             </div>
@@ -193,7 +193,7 @@ const AddTargetModal: React.FC<AddTargetModalProps> = ({ isOpen, onClose, onAdd,
                             <select
                                 value={sport}
                                 onChange={(e) => setSport(e.target.value as Sport)}
-                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white appearance-none cursor-pointer"
+                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white appearance-none cursor-pointer"
                             >
                                 {SPORTS.map((s) => (
                                     <option key={s} value={s}>{s}</option>
@@ -208,7 +208,7 @@ const AddTargetModal: React.FC<AddTargetModalProps> = ({ isOpen, onClose, onAdd,
                             <select
                                 value={league}
                                 onChange={(e) => setLeague(e.target.value as League)}
-                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white appearance-none cursor-pointer"
+                                className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white appearance-none cursor-pointer"
                             >
                                 {LEAGUES.map((l) => (
                                     <option key={l} value={l}>{l}</option>
@@ -227,7 +227,7 @@ const AddTargetModal: React.FC<AddTargetModalProps> = ({ isOpen, onClose, onAdd,
                             onChange={(e) => setNotes(e.target.value)}
                             placeholder="Any additional context for this target..."
                             rows={2}
-                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600 resize-none"
+                            className="w-full bg-brand-charcoal border border-slate-800 rounded-2xl py-4 px-5 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 focus:border-brand-lime/30 transition-all font-medium text-white placeholder:text-slate-600 resize-none"
                         />
                     </div>
 

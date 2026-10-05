@@ -259,7 +259,7 @@ const NonSportsExpansion: React.FC = () => {
                     <p className="text-sm font-bold text-white truncate">{item.name}</p>
                     <p className="text-[10px] text-slate-500">{item.condition} {item.graded ? `| ${item.grade}` : ''}</p>
                   </div>
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-right shrink-0">
                     <p className="text-sm font-bold text-white">${item.currentValue.toLocaleString()}</p>
                     <p className={`text-[10px] ${gain >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                       {gain >= 0 ? '+' : ''}{gainPct.toFixed(1)}%
@@ -293,7 +293,7 @@ const NonSportsExpansion: React.FC = () => {
                 {leader.topItems.map((item, idx) => (
                   <div key={idx} className="flex items-center justify-between text-xs">
                     <span className="text-slate-400 truncate mr-2">{item.name.split(' ').slice(0, 5).join(' ')}</span>
-                    <span className="text-slate-300 flex-shrink-0">${item.value.toLocaleString()}</span>
+                    <span className="text-slate-300 shrink-0">${item.value.toLocaleString()}</span>
                   </div>
                 ))}
               </div>

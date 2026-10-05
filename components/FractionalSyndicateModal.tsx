@@ -99,7 +99,7 @@ const SyndicatesTab: React.FC<{ syndicates: Syndicate[] }> = ({ syndicates }) =>
                 </h4>
                 <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">{s.description}</p>
               </div>
-              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${colors.text} ${colors.bg} border ${colors.border} flex-shrink-0`}>
+              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${colors.text} ${colors.bg} border ${colors.border} shrink-0`}>
                 {s.status}
               </span>
             </div>
@@ -213,7 +213,7 @@ const GovernanceTab: React.FC<{ votes: GovernanceVote[]; syndicates: Syndicate[]
                   <p className="text-xs text-slate-500 mb-1">{syndicateMap[v.syndicateId] ?? v.syndicateId}</p>
                   <h4 className="text-sm font-semibold text-white leading-tight">{v.proposalTitle}</h4>
                 </div>
-                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${typeColors.text} ${typeColors.bg} border ${typeColors.border} flex-shrink-0`}>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${typeColors.text} ${typeColors.bg} border ${typeColors.border} shrink-0`}>
                   {v.proposalType}
                 </span>
               </div>
@@ -376,7 +376,7 @@ const AssetsTab: React.FC<{ assets: SyndicateAsset[]; syndicates: Syndicate[] }>
                   <p className="text-sm text-white font-semibold truncate">{a.cardName}</p>
                   <p className="text-[10px] text-slate-500 mt-0.5">{syndicate?.name ?? a.syndicateId}</p>
                 </div>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${aColors.text} ${aColors.bg} border ${aColors.border} flex-shrink-0`}>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${aColors.text} ${aColors.bg} border ${aColors.border} shrink-0`}>
                   {a.status}
                 </span>
               </div>
@@ -451,7 +451,7 @@ const CreateNewTab: React.FC = () => {
           value={name}
           onChange={e => setName(e.target.value)}
           placeholder="e.g. Alpha Grail Hunters"
-          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 transition-colors"
         />
       </div>
 
@@ -465,7 +465,7 @@ const CreateNewTab: React.FC = () => {
           onChange={e => setDescription(e.target.value)}
           placeholder="Describe the investment thesis and target acquisitions..."
           rows={3}
-          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors resize-none"
+          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 transition-colors resize-none"
         />
       </div>
 
@@ -482,7 +482,7 @@ const CreateNewTab: React.FC = () => {
             onChange={e => setMinInvestment(Number(e.target.value))}
             min={100}
             step={500}
-            className="w-full pl-9 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+            className="w-full pl-9 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 transition-colors"
           />
         </div>
       </div>
@@ -519,7 +519,7 @@ const CreateNewTab: React.FC = () => {
           onChange={e => setInviteEmails(e.target.value)}
           placeholder="alice@example.com, bob@example.com"
           rows={2}
-          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors resize-none"
+          className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500 transition-colors resize-none"
         />
       </div>
 
@@ -578,10 +578,10 @@ export const FractionalSyndicateModal: React.FC<FractionalSyndicateModalProps> =
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header with gradient */}
-        <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-gradient-to-r from-indigo-500/10 to-slate-900">
+        <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-linear-to-r from-indigo-500/10 to-slate-900">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-indigo-500/20 text-indigo-400 rounded-2xl border border-indigo-500/30">
               <Users size={22} />

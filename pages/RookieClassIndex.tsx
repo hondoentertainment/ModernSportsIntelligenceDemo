@@ -227,7 +227,7 @@ const RookieClassIndex: React.FC = () => {
                   </div>
                   <p className="text-[10px] text-slate-500 mt-0.5">{entry.team} &bull; {entry.card_count} cards &bull; ${entry.avg_value} avg</p>
                 </div>
-                <div className="text-right flex-shrink-0 ml-4">
+                <div className="text-right shrink-0 ml-4">
                   <p className={`text-sm font-bold ${entry.roi_since_draft >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {entry.roi_since_draft >= 0 ? '+' : ''}{entry.roi_since_draft}%
                   </p>

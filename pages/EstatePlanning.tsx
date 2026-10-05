@@ -319,15 +319,15 @@ const EstatePlanning: React.FC = () => {
                     </td>
                     <td className="py-3 text-right">
                       {isExpired ? (
-                        <span className="text-xs font-medium text-red-400 bg-red-500/10 px-2 py-1 rounded">
+                        <span className="text-xs font-medium text-red-400 bg-red-500/10 px-2 py-1 rounded-sm">
                           Expired
                         </span>
                       ) : isExpiringSoon ? (
-                        <span className="text-xs font-medium text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded">
+                        <span className="text-xs font-medium text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-sm">
                           {daysLeft}d left
                         </span>
                       ) : (
-                        <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">
+                        <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-sm">
                           Active
                         </span>
                       )}

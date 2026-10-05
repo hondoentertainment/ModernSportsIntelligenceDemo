@@ -64,7 +64,7 @@ const ExpertiseBadge: React.FC<{ level: VoterExpertise }> = ({ level }) => {
   const color = getExpertiseColor(level);
   return (
     <span
-      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider"
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider"
       style={{ backgroundColor: color + '18', color }}
     >
       {level}
@@ -297,7 +297,7 @@ const PricerRow: React.FC<{ pricer: TopPricer; rank: number }> = ({ pricer, rank
   const medalColors = ['#f59e0b', '#94a3b8', '#cd7f32'];
   return (
     <div className="flex items-center gap-4 bg-slate-900 border border-slate-800 rounded-xl p-4 hover:border-slate-700 transition-colors">
-      <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
+      <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
         style={{
           backgroundColor: rank <= 3 ? medalColors[rank - 1] + '20' : '#1e293b',
           color: rank <= 3 ? medalColors[rank - 1] : '#64748b',
@@ -312,11 +312,11 @@ const PricerRow: React.FC<{ pricer: TopPricer; rank: number }> = ({ pricer, rank
         </div>
         <div className="flex flex-wrap gap-1">
           {pricer.specialties.map((s) => (
-            <span key={s} className="px-1.5 py-0.5 bg-slate-800/60 text-[10px] text-slate-500 rounded">{s}</span>
+            <span key={s} className="px-1.5 py-0.5 bg-slate-800/60 text-[10px] text-slate-500 rounded-sm">{s}</span>
           ))}
         </div>
       </div>
-      <div className="hidden md:grid grid-cols-4 gap-6 text-center flex-shrink-0">
+      <div className="hidden md:grid grid-cols-4 gap-6 text-center shrink-0">
         <div>
           <p className="text-[10px] text-slate-500 uppercase">Votes</p>
           <p className="text-sm font-bold text-slate-200">{pricer.totalVotes.toLocaleString()}</p>
@@ -335,7 +335,7 @@ const PricerRow: React.FC<{ pricer: TopPricer; rank: number }> = ({ pricer, rank
         </div>
       </div>
       {/* Mobile stats */}
-      <div className="md:hidden flex items-center gap-2 flex-shrink-0">
+      <div className="md:hidden flex items-center gap-2 shrink-0">
         <div className="text-right">
           <p className="text-sm font-bold text-emerald-400">{pricer.accuracyScore}%</p>
           <p className="text-[10px] text-slate-500">{pricer.totalVotes.toLocaleString()} votes</p>
@@ -506,7 +506,7 @@ const CrowdPricing: React.FC = () => {
           ))}
           <div className="bg-slate-900/50 border border-slate-800/50 rounded-lg p-4 mt-4">
             <div className="flex items-start gap-2">
-              <Shield size={14} className="text-slate-500 mt-0.5 flex-shrink-0" />
+              <Shield size={14} className="text-slate-500 mt-0.5 shrink-0" />
               <div className="text-xs text-slate-500 leading-relaxed">
                 <p className="font-semibold text-slate-400 mb-1">How Pricing Authority Works</p>
                 <p>

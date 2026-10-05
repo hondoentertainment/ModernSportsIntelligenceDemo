@@ -156,7 +156,7 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-6xl max-h-[90vh] bg-slate-900 border border-slate-700/50 rounded-2xl overflow-hidden flex flex-col">
@@ -336,19 +336,19 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
                 {/* Legend */}
                 <div className="flex items-center gap-4 mt-4 justify-center">
                   <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded bg-emerald-500 opacity-50" />
+                    <div className="w-3 h-3 rounded-sm bg-emerald-500 opacity-50" />
                     <span className="text-[10px] text-slate-400">Low (0-0.2)</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded bg-yellow-500 opacity-60" />
+                    <div className="w-3 h-3 rounded-sm bg-yellow-500 opacity-60" />
                     <span className="text-[10px] text-slate-400">Moderate (0.2-0.4)</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded bg-amber-500 opacity-70" />
+                    <div className="w-3 h-3 rounded-sm bg-amber-500 opacity-70" />
                     <span className="text-[10px] text-slate-400">High (0.4-0.6)</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded bg-red-500 opacity-90" />
+                    <div className="w-3 h-3 rounded-sm bg-red-500 opacity-90" />
                     <span className="text-[10px] text-slate-400">Very High (0.8+)</span>
                   </div>
                 </div>
@@ -574,7 +574,7 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
                               type="text"
                               value={importData.name ?? ''}
                               onChange={(e) => setImportData((prev) => ({ ...prev, name: e.target.value }))}
-                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
                               placeholder="e.g., Rolex Submariner 116610LN"
                             />
                           </div>
@@ -584,7 +584,7 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
                               type="text"
                               value={importData.condition ?? ''}
                               onChange={(e) => setImportData((prev) => ({ ...prev, condition: e.target.value }))}
-                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
                               placeholder="e.g., Excellent, Mint, DS"
                             />
                           </div>
@@ -594,7 +594,7 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
                           <textarea
                             value={importData.description ?? ''}
                             onChange={(e) => setImportData((prev) => ({ ...prev, description: e.target.value }))}
-                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50 h-20 resize-none"
+                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50 h-20 resize-none"
                             placeholder="Describe the asset..."
                           />
                         </div>
@@ -607,7 +607,7 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
                                 type="text"
                                 value={importData.brand ?? ''}
                                 onChange={(e) => setImportData((prev) => ({ ...prev, brand: e.target.value }))}
-                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
                               />
                             </div>
                             <div>
@@ -616,7 +616,7 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
                                 type="text"
                                 value={importData.model ?? ''}
                                 onChange={(e) => setImportData((prev) => ({ ...prev, model: e.target.value }))}
-                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
                               />
                             </div>
                           </div>
@@ -629,7 +629,7 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
                                 type="text"
                                 value={importData.artist ?? ''}
                                 onChange={(e) => setImportData((prev) => ({ ...prev, artist: e.target.value }))}
-                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
                               />
                             </div>
                             <div>
@@ -638,7 +638,7 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
                                 type="text"
                                 value={importData.medium ?? ''}
                                 onChange={(e) => setImportData((prev) => ({ ...prev, medium: e.target.value }))}
-                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+                                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
                               />
                             </div>
                           </div>
@@ -670,7 +670,7 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
                               type="number"
                               value={importData.purchasePrice ?? ''}
                               onChange={(e) => setImportData((prev) => ({ ...prev, purchasePrice: parseFloat(e.target.value) || 0 }))}
-                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
                               placeholder="0.00"
                             />
                           </div>
@@ -680,7 +680,7 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
                               type="number"
                               value={importData.currentValue ?? ''}
                               onChange={(e) => setImportData((prev) => ({ ...prev, currentValue: parseFloat(e.target.value) || 0 }))}
-                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+                              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
                               placeholder="0.00"
                             />
                           </div>
@@ -691,7 +691,7 @@ export const CrossHobbyPortfolioModal: React.FC<CrossHobbyPortfolioModalProps> =
                             type="date"
                             value={importData.purchaseDate ?? ''}
                             onChange={(e) => setImportData((prev) => ({ ...prev, purchaseDate: e.target.value }))}
-                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-lime-500/50"
+                            className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-lime-500/50"
                           />
                         </div>
                         <div className="flex justify-between">

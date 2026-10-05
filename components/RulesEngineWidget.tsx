@@ -114,7 +114,7 @@ export const RulesEngineWidget: React.FC<RulesEngineWidgetProps> = ({ _cards, on
       {/* Pending Review */}
       {pendingReview > 0 && (
         <div className="flex items-center gap-3 px-4 py-3 bg-amber-500/5 border border-amber-500/15 rounded-xl">
-          <FlaskConical size={14} className="text-amber-400 flex-shrink-0" />
+          <FlaskConical size={14} className="text-amber-400 shrink-0" />
           <span className="text-xs text-slate-400">Pending review:</span>
           <span className="text-xs text-amber-400 font-bold">{pendingReview} dry-run triggers</span>
         </div>
@@ -138,7 +138,7 @@ export const RulesEngineWidget: React.FC<RulesEngineWidgetProps> = ({ _cards, on
               <span className="text-slate-500 truncate max-w-[120px]">
                 {trigger.actionLabel}
               </span>
-              <span className="text-slate-600 flex items-center gap-1 flex-shrink-0">
+              <span className="text-slate-600 flex items-center gap-1 shrink-0">
                 <Clock size={10} />
                 {formatTimeAgo(trigger.timestamp)}
               </span>
@@ -150,7 +150,7 @@ export const RulesEngineWidget: React.FC<RulesEngineWidgetProps> = ({ _cards, on
       {/* Empty state */}
       {rules.length === 0 && recentTriggers.length === 0 && (
         <div className="flex items-center gap-3 px-4 py-3 bg-blue-500/5 border border-blue-500/15 rounded-xl">
-          <Zap size={14} className="text-blue-400 flex-shrink-0" />
+          <Zap size={14} className="text-blue-400 shrink-0" />
           <span className="text-xs text-slate-400">
             Set up automated rules to manage your portfolio
           </span>

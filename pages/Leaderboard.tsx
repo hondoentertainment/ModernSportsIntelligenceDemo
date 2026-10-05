@@ -42,7 +42,7 @@ const Leaderboard: React.FC = () => {
                 </div>
             </div>
 
-            <div className="bg-slate-900/50 border border-slate-800 rounded-3xl overflow-hidden backdrop-blur-sm">
+            <div className="bg-slate-900/50 border border-slate-800 rounded-3xl overflow-hidden backdrop-blur-xs">
                 <table className="w-full text-left">
                     <thead>
                         <tr className="bg-brand-charcoal border-b border-slate-800">

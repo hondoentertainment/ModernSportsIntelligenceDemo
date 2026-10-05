@@ -156,7 +156,7 @@ const EventsTab: React.FC<{
                   </span>
                   <span className="text-sm font-bold text-white">{event.name}</span>
                 </div>
-                <span className={`flex items-center gap-1 text-xs font-bold flex-shrink-0 ${
+                <span className={`flex items-center gap-1 text-xs font-bold shrink-0 ${
                   days <= 7 ? 'text-amber-400' : days <= 30 ? 'text-blue-400' : 'text-slate-400'
                 }`}>
                   <Clock size={12} />
@@ -294,7 +294,7 @@ const PrepTab: React.FC<{
         <select
           value={selectedEventId ?? ''}
           onChange={e => handleEventSelect(e.target.value)}
-          className="flex-1 px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+          className="flex-1 px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-hidden focus:border-blue-500"
         >
           <option value="">Select an event...</option>
           {events.map(e => (
@@ -340,7 +340,7 @@ const PrepTab: React.FC<{
                   >
                     <button
                       onClick={() => toggleReady(item.cardId)}
-                      className={`flex-shrink-0 ${
+                      className={`shrink-0 ${
                         item.status === 'ready' ? 'text-green-400' : 'text-slate-600 hover:text-slate-400'
                       }`}
                     >
@@ -352,7 +352,7 @@ const PrepTab: React.FC<{
                         {card.year} {card.manufacturer} {card.set} #{card.cardNumber}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                       <span className="text-xs text-slate-500">$</span>
                       <input
                         type="number"
@@ -363,7 +363,7 @@ const PrepTab: React.FC<{
                           if (!isNaN(val) && val > 0) updatePrice(item.cardId, val);
                           setEditPrices(prev => { const copy = { ...prev }; delete copy[item.cardId]; return copy; });
                         }}
-                        className="w-20 px-2 py-1 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white text-right focus:outline-none focus:border-blue-500"
+                        className="w-20 px-2 py-1 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white text-right focus:outline-hidden focus:border-blue-500"
                       />
                       <button
                         onClick={() => removeCard(item.cardId)}
@@ -390,7 +390,7 @@ const PrepTab: React.FC<{
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search cards to add..."
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
               />
             </div>
             <div className="max-h-48 overflow-y-auto space-y-1 no-scrollbar">
@@ -400,14 +400,14 @@ const PrepTab: React.FC<{
                   onClick={() => addCard(card.id, card.currentValue ?? card.purchasePrice)}
                   className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-slate-800/30 border border-transparent hover:border-slate-600 text-left transition-colors"
                 >
-                  <Plus size={14} className="text-blue-400 flex-shrink-0" />
+                  <Plus size={14} className="text-blue-400 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white truncate">{card.player}</p>
                     <p className="text-xs text-slate-500 truncate">
                       {card.year} {card.set} #{card.cardNumber}
                     </p>
                   </div>
-                  <span className="text-xs font-mono text-slate-400 flex-shrink-0">
+                  <span className="text-xs font-mono text-slate-400 shrink-0">
                     ${(card.currentValue ?? card.purchasePrice).toFixed(0)}
                   </span>
                 </button>
@@ -488,7 +488,7 @@ const BudgetTab: React.FC<{
       <select
         value={selectedEventId ?? ''}
         onChange={e => handleEventSelect(e.target.value)}
-        className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+        className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-hidden focus:border-blue-500"
       >
         <option value="">Select an event...</option>
         {events.map(e => (
@@ -537,7 +537,7 @@ const BudgetTab: React.FC<{
                   if (val === 0) return null;
                   return (
                     <div key={f.key} className="flex items-center gap-1.5 text-xs">
-                      <div className={`w-2.5 h-2.5 rounded-sm ${f.color}`} />
+                      <div className={`w-2.5 h-2.5 rounded-xs ${f.color}`} />
                       <span className="text-slate-400">{f.label}</span>
                       <span className="text-white font-mono">${val.toFixed(0)}</span>
                     </div>
@@ -560,7 +560,7 @@ const BudgetTab: React.FC<{
                     onChange={e => setBudgetValues(prev => ({ ...prev, [f.key]: e.target.value }))}
                     onBlur={saveBudgetValues}
                     placeholder="0"
-                    className="w-full pl-7 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500"
+                    className="w-full pl-7 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-hidden focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -576,7 +576,7 @@ const BudgetTab: React.FC<{
               onBlur={saveBudgetValues}
               placeholder="Budget notes..."
               rows={2}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 resize-none"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500 resize-none"
             />
           </div>
         </>
@@ -648,7 +648,7 @@ const DealsTab: React.FC<{
       <select
         value={selectedEventId ?? ''}
         onChange={e => handleEventSelect(e.target.value)}
-        className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+        className="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-hidden focus:border-blue-500"
       >
         <option value="">Select an event...</option>
         {eventOptions.map(e => (
@@ -692,21 +692,21 @@ const DealsTab: React.FC<{
                 value={dealPlayer}
                 onChange={e => setDealPlayer(e.target.value)}
                 placeholder="Player name *"
-                className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
               />
               <input
                 type="text"
                 value={dealDesc}
                 onChange={e => setDealDesc(e.target.value)}
                 placeholder="Card description"
-                className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
               />
               <input
                 type="number"
                 value={dealPrice}
                 onChange={e => setDealPrice(e.target.value)}
                 placeholder="Price *"
-                className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
               />
               {dealType === 'trade' && (
                 <input
@@ -714,7 +714,7 @@ const DealsTab: React.FC<{
                   value={dealTradeValue}
                   onChange={e => setDealTradeValue(e.target.value)}
                   placeholder="Trade value received"
-                  className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                  className="px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
                 />
               )}
               <input
@@ -722,7 +722,7 @@ const DealsTab: React.FC<{
                 value={dealNotes}
                 onChange={e => setDealNotes(e.target.value)}
                 placeholder="Notes"
-                className={`px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 ${dealType !== 'trade' ? 'col-span-1' : ''}`}
+                className={`px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500 ${dealType !== 'trade' ? 'col-span-1' : ''}`}
               />
             </div>
 
@@ -749,7 +749,7 @@ const DealsTab: React.FC<{
                     key={deal.id}
                     className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl"
                   >
-                    <span className={`flex-shrink-0 ${dt?.color ?? 'text-slate-400'}`}>
+                    <span className={`shrink-0 ${dt?.color ?? 'text-slate-400'}`}>
                       {dt?.icon}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -758,7 +758,7 @@ const DealsTab: React.FC<{
                         <p className="text-xs text-slate-400 truncate">{deal.cardDescription}</p>
                       )}
                     </div>
-                    <span className={`text-sm font-mono font-bold flex-shrink-0 ${
+                    <span className={`text-sm font-mono font-bold shrink-0 ${
                       deal.type === 'sell' ? 'text-green-400' : deal.type === 'buy' ? 'text-red-400' : 'text-purple-400'
                     }`}>
                       {deal.type === 'sell' ? '+' : deal.type === 'buy' ? '-' : ''}${deal.price.toFixed(0)}
@@ -1018,14 +1018,14 @@ const WantListTab: React.FC<{
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-semibold text-white truncate">{item.player}</span>
-                  <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${priorityColors[item.priority] ?? priorityColors.Low}`}>
+                  <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${priorityColors[item.priority] ?? priorityColors.Low}`}>
                     {item.priority.toUpperCase()}
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 truncate">{item.cardDescription}</p>
                 {item.notes && <p className="text-xs text-slate-500 mt-0.5 italic truncate">{item.notes}</p>}
               </div>
-              <span className="text-sm font-bold text-green-400 flex-shrink-0">
+              <span className="text-sm font-bold text-green-400 shrink-0">
                 max ${item.targetPrice.toLocaleString()}
               </span>
             </div>
@@ -1076,7 +1076,7 @@ export const EventModal: React.FC<EventModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">

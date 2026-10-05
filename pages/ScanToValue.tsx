@@ -299,7 +299,7 @@ function ScanTab() {
               <span className="text-red-400">{formatCurrency(valuation.priceRange.low)}</span>
               <div className="flex-1 h-2 bg-slate-700 rounded-full relative">
                 <div
-                  className="absolute h-2 bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 rounded-full"
+                  className="absolute h-2 bg-linear-to-r from-red-500 via-yellow-500 to-green-500 rounded-full"
                   style={{ width: '100%' }}
                 />
               </div>
@@ -400,7 +400,7 @@ function BatchModeTab() {
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           placeholder="New batch name..."
-          className="flex-1 bg-slate-700 rounded-lg px-4 py-2 text-sm outline-none placeholder-slate-500"
+          className="flex-1 bg-slate-700 rounded-lg px-4 py-2 text-sm outline-hidden placeholder-slate-500"
         />
         <button
           onClick={handleCreate}

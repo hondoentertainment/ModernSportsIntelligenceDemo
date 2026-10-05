@@ -239,7 +239,7 @@ function LeagueStandingsContent() {
 function PlayerSpotlightContent() {
   return (
     <div className="flex flex-col gap-2 h-full justify-center items-center text-center">
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/30 to-yellow-600/30 border border-amber-500/40 flex items-center justify-center">
+      <div className="w-10 h-10 rounded-full bg-linear-to-br from-amber-500/30 to-yellow-600/30 border border-amber-500/40 flex items-center justify-center">
         <Star size={18} className="text-amber-400" />
       </div>
       <div className="text-sm font-semibold text-white">Victor Wembanyama</div>
@@ -264,7 +264,7 @@ function ArbitrageScannerContent() {
         <span className="font-medium">2 Active Opportunities</span>
       </div>
       {opps.map((o, i) => (
-        <div key={i} className="flex items-center justify-between text-xs py-1.5 bg-slate-800/50 rounded px-2">
+        <div key={i} className="flex items-center justify-between text-xs py-1.5 bg-slate-800/50 rounded-sm px-2">
           <span className="text-slate-300 truncate flex-1 mr-2">{o.card}</span>
           <span className="text-red-400 mr-1">{o.buy}</span>
           <span className="text-slate-600 mr-1">&rarr;</span>

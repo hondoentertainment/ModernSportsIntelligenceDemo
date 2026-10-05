@@ -285,7 +285,7 @@ const GenerationalWealthPlanner: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
       {/* Header */}
-      <div className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-20">
+      <div className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-xs sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -724,7 +724,7 @@ const GenerationalWealthPlanner: React.FC = () => {
                   <select
                     value={compareA}
                     onChange={(e) => setCompareA(e.target.value)}
-                    className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/50"
                   >
                     {trusts.map((t) => (
                       <option key={t.id} value={t.id}>{t.name}</option>
@@ -736,7 +736,7 @@ const GenerationalWealthPlanner: React.FC = () => {
                   <select
                     value={compareB}
                     onChange={(e) => setCompareB(e.target.value)}
-                    className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/50"
                   >
                     {trusts.map((t) => (
                       <option key={t.id} value={t.id}>{t.name}</option>
@@ -808,7 +808,7 @@ const GenerationalWealthPlanner: React.FC = () => {
               <select
                 value={selectedState}
                 onChange={(e) => setSelectedState(e.target.value)}
-                className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/50"
               >
                 {getAvailableStates().map((st) => (
                   <option key={st} value={st}>{st}</option>

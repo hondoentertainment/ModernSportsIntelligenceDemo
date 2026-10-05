@@ -130,7 +130,7 @@ const BrowseTab: React.FC<{
                   </p>
                 </div>
                 {isEnrolled && (
-                  <span className="px-2 py-0.5 text-[10px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-md flex-shrink-0 ml-2">
+                  <span className="px-2 py-0.5 text-[10px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/30 rounded-md shrink-0 ml-2">
                     Enrolled
                   </span>
                 )}
@@ -240,7 +240,7 @@ const MySetsTab: React.FC<{
                 Enrolled {new Date(enrollment.enrolledAt).toLocaleDateString()}
               </p>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               <span className={`text-lg font-bebas tracking-wider ${
                 progress.completionPercent >= 100 ? 'text-green-400' : 'text-white'
               }`}>
@@ -565,21 +565,21 @@ const SetDetailTab: React.FC<{
                 }`}
               >
                 {isOwned ? (
-                  <CheckCircle2 size={16} className="text-green-400 flex-shrink-0" />
+                  <CheckCircle2 size={16} className="text-green-400 shrink-0" />
                 ) : (
-                  <XCircle size={16} className="text-red-400/50 flex-shrink-0" />
+                  <XCircle size={16} className="text-red-400/50 shrink-0" />
                 )}
-                <span className="w-12 text-xs font-mono text-slate-500 flex-shrink-0">
+                <span className="w-12 text-xs font-mono text-slate-500 shrink-0">
                   #{sc.cardNumber}
                 </span>
                 <span className={`flex-1 text-xs truncate ${isOwned ? 'text-white' : 'text-slate-400'}`}>
                   {sc.player}
                 </span>
-                <span className="text-[10px] text-slate-600 flex-shrink-0">
+                <span className="text-[10px] text-slate-600 shrink-0">
                   {sc.team}
                 </span>
                 {!isOwned && (
-                  <span className="text-xs font-mono text-amber-400/70 flex-shrink-0">
+                  <span className="text-xs font-mono text-amber-400/70 shrink-0">
                     ~${sc.estimatedValue.toFixed(2)}
                   </span>
                 )}
@@ -594,17 +594,17 @@ const SetDetailTab: React.FC<{
               key={mc.cardNumber}
               className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-slate-800/30 border border-transparent hover:bg-slate-800/60 text-sm transition-colors"
             >
-              <XCircle size={16} className="text-red-400/50 flex-shrink-0" />
-              <span className="w-12 text-xs font-mono text-slate-500 flex-shrink-0">
+              <XCircle size={16} className="text-red-400/50 shrink-0" />
+              <span className="w-12 text-xs font-mono text-slate-500 shrink-0">
                 #{mc.cardNumber}
               </span>
               <span className="flex-1 text-xs text-slate-400 truncate">
                 {mc.player}
               </span>
-              <span className="text-[10px] text-slate-600 flex-shrink-0">
+              <span className="text-[10px] text-slate-600 shrink-0">
                 {mc.team}
               </span>
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 {/* Rarity dots */}
                 <div className="flex items-center gap-0.5">
                   {Array.from({ length: Math.min(5, Math.ceil(mc.rarity / 2)) }).map((_, i) => (
@@ -680,7 +680,7 @@ export const SetRegistryModal: React.FC<SetRegistryModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">

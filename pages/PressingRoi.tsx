@@ -182,7 +182,7 @@ const PressingRoi: React.FC = () => {
                 const card = assessments.find(a => a.id === e.target.value);
                 if (card) handleCardSelect(card);
               }}
-              className="w-full bg-slate-900/50 border border-slate-700/50 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:outline-none focus:border-orange-500/50"
+              className="w-full bg-slate-900/50 border border-slate-700/50 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:outline-hidden focus:border-orange-500/50"
             >
               {assessments.map(a => (
                 <option key={a.id} value={a.id}>
@@ -215,7 +215,7 @@ const PressingRoi: React.FC = () => {
                     </div>
                     <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-orange-500 to-emerald-500 rounded-full transition-all"
+                        className="h-full bg-linear-to-r from-orange-500 to-emerald-500 rounded-full transition-all"
                         style={{ width: `${outcome.probability * 100}%` }}
                       />
                     </div>
@@ -252,7 +252,7 @@ const PressingRoi: React.FC = () => {
                       <p className="text-xs font-bold text-slate-300">{factor.factor}</p>
                       <p className="text-[10px] text-slate-500">{factor.description}</p>
                     </div>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${RISK_BADGE[factor.severity]}`}>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-sm ${RISK_BADGE[factor.severity]}`}>
                       {factor.severity.replace('_', ' ')}
                     </span>
                   </div>
@@ -396,11 +396,11 @@ const PressingRoi: React.FC = () => {
                 </p>
               </div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-slate-700 text-slate-300">
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-sm bg-slate-700 text-slate-300">
                   {c.gradeBefore}
                 </span>
                 <span className="text-[10px] text-slate-500">&rarr;</span>
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-500/20 text-emerald-300">
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-sm bg-emerald-500/20 text-emerald-300">
                   {c.gradeAfter}
                 </span>
               </div>
@@ -431,7 +431,7 @@ const PressingRoi: React.FC = () => {
                   <p className="text-[10px] text-slate-500 truncate">{card.cardDescription} | {card.currentGrade}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 flex-shrink-0">
+              <div className="flex items-center gap-4 shrink-0">
                 <span className="text-xs text-slate-400">${card.estimatedValueBefore.toLocaleString()}</span>
                 <div className="flex items-center gap-1">
                   <div className="w-12 h-1.5 bg-slate-700 rounded-full overflow-hidden">

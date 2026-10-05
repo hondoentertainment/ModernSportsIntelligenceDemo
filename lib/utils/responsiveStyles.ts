@@ -131,7 +131,7 @@ export function tabClasses(
   // Desktop pill style
   return [
     base,
-    'flex-1 min-w-0 px-3 py-2 rounded whitespace-nowrap',
+    'flex-1 min-w-0 px-3 py-2 rounded-sm whitespace-nowrap',
     isActive ? active : inactive,
   ].join(' ');
 }

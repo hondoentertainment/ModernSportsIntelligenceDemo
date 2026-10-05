@@ -194,8 +194,8 @@ const BehavioralFinance: React.FC = () => {
               return (
                 <div key={b.id} className={`p-3 rounded-xl border ${sc.bg} ${sc.border}`}>
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${sc.bg} ${sc.text} ${sc.border}`}>{sc.label}</span>
-                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${bc.bg} ${bc.text} ${bc.border}`}>{bc.label}</span>
+                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${sc.bg} ${sc.text} ${sc.border}`}>{sc.label}</span>
+                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${bc.bg} ${bc.text} ${bc.border}`}>{bc.label}</span>
                   </div>
                   <p className="text-xs text-slate-300 mb-1.5">{b.evidence}</p>
                   <p className="text-[10px] text-emerald-400 flex items-center gap-1">
@@ -225,21 +225,21 @@ const BehavioralFinance: React.FC = () => {
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${d.decision === 'Buy' ? 'bg-blue-500/20 text-blue-400' : d.decision === 'Sell' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-500/20 text-slate-400'}`}>{d.decision}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold ${d.decision === 'Buy' ? 'bg-blue-500/20 text-blue-400' : d.decision === 'Sell' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-500/20 text-slate-400'}`}>{d.decision}</span>
                       <p className="text-sm font-bold text-white truncate">{d.cardName}</p>
                     </div>
                     <p className="text-[10px] text-slate-500 truncate">{d.notes}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+                <div className="flex items-center gap-3 shrink-0 ml-2">
                   {biasInfo && (
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded border ${biasInfo.bg} ${biasInfo.text} ${biasInfo.border}`}>{biasInfo.label}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-sm border ${biasInfo.bg} ${biasInfo.text} ${biasInfo.border}`}>{biasInfo.label}</span>
                   )}
                   <div className="text-right">
                     <p className="text-sm font-bold text-white">{formatCurrency(d.amount)}</p>
                     <p className="text-[10px] text-slate-500">{d.date}</p>
                   </div>
-                  <span className={`text-xs font-bold px-2 py-1 rounded ${d.outcome === 'profit' ? 'bg-emerald-500/20 text-emerald-400' : d.outcome === 'loss' ? 'bg-red-500/20 text-red-400' : 'bg-slate-500/20 text-slate-400'}`}>
+                  <span className={`text-xs font-bold px-2 py-1 rounded-sm ${d.outcome === 'profit' ? 'bg-emerald-500/20 text-emerald-400' : d.outcome === 'loss' ? 'bg-red-500/20 text-red-400' : 'bg-slate-500/20 text-slate-400'}`}>
                     {d.outcome.toUpperCase()}
                   </span>
                 </div>
@@ -358,7 +358,7 @@ const BehavioralFinance: React.FC = () => {
             const sc = getSeverityConfig(n.priority);
             return (
               <div key={n.id} className={`flex items-center gap-3 p-3 rounded-xl border ${sc.bg} ${sc.border}`}>
-                <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${sc.bg} ${sc.text} ${sc.border} flex-shrink-0`}>
+                <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${sc.bg} ${sc.text} ${sc.border} shrink-0`}>
                   {n.type.toUpperCase()}
                 </span>
                 <p className="text-xs text-slate-300 flex-1">{n.message}</p>

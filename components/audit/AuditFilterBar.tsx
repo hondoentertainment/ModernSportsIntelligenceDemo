@@ -57,7 +57,7 @@ const AuditFilterBar: React.FC<AuditFilterBarProps> = ({
                     onChange={(e) => onSearchChange(e.target.value)}
                     placeholder="Search action, resource, actor, details…"
                     aria-label="Search audit events"
-                    className="w-full bg-slate-800/60 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500/60"
+                    className="w-full bg-slate-800/60 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-violet-500/60"
                 />
             </div>
             <button
@@ -119,7 +119,7 @@ function FilterChipGroup<T extends string>({
 }): React.ReactElement {
     return (
         <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[10px] uppercase tracking-wide text-slate-500 font-bold w-20 flex-shrink-0">
+            <span className="text-[10px] uppercase tracking-wide text-slate-500 font-bold w-20 shrink-0">
                 {label}
             </span>
             {items.map((item) => {

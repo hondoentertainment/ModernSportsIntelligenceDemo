@@ -320,7 +320,7 @@ const MarketRegimeDetector: React.FC = () => {
               {optimalActions.map((oa, idx) => (
                 <div key={idx} className="p-4 bg-slate-900/50 border border-slate-700/30 rounded-xl">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`px-2 py-1 text-xs font-bold rounded border ${ACTION_COLORS[oa.action]}`}>
+                    <span className={`px-2 py-1 text-xs font-bold rounded-sm border ${ACTION_COLORS[oa.action]}`}>
                       {oa.action.toUpperCase()}
                     </span>
                     <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${
@@ -587,7 +587,7 @@ const MarketRegimeDetector: React.FC = () => {
                           <td key={to} className="py-2 px-2 text-center">
                             {prob > 0 ? (
                               <div
-                                className="inline-flex items-center justify-center w-12 h-8 rounded text-xs font-bold"
+                                className="inline-flex items-center justify-center w-12 h-8 rounded-sm text-xs font-bold"
                                 style={{
                                   backgroundColor: from === to
                                     ? `rgba(100, 116, 139, ${intensity * 0.5})`
@@ -725,13 +725,13 @@ const MarketRegimeDetector: React.FC = () => {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div className="p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl text-center">
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Primary Action</p>
-                      <span className={`px-2 py-1 text-xs font-bold rounded border ${ACTION_COLORS[strat.primaryAction]}`}>
+                      <span className={`px-2 py-1 text-xs font-bold rounded-sm border ${ACTION_COLORS[strat.primaryAction]}`}>
                         {strat.primaryAction.toUpperCase()}
                       </span>
                     </div>
                     <div className="p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl text-center">
                       <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Secondary Action</p>
-                      <span className={`px-2 py-1 text-xs font-bold rounded border ${ACTION_COLORS[strat.secondaryAction]}`}>
+                      <span className={`px-2 py-1 text-xs font-bold rounded-sm border ${ACTION_COLORS[strat.secondaryAction]}`}>
                         {strat.secondaryAction.toUpperCase()}
                       </span>
                     </div>
@@ -846,13 +846,13 @@ const MarketRegimeDetector: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-white">{sig.name}</span>
-                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-slate-700 text-slate-400">{sig.category}</span>
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-sm bg-slate-700 text-slate-400">{sig.category}</span>
                     </div>
                     <p className="text-[10px] text-slate-500">
                       Value: {typeof sig.value === 'number' ? sig.value.toFixed(2) : sig.value} | Threshold: {sig.threshold} ({sig.direction})
                     </p>
                   </div>
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-right shrink-0">
                     <p className="text-sm font-bold text-cyan-400">{sig.strength}%</p>
                     <p className="text-[10px] text-slate-500">{sig.lastTriggered}</p>
                   </div>
@@ -963,7 +963,7 @@ const MarketRegimeDetector: React.FC = () => {
                     {strat && (
                       <div className="mt-3 pt-2 border-t border-slate-700/30 flex items-center gap-2">
                         <span className="text-[10px] text-slate-500">Recommended:</span>
-                        <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${ACTION_COLORS[strat.primaryAction]}`}>
+                        <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${ACTION_COLORS[strat.primaryAction]}`}>
                           {strat.primaryAction.toUpperCase()}
                         </span>
                       </div>

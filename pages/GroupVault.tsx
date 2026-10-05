@@ -154,7 +154,7 @@ const GroupVault: React.FC = () => {
             <button
               key={v.id}
               onClick={() => setSelectedIdx(i)}
-              className={`flex-shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border ${
+              className={`shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border ${
                 i === selectedIdx
                   ? 'bg-slate-800 border-slate-700 text-white'
                   : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700'
@@ -164,7 +164,7 @@ const GroupVault: React.FC = () => {
                 <Lock size={14} />
                 <span>{v.name}</span>
                 <span
-                  className={`text-xs px-1.5 py-0.5 rounded border ${tierBadgeBg(v.tier)} ${getVaultTierColor(v.tier)}`}
+                  className={`text-xs px-1.5 py-0.5 rounded-sm border ${tierBadgeBg(v.tier)} ${getVaultTierColor(v.tier)}`}
                 >
                   {tierLabel(v.tier)}
                 </span>
@@ -180,7 +180,7 @@ const GroupVault: React.FC = () => {
               <div className="flex items-center gap-2 mb-1">
                 <h2 className="text-lg font-bold">{vault.name}</h2>
                 <span
-                  className={`text-xs px-2 py-0.5 rounded border ${tierBadgeBg(vault.tier)} ${getVaultTierColor(vault.tier)}`}
+                  className={`text-xs px-2 py-0.5 rounded-sm border ${tierBadgeBg(vault.tier)} ${getVaultTierColor(vault.tier)}`}
                 >
                   {tierLabel(vault.tier)}
                 </span>
@@ -285,7 +285,7 @@ const GroupVault: React.FC = () => {
                         {item.grade ?? 'Ungraded'} &middot; {item.ownerHandle}
                       </div>
                     </div>
-                    <div className="text-sm font-bold text-emerald-400 ml-2 flex-shrink-0">
+                    <div className="text-sm font-bold text-emerald-400 ml-2 shrink-0">
                       {fmtFull(item.estimatedValue)}
                     </div>
                   </div>
@@ -294,7 +294,7 @@ const GroupVault: React.FC = () => {
                       <MapPin size={11} /> {item.location}
                     </span>
                     <span
-                      className={`px-1.5 py-0.5 rounded ${conditionBadgeBg(item.condition)} ${getConditionColor(item.condition)}`}
+                      className={`px-1.5 py-0.5 rounded-sm ${conditionBadgeBg(item.condition)} ${getConditionColor(item.condition)}`}
                     >
                       {item.condition}
                     </span>
@@ -322,7 +322,7 @@ const GroupVault: React.FC = () => {
               </h3>
               <div className="flex items-center gap-2 mb-3">
                 <span
-                  className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded ${conditionBadgeBg(vault.environment.status)} ${envColor}`}
+                  className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-sm ${conditionBadgeBg(vault.environment.status)} ${envColor}`}
                 >
                   <CheckCircle size={12} /> {vault.environment.status.toUpperCase()}
                 </span>
@@ -357,7 +357,7 @@ const GroupVault: React.FC = () => {
                       key={i}
                       className="flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-2.5 text-xs text-yellow-300"
                     >
-                      <AlertTriangle size={14} className="flex-shrink-0 mt-0.5" />
+                      <AlertTriangle size={14} className="shrink-0 mt-0.5" />
                       {alert}
                     </div>
                   ))}
@@ -430,7 +430,7 @@ const GroupVault: React.FC = () => {
               <div className="space-y-2">
                 {vault.securityFeatures.map((feat, i) => (
                   <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
-                    <CheckCircle size={14} className="text-emerald-400 flex-shrink-0" />
+                    <CheckCircle size={14} className="text-emerald-400 shrink-0" />
                     {feat}
                   </div>
                 ))}

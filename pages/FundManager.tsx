@@ -208,7 +208,7 @@ const FundManager: React.FC = () => {
                   <p className="text-sm font-bold text-white truncate">{p.assetName}</p>
                   <p className="text-[10px] text-slate-500">{p.sport} &bull; Acquired {p.acquisitionDate}</p>
                 </div>
-                <div className="text-right flex-shrink-0 ml-4">
+                <div className="text-right shrink-0 ml-4">
                   <p className={`text-sm font-bold ${p.multiple >= 1 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {p.multiple.toFixed(2)}x
                   </p>

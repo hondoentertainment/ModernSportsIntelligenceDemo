@@ -90,10 +90,10 @@ const GenerationalDemandForecasterModal: React.FC<Props> = ({ isOpen, onClose })
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-gradient-to-r from-rose-500/10 to-slate-900 px-6 py-5 border-b border-slate-700/40">
+        <div className="bg-linear-to-r from-rose-500/10 to-slate-900 px-6 py-5 border-b border-slate-700/40">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center">
@@ -324,7 +324,7 @@ const GenerationalDemandForecasterModal: React.FC<Props> = ({ isOpen, onClose })
 
                   <div className="flex flex-wrap gap-1.5">
                     {shift.affectedCategories.map((cat) => (
-                      <span key={cat} className="px-2 py-0.5 rounded bg-slate-700/50 text-slate-400 text-[10px] font-medium border border-slate-600/30">
+                      <span key={cat} className="px-2 py-0.5 rounded-sm bg-slate-700/50 text-slate-400 text-[10px] font-medium border border-slate-600/30">
                         {cat}
                       </span>
                     ))}
@@ -383,7 +383,7 @@ const GenerationalDemandForecasterModal: React.FC<Props> = ({ isOpen, onClose })
                       <p className="text-white text-xs font-semibold">{transfer.sourceGeneration}</p>
                     </div>
                     <ChevronRight size={16} className="text-amber-400" />
-                    <div className="flex-1 text-center px-3 py-1 rounded bg-amber-500/10 border border-amber-500/20">
+                    <div className="flex-1 text-center px-3 py-1 rounded-sm bg-amber-500/10 border border-amber-500/20">
                       <p className="text-amber-400 text-[10px] uppercase">Allocation</p>
                       <p className="text-amber-400 text-xs font-bold">{formatCurrency(transfer.estimatedValue * transfer.collectibleAllocation / 100)}</p>
                     </div>
@@ -462,7 +462,7 @@ const GenerationalDemandForecasterModal: React.FC<Props> = ({ isOpen, onClose })
                     <h4 className="text-slate-400 text-[10px] font-bold uppercase tracking-wide mb-1.5">Affected Eras</h4>
                     <div className="flex flex-wrap gap-1.5">
                       {cycle.affectedEras.map((era) => (
-                        <span key={era} className="px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 text-[10px] font-medium border border-rose-500/20">
+                        <span key={era} className="px-2 py-0.5 rounded-sm bg-rose-500/10 text-rose-400 text-[10px] font-medium border border-rose-500/20">
                           {era}
                         </span>
                       ))}

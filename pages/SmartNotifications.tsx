@@ -221,7 +221,7 @@ const SmartNotifications: React.FC = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === tab.id
-                ? 'bg-slate-700 text-white shadow-sm'
+                ? 'bg-slate-700 text-white shadow-xs'
                 : 'text-slate-400 hover:text-slate-300'
             }`}
           >
@@ -340,13 +340,13 @@ const SmartNotifications: React.FC = () => {
                     <div className="flex items-start gap-3">
                       {/* Category indicator */}
                       <div
-                        className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
+                        className="w-2 h-2 rounded-full mt-2 shrink-0"
                         style={{ backgroundColor: getCategoryColor(notif.category) }}
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <span
-                            className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
+                            className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-sm"
                             style={{
                               backgroundColor: getCategoryColor(notif.category) + '20',
                               color: getCategoryColor(notif.category),
@@ -441,7 +441,7 @@ const SmartNotifications: React.FC = () => {
                 <div className="grid grid-cols-2 gap-1.5 mt-2">
                   {categoryChartData.map(item => (
                     <div key={item.name} className="flex items-center gap-1.5">
-                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }} />
+                      <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
                       <span className="text-[10px] text-slate-400 truncate">{item.name}</span>
                       <span className="text-[10px] text-slate-500 ml-auto">{item.value}</span>
                     </div>
@@ -476,7 +476,7 @@ const SmartNotifications: React.FC = () => {
                     {stats.topAlertedCards.map((card, idx) => (
                       <div key={idx} className="flex items-center justify-between">
                         <span className="text-xs text-slate-300 truncate mr-2">{card.cardName}</span>
-                        <span className="text-xs text-amber-400 font-medium flex-shrink-0">{card.alertCount} alerts</span>
+                        <span className="text-xs text-amber-400 font-medium shrink-0">{card.alertCount} alerts</span>
                       </div>
                     ))}
                   </div>
@@ -502,7 +502,7 @@ const SmartNotifications: React.FC = () => {
               >
                 <div className="flex items-start justify-between mb-2">
                   <span
-                    className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400"
+                    className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-emerald-500/15 text-emerald-400"
                   >
                     {getDealTypeLabel(deal.dealType)}
                   </span>
@@ -585,7 +585,7 @@ const SmartNotifications: React.FC = () => {
                       <h3 className="text-sm font-semibold text-white">{rule.name}</h3>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span
-                          className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded"
+                          className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-sm"
                           style={{
                             backgroundColor: getCategoryColor(rule.category) + '20',
                             color: getCategoryColor(rule.category),
@@ -594,7 +594,7 @@ const SmartNotifications: React.FC = () => {
                           {getCategoryLabel(rule.category)}
                         </span>
                         <span
-                          className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded"
+                          className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded-sm"
                           style={{
                             backgroundColor: getPriorityColor(rule.priority) + '20',
                             color: getPriorityColor(rule.priority),
@@ -611,7 +611,7 @@ const SmartNotifications: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1">
                       {rule.channels.map(ch => (
-                        <span key={ch} className="text-[10px] text-slate-500 bg-slate-700/50 px-1.5 py-0.5 rounded">
+                        <span key={ch} className="text-[10px] text-slate-500 bg-slate-700/50 px-1.5 py-0.5 rounded-sm">
                           {ch.replace('_', ' ')}
                         </span>
                       ))}

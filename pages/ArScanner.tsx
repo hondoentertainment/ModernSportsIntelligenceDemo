@@ -149,7 +149,7 @@ const ArScanner: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <ScanLine size={14} className="text-cyan-400" />
                     <p className="text-sm font-bold text-white">{scan.player}</p>
-                    <span className="text-[10px] px-1.5 py-0.5 bg-slate-700 text-slate-400 rounded">{scan.sport}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 bg-slate-700 text-slate-400 rounded-sm">{scan.sport}</span>
                   </div>
                   <span className="text-sm font-bold text-emerald-400">${scan.estimatedValue.toLocaleString()}</span>
                 </div>
@@ -273,7 +273,7 @@ const ArScanner: React.FC = () => {
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-700 text-slate-400 uppercase">{dc.layout}</span>
               </div>
               <div className="flex items-center gap-2 mb-3">
-                <span className="w-4 h-4 rounded" style={{ backgroundColor: dc.theme.accent }} />
+                <span className="w-4 h-4 rounded-sm" style={{ backgroundColor: dc.theme.accent }} />
                 <span className="text-xs text-slate-400">{dc.theme.name}</span>
               </div>
               <div className="flex items-center justify-between text-[10px]">
@@ -284,7 +284,7 @@ const ArScanner: React.FC = () => {
                 {dc.cards.slice(0, 3).map(cardId => {
                   const scan = scanHistory?.recentScans.find(s => s.cardId === cardId);
                   return scan ? (
-                    <span key={cardId} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded truncate max-w-[120px]">
+                    <span key={cardId} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded-sm truncate max-w-[120px]">
                       {scan.player}
                     </span>
                   ) : null;

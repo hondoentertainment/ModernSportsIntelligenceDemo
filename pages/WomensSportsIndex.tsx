@@ -336,12 +336,12 @@ const WomensSportsIndex: React.FC = () => {
                     <td className="py-2.5 px-3">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-white">{card.name}</span>
-                        {card.rookie && <span className="text-[9px] px-1 py-0.5 bg-amber-500/20 text-amber-400 rounded font-bold">RC</span>}
-                        {card.autograph && <span className="text-[9px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded font-bold">AUTO</span>}
+                        {card.rookie && <span className="text-[9px] px-1 py-0.5 bg-amber-500/20 text-amber-400 rounded-sm font-bold">RC</span>}
+                        {card.autograph && <span className="text-[9px] px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded-sm font-bold">AUTO</span>}
                       </div>
                     </td>
                     <td className="py-2.5 px-3">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${sc.bg} ${sc.text}`}>{sc.label}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold ${sc.bg} ${sc.text}`}>{sc.label}</span>
                     </td>
                     <td className="py-2.5 px-3 text-xs text-slate-400 max-w-[160px] truncate">{card.year} {card.cardSet}</td>
                     <td className="py-2.5 px-3 text-right font-bold text-white">{formatCurrency(card.currentValue)}</td>
@@ -376,11 +376,11 @@ const WomensSportsIndex: React.FC = () => {
                 <div key={em.id} className="p-4 bg-slate-900/50 border border-slate-700/30 rounded-xl">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${sc.bg} ${sc.text}`}>{sc.label}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold ${sc.bg} ${sc.text}`}>{sc.label}</span>
                       <span className="text-sm font-bold text-white">{em.name}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${em.riskLevel === 'low' ? 'bg-emerald-500/20 text-emerald-400' : em.riskLevel === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'}`}>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold ${em.riskLevel === 'low' ? 'bg-emerald-500/20 text-emerald-400' : em.riskLevel === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'}`}>
                         {em.riskLevel.toUpperCase()} RISK
                       </span>
                       <span className="text-sm font-bold text-violet-400">{opportunityScore}/100</span>
@@ -394,7 +394,7 @@ const WomensSportsIndex: React.FC = () => {
                   </div>
                   <div className="flex flex-wrap gap-1 mt-2">
                     {em.keyAthletes.map(a => (
-                      <span key={a} className="text-[9px] px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded">{a}</span>
+                      <span key={a} className="text-[9px] px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded-sm">{a}</span>
                     ))}
                   </div>
                 </div>
@@ -423,8 +423,8 @@ const WomensSportsIndex: React.FC = () => {
                 <div key={sig.id} className={`p-4 rounded-xl border ${signalConfig.bg} ${signalConfig.border}`}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className={`text-[10px] px-2 py-0.5 rounded font-black ${signalConfig.bg} ${signalConfig.text} border ${signalConfig.border}`}>{signalConfig.label}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${sc.bg} ${sc.text}`}>{sc.label}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-sm font-black ${signalConfig.bg} ${signalConfig.text} border ${signalConfig.border}`}>{signalConfig.label}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold ${sc.bg} ${sc.text}`}>{sc.label}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Shield size={10} className="text-slate-500" />
@@ -482,7 +482,7 @@ const WomensSportsIndex: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-slate-500">Avg: <span className="text-white font-bold">${d.avgSpend}</span></span>
-                    <span className={`px-1 py-0.5 rounded ${sc.bg} ${sc.text} font-bold`}>{sc.label}</span>
+                    <span className={`px-1 py-0.5 rounded-sm ${sc.bg} ${sc.text} font-bold`}>{sc.label}</span>
                     <span className="text-emerald-400 font-bold">+{d.growthRate}%</span>
                   </div>
                 </div>
@@ -503,19 +503,19 @@ const WomensSportsIndex: React.FC = () => {
               return (
                 <div key={gm.id} className="flex items-center justify-between p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex-shrink-0 ${sc.bg} ${sc.text}`}>{sc.label}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold shrink-0 ${sc.bg} ${sc.text}`}>{sc.label}</span>
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-white truncate">{gm.category}</p>
                       <p className="text-[10px] text-slate-500">{gm.period}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+                  <div className="flex items-center gap-3 shrink-0 ml-2">
                     <div className="text-right">
                       <p className="text-sm font-bold text-white">
                         {gm.currentValue >= 1_000_000 ? formatCurrency(gm.currentValue) : gm.currentValue.toLocaleString()}
                       </p>
                     </div>
-                    <span className={`text-xs font-bold px-2 py-1 rounded ${gm.growthPercent >= 100 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                    <span className={`text-xs font-bold px-2 py-1 rounded-sm ${gm.growthPercent >= 100 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
                       +{gm.growthPercent.toFixed(0)}%
                     </span>
                   </div>
@@ -537,7 +537,7 @@ const WomensSportsIndex: React.FC = () => {
             const sc = getSportConfig(ms.sport);
             return (
               <div key={ms.id} className="flex items-start gap-4 p-4 bg-slate-900/50 border border-slate-700/30 rounded-xl">
-                <div className="flex flex-col items-center flex-shrink-0">
+                <div className="flex flex-col items-center shrink-0">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold ${ms.marketImpact >= 300 ? 'bg-emerald-500/20 text-emerald-400' : ms.marketImpact >= 150 ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-500/20 text-slate-400'}`}>
                     {ms.marketImpact}
                   </div>
@@ -545,13 +545,13 @@ const WomensSportsIndex: React.FC = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${sc.bg} ${sc.text}`}>{sc.label}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold ${sc.bg} ${sc.text}`}>{sc.label}</span>
                     <span className="text-[10px] text-slate-500">{ms.date}</span>
                   </div>
                   <p className="text-sm font-bold text-white mb-1">{ms.title}</p>
                   <p className="text-xs text-slate-400">{ms.description}</p>
                 </div>
-                <div className="flex-shrink-0 text-right">
+                <div className="shrink-0 text-right">
                   <p className="text-sm font-bold text-emerald-400">+{ms.marketImpact}%</p>
                   <p className="text-[10px] text-slate-500">market impact</p>
                 </div>

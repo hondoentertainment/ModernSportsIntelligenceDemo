@@ -78,10 +78,10 @@ const CollectionGenomeModal: React.FC<CollectionGenomeModalProps> = ({ isOpen, o
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-5xl max-h-[90vh] overflow-hidden bg-brand-charcoal border border-slate-800 rounded-[2rem] shadow-2xl flex flex-col animate-in zoom-in-95 duration-300">
+      <div className="relative w-full max-w-5xl max-h-[90vh] overflow-hidden bg-brand-charcoal border border-slate-800 rounded-4xl shadow-2xl flex flex-col animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-800">
           <div className="flex items-center gap-3">

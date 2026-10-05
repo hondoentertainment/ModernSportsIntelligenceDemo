@@ -108,12 +108,12 @@ const MarketMicrostructureModal: React.FC<MarketMicrostructureModalProps> = ({ i
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         {/* Gradient header */}
-        <div className="bg-gradient-to-r from-cyan-500/10 to-slate-900 px-6 py-5 border-b border-slate-700 flex items-center justify-between flex-shrink-0">
+        <div className="bg-linear-to-r from-cyan-500/10 to-slate-900 px-6 py-5 border-b border-slate-700 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-cyan-500/20">
               <BarChart3 size={22} className="text-cyan-400" />
@@ -132,7 +132,7 @@ const MarketMicrostructureModal: React.FC<MarketMicrostructureModalProps> = ({ i
         </div>
 
         {/* Summary stats bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 px-6 py-4 border-b border-slate-800 flex-shrink-0">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 px-6 py-4 border-b border-slate-800 shrink-0">
           {[
             { label: 'Cards Monitored', value: stats.totalCardsMonitored.toString(), color: 'text-cyan-400' },
             { label: 'Avg Spread', value: `${stats.avgSpread.toFixed(1)}%`, color: 'text-white' },
@@ -147,7 +147,7 @@ const MarketMicrostructureModal: React.FC<MarketMicrostructureModalProps> = ({ i
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 px-6 pt-4 pb-2 flex-shrink-0 overflow-x-auto">
+        <div className="flex gap-1 px-6 pt-4 pb-2 shrink-0 overflow-x-auto">
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -212,13 +212,13 @@ const MarketMicrostructureModal: React.FC<MarketMicrostructureModalProps> = ({ i
                             <span className="text-xs text-green-400 font-mono w-20 text-right font-bold">
                               {formatCurrency(bid.price)}
                             </span>
-                            <div className="flex-1 h-5 bg-slate-700/30 rounded overflow-hidden relative flex items-center">
+                            <div className="flex-1 h-5 bg-slate-700/30 rounded-sm overflow-hidden relative flex items-center">
                               <div
-                                className="absolute inset-y-0 left-0 bg-green-500/20 rounded"
+                                className="absolute inset-y-0 left-0 bg-green-500/20 rounded-sm"
                                 style={{ width: `${(bid.quantity / maxQty) * 100}%` }}
                               />
                               <div className="relative flex items-center gap-1.5 px-2">
-                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${pc.text} ${pc.bg} border ${pc.border}`}>
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-sm ${pc.text} ${pc.bg} border ${pc.border}`}>
                                   {bid.platform}
                                 </span>
                                 {getBuyerIcon(bid.buyerType)}
@@ -251,13 +251,13 @@ const MarketMicrostructureModal: React.FC<MarketMicrostructureModalProps> = ({ i
                             <span className="text-xs text-red-400 font-mono w-20 text-right font-bold">
                               {formatCurrency(ask.price)}
                             </span>
-                            <div className="flex-1 h-5 bg-slate-700/30 rounded overflow-hidden relative flex items-center">
+                            <div className="flex-1 h-5 bg-slate-700/30 rounded-sm overflow-hidden relative flex items-center">
                               <div
-                                className="absolute inset-y-0 left-0 bg-red-500/20 rounded"
+                                className="absolute inset-y-0 left-0 bg-red-500/20 rounded-sm"
                                 style={{ width: `${(ask.quantity / maxQty) * 100}%` }}
                               />
                               <div className="relative flex items-center gap-1.5 px-2">
-                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${pc.text} ${pc.bg} border ${pc.border}`}>
+                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-sm ${pc.text} ${pc.bg} border ${pc.border}`}>
                                   {ask.platform}
                                 </span>
                                 {getBuyerIcon(ask.buyerType)}
@@ -324,7 +324,7 @@ const MarketMicrostructureModal: React.FC<MarketMicrostructureModalProps> = ({ i
                           {sig.cardName}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 flex-shrink-0">
+                      <div className="flex items-center gap-3 shrink-0">
                         <span className="text-[10px] text-slate-500 font-mono">{formatTime(sig.detectedAt)}</span>
                         <div className="flex items-center gap-1">
                           <Eye size={10} className="text-slate-500" />

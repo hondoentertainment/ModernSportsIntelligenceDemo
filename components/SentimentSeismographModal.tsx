@@ -48,7 +48,7 @@ const SentimentSeismographModal: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
@@ -119,7 +119,7 @@ const SentimentSeismographModal: React.FC<Props> = ({ isOpen, onClose }) => {
                       <div className="text-xs text-slate-500 mb-1">Keywords</div>
                       <div className="flex flex-wrap gap-1">
                         {r.keywords.map((k) => (
-                          <span key={k} className="px-1.5 py-0.5 text-xs bg-red-500/10 text-red-300 rounded">#{k}</span>
+                          <span key={k} className="px-1.5 py-0.5 text-xs bg-red-500/10 text-red-300 rounded-sm">#{k}</span>
                         ))}
                       </div>
                     </div>
@@ -142,7 +142,7 @@ const SentimentSeismographModal: React.FC<Props> = ({ isOpen, onClose }) => {
                       <h3 className="text-white font-semibold">{a.title}</h3>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`px-2 py-0.5 rounded text-xs font-medium uppercase ${getSeverityColor(a.severity)}`}>
+                      <span className={`px-2 py-0.5 rounded-sm text-xs font-medium uppercase ${getSeverityColor(a.severity)}`}>
                         {a.severity}
                       </span>
                       {a.acknowledged && <span className="text-xs text-slate-500">Acknowledged</span>}

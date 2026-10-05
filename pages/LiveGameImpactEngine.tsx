@@ -227,12 +227,12 @@ const LiveGameImpactEngine: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-center gap-4 mb-2">
-              <div className="text-center min-w-[3rem]">
+              <div className="text-center min-w-12">
                 <p className="text-sm font-bold text-white">{game.awayAbbrev}</p>
                 <p className="text-2xl font-bebas text-white">{game.score.away}</p>
               </div>
               <span className="text-slate-600">@</span>
-              <div className="text-center min-w-[3rem]">
+              <div className="text-center min-w-12">
                 <p className="text-sm font-bold text-white">{game.homeAbbrev}</p>
                 <p className="text-2xl font-bebas text-white">{game.score.home}</p>
               </div>
@@ -255,7 +255,7 @@ const LiveGameImpactEngine: React.FC = () => {
           <div className="space-y-3">
             {selectedGameEvents.map(evt => (
               <div key={evt.id} className="flex gap-3 p-3 bg-slate-900/50 rounded-lg">
-                <div className={`w-1 rounded-full flex-shrink-0 ${
+                <div className={`w-1 rounded-full shrink-0 ${
                   evt.cardValueDelta > 3 ? 'bg-emerald-500' :
                   evt.cardValueDelta < -1 ? 'bg-red-500' : 'bg-slate-600'
                 }`} />
@@ -263,7 +263,7 @@ const LiveGameImpactEngine: React.FC = () => {
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-white">{evt.playerName}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-slate-700 text-slate-400">
                         {evt.eventType.replace(/_/g, ' ')}
                       </span>
                       {evt.isHighlight && <Zap size={10} className="text-amber-400" />}
@@ -328,7 +328,7 @@ const LiveGameImpactEngine: React.FC = () => {
 
                   <div className="flex items-center justify-between mt-2">
                     <p className="text-xs text-slate-400 truncate flex-1 mr-4">{card.latestEvent}</p>
-                    <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="flex items-center gap-3 shrink-0">
                       <span className="text-[10px] text-slate-500">
                         Conf: {(card.confidence * 100).toFixed(0)}% | {card.gameName}
                       </span>
@@ -483,10 +483,10 @@ const LiveGameImpactEngine: React.FC = () => {
             </div>
             <div className="flex items-center justify-center gap-6 text-[10px] text-slate-500">
               <span className="flex items-center gap-1">
-                <span className="w-3 h-0.5 bg-brand-lime rounded" /> Projected Price
+                <span className="w-3 h-0.5 bg-brand-lime rounded-sm" /> Projected Price
               </span>
               <span className="flex items-center gap-1">
-                <span className="w-3 h-3 bg-emerald-500/12 rounded" /> Confidence Band
+                <span className="w-3 h-3 bg-emerald-500/12 rounded-sm" /> Confidence Band
               </span>
             </div>
 

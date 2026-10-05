@@ -62,10 +62,10 @@ const PlayerTrajectoryModal: React.FC<PlayerTrajectoryModalProps> = ({ isOpen, o
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-8 overflow-y-auto">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-5xl bg-brand-charcoal border border-slate-800 rounded-[2rem] shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="relative w-full max-w-5xl bg-brand-charcoal border border-slate-800 rounded-4xl shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-800">
           <div className="flex items-center gap-3">
@@ -225,7 +225,7 @@ const PlayerTrajectoryModal: React.FC<PlayerTrajectoryModalProps> = ({ isOpen, o
                 <div className="space-y-3">
                   {player.factors.map((f) => (
                     <div key={f.label} className="flex items-center gap-4">
-                      <div className="w-32 flex-shrink-0">
+                      <div className="w-32 shrink-0">
                         <p className="text-xs font-bold text-white">{f.label}</p>
                       </div>
                       <div className="flex-1 h-3 bg-slate-800 rounded-full overflow-hidden">

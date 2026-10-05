@@ -89,7 +89,7 @@ const WhatIfSimulatorModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const maxProjectionDelta = Math.max(...projections.map(p => Math.abs(p.delta)));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs">
       <div className="bg-brand-charcoal border border-slate-700 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-700/50">
@@ -169,7 +169,7 @@ const WhatIfSimulatorModal: React.FC<Props> = ({ isOpen, onClose }) => {
                         </span>
                         <button
                           onClick={e => { e.stopPropagation(); setExpandedScenario(expandedScenario === scenario.id ? null : scenario.id); }}
-                          className="p-1 hover:bg-slate-700 rounded"
+                          className="p-1 hover:bg-slate-700 rounded-sm"
                         >
                           {expandedScenario === scenario.id ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
                         </button>

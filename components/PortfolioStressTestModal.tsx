@@ -342,7 +342,7 @@ const PortfolioStressTestModal: React.FC<PortfolioStressTestModalProps> = ({ isO
           <ul className="space-y-2">
             {resilience.recommendations.map((rec, i) => (
               <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                <ArrowUpRight size={12} className="text-lime-400 mt-0.5 flex-shrink-0" />
+                <ArrowUpRight size={12} className="text-lime-400 mt-0.5 shrink-0" />
                 {rec}
               </li>
             ))}
@@ -354,7 +354,7 @@ const PortfolioStressTestModal: React.FC<PortfolioStressTestModalProps> = ({ isO
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-5xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
           <div className="flex items-center gap-3">

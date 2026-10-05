@@ -137,7 +137,7 @@ function CardSelector({
         <select
           value={selectedId}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 text-slate-200 rounded-lg px-3 py-2 pr-8 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500"
+          className="w-full bg-slate-800 border border-slate-700 text-slate-200 rounded-lg px-3 py-2 pr-8 text-sm appearance-none focus:outline-hidden focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500"
           aria-label={label}
         >
           {cards.map((c) => (
@@ -175,13 +175,13 @@ function DNAStrandVisualization({ genes }: { genes: CardGene[] }) {
         {basePairs.map((bp, i) => (
           <div key={`${bp.gene}-${i}`} className="flex flex-col items-center gap-0.5 group relative">
             <div
-              className="w-5 h-7 rounded-sm transition-all duration-200 group-hover:scale-y-110"
+              className="w-5 h-7 rounded-xs transition-all duration-200 group-hover:scale-y-110"
               style={{ backgroundColor: DNA_BASE_COLORS[bp.left], opacity: 0.7 + (bp.score / 333) }}
               title={`${bp.gene}: ${bp.left} (${bp.score})`}
             />
             <div className="w-px h-2 bg-slate-600" />
             <div
-              className="w-5 h-7 rounded-sm transition-all duration-200 group-hover:scale-y-110"
+              className="w-5 h-7 rounded-xs transition-all duration-200 group-hover:scale-y-110"
               style={{ backgroundColor: DNA_BASE_COLORS[bp.right], opacity: 0.7 + (bp.score / 333) }}
             />
             <span className="absolute -bottom-6 text-[9px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
@@ -193,7 +193,7 @@ function DNAStrandVisualization({ genes }: { genes: CardGene[] }) {
       <div className="flex gap-4 mt-4 pt-2 border-t border-slate-700/50">
         {Object.entries(DNA_BASE_COLORS).map(([base, color]) => (
           <div key={base} className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }} />
+            <div className="w-3 h-3 rounded-xs" style={{ backgroundColor: color }} />
             <span className="text-[10px] text-slate-500">
               {base} = {base === 'A' ? '75-100' : base === 'G' ? '50-74' : base === 'C' ? '25-49' : '0-24'}
             </span>
@@ -312,7 +312,7 @@ function GenomeProfileTab({ profile }: { profile: GenomeProfile }) {
               <div className="space-y-2">
                 {genes.map((gene) => (
                   <div key={gene.name} className="flex items-center gap-3">
-                    <span className="text-xs text-slate-400 w-32 flex-shrink-0 truncate" title={gene.name}>{gene.name}</span>
+                    <span className="text-xs text-slate-400 w-32 shrink-0 truncate" title={gene.name}>{gene.name}</span>
                     <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500"
@@ -438,7 +438,7 @@ function GeneComparisonTab({
           {/* Recommendation */}
           <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-4">
             <div className="flex items-start gap-2">
-              <Info size={16} className="text-cyan-400 mt-0.5 flex-shrink-0" />
+              <Info size={16} className="text-cyan-400 mt-0.5 shrink-0" />
               <p className="text-sm text-cyan-200">{match.recommendation}</p>
             </div>
           </div>
@@ -470,7 +470,7 @@ function GeneComparisonTab({
               </h4>
               <div className="flex flex-wrap gap-1.5">
                 {match.sharedTraits.map((t) => (
-                  <span key={t} className="px-2 py-0.5 bg-emerald-500/10 text-emerald-300 rounded text-[10px] font-medium">{t}</span>
+                  <span key={t} className="px-2 py-0.5 bg-emerald-500/10 text-emerald-300 rounded-sm text-[10px] font-medium">{t}</span>
                 ))}
                 {match.sharedTraits.length === 0 && <span className="text-xs text-slate-500">None</span>}
               </div>
@@ -481,7 +481,7 @@ function GeneComparisonTab({
               </h4>
               <div className="flex flex-wrap gap-1.5">
                 {match.divergentTraits.map((t) => (
-                  <span key={t} className="px-2 py-0.5 bg-rose-500/10 text-rose-300 rounded text-[10px] font-medium">{t}</span>
+                  <span key={t} className="px-2 py-0.5 bg-rose-500/10 text-rose-300 rounded-sm text-[10px] font-medium">{t}</span>
                 ))}
                 {match.divergentTraits.length === 0 && <span className="text-xs text-slate-500">None</span>}
               </div>
@@ -578,7 +578,7 @@ function PopulationGenomicsTab() {
             <select
               value={selectedGene}
               onChange={(e) => setSelectedGene(e.target.value)}
-              className="bg-slate-700 border border-slate-600 text-slate-200 rounded-lg px-3 py-1.5 text-xs appearance-none pr-7 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              className="bg-slate-700 border border-slate-600 text-slate-200 rounded-lg px-3 py-1.5 text-xs appearance-none pr-7 focus:outline-hidden focus:ring-1 focus:ring-cyan-500"
               aria-label="Select gene for distribution"
             >
               {GENE_DEFINITIONS.map((g) => (
@@ -709,10 +709,10 @@ function GeneticTwinsTab({ primaryId, allCards }: { primaryId: string; allCards:
                 </div>
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {tw.sharedTraits.slice(0, 8).map((t) => (
-                    <span key={t} className="px-2 py-0.5 bg-emerald-500/10 text-emerald-300 rounded text-[10px] font-medium">{t}</span>
+                    <span key={t} className="px-2 py-0.5 bg-emerald-500/10 text-emerald-300 rounded-sm text-[10px] font-medium">{t}</span>
                   ))}
                   {tw.divergentTraits.slice(0, 4).map((t) => (
-                    <span key={t} className="px-2 py-0.5 bg-rose-500/10 text-rose-300 rounded text-[10px] font-medium">{t}</span>
+                    <span key={t} className="px-2 py-0.5 bg-rose-500/10 text-rose-300 rounded-sm text-[10px] font-medium">{t}</span>
                   ))}
                 </div>
                 <p className="text-xs text-slate-500 mt-2 italic">{tw.recommendation}</p>
@@ -859,8 +859,8 @@ function GenomeEvolutionTab({ primaryId }: { primaryId: string }) {
         <div className="space-y-3">
           {evolution.snapshots.map((snap, i) => (
             <div key={i} className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-cyan-400 flex-shrink-0" />
-              <span className="text-xs text-slate-500 w-24 flex-shrink-0">{snap.date}</span>
+              <div className="w-2 h-2 rounded-full bg-cyan-400 shrink-0" />
+              <span className="text-xs text-slate-500 w-24 shrink-0">{snap.date}</span>
               <span className="text-xs text-slate-300">{snap.trigger}</span>
               <GenomeScoreBadge score={snap.overallScore} />
             </div>
@@ -1083,7 +1083,7 @@ const CardGenomeSequencer: React.FC = () => {
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-500/20">
+            <div className="p-2.5 rounded-xl bg-linear-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-500/20">
               <Dna size={26} className="text-cyan-400" />
             </div>
             <div>
@@ -1105,9 +1105,9 @@ const CardGenomeSequencer: React.FC = () => {
 
         {/* Selected card banner */}
         {selectedProfile && (
-          <div className="bg-gradient-to-r from-slate-800/80 to-slate-800/40 rounded-xl p-4 border border-slate-700/50 flex items-center justify-between flex-wrap gap-3">
+          <div className="bg-linear-to-r from-slate-800/80 to-slate-800/40 rounded-xl p-4 border border-slate-700/50 flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-4 min-w-0">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/30 to-violet-500/30 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-linear-to-br from-cyan-500/30 to-violet-500/30 flex items-center justify-center shrink-0">
                 <FlaskConical size={20} className="text-cyan-400" />
               </div>
               <div className="min-w-0">

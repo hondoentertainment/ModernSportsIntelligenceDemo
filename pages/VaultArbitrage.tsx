@@ -217,11 +217,11 @@ const VaultArbitrage: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center gap-3 mb-2">
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-slate-700 text-slate-300 uppercase">
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-sm bg-slate-700 text-slate-300 uppercase">
                   {getPlatformLabel(opp.currentPlatform)}
                 </span>
                 <ArrowRight size={12} className="text-cyan-400" />
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-cyan-500/20 text-cyan-300 uppercase">
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-sm bg-cyan-500/20 text-cyan-300 uppercase">
                   {getPlatformLabel(opp.recommendedPlatform)}
                 </span>
                 <span className="text-[10px] text-slate-500 ml-auto">
@@ -254,7 +254,7 @@ const VaultArbitrage: React.FC = () => {
                 const card = cards.find(c => c.id === e.target.value);
                 if (card) setSelectedCard(card);
               }}
-              className="w-full bg-slate-900/50 border border-slate-700/50 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:outline-none focus:border-cyan-500/50"
+              className="w-full bg-slate-900/50 border border-slate-700/50 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:outline-hidden focus:border-cyan-500/50"
             >
               {cards.map(c => (
                 <option key={c.id} value={c.id}>
@@ -298,7 +298,7 @@ const VaultArbitrage: React.FC = () => {
                     {getPlatformLabel(transfer.fromPlatform)} &rarr; {getPlatformLabel(transfer.toPlatform)}
                   </p>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
+                <div className="flex items-center gap-3 shrink-0">
                   <span className="text-xs text-slate-400">${transfer.transferFee.toFixed(2)}</span>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full ${TRANSFER_BADGE[transfer.status]}`}>
                     {transfer.status.replace('_', ' ')}

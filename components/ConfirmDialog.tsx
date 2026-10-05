@@ -48,7 +48,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-200 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
       role="dialog"
       aria-modal="true"
@@ -61,7 +61,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       >
         <div className="p-8 space-y-6">
           <div className="flex items-start gap-4">
-            <div className={`p-3 rounded-2xl flex-shrink-0 ${styles.iconBg}`}>
+            <div className={`p-3 rounded-2xl shrink-0 ${styles.iconBg}`}>
               {styles.icon}
             </div>
             <div>

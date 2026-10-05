@@ -159,7 +159,7 @@ export const MarketMicrostructureWidget: React.FC<MarketMicrostructureWidgetProp
       {/* Anomaly badge */}
       {anomalies.length > 0 && (
         <div className="flex items-center gap-2 px-4 py-2.5 bg-red-500/10 border border-red-500/20 rounded-xl">
-          <AlertTriangle size={14} className="text-red-400 flex-shrink-0" />
+          <AlertTriangle size={14} className="text-red-400 shrink-0" />
           <span className="text-[10px] font-black text-red-400 uppercase tracking-widest">
             {anomalies.length} anomal{anomalies.length === 1 ? 'y' : 'ies'} detected
           </span>

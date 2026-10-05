@@ -67,12 +67,12 @@ export const BlockchainProvenanceWidget: React.FC<BlockchainProvenanceWidgetProp
       {/* Latest verification highlight */}
       {latestVerification && (
         <div className="flex items-center gap-3 p-3 bg-violet-500/5 border border-violet-500/20 rounded-xl mb-4">
-          <ShieldCheck size={14} className="text-violet-400 flex-shrink-0" />
+          <ShieldCheck size={14} className="text-violet-400 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-violet-400 uppercase tracking-widest">Latest Verification</p>
             <p className="text-xs text-white font-medium truncate">{latestVerification.cardName}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <p className="text-sm font-bold text-violet-400">{latestVerification.authenticityScore}%</p>
             <p className="text-[10px] text-slate-500">{latestVerification.verified ? 'Verified' : 'Pending'}</p>
           </div>

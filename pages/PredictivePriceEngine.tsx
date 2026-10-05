@@ -294,7 +294,7 @@ const PredictivePriceEngine: React.FC = () => {
           <select
             value={signalFilter}
             onChange={e => setSignalFilter(e.target.value as TrendSignal | 'all')}
-            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-purple-500"
+            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-hidden focus:border-purple-500"
           >
             <option value="all">All Signals</option>
             {SIGNAL_OPTIONS.map(s => (
@@ -304,7 +304,7 @@ const PredictivePriceEngine: React.FC = () => {
           <select
             value={sportFilter}
             onChange={e => setSportFilter(e.target.value)}
-            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-purple-500"
+            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-hidden focus:border-purple-500"
           >
             {SPORT_OPTIONS.map(s => (
               <option key={s} value={s}>{s}</option>
@@ -313,7 +313,7 @@ const PredictivePriceEngine: React.FC = () => {
           <select
             value={selectedHorizon}
             onChange={e => setSelectedHorizon(e.target.value as ForecastHorizon)}
-            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-purple-500"
+            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-hidden focus:border-purple-500"
           >
             {HORIZON_OPTIONS.map(h => (
               <option key={h} value={h}>{h}</option>
@@ -465,11 +465,11 @@ const PredictivePriceEngine: React.FC = () => {
         <div className="space-y-3">
           {catalysts.slice(0, 10).map(c => (
             <div key={c.id} className="bg-slate-900/50 border border-slate-700/30 rounded-xl p-4 flex items-start gap-4 hover:border-slate-600/50 transition-colors">
-              <div className="text-2xl flex-shrink-0">{getCatalystIcon(c.type)}</div>
+              <div className="text-2xl shrink-0">{getCatalystIcon(c.type)}</div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <p className="text-sm font-bold text-white">{c.title}</p>
-                  <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${c.impact >= 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                  <span className={`inline-block px-1.5 py-0.5 rounded-sm text-[10px] font-bold uppercase ${c.impact >= 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
                     {c.impact >= 0 ? '+' : ''}{c.impact}% impact
                   </span>
                 </div>
@@ -521,7 +521,7 @@ const PredictivePriceEngine: React.FC = () => {
             <select
               value={selectedModel}
               onChange={e => setSelectedModel(e.target.value as ModelType)}
-              className="ml-auto bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-white text-xs focus:outline-none focus:border-purple-500"
+              className="ml-auto bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-white text-xs focus:outline-hidden focus:border-purple-500"
             >
               <option value="composite">Composite</option>
               <option value="ml_ensemble">ML Ensemble</option>

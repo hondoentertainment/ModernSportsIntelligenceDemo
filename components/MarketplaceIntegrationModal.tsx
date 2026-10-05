@@ -77,7 +77,7 @@ const MarketplaceIntegrationModal: React.FC<MarketplaceIntegrationModalProps> = 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-h-[90vh] flex flex-col">
@@ -104,7 +104,7 @@ const MarketplaceIntegrationModal: React.FC<MarketplaceIntegrationModalProps> = 
         <div className="flex-1 overflow-y-auto p-5 space-y-3">
           {/* Security note */}
           <div className="p-3 rounded-xl bg-blue-500/5 border border-blue-500/20 flex items-start gap-2 mb-4">
-            <ShieldCheck size={16} className="text-blue-400 mt-0.5 flex-shrink-0" />
+            <ShieldCheck size={16} className="text-blue-400 mt-0.5 shrink-0" />
             <p className="text-xs text-blue-300/80">
               Connections use OAuth 2.0. We never store your marketplace password. Tokens can be revoked at any time.
             </p>

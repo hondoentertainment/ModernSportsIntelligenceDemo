@@ -137,10 +137,10 @@ export const HofProbabilityModal: React.FC<HofProbabilityModalProps> = ({ isOpen
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col">
         {/* Header with gradient */}
-        <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-gradient-to-r from-amber-500/10 to-slate-900">
+        <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-linear-to-r from-amber-500/10 to-slate-900">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-amber-500/10 text-amber-400 rounded-2xl border border-amber-500/30">
               <Award size={22} />
@@ -269,7 +269,7 @@ export const HofProbabilityModal: React.FC<HofProbabilityModalProps> = ({ isOpen
                     {/* Career stat highlights */}
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {Object.entries(candidate.careerStats).slice(0, 3).map(([key, val]) => (
-                        <span key={key} className="text-[10px] px-2 py-0.5 bg-slate-700/60 rounded text-slate-300">
+                        <span key={key} className="text-[10px] px-2 py-0.5 bg-slate-700/60 rounded-sm text-slate-300">
                           {key}: <span className="text-white font-bold">{typeof val === 'number' && val < 1 ? val.toFixed(3) : val}</span>
                         </span>
                       ))}
@@ -563,7 +563,7 @@ export const HofProbabilityModal: React.FC<HofProbabilityModalProps> = ({ isOpen
 
                       {/* Alert threshold */}
                       <div className="mt-3 flex items-center gap-2 p-2.5 bg-amber-500/5 border border-amber-500/20 rounded-lg">
-                        <Bell size={12} className="text-amber-400 flex-shrink-0" />
+                        <Bell size={12} className="text-amber-400 shrink-0" />
                         <span className="text-[10px] text-slate-400">
                           Alert when probability drops below{' '}
                           <span className="text-amber-400 font-bold">{entry.alertThreshold}%</span>
@@ -673,11 +673,11 @@ const PricingCard: React.FC<{ candidate: HofCandidate; pricing: HofPricingModel 
         </div>
         <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden flex">
           <div
-            className="h-full bg-gradient-to-r from-red-500 to-red-400"
+            className="h-full bg-linear-to-r from-red-500 to-red-400"
             style={{ width: `${pricing.breakEvenProbability}%` }}
           />
           <div
-            className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500"
+            className="h-full bg-linear-to-r from-emerald-400 to-emerald-500"
             style={{ width: `${100 - pricing.breakEvenProbability}%` }}
           />
         </div>

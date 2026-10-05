@@ -321,7 +321,7 @@ const SealedProductPage: React.FC = () => {
                     <p className="text-[10px] text-slate-500">{v.year} &middot; {v.sport}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+                <div className="flex items-center gap-3 shrink-0 ml-2">
                   <span className="text-sm font-bold text-emerald-400">{formatCurrency(v.currentValue)}</span>
                   <span className="text-[10px] text-slate-500">Est. {v.estimatedRemaining} left</span>
                 </div>
@@ -348,7 +348,7 @@ const SealedProductPage: React.FC = () => {
                   <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                     <div className="h-full bg-violet-500 rounded-full" style={{ width: `${Math.min(s.estimatedSupply / s.originalPrint * 100, 100)}%` }} />
                   </div>
-                  <span className="text-[10px] text-slate-500 flex-shrink-0">{s.estimatedSupply.toLocaleString()} / {s.originalPrint.toLocaleString()}</span>
+                  <span className="text-[10px] text-slate-500 shrink-0">{s.estimatedSupply.toLocaleString()} / {s.originalPrint.toLocaleString()}</span>
                 </div>
               </div>
             ))}

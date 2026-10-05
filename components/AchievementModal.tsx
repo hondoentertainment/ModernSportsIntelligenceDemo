@@ -85,7 +85,7 @@ const AchievementModal: React.FC<AchievementModalProps> = ({ isOpen, onClose, in
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
@@ -160,7 +160,7 @@ const AchievementModal: React.FC<AchievementModalProps> = ({ isOpen, onClose, in
                   <span className="text-lg">{a.icon}</span>
                   <span className="text-sm font-medium text-yellow-300">{a.name}</span>
                   <span
-                    className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded"
+                    className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-sm"
                     style={{
                       backgroundColor: TIER_COLORS[a.tier] + '22',
                       color: TIER_COLORS[a.tier],
@@ -248,7 +248,7 @@ const AchievementCard: React.FC<{ achievement: Achievement }> = ({ achievement }
     >
       {/* Tier badge */}
       <span
-        className="absolute top-2 right-2 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded"
+        className="absolute top-2 right-2 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-sm"
         style={{
           backgroundColor: color + '22',
           color,

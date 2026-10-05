@@ -74,7 +74,7 @@ const DealerInventory: React.FC = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h4 className="text-white font-semibold text-sm">{item.cardName}</h4>
-                    <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]">{getCategoryLabel(item.category)}</span>
+                    <span className="px-1.5 py-0.5 rounded-sm bg-slate-800 text-slate-400 text-[10px]">{getCategoryLabel(item.category)}</span>
                     {item.quantity > 1 && <span className="text-orange-400 text-xs font-bold">x{item.quantity}</span>}
                   </div>
                   <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
@@ -83,7 +83,7 @@ const DealerInventory: React.FC = () => {
                     {item.listedVenues.length > 0 && (
                       <div className="flex gap-1">
                         {item.listedVenues.map(v => (
-                          <span key={v} className={`px-1 py-0.5 rounded text-[10px] font-bold capitalize ${getVenueColor(v)}`}>{v}</span>
+                          <span key={v} className={`px-1 py-0.5 rounded-sm text-[10px] font-bold capitalize ${getVenueColor(v)}`}>{v}</span>
                         ))}
                       </div>
                     )}

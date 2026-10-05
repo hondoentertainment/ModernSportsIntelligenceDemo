@@ -118,7 +118,7 @@ const SharedWatchlists: React.FC = () => {
                     <div>
                       <h4 className="text-white font-semibold text-sm">{card.cardName}</h4>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${getResearchStatusColor(card.researchStatus)}`}>
+                        <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold ${getResearchStatusColor(card.researchStatus)}`}>
                           {getResearchStatusLabel(card.researchStatus)}
                         </span>
                         <span className="text-slate-500 text-xs">Added by @{card.addedBy}</span>
@@ -170,7 +170,7 @@ const SharedWatchlists: React.FC = () => {
                     <div className="space-y-2">
                       {card.notes.map(note => (
                         <div key={note.id} className="bg-slate-800/50 rounded-lg p-3 flex items-start gap-3">
-                          <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
+                          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
                             note.sentiment === 'bullish' ? 'bg-green-400' : note.sentiment === 'bearish' ? 'bg-red-400' : 'bg-slate-400'
                           }`} />
                           <div className="flex-1">

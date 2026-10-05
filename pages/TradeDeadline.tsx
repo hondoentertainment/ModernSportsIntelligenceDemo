@@ -307,8 +307,8 @@ const TradeDeadline: React.FC = () => {
             </ResponsiveContainer>
           </div>
           <div className="flex items-center justify-center gap-6 text-[10px] text-slate-500 mt-2">
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-emerald-500 rounded" /> Increase</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-500 rounded" /> Decrease</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-emerald-500 rounded-sm" /> Increase</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-500 rounded-sm" /> Decrease</span>
           </div>
         </div>
 

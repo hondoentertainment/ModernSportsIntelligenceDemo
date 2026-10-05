@@ -63,7 +63,7 @@ const WhiteLabelApi: React.FC = () => {
         <div className="bg-slate-900 rounded-xl border border-slate-800 p-5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-slate-400 text-xs uppercase">Monthly Usage: {stats.totalCallsThisMonth.toLocaleString()} / {stats.monthlyLimit.toLocaleString()}</span>
-            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${getPlanColor(stats.plan)}`}>{stats.plan}</span>
+            <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${getPlanColor(stats.plan)}`}>{stats.plan}</span>
           </div>
           <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
             <div className={`h-full rounded-full ${stats.usagePercent > 80 ? 'bg-red-500' : stats.usagePercent > 60 ? 'bg-amber-500' : 'bg-cyan-500'}`}
@@ -107,7 +107,7 @@ const WhiteLabelApi: React.FC = () => {
                     <span className="text-white font-semibold text-sm">{k.name}</span>
                     <code className="text-slate-500 text-xs font-mono">{k.keyPrefix}</code>
                   </div>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${k.status === 'active' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>{k.status}</span>
+                  <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold ${k.status === 'active' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>{k.status}</span>
                 </div>
                 <div className="flex items-center gap-4 text-xs text-slate-400">
                   <span>Rate: {k.rateLimit}/min</span>
@@ -117,7 +117,7 @@ const WhiteLabelApi: React.FC = () => {
                 </div>
                 <div className="flex gap-1 mt-2">
                   {k.permissions.map(p => (
-                    <span key={p} className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] capitalize">{p}</span>
+                    <span key={p} className="px-1.5 py-0.5 rounded-sm bg-slate-800 text-slate-400 text-[10px] capitalize">{p}</span>
                   ))}
                 </div>
               </div>
@@ -170,7 +170,7 @@ const WhiteLabelApi: React.FC = () => {
                   <span>Last: {wh.lastTriggered}</span>
                 </div>
                 <div className="flex gap-1 mt-2">
-                  {wh.events.map(e => <span key={e} className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px]">{e}</span>)}
+                  {wh.events.map(e => <span key={e} className="px-1.5 py-0.5 rounded-sm bg-slate-800 text-slate-400 text-[10px]">{e}</span>)}
                 </div>
               </div>
             ))}

@@ -221,7 +221,7 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({ isOpen, onClos
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-5xl max-h-[90vh] bg-[#0f1729] border border-slate-800 rounded-3xl overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-800">
@@ -310,7 +310,7 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({ isOpen, onClos
                             {s.category}
                           </span>
                           {s.isCustom && (
-                            <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-1.5 py-0.5 rounded">
+                            <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-1.5 py-0.5 rounded-sm">
                               CUSTOM
                             </span>
                           )}
@@ -318,7 +318,7 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({ isOpen, onClos
                         {s.isCustom && (
                           <button
                             onClick={(e) => { e.stopPropagation(); handleDeleteCustom(s.id); }}
-                            className="p-1 rounded hover:bg-red-500/20 text-slate-600 hover:text-red-400 transition-colors"
+                            className="p-1 rounded-sm hover:bg-red-500/20 text-slate-600 hover:text-red-400 transition-colors"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -366,7 +366,7 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({ isOpen, onClos
                           value={customName}
                           onChange={e => setCustomName(e.target.value)}
                           placeholder="My scenario"
-                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-purple-500"
                         />
                       </div>
                       <div>
@@ -376,7 +376,7 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({ isOpen, onClos
                           value={customDesc}
                           onChange={e => setCustomDesc(e.target.value)}
                           placeholder="What-if analysis..."
-                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500"
+                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-purple-500"
                         />
                       </div>
                     </div>
@@ -391,7 +391,7 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({ isOpen, onClos
                             <select
                               value={shock.target}
                               onChange={e => updateShock(idx, 'target', e.target.value)}
-                              className="w-full px-2 py-1.5 bg-slate-700 border border-slate-600 rounded-lg text-xs text-white focus:outline-none"
+                              className="w-full px-2 py-1.5 bg-slate-700 border border-slate-600 rounded-lg text-xs text-white focus:outline-hidden"
                             >
                               {SHOCK_TARGETS.map(t => (
                                 <option key={t.value} value={t.value}>{t.label}</option>
@@ -613,16 +613,16 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({ isOpen, onClos
                     {/* Legend */}
                     <div className="flex items-center justify-center gap-6 mt-3 text-[10px] text-slate-400">
                       <span className="flex items-center gap-1.5">
-                        <span className="w-3 h-0.5 bg-green-500 rounded" /> P95 (Bull)
+                        <span className="w-3 h-0.5 bg-green-500 rounded-sm" /> P95 (Bull)
                       </span>
                       <span className="flex items-center gap-1.5">
-                        <span className="w-3 h-0.5 bg-blue-500 rounded" /> P25-P75
+                        <span className="w-3 h-0.5 bg-blue-500 rounded-sm" /> P25-P75
                       </span>
                       <span className="flex items-center gap-1.5">
-                        <span className="w-3 h-1 bg-purple-500 rounded" /> Median
+                        <span className="w-3 h-1 bg-purple-500 rounded-sm" /> Median
                       </span>
                       <span className="flex items-center gap-1.5">
-                        <span className="w-3 h-0.5 bg-red-500 rounded" /> P5 (Bear)
+                        <span className="w-3 h-0.5 bg-red-500 rounded-sm" /> P5 (Bear)
                       </span>
                     </div>
                   </div>
@@ -705,7 +705,7 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({ isOpen, onClos
                           </div>
                           <div className="h-3 bg-slate-700 rounded-full overflow-hidden mb-3">
                             <div
-                              className="h-full rounded-full bg-gradient-to-r from-red-600 to-red-400"
+                              className="h-full rounded-full bg-linear-to-r from-red-600 to-red-400"
                               style={{ width: `${Math.min(v.varPercent, 100)}%` }}
                             />
                           </div>
@@ -933,7 +933,7 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({ isOpen, onClos
               {result && result.hedgingRecommendations.length > 0 ? (
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 p-4 bg-purple-500/5 border border-purple-500/20 rounded-2xl">
-                    <Lightbulb size={20} className="text-purple-400 flex-shrink-0" />
+                    <Lightbulb size={20} className="text-purple-400 shrink-0" />
                     <div>
                       <p className="text-sm text-white font-bold">Hedging Recommendations</p>
                       <p className="text-xs text-slate-400 mt-0.5">
@@ -951,13 +951,13 @@ export const StressTestModal: React.FC<StressTestModalProps> = ({ isOpen, onClos
                           className="p-4 bg-slate-800/30 border border-slate-700/50 rounded-2xl space-y-3"
                         >
                           <div className="flex items-start gap-3">
-                            <div className={`p-2 rounded-lg ${pColor.bg} ${pColor.text} flex-shrink-0`}>
+                            <div className={`p-2 rounded-lg ${pColor.bg} ${pColor.text} shrink-0`}>
                               {categoryIcon[rec.category] ?? <Lightbulb size={16} />}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
                                 <h4 className="text-sm font-bold text-white">{rec.action}</h4>
-                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${pColor.text} ${pColor.bg} border ${pColor.border}`}>
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-[9px] font-bold uppercase tracking-wider ${pColor.text} ${pColor.bg} border ${pColor.border}`}>
                                   {rec.priority}
                                 </span>
                               </div>

@@ -203,7 +203,7 @@ function AssetSelector({ selectedIds, onChange }: AssetSelectorProps) {
               {assets.map((a) => (
                 <label
                   key={a.id}
-                  className="flex items-center gap-2 py-1 px-2 rounded hover:bg-slate-700/50 cursor-pointer"
+                  className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-slate-700/50 cursor-pointer"
                 >
                   <div
                     className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${
@@ -215,7 +215,7 @@ function AssetSelector({ selectedIds, onChange }: AssetSelectorProps) {
                     {selectedIds.includes(a.id) && <Check size={10} className="text-white" />}
                   </div>
                   <span
-                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    className="w-2 h-2 rounded-full shrink-0"
                     style={{ backgroundColor: a.color }}
                   />
                   <span className="text-xs text-slate-300">{a.name}</span>
@@ -293,7 +293,7 @@ function CorrelationMatrixTab({
               <React.Fragment key={rowId}>
                 <div className="flex items-center gap-2 pr-2">
                   <span
-                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    className="w-2 h-2 rounded-full shrink-0"
                     style={{ backgroundColor: rowAsset?.color }}
                   />
                   <span className="text-xs text-slate-300 truncate">
@@ -332,21 +332,21 @@ function CorrelationMatrixTab({
       <div className="flex items-center gap-2 text-[10px] text-slate-500">
         <span>Legend:</span>
         <div className="flex items-center gap-1">
-          <span className="w-8 h-3 rounded" style={{ backgroundColor: 'rgba(239,68,68,0.7)' }} />
+          <span className="w-8 h-3 rounded-sm" style={{ backgroundColor: 'rgba(239,68,68,0.7)' }} />
           <span>-1</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-8 h-3 rounded" style={{ backgroundColor: 'rgba(239,68,68,0.2)' }} />
+          <span className="w-8 h-3 rounded-sm" style={{ backgroundColor: 'rgba(239,68,68,0.2)' }} />
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-8 h-3 rounded" style={{ backgroundColor: 'rgba(100,116,139,0.25)' }} />
+          <span className="w-8 h-3 rounded-sm" style={{ backgroundColor: 'rgba(100,116,139,0.25)' }} />
           <span>0</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-8 h-3 rounded" style={{ backgroundColor: 'rgba(34,197,94,0.2)' }} />
+          <span className="w-8 h-3 rounded-sm" style={{ backgroundColor: 'rgba(34,197,94,0.2)' }} />
         </div>
         <div className="flex items-center gap-1">
-          <span className="w-8 h-3 rounded" style={{ backgroundColor: 'rgba(34,197,94,0.7)' }} />
+          <span className="w-8 h-3 rounded-sm" style={{ backgroundColor: 'rgba(34,197,94,0.7)' }} />
           <span>+1</span>
         </div>
       </div>
@@ -938,7 +938,7 @@ function MacroRegimesTab() {
 
       {/* Key Insight */}
       <div className="bg-indigo-500/5 rounded-xl p-4 border border-indigo-500/20 flex items-start gap-3">
-        <Info size={16} className="text-indigo-400 mt-0.5 flex-shrink-0" />
+        <Info size={16} className="text-indigo-400 mt-0.5 shrink-0" />
         <div>
           <p className="text-sm text-white font-medium mb-1">
             Sports Cards: The Regime-Resilient Asset
@@ -1059,7 +1059,7 @@ function AlphaSignalsTab() {
 
       {/* Disclaimer */}
       <div className="bg-amber-500/5 rounded-xl p-3 border border-amber-500/20 flex items-start gap-2">
-        <AlertTriangle size={14} className="text-amber-400 mt-0.5 flex-shrink-0" />
+        <AlertTriangle size={14} className="text-amber-400 mt-0.5 shrink-0" />
         <p className="text-[10px] text-slate-400">
           Alpha signals are based on historical backtesting and do not guarantee future performance.
           Past correlations may break down during unprecedented market events. Always conduct your own
@@ -1303,7 +1303,7 @@ function DrawdownTab({ assetIds, period }: { assetIds: string[]; period: number 
 
       {/* Insight */}
       <div className="bg-indigo-500/5 rounded-xl p-4 border border-indigo-500/20 flex items-start gap-3">
-        <Info size={16} className="text-indigo-400 mt-0.5 flex-shrink-0" />
+        <Info size={16} className="text-indigo-400 mt-0.5 shrink-0" />
         <div>
           <p className="text-sm text-white font-medium mb-1">
             Drawdown Resilience Advantage

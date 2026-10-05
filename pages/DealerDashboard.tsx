@@ -186,7 +186,7 @@ const DealerDashboard: React.FC = () => {
                   <p className="text-sm font-bold text-white truncate">{item.cardName}</p>
                   <p className="text-[10px] text-slate-500">{item.player} &bull; {item.grade} &bull; Qty: {item.quantity}</p>
                 </div>
-                <div className="text-right flex-shrink-0 ml-4">
+                <div className="text-right shrink-0 ml-4">
                   <p className="text-sm font-bold text-white">${item.listPrice.toLocaleString()}</p>
                   <p className="text-[10px] text-emerald-400">+{item.marginPercent.toFixed(1)}% margin</p>
                 </div>
@@ -271,7 +271,7 @@ const DealerDashboard: React.FC = () => {
                   <p className="text-sm font-bold text-white truncate">{t.itemName}</p>
                   <p className="text-[10px] text-slate-500">{t.unitsSold} sold</p>
                 </div>
-                <div className="text-right flex-shrink-0 ml-4">
+                <div className="text-right shrink-0 ml-4">
                   <p className="text-sm font-bold text-white">${t.totalRevenue.toLocaleString()}</p>
                   <p className="text-[10px] text-emerald-400">{t.avgMargin}% avg margin</p>
                 </div>

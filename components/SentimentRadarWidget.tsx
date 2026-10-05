@@ -97,7 +97,7 @@ const SentimentRadarWidget: React.FC<SentimentRadarWidgetProps> = ({ onOpenModal
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${sentimentBg(p.overallSentiment)} ${sentimentColor(p.overallSentiment)}`}>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-sm border ${sentimentBg(p.overallSentiment)} ${sentimentColor(p.overallSentiment)}`}>
                 {p.overallSentiment > 0 ? '+' : ''}{p.overallSentiment}
               </span>
               <span className={`text-[10px] font-bold ${p.priceChange24h >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>

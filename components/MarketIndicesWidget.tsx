@@ -45,8 +45,8 @@ export const MarketIndicesWidget: React.FC<MarketIndicesWidgetProps> = ({ onOpen
       </div>
 
       {/* Subtle gradient edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-slate-900/50 to-transparent pointer-events-none z-10" />
-      <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-slate-900/50 to-transparent pointer-events-none z-10" />
+      <div className="absolute left-0 top-0 bottom-0 w-6 bg-linear-to-r from-slate-900/50 to-transparent pointer-events-none z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-6 bg-linear-to-l from-slate-900/50 to-transparent pointer-events-none z-10" />
 
       {/* Inline animation style */}
       <style>{`
@@ -70,7 +70,7 @@ const TickerItem: React.FC<{ index: MarketIndex }> = ({ index }) => {
   const isPositive = index.change >= 0;
 
   return (
-    <div className="flex items-center gap-2 flex-shrink-0 px-3 py-1.5 rounded-lg bg-slate-800/50">
+    <div className="flex items-center gap-2 shrink-0 px-3 py-1.5 rounded-lg bg-slate-800/50">
       <span
         className="text-[11px] font-black tracking-wider"
         style={{ color: '#FFD700' }}

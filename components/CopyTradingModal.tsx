@@ -125,7 +125,7 @@ const LeaderboardTab: React.FC<{
             value={searchQuery}
             onChange={e => onSearchChange(e.target.value)}
             placeholder="Search collectors..."
-            className="w-full pl-9 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-500/50"
+            className="w-full pl-9 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-600 focus:outline-hidden focus:border-amber-500/50"
           />
         </div>
         <button
@@ -208,11 +208,11 @@ const LeaderboardTab: React.FC<{
                 {rankDiff < 0 && <ArrowDown size={10} className="text-red-400" />}
               </div>
               <div className="col-span-4 flex items-center gap-2 min-w-0">
-                <span className="text-lg flex-shrink-0">{entry.collector.avatarUrl}</span>
+                <span className="text-lg shrink-0">{entry.collector.avatarUrl}</span>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1">
                     <p className="text-xs font-bold text-white truncate">{entry.collector.displayName}</p>
-                    {entry.collector.verified && <Shield size={10} className="text-blue-400 flex-shrink-0" />}
+                    {entry.collector.verified && <Shield size={10} className="text-blue-400 shrink-0" />}
                   </div>
                   <p className="text-[9px] text-slate-500 truncate">{entry.collector.category}</p>
                 </div>
@@ -296,7 +296,7 @@ const FollowingTab: React.FC = () => {
                 {trades.map((trade: TradeHistory) => (
                   <div key={trade.id} className="flex items-center justify-between py-1.5 px-2 bg-slate-800/50 rounded-lg">
                     <div className="flex items-center gap-2">
-                      <div className={`p-0.5 rounded ${trade.action === 'buy' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
+                      <div className={`p-0.5 rounded-sm ${trade.action === 'buy' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
                         {trade.action === 'buy' ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}
                       </div>
                       <span className="text-[10px] text-slate-300 truncate max-w-[180px]">{trade.cardName}</span>
@@ -434,7 +434,7 @@ const MirrorTab: React.FC = () => {
               onChange={e => setBudget(Number(e.target.value))}
               min={100}
               step={500}
-              className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-amber-500/50"
+              className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-hidden focus:border-amber-500/50"
             />
           </div>
         </div>
@@ -487,7 +487,7 @@ const MirrorTab: React.FC = () => {
                     <span className="text-[9px] text-slate-600">{alloc.estimatedShares} unit{alloc.estimatedShares !== 1 ? 's' : ''}</span>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0 ml-3">
+                <div className="text-right shrink-0 ml-3">
                   <p className="text-xs font-bold text-white">${alloc.targetAmount.toLocaleString()}</p>
                   <p className="text-[9px] text-slate-500">@ ${alloc.currentPrice.toFixed(2)}</p>
                 </div>
@@ -546,7 +546,7 @@ const PerformanceTab: React.FC = () => {
   return (
     <div className="space-y-5">
       {/* Rank & Benchmark */}
-      <div className="p-5 bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/20 rounded-2xl">
+      <div className="p-5 bg-linear-to-br from-amber-500/10 to-transparent border border-amber-500/20 rounded-2xl">
         <div className="flex items-center justify-between mb-3">
           <div>
             <p className="text-[10px] font-black text-amber-400/70 uppercase tracking-widest">Community Ranking</p>
@@ -644,7 +644,7 @@ const PerformanceTab: React.FC = () => {
         </div>
         <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full"
+            className="h-full bg-linear-to-r from-green-500 to-green-400 rounded-full"
             style={{ width: `${(metrics.winCount / metrics.totalTrades) * 100}%` }}
           />
         </div>
@@ -675,7 +675,7 @@ export const CopyTradingModal: React.FC<CopyTradingModalProps> = ({ isOpen, onCl
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-amber-500/5">

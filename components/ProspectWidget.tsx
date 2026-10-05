@@ -77,7 +77,7 @@ export const ProspectWidget: React.FC<ProspectWidgetProps> = ({ onClick }) => {
       {/* Alert banner */}
       {alerts.length > 0 && (
         <div className="flex items-center gap-2 px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
-          <Bell size={14} className="text-emerald-400 flex-shrink-0" />
+          <Bell size={14} className="text-emerald-400 shrink-0" />
           <span className="text-xs text-emerald-400 font-semibold">
             {alerts.length} new call-up alert{alerts.length !== 1 ? 's' : ''}
           </span>
@@ -101,7 +101,7 @@ export const ProspectWidget: React.FC<ProspectWidgetProps> = ({ onClick }) => {
                   <span className="text-sm font-semibold text-white truncate group-hover:text-blue-300 transition-colors">
                     {p.name}
                   </span>
-                  <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded border ${badge.cls}`}>
+                  <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded-sm border ${badge.cls}`}>
                     {badge.label}
                   </span>
                 </div>
@@ -111,7 +111,7 @@ export const ProspectWidget: React.FC<ProspectWidgetProps> = ({ onClick }) => {
                   <span className="text-slate-500">{p.position}</span>
                 </div>
               </div>
-              <div className="text-right flex-shrink-0">
+              <div className="text-right shrink-0">
                 <p className="text-xs font-mono font-bold text-emerald-400">{p.callUpProbability}%</p>
                 <p className="text-[10px] text-slate-500">prob.</p>
               </div>

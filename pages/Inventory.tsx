@@ -84,7 +84,7 @@ const Inventory: React.FC = () => {
                       <div>
                         <h3 className="font-bold text-lg leading-tight mb-1">{item.cardName}</h3>
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded bg-brand-lime/10 border border-brand-lime/20 text-[10px] font-bold text-brand-lime uppercase tracking-widest">
+                          <span className="px-2 py-0.5 rounded-sm bg-brand-lime/10 border border-brand-lime/20 text-[10px] font-bold text-brand-lime uppercase tracking-widest">
                             {item.status}
                           </span>
                         </div>

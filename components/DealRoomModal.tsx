@@ -138,7 +138,7 @@ const ChatRoom: React.FC<{ room: DealRoom; onBack: () => void }> = ({ room, onBa
     if (!participant) return null;
     const badge = ROLE_BADGE[participant.role];
     return (
-      <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${badge.cls}`}>
+      <span className={`text-[9px] px-1.5 py-0.5 rounded-sm font-medium ${badge.cls}`}>
         {badge.label}
       </span>
     );
@@ -154,7 +154,7 @@ const ChatRoom: React.FC<{ room: DealRoom; onBack: () => void }> = ({ room, onBa
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold text-slate-200 truncate">{room.card.player}</h3>
-            <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold border ${STATUS_BADGE[room.status].cls}`}>
+            <span className={`text-[9px] px-1.5 py-0.5 rounded-sm font-bold border ${STATUS_BADGE[room.status].cls}`}>
               {STATUS_BADGE[room.status].label}
             </span>
           </div>
@@ -185,7 +185,7 @@ const ChatRoom: React.FC<{ room: DealRoom; onBack: () => void }> = ({ room, onBa
           <div className="flex items-center gap-1">
             {offerTimeline.map((o, i) => (
               <React.Fragment key={o.id}>
-                <div className={`px-2 py-1 rounded text-[10px] font-medium ${o.type === 'offer' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'}`}>
+                <div className={`px-2 py-1 rounded-sm text-[10px] font-medium ${o.type === 'offer' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'}`}>
                   ${o.offerAmount?.toLocaleString()}
                 </div>
                 {i < offerTimeline.length - 1 && (
@@ -231,7 +231,7 @@ const ChatRoom: React.FC<{ room: DealRoom; onBack: () => void }> = ({ room, onBa
                 </div>
                 <div className={`rounded-xl px-3 py-2 text-xs leading-relaxed ${
                   isOffer
-                    ? 'bg-gradient-to-r from-amber-500/20 to-amber-600/10 border border-amber-500/30 text-amber-200'
+                    ? 'bg-linear-to-r from-amber-500/20 to-amber-600/10 border border-amber-500/30 text-amber-200'
                     : isAccept
                     ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-300'
                     : isReject
@@ -261,7 +261,7 @@ const ChatRoom: React.FC<{ room: DealRoom; onBack: () => void }> = ({ room, onBa
                 onChange={e => setOfferAmount(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Enter offer amount..."
-                className="w-full pl-8 pr-3 py-2 bg-slate-800 border border-amber-500/30 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500/50"
+                className="w-full pl-8 pr-3 py-2 bg-slate-800 border border-amber-500/30 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-amber-500/50"
                 autoFocus
               />
             </div>
@@ -280,7 +280,7 @@ const ChatRoom: React.FC<{ room: DealRoom; onBack: () => void }> = ({ room, onBa
               onChange={e => setMsgText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Type a secure message..."
-              className="flex-1 px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/40"
+              className="flex-1 px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500/40"
             />
             <button onClick={() => setOfferMode(true)} className="px-3 py-2 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 rounded-lg text-xs font-semibold transition-colors border border-amber-500/30">
               <DollarSign size={14} />
@@ -361,10 +361,10 @@ const DealRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs" onClick={onClose}>
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-gradient-to-r from-blue-500/10 to-slate-900">
+        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 bg-linear-to-r from-blue-500/10 to-slate-900">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-blue-500/20">
               <MessageSquare size={20} className="text-blue-400" />
@@ -372,7 +372,7 @@ const DealRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-slate-100">Institutional Deal Room</h2>
-                <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                <span className="flex items-center gap-1 px-2 py-0.5 rounded-sm text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
                   <Lock size={9} />
                   END-TO-END ENCRYPTED
                 </span>
@@ -446,10 +446,10 @@ const DealRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <h4 className="text-sm font-semibold text-slate-200 truncate">{room.title}</h4>
-                              <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold border ${statusBadge.cls}`}>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded-sm font-bold border ${statusBadge.cls}`}>
                                 {statusBadge.label}
                               </span>
-                              <span className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${typeBadge.cls}`}>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded-sm font-medium ${typeBadge.cls}`}>
                                 {typeBadge.label}
                               </span>
                             </div>
@@ -653,7 +653,7 @@ const DealRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                             value={newPlayer}
                             onChange={e => setNewPlayer(e.target.value)}
                             placeholder="e.g. LeBron James"
-                            className="w-full px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/40"
+                            className="w-full px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500/40"
                           />
                         </div>
                         <div>
@@ -663,7 +663,7 @@ const DealRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                             value={newGrade}
                             onChange={e => setNewGrade(e.target.value)}
                             placeholder="e.g. PSA 10"
-                            className="w-full px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/40"
+                            className="w-full px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500/40"
                           />
                         </div>
                       </div>
@@ -675,7 +675,7 @@ const DealRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                           value={newDescription}
                           onChange={e => setNewDescription(e.target.value)}
                           placeholder="e.g. 2003 Topps Chrome Rookie Card #111"
-                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/40"
+                          className="w-full px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500/40"
                         />
                       </div>
 
@@ -687,7 +687,7 @@ const DealRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                             value={newEstValue}
                             onChange={e => setNewEstValue(e.target.value)}
                             placeholder="e.g. 50000"
-                            className="w-full px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/40"
+                            className="w-full px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500/40"
                           />
                         </div>
                         <div>
@@ -697,7 +697,7 @@ const DealRoomModal: React.FC<Props> = ({ isOpen, onClose }) => {
                             value={newAskingPrice}
                             onChange={e => setNewAskingPrice(e.target.value)}
                             placeholder="e.g. 48000"
-                            className="w-full px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500/40"
+                            className="w-full px-3 py-2 bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500/40"
                           />
                         </div>
                       </div>

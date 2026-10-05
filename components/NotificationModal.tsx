@@ -122,7 +122,7 @@ const NotificationRow: React.FC<{
     >
       <div className="flex items-start gap-3">
         <span
-          className={`mt-1.5 w-2 h-2 rounded-full flex-shrink-0 ${pCfg.dot} ${
+          className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${pCfg.dot} ${
             notification.priority === 'critical' ? 'animate-pulse' : ''
           }`}
         />
@@ -131,12 +131,12 @@ const NotificationRow: React.FC<{
             <span className={`${catCfg.color}`}>{catCfg.icon}</span>
             <span className="text-sm font-semibold text-white truncate">{notification.title}</span>
             {!notification.isRead && (
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
             )}
           </div>
           <p className="text-xs text-slate-400 line-clamp-2">{notification.message}</p>
         </div>
-        <div className="flex flex-col items-end gap-1 flex-shrink-0">
+        <div className="flex flex-col items-end gap-1 shrink-0">
           <span className={`text-[9px] font-black uppercase tracking-widest ${pCfg.text}`}>
             {notification.priority}
           </span>
@@ -334,7 +334,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#0a0f1c] border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
@@ -393,7 +393,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search notifications..."
-                className="flex-1 bg-transparent text-sm text-white placeholder:text-slate-600 outline-none"
+                className="flex-1 bg-transparent text-sm text-white placeholder:text-slate-600 outline-hidden"
               />
             </div>
 
@@ -403,7 +403,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
               onChange={(e) =>
                 setActiveCategory(e.target.value as NotificationCategory | 'all')
               }
-              className="px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-300 outline-none cursor-pointer"
+              className="px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-300 outline-hidden cursor-pointer"
             >
               <option value="all">All Categories</option>
               {ALL_CATEGORIES.map((cat) => (
@@ -417,7 +417,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
             <select
               value={sortMode}
               onChange={(e) => setSortMode(e.target.value as SortMode)}
-              className="px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-300 outline-none cursor-pointer"
+              className="px-3 py-1.5 bg-slate-800/50 border border-slate-700 rounded-lg text-xs text-slate-300 outline-hidden cursor-pointer"
             >
               <option value="priority">Priority</option>
               <option value="newest">Newest</option>
@@ -446,14 +446,14 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
-              className="px-2 py-1 bg-slate-800/50 border border-slate-700 rounded-md text-xs text-slate-300 outline-none"
+              className="px-2 py-1 bg-slate-800/50 border border-slate-700 rounded-md text-xs text-slate-300 outline-hidden"
             />
             <span className="text-xs text-slate-500">To:</span>
             <input
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
-              className="px-2 py-1 bg-slate-800/50 border border-slate-700 rounded-md text-xs text-slate-300 outline-none"
+              className="px-2 py-1 bg-slate-800/50 border border-slate-700 rounded-md text-xs text-slate-300 outline-hidden"
             />
           </div>
         )}
@@ -571,19 +571,19 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                       : 'bg-slate-800/40 border-slate-700/50'
                   }`}
                 >
-                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${priorityConfig[n.priority].dot}`} />
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${priorityConfig[n.priority].dot}`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white font-medium truncate">{n.title}</p>
                     <p className="text-[11px] text-slate-500 truncate">{n.message}</p>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
                     {n.isDismissed && (
-                      <span className="text-[9px] font-bold uppercase text-slate-600 px-1.5 py-0.5 rounded bg-slate-800">
+                      <span className="text-[9px] font-bold uppercase text-slate-600 px-1.5 py-0.5 rounded-sm bg-slate-800">
                         Dismissed
                       </span>
                     )}
                     {n.isRead && !n.isDismissed && (
-                      <span className="text-[9px] font-bold uppercase text-slate-500 px-1.5 py-0.5 rounded bg-slate-800">
+                      <span className="text-[9px] font-bold uppercase text-slate-500 px-1.5 py-0.5 rounded-sm bg-slate-800">
                         Read
                       </span>
                     )}
@@ -682,7 +682,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                         key={h.id}
                         className="flex items-start gap-3 px-4 py-3 bg-slate-800/30 border border-slate-700/50 rounded-xl"
                       >
-                        <span className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${pCfg.dot}`} />
+                        <span className={`mt-1 w-2 h-2 rounded-full shrink-0 ${pCfg.dot}`} />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-0.5">
                             <span className={catCfg.color}>{catCfg.icon}</span>

@@ -127,7 +127,7 @@ export const PhantomBacktesterModal: React.FC<PhantomBacktesterModalProps> = ({ 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col">
         {/* Header */}
         <div className="p-6 md:p-8 border-b border-slate-700 flex items-center justify-between bg-brand-lime/5 shrink-0">
@@ -185,7 +185,7 @@ export const PhantomBacktesterModal: React.FC<PhantomBacktesterModalProps> = ({ 
                     type="date"
                     value={config.startDate}
                     onChange={(e) => setConfig((p) => ({ ...p, startDate: e.target.value }))}
-                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white focus:border-brand-lime focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -194,7 +194,7 @@ export const PhantomBacktesterModal: React.FC<PhantomBacktesterModalProps> = ({ 
                     type="date"
                     value={config.endDate}
                     onChange={(e) => setConfig((p) => ({ ...p, endDate: e.target.value }))}
-                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white focus:border-brand-lime focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -203,7 +203,7 @@ export const PhantomBacktesterModal: React.FC<PhantomBacktesterModalProps> = ({ 
                     type="number"
                     value={config.initialCapital}
                     onChange={(e) => setConfig((p) => ({ ...p, initialCapital: Number(e.target.value) }))}
-                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white focus:border-brand-lime focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                   />
                 </div>
                 <div>
@@ -211,7 +211,7 @@ export const PhantomBacktesterModal: React.FC<PhantomBacktesterModalProps> = ({ 
                   <select
                     value={config.benchmark}
                     onChange={(e) => setConfig((p) => ({ ...p, benchmark: e.target.value as BacktestConfig['benchmark'] }))}
-                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white focus:border-brand-lime focus:outline-none"
+                    className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                   >
                     <option value="sp500">S&P 500</option>
                     <option value="rookie_index">Rookie Index</option>
@@ -229,7 +229,7 @@ export const PhantomBacktesterModal: React.FC<PhantomBacktesterModalProps> = ({ 
                   placeholder="Search players to add..."
                   value={playerSearch}
                   onChange={(e) => setPlayerSearch(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-600 rounded-xl pl-10 pr-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-none"
+                  className="w-full bg-slate-800 border border-slate-600 rounded-xl pl-10 pr-3 py-2.5 text-sm text-white focus:border-brand-lime focus:outline-hidden"
                 />
                 {playerSearch && (
                   <div className="absolute z-20 top-full mt-1 w-full bg-slate-900 border border-slate-600 rounded-xl shadow-xl max-h-40 overflow-y-auto">
@@ -298,7 +298,7 @@ export const PhantomBacktesterModal: React.FC<PhantomBacktesterModalProps> = ({ 
               <div className="max-w-md mx-auto">
                 <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-brand-lime to-emerald-400 rounded-full transition-all duration-300"
+                    className="h-full bg-linear-to-r from-brand-lime to-emerald-400 rounded-full transition-all duration-300"
                     style={{ width: `${progress}%` }}
                   />
                 </div>

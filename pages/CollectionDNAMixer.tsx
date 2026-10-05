@@ -253,7 +253,7 @@ const CrossoverFlow: React.FC<{ result: BreedingResult; selectedOffspring: Hybri
           <div className="text-center">
             <div className="text-xs text-slate-500 mb-1">Crossover Points</div>
             {result.crossoverPoints.map((cp) => (
-              <div key={cp} className="text-xs text-purple-400 bg-purple-500/10 rounded px-2 py-0.5 mb-1">
+              <div key={cp} className="text-xs text-purple-400 bg-purple-500/10 rounded-sm px-2 py-0.5 mb-1">
                 {cp}
               </div>
             ))}
@@ -554,7 +554,7 @@ const CollectionDNAMixer: React.FC = () => {
       {activeTab === 'breeding-lab' && (
         <div className="space-y-6">
           {/* Parent Selection */}
-          <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-4 items-end">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-end">
             <div>
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                 Parent Collection 1
@@ -562,7 +562,7 @@ const CollectionDNAMixer: React.FC = () => {
               <select
                 value={selectedP1}
                 onChange={(e) => { setSelectedP1(e.target.value); setBreedingResult(null); }}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-hidden focus:border-purple-500"
               >
                 {collections.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -598,7 +598,7 @@ const CollectionDNAMixer: React.FC = () => {
               <select
                 value={selectedP2}
                 onChange={(e) => { setSelectedP2(e.target.value); setBreedingResult(null); }}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-purple-500"
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-hidden focus:border-purple-500"
               >
                 {collections.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -647,11 +647,11 @@ const CollectionDNAMixer: React.FC = () => {
               </h3>
               <div className="flex items-center gap-4 mb-3 text-xs">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: selectedP1Data.color }} />
+                  <div className="w-3 h-3 rounded-xs" style={{ backgroundColor: selectedP1Data.color }} />
                   <span className="text-slate-400">{selectedP1Data.ownerName}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: selectedP2Data.color }} />
+                  <div className="w-3 h-3 rounded-xs" style={{ backgroundColor: selectedP2Data.color }} />
                   <span className="text-slate-400">{selectedP2Data.ownerName}</span>
                 </div>
               </div>
@@ -683,7 +683,7 @@ const CollectionDNAMixer: React.FC = () => {
                   <button
                     key={off.id}
                     onClick={() => setSelectedOffspringIdx(idx)}
-                    className={`flex-shrink-0 p-3 rounded-xl border text-left transition-all ${
+                    className={`shrink-0 p-3 rounded-xl border text-left transition-all ${
                       idx === selectedOffspringIdx
                         ? 'border-purple-500/60 bg-purple-500/10'
                         : 'border-slate-800 bg-slate-900/40 hover:border-slate-700'
@@ -925,7 +925,7 @@ const CollectionDNAMixer: React.FC = () => {
                       if (row.id === col.id) {
                         return (
                           <td key={col.id} className="p-1">
-                            <div className="w-full h-10 rounded bg-slate-800/50 flex items-center justify-center text-slate-600 text-[10px]">
+                            <div className="w-full h-10 rounded-sm bg-slate-800/50 flex items-center justify-center text-slate-600 text-[10px]">
                               --
                             </div>
                           </td>
@@ -942,7 +942,7 @@ const CollectionDNAMixer: React.FC = () => {
                       return (
                         <td key={col.id} className="p-1">
                           <div
-                            className="w-full h-10 rounded flex items-center justify-center text-xs font-bold text-white/90 cursor-default transition-transform hover:scale-110"
+                            className="w-full h-10 rounded-sm flex items-center justify-center text-xs font-bold text-white/90 cursor-default transition-transform hover:scale-110"
                             style={{ backgroundColor: bg }}
                             title={`${row.ownerName} x ${col.ownerName}: ${pot}% potential`}
                           >
@@ -1055,7 +1055,7 @@ const CollectionDNAMixer: React.FC = () => {
             <select
               value={selectedBreedingId}
               onChange={(e) => setSelectedBreedingId(e.target.value)}
-              className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-purple-500"
+              className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-hidden focus:border-purple-500"
             >
               <option value="breed-001">Blue Chipper x Modern Speculator</option>
               <option value="breed-002">Vintage Purist x Prospect Farmer</option>
@@ -1240,7 +1240,7 @@ const CollectionDNAMixer: React.FC = () => {
             <select
               value={mateForCollection}
               onChange={(e) => setMateForCollection(e.target.value)}
-              className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-purple-500"
+              className="w-full max-w-md bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-hidden focus:border-purple-500"
             >
               {collections.map((c) => (
                 <option key={c.id} value={c.id}>

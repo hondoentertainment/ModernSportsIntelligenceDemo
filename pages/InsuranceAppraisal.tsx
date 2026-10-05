@@ -89,10 +89,10 @@ const AppraisalsTab: React.FC<{
               <p className="text-sm text-slate-400">{selectedItem.year} {selectedItem.manufacturer} | {selectedItem.grade} ({selectedItem.grader}) | Cert #{selectedItem.certNumber}</p>
             </div>
             <div className="flex gap-2">
-              <span className="px-2 py-1 rounded bg-green-500/15 text-green-400 text-xs font-medium border border-green-500/30 flex items-center gap-1">
+              <span className="px-2 py-1 rounded-sm bg-green-500/15 text-green-400 text-xs font-medium border border-green-500/30 flex items-center gap-1">
                 <Award size={12} /> Insurance-Grade
               </span>
-              <span className="px-2 py-1 rounded bg-blue-500/15 text-blue-400 text-xs font-medium border border-blue-500/30 flex items-center gap-1">
+              <span className="px-2 py-1 rounded-sm bg-blue-500/15 text-blue-400 text-xs font-medium border border-blue-500/30 flex items-center gap-1">
                 <FileCheck size={12} /> IRS-Compliant
               </span>
             </div>
@@ -114,7 +114,7 @@ const AppraisalsTab: React.FC<{
           <h4 className="text-sm font-semibold text-slate-300 mb-3">Comparable Sales Evidence ({selectedItem.comparables.length} comps)</h4>
           <div className="space-y-2 max-h-80 overflow-y-auto">
             {selectedItem.comparables.map(comp => (
-              <div key={comp.id} className="bg-slate-900 rounded border border-slate-700 p-3 flex items-center justify-between">
+              <div key={comp.id} className="bg-slate-900 rounded-sm border border-slate-700 p-3 flex items-center justify-between">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-slate-200 truncate">{comp.description}</p>
                   <p className="text-xs text-slate-500">{comp.venue} | {comp.saleDate} | {comp.grade}</p>
@@ -148,7 +148,7 @@ const AppraisalsTab: React.FC<{
             </div>
             <div className="flex gap-2 items-center">
               <Badge status={selectedReport.status} />
-              <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded flex items-center gap-1">
+              <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-sm flex items-center gap-1">
                 <Download size={14} /> PDF
               </button>
             </div>
@@ -175,13 +175,13 @@ const AppraisalsTab: React.FC<{
               </div>
               <div className="flex gap-2 items-end">
                 {selectedReport.certification.irsCompliant && (
-                  <span className="px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 text-xs border border-blue-500/30">IRS</span>
+                  <span className="px-1.5 py-0.5 rounded-sm bg-blue-500/15 text-blue-400 text-xs border border-blue-500/30">IRS</span>
                 )}
                 {selectedReport.certification.insuranceGrade && (
-                  <span className="px-1.5 py-0.5 rounded bg-green-500/15 text-green-400 text-xs border border-green-500/30">INS</span>
+                  <span className="px-1.5 py-0.5 rounded-sm bg-green-500/15 text-green-400 text-xs border border-green-500/30">INS</span>
                 )}
                 {selectedReport.certification.uspap && (
-                  <span className="px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400 text-xs border border-purple-500/30">USPAP</span>
+                  <span className="px-1.5 py-0.5 rounded-sm bg-purple-500/15 text-purple-400 text-xs border border-purple-500/30">USPAP</span>
                 )}
               </div>
             </div>
@@ -210,7 +210,7 @@ const AppraisalsTab: React.FC<{
               <button
                 key={item.id}
                 onClick={() => setSelectedItem(item)}
-                className="w-full bg-slate-900 rounded border border-slate-700 p-3 flex items-center justify-between hover:border-blue-500/50 transition-colors text-left"
+                className="w-full bg-slate-900 rounded-sm border border-slate-700 p-3 flex items-center justify-between hover:border-blue-500/50 transition-colors text-left"
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm text-slate-200 truncate">{item.cardName}</p>
@@ -534,22 +534,22 @@ const ClaimsTab: React.FC<{
           <p className="text-sm text-slate-300 mb-4">{selectedClaim.description}</p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-            <div className="bg-slate-900 rounded p-3 border border-slate-700">
+            <div className="bg-slate-900 rounded-sm p-3 border border-slate-700">
               <p className="text-xs text-slate-500">Claim Amount</p>
               <p className="text-lg font-bold text-blue-400">{fmt(selectedClaim.claimAmount)}</p>
             </div>
             {selectedClaim.settledAmount !== undefined && (
-              <div className="bg-slate-900 rounded p-3 border border-slate-700">
+              <div className="bg-slate-900 rounded-sm p-3 border border-slate-700">
                 <p className="text-xs text-slate-500">Settled</p>
                 <p className="text-lg font-bold text-green-400">{fmt(selectedClaim.settledAmount)}</p>
               </div>
             )}
-            <div className="bg-slate-900 rounded p-3 border border-slate-700">
+            <div className="bg-slate-900 rounded-sm p-3 border border-slate-700">
               <p className="text-xs text-slate-500">Category</p>
               <p className="text-lg font-bold text-slate-200 capitalize">{selectedClaim.category}</p>
             </div>
             {selectedClaim.adjusterName && (
-              <div className="bg-slate-900 rounded p-3 border border-slate-700">
+              <div className="bg-slate-900 rounded-sm p-3 border border-slate-700">
                 <p className="text-xs text-slate-500">Adjuster</p>
                 <p className="text-sm font-medium text-slate-200">{selectedClaim.adjusterName}</p>
               </div>
@@ -561,7 +561,7 @@ const ClaimsTab: React.FC<{
             <h4 className="text-sm font-semibold text-slate-300 mb-2">Affected Items</h4>
             <div className="flex flex-wrap gap-2">
               {selectedClaim.affectedItems.map((item, i) => (
-                <span key={i} className="px-2 py-1 bg-slate-900 border border-slate-700 rounded text-xs text-slate-300">{item}</span>
+                <span key={i} className="px-2 py-1 bg-slate-900 border border-slate-700 rounded-sm text-xs text-slate-300">{item}</span>
               ))}
             </div>
           </div>
@@ -571,7 +571,7 @@ const ClaimsTab: React.FC<{
           <div className="relative border-l-2 border-slate-700 ml-3 mb-6 space-y-4">
             {selectedClaim.timeline.map((entry, i) => (
               <div key={i} className="relative pl-6">
-                <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 ${i === selectedClaim.timeline.length - 1 ? 'bg-blue-500 border-blue-400' : 'bg-slate-800 border-slate-600'}`} />
+                <div className={`absolute left-[-9px] top-1 w-4 h-4 rounded-full border-2 ${i === selectedClaim.timeline.length - 1 ? 'bg-blue-500 border-blue-400' : 'bg-slate-800 border-slate-600'}`} />
                 <p className="text-xs text-slate-500">{entry.date}</p>
                 <p className="text-sm font-medium text-slate-200">{entry.event}</p>
                 <p className="text-xs text-slate-400">{entry.detail}</p>
@@ -583,7 +583,7 @@ const ClaimsTab: React.FC<{
           <h4 className="text-sm font-semibold text-slate-300 mb-2">Required Documents</h4>
           <div className="space-y-2">
             {selectedClaim.documents.map(doc => (
-              <div key={doc.id} className="flex items-center justify-between bg-slate-900 rounded border border-slate-700 p-3">
+              <div key={doc.id} className="flex items-center justify-between bg-slate-900 rounded-sm border border-slate-700 p-3">
                 <div className="flex items-center gap-2">
                   {docStatusIcon(doc.status)}
                   <span className="text-sm text-slate-300">{doc.name}</span>
@@ -756,16 +756,16 @@ const CoverageAnalyzerTab: React.FC<{
           <h4 className="text-sm font-semibold text-slate-200 mb-3">High-Value Items Coverage</h4>
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {summary.highValueItems.map((item, i) => (
-              <div key={i} className="flex items-center justify-between bg-slate-900 rounded p-2 border border-slate-700">
+              <div key={i} className="flex items-center justify-between bg-slate-900 rounded-sm p-2 border border-slate-700">
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-slate-300 truncate">{item.name}</p>
                 </div>
                 <div className="flex items-center gap-2 ml-2 shrink-0">
                   <span className="text-xs font-medium text-slate-200">{fmt(item.value)}</span>
                   {item.insured ? (
-                    <span className="px-1.5 py-0.5 rounded bg-green-500/15 text-green-400 text-[10px] border border-green-500/30">Insured</span>
+                    <span className="px-1.5 py-0.5 rounded-sm bg-green-500/15 text-green-400 text-[10px] border border-green-500/30">Insured</span>
                   ) : (
-                    <span className="px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 text-[10px] border border-red-500/30 flex items-center gap-0.5">
+                    <span className="px-1.5 py-0.5 rounded-sm bg-red-500/15 text-red-400 text-[10px] border border-red-500/30 flex items-center gap-0.5">
                       <AlertTriangle size={10} /> Uninsured
                     </span>
                   )}

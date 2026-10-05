@@ -372,7 +372,7 @@ const ConsignmentMarket: React.FC = () => {
                   type="number"
                   value={calcValue}
                   onChange={e => setCalcValue(Math.max(0, Number(e.target.value)))}
-                  className="bg-slate-700 border border-slate-600 rounded-lg pl-8 pr-4 py-2 text-white w-48 focus:outline-none focus:border-lime-500"
+                  className="bg-slate-700 border border-slate-600 rounded-lg pl-8 pr-4 py-2 text-white w-48 focus:outline-hidden focus:border-lime-500"
                 />
               </div>
             </div>

@@ -307,8 +307,8 @@ const VendingMachine: React.FC = () => {
             </ResponsiveContainer>
           </div>
           <div className="flex items-center justify-center gap-6 text-[10px] text-slate-500 mt-2">
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-blue-500 rounded" /> Expected</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-brand-lime rounded" /> Actual</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-blue-500 rounded-sm" /> Expected</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-brand-lime rounded-sm" /> Actual</span>
           </div>
         </div>
       </div>
@@ -393,7 +393,7 @@ const VendingMachine: React.FC = () => {
               <p className="text-xs text-slate-500 mt-1">Current Pool &middot; {jackpot.contributions} contributions</p>
             </div>
             <div className="w-full h-3 bg-slate-700 rounded-full mb-4">
-              <div className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full" style={{ width: `${Math.min(100, (jackpot.poolAmount / 20000) * 100)}%` }} />
+              <div className="h-full bg-linear-to-r from-amber-500 to-yellow-400 rounded-full" style={{ width: `${Math.min(100, (jackpot.poolAmount / 20000) * 100)}%` }} />
             </div>
             <div className="grid grid-cols-2 gap-3 text-center">
               <div className="p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl">
@@ -421,7 +421,7 @@ const VendingMachine: React.FC = () => {
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xs text-slate-400">Tier {seasonPass.currentTier}/{seasonPass.maxTiers}</span>
               <div className="flex-1 h-2 bg-slate-700 rounded-full">
-                <div className="h-full bg-gradient-to-r from-violet-500 to-purple-400 rounded-full" style={{ width: `${(seasonPass.xpEarned / seasonPass.xpRequired) * 100}%` }} />
+                <div className="h-full bg-linear-to-r from-violet-500 to-purple-400 rounded-full" style={{ width: `${(seasonPass.xpEarned / seasonPass.xpRequired) * 100}%` }} />
               </div>
               <span className="text-xs text-violet-400">{seasonPass.xpEarned.toLocaleString()}/{seasonPass.xpRequired.toLocaleString()} XP</span>
             </div>
@@ -529,19 +529,19 @@ const VendingMachine: React.FC = () => {
               <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-2">Collecting Tips</p>
               <ul className="space-y-1">
                 <li className="text-[10px] text-slate-400 flex items-center gap-1">
-                  <ShieldCheck size={10} className="text-emerald-400 flex-shrink-0" />
+                  <ShieldCheck size={10} className="text-emerald-400 shrink-0" />
                   Set a budget before opening packs
                 </li>
                 <li className="text-[10px] text-slate-400 flex items-center gap-1">
-                  <ShieldCheck size={10} className="text-emerald-400 flex-shrink-0" />
+                  <ShieldCheck size={10} className="text-emerald-400 shrink-0" />
                   Track your ROI over time, not per pack
                 </li>
                 <li className="text-[10px] text-slate-400 flex items-center gap-1">
-                  <ShieldCheck size={10} className="text-emerald-400 flex-shrink-0" />
+                  <ShieldCheck size={10} className="text-emerald-400 shrink-0" />
                   Higher tier packs have better EV ratios
                 </li>
                 <li className="text-[10px] text-slate-400 flex items-center gap-1">
-                  <ShieldCheck size={10} className="text-emerald-400 flex-shrink-0" />
+                  <ShieldCheck size={10} className="text-emerald-400 shrink-0" />
                   Take breaks between sessions
                 </li>
               </ul>

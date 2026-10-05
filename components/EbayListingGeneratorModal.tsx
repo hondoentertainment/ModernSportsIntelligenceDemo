@@ -83,7 +83,7 @@ const EbayListingGeneratorModal: React.FC<Props> = ({ isOpen, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs">
       <div className="bg-brand-charcoal border border-slate-700 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-700/50">
@@ -143,10 +143,10 @@ const EbayListingGeneratorModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 <div key={listing.id} className="bg-slate-800/30 border border-slate-700/50 rounded-xl p-4">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${statusColors[listing.status]}`}>
+                      <span className={`px-2 py-0.5 rounded-sm text-[10px] font-medium ${statusColors[listing.status]}`}>
                         {listing.status.toUpperCase()}
                       </span>
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${formatColors[listing.format]}`}>
+                      <span className={`px-2 py-0.5 rounded-sm text-[10px] font-medium ${formatColors[listing.format]}`}>
                         {listing.format.toUpperCase()}
                       </span>
                     </div>
@@ -168,19 +168,19 @@ const EbayListingGeneratorModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleCopy(listing.generatedTitle, listing.id)}
-                        className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs text-slate-300 flex items-center gap-1 transition-colors"
+                        className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded-sm text-xs text-slate-300 flex items-center gap-1 transition-colors"
                       >
                         {copiedTitle === listing.id ? <CheckCircle2 size={12} className="text-green-400" /> : <Copy size={12} />}
                         {copiedTitle === listing.id ? 'Copied' : 'Copy Title'}
                       </button>
-                      <button className="px-2 py-1 bg-orange-600/20 text-orange-400 hover:bg-orange-600/30 rounded text-xs font-medium transition-colors">
+                      <button className="px-2 py-1 bg-orange-600/20 text-orange-400 hover:bg-orange-600/30 rounded-sm text-xs font-medium transition-colors">
                         Edit
                       </button>
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1 mt-2">
                     {listing.keywords.map((kw, i) => (
-                      <span key={i} className="px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded text-[10px]">{kw}</span>
+                      <span key={i} className="px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded-sm text-[10px]">{kw}</span>
                     ))}
                   </div>
                 </div>
@@ -211,7 +211,7 @@ const EbayListingGeneratorModal: React.FC<Props> = ({ isOpen, onClose }) => {
                       Copy
                     </button>
                   </div>
-                  <p className="text-sm font-medium text-slate-200 mb-2 font-mono bg-slate-800/50 p-2 rounded">{s.title}</p>
+                  <p className="text-sm font-medium text-slate-200 mb-2 font-mono bg-slate-800/50 p-2 rounded-sm">{s.title}</p>
                   <div className="flex items-center gap-4 text-xs text-slate-400">
                     <span>{s.characterCount} chars</span>
                     <span>Keyword density: {(s.keywordDensity * 100).toFixed(0)}%</span>
@@ -246,7 +246,7 @@ const EbayListingGeneratorModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   <h4 className="text-sm text-slate-400 mb-2">Recent Sales</h4>
                   <div className="flex gap-2">
                     {pricing.recentSales.map((sale, i) => (
-                      <div key={i} className="bg-slate-800/50 rounded px-3 py-2 text-center flex-1">
+                      <div key={i} className="bg-slate-800/50 rounded-sm px-3 py-2 text-center flex-1">
                         <div className="text-sm font-medium text-slate-200">${sale}</div>
                       </div>
                     ))}

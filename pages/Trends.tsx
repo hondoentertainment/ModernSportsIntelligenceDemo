@@ -301,7 +301,7 @@ const Trends: React.FC = () => {
           { label: 'Modern Exposure', percent: (inventory.filter(c => c.year >= 2000).length / inventory.length) * 100, color: 'text-brand-green' },
           { label: 'Vintage Anchor', percent: (inventory.filter(c => c.year < 2000).length / inventory.length) * 100, color: 'text-brand-orange' }
         ].map((item, i) => (
-          <div key={i} className="bg-brand-charcoal/50 border border-slate-800/80 rounded-[2rem] p-6 text-center space-y-4">
+          <div key={i} className="bg-brand-charcoal/50 border border-slate-800/80 rounded-4xl p-6 text-center space-y-4">
             <div className="relative h-1 w-full bg-slate-800 rounded-full overflow-hidden">
               <div
                 className={`absolute top-0 left-0 h-full transition-all duration-1000 ${item.color.replace('text', 'bg')}`}

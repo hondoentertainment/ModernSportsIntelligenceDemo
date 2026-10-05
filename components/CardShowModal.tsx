@@ -104,7 +104,7 @@ const CardShowModal: React.FC<CardShowModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-start justify-center pt-8 pb-8 overflow-y-auto">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 flex items-start justify-center pt-8 pb-8 overflow-y-auto">
       <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl mx-4 shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-800">
@@ -157,7 +157,7 @@ const CardShowModal: React.FC<CardShowModalProps> = ({ isOpen, onClose }) => {
                   placeholder="Search player + card (e.g. 'Ohtani PSA 10')"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-800/60 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-800/60 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder:text-slate-600 focus:outline-hidden focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20"
                 />
               </div>
 
@@ -305,7 +305,7 @@ const CardShowModal: React.FC<CardShowModalProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div className="h-2.5 bg-slate-700/60 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-lime-500 to-emerald-500 rounded-full transition-all duration-500"
+                    className="h-full bg-linear-to-r from-lime-500 to-emerald-500 rounded-full transition-all duration-500"
                     style={{ width: `${(wantList.filter((w) => w.found).length / wantList.length) * 100}%` }}
                   />
                 </div>
@@ -324,9 +324,9 @@ const CardShowModal: React.FC<CardShowModalProps> = ({ isOpen, onClose }) => {
                     }`}
                   >
                     {item.found ? (
-                      <CheckCircle2 size={20} className="text-emerald-400 flex-shrink-0" />
+                      <CheckCircle2 size={20} className="text-emerald-400 shrink-0" />
                     ) : (
-                      <Circle size={20} className="text-slate-600 flex-shrink-0" />
+                      <Circle size={20} className="text-slate-600 shrink-0" />
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -341,7 +341,7 @@ const CardShowModal: React.FC<CardShowModalProps> = ({ isOpen, onClose }) => {
                         {item.cardDescription}
                       </p>
                     </div>
-                    <span className="text-sm font-medium text-slate-400 flex-shrink-0">
+                    <span className="text-sm font-medium text-slate-400 shrink-0">
                       &le;${item.maxPrice}
                     </span>
                   </button>

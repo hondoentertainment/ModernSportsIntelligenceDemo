@@ -331,7 +331,7 @@ const TrendsTab: React.FC = () => {
                     <span className="text-[10px] text-slate-500">Impact Magnitude:</span>
                     <div className="flex gap-0.5">
                       {Array.from({ length: 10 }).map((_, i) => (
-                        <div key={i} className={`w-3 h-2 rounded-sm ${i < trend.magnitude ? (trend.impact === 'negative' ? 'bg-red-500' : trend.impact === 'positive' ? 'bg-green-500' : 'bg-slate-500') : 'bg-slate-700'}`} />
+                        <div key={i} className={`w-3 h-2 rounded-xs ${i < trend.magnitude ? (trend.impact === 'negative' ? 'bg-red-500' : trend.impact === 'positive' ? 'bg-green-500' : 'bg-slate-500') : 'bg-slate-700'}`} />
                       ))}
                     </div>
                     <span className="text-[10px] font-mono text-slate-400">{trend.magnitude}/10</span>
@@ -362,9 +362,9 @@ const PopForecasterModal: React.FC<PopForecasterModalProps> = ({ isOpen, onClose
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-5xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
-        <div className="p-8 border-b border-slate-700 bg-gradient-to-r from-cyan-500/10 to-slate-900">
+        <div className="p-8 border-b border-slate-700 bg-linear-to-r from-cyan-500/10 to-slate-900">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-cyan-500/20 rounded-2xl border border-cyan-500/30 text-cyan-400">

@@ -164,7 +164,7 @@ const CompForensics: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-slate-400">{card.compCount} comps</span>
                 <span className="text-sm font-bold text-white">{formatCurrency(card.fmv)}</span>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${card.fmvConfidence >= 90 ? 'bg-emerald-500/20 text-emerald-400' : card.fmvConfidence >= 75 ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'}`}>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold ${card.fmvConfidence >= 90 ? 'bg-emerald-500/20 text-emerald-400' : card.fmvConfidence >= 75 ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'}`}>
                   {card.fmvConfidence}%
                 </span>
               </div>
@@ -264,14 +264,14 @@ const CompForensics: React.FC = () => {
               return (
                 <div key={o.id} className="flex items-center justify-between p-3 bg-slate-900/50 border border-red-500/20 rounded-xl">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${pc.bg} ${pc.text} border ${pc.border} flex-shrink-0`}>{pc.label}</span>
-                    {oc && <span className={`text-[10px] px-2 py-0.5 rounded border ${oc.bg} ${oc.text} ${oc.border} flex-shrink-0`}>{oc.label}</span>}
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${pc.bg} ${pc.text} border ${pc.border} shrink-0`}>{pc.label}</span>
+                    {oc && <span className={`text-[10px] px-2 py-0.5 rounded-sm border ${oc.bg} ${oc.text} ${oc.border} shrink-0`}>{oc.label}</span>}
                     <div className="min-w-0">
                       <p className="text-xs text-slate-300 truncate">{o.condition_notes}</p>
                       <p className="text-[10px] text-slate-500">{o.date}</p>
                     </div>
                   </div>
-                  <span className="text-sm font-bold text-red-400 flex-shrink-0 ml-2">{formatCurrency(o.price)}</span>
+                  <span className="text-sm font-bold text-red-400 shrink-0 ml-2">{formatCurrency(o.price)}</span>
                 </div>
               );
             })}
@@ -318,7 +318,7 @@ const CompForensics: React.FC = () => {
                   <p className="text-[10px] text-red-400 font-bold uppercase">Risk Factors:</p>
                   {report.riskFactors.map((risk, idx) => (
                     <p key={idx} className="text-[10px] text-slate-400 flex items-start gap-1.5">
-                      <AlertTriangle size={10} className="text-amber-400 flex-shrink-0 mt-0.5" /> {risk}
+                      <AlertTriangle size={10} className="text-amber-400 shrink-0 mt-0.5" /> {risk}
                     </p>
                   ))}
                 </div>
@@ -358,12 +358,12 @@ const CompForensics: React.FC = () => {
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-white">{s.sellerName}</p>
                     <div className="flex items-center gap-2">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded border ${pc.bg} ${pc.text} ${pc.border}`}>{pc.label}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-sm border ${pc.bg} ${pc.text} ${pc.border}`}>{pc.label}</span>
                       <span className="text-[10px] text-slate-500 capitalize">{s.seller_type.replace('_', ' ')}</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 flex-shrink-0">
+                <div className="flex items-center gap-4 shrink-0">
                   <div className="text-center">
                     <p className="text-[10px] text-slate-500">Sales</p>
                     <p className="text-xs font-bold text-white">{s.totalSales.toLocaleString()}</p>
@@ -379,7 +379,7 @@ const CompForensics: React.FC = () => {
                     </p>
                   </div>
                   {s.suspiciousActivity > 0 && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-bold">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-red-500/20 text-red-400 font-bold">
                       {s.suspiciousActivity} flags
                     </span>
                   )}

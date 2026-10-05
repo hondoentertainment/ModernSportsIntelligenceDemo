@@ -180,7 +180,7 @@ const SentimentRadar: React.FC = () => {
               <div className="flex items-center gap-2 mb-2">
                 {sourceIcon(alerts[0].source)}
                 <span className="text-sm font-bold text-slate-200">{alerts[0].player}</span>
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${severityBadge(alerts[0].severity)}`}>
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-sm border ${severityBadge(alerts[0].severity)}`}>
                   {alerts[0].severity}
                 </span>
               </div>
@@ -266,7 +266,7 @@ const SentimentRadar: React.FC = () => {
                 <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-800">
                   <div className="flex flex-wrap gap-1">
                     {p.keywords.slice(0, 3).map(kw => (
-                      <span key={kw} className="px-2 py-0.5 bg-slate-800/80 rounded text-[10px] text-slate-400">
+                      <span key={kw} className="px-2 py-0.5 bg-slate-800/80 rounded-sm text-[10px] text-slate-400">
                         #{kw}
                       </span>
                     ))}
@@ -315,7 +315,7 @@ const SentimentRadar: React.FC = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-sm font-bold text-slate-200">{a.player}</span>
-                  <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded border ${severityBadge(a.severity)}`}>
+                  <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-sm border ${severityBadge(a.severity)}`}>
                     {a.severity}
                   </span>
                   <span className={`text-[10px] font-bold ${sentimentColor(a.sentiment)}`}>

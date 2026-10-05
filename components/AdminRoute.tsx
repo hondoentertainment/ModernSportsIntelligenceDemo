@@ -15,7 +15,7 @@ interface AdminRouteProps {
 const AdminLoadingShell: React.FC = () => (
     <div className="min-h-screen bg-brand-charcoal flex items-center justify-center overflow-hidden relative">
         <div className="relative z-10 text-center flex flex-col items-center">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-lime to-brand-teal flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(190,242,100,0.2)]">
+            <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-brand-lime to-brand-teal flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(190,242,100,0.2)]">
                 <TrendingUp className="w-7 h-7 text-brand-charcoal" />
             </div>
             <div className="flex items-center gap-3" role="status" aria-live="polite">

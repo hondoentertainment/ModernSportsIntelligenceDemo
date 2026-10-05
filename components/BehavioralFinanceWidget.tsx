@@ -75,7 +75,7 @@ const BehavioralFinanceWidget: React.FC<BehavioralFinanceWidgetProps> = ({ onOpe
                 {(() => {
                   const sc = getSeverityConfig(topBias.severity);
                   return (
-                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${sc.bg} ${sc.text} ${sc.border}`}>
+                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${sc.bg} ${sc.text} ${sc.border}`}>
                       {sc.label}
                     </span>
                   );
@@ -86,7 +86,7 @@ const BehavioralFinanceWidget: React.FC<BehavioralFinanceWidgetProps> = ({ onOpe
               </div>
               <p className="text-xs text-slate-400 line-clamp-2">{topBias.evidence}</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0" />
+            <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
           </button>
         </div>
       )}

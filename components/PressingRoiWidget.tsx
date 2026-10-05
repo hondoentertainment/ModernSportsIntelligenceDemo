@@ -32,7 +32,7 @@ const PressingRoiWidget: React.FC<PressingRoiWidgetProps> = ({ onClick }) => {
       <div className="flex items-center gap-2 mb-4">
         <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-orange-500 to-emerald-500 rounded-full"
+            className="h-full bg-linear-to-r from-orange-500 to-emerald-500 rounded-full"
             style={{ width: `${(stats.avgSuccessRate * 100)}%` }}
           />
         </div>

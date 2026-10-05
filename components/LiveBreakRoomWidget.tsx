@@ -91,14 +91,14 @@ const LiveBreakRoomWidget: React.FC<Props> = ({ onOpenModal }) => {
                 key={brk.id}
                 className="flex items-center gap-3 p-3 bg-rose-500/5 border border-rose-500/15 rounded-xl text-xs"
               >
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-medium truncate">{brk.title}</p>
                   <p className="text-[10px] text-slate-500">
                     {brk.sport} &bull; {brk.filledSpots}/{brk.totalSpots} spots
                   </p>
                 </div>
-                <div className="flex items-center gap-2 text-slate-400 flex-shrink-0">
+                <div className="flex items-center gap-2 text-slate-400 shrink-0">
                   <span className="flex items-center gap-0.5"><Users size={10} /> {brk.viewers}</span>
                   <span className="flex items-center gap-0.5"><Flame size={10} className="text-orange-400" /> {brk.hits.length}</span>
                 </div>
@@ -118,7 +118,7 @@ const LiveBreakRoomWidget: React.FC<Props> = ({ onOpenModal }) => {
                 key={auction.id}
                 className="flex items-center gap-3 p-3 bg-amber-500/5 border border-amber-500/15 rounded-xl text-xs"
               >
-                <Gavel size={12} className="text-amber-400 flex-shrink-0" />
+                <Gavel size={12} className="text-amber-400 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-medium truncate">{auction.playerName}</p>
                   <p className="text-[10px] text-slate-500">{auction.platform} &bull; {auction.timeRemaining}</p>

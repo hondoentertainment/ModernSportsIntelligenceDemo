@@ -66,7 +66,7 @@ export const ArVaultWalkthroughWidget: React.FC<ArVaultWalkthroughWidgetProps> =
       </div>
 
       {/* Featured Room Preview */}
-      <div className={`p-3.5 rounded-xl bg-gradient-to-r ${featured.thumbnailGradient} border border-slate-700/50`}>
+      <div className={`p-3.5 rounded-xl bg-linear-to-r ${featured.thumbnailGradient} border border-slate-700/50`}>
         <div className="flex items-center justify-between mb-2">
           <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider">
             Featured Room

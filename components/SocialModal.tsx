@@ -132,7 +132,7 @@ const FeedTab: React.FC<{ cards: CardInventory[] }> = () => {
             className="flex items-start gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-xl"
           >
             <div
-              className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 mt-0.5"
+              className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 mt-0.5"
               style={{ backgroundColor: item.avatarColor }}
             >
               {item.initials}
@@ -145,17 +145,17 @@ const FeedTab: React.FC<{ cards: CardInventory[] }> = () => {
                     ? item.description.slice(item.collectorName.length).trim()
                     : item.description}
                 </p>
-                <span className="text-[10px] text-slate-600 flex-shrink-0 mt-0.5">
+                <span className="text-[10px] text-slate-600 shrink-0 mt-0.5">
                   {timeAgo(item.timestamp)}
                 </span>
               </div>
               {item.metadata?.sport && (
-                <span className="inline-block mt-1.5 px-2 py-0.5 bg-slate-700/50 text-slate-500 text-[10px] font-bold uppercase tracking-widest rounded">
+                <span className="inline-block mt-1.5 px-2 py-0.5 bg-slate-700/50 text-slate-500 text-[10px] font-bold uppercase tracking-widest rounded-sm">
                   {item.metadata.sport}
                 </span>
               )}
             </div>
-            <span className="text-lg flex-shrink-0">{ACTIVITY_ICONS[item.type] || '📌'}</span>
+            <span className="text-lg shrink-0">{ACTIVITY_ICONS[item.type] || '📌'}</span>
           </div>
         ))}
 
@@ -240,7 +240,7 @@ const MessagesTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
               onClick={() => setOpenThreadId(thread.id)}
               className="w-full flex items-center gap-3 p-4 bg-slate-800/50 border border-slate-700 rounded-xl hover:bg-slate-800 transition-colors text-left"
             >
-              <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-bold text-blue-400 flex-shrink-0">
+              <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-xs font-bold text-blue-400 shrink-0">
                 {otherName.split(' ').map(n => n[0]).join('').slice(0, 2)}
               </div>
               <div className="flex-1 min-w-0">
@@ -251,7 +251,7 @@ const MessagesTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
                 <p className="text-xs text-slate-400 truncate mt-0.5">{thread.lastMessage || 'No messages yet'}</p>
               </div>
               {thread.unreadCount > 0 && (
-                <span className="w-5 h-5 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="w-5 h-5 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shrink-0">
                   {thread.unreadCount}
                 </span>
               )}
@@ -363,7 +363,7 @@ const MessagesTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
               <span className="text-xs text-white font-medium truncate">
                 {card.player} ({card.year})
               </span>
-              <span className="text-[10px] text-slate-500 ml-auto flex-shrink-0">
+              <span className="text-[10px] text-slate-500 ml-auto shrink-0">
                 ${(card.currentValue ?? card.purchasePrice).toLocaleString()}
               </span>
             </button>
@@ -390,7 +390,7 @@ const MessagesTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
           onChange={e => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
-          className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50"
+          className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-hidden focus:border-blue-500/50"
         />
         <button
           onClick={handleSend}
@@ -427,7 +427,7 @@ const TradesTab: React.FC<{ cards: CardInventory[]; onOpenThread: (_collectorId:
             {/* Collector Header */}
             <div className="flex items-center gap-3">
               <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+                className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
                 style={{ backgroundColor: match.avatarColor }}
               >
                 {match.initials}
@@ -568,7 +568,7 @@ const DiscoverTab: React.FC = () => {
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           placeholder="Search collectors..."
-          className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50"
+          className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-hidden focus:border-blue-500/50"
         />
       </div>
 
@@ -651,7 +651,7 @@ const DiscoverTab: React.FC = () => {
 
               {/* Top Sport */}
               <div className="flex items-center gap-1.5">
-                <span className="px-2 py-0.5 bg-slate-700/50 text-slate-400 text-[10px] font-bold uppercase tracking-widest rounded">
+                <span className="px-2 py-0.5 bg-slate-700/50 text-slate-400 text-[10px] font-bold uppercase tracking-widest rounded-sm">
                   {profile.topSport}
                 </span>
               </div>
@@ -686,7 +686,7 @@ export const SocialModal: React.FC<SocialModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">

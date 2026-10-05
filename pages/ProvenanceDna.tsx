@@ -359,7 +359,7 @@ const ProvenanceDna: React.FC = () => {
                     <Target size={14} className="text-brand-lime" />
                     Micro-Feature Map
                   </h3>
-                  <div className="relative bg-slate-900 rounded-xl aspect-[3/4] border border-slate-700/30 overflow-hidden">
+                  <div className="relative bg-slate-900 rounded-xl aspect-3/4 border border-slate-700/30 overflow-hidden">
                     {/* Card outline */}
                     <div className="absolute inset-3 border border-slate-600/40 rounded-lg" />
                     {/* Feature dots */}
@@ -694,7 +694,7 @@ const ProvenanceDna: React.FC = () => {
                 placeholder="Search by name, player, or hash..."
                 value={dbSearch}
                 onChange={(e) => setDbSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime/50"
+                className="w-full pl-9 pr-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime/50"
               />
             </div>
             <span className="text-xs text-slate-500">{filteredDb.length} cards</span>
@@ -753,7 +753,7 @@ const ProvenanceDna: React.FC = () => {
               <select
                 value={compareA}
                 onChange={(e) => { setCompareA(e.target.value); setComparison(null); }}
-                className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-brand-lime/50"
+                className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-xl text-sm text-white focus:outline-hidden focus:border-brand-lime/50"
               >
                 <option value="">Select a card...</option>
                 {database.map((fp) => (
@@ -770,7 +770,7 @@ const ProvenanceDna: React.FC = () => {
               <select
                 value={compareB}
                 onChange={(e) => { setCompareB(e.target.value); setComparison(null); }}
-                className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-xl text-sm text-white focus:outline-none focus:border-brand-lime/50"
+                className="w-full px-4 py-2.5 bg-slate-800/50 border border-slate-700/50 rounded-xl text-sm text-white focus:outline-hidden focus:border-brand-lime/50"
               >
                 <option value="">Select a card...</option>
                 {database.map((fp) => (

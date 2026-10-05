@@ -88,7 +88,7 @@ const SharedDashboards: React.FC = () => {
                   <p className="text-slate-400 text-sm">{active.description}</p>
                 </div>
                 <div className="flex items-center gap-3 text-xs">
-                  <span className={`px-2 py-1 rounded font-bold ${getAccessColor(active.access)}`}>{active.access}</span>
+                  <span className={`px-2 py-1 rounded-sm font-bold ${getAccessColor(active.access)}`}>{active.access}</span>
                   <span className="text-slate-500">
                     <Eye size={12} className="inline mr-1" />{active.activeViewers} watching
                   </span>
@@ -121,7 +121,7 @@ const SharedDashboards: React.FC = () => {
                           const min = Math.min(...widget.sparkline!);
                           const range = max - min || 1;
                           return (
-                            <div key={i} className="flex-1 bg-white/20 rounded-sm"
+                            <div key={i} className="flex-1 bg-white/20 rounded-xs"
                               style={{ height: `${((v - min) / range) * 100}%`, minHeight: '2px' }} />
                           );
                         })}

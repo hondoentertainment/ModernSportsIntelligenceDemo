@@ -99,7 +99,7 @@ export const CounterfactualValueModal: React.FC<CounterfactualValueModalProps> =
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-5xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div
@@ -276,7 +276,7 @@ const ScenariosTab: React.FC<{
                 </div>
                 <ChevronRight
                   size={16}
-                  className="text-slate-600 group-hover:text-violet-400 group-hover:translate-x-1 transition-all mt-1 flex-shrink-0"
+                  className="text-slate-600 group-hover:text-violet-400 group-hover:translate-x-1 transition-all mt-1 shrink-0"
                 />
               </div>
 
@@ -288,7 +288,7 @@ const ScenariosTab: React.FC<{
                     ${scenario.actualValue.toLocaleString()}
                   </p>
                 </div>
-                <ArrowRight size={14} className="text-violet-400 flex-shrink-0" />
+                <ArrowRight size={14} className="text-violet-400 shrink-0" />
                 <div>
                   <p className="text-[10px] text-slate-500 uppercase">Alt. Value</p>
                   <p className="text-sm font-bold text-violet-400">
@@ -359,7 +359,7 @@ const TimelineTab: React.FC<{
             const s = scenarios.find((sc) => sc.id === e.target.value);
             if (s) onSelectScenario(s);
           }}
-          className="bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-violet-500"
+          className="bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-hidden focus:border-violet-500"
         >
           {scenarios.map((s) => (
             <option key={s.id} value={s.id}>
@@ -406,7 +406,7 @@ const TimelineTab: React.FC<{
           return (
             <div key={i} className="flex items-center gap-4 group">
               {/* Year */}
-              <div className="w-12 text-right flex-shrink-0">
+              <div className="w-12 text-right shrink-0">
                 <span className="text-xs font-bold text-slate-400">{event.year}</span>
               </div>
 
@@ -416,7 +416,7 @@ const TimelineTab: React.FC<{
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-5 bg-slate-800 rounded-lg overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-violet-600 to-violet-400 rounded-lg transition-all duration-500 flex items-center justify-end px-2"
+                      className="h-full bg-linear-to-r from-violet-600 to-violet-400 rounded-lg transition-all duration-500 flex items-center justify-end px-2"
                       style={{ width: `${Math.max(altWidth, 8)}%` }}
                     >
                       <span className="text-[9px] font-bold text-white whitespace-nowrap">
@@ -429,7 +429,7 @@ const TimelineTab: React.FC<{
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-5 bg-slate-800 rounded-lg overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-slate-600 to-slate-500 rounded-lg transition-all duration-500 flex items-center justify-end px-2"
+                      className="h-full bg-linear-to-r from-slate-600 to-slate-500 rounded-lg transition-all duration-500 flex items-center justify-end px-2"
                       style={{ width: `${Math.max(actualWidth, 8)}%` }}
                     >
                       <span className="text-[9px] font-bold text-slate-300 whitespace-nowrap">
@@ -441,7 +441,7 @@ const TimelineTab: React.FC<{
               </div>
 
               {/* Divergence Indicator */}
-              <div className="w-16 flex-shrink-0 text-right">
+              <div className="w-16 shrink-0 text-right">
                 {diverging && (
                   <span
                     className={`text-[10px] font-bold ${
@@ -473,7 +473,7 @@ const TimelineTab: React.FC<{
             key={i}
             className="flex items-start gap-3 p-2 rounded-lg hover:bg-slate-800/50 transition-all"
           >
-            <span className="text-xs font-bold text-violet-400 mt-0.5 w-10 flex-shrink-0">
+            <span className="text-xs font-bold text-violet-400 mt-0.5 w-10 shrink-0">
               {event.year}
             </span>
             <p className="text-xs text-slate-400">{event.event}</p>
@@ -504,7 +504,7 @@ const ComparablesTab: React.FC<{
           const s = scenarios.find((sc) => sc.id === e.target.value);
           if (s) onSelectScenario(s);
         }}
-        className="bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-violet-500"
+        className="bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-hidden focus:border-violet-500"
       >
         {scenarios.map((s) => (
           <option key={s.id} value={s.id}>
@@ -555,7 +555,7 @@ const ComparablesTab: React.FC<{
 
           {/* Similarity Score Bar */}
           <div className="flex items-center gap-3">
-            <span className="text-[10px] text-slate-500 font-bold uppercase w-16 flex-shrink-0">
+            <span className="text-[10px] text-slate-500 font-bold uppercase w-16 shrink-0">
               Similarity
             </span>
             <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
@@ -639,7 +639,7 @@ const CreateTab: React.FC<{
               value={player}
               onChange={(e) => onPlayerChange(e.target.value)}
               placeholder="e.g., Mike Trout, Victor Wembanyama..."
-              className="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl pl-9 pr-4 py-3 focus:outline-none focus:border-violet-500 placeholder:text-slate-600"
+              className="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl pl-9 pr-4 py-3 focus:outline-hidden focus:border-violet-500 placeholder:text-slate-600"
             />
           </div>
         </div>
@@ -676,7 +676,7 @@ const CreateTab: React.FC<{
             onChange={(e) => onDescriptionChange(e.target.value)}
             rows={3}
             placeholder="e.g., What if Mike Trout never had calf/back injuries after 2020 and continued his MVP-pace seasons..."
-            className="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-violet-500 placeholder:text-slate-600 resize-none"
+            className="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-xl px-4 py-3 focus:outline-hidden focus:border-violet-500 placeholder:text-slate-600 resize-none"
           />
         </div>
 

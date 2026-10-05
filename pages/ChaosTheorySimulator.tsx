@@ -211,7 +211,7 @@ const ChaosTheorySimulator: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
       {/* Header */}
-      <div className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm sticky top-0 z-20">
+      <div className="border-b border-gray-800 bg-gray-950/80 backdrop-blur-xs sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -361,15 +361,15 @@ const ButterflyEventsTab: React.FC<{
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Bug className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                  <Bug className="w-4 h-4 text-purple-400 shrink-0" />
                   <h3 className="font-semibold text-white">{event.name}</h3>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${magStyle.bg} ${magStyle.text}`}>
+                  <span className={`px-2 py-0.5 rounded-sm text-xs font-medium ${magStyle.bg} ${magStyle.text}`}>
                     {magStyle.label}
                   </span>
                   <span
-                    className="px-2 py-0.5 rounded text-xs font-medium"
+                    className="px-2 py-0.5 rounded-sm text-xs font-medium"
                     style={{ backgroundColor: `${CATEGORY_COLORS[event.category]}20`, color: CATEGORY_COLORS[event.category] }}
                   >
                     {CATEGORY_LABELS[event.category]}
@@ -380,11 +380,11 @@ const ButterflyEventsTab: React.FC<{
 
               {/* Cascade Preview */}
               <div className="flex items-center gap-1 mb-3 overflow-hidden">
-                <div className="flex-shrink-0 w-2 h-2 rounded-full bg-purple-400" />
+                <div className="shrink-0 w-2 h-2 rounded-full bg-purple-400" />
                 {event.affectedCards.slice(0, 4).map((card, i) => (
                   <React.Fragment key={card.cardId}>
-                    <ArrowRight className="w-3 h-3 text-gray-600 flex-shrink-0" />
-                    <span className={`text-xs px-1.5 py-0.5 rounded flex-shrink-0 ${card.impactPercent > 0 ? 'bg-emerald-900/30 text-emerald-400' : 'bg-red-900/30 text-red-400'}`}>
+                    <ArrowRight className="w-3 h-3 text-gray-600 shrink-0" />
+                    <span className={`text-xs px-1.5 py-0.5 rounded-sm shrink-0 ${card.impactPercent > 0 ? 'bg-emerald-900/30 text-emerald-400' : 'bg-red-900/30 text-red-400'}`}>
                       {card.impactPercent > 0 ? '+' : ''}{card.impactPercent}%
                     </span>
                   </React.Fragment>
@@ -470,7 +470,7 @@ const CascadeViewerTab: React.FC<{
           <Bug className="w-5 h-5 text-purple-400" />
           <h2 className="text-lg font-bold text-white">{event.name}</h2>
           <span
-            className="px-2 py-0.5 rounded text-xs font-medium"
+            className="px-2 py-0.5 rounded-sm text-xs font-medium"
             style={{ backgroundColor: `${CATEGORY_COLORS[event.category]}20`, color: CATEGORY_COLORS[event.category] }}
           >
             {CATEGORY_LABELS[event.category]}
@@ -539,7 +539,7 @@ const CascadeViewerTab: React.FC<{
             return (
               <div key={idx} className="flex items-start gap-4">
                 {/* Timeline line */}
-                <div className="flex flex-col items-center flex-shrink-0">
+                <div className="flex flex-col items-center shrink-0">
                   <div
                     className={`w-3 h-3 rounded-full border-2 ${
                       isFirst ? 'border-purple-400 bg-purple-900' : isLast ? 'border-orange-400 bg-orange-900' : 'border-gray-500 bg-gray-800'
@@ -598,7 +598,7 @@ const CascadeViewerTab: React.FC<{
                       <span className="text-sm text-gray-200 truncate">{card.player}</span>
                       <span className="text-xs text-gray-500 truncate hidden md:inline">{card.cardName}</span>
                     </div>
-                    <span className={`text-sm font-bold flex-shrink-0 ${card.impactPercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    <span className={`text-sm font-bold shrink-0 ${card.impactPercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                       {card.impactPercent > 0 ? '+' : ''}{card.impactPercent}%
                     </span>
                   </div>
@@ -614,7 +614,7 @@ const CascadeViewerTab: React.FC<{
                   <div className="flex items-center gap-1 mt-1">
                     {card.pathway.map((step, si) => (
                       <React.Fragment key={si}>
-                        {si > 0 && <ChevronRight className="w-3 h-3 text-gray-600 flex-shrink-0" />}
+                        {si > 0 && <ChevronRight className="w-3 h-3 text-gray-600 shrink-0" />}
                         <span className="text-xs text-gray-500 truncate">{step}</span>
                       </React.Fragment>
                     ))}
@@ -699,7 +699,7 @@ const StrangeAttractorsTab: React.FC<{
             </div>
             <div className="flex flex-wrap gap-2 mt-3">
               {selected.cards.map((card, i) => (
-                <span key={i} className="px-2 py-1 bg-gray-800 rounded text-xs text-gray-300">{card}</span>
+                <span key={i} className="px-2 py-1 bg-gray-800 rounded-sm text-xs text-gray-300">{card}</span>
               ))}
             </div>
           </div>
@@ -783,7 +783,7 @@ const SensitivityDashboardTab: React.FC<{
         <select
           value={selected?.cardId ?? ''}
           onChange={(e) => onSelect(e.target.value)}
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-600"
+          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-hidden focus:ring-2 focus:ring-purple-600"
         >
           {maps.map(m => (
             <option key={m.cardId} value={m.cardId}>{m.cardName}</option>
@@ -853,7 +853,7 @@ const SensitivityDashboardTab: React.FC<{
               <span className="text-xs text-gray-500">Non-linearity types:</span>
               {(['linear', 'logarithmic', 'exponential', 'chaotic'] as NonLinearityType[]).map(t => (
                 <span key={t} className="flex items-center gap-1.5 text-xs">
-                  <span className="w-3 h-3 rounded" style={{ backgroundColor: NONLINEARITY_COLORS[t] }} />
+                  <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: NONLINEARITY_COLORS[t] }} />
                   <span className="text-gray-400 capitalize">{t}</span>
                 </span>
               ))}
@@ -866,14 +866,14 @@ const SensitivityDashboardTab: React.FC<{
                     <div className="min-w-0">
                       <p className="text-sm text-gray-200 truncate">{f.factor}</p>
                       <span
-                        className="text-xs px-1.5 py-0.5 rounded capitalize"
+                        className="text-xs px-1.5 py-0.5 rounded-sm capitalize"
                         style={{ backgroundColor: `${NONLINEARITY_COLORS[f.nonLinearity]}20`, color: NONLINEARITY_COLORS[f.nonLinearity] }}
                       >
                         {f.nonLinearity}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
                     <div className="w-20 h-2 bg-gray-700 rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full"
@@ -1203,7 +1203,7 @@ const EntropyMonitorTab: React.FC<{
               return (
                 <div key={event.id} className="flex items-center gap-4 p-3 bg-gray-800 rounded-lg">
                   <div
-                    className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                    className={`w-3 h-3 rounded-full shrink-0 ${
                       peakEntropy > 0.8 ? 'bg-red-500' : peakEntropy > 0.6 ? 'bg-yellow-500' : 'bg-blue-500'
                     }`}
                   />
@@ -1213,7 +1213,7 @@ const EntropyMonitorTab: React.FC<{
                       <span className="text-xs text-gray-500">{formatTimestamp(event.timestamp)}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 flex-shrink-0 text-xs">
+                  <div className="flex items-center gap-4 shrink-0 text-xs">
                     <div className="text-right">
                       <p className="text-gray-500">Peak Entropy</p>
                       <p className={`font-bold ${peakEntropy > 0.8 ? 'text-red-400' : 'text-yellow-400'}`}>{peakEntropy.toFixed(2)}</p>

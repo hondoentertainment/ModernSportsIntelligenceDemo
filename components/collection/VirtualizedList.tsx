@@ -39,7 +39,7 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
   return (
     <div
       ref={parentRef}
-      className="h-[calc(100vh-340px)] min-h-[420px] overflow-y-auto rounded-[2rem] border border-slate-800 bg-brand-slate"
+      className="h-[calc(100vh-340px)] min-h-[420px] overflow-y-auto rounded-4xl border border-slate-800 bg-brand-slate"
     >
       <table className="w-full text-left">
         <thead className="sticky top-0 z-10 bg-brand-charcoal/95 text-[10px] font-black uppercase tracking-widest text-brand-muted border-b border-slate-800">

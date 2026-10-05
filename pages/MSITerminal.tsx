@@ -59,7 +59,7 @@ const MetricBox: React.FC<{ label: string; value: string | number; color: string
     slate: 'text-slate-300 border-slate-600/30 bg-slate-600/5',
   };
   return (
-    <div className={`rounded border p-2 ${colorMap[color] || colorMap.slate}`}>
+    <div className={`rounded-sm border p-2 ${colorMap[color] || colorMap.slate}`}>
       <div className="text-[9px] text-slate-500 uppercase" style={MONO}>{label}</div>
       <div className="text-sm font-bold" style={MONO}>{value}</div>
     </div>
@@ -93,7 +93,7 @@ const PageResultRenderer: React.FC<{ result: CommandResult }> = ({ result }) => 
             <div className="space-y-0.5 ml-2">
               {(cmds as any[]).map((cmd, i) => (
                 <div key={i} className="flex gap-3 text-xs">
-                  <span className="text-emerald-400 w-32 flex-shrink-0 font-bold" style={MONO}>{cmd.usage}</span>
+                  <span className="text-emerald-400 w-32 shrink-0 font-bold" style={MONO}>{cmd.usage}</span>
                   <span className="text-slate-400">{cmd.description}</span>
                 </div>
               ))}
@@ -132,7 +132,7 @@ const PageResultRenderer: React.FC<{ result: CommandResult }> = ({ result }) => 
           <div className="space-y-1">
             <div className="text-[10px] text-emerald-600 uppercase tracking-wider" style={MONO}>Recent Sales</div>
             {data.recentSales.map((s: any, i: number) => (
-              <div key={i} className="flex justify-between text-xs bg-slate-900/50 rounded px-2 py-1">
+              <div key={i} className="flex justify-between text-xs bg-slate-900/50 rounded-sm px-2 py-1">
                 <span className="text-slate-400 truncate flex-1">{s.card}</span>
                 <span className="text-emerald-400 ml-2" style={MONO}>${s.price.toLocaleString()}</span>
                 <span className="text-slate-600 ml-2 text-[10px]">{s.date}</span>
@@ -141,7 +141,7 @@ const PageResultRenderer: React.FC<{ result: CommandResult }> = ({ result }) => 
           </div>
         )}
         {data.priceHistory && (
-          <div className="h-44 bg-slate-950/50 rounded p-1">
+          <div className="h-44 bg-slate-950/50 rounded-sm p-1">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data.priceHistory}>
                 <defs>
@@ -219,7 +219,7 @@ const PageResultRenderer: React.FC<{ result: CommandResult }> = ({ result }) => 
               </span>
             </div>
           </div>
-          <div className="h-44 bg-slate-950/50 rounded p-1">
+          <div className="h-44 bg-slate-950/50 rounded-sm p-1">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data.chartData}>
                 <defs>
@@ -246,7 +246,7 @@ const PageResultRenderer: React.FC<{ result: CommandResult }> = ({ result }) => 
             <div key={key}>
               <div className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${key === 'gainers' ? 'text-emerald-400' : key === 'losers' ? 'text-red-400' : 'text-blue-400'}`} style={MONO}>{key}</div>
               {data[key]?.map((item: any, i: number) => (
-                <div key={i} className="flex justify-between bg-slate-900/30 rounded px-2 py-1 text-xs mb-1">
+                <div key={i} className="flex justify-between bg-slate-900/30 rounded-sm px-2 py-1 text-xs mb-1">
                   <span className="text-white truncate">{item.name}</span>
                   <span className={`${item.change >= 0 ? 'text-emerald-400' : 'text-red-400'} font-bold`} style={MONO}>{item.change >= 0 ? '+' : ''}{item.change}%</span>
                 </div>
@@ -266,7 +266,7 @@ const PageResultRenderer: React.FC<{ result: CommandResult }> = ({ result }) => 
       return (
         <div className="space-y-2">
           <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>{data.player} — Price History</div>
-          <div className="h-48 bg-slate-950/50 rounded p-1">
+          <div className="h-48 bg-slate-950/50 rounded-sm p-1">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data.history}>
                 <defs>
@@ -290,7 +290,7 @@ const PageResultRenderer: React.FC<{ result: CommandResult }> = ({ result }) => 
       return (
         <div className="space-y-2">
           <div className="text-xs text-emerald-600 uppercase tracking-wider" style={MONO}>Monte Carlo ({data.iterations?.toLocaleString()} runs)</div>
-          <div className="h-48 bg-slate-950/50 rounded p-1">
+          <div className="h-48 bg-slate-950/50 rounded-sm p-1">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data.scenarios}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
@@ -309,7 +309,7 @@ const PageResultRenderer: React.FC<{ result: CommandResult }> = ({ result }) => 
     if (data.type === 'allocation' && data.slices) {
       const colors = ['#00ff41', '#60a5fa', '#fbbf24', '#f87171', '#a78bfa'];
       return (
-        <div className="h-52 bg-slate-950/50 rounded p-1">
+        <div className="h-52 bg-slate-950/50 rounded-sm p-1">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie data={data.slices} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" nameKey="name" label={({ name, value }) => `${name} ${value}%`}>
@@ -488,7 +488,7 @@ const MSITerminal: React.FC = () => {
               <Terminal size={14} className="text-emerald-500" />
               <span className="text-[10px] text-emerald-700 font-bold tracking-wider" style={MONO}>MSI&gt;</span>
             </div>
-            <ChevronRight size={14} className="text-emerald-500 flex-shrink-0" />
+            <ChevronRight size={14} className="text-emerald-500 shrink-0" />
             <input
               ref={inputRef}
               type="text"
@@ -496,19 +496,19 @@ const MSITerminal: React.FC = () => {
               onChange={(e) => setInput(e.target.value.toUpperCase())}
               onKeyDown={handleKeyDown}
               placeholder="Enter command... (HELP for all commands, MAHOMES GO, PORT, MSI500, MOVERS)"
-              className="bg-transparent flex-1 outline-none text-sm placeholder-emerald-800/40"
+              className="bg-transparent flex-1 outline-hidden text-sm placeholder-emerald-800/40"
               style={{ ...MONO, color: TERM_GREEN }}
             />
             <button
               onClick={handleExecute}
-              className="px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/40 rounded text-emerald-400 text-xs hover:bg-emerald-500/30 transition-colors font-bold"
+              className="px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/40 rounded-sm text-emerald-400 text-xs hover:bg-emerald-500/30 transition-colors font-bold"
               style={MONO}
             >
               <Zap size={12} className="inline mr-1" />GO
             </button>
             <button
               onClick={() => setShowHistory(!showHistory)}
-              className={`p-1.5 rounded transition-colors ${showHistory ? 'bg-emerald-500/20 text-emerald-400' : 'text-emerald-700 hover:text-emerald-400'}`}
+              className={`p-1.5 rounded-sm transition-colors ${showHistory ? 'bg-emerald-500/20 text-emerald-400' : 'text-emerald-700 hover:text-emerald-400'}`}
             >
               {showHistory ? <PanelLeftClose size={14} /> : <PanelLeftOpen size={14} />}
             </button>
@@ -535,7 +535,7 @@ const MSITerminal: React.FC = () => {
         <div className="flex" style={{ minHeight: 'calc(70vh - 100px)' }}>
           {/* History sidebar */}
           {showHistory && (
-            <div className="w-64 border-r border-emerald-500/20 bg-black/50 flex flex-col overflow-hidden flex-shrink-0">
+            <div className="w-64 border-r border-emerald-500/20 bg-black/50 flex flex-col overflow-hidden shrink-0">
               <div className="px-3 py-2 border-b border-emerald-900/30 flex items-center justify-between">
                 <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider" style={MONO}>History</span>
                 <button onClick={() => { clearCommandHistory(); setEntries([]); }} className="text-[9px] text-emerald-800 hover:text-red-400" style={MONO}>CLEAR</button>

@@ -284,7 +284,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onAddC
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-start justify-center pt-[15vh] p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-200 flex items-start justify-center pt-[15vh] p-4 bg-black/60 backdrop-blur-xs"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       role="dialog"
       aria-modal="true"
@@ -295,9 +295,9 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onAddC
         {/* Search input */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-800">
           {query.startsWith('/') ? (
-            <Terminal size={18} className="text-brand-lime flex-shrink-0" aria-hidden />
+            <Terminal size={18} className="text-brand-lime shrink-0" aria-hidden />
           ) : (
-            <Search size={18} className="text-brand-muted flex-shrink-0" aria-hidden />
+            <Search size={18} className="text-brand-muted shrink-0" aria-hidden />
           )}
           <input
             ref={inputRef}
@@ -305,7 +305,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onAddC
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search commands, features, or type /scan, /buy, /compare..."
-            className="flex-1 bg-transparent text-sm text-white placeholder:text-brand-muted/50 outline-none"
+            className="flex-1 bg-transparent text-sm text-white placeholder:text-brand-muted/50 outline-hidden"
             aria-label="Search commands and features"
           />
           <kbd className="hidden md:inline text-[9px] font-mono text-brand-muted bg-brand-charcoal px-2 py-1 rounded-lg border border-slate-800" aria-label={`Open with ${glyph.combo('K')}`}>
@@ -339,7 +339,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onAddC
                         : 'text-slate-300 hover:bg-brand-charcoal/50'
                     }`}
                   >
-                    <span className="flex-shrink-0 opacity-60">{item.icon}</span>
+                    <span className="shrink-0 opacity-60">{item.icon}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{item.label}</p>
                       {item.description && (
@@ -347,7 +347,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onAddC
                       )}
                     </div>
                     {section === 'Features' && (
-                      <ArrowRight size={14} className={`flex-shrink-0 ${idx === selectedIndex ? 'text-brand-lime' : 'text-slate-600'}`} aria-hidden />
+                      <ArrowRight size={14} className={`shrink-0 ${idx === selectedIndex ? 'text-brand-lime' : 'text-slate-600'}`} aria-hidden />
                     )}
                   </button>
                 );
@@ -359,10 +359,10 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onAddC
         {/* Footer */}
         <div className="flex items-center justify-between px-5 py-3 border-t border-slate-800 text-[9px] text-brand-muted">
           <div className="flex gap-3">
-            <span><kbd className="font-mono bg-brand-charcoal px-1.5 py-0.5 rounded border border-slate-800">↑↓</kbd> navigate</span>
-            <span><kbd className="font-mono bg-brand-charcoal px-1.5 py-0.5 rounded border border-slate-800">↵</kbd> select</span>
+            <span><kbd className="font-mono bg-brand-charcoal px-1.5 py-0.5 rounded-sm border border-slate-800">↑↓</kbd> navigate</span>
+            <span><kbd className="font-mono bg-brand-charcoal px-1.5 py-0.5 rounded-sm border border-slate-800">↵</kbd> select</span>
           </div>
-          <span><kbd className="font-mono bg-brand-charcoal px-1.5 py-0.5 rounded border border-slate-800">esc</kbd> close</span>
+          <span><kbd className="font-mono bg-brand-charcoal px-1.5 py-0.5 rounded-sm border border-slate-800">esc</kbd> close</span>
         </div>
       </div>
     </div>

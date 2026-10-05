@@ -79,7 +79,7 @@ const PortfolioCopilotModal: React.FC<Props> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
@@ -213,7 +213,7 @@ const PortfolioCopilotModal: React.FC<Props> = ({ isOpen, onClose }) => {
                     value={inputValue}
                     onChange={e => setInputValue(e.target.value)}
                     placeholder="Ask Copilot about your portfolio..."
-                    className="flex-1 bg-transparent text-xs text-slate-200 placeholder-slate-500 outline-none"
+                    className="flex-1 bg-transparent text-xs text-slate-200 placeholder-slate-500 outline-hidden"
                   />
                   <button className="p-1 rounded-lg hover:bg-slate-700 transition-colors text-slate-500 hover:text-slate-300">
                     <Mic size={14} />
@@ -449,7 +449,7 @@ const PortfolioCopilotModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search conversations..."
-                  className="flex-1 bg-transparent text-xs text-slate-200 placeholder-slate-500 outline-none"
+                  className="flex-1 bg-transparent text-xs text-slate-200 placeholder-slate-500 outline-hidden"
                 />
               </div>
 

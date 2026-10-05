@@ -141,7 +141,7 @@ export const GoalWidget: React.FC<GoalWidgetProps> = ({ inventory, onClick }) =>
           {/* Next milestone */}
           {summary.nextMilestone && (
             <div className="flex items-center gap-2 px-4 py-2.5 bg-emerald-500/5 border border-emerald-500/15 rounded-xl">
-              <TrendingUp size={14} className="text-emerald-400 flex-shrink-0" />
+              <TrendingUp size={14} className="text-emerald-400 shrink-0" />
               <span className="text-xs text-slate-400">Next:</span>
               <span className="text-xs text-emerald-400 font-bold truncate">
                 {summary.nextMilestone.label}

@@ -40,7 +40,7 @@ const Players: React.FC = () => {
               placeholder="Query athlete database..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-brand-slate border border-slate-800 rounded-2xl py-3.5 pl-12 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-brand-lime/20 w-full md:w-80 transition-all"
+              className="bg-brand-slate border border-slate-800 rounded-2xl py-3.5 pl-12 pr-6 text-sm focus:outline-hidden focus:ring-2 focus:ring-brand-lime/20 w-full md:w-80 transition-all"
             />
           </div>
           <button className="p-3.5 bg-brand-slate border border-slate-800 rounded-2xl text-brand-muted hover:text-white transition-all shadow-xl">
@@ -75,7 +75,7 @@ const Players: React.FC = () => {
             <div className="p-6">
               <div className="flex items-start justify-between mb-8 gap-4">
                 <div className="flex items-center gap-4 min-w-0">
-                  <div className="relative flex-shrink-0">
+                  <div className="relative shrink-0">
                     <img src={player.image} alt={player.name} className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-800" />
                     <div className="absolute -bottom-1 -right-1 bg-brand-lime text-brand-charcoal p-1 rounded-lg border-2 border-slate-900 shadow-md">
                       <Zap size={10} fill="currentColor" />
@@ -88,7 +88,7 @@ const Players: React.FC = () => {
                 </div>
 
                 {player.breakoutScore > 80 && (
-                  <div className="flex-shrink-0 p-2 bg-brand-green/10 text-brand-green rounded-xl border border-brand-green/20 flex items-center gap-1.5 animate-pulse">
+                  <div className="shrink-0 p-2 bg-brand-green/10 text-brand-green rounded-xl border border-brand-green/20 flex items-center gap-1.5 animate-pulse">
                     <Flame size={14} />
                     <span className="text-[10px] font-black uppercase tracking-widest">Surge</span>
                   </div>

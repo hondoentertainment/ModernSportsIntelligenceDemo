@@ -145,10 +145,10 @@ const CandidatesTab: React.FC = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-white truncate">{c.player}</span>
-                  <span className={`inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border ${sportBadge(c.sport)}`}>
+                  <span className={`inline-flex px-1.5 py-0.5 rounded-sm text-[9px] font-bold uppercase border ${sportBadge(c.sport)}`}>
                     {c.sport}
                   </span>
-                  <span className={`inline-flex px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border ${sb.css}`}>
+                  <span className={`inline-flex px-1.5 py-0.5 rounded-sm text-[9px] font-bold uppercase border ${sb.css}`}>
                     {sb.label}
                   </span>
                 </div>
@@ -269,7 +269,7 @@ const ProjectionsTab: React.FC = () => {
         <select
           value={selectedId}
           onChange={(e) => setSelectedId(e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white appearance-none cursor-pointer focus:outline-none focus:border-amber-500/50"
+          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white appearance-none cursor-pointer focus:outline-hidden focus:border-amber-500/50"
         >
           {candidates.map((c) => (
             <option key={c.id} value={c.id}>
@@ -483,7 +483,7 @@ const InvestSignalsTab: React.FC = () => {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-white">{s.player}</span>
-                <span className={`inline-flex px-2 py-0.5 rounded text-[9px] font-black uppercase border ${badge.css}`}>
+                <span className={`inline-flex px-2 py-0.5 rounded-sm text-[9px] font-black uppercase border ${badge.css}`}>
                   {badge.label}
                 </span>
               </div>
@@ -520,7 +520,7 @@ export const HOFTrackerModal: React.FC<HOFTrackerModalProps> = ({ isOpen, onClos
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-8 md:pt-16">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-4xl max-h-[85vh] flex flex-col bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden">

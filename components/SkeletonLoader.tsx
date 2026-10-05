@@ -8,7 +8,7 @@ const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
 /** Skeleton for a card grid item */
 export const CardSkeleton: React.FC = () => (
   <div className="bg-brand-slate border border-slate-800/50 rounded-[2.5rem] overflow-hidden">
-    <Skeleton className="aspect-[4/5] rounded-none" />
+    <Skeleton className="aspect-4/5 rounded-none" />
     <div className="p-8 space-y-6">
       <div className="space-y-2">
         <Skeleton className="h-3 w-20" />

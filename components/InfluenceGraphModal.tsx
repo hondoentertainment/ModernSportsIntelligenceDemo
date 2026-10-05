@@ -103,7 +103,7 @@ const InfluenceGraphModal: React.FC<Props> = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
@@ -616,7 +616,7 @@ const InfluenceGraphModal: React.FC<Props> = ({ isOpen, onClose }) => {
                       </span>
                       <span className="text-xs font-bold text-slate-200 truncate">{inf.name}</span>
                     </div>
-                    <div className="w-8 h-4 bg-brand-lime/30 rounded-full relative flex-shrink-0 ml-2">
+                    <div className="w-8 h-4 bg-brand-lime/30 rounded-full relative shrink-0 ml-2">
                       <div className="absolute right-0.5 top-0.5 w-3 h-3 rounded-full bg-brand-lime" />
                     </div>
                   </div>

@@ -262,7 +262,7 @@ const FractionalVault: React.FC = () => {
                   <span>{vc.availableShares.toLocaleString()} shares left</span>
                 </div>
                 <div className="w-full bg-slate-700 rounded-full h-2">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all" style={{ width: `${pct}%` }} />
+                  <div className="h-2 rounded-full bg-linear-to-r from-purple-500 to-blue-500 transition-all" style={{ width: `${pct}%` }} />
                 </div>
               </div>
             </button>
@@ -578,7 +578,7 @@ const FractionalVault: React.FC = () => {
           <select
             value={selectedVaultId}
             onChange={(e) => handleSelectVault(e.target.value)}
-            className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-purple-500"
           >
             {vaultCards.map((vc) => (
               <option key={vc.id} value={vc.id}>{vc.player} - {vc.cardName}</option>
@@ -699,7 +699,7 @@ const FractionalVault: React.FC = () => {
           <select
             value={selectedVaultId}
             onChange={(e) => handleSelectVault(e.target.value)}
-            className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-purple-500"
           >
             {vaultCards.map((vc) => (
               <option key={vc.id} value={vc.id}>{vc.player} - {vc.grade}</option>

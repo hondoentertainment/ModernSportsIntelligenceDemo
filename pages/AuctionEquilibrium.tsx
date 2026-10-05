@@ -134,7 +134,7 @@ const AuctionEquilibrium: React.FC = () => {
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${PLATFORM_COLORS[auction.platform] || 'text-slate-400 bg-slate-800 border-slate-700'}`}>
+                        <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase border ${PLATFORM_COLORS[auction.platform] || 'text-slate-400 bg-slate-800 border-slate-700'}`}>
                           {auction.platform}
                         </span>
                         <span className="text-slate-500 text-xs">{auction.auctionType}</span>
@@ -165,7 +165,7 @@ const AuctionEquilibrium: React.FC = () => {
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className={`px-2 py-1 rounded text-[10px] font-bold bg-slate-800 ${exploit.color}`}>
+                      <span className={`px-2 py-1 rounded-sm text-[10px] font-bold bg-slate-800 ${exploit.color}`}>
                         Exploit: {auction.exploitabilityScore}
                       </span>
                       <span className={`text-xs ${compColor}`}>

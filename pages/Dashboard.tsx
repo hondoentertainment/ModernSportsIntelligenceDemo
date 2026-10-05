@@ -493,12 +493,12 @@ const Dashboard: React.FC = () => {
           <div className="relative z-10 w-full max-w-4xl space-y-8 text-center reveal-section">
             <div className="inline-flex flex-col items-center gap-4">
               <div className="relative group">
-                <div className="absolute -inset-2 bg-gradient-to-r from-brand-lime to-brand-teal rounded-full blur-md opacity-25 group-hover:opacity-50 transition duration-1000 animate-pulse"></div>
+                <div className="absolute -inset-2 bg-linear-to-r from-brand-lime to-brand-teal rounded-full blur-md opacity-25 group-hover:opacity-50 transition duration-1000 animate-pulse"></div>
                 <div className="relative p-6 bg-brand-charcoal border border-slate-800 rounded-full shadow-2xl">
                   <Activity size={48} className="text-brand-lime animate-pulse" />
                 </div>
                 {/* Scanning Line Effect */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-lime to-transparent opacity-50 animate-scan pointer-events-none"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-brand-lime to-transparent opacity-50 animate-scan pointer-events-none"></div>
               </div>
 
               <div className="space-y-2">
@@ -551,7 +551,7 @@ const Dashboard: React.FC = () => {
                 { icon: <Zap size={18} />, title: 'Gemini Insight', desc: 'AI valuation' },
                 { icon: <Trophy size={18} />, title: 'Asset Alpha', desc: 'League analytics' }
               ].map((feature, i) => (
-                <div key={i} className="bg-brand-slate/40 backdrop-blur-md border border-slate-800 p-6 rounded-[1.5rem] space-y-2 group hover:border-brand-lime/30 transition-all">
+                <div key={i} className="bg-brand-slate/40 backdrop-blur-md border border-slate-800 p-6 rounded-3xl space-y-2 group hover:border-brand-lime/30 transition-all">
                   <div className="w-10 h-10 bg-brand-charcoal rounded-xl flex items-center justify-center text-brand-lime mb-1 group-hover:scale-110 transition-transform">
                     {feature.icon}
                   </div>
@@ -651,7 +651,7 @@ const Dashboard: React.FC = () => {
                 </div>
 
                 {!isTerminalMode && (
-                  <div className="w-full md:w-[280px] h-[160px] bg-slate-900/50 rounded-2xl border border-white/5 p-4 backdrop-blur-sm">
+                  <div className="w-full md:w-[280px] h-[160px] bg-slate-900/50 rounded-2xl border border-white/5 p-4 backdrop-blur-xs">
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">30d Momentum</span>
                       <span className={`text-[10px] font-black uppercase tracking-widest ${growthComparison.deltaPercent >= 0 ? 'text-brand-green' : 'text-brand-red'}`}>
@@ -677,7 +677,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Right Column Stack / Terminal Grid Items */}
-            <div className={isTerminalMode ? 'md:col-span-1 luminous-card rounded-2xl p-4 flex flex-col justify-center gap-2 min-h-[100px]' : 'luminous-card rounded-[2rem] p-6 flex flex-col justify-center gap-4 min-h-[160px]'}>
+            <div className={isTerminalMode ? 'md:col-span-1 luminous-card rounded-2xl p-4 flex flex-col justify-center gap-2 min-h-[100px]' : 'luminous-card rounded-4xl p-6 flex flex-col justify-center gap-4 min-h-[160px]'}>
               <div className="flex justify-between items-start">
                 <div className="p-2 bg-brand-charcoal rounded-lg border border-slate-800 text-brand-blue">
                   <Activity size={16} />
@@ -691,7 +691,7 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* ROI Card */}
-            <div className={isTerminalMode ? 'md:col-span-1 luminous-card rounded-2xl p-4 flex flex-col justify-center gap-2 min-h-[100px]' : 'luminous-card rounded-[2rem] p-6 flex flex-col justify-center gap-4 min-h-[160px]'}>
+            <div className={isTerminalMode ? 'md:col-span-1 luminous-card rounded-2xl p-4 flex flex-col justify-center gap-2 min-h-[100px]' : 'luminous-card rounded-4xl p-6 flex flex-col justify-center gap-4 min-h-[160px]'}>
               <div className="flex justify-between items-start">
                 <div className="p-2 bg-brand-charcoal rounded-lg border border-slate-800 text-brand-green">
                   <TrendingUp size={16} />
@@ -726,7 +726,7 @@ const Dashboard: React.FC = () => {
                     <h3 className="text-lg font-bebas tracking-wide text-white">Local Market Quotes</h3>
                   </div>
                   <div className="flex gap-2">
-                    <span className="px-2 py-0.5 rounded bg-brand-charcoal border border-slate-800 text-[9px] font-black text-slate-500 uppercase tracking-widest">Streaming</span>
+                    <span className="px-2 py-0.5 rounded-sm bg-brand-charcoal border border-slate-800 text-[9px] font-black text-slate-500 uppercase tracking-widest">Streaming</span>
                   </div>
                 </div>
                 <MarketPulseTable items={inventory.slice(0, 8)} />
@@ -739,7 +739,7 @@ const Dashboard: React.FC = () => {
 
           {/* Portfolio Identity HUD */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom-8 duration-700 delay-200 order-3 lg:order-2">
-            <div className="lg:col-span-1 luminous-card rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl shadow-brand-lime/5">
+            <div className="lg:col-span-1 luminous-card rounded-4xl p-8 relative overflow-hidden group shadow-2xl shadow-brand-lime/5">
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-lime/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-brand-lime/10 transition-colors"></div>
 
               <div className="relative z-10 flex flex-col h-full justify-between gap-8">
@@ -765,7 +765,7 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="h-2 w-full bg-brand-charcoal rounded-full overflow-hidden p-0.5 border border-slate-800">
                     <div
-                      className="h-full bg-gradient-to-r from-brand-lime to-brand-teal rounded-full transition-all duration-1000 ease-out"
+                      className="h-full bg-linear-to-r from-brand-lime to-brand-teal rounded-full transition-all duration-1000 ease-out"
                       style={{ width: `${alphaScore}%` }}
                     />
                   </div>
@@ -773,7 +773,7 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
 
-            <div className="lg:col-span-2 luminous-card rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl shadow-brand-teal/5 flex flex-col lg:flex-row gap-8">
+            <div className="lg:col-span-2 luminous-card rounded-4xl p-8 relative overflow-hidden group shadow-2xl shadow-brand-teal/5 flex flex-col lg:flex-row gap-8">
               <div className="flex-1">
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -997,7 +997,7 @@ const Dashboard: React.FC = () => {
               >
                 <div className="w-24 h-32 bg-slate-900 rounded-xl overflow-hidden relative">
                   <img src="https://m.media-amazon.com/images/I/71R2o5C2HNL._AC_UF1000,1000_QL80_.jpg" alt="Card" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                  <div className="absolute top-2 right-2 bg-brand-charcoal/80 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-black text-white border border-white/10">PSA 10</div>
+                  <div className="absolute top-2 right-2 bg-brand-charcoal/80 backdrop-blur-xs px-2 py-0.5 rounded-sm text-[10px] font-black text-white border border-white/10">PSA 10</div>
                 </div>
                 <div className="flex-1 flex flex-col justify-between">
                   <div>
@@ -1029,7 +1029,7 @@ const Dashboard: React.FC = () => {
               >
                 <div className="w-24 h-32 bg-slate-900 rounded-xl overflow-hidden relative">
                   <img src="https://i.ebayimg.com/images/g/Y~QAAOSw~dVl~u~g/s-l1200.jpg" alt="Card" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                  <div className="absolute top-2 right-2 bg-brand-charcoal/80 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-black text-white border border-white/10">BGS 9.5</div>
+                  <div className="absolute top-2 right-2 bg-brand-charcoal/80 backdrop-blur-xs px-2 py-0.5 rounded-sm text-[10px] font-black text-white border border-white/10">BGS 9.5</div>
                 </div>
                 <div className="flex-1 flex flex-col justify-between">
                   <div>
@@ -1100,7 +1100,7 @@ const Dashboard: React.FC = () => {
                   ))}
                 </div>
 
-                <div className="p-6 bg-brand-charcoal rounded-[2rem] border border-slate-800 space-y-4">
+                <div className="p-6 bg-brand-charcoal rounded-4xl border border-slate-800 space-y-4">
                   <div>
                     <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">AI Market Sentiment</p>
                     <p className="text-sm text-slate-200 leading-relaxed">
@@ -1116,7 +1116,7 @@ const Dashboard: React.FC = () => {
 
               <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="md:col-span-3 bg-brand-charcoal/40 backdrop-blur-md rounded-[2.5rem] p-10 border border-white/5 flex flex-col lg:flex-row items-center gap-12 relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-brand-lime/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                  <div className="absolute inset-0 bg-linear-to-br from-brand-lime/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                   <div className="h-48 w-48 shrink-0 relative">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -1167,7 +1167,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-brand-charcoal/30 backdrop-blur-sm rounded-3xl p-6 border border-white/5 group hover:border-brand-lime/20 transition-all">
+                <div className="bg-brand-charcoal/30 backdrop-blur-xs rounded-3xl p-6 border border-white/5 group hover:border-brand-lime/20 transition-all">
                   <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-4 flex items-center justify-between">
                     Manufacturer Alpha
                     <BarChart3 size={12} className="text-brand-lime opacity-50" />
@@ -1186,18 +1186,18 @@ const Dashboard: React.FC = () => {
                     </ResponsiveContainer>
                   </div>
                 </div>
-                <div className="bg-brand-charcoal/30 backdrop-blur-sm rounded-3xl p-6 border border-white/5 group hover:border-brand-lime/20 transition-all">
+                <div className="bg-brand-charcoal/30 backdrop-blur-xs rounded-3xl p-6 border border-white/5 group hover:border-brand-lime/20 transition-all">
                   <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-4 flex items-center justify-between">
                     Price Parity Index
                     <Activity size={12} className="text-brand-lime opacity-50" />
                   </p>
                   <div className="flex items-end gap-1 h-24">
                     {[40, 70, 45, 90, 65, 80].map((h, i) => (
-                      <div key={i} className="flex-1 bg-gradient-to-t from-brand-slate to-brand-slate/40 rounded-t-sm group-hover:from-brand-lime/20 transition-all" style={{ height: `${h}%` }}></div>
+                      <div key={i} className="flex-1 bg-linear-to-t from-brand-slate to-brand-slate/40 rounded-t-sm group-hover:from-brand-lime/20 transition-all" style={{ height: `${h}%` }}></div>
                     ))}
                   </div>
                 </div>
-                <div className="bg-brand-charcoal/30 backdrop-blur-sm rounded-3xl p-6 border border-white/5 group hover:border-brand-lime/20 transition-all flex flex-col justify-between">
+                <div className="bg-brand-charcoal/30 backdrop-blur-xs rounded-3xl p-6 border border-white/5 group hover:border-brand-lime/20 transition-all flex flex-col justify-between">
                   <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-2">Liquidity Score</p>
                   <div className="flex items-center gap-4">
                     <span className="text-4xl font-bebas text-brand-green">84.2</span>
@@ -1401,10 +1401,10 @@ const Dashboard: React.FC = () => {
                 const displayNav = truth.value || card.currentValue;
 
                 return (
-                  <div key={card.id} className={`group bg-brand-slate border ${styles.border} rounded-[2rem] p-6 hover:shadow-xl transition-all flex items-center gap-6 relative overflow-hidden`}>
-                    <div className={`absolute inset-0 bg-gradient-to-r ${styles.glow || 'from-transparent'} via-transparent to-transparent opacity-30`}></div>
+                  <div key={card.id} className={`group bg-brand-slate border ${styles.border} rounded-4xl p-6 hover:shadow-xl transition-all flex items-center gap-6 relative overflow-hidden`}>
+                    <div className={`absolute inset-0 bg-linear-to-r ${styles.glow || 'from-transparent'} via-transparent to-transparent opacity-30`}></div>
 
-                    <div className={`w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden border-2 border-slate-800 ${styles.border !== 'border-slate-800' ? styles.border : ''} transition-colors relative z-10`}>
+                    <div className={`w-24 h-24 shrink-0 rounded-2xl overflow-hidden border-2 border-slate-800 ${styles.border !== 'border-slate-800' ? styles.border : ''} transition-colors relative z-10`}>
                       <CardImage
                         src={card.image}
                         playerName={card.player}

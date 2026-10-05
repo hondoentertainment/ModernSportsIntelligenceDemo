@@ -103,7 +103,7 @@ export const GradingCalculatorModal: React.FC<GradingCalculatorModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-2xl bg-brand-slate border border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
 
         {/* Header */}
@@ -218,11 +218,11 @@ export const GradingCalculatorModal: React.FC<GradingCalculatorModalProps> = ({
                   </div>
                   <div className="flex items-center gap-1.5">
                     {r.roi > 5 ? (
-                      <TrendingUp size={14} className="text-brand-green flex-shrink-0" />
+                      <TrendingUp size={14} className="text-brand-green shrink-0" />
                     ) : r.roi < -5 ? (
-                      <TrendingDown size={14} className="text-brand-red flex-shrink-0" />
+                      <TrendingDown size={14} className="text-brand-red shrink-0" />
                     ) : (
-                      <Minus size={14} className="text-slate-500 flex-shrink-0" />
+                      <Minus size={14} className="text-slate-500 shrink-0" />
                     )}
                     <span className={`text-xs font-black ${r.roi > 5 ? 'text-brand-green' : r.roi < -5 ? 'text-brand-red' : 'text-slate-400'}`}>
                       {r.roi >= 0 ? '+' : ''}{Math.round(r.roi)}%

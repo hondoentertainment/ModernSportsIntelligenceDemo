@@ -39,7 +39,7 @@ const ConsignmentRouterWidget: React.FC<ConsignmentRouterWidgetProps> = ({ onOpe
         <div className="bg-slate-800/50 rounded-xl p-3 mb-3 border border-lime-500/20">
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs text-slate-400">Best Platform</span>
-            <span className="text-[10px] font-bold text-lime-400 bg-lime-500/20 px-1.5 py-0.5 rounded">
+            <span className="text-[10px] font-bold text-lime-400 bg-lime-500/20 px-1.5 py-0.5 rounded-sm">
               SCORE {best.recommendationScore}
             </span>
           </div>

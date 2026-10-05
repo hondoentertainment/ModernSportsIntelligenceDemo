@@ -98,9 +98,9 @@ const MiniOrderBook: React.FC<{ book: SyntheticOrderBook }> = ({ book }) => {
       </div>
       {/* Asks (reversed so lowest ask is closest to midpoint) */}
       {[...topAsks].reverse().map((entry, i) => (
-        <div key={`ask-${i}`} className="relative flex items-center justify-between px-1.5 py-0.5 rounded text-xs">
+        <div key={`ask-${i}`} className="relative flex items-center justify-between px-1.5 py-0.5 rounded-sm text-xs">
           <div
-            className="absolute inset-0 bg-red-500/10 rounded"
+            className="absolute inset-0 bg-red-500/10 rounded-sm"
             style={{ width: `${(entry.quantity / maxQty) * 100}%`, marginLeft: 'auto' }}
           />
           <span className="relative text-red-400 font-mono text-[11px]">${entry.price.toLocaleString()}</span>
@@ -115,9 +115,9 @@ const MiniOrderBook: React.FC<{ book: SyntheticOrderBook }> = ({ book }) => {
       </div>
       {/* Bids */}
       {topBids.map((entry, i) => (
-        <div key={`bid-${i}`} className="relative flex items-center justify-between px-1.5 py-0.5 rounded text-xs">
+        <div key={`bid-${i}`} className="relative flex items-center justify-between px-1.5 py-0.5 rounded-sm text-xs">
           <div
-            className="absolute inset-0 bg-emerald-500/10 rounded"
+            className="absolute inset-0 bg-emerald-500/10 rounded-sm"
             style={{ width: `${(entry.quantity / maxQty) * 100}%` }}
           />
           <span className="relative text-emerald-400 font-mono text-[11px]">${entry.price.toLocaleString()}</span>
@@ -225,15 +225,15 @@ const PredictiveMarketMakerWidget: React.FC<PredictiveMarketMakerWidgetProps> = 
                   }`}
                 >
                   {isNarrow ? (
-                    <ArrowDownRight size={14} className="text-emerald-400 flex-shrink-0" />
+                    <ArrowDownRight size={14} className="text-emerald-400 shrink-0" />
                   ) : (
-                    <ArrowUpRight size={14} className="text-amber-400 flex-shrink-0" />
+                    <ArrowUpRight size={14} className="text-amber-400 shrink-0" />
                   )}
                   <div className="flex-1 min-w-0">
                     <span className="text-white font-semibold truncate block">{alert.player}</span>
                     <span className="text-slate-400 truncate block">{alert.reason}</span>
                   </div>
-                  <div className="flex flex-col items-end flex-shrink-0">
+                  <div className="flex flex-col items-end shrink-0">
                     <span className={`font-bold ${isNarrow ? 'text-emerald-400' : 'text-amber-400'}`}>
                       {isNarrow ? 'SELL' : 'BUY'}
                     </span>

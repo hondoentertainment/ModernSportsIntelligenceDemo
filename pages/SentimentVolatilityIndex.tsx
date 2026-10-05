@@ -259,7 +259,7 @@ const SentimentVolatilityIndex: React.FC = () => {
     <select
       value={selectedPlayerId}
       onChange={e => setSelectedPlayerId(e.target.value)}
-      className="bg-slate-800 border border-slate-700 text-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+      className="bg-slate-800 border border-slate-700 text-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-hidden focus:ring-2 focus:ring-cyan-500/40"
     >
       {playerList.map(p => (
         <option key={p.id} value={p.id}>{p.name} ({p.sport})</option>
@@ -535,7 +535,7 @@ const SentimentVolatilityIndex: React.FC = () => {
                       return (
                         <td key={`${ei}-${si}`} className="text-center py-1 px-1">
                           <span
-                            className="inline-block w-full rounded px-1 py-0.5 font-mono font-bold"
+                            className="inline-block w-full rounded-sm px-1 py-0.5 font-mono font-bold"
                             style={{
                               backgroundColor: volColor(val) + '30',
                               color: volColor(val),
@@ -552,10 +552,10 @@ const SentimentVolatilityIndex: React.FC = () => {
             </table>
           </div>
           <div className="flex items-center gap-4 mt-4 text-xs text-slate-500">
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded" style={{ backgroundColor: '#22c55e' }} /> Low (&lt;20)</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded" style={{ backgroundColor: '#3b82f6' }} /> Normal (20-40)</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded" style={{ backgroundColor: '#f59e0b' }} /> Elevated (40-60)</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded" style={{ backgroundColor: '#ef4444' }} /> Extreme (&gt;60)</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#22c55e' }} /> Low (&lt;20)</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#3b82f6' }} /> Normal (20-40)</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#f59e0b' }} /> Elevated (40-60)</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#ef4444' }} /> Extreme (&gt;60)</span>
           </div>
         </div>
 
@@ -763,7 +763,7 @@ const SentimentVolatilityIndex: React.FC = () => {
                       return (
                         <td key={k} className="text-center py-1.5 px-2">
                           <span
-                            className="inline-block w-full rounded px-1 py-0.5 font-mono font-bold"
+                            className="inline-block w-full rounded-sm px-1 py-0.5 font-mono font-bold"
                             style={{
                               backgroundColor: EMOTION_COLORS[k] + Math.round(intensity * 60 + 15).toString(16).padStart(2, '0'),
                               color: intensity > 0.5 ? '#fff' : EMOTION_COLORS[k],
@@ -996,7 +996,7 @@ const SentimentVolatilityIndex: React.FC = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
               activeTab === tab.id
-                ? 'bg-slate-700 text-slate-100 shadow-sm'
+                ? 'bg-slate-700 text-slate-100 shadow-xs'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
             }`}
           >

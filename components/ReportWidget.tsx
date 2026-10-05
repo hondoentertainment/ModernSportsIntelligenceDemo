@@ -153,7 +153,7 @@ export const ReportWidget: React.FC<ReportWidgetProps> = ({ inventory, onOpenMod
                 {generating === btn.type ? 'Generating...' : 'Quick generate'}
               </span>
             </div>
-            <ChevronRight size={14} className="text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0" />
+            <ChevronRight size={14} className="text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
           </button>
         ))}
       </div>
@@ -161,14 +161,14 @@ export const ReportWidget: React.FC<ReportWidgetProps> = ({ inventory, onOpenMod
       {/* Last generated info */}
       {lastReport && (
         <div className="flex items-center gap-3 p-3 bg-slate-800/50 border border-slate-700 rounded-xl">
-          <Clock size={14} className="text-slate-500 flex-shrink-0" />
+          <Clock size={14} className="text-slate-500 shrink-0" />
           <div className="flex-1 min-w-0">
             <span className="text-xs text-slate-400 block">Last report</span>
             <span className="text-xs text-white font-medium truncate block">
               {lastReport.type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
             </span>
           </div>
-          <span className="text-[10px] text-slate-500 font-mono flex-shrink-0">{lastReportDate}</span>
+          <span className="text-[10px] text-slate-500 font-mono shrink-0">{lastReportDate}</span>
         </div>
       )}
 

@@ -103,7 +103,7 @@ const DashboardBuilderWidget: React.FC<DashboardBuilderWidgetProps> = ({ onOpenB
             {activeLayout.widgets.slice(0, 8).map(w => (
               <div
                 key={w.id}
-                className="bg-slate-700/40 rounded text-[8px] text-slate-500 flex items-center justify-center"
+                className="bg-slate-700/40 rounded-sm text-[8px] text-slate-500 flex items-center justify-center"
                 style={{
                   gridColumn: `span ${Math.min(w.position.w, 4)}`,
                   gridRow: `span ${w.position.h}`,

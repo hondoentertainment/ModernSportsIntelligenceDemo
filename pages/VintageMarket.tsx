@@ -231,7 +231,7 @@ const VintageMarket: React.FC = () => {
           <select
             value={selectedEra}
             onChange={e => setSelectedEra(e.target.value)}
-            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-amber-500"
+            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-hidden focus:border-amber-500"
           >
             <option value="all">All Eras</option>
             <option value="pre-war">Pre-War</option>

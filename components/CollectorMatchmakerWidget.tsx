@@ -80,7 +80,7 @@ export const CollectorMatchmakerWidget: React.FC<CollectorMatchmakerWidgetProps>
               <p className="text-white font-medium truncate">{topMatch.collector2.alias}</p>
               <p className="text-slate-400 text-xs truncate">{topMatch.matchReason}</p>
             </div>
-            <div className="text-right flex-shrink-0">
+            <div className="text-right shrink-0">
               <p className="text-emerald-400 font-bold text-lg">{topMatch.compatibilityScore}%</p>
               <p className="text-slate-500 text-xs">compatibility</p>
             </div>

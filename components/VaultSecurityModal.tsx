@@ -550,7 +550,7 @@ const DisasterPlanTab: React.FC<{ plans: DisasterPlan[] }> = ({ plans }) => {
                   <ul className="space-y-2">
                     {plan.preparations.map((prep, i) => (
                       <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                        <CheckCircle2 size={12} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 size={12} className="text-emerald-400 mt-0.5 shrink-0" />
                         <span>{prep}</span>
                       </li>
                     ))}
@@ -565,7 +565,7 @@ const DisasterPlanTab: React.FC<{ plans: DisasterPlan[] }> = ({ plans }) => {
                   <ol className="space-y-2">
                     {plan.recoverySteps.map((step, i) => (
                       <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                        <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center bg-slate-700 rounded-full text-[10px] font-bold text-slate-300">
+                        <span className="shrink-0 w-5 h-5 flex items-center justify-center bg-slate-700 rounded-full text-[10px] font-bold text-slate-300">
                           {i + 1}
                         </span>
                         <span>{step}</span>
@@ -607,12 +607,12 @@ export const VaultSecurityModal: React.FC<VaultSecurityModalProps> = ({ isOpen, 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center">
+    <div className="fixed inset-0 z-100 flex items-start justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative w-full max-w-5xl mx-4 mt-8 mb-8 max-h-[90vh] flex flex-col bg-brand-charcoal border border-slate-800 rounded-[2rem] shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 overflow-hidden">
+      <div className="relative w-full max-w-5xl mx-4 mt-8 mb-8 max-h-[90vh] flex flex-col bg-brand-charcoal border border-slate-800 rounded-4xl shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-300 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-800">
           <div className="flex items-center gap-3">

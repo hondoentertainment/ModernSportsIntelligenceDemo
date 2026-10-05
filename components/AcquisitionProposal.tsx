@@ -54,7 +54,7 @@ const AcquisitionProposal: React.FC<AcquisitionProposalProps> = ({
 
                     <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
                         <div
-                            className="h-full bg-gradient-to-r from-brand-lime to-brand-cyan transition-all duration-1000 ease-out"
+                            className="h-full bg-linear-to-r from-brand-lime to-brand-cyan transition-all duration-1000 ease-out"
                             style={{ width: `${Math.min(100, fundingPercentage)}%` }}
                         />
                     </div>

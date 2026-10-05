@@ -290,7 +290,7 @@ const CardDetailTab: React.FC<{
           className="w-full flex items-center justify-between gap-2 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white hover:border-slate-600 transition-colors"
         >
           <span className="truncate">{selectedCard.player} — {selectedCard.year} {selectedCard.set}</span>
-          <ChevronDown size={16} className="text-slate-400 flex-shrink-0" />
+          <ChevronDown size={16} className="text-slate-400 shrink-0" />
         </button>
         {showDropdown && (
           <div className="absolute z-50 top-full mt-1 w-full max-h-64 overflow-y-auto bg-slate-800 border border-slate-700 rounded-xl shadow-xl">
@@ -449,7 +449,7 @@ const GemRatesTab: React.FC<{
                 key={item.card.id + i}
                 className="flex items-center gap-3 px-4 py-3 bg-slate-800/30 border border-transparent rounded-xl text-sm hover:bg-slate-800/60 transition-colors"
               >
-                <Diamond size={14} className="text-amber-400 flex-shrink-0" />
+                <Diamond size={14} className="text-amber-400 shrink-0" />
                 <span className="text-white font-medium truncate flex-1">{item.card.player}</span>
                 <span className="text-xs text-slate-400 font-mono">
                   {item.gemRate.gemRate.toFixed(1)}%
@@ -595,7 +595,7 @@ export const PopGrowthModal: React.FC<PopGrowthModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">
