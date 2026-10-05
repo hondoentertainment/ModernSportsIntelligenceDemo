@@ -114,7 +114,7 @@ const GradingVisionModal: React.FC<Props> = ({ isOpen, onClose, cardName, cardId
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-2xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
@@ -170,7 +170,7 @@ const GradingVisionModal: React.FC<Props> = ({ isOpen, onClose, cardName, cardId
               <div className="text-center">
                 <button
                   onClick={handleDemoAnalysis}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all"
                 >
                   <Zap size={16} />
                   Demo Analysis
@@ -183,11 +183,11 @@ const GradingVisionModal: React.FC<Props> = ({ isOpen, onClose, cardName, cardId
           {step === 'analyzing' && (
             <div className="flex flex-col items-center py-10 space-y-6">
               <div className="relative w-40 h-56 bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
-                <div className="absolute inset-3 bg-slate-700/50 rounded flex items-center justify-center">
+                <div className="absolute inset-3 bg-slate-700/50 rounded-sm flex items-center justify-center">
                   <Camera size={32} className="text-slate-600" />
                 </div>
                 <div
-                  className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"
+                  className="absolute left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-cyan-400 to-transparent"
                   style={{ top: `${progress % 100}%` }}
                 />
                 <div className="absolute top-1 left-1 w-4 h-4 border-t-2 border-l-2 border-cyan-400 rounded-tl" />
@@ -204,7 +204,7 @@ const GradingVisionModal: React.FC<Props> = ({ isOpen, onClose, cardName, cardId
               <div className="w-48">
                 <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-150"
+                    className="h-full bg-linear-to-r from-cyan-500 to-purple-500 rounded-full transition-all duration-150"
                     style={{ width: `${progress}%` }}
                   />
                 </div>

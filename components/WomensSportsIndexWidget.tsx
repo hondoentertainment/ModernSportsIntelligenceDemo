@@ -70,12 +70,12 @@ export const WomensSportsIndexWidget: React.FC<WomensSportsIndexWidgetProps> = (
       {/* Hottest athlete card highlight */}
       {topPerformer && (
         <div className="flex items-center gap-3 p-3 bg-pink-500/5 border border-pink-500/20 rounded-xl mb-4">
-          <TrendingUp size={14} className="text-pink-400 flex-shrink-0" />
+          <TrendingUp size={14} className="text-pink-400 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-pink-400 uppercase tracking-widest">Hottest Card</p>
             <p className="text-xs text-white font-medium truncate">{topPerformer.name}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <p className="text-sm font-bold text-pink-400">+{topPerformer.growth.toFixed(1)}%</p>
           </div>
         </div>

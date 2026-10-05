@@ -128,7 +128,7 @@ function GradeZoneBadge({ grade }: { grade: number }) {
     critical: 'bg-red-500/20 text-red-400',
   };
   return (
-    <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors[zone]}`}>
+    <span className={`px-2 py-0.5 rounded-sm text-xs font-medium ${colors[zone]}`}>
       {labels[zone]}
     </span>
   );
@@ -148,7 +148,7 @@ function HalfLifeIndicator({ halfLife }: { halfLife: number }) {
         {halfLife.toFixed(1)} yr
       </span>
       {isFast && (
-        <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-semibold uppercase tracking-wider">
+        <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-red-500/20 text-red-400 font-semibold uppercase tracking-wider">
           Rapid Decay
         </span>
       )}
@@ -389,7 +389,7 @@ function DecayDashboard({
             <span className="w-3 h-0.5 bg-red-500 inline-block" /> Grade 4 (Critical Zone)
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-3 h-3 bg-indigo-500/20 rounded inline-block" /> Confidence Band
+            <span className="w-3 h-3 bg-indigo-500/20 rounded-sm inline-block" /> Confidence Band
           </span>
         </div>
       </div>
@@ -639,7 +639,7 @@ function StorageSimulator({
               <input
                 value={cond.label}
                 onChange={(e) => updateCondition(idx, { label: e.target.value })}
-                className="bg-transparent text-white font-semibold text-lg border-b border-slate-600 focus:border-indigo-400 outline-none pb-1"
+                className="bg-transparent text-white font-semibold text-lg border-b border-slate-600 focus:border-indigo-400 outline-hidden pb-1"
               />
               {results?.[idx] && <HalfLifeIndicator halfLife={results[idx].halfLife} />}
             </div>
@@ -653,7 +653,7 @@ function StorageSimulator({
                   onChange={(e) =>
                     updateCondition(idx, { environment: e.target.value as StorageEnvironment })
                   }
-                  className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-1.5 text-white text-sm"
+                  className="w-full bg-slate-700 border border-slate-600 rounded-sm px-3 py-1.5 text-white text-sm"
                 >
                   {ENVIRONMENT_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>
@@ -721,7 +721,7 @@ function StorageSimulator({
                   onChange={(e) =>
                     updateCondition(idx, { lightExposure: e.target.value as LightExposure })
                   }
-                  className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-1.5 text-white text-sm"
+                  className="w-full bg-slate-700 border border-slate-600 rounded-sm px-3 py-1.5 text-white text-sm"
                 >
                   {LIGHT_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>
@@ -843,7 +843,7 @@ function StorageSimulator({
                 className="flex items-center gap-3 p-3 bg-slate-900/50 rounded-lg border border-slate-700"
               >
                 <div
-                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  className="w-3 h-3 rounded-full shrink-0"
                   style={{ backgroundColor: scenarioColors[i % scenarioColors.length] }}
                 />
                 <div className="flex-1 min-w-0">
@@ -1169,7 +1169,7 @@ function PreservationPlanner({
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-black/20">
+                  <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm bg-black/20">
                     {rec.priority}
                   </span>
                   <h4 className="text-white font-medium">{rec.action}</h4>
@@ -1260,7 +1260,7 @@ function CollectionForecast({ profiles }: { profiles: DecayProfile[] }) {
       {/* Weakest / Strongest */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-center gap-3">
-          <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
+          <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
           <div>
             <p className="text-red-400 text-xs font-semibold">Most Vulnerable</p>
             <p className="text-white text-sm">{forecast.weakestCard.cardName}</p>
@@ -1270,7 +1270,7 @@ function CollectionForecast({ profiles }: { profiles: DecayProfile[] }) {
           </div>
         </div>
         <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 flex items-center gap-3">
-          <ShieldCheck className="w-5 h-5 text-green-400 flex-shrink-0" />
+          <ShieldCheck className="w-5 h-5 text-green-400 shrink-0" />
           <div>
             <p className="text-green-400 text-xs font-semibold">Most Resilient</p>
             <p className="text-white text-sm">{forecast.strongestCard.cardName}</p>
@@ -1537,9 +1537,9 @@ function HalfLifeRankings({ profiles }: { profiles: DecayProfile[] }) {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {isFastDecay && (
-                        <AlertTriangle className="w-3.5 h-3.5 text-red-400 flex-shrink-0" />
+                        <AlertTriangle className="w-3.5 h-3.5 text-red-400 shrink-0" />
                       )}
-                      <div className="w-24 flex-shrink-0">
+                      <div className="w-24 shrink-0">
                         <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
@@ -1648,7 +1648,7 @@ export default function CardDecayPredictor() {
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       {/* Header */}
-      <div className="border-b border-slate-700 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-10">
+      <div className="border-b border-slate-700 bg-slate-900/80 backdrop-blur-xs sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">

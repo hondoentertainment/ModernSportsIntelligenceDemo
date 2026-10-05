@@ -225,7 +225,7 @@ const CollectionAppraiser: React.FC = () => {
             <p className="text-3xl font-bold text-violet-400 mb-2">{report.confidenceScore}%</p>
             <p className="text-xs text-slate-400">Based on data quality and market activity</p>
             <div className="w-full h-3 bg-slate-700 rounded-full mt-3">
-              <div className="h-full bg-gradient-to-r from-violet-500 to-purple-400 rounded-full" style={{ width: `${report.confidenceScore}%` }} />
+              <div className="h-full bg-linear-to-r from-violet-500 to-purple-400 rounded-full" style={{ width: `${report.confidenceScore}%` }} />
             </div>
             <p className="text-[10px] text-slate-500 mt-2">Last updated: {formatDate(report.lastUpdated)}</p>
           </div>
@@ -271,8 +271,8 @@ const CollectionAppraiser: React.FC = () => {
             </ResponsiveContainer>
           </div>
           <div className="flex items-center justify-center gap-6 text-[10px] text-slate-500 mt-2">
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-500 rounded" /> Annual Rate</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-amber-500 rounded" /> Projected Loss</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-red-500 rounded-sm" /> Annual Rate</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 bg-amber-500 rounded-sm" /> Projected Loss</span>
           </div>
         </div>
       </div>

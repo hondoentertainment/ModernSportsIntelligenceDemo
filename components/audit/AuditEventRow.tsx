@@ -26,7 +26,7 @@ const AuditEventRow: React.FC<{ event: AuditEvent }> = ({ event: e }) => {
                     <div>
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
                             <span
-                                className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${getSeverityColor(e.severity)}`}
+                                className={`px-1.5 py-0.5 rounded-sm text-[10px] font-bold ${getSeverityColor(e.severity)}`}
                             >
                                 {e.severity}
                             </span>
@@ -35,17 +35,17 @@ const AuditEventRow: React.FC<{ event: AuditEvent }> = ({ event: e }) => {
                             </span>
                             <code className="text-slate-400 text-[10px] font-mono">{e.action}</code>
                             {e.source === 'recorded' && (
-                                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30">
+                                <span className="px-1.5 py-0.5 rounded-sm text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30">
                                     Recorded
                                 </span>
                             )}
                             {e.source === 'cloud' && (
-                                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-sky-400 bg-sky-500/10 border border-sky-500/30">
+                                <span className="px-1.5 py-0.5 rounded-sm text-[10px] font-bold text-sky-400 bg-sky-500/10 border border-sky-500/30">
                                     Cloud
                                 </span>
                             )}
                             {e.source === 'sample' && (
-                                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-slate-400 bg-slate-500/10 border border-slate-600">
+                                <span className="px-1.5 py-0.5 rounded-sm text-[10px] font-bold text-slate-400 bg-slate-500/10 border border-slate-600">
                                     Sample
                                 </span>
                             )}

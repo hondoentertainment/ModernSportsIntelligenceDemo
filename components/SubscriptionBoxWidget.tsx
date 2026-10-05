@@ -77,7 +77,7 @@ export const SubscriptionBoxWidget: React.FC<SubscriptionBoxWidgetProps> = ({ on
             <p className="text-sm font-medium text-white">{currentMonth.month}</p>
           </div>
           <div className="h-10 w-px bg-slate-700" />
-          <div className="flex-shrink-0 text-right">
+          <div className="shrink-0 text-right">
             <div className="flex items-center gap-1">
               <DollarSign size={12} className={currentMonth.profit >= 0 ? 'text-brand-lime' : 'text-red-400'} />
               <span className={`text-2xl font-bebas tracking-wider ${currentMonth.profit >= 0 ? 'text-brand-lime' : 'text-red-400'}`}>
@@ -99,7 +99,7 @@ export const SubscriptionBoxWidget: React.FC<SubscriptionBoxWidgetProps> = ({ on
               Top Provider
             </p>
             <div className="flex items-center gap-1">
-              <Star size={12} className="text-brand-lime flex-shrink-0" />
+              <Star size={12} className="text-brand-lime shrink-0" />
               <p className="text-xs text-white font-medium truncate">{bestProvider.displayName}</p>
             </div>
           </div>
@@ -122,11 +122,11 @@ export const SubscriptionBoxWidget: React.FC<SubscriptionBoxWidgetProps> = ({ on
           </p>
           {recentHits.map(hit => (
             <div key={hit.id} className="flex items-center gap-3 px-4 py-2.5 bg-green-500/5 border border-green-500/15 rounded-xl">
-              <TrendingUp size={14} className="text-green-400 flex-shrink-0" />
+              <TrendingUp size={14} className="text-green-400 shrink-0" />
               <span className="text-xs text-white font-medium truncate">
                 {hit.player} - {hit.cardDescription}
               </span>
-              <span className="ml-auto text-xs font-bold text-green-400 flex-shrink-0">
+              <span className="ml-auto text-xs font-bold text-green-400 shrink-0">
                 ${hit.estimatedValue.toLocaleString()}
               </span>
             </div>

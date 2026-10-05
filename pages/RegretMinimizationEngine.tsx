@@ -151,7 +151,7 @@ const RegretMinimizationEngine: React.FC = () => {
       {/* Biggest Miss Banner */}
       {summary && (
         <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 flex items-center gap-3">
-          <AlertTriangle size={20} className="text-red-400 flex-shrink-0" />
+          <AlertTriangle size={20} className="text-red-400 shrink-0" />
           <div>
             <p className="text-xs text-red-400 uppercase tracking-wider font-bold mb-0.5">Biggest Miss</p>
             <p className="text-sm text-slate-200 font-medium">{summary.biggestMiss}</p>
@@ -220,7 +220,7 @@ const RegretMinimizationEngine: React.FC = () => {
               }`}>
                 <div className="flex items-center justify-between mb-1">
                   <p className="text-sm font-bold text-white truncate mr-2">{alert.cardName}</p>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 ${
                     alert.urgency === 'high' ? 'bg-red-500/10 text-red-400' :
                     alert.urgency === 'medium' ? 'bg-amber-500/10 text-amber-400' :
                     'bg-blue-500/10 text-blue-400'
@@ -245,18 +245,18 @@ const RegretMinimizationEngine: React.FC = () => {
         <div className="space-y-3">
           {topRegrets.map((card, idx) => (
             <div key={card.id} className="flex items-center gap-4 p-4 bg-slate-900/50 border border-red-500/10 rounded-xl">
-              <div className="flex-shrink-0 w-7 h-7 rounded-full bg-red-500/20 flex items-center justify-center">
+              <div className="shrink-0 w-7 h-7 rounded-full bg-red-500/20 flex items-center justify-center">
                 <span className="text-xs font-bold text-red-400">#{idx + 1}</span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-white truncate">{card.cardName}</p>
                 <p className="text-[10px] text-slate-500">{card.sport} · {card.year} · Passed: {card.passedOnDate} · Reason: {card.reason}</p>
               </div>
-              <div className="flex-shrink-0 text-right">
+              <div className="shrink-0 text-right">
                 <p className="text-[10px] text-slate-500">Passed @ {formatCurrency(card.passedOnPrice)}</p>
                 <p className="text-sm font-bold text-emerald-400">Now: {formatCurrency(card.currentPrice)}</p>
               </div>
-              <div className="flex-shrink-0 text-right">
+              <div className="shrink-0 text-right">
                 <p className={`text-lg font-bold ${card.returnPct > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
                   {card.returnPct > 0 ? '+' : ''}{card.returnPct.toLocaleString()}%
                 </p>
@@ -375,7 +375,7 @@ const RegretMinimizationEngine: React.FC = () => {
               <div>
                 <label className="text-[10px] text-slate-500 uppercase tracking-wider">Card Name</label>
                 <input
-                  className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-slate-500"
+                  className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-slate-500"
                   placeholder="e.g. 2023 Topps Chrome Victor Wembanyama RC PSA 10"
                 />
               </div>
@@ -384,7 +384,7 @@ const RegretMinimizationEngine: React.FC = () => {
                   <label className="text-[10px] text-slate-500 uppercase tracking-wider">Passed-On Price ($)</label>
                   <input
                     type="number"
-                    className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-slate-500"
+                    className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-slate-500"
                     placeholder="e.g. 450"
                   />
                 </div>
@@ -392,13 +392,13 @@ const RegretMinimizationEngine: React.FC = () => {
                   <label className="text-[10px] text-slate-500 uppercase tracking-wider">Date Passed</label>
                   <input
                     type="date"
-                    className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-slate-500"
+                    className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-slate-500"
                   />
                 </div>
               </div>
               <div>
                 <label className="text-[10px] text-slate-500 uppercase tracking-wider">Reason for Passing</label>
-                <select className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-slate-500">
+                <select className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-slate-500">
                   <option>Price too high</option>
                   <option>Wrong timing</option>
                   <option>Passed on instinct</option>
@@ -408,7 +408,7 @@ const RegretMinimizationEngine: React.FC = () => {
               </div>
               <div>
                 <label className="text-[10px] text-slate-500 uppercase tracking-wider">Category</label>
-                <select className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-slate-500">
+                <select className="w-full mt-1 bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-slate-500">
                   <option>Rookie Cards</option>
                   <option>Vintage</option>
                   <option>Autographs</option>

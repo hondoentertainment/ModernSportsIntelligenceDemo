@@ -320,21 +320,21 @@ const DeadMoneyDetector: React.FC = () => {
         <select
           value={sportFilter}
           onChange={e => setSportFilter(e.target.value as Sport | 'all')}
-          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-emerald-500/50"
+          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-hidden focus:border-emerald-500/50"
         >
           {SPORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
         <select
           value={holdFilter}
           onChange={e => setHoldFilter(Number(e.target.value))}
-          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-emerald-500/50"
+          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-hidden focus:border-emerald-500/50"
         >
           {HOLD_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
         <select
           value={scoreFilter}
           onChange={e => setScoreFilter(Number(e.target.value))}
-          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-emerald-500/50"
+          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-300 focus:outline-hidden focus:border-emerald-500/50"
         >
           {SCORE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
@@ -693,7 +693,7 @@ const DeadMoneyDetector: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="text-xs text-white font-medium">{c.player}</p>
-                      <span className="px-1.5 py-0.5 bg-cyan-500/10 border border-cyan-500/20 rounded text-[9px] text-cyan-400">{c.catalystType}</span>
+                      <span className="px-1.5 py-0.5 bg-cyan-500/10 border border-cyan-500/20 rounded-sm text-[9px] text-cyan-400">{c.catalystType}</span>
                     </div>
                     <p className="text-[10px] text-slate-400 mb-1">{c.description}</p>
                     <div className="flex items-center gap-3">
@@ -732,7 +732,7 @@ const DeadMoneyDetector: React.FC = () => {
             };
             return (
               <div key={a.id} className={`flex items-start gap-3 rounded-lg p-3 border ${severityStyles[a.severity]} ${!a.read ? 'ring-1 ring-red-500/20' : ''}`}>
-                <div className="flex-shrink-0 mt-0.5">{severityIcon[a.severity]}</div>
+                <div className="shrink-0 mt-0.5">{severityIcon[a.severity]}</div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="text-xs text-white font-medium">{a.player}</p>
@@ -813,7 +813,7 @@ const DeadMoneyDetector: React.FC = () => {
           <div className="space-y-2">
             {healthScore.recommendations.map((r, i) => (
               <div key={i} className="flex items-start gap-2">
-                <ChevronRight size={12} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                <ChevronRight size={12} className="text-emerald-400 mt-0.5 shrink-0" />
                 <p className="text-xs text-slate-300">{r}</p>
               </div>
             ))}

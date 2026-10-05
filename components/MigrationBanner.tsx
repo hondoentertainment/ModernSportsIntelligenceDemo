@@ -100,7 +100,7 @@ const MigrationBanner: React.FC = () => {
                                 id="msi-migration-policy"
                                 value={policy}
                                 onChange={(e) => handlePolicyChange(e.target.value as MigrationConflictPolicy)}
-                                className="text-xs bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 focus:outline-none focus:border-brand-teal/50"
+                                className="text-xs bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-slate-200 focus:outline-hidden focus:border-brand-teal/50"
                             >
                                 {MIGRATION_CONFLICT_POLICY_OPTIONS.map((o) => (
                                     <option key={o.value} value={o.value} title={o.hint}>

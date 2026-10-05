@@ -75,7 +75,7 @@ export const AdvisorWidget: React.FC<AdvisorWidgetProps> = ({ inventory, onClick
         <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
           <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-2">Top Recommendation</p>
           <div className="flex items-center gap-3">
-            <TrendingUp size={16} className="text-brand-lime flex-shrink-0" />
+            <TrendingUp size={16} className="text-brand-lime shrink-0" />
             <span className="text-sm text-white font-medium truncate flex-1 group-hover:text-brand-lime transition-colors">
               Buy {topRec.player} — {topRec.sport} {topRec.year} {topRec.set}
             </span>

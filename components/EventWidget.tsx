@@ -115,7 +115,7 @@ export const EventWidget: React.FC<EventWidgetProps> = ({ cards, onClick }) => {
           </div>
 
           <div className="flex items-center gap-1.5 text-xs text-slate-400">
-            <MapPin size={12} className="flex-shrink-0" />
+            <MapPin size={12} className="shrink-0" />
             <span>{nextEvent.location}</span>
             <span className="text-slate-600 mx-1">|</span>
             <span>{new Date(nextEvent.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>

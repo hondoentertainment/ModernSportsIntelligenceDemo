@@ -299,7 +299,7 @@ function LiveRadarTab({
           {upcomingWindows.slice(0, 5).map((w) => (
             <div
               key={w.eventName}
-              className="flex-shrink-0 rounded-lg border border-slate-600 bg-slate-700/50 p-3"
+              className="shrink-0 rounded-lg border border-slate-600 bg-slate-700/50 p-3"
               style={{ minWidth: 220 }}
             >
               <div className="text-sm font-semibold text-white">{w.eventName}</div>
@@ -326,7 +326,7 @@ function LiveRadarTab({
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value as ArbitrageType | "all")}
-            className="rounded-lg border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm text-white focus:border-blue-500 focus:outline-none"
+            className="rounded-lg border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm text-white focus:border-blue-500 focus:outline-hidden"
           >
             <option value="all">All Types</option>
             <option value="event-window">Event Window</option>
@@ -341,7 +341,7 @@ function LiveRadarTab({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as "profit" | "confidence" | "expiry")}
-            className="rounded-lg border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm text-white focus:border-blue-500 focus:outline-none"
+            className="rounded-lg border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm text-white focus:border-blue-500 focus:outline-hidden"
           >
             <option value="confidence">Confidence</option>
             <option value="profit">Profit</option>
@@ -726,13 +726,13 @@ function SeasonalMapsTab({
         </ResponsiveContainer>
         <div className="mt-2 flex items-center justify-center gap-6 text-xs">
           <span className="flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded bg-emerald-500" /> Best Buy Month
+            <span className="inline-block h-3 w-3 rounded-sm bg-emerald-500" /> Best Buy Month
           </span>
           <span className="flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded bg-red-500" /> Best Sell Month
+            <span className="inline-block h-3 w-3 rounded-sm bg-red-500" /> Best Sell Month
           </span>
           <span className="flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded bg-blue-500" /> Current Month
+            <span className="inline-block h-3 w-3 rounded-sm bg-blue-500" /> Current Month
           </span>
         </div>
       </div>
@@ -786,13 +786,13 @@ function SeasonalMapsTab({
             {/* Legend */}
             <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-400">
               <span className="flex items-center gap-1">
-                <span className="inline-block h-3 w-6 rounded bg-emerald-600" /> Cheapest
+                <span className="inline-block h-3 w-6 rounded-sm bg-emerald-600" /> Cheapest
               </span>
               <span className="flex items-center gap-1">
-                <span className="inline-block h-3 w-6 rounded bg-slate-600" /> Average
+                <span className="inline-block h-3 w-6 rounded-sm bg-slate-600" /> Average
               </span>
               <span className="flex items-center gap-1">
-                <span className="inline-block h-3 w-6 rounded bg-red-600" /> Most Expensive
+                <span className="inline-block h-3 w-6 rounded-sm bg-red-600" /> Most Expensive
               </span>
             </div>
           </div>
@@ -1451,7 +1451,7 @@ export default function TemporalArbitrageRadar() {
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-purple-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-blue-600 to-purple-600">
               <Clock className="h-5 w-5 text-white" />
             </div>
             <div>

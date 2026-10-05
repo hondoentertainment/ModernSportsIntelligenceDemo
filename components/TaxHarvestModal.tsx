@@ -160,7 +160,7 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
   }));
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col">
 
         {/* Header */}
@@ -357,7 +357,7 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
               {/* Tax Rate Info */}
               <div className="bg-rose-500/5 border border-rose-500/20 rounded-2xl p-4">
                 <div className="flex items-start gap-3">
-                  <Info size={16} className="text-rose-400 flex-shrink-0 mt-0.5" />
+                  <Info size={16} className="text-rose-400 shrink-0 mt-0.5" />
                   <div className="text-xs text-slate-300">
                     <span className="font-bold text-white">Rates applied: </span>
                     Short-term {(bracketInfo.combinedShortTermRate * 100).toFixed(1)}% |
@@ -394,25 +394,25 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
                           onClick={() => toggleExpanded(rec.id)}
                           className="w-full p-5 flex items-center gap-4 text-left hover:bg-slate-800/40 transition-colors"
                         >
-                          <div className={`w-2 h-2 rounded-full flex-shrink-0 ${pc.bg.replace('/10', '')} ${pc.color.includes('red') ? 'bg-red-500' : pc.color.includes('amber') ? 'bg-amber-500' : 'bg-slate-500'}`} />
+                          <div className={`w-2 h-2 rounded-full shrink-0 ${pc.bg.replace('/10', '')} ${pc.color.includes('red') ? 'bg-red-500' : pc.color.includes('amber') ? 'bg-amber-500' : 'bg-slate-500'}`} />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <span className="text-sm text-white font-bold truncate">{rec.player}</span>
-                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${pc.color} ${pc.bg} border ${pc.border}`}>
+                              <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-bold ${pc.color} ${pc.bg} border ${pc.border}`}>
                                 {pc.label}
                               </span>
-                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${hc.color} ${hc.bg}`}>
+                              <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-bold ${hc.color} ${hc.bg}`}>
                                 {hc.label}
                               </span>
                               {rec.washSaleStatus !== 'clear' && (
-                                <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${ws.color} bg-slate-800`}>
+                                <span className={`px-1.5 py-0.5 rounded-sm text-[9px] font-bold ${ws.color} bg-slate-800`}>
                                   {ws.label}
                                 </span>
                               )}
                             </div>
                             <p className="text-[11px] text-slate-500">{rec.set} {rec.year} | {rec.sport}</p>
                           </div>
-                          <div className="text-right flex-shrink-0 mr-2">
+                          <div className="text-right shrink-0 mr-2">
                             <p className="text-sm font-mono text-red-400 font-bold">-${rec.lossAmount.toFixed(2)}</p>
                             <p className="text-[10px] text-green-400 font-mono">+${rec.taxBenefit.toFixed(2)} savings</p>
                           </div>
@@ -455,12 +455,12 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
                                       key={rep.id}
                                       className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl text-xs"
                                     >
-                                      <RefreshCw size={12} className="text-blue-400 flex-shrink-0" />
+                                      <RefreshCw size={12} className="text-blue-400 shrink-0" />
                                       <div className="flex-1 min-w-0">
                                         <span className="text-white font-medium">{rep.player} - {rep.set} {rep.year}</span>
                                         <p className="text-[10px] text-slate-500 mt-0.5">{rep.reason}</p>
                                       </div>
-                                      <span className="text-slate-300 font-mono flex-shrink-0">~${rep.estimatedPrice.toFixed(0)}</span>
+                                      <span className="text-slate-300 font-mono shrink-0">~${rep.estimatedPrice.toFixed(0)}</span>
                                     </div>
                                   ))}
                                 </div>
@@ -490,7 +490,7 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
             <>
               <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-5">
                 <div className="flex items-start gap-3">
-                  <ShieldAlert size={18} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                  <ShieldAlert size={18} className="text-amber-400 shrink-0 mt-0.5" />
                   <div className="text-xs text-slate-300 leading-relaxed space-y-1">
                     <p className="font-bold text-white">Wash Sale Rule (IRS Section 1091)</p>
                     <p>A wash sale occurs when you sell a security at a loss and repurchase the same or a "substantially identical" security within 30 days before or after the sale. The loss is disallowed and added to the cost basis of the replacement.</p>
@@ -526,7 +526,7 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
                           <div className="flex items-center gap-2">
                             <span className={`w-2 h-2 rounded-full ${sc.dot}`} />
                             <span className="text-sm text-white font-bold">{ws.player}</span>
-                            <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${sc.color} bg-slate-800`}>
+                            <span className={`px-2 py-0.5 rounded-sm text-[9px] font-bold ${sc.color} bg-slate-800`}>
                               {sc.label}
                             </span>
                           </div>
@@ -590,7 +590,7 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
                     <select
                       value={filingStatus}
                       onChange={e => setFilingStatus(e.target.value as FilingStatus)}
-                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-rose-500 focus:outline-none"
+                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-rose-500 focus:outline-hidden"
                     >
                       {Object.entries(FILING_STATUS_LABELS).map(([key, label]) => (
                         <option key={key} value={key}>{label}</option>
@@ -604,7 +604,7 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
                       type="number"
                       value={estimatedIncome}
                       onChange={e => setEstimatedIncome(Number(e.target.value))}
-                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white font-mono focus:border-rose-500 focus:outline-none"
+                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white font-mono focus:border-rose-500 focus:outline-hidden"
                       min={0}
                       step={5000}
                     />
@@ -615,7 +615,7 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
                     <select
                       value={stateCode}
                       onChange={e => setStateCode(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-rose-500 focus:outline-none"
+                      className="w-full bg-slate-800 border border-slate-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-rose-500 focus:outline-hidden"
                     >
                       {Object.keys({ CA: 0, NY: 0, NJ: 0, MA: 0, IL: 0, PA: 0, OH: 0, TX: 0, FL: 0, WA: 0, NV: 0, TN: 0, WY: 0, AK: 0, SD: 0, NH: 0, OR: 0, MN: 0, HI: 0, CT: 0, OTHER: 0 }).map(code => (
                         <option key={code} value={code}>{code}</option>
@@ -707,7 +707,7 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
 
               <div className="bg-slate-800/20 border border-slate-700/30 rounded-2xl p-4">
                 <div className="flex items-start gap-2 text-[10px] text-slate-500">
-                  <Info size={12} className="flex-shrink-0 mt-0.5" />
+                  <Info size={12} className="shrink-0 mt-0.5" />
                   <span>Tax calculations are estimates for educational purposes only. Consult a qualified tax professional for actual tax advice. State rates are simplified approximations.</span>
                 </div>
               </div>
@@ -770,7 +770,7 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
                       >
                         <p className={`text-xs font-bold mb-2 ${isCurrent ? 'text-rose-400' : 'text-slate-300'}`}>
                           {m.monthName}
-                          {isCurrent && <span className="ml-1 text-[8px] bg-rose-500/20 px-1 py-0.5 rounded">NOW</span>}
+                          {isCurrent && <span className="ml-1 text-[8px] bg-rose-500/20 px-1 py-0.5 rounded-sm">NOW</span>}
                         </p>
                         {m.isOptimalWindow && (
                           <span className="inline-block px-1.5 py-0.5 bg-green-500/15 text-green-400 text-[8px] font-bold rounded-full mb-1.5">
@@ -798,11 +798,11 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
               {/* Legend */}
               <div className="flex items-center gap-4 text-[10px] text-slate-400">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded bg-rose-500/30 border border-rose-500/40" />
+                  <div className="w-3 h-3 rounded-sm bg-rose-500/30 border border-rose-500/40" />
                   <span>Current Month</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded bg-green-500/20 border border-green-500/30" />
+                  <div className="w-3 h-3 rounded-sm bg-green-500/20 border border-green-500/30" />
                   <span>Optimal Harvest Window</span>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -929,7 +929,7 @@ export const TaxHarvestModal: React.FC<TaxHarvestModalProps> = ({ isOpen, onClos
               {/* Disclaimer */}
               <div className="bg-slate-800/20 border border-slate-700/30 rounded-2xl p-4">
                 <div className="flex items-start gap-2 text-[10px] text-slate-500">
-                  <Info size={12} className="flex-shrink-0 mt-0.5" />
+                  <Info size={12} className="shrink-0 mt-0.5" />
                   <span>
                     All tax calculations are simulated estimates for educational and planning purposes only.
                     Sports cards tax treatment may vary. The $3,000 annual capital loss deduction limit applies

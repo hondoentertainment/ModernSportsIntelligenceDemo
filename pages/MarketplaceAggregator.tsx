@@ -202,7 +202,7 @@ const MarketplaceAggregator: React.FC = () => {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search player, card, or grade..."
-              className="flex-1 bg-slate-900/50 border border-slate-700/50 rounded-lg px-3 py-1.5 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-brand-lime/50"
+              className="flex-1 bg-slate-900/50 border border-slate-700/50 rounded-lg px-3 py-1.5 text-sm text-slate-300 placeholder-slate-600 focus:outline-hidden focus:border-brand-lime/50"
             />
           </div>
           <div className="space-y-3">
@@ -210,7 +210,7 @@ const MarketplaceAggregator: React.FC = () => {
               <div key={listing.id} className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-slate-600 transition-colors">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-700 text-slate-300 uppercase">
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-sm bg-slate-700 text-slate-300 uppercase">
                       {getPlatformLabel(listing.platform)}
                     </span>
                     <div>
@@ -325,7 +325,7 @@ const MarketplaceAggregator: React.FC = () => {
                   <p className="text-[10px] text-slate-500 truncate">{order.cardDescription} | {order.grade}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 flex-shrink-0">
+              <div className="flex items-center gap-4 shrink-0">
                 <span className="text-xs font-bold text-slate-300 uppercase">{getPlatformLabel(order.platform)}</span>
                 <span className="text-sm font-bold text-white">${order.totalCost.toFixed(2)}</span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full ${ORDER_STATUS_BADGE[order.status]}`}>

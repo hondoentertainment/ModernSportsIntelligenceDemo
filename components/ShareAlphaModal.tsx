@@ -45,11 +45,11 @@ const ShareAlphaModal: React.FC<Props> = ({ isOpen, onClose, profile, onToggleVi
         : iframeSnippet;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={onClose} />
 
             <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-brand-charcoal border border-slate-800 rounded-[2.5rem] shadow-2xl animate-in zoom-in-95 duration-300">
-                <div className="p-8 bg-gradient-to-br from-brand-lime/10 to-transparent border-b border-slate-800">
+                <div className="p-8 bg-linear-to-br from-brand-lime/10 to-transparent border-b border-slate-800">
                     <div className="flex justify-between items-start mb-6">
                         <div className="w-16 h-16 bg-brand-lime/20 rounded-2xl flex items-center justify-center text-brand-lime border border-brand-lime/30">
                             <Share2 size={32} />

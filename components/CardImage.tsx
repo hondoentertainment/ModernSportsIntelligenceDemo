@@ -23,14 +23,14 @@ const CardImage: React.FC<CardImageProps> = ({ src, playerName, year, manufactur
         <div className={`relative overflow-hidden bg-slate-950 group ${className}`}>
             {/* Premium Shimmer Loading State */}
             {isLoading && !hasError && (
-                <div className="absolute inset-0 z-20 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer"
+                <div className="absolute inset-0 z-20 bg-linear-to-r from-transparent via-white/5 to-transparent animate-shimmer"
                     style={{ backgroundSize: '200% 100%' }} />
             )}
 
             {isPlaceholder ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-slate-900 to-slate-950">
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-linear-to-br from-slate-900 to-slate-950">
                     {/* Glassmorphic Card Decoration */}
-                    <div className="absolute inset-4 rounded-xl border border-white/5 bg-white/5 backdrop-blur-sm pointer-events-none" />
+                    <div className="absolute inset-4 rounded-xl border border-white/5 bg-white/5 backdrop-blur-xs pointer-events-none" />
 
                     <div className="relative z-10 space-y-4">
                         <div className="w-16 h-16 mx-auto rounded-full bg-slate-800 flex items-center justify-center border border-slate-700 shadow-xl">

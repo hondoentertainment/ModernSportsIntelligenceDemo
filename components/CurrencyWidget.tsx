@@ -105,19 +105,19 @@ export const CurrencyWidget: React.FC<CurrencyWidgetProps> = ({ inventory, onCli
               : 'bg-slate-800/30 border-slate-700'
         }`}>
           {impact.trend === 'favorable' ? (
-            <TrendingUp size={14} className="text-green-400 flex-shrink-0" />
+            <TrendingUp size={14} className="text-green-400 shrink-0" />
           ) : impact.trend === 'unfavorable' ? (
-            <TrendingDown size={14} className="text-red-400 flex-shrink-0" />
+            <TrendingDown size={14} className="text-red-400 shrink-0" />
           ) : (
-            <ArrowRightLeft size={14} className="text-slate-400 flex-shrink-0" />
+            <ArrowRightLeft size={14} className="text-slate-400 shrink-0" />
           )}
-          <span className="text-xs text-slate-400 flex-shrink-0">7d FX:</span>
+          <span className="text-xs text-slate-400 shrink-0">7d FX:</span>
           <span className={`text-xs font-bold ${
             impact.change7dPercent < 0 ? 'text-green-400' : impact.change7dPercent > 0 ? 'text-red-400' : 'text-slate-300'
           }`}>
             {impact.change7dPercent > 0 ? '+' : ''}{impact.change7dPercent.toFixed(2)}%
           </span>
-          <span className="ml-auto text-[10px] text-slate-500 flex-shrink-0">
+          <span className="ml-auto text-[10px] text-slate-500 shrink-0">
             {impact.trend === 'favorable' ? 'USD weakening' : impact.trend === 'unfavorable' ? 'USD strengthening' : 'Stable'}
           </span>
         </div>
@@ -153,7 +153,7 @@ export const CurrencyWidget: React.FC<CurrencyWidgetProps> = ({ inventory, onCli
       {/* Alert Badge */}
       {highPriorityAlerts > 0 && (
         <div className="flex items-center gap-3 px-4 py-3 bg-amber-500/5 border border-amber-500/15 rounded-xl">
-          <AlertCircle size={14} className="text-amber-400 flex-shrink-0" />
+          <AlertCircle size={14} className="text-amber-400 shrink-0" />
           <span className="text-xs text-amber-400 font-medium">
             {highPriorityAlerts} cross-border deal{highPriorityAlerts !== 1 ? 's' : ''} detected
           </span>

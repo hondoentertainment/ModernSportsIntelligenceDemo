@@ -143,7 +143,7 @@ const LiveGameImpactEngineWidget: React.FC<Props> = ({ onOpenModal }) => {
             {liveGames.map(game => (
               <div
                 key={game.id}
-                className="flex-shrink-0 px-3 py-2 bg-slate-800/60 border border-slate-700/50 rounded-xl text-xs"
+                className="shrink-0 px-3 py-2 bg-slate-800/60 border border-slate-700/50 rounded-xl text-xs"
               >
                 <div className="flex items-center gap-2 mb-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
@@ -188,18 +188,18 @@ const LiveGameImpactEngineWidget: React.FC<Props> = ({ onOpenModal }) => {
               >
                 <div className="flex items-center gap-2 min-w-0">
                   {card.trend === 'up' ? (
-                    <TrendingUp size={14} className="text-emerald-400 flex-shrink-0" />
+                    <TrendingUp size={14} className="text-emerald-400 shrink-0" />
                   ) : card.trend === 'down' ? (
-                    <TrendingDown size={14} className="text-red-400 flex-shrink-0" />
+                    <TrendingDown size={14} className="text-red-400 shrink-0" />
                   ) : (
-                    <Activity size={14} className="text-slate-500 flex-shrink-0" />
+                    <Activity size={14} className="text-slate-500 shrink-0" />
                   )}
                   <div className="min-w-0">
                     <p className="text-xs font-medium text-white truncate">{card.player}</p>
                     <p className="text-[10px] text-slate-500 truncate">{card.gameName}</p>
                   </div>
                 </div>
-                <span className={`text-sm font-bold flex-shrink-0 ${
+                <span className={`text-sm font-bold shrink-0 ${
                   card.projectedChange > 0 ? 'text-emerald-400' : card.projectedChange < 0 ? 'text-red-400' : 'text-slate-400'
                 }`}>
                   {card.projectedChange > 0 ? '+' : ''}{card.projectedChange.toFixed(1)}%
@@ -216,14 +216,14 @@ const LiveGameImpactEngineWidget: React.FC<Props> = ({ onOpenModal }) => {
                   key={ms.id}
                   className="flex items-center gap-2 px-3 py-2 bg-amber-500/5 border border-amber-500/20 rounded-xl"
                 >
-                  <Target size={12} className="text-amber-400 flex-shrink-0" />
+                  <Target size={12} className="text-amber-400 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="text-[10px] font-bold text-amber-400 truncate">
                       {ms.milestoneType}
                     </p>
                     <p className="text-[10px] text-slate-500 truncate">{ms.playerName} &mdash; {ms.description}</p>
                   </div>
-                  <span className="text-[10px] font-bold text-amber-400/80 flex-shrink-0">
+                  <span className="text-[10px] font-bold text-amber-400/80 shrink-0">
                     +{ms.potentialPriceImpact}%
                   </span>
                 </div>

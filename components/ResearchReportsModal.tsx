@@ -103,12 +103,12 @@ const ReportCard: React.FC<{
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             <span
-              className={`px-2 py-0.5 ${badge.bg} ${badge.color} border ${badge.border} text-[10px] font-medium rounded`}
+              className={`px-2 py-0.5 ${badge.bg} ${badge.color} border ${badge.border} text-[10px] font-medium rounded-sm`}
             >
               {badge.label}
             </span>
             {!read && (
-              <span className="px-1.5 py-0.5 bg-lime-500 text-slate-900 text-[10px] font-bold rounded">
+              <span className="px-1.5 py-0.5 bg-lime-500 text-slate-900 text-[10px] font-bold rounded-sm">
                 NEW
               </span>
             )}
@@ -177,12 +177,12 @@ const ReportViewer: React.FC<{
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span
-              className={`px-2 py-0.5 ${badge.bg} ${badge.color} border ${badge.border} text-[10px] font-medium rounded`}
+              className={`px-2 py-0.5 ${badge.bg} ${badge.color} border ${badge.border} text-[10px] font-medium rounded-sm`}
             >
               {badge.label}
             </span>
             {report.sport && (
-              <span className="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] font-medium rounded">
+              <span className="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] font-medium rounded-sm">
                 {report.sport}
               </span>
             )}
@@ -218,7 +218,7 @@ const ReportViewer: React.FC<{
           {report.tags.map((tag) => (
             <span
               key={tag}
-              className="px-2 py-1 bg-slate-700/50 text-slate-400 text-[10px] rounded"
+              className="px-2 py-1 bg-slate-700/50 text-slate-400 text-[10px] rounded-sm"
             >
               #{tag}
             </span>
@@ -295,7 +295,7 @@ const PlayerNoteCard: React.FC<{ note: PlayerResearchNote }> = ({ note }) => {
             <div className="flex items-center gap-2 mb-1">
               <h4 className="text-sm font-semibold text-white">{note.player}</h4>
               <span
-                className={`px-2 py-0.5 ${colors.bg} ${colors.text} border ${colors.border} text-[10px] font-bold rounded`}
+                className={`px-2 py-0.5 ${colors.bg} ${colors.text} border ${colors.border} text-[10px] font-bold rounded-sm`}
               >
                 {note.rating}
               </span>
@@ -397,7 +397,7 @@ const PlayerNoteCard: React.FC<{ note: PlayerResearchNote }> = ({ note }) => {
               {note.comparables.map((comp, i) => (
                 <span
                   key={i}
-                  className="px-2 py-1 bg-slate-700/50 border border-slate-600/50 text-[10px] text-slate-300 rounded"
+                  className="px-2 py-1 bg-slate-700/50 border border-slate-600/50 text-[10px] text-slate-300 rounded-sm"
                 >
                   {comp}
                 </span>
@@ -426,7 +426,7 @@ const ContrarianPickCard: React.FC<{ pick: ContrarianPick; rank: number }> = ({ 
   return (
     <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
       <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded-full bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-400 text-sm font-bold flex-shrink-0">
+        <div className="w-8 h-8 rounded-full bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-400 text-sm font-bold shrink-0">
           {rank}
         </div>
         <div className="flex-1 min-w-0">
@@ -448,7 +448,7 @@ const ContrarianPickCard: React.FC<{ pick: ContrarianPick; rank: number }> = ({ 
               </span>
             </div>
             <span
-              className={`px-1.5 py-0.5 ${sentimentColor.bg} ${sentimentColor.text} border ${sentimentColor.border} text-[10px] font-medium rounded`}
+              className={`px-1.5 py-0.5 ${sentimentColor.bg} ${sentimentColor.text} border ${sentimentColor.border} text-[10px] font-medium rounded-sm`}
             >
               {pick.marketSentiment === 'very_bearish' ? 'Very Bearish' : 'Bearish'}
             </span>
@@ -507,12 +507,12 @@ export const ResearchReportsModal: React.FC<ResearchReportsModalProps> = ({ isOp
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-5xl h-[85vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700 shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-lime-500/10 rounded-xl">
               <FileText size={22} className="text-lime-400" />
@@ -533,7 +533,7 @@ export const ResearchReportsModal: React.FC<ResearchReportsModalProps> = ({ isOp
         </div>
 
         {/* Summary Stats Bar */}
-        <div className="flex items-center gap-6 px-6 py-3 border-b border-slate-800 bg-slate-800/50 flex-shrink-0">
+        <div className="flex items-center gap-6 px-6 py-3 border-b border-slate-800 bg-slate-800/50 shrink-0">
           <div className="flex items-center gap-2">
             <FileText size={14} className="text-slate-500" />
             <span className="text-xs text-slate-400">
@@ -562,7 +562,7 @@ export const ResearchReportsModal: React.FC<ResearchReportsModalProps> = ({ isOp
 
         {/* Tabs */}
         {!selectedReport && (
-          <div className="flex items-center gap-1 px-6 py-2 border-b border-slate-800 flex-shrink-0">
+          <div className="flex items-center gap-1 px-6 py-2 border-b border-slate-800 shrink-0">
             {TABS.map((tab) => (
               <button
                 key={tab.key}
@@ -640,7 +640,7 @@ const PlayerNotesTab: React.FC<{ notes: PlayerResearchNote[] }> = ({ notes }) =>
           return (
             <span
               key={rating}
-              className={`px-1.5 py-0.5 ${colors.bg} ${colors.text} border ${colors.border} text-[10px] font-medium rounded`}
+              className={`px-1.5 py-0.5 ${colors.bg} ${colors.text} border ${colors.border} text-[10px] font-medium rounded-sm`}
             >
               {rating}
             </span>
@@ -695,7 +695,7 @@ const ArchiveTab: React.FC<{
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Search reports by title, content, or tag..."
-          className="w-full pl-9 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-lime-500/50"
+          className="w-full pl-9 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-lime-500/50"
         />
       </div>
       <div className="flex items-center gap-1">
@@ -703,7 +703,7 @@ const ArchiveTab: React.FC<{
         <select
           value={typeFilter}
           onChange={(e) => onTypeFilterChange(e.target.value as ReportType | 'all')}
-          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-lime-500/50"
+          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-hidden focus:border-lime-500/50"
         >
           <option value="all">All Types</option>
           <option value="weekly_market">Weekly Market</option>

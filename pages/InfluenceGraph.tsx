@@ -311,7 +311,7 @@ const InfluenceGraph: React.FC = () => {
 
             return (
               <div key={m.id} className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-800/30 transition-colors border border-transparent hover:border-slate-700/50">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <span className={`text-xs font-black uppercase ${platformColor(m.platform)}`}>
                     {platformIcon(m.platform)}
                   </span>
@@ -325,7 +325,7 @@ const InfluenceGraph: React.FC = () => {
                   </div>
                   <p className="text-[10px] text-slate-400 truncate">{m.cardName}</p>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
+                <div className="flex items-center gap-3 shrink-0">
                   <span className="text-[10px] text-slate-500">
                     Peak +{peakPct.toFixed(1)}%
                   </span>

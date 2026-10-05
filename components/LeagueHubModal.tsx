@@ -69,12 +69,12 @@ const LeagueHubModal: React.FC<LeagueHubModalProps> = ({ isOpen, onClose, initia
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className={`relative w-full max-w-4xl max-h-[85vh] bg-slate-900 border ${config.borderColor} rounded-2xl shadow-2xl overflow-hidden flex flex-col`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-slate-700/50 shrink-0">
           <div className="flex items-center gap-3">
             {config.icon}
             <div>
@@ -107,7 +107,7 @@ const LeagueHubModal: React.FC<LeagueHubModalProps> = ({ isOpen, onClose, initia
         </div>
 
         {/* View Tabs */}
-        <div className="flex gap-1 px-4 pt-3 flex-shrink-0">
+        <div className="flex gap-1 px-4 pt-3 shrink-0">
           {[
             { key: 'overview' as ModalView, label: 'Overview', icon: <BarChart3 size={12} /> },
             { key: 'standings' as ModalView, label: 'Standings', icon: <Trophy size={12} /> },
@@ -195,7 +195,7 @@ const LeagueHubModal: React.FC<LeagueHubModalProps> = ({ isOpen, onClose, initia
                   {topRookies.slice(0, 5).map(rookie => (
                     <div key={rookie.id} className="flex items-center justify-between py-1.5 border-b border-slate-700/20 last:border-0">
                       <div className="flex items-center gap-2">
-                        <span className={`text-[10px] px-1 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold`}>{rookie.seasonGrade}</span>
+                        <span className={`text-[10px] px-1 py-0.5 rounded-sm bg-amber-500/20 text-amber-400 font-bold`}>{rookie.seasonGrade}</span>
                         <span className="text-xs text-white">{rookie.name}</span>
                       </div>
                       <div className="text-right">

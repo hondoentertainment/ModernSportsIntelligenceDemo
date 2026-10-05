@@ -67,12 +67,12 @@ export const SetRegistryWidget: React.FC<SetRegistryWidgetProps> = ({ onOpenModa
       {/* Nearest completion highlight */}
       {nearestCompletion && (
         <div className="flex items-center gap-3 p-3 bg-blue-500/5 border border-blue-500/20 rounded-xl mb-4">
-          <Target size={14} className="text-blue-400 flex-shrink-0" />
+          <Target size={14} className="text-blue-400 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Nearest Complete</p>
             <p className="text-xs text-white font-medium truncate">{nearestCompletion.setName}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <p className="text-xs text-slate-500">Progress</p>
             <p className="text-sm font-bold text-blue-400">{nearestCompletion.completionPercent}%</p>
           </div>

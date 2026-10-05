@@ -41,7 +41,7 @@ export const TaxExitSimulator: React.FC<TaxExitSimulatorProps> = ({ card, onClos
                         type="number"
                         value={targetPrice}
                         onChange={(e) => setTargetPrice(Number(e.target.value))}
-                        className="w-full bg-black/40 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-2xl font-bold text-white focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 outline-none transition-all"
+                        className="w-full bg-black/40 border border-white/10 rounded-lg py-3 pl-10 pr-4 text-2xl font-bold text-white focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 outline-hidden transition-all"
                     />
                 </div>
             </div>

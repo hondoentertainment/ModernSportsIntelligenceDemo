@@ -146,7 +146,7 @@ const Alerts: React.FC = () => {
               {alerts.map(alert => (
                 <div
                   key={alert.id}
-                  className={`p-8 bg-brand-charcoal border rounded-[2rem] flex gap-8 group hover:border-brand-lime/30 transition-all relative overflow-hidden ${alert.isRead ? 'border-slate-800/50 opacity-70' : 'border-slate-800'
+                  className={`p-8 bg-brand-charcoal border rounded-4xl flex gap-8 group hover:border-brand-lime/30 transition-all relative overflow-hidden ${alert.isRead ? 'border-slate-800/50 opacity-70' : 'border-slate-800'
                     }`}
                 >
                   {/* Unread indicator */}

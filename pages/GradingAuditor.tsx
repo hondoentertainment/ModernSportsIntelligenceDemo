@@ -434,7 +434,7 @@ const GradingAuditor: React.FC = () => {
             type="number"
             value={recCardValue}
             onChange={e => setRecCardValue(Math.max(1, parseInt(e.target.value) || 0))}
-            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm w-32 focus:outline-none focus:border-emerald-500"
+            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm w-32 focus:outline-hidden focus:border-emerald-500"
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

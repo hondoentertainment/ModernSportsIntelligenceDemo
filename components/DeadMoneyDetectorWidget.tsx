@@ -62,12 +62,12 @@ export const DeadMoneyDetectorWidget: React.FC<DeadMoneyDetectorWidgetProps> = (
       {/* Top swap highlight */}
       {topSwap && (
         <div className="flex items-center gap-3 p-3 bg-violet-500/5 border border-violet-500/20 rounded-xl mb-4">
-          <ArrowRightLeft size={14} className="text-violet-400 flex-shrink-0" />
+          <ArrowRightLeft size={14} className="text-violet-400 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-violet-400 uppercase tracking-widest">Top Swap</p>
             <p className="text-xs text-white font-medium truncate">{topSwap.fromAsset.player} → {topSwap.toAsset.player}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <p className="text-xs text-slate-500">Expected</p>
             <p className="text-sm font-bold text-emerald-400">+{formatCurrency(topSwap.expectedGain)}</p>
           </div>

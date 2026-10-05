@@ -27,7 +27,7 @@ export const ARShowcaseModal: React.FC<ARShowcaseModalProps> = ({ isOpen, onClos
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-brand-lime/5">
@@ -130,7 +130,7 @@ const CardTile: React.FC<{
       style={{ perspective: '600px' }}
     >
       <div
-        className="rounded-xl border border-slate-600/50 bg-slate-800/80 backdrop-blur-sm p-4 transition-all duration-500"
+        className="rounded-xl border border-slate-600/50 bg-slate-800/80 backdrop-blur-xs p-4 transition-all duration-500"
         style={{
           transform: isHovered
             ? 'rotateY(8deg) rotateX(-4deg) translateZ(15px) scale(1.04)'
@@ -154,7 +154,7 @@ const CardTile: React.FC<{
         </p>
 
         <div className="flex items-center gap-2 mt-2">
-          <span className="text-[10px] font-bold px-1.5 py-0.5 bg-brand-lime/10 border border-brand-lime/30 text-brand-lime rounded">
+          <span className="text-[10px] font-bold px-1.5 py-0.5 bg-brand-lime/10 border border-brand-lime/30 text-brand-lime rounded-sm">
             {card.grade}
           </span>
           <span className="text-[10px] text-slate-500">{card.sport}</span>

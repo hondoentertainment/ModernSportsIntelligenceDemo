@@ -225,7 +225,7 @@ const ErrorVarietyHunterModal: React.FC<ErrorVarietyHunterModalProps> = ({ isOpe
             <ul className="space-y-1.5">
               {section.examples.map((ex, i) => (
                 <li key={i} className="flex items-start gap-2 text-xs text-slate-300">
-                  <Zap size={10} className="text-lime-400 mt-0.5 flex-shrink-0" />
+                  <Zap size={10} className="text-lime-400 mt-0.5 shrink-0" />
                   {ex}
                 </li>
               ))}
@@ -241,15 +241,15 @@ const ErrorVarietyHunterModal: React.FC<ErrorVarietyHunterModalProps> = ({ isOpe
         </div>
         <ul className="space-y-2">
           <li className="flex items-start gap-2 text-xs text-slate-300">
-            <ArrowUpRight size={12} className="text-amber-400 mt-0.5 flex-shrink-0" />
+            <ArrowUpRight size={12} className="text-amber-400 mt-0.5 shrink-0" />
             Always get suspected error cards authenticated by PSA, BGS, or SGC
           </li>
           <li className="flex items-start gap-2 text-xs text-slate-300">
-            <ArrowUpRight size={12} className="text-amber-400 mt-0.5 flex-shrink-0" />
+            <ArrowUpRight size={12} className="text-amber-400 mt-0.5 shrink-0" />
             Compare against known examples using the error card database
           </li>
           <li className="flex items-start gap-2 text-xs text-slate-300">
-            <ArrowUpRight size={12} className="text-amber-400 mt-0.5 flex-shrink-0" />
+            <ArrowUpRight size={12} className="text-amber-400 mt-0.5 shrink-0" />
             Document the error thoroughly with high-resolution photographs
           </li>
         </ul>
@@ -259,7 +259,7 @@ const ErrorVarietyHunterModal: React.FC<ErrorVarietyHunterModalProps> = ({ isOpe
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-5xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
           <div className="flex items-center gap-3">

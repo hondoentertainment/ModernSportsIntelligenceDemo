@@ -143,7 +143,7 @@ const MarketplaceIntegrationWidget: React.FC<MarketplaceIntegrationWidgetProps> 
       {/* Error indicator */}
       {errorCount > 0 && (
         <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center gap-2">
-          <AlertTriangle size={14} className="text-red-400 flex-shrink-0" />
+          <AlertTriangle size={14} className="text-red-400 shrink-0" />
           <p className="text-[11px] text-red-400">
             {errorCount} connection{errorCount > 1 ? 's' : ''} need attention
           </p>

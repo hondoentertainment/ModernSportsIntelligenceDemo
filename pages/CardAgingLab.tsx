@@ -192,7 +192,7 @@ const AgingCardVisual: React.FC<{ yearIndex: number; maxYears: number; grade: st
             zIndex: 2,
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex flex-col items-center justify-center p-4">
+        <div className="absolute inset-0 bg-linear-to-br from-slate-700 via-slate-600 to-slate-800 flex flex-col items-center justify-center p-4">
           <div className="w-16 h-16 rounded-full bg-slate-500/50 mb-3 flex items-center justify-center">
             <FlaskConical size={28} className="text-slate-300" />
           </div>
@@ -398,7 +398,7 @@ const CardAgingLab: React.FC = () => {
               <select
                 value={storageType}
                 onChange={(e) => setStorageType(e.target.value as StorageType)}
-                className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-lime/50"
+                className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-hidden focus:border-brand-lime/50"
               >
                 {STORAGE_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>
@@ -411,7 +411,7 @@ const CardAgingLab: React.FC = () => {
                   type="checkbox"
                   checked={isClimateControlled}
                   onChange={(e) => setIsClimateControlled(e.target.checked)}
-                  className="rounded border-slate-600 bg-slate-700 text-brand-lime focus:ring-brand-lime/50"
+                  className="rounded-sm border-slate-600 bg-slate-700 text-brand-lime focus:ring-brand-lime/50"
                 />
                 Climate Controlled
               </label>
@@ -478,7 +478,7 @@ const CardAgingLab: React.FC = () => {
                 <select
                   value={uvExposure}
                   onChange={(e) => setUvExposure(e.target.value as UVExposure)}
-                  className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-brand-lime/50"
+                  className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-brand-lime/50"
                 >
                   {UV_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -494,7 +494,7 @@ const CardAgingLab: React.FC = () => {
                 <select
                   value={airQuality}
                   onChange={(e) => setAirQuality(e.target.value as AirQuality)}
-                  className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-brand-lime/50"
+                  className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-brand-lime/50"
                 >
                   {AIR_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{o.label}</option>
@@ -515,7 +515,7 @@ const CardAgingLab: React.FC = () => {
                   type="number"
                   value={cardValue}
                   onChange={(e) => setCardValue(Math.max(0, Number(e.target.value)))}
-                  className="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-brand-lime/50"
+                  className="flex-1 bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-brand-lime/50"
                 />
               </div>
             </div>
@@ -1021,7 +1021,7 @@ const CardAgingLab: React.FC = () => {
                     type="number"
                     value={roiCardValue}
                     onChange={(e) => setRoiCardValue(Math.max(0, Number(e.target.value)))}
-                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-lime/50"
+                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-hidden focus:border-brand-lime/50"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -1030,7 +1030,7 @@ const CardAgingLab: React.FC = () => {
                     type="number"
                     value={roiUpgradeCost}
                     onChange={(e) => setRoiUpgradeCost(Math.max(0, Number(e.target.value)))}
-                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-lime/50"
+                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-hidden focus:border-brand-lime/50"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -1038,7 +1038,7 @@ const CardAgingLab: React.FC = () => {
                   <select
                     value={storageType}
                     onChange={(e) => setStorageType(e.target.value as StorageType)}
-                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-lime/50"
+                    className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:outline-hidden focus:border-brand-lime/50"
                   >
                     {STORAGE_OPTIONS.map((o) => (
                       <option key={o.value} value={o.value}>{o.label}</option>

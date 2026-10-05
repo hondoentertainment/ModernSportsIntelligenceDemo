@@ -14,11 +14,11 @@ const DashboardEmptyState: React.FC<DashboardEmptyStateProps> = ({ onScanOpen, o
     <div className="relative z-10 w-full max-w-4xl space-y-8 text-center reveal-section">
       <div className="inline-flex flex-col items-center gap-4">
         <div className="relative group">
-          <div className="absolute -inset-2 bg-gradient-to-r from-brand-lime to-brand-teal rounded-full blur-md opacity-25 group-hover:opacity-50 transition duration-1000 animate-pulse"></div>
+          <div className="absolute -inset-2 bg-linear-to-r from-brand-lime to-brand-teal rounded-full blur-md opacity-25 group-hover:opacity-50 transition duration-1000 animate-pulse"></div>
           <div className="relative p-6 bg-brand-charcoal border border-slate-800 rounded-full shadow-2xl">
             <Activity size={48} className="text-brand-lime animate-pulse" />
           </div>
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brand-lime to-transparent opacity-50 animate-scan pointer-events-none"></div>
+          <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-brand-lime to-transparent opacity-50 animate-scan pointer-events-none"></div>
         </div>
 
         <div className="space-y-2">
@@ -64,7 +64,7 @@ const DashboardEmptyState: React.FC<DashboardEmptyStateProps> = ({ onScanOpen, o
         ].map((feature, i) => (
           <div
             key={i}
-            className="bg-brand-slate/40 backdrop-blur-md border border-slate-800 p-6 rounded-[1.5rem] space-y-2 group hover:border-brand-lime/30 transition-all"
+            className="bg-brand-slate/40 backdrop-blur-md border border-slate-800 p-6 rounded-3xl space-y-2 group hover:border-brand-lime/30 transition-all"
           >
             <div className="w-10 h-10 bg-brand-charcoal rounded-xl flex items-center justify-center text-brand-lime mb-1 group-hover:scale-110 transition-transform">
               {feature.icon}

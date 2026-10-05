@@ -196,7 +196,7 @@ const PoliciesTab: React.FC<{
               type="text"
               value={form.provider}
               onChange={e => setForm({ ...form, provider: e.target.value })}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
               placeholder="Insurance provider name"
             />
           </div>
@@ -206,7 +206,7 @@ const PoliciesTab: React.FC<{
               type="text"
               value={form.policyNumber}
               onChange={e => setForm({ ...form, policyNumber: e.target.value })}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
               placeholder="Policy #"
             />
           </div>
@@ -216,7 +216,7 @@ const PoliciesTab: React.FC<{
               type="number"
               value={form.coverageAmount}
               onChange={e => setForm({ ...form, coverageAmount: e.target.value })}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
               placeholder="25000"
             />
           </div>
@@ -226,7 +226,7 @@ const PoliciesTab: React.FC<{
               type="number"
               value={form.premium}
               onChange={e => setForm({ ...form, premium: e.target.value })}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
               placeholder="375"
             />
           </div>
@@ -236,7 +236,7 @@ const PoliciesTab: React.FC<{
               type="number"
               value={form.deductible}
               onChange={e => setForm({ ...form, deductible: e.target.value })}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
               placeholder="250"
             />
           </div>
@@ -245,7 +245,7 @@ const PoliciesTab: React.FC<{
             <select
               value={form.type}
               onChange={e => setForm({ ...form, type: e.target.value as InsurancePolicy['type'] })}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-hidden focus:border-blue-500"
             >
               <option value="blanket">Blanket</option>
               <option value="scheduled">Scheduled</option>
@@ -258,7 +258,7 @@ const PoliciesTab: React.FC<{
               type="date"
               value={form.startDate}
               onChange={e => setForm({ ...form, startDate: e.target.value })}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-hidden focus:border-blue-500"
             />
           </div>
           <div className="space-y-1.5">
@@ -267,7 +267,7 @@ const PoliciesTab: React.FC<{
               type="date"
               value={form.endDate}
               onChange={e => setForm({ ...form, endDate: e.target.value })}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-hidden focus:border-blue-500"
             />
           </div>
         </div>
@@ -277,7 +277,7 @@ const PoliciesTab: React.FC<{
           <textarea
             value={form.notes}
             onChange={e => setForm({ ...form, notes: e.target.value })}
-            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
+            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500 resize-none"
             rows={2}
             placeholder="Optional notes..."
           />
@@ -566,7 +566,7 @@ const PremiumTab: React.FC<{
               value={customValue || ''}
               onChange={e => setCustomValue(e.target.value)}
               placeholder={`${totalValue.toLocaleString()} (auto-detected)`}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
             />
           </div>
           {customValue && (
@@ -715,7 +715,7 @@ const ClaimsTab: React.FC<{
               <select
                 value={form.policyId}
                 onChange={e => setForm({ ...form, policyId: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-hidden focus:border-blue-500"
               >
                 <option value="">Select policy...</option>
                 {policies.map(p => (
@@ -728,7 +728,7 @@ const ClaimsTab: React.FC<{
               <select
                 value={form.type}
                 onChange={e => setForm({ ...form, type: e.target.value as InsuranceClaim['type'] })}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-hidden focus:border-blue-500"
               >
                 <option value="damage">Damage</option>
                 <option value="theft">Theft</option>
@@ -741,7 +741,7 @@ const ClaimsTab: React.FC<{
               <textarea
                 value={form.description}
                 onChange={e => setForm({ ...form, description: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500 resize-none"
                 rows={2}
                 placeholder="Describe the incident..."
               />
@@ -752,7 +752,7 @@ const ClaimsTab: React.FC<{
                 type="number"
                 value={form.claimAmount}
                 onChange={e => setForm({ ...form, claimAmount: e.target.value })}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
                 placeholder="500"
               />
             </div>
@@ -868,7 +868,7 @@ const RidersTab: React.FC<{
                   <span className="text-sm font-bold text-white">{rec.player}</span>
                   <p className="text-xs text-slate-400 mt-0.5">{rec.reason}</p>
                 </div>
-                <div className="text-right flex-shrink-0 ml-3">
+                <div className="text-right shrink-0 ml-3">
                   <p className="text-lg font-bebas tracking-wider text-amber-400">
                     ${rec.currentValue.toLocaleString()}
                   </p>
@@ -948,7 +948,7 @@ export const InsurancePolicyModal: React.FC<InsurancePolicyModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">

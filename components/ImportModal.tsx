@@ -233,7 +233,7 @@ const ImportTab: React.FC<{
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
               placeholder="Player,Year,Set,Card Number,Sport,Purchase Price&#10;Mike Trout,2011,Topps Update,US175,Baseball,250.00"
-              className="w-full h-32 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 font-mono resize-none focus:outline-none focus:border-blue-500/50"
+              className="w-full h-32 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 font-mono resize-none focus:outline-hidden focus:border-blue-500/50"
             />
           </div>
         </div>
@@ -248,7 +248,7 @@ const ImportTab: React.FC<{
             value={textInput}
             onChange={(e) => setTextInput(e.target.value)}
             placeholder="2023 Topps Chrome Mike Trout #1 PSA 10 | $150.00 | 2024-01-15&#10;2022 Prizm Luka Doncic #1 Basketball | $85.50 | 2024-02-20"
-            className="w-full h-40 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 font-mono resize-none focus:outline-none focus:border-blue-500/50"
+            className="w-full h-40 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 font-mono resize-none focus:outline-hidden focus:border-blue-500/50"
           />
           <p className="text-[10px] text-slate-500 mt-2">
             Format: Item Title | $Price | Date (one per line)
@@ -269,7 +269,7 @@ const ImportTab: React.FC<{
                 value={certNumber}
                 onChange={(e) => setCertNumber(e.target.value)}
                 placeholder="e.g., 48672359"
-                className="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 font-mono focus:outline-none focus:border-blue-500/50"
+                className="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 font-mono focus:outline-hidden focus:border-blue-500/50"
               />
             </div>
           </div>
@@ -288,7 +288,7 @@ const ImportTab: React.FC<{
             value={textInput}
             onChange={(e) => setTextInput(e.target.value)}
             placeholder={'[\n  {\n    "player": "Mike Trout",\n    "year": 2011,\n    "set": "Topps Update",\n    "sport": "Baseball"\n  }\n]'}
-            className="w-full h-40 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 font-mono resize-none focus:outline-none focus:border-blue-500/50"
+            className="w-full h-40 px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 font-mono resize-none focus:outline-hidden focus:border-blue-500/50"
           />
         </div>
       )}
@@ -390,14 +390,14 @@ const ColumnMapperTab: React.FC<{
               </div>
 
               {/* Arrow */}
-              <ArrowRight size={14} className="text-slate-600 flex-shrink-0" />
+              <ArrowRight size={14} className="text-slate-600 shrink-0" />
 
               {/* Target Field Dropdown */}
               <div className="relative flex-1">
                 <select
                   value={col.targetField}
                   onChange={(e) => handleFieldChange(idx, e.target.value)}
-                  className="w-full appearance-none px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500/50 cursor-pointer"
+                  className="w-full appearance-none px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm text-white focus:outline-hidden focus:border-blue-500/50 cursor-pointer"
                 >
                   <option value="">-- Skip --</option>
                   {ALL_CARD_FIELDS.map(field => (
@@ -408,7 +408,7 @@ const ColumnMapperTab: React.FC<{
               </div>
 
               {/* Confidence indicator */}
-              <div className="w-6 flex-shrink-0">
+              <div className="w-6 shrink-0">
                 {col.targetField && (
                   <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
                     col.confidence >= 0.9 ? 'bg-green-500/20 text-green-400' :
@@ -497,7 +497,7 @@ const DuplicateReview: React.FC<{
     <div className="space-y-5">
       {/* Summary */}
       <div className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
-        <AlertTriangle size={18} className="text-amber-400 flex-shrink-0" />
+        <AlertTriangle size={18} className="text-amber-400 shrink-0" />
         <div>
           <p className="text-sm text-amber-400 font-bold">
             {duplicates.length} potential duplicate{duplicates.length !== 1 ? 's' : ''} found
@@ -620,7 +620,7 @@ const HistoryTab: React.FC<{
             key={record.id}
             className="flex items-center gap-4 p-4 bg-slate-800/50 border border-slate-700 rounded-xl"
           >
-            <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg flex-shrink-0">
+            <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg shrink-0">
               <FileSpreadsheet size={16} />
             </div>
             <div className="flex-1 min-w-0">
@@ -827,7 +827,7 @@ const ExportTab: React.FC<{
               type="date"
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-hidden focus:border-green-500/50"
             />
           </div>
           <div className="flex-1">
@@ -836,7 +836,7 @@ const ExportTab: React.FC<{
               type="date"
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-green-500/50"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-hidden focus:border-green-500/50"
             />
           </div>
         </div>
@@ -979,7 +979,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">

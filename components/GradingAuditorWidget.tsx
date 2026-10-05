@@ -69,7 +69,7 @@ const GradingAuditorWidget: React.FC<GradingAuditorWidgetProps> = ({ onOpenModal
         <div className="px-4 py-3 border-b border-slate-700/50">
           <div className="flex items-center gap-2 mb-1">
             <AlertTriangle className={`w-3.5 h-3.5 ${alertConfig.text}`} />
-            <span className={`text-[10px] px-1.5 py-0.5 rounded ${alertConfig.bg} ${alertConfig.text}`}>{alertConfig.label}</span>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-sm ${alertConfig.bg} ${alertConfig.text}`}>{alertConfig.label}</span>
             <span className="text-xs text-slate-300 font-medium truncate">{latestAlert.title}</span>
           </div>
           <p className="text-[10px] text-slate-500 line-clamp-2">{latestAlert.description}</p>

@@ -79,7 +79,7 @@ const MiniSparkline: React.FC<{ data: number[]; color: string; width?: number; h
     .join(' ');
 
   return (
-    <svg width={width} height={height} className="flex-shrink-0">
+    <svg width={width} height={height} className="shrink-0">
       <polyline
         points={points}
         fill="none"
@@ -335,7 +335,7 @@ const PlayersTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Search players, teams, sports..."
-          className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+          className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500 transition-colors"
         />
       </div>
 
@@ -437,7 +437,7 @@ const CompareTab: React.FC<{ cards: CardInventory[] }> = ({ cards }) => {
               }}
               onFocus={() => setShowDropdown(true)}
               placeholder="Add player..."
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-blue-500 transition-colors"
             />
             {showDropdown && searchResults.length > 0 && (
               <div className="absolute z-50 top-full mt-1 w-full max-h-48 overflow-y-auto bg-slate-800 border border-slate-700 rounded-xl shadow-xl">
@@ -752,7 +752,7 @@ export const PlayerIndexModal: React.FC<PlayerIndexModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">

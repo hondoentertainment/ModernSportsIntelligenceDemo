@@ -52,7 +52,7 @@ const MacroSentinelWidget: React.FC<Props> = ({ portfolioValue, inventory = [] }
             'Low': 'bg-blue-500/20 text-blue-400 border-blue-500/30'
         };
         return (
-            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${colors[impact]}`}>
+            <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider border ${colors[impact]}`}>
                 {impact} Impact
             </span>
         );
@@ -138,7 +138,7 @@ const MacroSentinelWidget: React.FC<Props> = ({ portfolioValue, inventory = [] }
 
             {/* AI Analysis Box */}
             {analysis && (
-                <div className="mt-4 p-4 rounded-lg bg-gradient-to-r from-brand-lime/10 to-transparent border border-brand-lime/20 relative z-10">
+                <div className="mt-4 p-4 rounded-lg bg-linear-to-r from-brand-lime/10 to-transparent border border-brand-lime/20 relative z-10">
                     <div className="flex items-center gap-2 mb-2">
                         <Cpu size={14} className="text-brand-lime" />
                         <span className="text-xs font-bold text-brand-lime uppercase tracking-widest">AI Portfolio Threat Assessment</span>

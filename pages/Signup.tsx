@@ -91,7 +91,7 @@ const Signup: React.FC = () => {
                     </p>
                     <Link
                         to="/login"
-                        className="inline-block py-3 px-8 rounded-xl bg-gradient-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-lg tracking-wider hover:opacity-90 transition-all font-black"
+                        className="inline-block py-3 px-8 rounded-xl bg-linear-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-lg tracking-wider hover:opacity-90 transition-all font-black"
                     >
                         BACK TO LOGIN
                     </Link>
@@ -104,13 +104,13 @@ const Signup: React.FC = () => {
         <div className="min-h-screen bg-brand-charcoal flex">
             {/* Left Panel - Branding */}
             <div className="hidden lg:flex lg:w-1/3 relative overflow-hidden bg-brand-slate/20">
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-charcoal via-slate-900 to-brand-charcoal" />
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-lime/10 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-br from-brand-charcoal via-slate-900 to-brand-charcoal" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-brand-lime/10 via-transparent to-transparent" />
 
                 <div className="relative z-10 flex flex-col justify-center p-12">
                     <div className="mb-12">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-lime to-brand-teal flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-brand-lime to-brand-teal flex items-center justify-center">
                                 <TrendingUp className="w-7 h-7 text-brand-charcoal" />
                             </div>
                             <span className="font-bebas text-4xl tracking-wider text-white">MSI</span>
@@ -190,7 +190,7 @@ const Signup: React.FC = () => {
                                 type="text"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all text-sm"
+                                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all text-sm"
                                 placeholder="cardcollector99"
                                 required
                             />
@@ -202,7 +202,7 @@ const Signup: React.FC = () => {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all text-sm"
+                                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all text-sm"
                                 placeholder="investor@example.com"
                                 required
                             />
@@ -215,7 +215,7 @@ const Signup: React.FC = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all pr-12 text-sm"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all pr-12 text-sm"
                                     placeholder="••••••••"
                                     required
                                 />
@@ -235,7 +235,7 @@ const Signup: React.FC = () => {
                                 type="password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                className={`w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border text-white placeholder-slate-500 focus:outline-none focus:ring-1 transition-all text-sm ${confirmPassword && confirmPassword !== password ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:border-brand-lime focus:ring-brand-lime'}`}
+                                className={`w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border text-white placeholder-slate-500 focus:outline-hidden focus:ring-1 transition-all text-sm ${confirmPassword && confirmPassword !== password ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:border-brand-lime focus:ring-brand-lime'}`}
                                 placeholder="••••••••"
                                 required
                             />
@@ -270,7 +270,7 @@ const Signup: React.FC = () => {
                                     type="checkbox"
                                     checked={acceptTerms}
                                     onChange={(e) => setAcceptTerms(e.target.checked)}
-                                    className="w-4 h-4 rounded bg-slate-800 border-slate-600 text-brand-lime focus:ring-brand-lime focus:ring-offset-0"
+                                    className="w-4 h-4 rounded-sm bg-slate-800 border-slate-600 text-brand-lime focus:ring-brand-lime focus:ring-offset-0"
                                 />
                                 <span className="text-[11px] font-medium">
                                     I agree to the <a href="#" className="text-brand-lime hover:underline">Terms of Service</a>
@@ -282,7 +282,7 @@ const Signup: React.FC = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-4 px-4 rounded-xl bg-gradient-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-xl tracking-wider hover:opacity-90 transition-all font-black flex items-center justify-center gap-2"
+                                className="w-full py-4 px-4 rounded-xl bg-linear-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-xl tracking-wider hover:opacity-90 transition-all font-black flex items-center justify-center gap-2"
                             >
                                 {loading ? <><Loader2 className="w-6 h-6 animate-spin" /> INITIALIZING...</> : isDemoMode ? 'INITIALIZE LOCAL SESSION' : 'CREATE ACCOUNT'}
                             </button>

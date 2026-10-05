@@ -446,7 +446,7 @@ const Favorites: React.FC = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    className="w-full bg-brand-slate border border-slate-800 rounded-2xl py-3 pl-4 pr-12 text-sm focus:outline-none focus:ring-1 focus:ring-brand-lime"
+                    className="w-full bg-brand-slate border border-slate-800 rounded-2xl py-3 pl-4 pr-12 text-sm focus:outline-hidden focus:ring-1 focus:ring-brand-lime"
                   />
                   <button
                     onClick={handleSearch}

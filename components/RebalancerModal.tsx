@@ -72,7 +72,7 @@ const RebalancerModal: React.FC<RebalancerModalProps> = ({ isOpen, onClose }) =>
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-brand-charcoal border border-slate-800 rounded-[2.5rem] p-8 space-y-8 animate-in zoom-in-95 duration-300">
@@ -171,13 +171,13 @@ const RebalancerModal: React.FC<RebalancerModalProps> = ({ isOpen, onClose }) =>
             <div className="space-y-2">
               {allocations.map((alloc, i) => (
                 <div key={alloc.category} className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl">
-                  <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                  <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                   <span className="text-xs text-white font-medium flex-1">{alloc.category}</span>
                   <span className="text-xs font-mono text-brand-muted">{alloc.currentPct}%</span>
                   <span className="text-[10px] text-brand-muted">→</span>
                   <span className="text-xs font-mono text-lime-400">{alloc.targetPct}%</span>
                   <span
-                    className={`text-[10px] font-mono font-bold min-w-[3rem] text-right ${
+                    className={`text-[10px] font-mono font-bold min-w-12 text-right ${
                       alloc.delta > 0 ? 'text-red-400' : alloc.delta < 0 ? 'text-emerald-400' : 'text-slate-500'
                     }`}
                   >

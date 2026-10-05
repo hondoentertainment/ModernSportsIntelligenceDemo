@@ -209,13 +209,13 @@ const GradeInflationDetector: React.FC = () => {
         </div>
         <div className="mt-3 flex gap-4 flex-wrap text-xs text-slate-500">
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-1 rounded bg-emerald-400 inline-block" /> PSA: 28.2% → 42.3%
+            <span className="w-3 h-1 rounded-sm bg-emerald-400 inline-block" /> PSA: 28.2% → 42.3%
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-1 rounded bg-blue-400 inline-block" /> BGS: 12.1% → 16.0%
+            <span className="w-3 h-1 rounded-sm bg-blue-400 inline-block" /> BGS: 12.1% → 16.0%
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-1 rounded bg-red-400 inline-block" /> SGC: 22.5% → 31.4%
+            <span className="w-3 h-1 rounded-sm bg-red-400 inline-block" /> SGC: 22.5% → 31.4%
           </span>
         </div>
       </div>
@@ -257,7 +257,7 @@ const GradeInflationDetector: React.FC = () => {
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
           {categories.slice(0, 4).map((cat, idx) => (
             <div key={idx} className="flex items-start gap-3 p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl">
-              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold flex-shrink-0 mt-0.5 ${riskBadge(cat.riskLevel)}`}>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold shrink-0 mt-0.5 ${riskBadge(cat.riskLevel)}`}>
                 {cat.riskLevel.toUpperCase()}
               </span>
               <div>

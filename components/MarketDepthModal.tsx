@@ -31,11 +31,11 @@ const MarketDepthModal: React.FC<MarketDepthModalProps> = ({ isOpen, onClose, ca
   );
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-brand-slate border border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
 
         {/* Header */}
-        <div className="p-8 border-b border-slate-800 flex items-center justify-between bg-gradient-to-r from-brand-charcoal/60 to-brand-charcoal/30">
+        <div className="p-8 border-b border-slate-800 flex items-center justify-between bg-linear-to-r from-brand-charcoal/60 to-brand-charcoal/30">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-brand-green/10 rounded-2xl border border-brand-green/20">
               <BarChart3 size={24} className="text-brand-green" />
@@ -99,9 +99,9 @@ const MarketDepthModal: React.FC<MarketDepthModalProps> = ({ isOpen, onClose, ca
                 {depth.bids.map((level, i) => (
                   <div key={`bid-${i}`} className="flex items-center gap-3">
                     <span className="text-xs font-mono text-brand-green w-20 text-right">${level.price.toLocaleString()}</span>
-                    <div className="flex-1 h-5 bg-brand-charcoal rounded overflow-hidden">
+                    <div className="flex-1 h-5 bg-brand-charcoal rounded-sm overflow-hidden">
                       <div
-                        className="h-full bg-brand-green/30 rounded transition-all"
+                        className="h-full bg-brand-green/30 rounded-sm transition-all"
                         style={{ width: `${(level.cumulative / maxDepthQty) * 100}%` }}
                       />
                     </div>
@@ -120,9 +120,9 @@ const MarketDepthModal: React.FC<MarketDepthModalProps> = ({ isOpen, onClose, ca
                 {depth.asks.map((level, i) => (
                   <div key={`ask-${i}`} className="flex items-center gap-3">
                     <span className="text-xs font-mono text-brand-red w-20 text-right">${level.price.toLocaleString()}</span>
-                    <div className="flex-1 h-5 bg-brand-charcoal rounded overflow-hidden">
+                    <div className="flex-1 h-5 bg-brand-charcoal rounded-sm overflow-hidden">
                       <div
-                        className="h-full bg-brand-red/30 rounded transition-all"
+                        className="h-full bg-brand-red/30 rounded-sm transition-all"
                         style={{ width: `${(level.cumulative / maxDepthQty) * 100}%` }}
                       />
                     </div>

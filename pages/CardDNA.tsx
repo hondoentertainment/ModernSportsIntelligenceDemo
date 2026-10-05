@@ -152,7 +152,7 @@ const CardDNA: React.FC = () => {
                 placeholder="Search cards to scan..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime/50"
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime/50"
               />
             </div>
             <div className="flex gap-2 flex-wrap mb-6">

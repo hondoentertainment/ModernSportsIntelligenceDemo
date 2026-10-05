@@ -71,7 +71,7 @@ export const RebalancerWidget: React.FC<RebalancerWidgetProps> = ({ onClick }) =
       {/* Health Score Gauge & Optimization */}
       <div className="flex items-center gap-6">
         {/* Circular gauge */}
-        <div className="relative flex-shrink-0">
+        <div className="relative shrink-0">
           <svg width={88} height={88} className="-rotate-90">
             <circle cx={44} cy={44} r={36} fill="none" stroke="#1e293b" strokeWidth={6} />
             <circle
@@ -140,7 +140,7 @@ export const RebalancerWidget: React.FC<RebalancerWidgetProps> = ({ onClick }) =
                 <p className="text-[10px] text-brand-muted truncate">{rec.cardDescription}</p>
               </div>
               {rec.expectedImpact > 0 && (
-                <span className="text-[10px] font-mono font-bold text-emerald-400 flex-shrink-0">
+                <span className="text-[10px] font-mono font-bold text-emerald-400 shrink-0">
                   +{rec.expectedImpact}%
                 </span>
               )}

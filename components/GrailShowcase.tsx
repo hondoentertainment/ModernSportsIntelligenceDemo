@@ -48,7 +48,7 @@ const GrailShowcase: React.FC<GrailShowcaseProps> = ({ card, isOpen, onClose }) 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl animate-in fade-in duration-500">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/90 backdrop-blur-xl animate-in fade-in duration-500">
             {/* Background Ambience */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-lime/10 rounded-full blur-[120px] animate-pulse" />
@@ -58,7 +58,7 @@ const GrailShowcase: React.FC<GrailShowcaseProps> = ({ card, isOpen, onClose }) 
             {/* Close Button */}
             <button
                 onClick={onClose}
-                className="absolute top-8 right-8 p-3 bg-white/5 hover:bg-white/10 rounded-full text-white/40 hover:text-white transition-all z-[110]"
+                className="absolute top-8 right-8 p-3 bg-white/5 hover:bg-white/10 rounded-full text-white/40 hover:text-white transition-all z-110"
             >
                 <X size={24} />
             </button>
@@ -79,20 +79,20 @@ const GrailShowcase: React.FC<GrailShowcaseProps> = ({ card, isOpen, onClose }) 
                         }}
                     >
                         {/* Card Case (Acrylic Effect) */}
-                        <div className="absolute inset-0 bg-white/5 backdrop-blur-md rounded-[2.5rem] border-[4px] border-white/20 shadow-[0_0_100px_rgba(255,255,255,0.1)] overflow-hidden">
+                        <div className="absolute inset-0 bg-white/5 backdrop-blur-md rounded-[2.5rem] border-4 border-white/20 shadow-[0_0_100px_rgba(255,255,255,0.1)] overflow-hidden">
                             {/* Internal Bevel */}
-                            <div className="absolute inset-[10px] border border-white/10 rounded-[2rem]" />
+                            <div className="absolute inset-[10px] border border-white/10 rounded-4xl" />
 
                             {/* Holographic Reflection */}
                             <div
-                                className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent pointer-events-none"
+                                className="absolute inset-0 bg-linear-to-tr from-transparent via-white/5 to-transparent pointer-events-none"
                                 style={{
                                     transform: `translateX(${rotation.y * 2}px) translateY(${rotation.x * 2}px)`,
                                 }}
                             />
 
                             {/* Card Image */}
-                            <div className="absolute inset-[20px] rounded-[1.5rem] overflow-hidden bg-brand-charcoal">
+                            <div className="absolute inset-[20px] rounded-3xl overflow-hidden bg-brand-charcoal">
                                 <img
                                     src={card.image}
                                     alt={card.name}

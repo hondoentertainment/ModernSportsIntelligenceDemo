@@ -125,7 +125,7 @@ export const ProvenanceDnaModal: React.FC<ProvenanceDnaModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-slate-900 border border-slate-700/50 rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
@@ -290,7 +290,7 @@ export const ProvenanceDnaModal: React.FC<ProvenanceDnaModalProps> = ({
                   <Target size={12} className="text-brand-lime" />
                   Feature Map
                 </h3>
-                <div className="relative bg-slate-900 rounded-xl aspect-[4/3] border border-slate-700/30 overflow-hidden">
+                <div className="relative bg-slate-900 rounded-xl aspect-4/3 border border-slate-700/30 overflow-hidden">
                   <div className="absolute inset-2 border border-slate-600/30 rounded-lg" />
                   {scanResult.fingerprint.features.slice(0, 20).map((f, i) => {
                     const colors: Record<string, string> = {

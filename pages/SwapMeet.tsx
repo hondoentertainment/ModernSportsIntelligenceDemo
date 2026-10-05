@@ -194,7 +194,7 @@ const SwapMeet: React.FC = () => {
               evt.status === 'scheduled' ? 'bg-blue-500' : 'bg-slate-500'
             }`} />
             <span>{evt.name}</span>
-            <span className={`text-xs px-1.5 py-0.5 rounded border ${statusBadgeBg(evt.status)} ${getEventStatusColor(evt.status)}`}>
+            <span className={`text-xs px-1.5 py-0.5 rounded-sm border ${statusBadgeBg(evt.status)} ${getEventStatusColor(evt.status)}`}>
               {evt.status}
             </span>
           </button>
@@ -461,7 +461,7 @@ const SwapMeet: React.FC = () => {
                 <p className="text-3xl font-bold text-green-400">{formatFullCurrency(selectedEvent.totalTradeVolume)}</p>
                 <div className="mt-2 h-1.5 bg-slate-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full transition-all"
+                    className="h-full bg-linear-to-r from-green-500 to-emerald-400 rounded-full transition-all"
                     style={{ width: `${Math.min((selectedEvent.totalTradeVolume / 50000) * 100, 100)}%` }}
                   />
                 </div>
@@ -488,7 +488,7 @@ const SwapMeet: React.FC = () => {
                 <p className="text-3xl font-bold text-blue-400">{selectedEvent.registeredCount}/{selectedEvent.maxParticipants}</p>
                 <div className="mt-2 h-1.5 bg-slate-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all"
+                    className="h-full bg-linear-to-r from-blue-500 to-cyan-400 rounded-full transition-all"
                     style={{ width: `${(selectedEvent.registeredCount / selectedEvent.maxParticipants) * 100}%` }}
                   />
                 </div>

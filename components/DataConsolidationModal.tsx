@@ -61,7 +61,7 @@ function platformColor(p: Platform): string {
 function platformBadge(platform: Platform) {
   return (
     <span
-      className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border"
+      className="inline-flex items-center px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase tracking-wider border"
       style={{
         color: platformColor(platform),
         borderColor: platformColor(platform) + '40',
@@ -154,7 +154,7 @@ const NBBOTab: React.FC = () => {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Search player or card…"
-          className="w-full pl-9 pr-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime/50"
+          className="w-full pl-9 pr-4 py-2.5 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime/50"
         />
         {suggestions.length > 0 && (
           <div className="absolute z-50 mt-1 w-full bg-slate-800 border border-slate-700 rounded-xl shadow-xl overflow-hidden">
@@ -329,7 +329,7 @@ const ArbitrageTab: React.FC = () => {
               </div>
               <p className="text-[10px] text-slate-500 truncate">{arb.cardDescription}</p>
             </div>
-            <div className={`px-2 py-0.5 rounded border text-[10px] font-bold ${confidenceBg(arb.confidence)}`}>
+            <div className={`px-2 py-0.5 rounded-sm border text-[10px] font-bold ${confidenceBg(arb.confidence)}`}>
               {arb.confidence}% conf
             </div>
           </div>
@@ -341,7 +341,7 @@ const ArbitrageTab: React.FC = () => {
               {platformBadge(arb.buyPlatform)}
               <p className="text-sm font-bold text-white mt-1">${arb.buyPrice.toLocaleString()}</p>
             </div>
-            <TrendingUp size={16} className="text-emerald-400 flex-shrink-0" />
+            <TrendingUp size={16} className="text-emerald-400 shrink-0" />
             <div className="flex-1 bg-slate-900/60 rounded-lg p-2.5 text-center">
               <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold mb-1">Sell</p>
               {platformBadge(arb.sellPlatform)}
@@ -402,7 +402,7 @@ const FeedTab: React.FC = () => {
       bid: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
     };
     return (
-      <span className={`px-1.5 py-0.5 rounded border text-[10px] font-bold uppercase ${map[type]}`}>
+      <span className={`px-1.5 py-0.5 rounded-sm border text-[10px] font-bold uppercase ${map[type]}`}>
         {type}
       </span>
     );
@@ -419,13 +419,13 @@ const FeedTab: React.FC = () => {
             value={playerFilter}
             onChange={e => setPlayerFilter(e.target.value)}
             placeholder="Filter by player…"
-            className="w-full pl-8 pr-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime/50"
+            className="w-full pl-8 pr-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime/50"
           />
         </div>
         <select
           value={platformFilter}
           onChange={e => setPlatformFilter(e.target.value as Platform | '')}
-          className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-brand-lime/50"
+          className="px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-xs text-white focus:outline-hidden focus:border-brand-lime/50"
         >
           <option value="">All Platforms</option>
           <option value="eBay">eBay</option>
@@ -444,15 +444,15 @@ const FeedTab: React.FC = () => {
             key={txn.id}
             className="flex items-center gap-3 bg-slate-800/40 border border-slate-700/30 rounded-lg px-3 py-2.5 hover:bg-slate-800/60 transition-colors"
           >
-            <div className="flex-shrink-0 w-16">{platformBadge(txn.platform)}</div>
+            <div className="shrink-0 w-16">{platformBadge(txn.platform)}</div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-white truncate">{txn.player}</p>
               <p className="text-[10px] text-slate-500 truncate">{txn.cardDescription} — {txn.grade}</p>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               {typeBadge(txn.type)}
               <span className="text-sm font-bold text-white w-20 text-right">${txn.price.toLocaleString()}</span>
-              {txn.verified && <CheckCircle size={12} className="text-emerald-400 flex-shrink-0" />}
+              {txn.verified && <CheckCircle size={12} className="text-emerald-400 shrink-0" />}
               <span className="text-[10px] text-slate-500 w-14 text-right">{timeAgo(txn.date)}</span>
             </div>
           </div>
@@ -561,7 +561,7 @@ const DataConsolidationModal: React.FC<DataConsolidationModalProps> = ({ isOpen,
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Panel */}
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 border border-slate-700/60 rounded-2xl shadow-2xl flex flex-col overflow-hidden">

@@ -89,15 +89,15 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={onClose} />
 
             <div className="relative w-full max-w-4xl bg-brand-slate border border-slate-800 rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 fade-in duration-500 flex flex-col max-h-[90vh]">
 
                 {/* Scanning Overlay */}
                 {isScanning && (
-                    <div className="absolute inset-0 z-[70] pointer-events-none overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-brand-lime shadow-[0_0_25px_#BEF264] animate-scan z-[80]"></div>
+                    <div className="absolute inset-0 z-70 pointer-events-none overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-brand-lime shadow-[0_0_25px_#BEF264] animate-scan z-80"></div>
                         <div className="absolute inset-0 bg-brand-lime/5 animate-pulse"></div>
                         <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-md">
                             <div className="text-center space-y-4">
@@ -111,7 +111,7 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
                     </div>
                 )}
 
-                <div className="p-8 flex-shrink-0 border-b border-slate-800">
+                <div className="p-8 shrink-0 border-b border-slate-800">
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-3">
                             <div className="p-3 bg-brand-lime/10 rounded-2xl text-brand-lime shadow-inner shadow-brand-lime/20">
@@ -155,9 +155,9 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
                             ) : (
                                 <div
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="aspect-video border-2 border-dashed border-slate-800 rounded-[2rem] flex flex-col items-center justify-center space-y-4 hover:border-brand-lime/50 hover:bg-brand-lime/5 transition-all cursor-pointer group bg-brand-charcoal/30"
+                                    className="aspect-video border-2 border-dashed border-slate-800 rounded-4xl flex flex-col items-center justify-center space-y-4 hover:border-brand-lime/50 hover:bg-brand-lime/5 transition-all cursor-pointer group bg-brand-charcoal/30"
                                 >
-                                    <div className="w-20 h-20 bg-brand-charcoal rounded-[2rem] flex items-center justify-center text-brand-muted group-hover:text-brand-lime transition-all group-hover:scale-110 shadow-2xl">
+                                    <div className="w-20 h-20 bg-brand-charcoal rounded-4xl flex items-center justify-center text-brand-muted group-hover:text-brand-lime transition-all group-hover:scale-110 shadow-2xl">
                                         <Upload size={40} />
                                     </div>
                                     <div className="text-center">
@@ -178,12 +178,12 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-4">
                                 <CenteringHeuristicPanel result={heuristic} compact />
-                                <div className="aspect-[3/4] rounded-[2rem] overflow-hidden border border-slate-800 relative bg-brand-charcoal group">
+                                <div className="aspect-3/4 rounded-4xl overflow-hidden border border-slate-800 relative bg-brand-charcoal group">
                                     <img src={previewUrl} alt="Preview" className="w-full h-full object-contain" />
 
                                     {/* Artificial Defect Overlay Scanlines */}
                                     {result && (
-                                        <div className="absolute inset-0 pointer-events-none opacity-30 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px]" />
+                                        <div className="absolute inset-0 pointer-events-none opacity-30 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.25)_50%)] bg-size-[100%_4px]" />
                                     )}
 
                                     {/* Visual Markers for defects if result exists */}
@@ -220,7 +220,7 @@ const GradingAuditModal: React.FC<GradingAuditModalProps> = ({ isOpen, onClose, 
                             {/* Analysis Results Panel */}
                             {result && (
                                 <div className="space-y-6 animate-in slide-in-from-right-8 duration-500">
-                                    <div className="p-6 bg-brand-lime text-brand-charcoal rounded-[2rem] flex items-center justify-between">
+                                    <div className="p-6 bg-brand-lime text-brand-charcoal rounded-4xl flex items-center justify-between">
                                         <div>
                                             <p className="text-sm font-black uppercase tracking-widest opacity-70 mb-1">Predicted Grade</p>
                                             <h3 className="text-5xl font-bebas tracking-wide leading-none">{result.predictedGrade}</h3>

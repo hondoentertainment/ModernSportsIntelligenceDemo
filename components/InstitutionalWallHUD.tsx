@@ -36,7 +36,7 @@ const InstitutionalWallHUD: React.FC<WallHUDProps> = ({ onClose, inventoryCount,
     const formatValue = (val: string) => isStealthMode ? '[REDACTED]' : val;
 
     return (
-        <div className="fixed inset-0 z-[100] bg-brand-charcoal text-white flex flex-col font-mono overflow-hidden animate-in fade-in duration-700">
+        <div className="fixed inset-0 z-100 bg-brand-charcoal text-white flex flex-col font-mono overflow-hidden animate-in fade-in duration-700">
             {/* Top Navigation / Status Bar */}
             <div className="h-16 border-b border-white/10 flex items-center justify-between px-8 bg-black/40 backdrop-blur-md">
                 <div className="flex items-center gap-6">
@@ -44,7 +44,7 @@ const InstitutionalWallHUD: React.FC<WallHUDProps> = ({ onClose, inventoryCount,
                         <div className="w-3 h-3 bg-brand-lime rounded-full animate-pulse" />
                         <span className="text-xl font-bebas tracking-[0.2em] text-white">MODERN SPORTS INTELLIGENCE // INSTITUTIONAL HUD</span>
                     </div>
-                    <div className="h-6 w-[1px] bg-white/10" />
+                    <div className="h-6 w-px bg-white/10" />
                     <div className="flex items-center gap-4 text-[10px] text-white/40 font-bold uppercase tracking-widest">
                         <span className="flex items-center gap-1"><Globe size={12} /> EST SERVER: ONLINE</span>
                         <span className="flex items-center gap-1"><Activity size={12} /> SYSTEM LATENCY: 12ms</span>
@@ -154,7 +154,7 @@ const InstitutionalWallHUD: React.FC<WallHUDProps> = ({ onClose, inventoryCount,
                         </div>
 
                         {/* Overlay HUD Labels */}
-                        <div className="absolute top-4 left-4 p-4 border-l-2 border-brand-lime bg-black/40 backdrop-blur-sm">
+                        <div className="absolute top-4 left-4 p-4 border-l-2 border-brand-lime bg-black/40 backdrop-blur-xs">
                             <div className="text-[10px] font-black text-brand-lime uppercase tracking-widest">Active Scouting Zone</div>
                             <div className="text-[18px] font-mono text-white">MiLB BREAKOUT SECTOR // NYM</div>
                         </div>
@@ -177,7 +177,7 @@ const InstitutionalWallHUD: React.FC<WallHUDProps> = ({ onClose, inventoryCount,
                                 <div key={i} className="p-3 bg-white/5 border border-white/10 space-y-1">
                                     <div className="flex items-center justify-between">
                                         <span className="text-[10px] font-black text-white">{a.t}</span>
-                                        <span className={`text-[8px] font-black px-2 py-0.5 rounded ${a.s === 'CRITICAL' ? 'bg-brand-red text-white' : 'bg-brand-orange/20 text-brand-orange'}`}>{a.s}</span>
+                                        <span className={`text-[8px] font-black px-2 py-0.5 rounded-sm ${a.s === 'CRITICAL' ? 'bg-brand-red text-white' : 'bg-brand-orange/20 text-brand-orange'}`}>{a.s}</span>
                                     </div>
                                     <div className="text-[9px] text-white/40">{a.d}</div>
                                 </div>

@@ -83,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
                 </div>
                 {isOpen && <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">{item.label}</span>}
                 {!isOpen && (
-                  <div className="absolute left-full ml-4 px-3 py-1 bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                  <div className="absolute left-full ml-4 px-3 py-1 bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest rounded-sm opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
                     {item.label}
                   </div>
                 )}

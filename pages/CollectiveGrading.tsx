@@ -80,8 +80,8 @@ const CollectiveGrading: React.FC = () => {
                       <div>
                         <h3 className="text-white font-semibold text-sm">{pool.name}</h3>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${getCompanyColor(pool.gradingCompany)}`}>{pool.gradingCompany}</span>
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${getPoolStatusColor(pool.status)}`}>{getPoolStatusLabel(pool.status)}</span>
+                          <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase border ${getCompanyColor(pool.gradingCompany)}`}>{pool.gradingCompany}</span>
+                          <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold ${getPoolStatusColor(pool.status)}`}>{getPoolStatusLabel(pool.status)}</span>
                           <span className="text-slate-500 text-xs capitalize">{pool.serviceTier}</span>
                         </div>
                       </div>
@@ -151,7 +151,7 @@ const CollectiveGrading: React.FC = () => {
               <div key={h.poolId} className="bg-slate-900 rounded-xl border border-slate-800 p-5 flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${getCompanyColor(h.gradingCompany)}`}>{h.gradingCompany}</span>
+                    <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase border ${getCompanyColor(h.gradingCompany)}`}>{h.gradingCompany}</span>
                     <span className="text-slate-400 text-xs capitalize">{h.serviceTier}</span>
                   </div>
                   <p className="text-slate-500 text-xs mt-1">{h.completedDate} • {h.cardsSubmitted} total cards • {h.turnaroundDays}d turnaround</p>

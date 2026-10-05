@@ -28,7 +28,7 @@ const WarRoomWidget: React.FC = () => {
     }, [inventory]);
 
     return (
-        <div className="luminous-card rounded-[2rem] p-8 border border-slate-800 relative overflow-hidden group shadow-2xl">
+        <div className="luminous-card rounded-4xl p-8 border border-slate-800 relative overflow-hidden group shadow-2xl">
             {/* Background Decorative Element */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-brand-lime/5 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
 
@@ -56,8 +56,8 @@ const WarRoomWidget: React.FC = () => {
 
                 {isGenerating ? (
                     <div className="space-y-3 animate-pulse">
-                        <div className="h-4 bg-slate-800 rounded w-full" />
-                        <div className="h-4 bg-slate-800 rounded w-11/12" />
+                        <div className="h-4 bg-slate-800 rounded-sm w-full" />
+                        <div className="h-4 bg-slate-800 rounded-sm w-11/12" />
                     </div>
                 ) : thesis ? (
                     <div className="space-y-4">

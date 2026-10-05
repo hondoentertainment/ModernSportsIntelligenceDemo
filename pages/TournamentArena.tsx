@@ -178,7 +178,7 @@ const TournamentArena: React.FC = () => {
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-bold text-white truncate">{t.name}</span>
-                  {isEntered && <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />}
+                  {isEntered && <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />}
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`text-[10px] px-1.5 py-0.5 rounded-full border ${tournamentTypeBadgeColor(t.type)}`}>

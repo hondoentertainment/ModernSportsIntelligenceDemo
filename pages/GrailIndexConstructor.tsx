@@ -153,7 +153,7 @@ const Sparkline: React.FC<{ data: { value: number }[]; color?: string; width?: n
     })
     .join(' ');
   return (
-    <svg width={width} height={height} className="flex-shrink-0">
+    <svg width={width} height={height} className="shrink-0">
       <polyline points={points} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
     </svg>
   );
@@ -162,7 +162,7 @@ const Sparkline: React.FC<{ data: { value: number }[]; color?: string; width?: n
 // ---- Loading Skeleton ----
 
 const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`animate-pulse bg-slate-700/50 rounded ${className}`} />
+  <div className={`animate-pulse bg-slate-700/50 rounded-sm ${className}`} />
 );
 
 const LoadingOverlay: React.FC = () => (
@@ -407,7 +407,7 @@ const IndexDeepDive: React.FC<{
                   <td className="py-2 text-slate-400">{c.player}</td>
                   <td className="py-2">
                     <span
-                      className="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold uppercase"
+                      className="inline-block px-1.5 py-0.5 rounded-sm text-[10px] font-bold uppercase"
                       style={{ backgroundColor: `${SPORT_COLORS[c.sport]}20`, color: SPORT_COLORS[c.sport] }}
                     >
                       {c.sport}
@@ -514,7 +514,7 @@ const IndexDeepDive: React.FC<{
               <ul className="space-y-1">
                 {idx.methodology.selectionCriteria.map((c, i) => (
                   <li key={i} className="text-slate-400 text-[10px] flex items-start gap-1.5">
-                    <ChevronRight size={8} className="mt-0.5 text-brand-lime flex-shrink-0" />
+                    <ChevronRight size={8} className="mt-0.5 text-brand-lime shrink-0" />
                     {c}
                   </li>
                 ))}
@@ -589,7 +589,7 @@ const IndexBuilder: React.FC = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="My Custom Index"
-            className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand-lime/40"
+            className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-brand-lime/40"
           />
         </div>
 
@@ -600,7 +600,7 @@ const IndexBuilder: React.FC = () => {
             onChange={(e) => setObjectives(e.target.value)}
             placeholder="Describe the goal of this index..."
             rows={2}
-            className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand-lime/40 resize-none"
+            className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-brand-lime/40 resize-none"
           />
         </div>
 
@@ -653,7 +653,7 @@ const IndexBuilder: React.FC = () => {
             <select
               value={weighting}
               onChange={(e) => setWeighting(e.target.value as typeof weighting)}
-              className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-lime/40"
+              className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-brand-lime/40"
             >
               <option value="equal">Equal Weight</option>
               <option value="market-cap">Market Cap</option>
@@ -666,7 +666,7 @@ const IndexBuilder: React.FC = () => {
             <select
               value={rebalance}
               onChange={(e) => setRebalance(e.target.value as typeof rebalance)}
-              className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-lime/40"
+              className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-brand-lime/40"
             >
               <option value="monthly">Monthly</option>
               <option value="quarterly">Quarterly</option>
@@ -682,7 +682,7 @@ const IndexBuilder: React.FC = () => {
               type="number"
               value={minValue}
               onChange={(e) => setMinValue(e.target.value)}
-              className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-lime/40"
+              className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-brand-lime/40"
             />
           </div>
           <div>
@@ -691,7 +691,7 @@ const IndexBuilder: React.FC = () => {
               type="number"
               value={maxConstituents}
               onChange={(e) => setMaxConstituents(e.target.value)}
-              className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-lime/40"
+              className="w-full bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-brand-lime/40"
             />
           </div>
         </div>
@@ -701,7 +701,7 @@ const IndexBuilder: React.FC = () => {
           <div className="space-y-1.5 mb-2">
             {criteria.map((c, i) => (
               <div key={i} className="flex items-center gap-2 bg-slate-900/40 rounded-lg px-3 py-1.5">
-                <ChevronRight size={10} className="text-brand-lime flex-shrink-0" />
+                <ChevronRight size={10} className="text-brand-lime shrink-0" />
                 <span className="text-slate-300 text-xs flex-1">{c}</span>
                 <button onClick={() => removeCriterion(i)} className="text-slate-600 hover:text-red-400">
                   <Minus size={12} />
@@ -716,7 +716,7 @@ const IndexBuilder: React.FC = () => {
               onChange={(e) => setNewCriterion(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addCriterion()}
               placeholder="Add criterion..."
-              className="flex-1 bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-lime/40"
+              className="flex-1 bg-slate-900/60 border border-slate-700/50 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-600 focus:outline-hidden focus:border-brand-lime/40"
             />
             <button
               onClick={addCriterion}
@@ -896,7 +896,7 @@ const RebalanceLog: React.FC<{ indices: CardIndex[] }> = ({ indices }) => {
                       <p className="text-emerald-400/70 text-[10px] uppercase tracking-wider mb-1 font-bold">Additions</p>
                       {evt.additions.map((a, i) => (
                         <div key={i} className="flex items-start gap-2 text-xs py-1">
-                          <Plus size={10} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                          <Plus size={10} className="text-emerald-400 mt-0.5 shrink-0" />
                           <span className="text-slate-300">{a.reason}</span>
                         </div>
                       ))}
@@ -908,7 +908,7 @@ const RebalanceLog: React.FC<{ indices: CardIndex[] }> = ({ indices }) => {
                       <p className="text-red-400/70 text-[10px] uppercase tracking-wider mb-1 font-bold">Removals</p>
                       {evt.removals.map((r, i) => (
                         <div key={i} className="flex items-start gap-2 text-xs py-1">
-                          <Minus size={10} className="text-red-400 mt-0.5 flex-shrink-0" />
+                          <Minus size={10} className="text-red-400 mt-0.5 shrink-0" />
                           <span className="text-slate-300">{r.reason}</span>
                         </div>
                       ))}
@@ -919,8 +919,8 @@ const RebalanceLog: React.FC<{ indices: CardIndex[] }> = ({ indices }) => {
                     <p className="text-blue-400/70 text-[10px] uppercase tracking-wider mb-1 font-bold">Weight Adjustments</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                       {evt.weightChanges.slice(0, 4).map((w, i) => (
-                        <div key={i} className="flex items-center gap-2 text-xs py-1 bg-slate-900/30 rounded px-2">
-                          <RefreshCw size={9} className="text-blue-400 flex-shrink-0" />
+                        <div key={i} className="flex items-center gap-2 text-xs py-1 bg-slate-900/30 rounded-sm px-2">
+                          <RefreshCw size={9} className="text-blue-400 shrink-0" />
                           <span className="text-slate-500">{w.oldWeight}%</span>
                           <span className="text-slate-600">&rarr;</span>
                           <span className={w.newWeight > w.oldWeight ? 'text-emerald-400' : 'text-red-400'}>
@@ -1089,7 +1089,7 @@ const ComparisonTab: React.FC<{ indices: CardIndex[] }> = ({ indices }) => {
               </div>
               <div className="flex items-center justify-center gap-1 mt-3">
                 <span className="text-slate-600 text-[9px]">Low</span>
-                <div className="flex h-2 rounded overflow-hidden">
+                <div className="flex h-2 rounded-sm overflow-hidden">
                   {['bg-red-700/60', 'bg-orange-700/50', 'bg-yellow-600/50', 'bg-emerald-700/60', 'bg-emerald-500/80'].map(
                     (c, i) => (
                       <div key={i} className={`w-6 ${c}`} />
@@ -1297,7 +1297,7 @@ const BacktestLab: React.FC<{ indices: CardIndex[] }> = ({ indices }) => {
             </div>
             <div className="flex items-center justify-center gap-1 mt-3">
               <span className="text-slate-600 text-[9px]">-8%+</span>
-              <div className="flex h-2 rounded overflow-hidden">
+              <div className="flex h-2 rounded-sm overflow-hidden">
                 {['bg-red-500', 'bg-red-600/80', 'bg-red-700/70', 'bg-red-900/50', 'bg-green-800/50', 'bg-green-600/70', 'bg-emerald-600/80', 'bg-emerald-500'].map(
                   (c, i) => (
                     <div key={i} className={`w-5 ${c}`} />
@@ -1401,7 +1401,7 @@ const GrailIndexConstructor: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900">
+    <div className="min-h-screen bg-linear-to-b from-slate-950 to-slate-900">
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between">

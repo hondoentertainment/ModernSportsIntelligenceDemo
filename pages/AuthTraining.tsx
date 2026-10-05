@@ -163,7 +163,7 @@ const AuthTraining: React.FC = () => {
         </div>
         <div className="w-full bg-slate-700 rounded-full h-3">
           <div
-            className="bg-gradient-to-r from-violet-600 to-violet-400 h-3 rounded-full transition-all"
+            className="bg-linear-to-r from-violet-600 to-violet-400 h-3 rounded-full transition-all"
             style={{ width: `${levelInfo.pct}%` }}
           />
         </div>

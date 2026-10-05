@@ -179,7 +179,7 @@ const LiveAssistantTab: React.FC = () => {
                 <p className="text-[10px] text-slate-500 uppercase mb-2">Negotiation Range</p>
                 <div className="relative h-3 bg-slate-700 rounded-full overflow-hidden">
                   <div
-                    className="absolute inset-y-0 bg-gradient-to-r from-green-500 to-orange-500 rounded-full"
+                    className="absolute inset-y-0 bg-linear-to-r from-green-500 to-orange-500 rounded-full"
                     style={{
                       left: `${((negotiation.floor / latestScan.marketValue) * 100) - 10}%`,
                       right: `${100 - ((negotiation.ceiling / latestScan.marketValue) * 100) - 5}%`,
@@ -271,7 +271,7 @@ const VendorMapTab: React.FC = () => {
                 className="w-full flex items-center justify-between p-3 text-left"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex-shrink-0 w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center">
+                  <div className="shrink-0 w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center">
                     <span className="text-[10px] font-bold text-orange-400">
                       {vendor.boothNumber}
                     </span>
@@ -296,7 +296,7 @@ const VendorMapTab: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
                   <span className={`text-[10px] font-bold ${fairnessColor(vendor.avgPriceVsMarket)}`}>
                     {fairnessLabel(vendor.avgPriceVsMarket)}
                   </span>
@@ -382,7 +382,7 @@ const ScanHistoryTab: React.FC = () => {
           className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-3 flex gap-3"
         >
           {/* Thumbnail Placeholder */}
-          <div className="flex-shrink-0 w-14 h-20 bg-slate-700/80 rounded-lg flex items-center justify-center">
+          <div className="shrink-0 w-14 h-20 bg-slate-700/80 rounded-lg flex items-center justify-center">
             <ScanLine size={18} className="text-slate-500" />
           </div>
 
@@ -549,12 +549,12 @@ const VoiceCardShowModal: React.FC<VoiceCardShowModalProps> = ({ isOpen, onClose
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-10 overflow-y-auto">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal Content */}
       <div className="relative w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
         {/* Header with gradient */}
-        <div className="relative bg-gradient-to-r from-orange-500/10 to-slate-900 p-6 border-b border-slate-700/60">
+        <div className="relative bg-linear-to-r from-orange-500/10 to-slate-900 p-6 border-b border-slate-700/60">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"

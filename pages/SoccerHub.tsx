@@ -325,7 +325,7 @@ const SoccerHub: React.FC = () => {
           </div>
 
           {/* World Cup Callout */}
-          <div className="bg-gradient-to-r from-slate-800/80 to-slate-900/80 border border-cyan-500/30 rounded-xl p-6 text-center">
+          <div className="bg-linear-to-r from-slate-800/80 to-slate-900/80 border border-cyan-500/30 rounded-xl p-6 text-center">
             <Globe size={32} className="text-cyan-400 mx-auto mb-2" />
             <h3 className="text-lg font-bold text-cyan-400">FIFA World Cup 2026</h3>
             <p className="text-sm text-slate-400 mt-1">June 11 - July 19 &bull; USA, Mexico &amp; Canada</p>
@@ -449,7 +449,7 @@ const SoccerHub: React.FC = () => {
                     </div>
                     <p className="text-[10px] text-slate-500 mt-0.5">{rookie.team} &bull; {rookie.position}</p>
                   </div>
-                  <div className="text-right flex-shrink-0 ml-3">
+                  <div className="text-right shrink-0 ml-3">
                     <p className="text-sm font-bold text-white">${rookie.topCardValue}</p>
                     <p className={`text-xs ${rookie.weeklyChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                       {rookie.weeklyChange >= 0 ? '+' : ''}{rookie.weeklyChange}%

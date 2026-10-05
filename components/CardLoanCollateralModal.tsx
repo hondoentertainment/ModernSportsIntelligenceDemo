@@ -38,7 +38,7 @@ const CardLoanCollateralModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const totalCollateral = loans.filter(l => l.status === 'active' || l.status === 'at-risk').reduce((s, l) => s + l.collateralValue, 0);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
@@ -154,7 +154,7 @@ const CardLoanCollateralModal: React.FC<Props> = ({ isOpen, onClose }) => {
                       <div className="text-slate-500 text-xs">Haircut</div>
                       <div className="text-slate-300">{c.haircut}%</div>
                     </div>
-                    <div className={`px-2 py-1 rounded text-xs font-medium ${c.eligible ? 'text-emerald-400 bg-emerald-400/10' : 'text-red-400 bg-red-400/10'}`}>
+                    <div className={`px-2 py-1 rounded-sm text-xs font-medium ${c.eligible ? 'text-emerald-400 bg-emerald-400/10' : 'text-red-400 bg-red-400/10'}`}>
                       {c.eligible ? 'Eligible' : 'Ineligible'}
                     </div>
                   </div>

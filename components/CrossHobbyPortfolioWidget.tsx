@@ -83,7 +83,7 @@ export const CrossHobbyPortfolioWidget: React.FC<CrossHobbyPortfolioWidgetProps>
 
       {/* Mini Allocation Pie */}
       <div className="flex items-center gap-4 mb-4">
-        <svg viewBox="0 0 48 48" className="w-12 h-12 flex-shrink-0">
+        <svg viewBox="0 0 48 48" className="w-12 h-12 shrink-0">
           {pieSlices.map((slice) => (
             <path
               key={slice.category}
@@ -107,7 +107,7 @@ export const CrossHobbyPortfolioWidget: React.FC<CrossHobbyPortfolioWidgetProps>
 
       {/* Diversification Score Gauge */}
       <div className="flex items-center gap-4 mb-4">
-        <div className="relative w-14 h-8 flex-shrink-0">
+        <div className="relative w-14 h-8 shrink-0">
           <svg viewBox="0 0 60 35" className="w-full h-full">
             <path
               d="M 5 30 A 25 25 0 0 1 55 30"

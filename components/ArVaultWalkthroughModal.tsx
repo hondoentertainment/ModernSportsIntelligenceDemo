@@ -99,10 +99,10 @@ export const ArVaultWalkthroughModal: React.FC<ArVaultWalkthroughModalProps> = (
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-300">
       <div className="w-full max-w-5xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col animate-in zoom-in-95 duration-300">
         {/* Header */}
-        <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-purple-500/10 to-slate-900 flex-shrink-0">
+        <div className="p-6 border-b border-slate-700 bg-linear-to-r from-purple-500/10 to-slate-900 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-purple-500/20 text-purple-400 rounded-xl border border-purple-500/30">
@@ -237,7 +237,7 @@ const MyVaultsTab: React.FC<{
               }`}
             >
               {/* Theme header gradient */}
-              <div className={`h-16 -mx-4 -mt-4 mb-3 rounded-t-xl bg-gradient-to-r ${room.thumbnailGradient} flex items-center justify-center`}>
+              <div className={`h-16 -mx-4 -mt-4 mb-3 rounded-t-xl bg-linear-to-r ${room.thumbnailGradient} flex items-center justify-center`}>
                 <div className={`p-2 rounded-lg bg-slate-900/60 ${themeMeta.color}`}>
                   {THEME_ICONS[room.theme]}
                 </div>
@@ -245,7 +245,7 @@ const MyVaultsTab: React.FC<{
 
               <div className="flex items-start justify-between mb-2">
                 <h4 className="text-sm font-bold text-white truncate flex-1">{room.name}</h4>
-                <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold border ${vis.color}`}>
+                <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[9px] font-bold border ${vis.color}`}>
                   {vis.icon}
                   {vis.label}
                 </span>
@@ -347,7 +347,7 @@ const RoomBuilderTab: React.FC<{
             {Array.from({ length: 12 }).map((_, i) => (
               <div
                 key={i}
-                className={`aspect-[2.5/3.5] rounded-lg border-2 border-dashed flex items-center justify-center transition-all ${
+                className={`aspect-2.5/3.5 rounded-lg border-2 border-dashed flex items-center justify-center transition-all ${
                   i < 4
                     ? 'border-purple-500/40 bg-purple-500/5'
                     : 'border-slate-700 bg-slate-800/40 hover:border-slate-600'
@@ -446,7 +446,7 @@ const RoomBuilderTab: React.FC<{
           </div>
 
           {/* Room Preview */}
-          <div className={`p-4 bg-gradient-to-br from-slate-800/60 to-slate-900 border border-slate-700/50 rounded-xl`}>
+          <div className={`p-4 bg-linear-to-br from-slate-800/60 to-slate-900 border border-slate-700/50 rounded-xl`}>
             <div className="flex items-center gap-2 mb-2">
               <View size={15} className="text-purple-400" />
               <span className="text-sm font-bold text-white">Preview</span>
@@ -501,7 +501,7 @@ const ToursTab: React.FC<{
             >
               <div className="flex items-start gap-4">
                 {/* Tour Thumbnail */}
-                <div className={`w-24 h-16 rounded-lg bg-gradient-to-br ${tour.thumbnailGradient} flex items-center justify-center flex-shrink-0 border border-slate-700/50`}>
+                <div className={`w-24 h-16 rounded-lg bg-linear-to-br ${tour.thumbnailGradient} flex items-center justify-center shrink-0 border border-slate-700/50`}>
                   {tour.isLive ? (
                     <div className="flex items-center gap-1">
                       <Radio size={14} className="text-red-400 animate-pulse" />
@@ -517,11 +517,11 @@ const ToursTab: React.FC<{
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className="text-sm font-bold text-white truncate">{tour.tourName}</h4>
                     {tour.isLive ? (
-                      <span className="px-1.5 py-0.5 bg-red-500/15 border border-red-500/30 rounded text-[9px] font-bold text-red-400">
+                      <span className="px-1.5 py-0.5 bg-red-500/15 border border-red-500/30 rounded-sm text-[9px] font-bold text-red-400">
                         LIVE
                       </span>
                     ) : (
-                      <span className="px-1.5 py-0.5 bg-slate-700/50 border border-slate-600 rounded text-[9px] font-bold text-slate-400">
+                      <span className="px-1.5 py-0.5 bg-slate-700/50 border border-slate-600 rounded-sm text-[9px] font-bold text-slate-400">
                         Recorded
                       </span>
                     )}
@@ -555,7 +555,7 @@ const ToursTab: React.FC<{
                       .map((wp, i) => (
                         <span
                           key={i}
-                          className="px-1.5 py-0.5 bg-slate-700/40 border border-slate-700 rounded text-[9px] text-slate-500"
+                          className="px-1.5 py-0.5 bg-slate-700/40 border border-slate-700 rounded-sm text-[9px] text-slate-500"
                         >
                           {wp.label}
                         </span>
@@ -564,7 +564,7 @@ const ToursTab: React.FC<{
                 </div>
 
                 {/* Action */}
-                <button className="px-3 py-2 bg-purple-500/15 border border-purple-500/30 text-purple-400 rounded-lg text-xs font-bold hover:bg-purple-500/25 transition-all flex-shrink-0">
+                <button className="px-3 py-2 bg-purple-500/15 border border-purple-500/30 text-purple-400 rounded-lg text-xs font-bold hover:bg-purple-500/25 transition-all shrink-0">
                   {tour.isLive ? 'Join' : 'Play'}
                 </button>
               </div>
@@ -603,7 +603,7 @@ const SharedVaultsTab: React.FC<{
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search public vaults..."
-            className="w-full pl-9 pr-4 py-2.5 bg-slate-800/60 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-purple-500/50 transition-all"
+            className="w-full pl-9 pr-4 py-2.5 bg-slate-800/60 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-purple-500/50 transition-all"
           />
         </div>
         <div className="flex gap-1 bg-slate-800/50 rounded-xl p-1">
@@ -641,7 +641,7 @@ const SharedVaultsTab: React.FC<{
                 className="p-4 bg-slate-800/40 border border-slate-700/50 rounded-xl hover:border-purple-500/30 transition-all"
               >
                 {/* Theme Gradient Header */}
-                <div className={`h-12 -mx-4 -mt-4 mb-3 rounded-t-xl bg-gradient-to-r ${vault.thumbnailGradient} flex items-center justify-between px-4`}>
+                <div className={`h-12 -mx-4 -mt-4 mb-3 rounded-t-xl bg-linear-to-r ${vault.thumbnailGradient} flex items-center justify-between px-4`}>
                   <div className={`flex items-center gap-2 ${themeMeta.color}`}>
                     {THEME_ICONS[vault.theme]}
                     <span className="text-xs font-bold">{themeMeta.label}</span>

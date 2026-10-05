@@ -74,7 +74,7 @@ const StepCard: React.FC<{
     >
       <div className="flex items-center gap-3">
         <div
-          className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
+          className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
           style={{
             backgroundColor: isCompleted ? '#22c55e20' : isActive ? `${config.color}20` : '#33415520',
             color: isCompleted ? '#22c55e' : isActive ? config.color : '#64748b',
@@ -93,7 +93,7 @@ const StepCard: React.FC<{
             <span className="text-[10px] text-slate-500">{formatDuration(step.duration)}</span>
           </div>
         </div>
-        {isActive && <ArrowRight size={14} className="text-brand-lime flex-shrink-0" />}
+        {isActive && <ArrowRight size={14} className="text-brand-lime shrink-0" />}
       </div>
     </button>
   );
@@ -101,7 +101,7 @@ const StepCard: React.FC<{
 StepCard.displayName = 'StepCard';
 
 const MetricCallout: React.FC<{ label: string; value: string; color?: string }> = React.memo(({ label, value, color = '#84cc16' }) => (
-  <div className="relative overflow-hidden rounded-xl border border-slate-700/50 bg-gradient-to-br from-slate-800/80 to-slate-900/80 p-5">
+  <div className="relative overflow-hidden rounded-xl border border-slate-700/50 bg-linear-to-br from-slate-800/80 to-slate-900/80 p-5">
     <div className="absolute top-0 right-0 w-24 h-24 rounded-full blur-3xl opacity-20" style={{ backgroundColor: color }} />
     <p className="text-xs uppercase tracking-wider text-slate-400 mb-1">{label}</p>
     <p className="text-3xl font-bold" style={{ color }}>{value}</p>
@@ -388,7 +388,7 @@ const DemoFlowPage: React.FC = () => {
             </div>
             <div className="h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-brand-lime to-emerald-400 rounded-full transition-all duration-500"
+                className="h-full bg-linear-to-r from-brand-lime to-emerald-400 rounded-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -451,7 +451,7 @@ const DemoFlowPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Side Panel - Flow Overview */}
         <div className="lg:col-span-1 space-y-2 max-h-[calc(100vh-280px)] overflow-y-auto pr-1 scrollbar-thin">
-          <h3 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3 sticky top-0 bg-brand-charcoal/95 backdrop-blur-sm py-1 z-10">
+          <h3 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3 sticky top-0 bg-brand-charcoal/95 backdrop-blur-xs py-1 z-10">
             Flow Steps
           </h3>
           {selectedFlow.steps.map((step, idx) => (
@@ -469,7 +469,7 @@ const DemoFlowPage: React.FC = () => {
         {/* Main Area */}
         <div className="lg:col-span-3 space-y-6">
           {/* Current Step Card */}
-          <div className="rounded-2xl border border-slate-700/50 bg-gradient-to-br from-slate-800/60 to-slate-900/80 overflow-hidden">
+          <div className="rounded-2xl border border-slate-700/50 bg-linear-to-br from-slate-800/60 to-slate-900/80 overflow-hidden">
             {/* Step Header */}
             <div className="px-6 py-4 border-b border-slate-700/30 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -495,7 +495,7 @@ const DemoFlowPage: React.FC = () => {
             {/* Investor Pitch */}
             <div className="px-6 py-5">
               <div className="flex items-start gap-3 mb-5">
-                <Zap size={16} className="text-amber-400 mt-0.5 flex-shrink-0" />
+                <Zap size={16} className="text-amber-400 mt-0.5 shrink-0" />
                 <div>
                   <p className="text-xs uppercase tracking-wider text-amber-400 font-semibold mb-1.5">Investor Pitch</p>
                   <p className="text-sm text-slate-200 leading-relaxed">{currentStep.investorPitch}</p>
@@ -514,7 +514,7 @@ const DemoFlowPage: React.FC = () => {
                   <ul className="space-y-1.5">
                     {currentStep.highlights.map((h, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                        <TrendingUp size={12} className="text-brand-lime mt-0.5 flex-shrink-0" />
+                        <TrendingUp size={12} className="text-brand-lime mt-0.5 shrink-0" />
                         {h}
                       </li>
                     ))}
@@ -526,7 +526,7 @@ const DemoFlowPage: React.FC = () => {
               <div className="mt-5 flex items-center gap-3">
                 <button
                   onClick={handleLaunchFeature}
-                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-brand-lime to-emerald-500 text-black font-bold text-sm hover:shadow-lg hover:shadow-brand-lime/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-linear-to-r from-brand-lime to-emerald-500 text-black font-bold text-sm hover:shadow-lg hover:shadow-brand-lime/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <ExternalLink size={16} />
                   Launch {currentStep.featureName}

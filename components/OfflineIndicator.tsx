@@ -73,11 +73,11 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ compact = false }) 
     <div className={`${bgColor} border-b px-4 py-2.5 flex items-center justify-between gap-3 z-50`}>
       <div className="flex items-center gap-3 min-w-0">
         {isOffline ? (
-          <WifiOff size={18} className="text-red-300 flex-shrink-0" />
+          <WifiOff size={18} className="text-red-300 shrink-0" />
         ) : isSyncing ? (
-          <Loader2 size={18} className="text-blue-300 animate-spin flex-shrink-0" />
+          <Loader2 size={18} className="text-blue-300 animate-spin shrink-0" />
         ) : (
-          <CloudOff size={18} className="text-amber-300 flex-shrink-0" />
+          <CloudOff size={18} className="text-amber-300 shrink-0" />
         )}
 
         <div className="min-w-0">
@@ -100,7 +100,7 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ compact = false }) 
         </div>
       </div>
 
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
         {!isOffline && (pendingCount > 0 || failedCount > 0) && !isSyncing && (
           <button
             type="button"

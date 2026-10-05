@@ -156,8 +156,8 @@ const CarbonScore: React.FC = () => {
             </ResponsiveContainer>
           </div>
           <div className="flex items-center justify-center gap-6 mt-2 text-[10px] text-slate-500">
-            <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-red-500 rounded" /> Emissions</span>
-            <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-emerald-500 rounded" /> Offsets</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-red-500 rounded-sm" /> Emissions</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-emerald-500 rounded-sm" /> Offsets</span>
           </div>
         </div>
 
@@ -349,7 +349,7 @@ const CarbonScore: React.FC = () => {
             <div className="space-y-2">
               {tips.slice(0, 5).map(tip => (
                 <div key={tip.id} className="flex items-start gap-2 p-2 bg-slate-900/30 rounded-lg">
-                  <span className={`mt-0.5 w-2 h-2 rounded-full flex-shrink-0 ${tip.implemented ? 'bg-emerald-500' : 'bg-slate-600'}`} />
+                  <span className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${tip.implemented ? 'bg-emerald-500' : 'bg-slate-600'}`} />
                   <div>
                     <p className="text-xs font-medium text-white">{tip.title}</p>
                     <p className="text-[10px] text-slate-500">{tip.description}</p>

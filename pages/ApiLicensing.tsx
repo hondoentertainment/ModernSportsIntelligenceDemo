@@ -334,7 +334,7 @@ const ApiLicensing: React.FC = () => {
                 <p className="text-[10px] text-slate-500 font-mono truncate mb-1">{wh.url}</p>
                 <div className="flex flex-wrap gap-1 mb-2">
                   {wh.events.map((ev) => (
-                    <span key={ev} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded">{ev}</span>
+                    <span key={ev} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded-sm">{ev}</span>
                   ))}
                 </div>
                 <p className="text-[10px] text-slate-600">
@@ -419,7 +419,7 @@ const ApiLicensing: React.FC = () => {
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {tier.features.slice(0, 4).map((f) => (
-                    <span key={f} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded">{f}</span>
+                    <span key={f} className="text-[10px] px-1.5 py-0.5 bg-slate-700/50 text-slate-400 rounded-sm">{f}</span>
                   ))}
                   {tier.features.length > 4 && (
                     <span className="text-[10px] text-slate-600">+{tier.features.length - 4} more</span>

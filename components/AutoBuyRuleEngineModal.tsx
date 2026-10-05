@@ -127,7 +127,7 @@ const AutoBuyRuleEngineModal: React.FC<AutoBuyRuleEngineModalProps> = ({ isOpen,
               {rule.conditions && (
                 <div className="flex flex-wrap gap-2">
                   {(Array.isArray(rule.conditions) ? rule.conditions : []).map((cond: any, i: number) => (
-                    <span key={i} className="px-2 py-0.5 bg-slate-700/50 text-slate-400 rounded text-xs">
+                    <span key={i} className="px-2 py-0.5 bg-slate-700/50 text-slate-400 rounded-sm text-xs">
                       {typeof cond === 'string' ? cond : cond.label ?? cond.type ?? ''}
                     </span>
                   ))}
@@ -282,15 +282,15 @@ const AutoBuyRuleEngineModal: React.FC<AutoBuyRuleEngineModalProps> = ({ isOpen,
         </div>
         <ul className="space-y-2">
           <li className="flex items-start gap-2 text-xs text-slate-300">
-            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 flex-shrink-0" />
+            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 shrink-0" />
             Set daily budget limits to prevent overexposure during volatile markets
           </li>
           <li className="flex items-start gap-2 text-xs text-slate-300">
-            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 flex-shrink-0" />
+            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 shrink-0" />
             Combine price and condition rules for the most precise targeting
           </li>
           <li className="flex items-start gap-2 text-xs text-slate-300">
-            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 flex-shrink-0" />
+            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 shrink-0" />
             Review trigger logs weekly to refine rules and improve hit rates
           </li>
         </ul>
@@ -300,7 +300,7 @@ const AutoBuyRuleEngineModal: React.FC<AutoBuyRuleEngineModalProps> = ({ isOpen,
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-5xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
           <div className="flex items-center gap-3">

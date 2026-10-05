@@ -137,14 +137,14 @@ const OCRIngestionModal: React.FC<OCRIngestionModalProps> = ({ isOpen, onClose, 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-4">
             <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={onClose} />
 
             <div className="relative w-full max-w-2xl max-h-[92vh] overflow-y-auto bg-brand-slate border border-slate-800 rounded-[2.5rem] shadow-2xl animate-in zoom-in-95 fade-in duration-500">
                 {/* Global HUD Scanning Overlay - Only active when results are coming back */}
                 {isScanning && (
-                    <div className="absolute inset-0 z-[70] pointer-events-none overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-brand-lime shadow-[0_0_25px_#BEF264] animate-scan z-[80]"></div>
+                    <div className="absolute inset-0 z-70 pointer-events-none overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-brand-lime shadow-[0_0_25px_#BEF264] animate-scan z-80"></div>
                         <div className="absolute inset-0 bg-brand-lime/5 animate-pulse"></div>
                         <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-md">
                             <div className="text-center space-y-4">
@@ -223,7 +223,7 @@ const OCRIngestionModal: React.FC<OCRIngestionModalProps> = ({ isOpen, onClose, 
                                         inputMode="numeric"
                                         autoComplete="off"
                                         placeholder="PSA cert or UPC — e.g. 12345678"
-                                        className="flex-1 min-h-[48px] bg-slate-900 border border-slate-800 rounded-xl px-4 text-white font-mono text-sm focus:outline-none focus:border-brand-lime"
+                                        className="flex-1 min-h-[48px] bg-slate-900 border border-slate-800 rounded-xl px-4 text-white font-mono text-sm focus:outline-hidden focus:border-brand-lime"
                                     />
                                     <button
                                         type="button"
@@ -245,7 +245,7 @@ const OCRIngestionModal: React.FC<OCRIngestionModalProps> = ({ isOpen, onClose, 
                             )}
 
                             {!resolved && !error && !lookupBusy && (
-                                <div className="flex flex-col items-center justify-center gap-3 py-8 text-center border border-dashed border-slate-800 rounded-[2rem] bg-brand-charcoal/20">
+                                <div className="flex flex-col items-center justify-center gap-3 py-8 text-center border border-dashed border-slate-800 rounded-4xl bg-brand-charcoal/20">
                                     <ScanBarcode className="text-brand-lime" size={36} />
                                     <p className="text-white font-bold">No identifier yet</p>
                                     <p className="text-xs text-brand-muted max-w-sm">
@@ -301,9 +301,9 @@ const OCRIngestionModal: React.FC<OCRIngestionModalProps> = ({ isOpen, onClose, 
                             ) : (
                                 <div
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="aspect-video border-2 border-dashed border-slate-800 rounded-[2rem] flex flex-col items-center justify-center space-y-4 hover:border-brand-lime/50 hover:bg-brand-lime/5 transition-all cursor-pointer group bg-brand-charcoal/30"
+                                    className="aspect-video border-2 border-dashed border-slate-800 rounded-4xl flex flex-col items-center justify-center space-y-4 hover:border-brand-lime/50 hover:bg-brand-lime/5 transition-all cursor-pointer group bg-brand-charcoal/30"
                                 >
-                                    <div className="w-20 h-20 bg-brand-charcoal rounded-[2rem] flex items-center justify-center text-brand-muted group-hover:text-brand-lime transition-all group-hover:scale-110 shadow-2xl">
+                                    <div className="w-20 h-20 bg-brand-charcoal rounded-4xl flex items-center justify-center text-brand-muted group-hover:text-brand-lime transition-all group-hover:scale-110 shadow-2xl">
                                         <Upload size={40} />
                                     </div>
                                     <div className="text-center">
@@ -324,7 +324,7 @@ const OCRIngestionModal: React.FC<OCRIngestionModalProps> = ({ isOpen, onClose, 
 
                     {mode !== 'cert' && previewUrl && (
                         <div className="space-y-6">
-                            <div className="aspect-video rounded-[2rem] overflow-hidden border border-slate-800 relative bg-brand-charcoal">
+                            <div className="aspect-video rounded-4xl overflow-hidden border border-slate-800 relative bg-brand-charcoal">
                                 <img src={previewUrl} alt="Preview" className="w-full h-full object-contain" />
                             </div>
 
@@ -347,7 +347,7 @@ const OCRIngestionModal: React.FC<OCRIngestionModalProps> = ({ isOpen, onClose, 
                     )}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                        <div className="p-6 bg-brand-charcoal/50 border border-slate-800 rounded-[2rem] space-y-4 relative overflow-hidden group">
+                        <div className="p-6 bg-brand-charcoal/50 border border-slate-800 rounded-4xl space-y-4 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-24 h-24 bg-brand-lime/5 blur-2xl rounded-full" />
                             <Sparkles size={24} className="text-brand-lime" />
                             <div>
@@ -355,7 +355,7 @@ const OCRIngestionModal: React.FC<OCRIngestionModalProps> = ({ isOpen, onClose, 
                                 <p className="text-[10px] text-brand-muted leading-relaxed">Multimodal recognition for cards, stamps, and signatures. Resolved with low latency.</p>
                             </div>
                         </div>
-                        <div className="p-6 bg-brand-charcoal/50 border border-slate-800 rounded-[2rem] space-y-4 relative overflow-hidden group">
+                        <div className="p-6 bg-brand-charcoal/50 border border-slate-800 rounded-4xl space-y-4 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-24 h-24 bg-brand-teal/5 blur-2xl rounded-full" />
                             <Activity size={24} className="text-brand-teal" />
                             <div>

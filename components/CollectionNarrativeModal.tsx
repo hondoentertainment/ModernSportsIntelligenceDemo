@@ -88,7 +88,7 @@ const CollectionNarrativeModal: React.FC<CollectionNarrativeModalProps> = ({ isO
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
       <div className="relative bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl mx-4 flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700 shrink-0">
@@ -274,14 +274,14 @@ const CollectionNarrativeModal: React.FC<CollectionNarrativeModalProps> = ({ isO
                       value={memoCardId}
                       onChange={(e) => setMemoCardId(e.target.value)}
                       placeholder="Card ID"
-                      className="bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime"
+                      className="bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime"
                     />
                     <input
                       type="text"
                       value={memoCardLabel}
                       onChange={(e) => setMemoCardLabel(e.target.value)}
                       placeholder="Card label"
-                      className="bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime"
+                      className="bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime"
                     />
                   </div>
                   <textarea
@@ -289,7 +289,7 @@ const CollectionNarrativeModal: React.FC<CollectionNarrativeModalProps> = ({ isO
                     onChange={(e) => setMemoText(e.target.value)}
                     placeholder="Why does this card matter to you? Tell its story..."
                     rows={3}
-                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime resize-none"
+                    className="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime resize-none"
                   />
                   <button
                     onClick={handleSaveMemo}

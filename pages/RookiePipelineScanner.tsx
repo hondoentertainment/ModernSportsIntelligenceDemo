@@ -160,7 +160,7 @@ function ScoutGradeBar({ grade }: { grade: number }) {
 function RiskBadge({ risk }: { risk: RiskRating }) {
   return (
     <span
-      className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded border ${RISK_COLORS[risk]}`}
+      className={`inline-flex px-2 py-0.5 text-xs font-semibold rounded-sm border ${RISK_COLORS[risk]}`}
     >
       {risk.replace('-', ' ')}
     </span>
@@ -285,7 +285,7 @@ function ProspectBoardTab({
                 <span className="font-semibold text-slate-100">
                   {p.name}
                 </span>
-                <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
+                <span className="ml-2 text-xs px-1.5 py-0.5 rounded-sm bg-slate-700 text-slate-400">
                   {p.sport}
                 </span>
               </td>
@@ -570,7 +570,7 @@ function DraftClassTab({
                   {Array.from({ length: 10 }).map((_, i) => (
                     <div
                       key={i}
-                      className={`w-2 h-4 rounded-sm ${
+                      className={`w-2 h-4 rounded-xs ${
                         i < p.classStrength
                           ? 'bg-blue-500'
                           : 'bg-slate-700'
@@ -1108,7 +1108,7 @@ function WatchlistTab({
                 {Array.from({ length: 10 }).map((_, i) => (
                   <div
                     key={i}
-                    className={`w-1 h-3 rounded-sm ${
+                    className={`w-1 h-3 rounded-xs ${
                       i < alert.significance
                         ? alert.significance >= 8
                           ? 'bg-red-500'
@@ -1130,7 +1130,7 @@ function WatchlistTab({
                   </span>
                 )}
                 {prospect && (
-                  <span className="text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
+                  <span className="text-xs px-1.5 py-0.5 rounded-sm bg-slate-700 text-slate-400">
                     {prospect.sport}
                   </span>
                 )}
@@ -1333,7 +1333,7 @@ const RookiePipelineScanner: React.FC = () => {
           onChange={(e) =>
             setLevelFilter(e.target.value as ProspectLevel | 'all')
           }
-          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+          className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:outline-hidden focus:ring-2 focus:ring-blue-500/40"
         >
           {LEVELS.map((l) => (
             <option key={l.value} value={l.value}>

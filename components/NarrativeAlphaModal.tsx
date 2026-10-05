@@ -119,10 +119,10 @@ const NarrativeAlphaModal: React.FC<NarrativeAlphaModalProps> = ({ isOpen, onClo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-pink-500/10 to-slate-900 border-b border-slate-800 p-6">
+        <div className="bg-linear-to-r from-pink-500/10 to-slate-900 border-b border-slate-800 p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-pink-500/20 rounded-xl">
@@ -445,7 +445,7 @@ const NarrativeAlphaModal: React.FC<NarrativeAlphaModalProps> = ({ isOpen, onClo
                   {topAlpha.map((signal) => (
                     <div
                       key={signal.id}
-                      className="flex items-center justify-between bg-gradient-to-r from-pink-500/5 to-slate-800/30 rounded-xl p-3 border border-pink-500/10"
+                      className="flex items-center justify-between bg-linear-to-r from-pink-500/5 to-slate-800/30 rounded-xl p-3 border border-pink-500/10"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-pink-500/10 flex items-center justify-center">
@@ -502,7 +502,7 @@ const NarrativeCard: React.FC<{
           </div>
           <p className="text-sm text-slate-300 font-medium">{signal.title}</p>
         </div>
-        <ChevronRight size={16} className="text-slate-600 mt-1 flex-shrink-0" />
+        <ChevronRight size={16} className="text-slate-600 mt-1 shrink-0" />
       </div>
 
       <p className="text-xs text-slate-500 mb-3 line-clamp-2">{signal.description}</p>
@@ -544,7 +544,7 @@ const NarrativeCard: React.FC<{
           </div>
           <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
             <div
-              className="h-full rounded-full transition-all bg-gradient-to-r from-pink-600 to-pink-400"
+              className="h-full rounded-full transition-all bg-linear-to-r from-pink-600 to-pink-400"
               style={{ width: `${signal.strengthScore}%` }}
             />
           </div>
@@ -602,7 +602,7 @@ const MediaMentionRow: React.FC<{ mention: MediaMention }> = ({ mention }) => {
   return (
     <div className="flex items-center gap-3 bg-slate-800/30 rounded-xl p-3 border border-slate-700/30">
       {/* Source Icon */}
-      <div className="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-lg flex-shrink-0">
+      <div className="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-lg shrink-0">
         {SOURCE_ICONS[mention.source] || '📄'}
       </div>
 
@@ -635,7 +635,7 @@ const MediaMentionRow: React.FC<{ mention: MediaMention }> = ({ mention }) => {
       </div>
 
       {/* Reach */}
-      <div className="text-right flex-shrink-0">
+      <div className="text-right shrink-0">
         <p className="text-sm font-bold text-white">{formattedReach}</p>
         <p className="text-[10px] text-slate-500">Reach</p>
       </div>

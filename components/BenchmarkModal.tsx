@@ -506,10 +506,10 @@ const CommunityTab: React.FC<{
         <div className="space-y-2">
           {histogram.map((bucket, i) => (
             <div key={i} className="flex items-center gap-3 text-xs">
-              <span className="w-16 text-right text-slate-500 font-mono text-[11px] flex-shrink-0">
+              <span className="w-16 text-right text-slate-500 font-mono text-[11px] shrink-0">
                 {bucket.label}
               </span>
-              <div className="flex-1 h-4 bg-slate-700/50 rounded overflow-hidden">
+              <div className="flex-1 h-4 bg-slate-700/50 rounded-sm overflow-hidden">
                 <div
                   className={`h-full rounded transition-all duration-500 ${
                     bucket.isUserBucket ? 'bg-brand-lime' : 'bg-blue-500/60'
@@ -540,10 +540,10 @@ const CommunityTab: React.FC<{
         <div className="space-y-2">
           {roiHistogram.map((bucket, i) => (
             <div key={i} className="flex items-center gap-3 text-xs">
-              <span className="w-16 text-right text-slate-500 font-mono text-[11px] flex-shrink-0">
+              <span className="w-16 text-right text-slate-500 font-mono text-[11px] shrink-0">
                 {bucket.label}
               </span>
-              <div className="flex-1 h-4 bg-slate-700/50 rounded overflow-hidden">
+              <div className="flex-1 h-4 bg-slate-700/50 rounded-sm overflow-hidden">
                 <div
                   className={`h-full rounded transition-all duration-500 ${
                     bucket.isUserBucket
@@ -592,7 +592,7 @@ export const BenchmarkModal: React.FC<BenchmarkModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-amber-500/5">

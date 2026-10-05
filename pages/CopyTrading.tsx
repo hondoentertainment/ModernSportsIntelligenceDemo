@@ -239,7 +239,7 @@ const CopyTrading: React.FC = () => {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search collectors..."
-                  className="w-full pl-9 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-500/50"
+                  className="w-full pl-9 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder:text-slate-600 focus:outline-hidden focus:border-amber-500/50"
                 />
               </div>
               <select
@@ -286,24 +286,24 @@ const CopyTrading: React.FC = () => {
                     </div>
 
                     {/* Avatar */}
-                    <span className="text-xl flex-shrink-0">{entry.collector.avatarUrl}</span>
+                    <span className="text-xl shrink-0">{entry.collector.avatarUrl}</span>
 
                     {/* Name */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1">
                         <p className="text-xs font-bold text-white truncate">{entry.collector.displayName}</p>
-                        {entry.collector.verified && <Shield size={10} className="text-blue-400 flex-shrink-0" />}
+                        {entry.collector.verified && <Shield size={10} className="text-blue-400 shrink-0" />}
                       </div>
                       <p className="text-[9px] text-slate-500">{entry.collector.category}</p>
                     </div>
 
                     {/* Alpha Score */}
-                    <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                    <div className="shrink-0 w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
                       <span className="text-xs font-bold text-amber-400">{entry.alphaScore}</span>
                     </div>
 
                     {/* ROI */}
-                    <div className="text-right flex-shrink-0 w-16">
+                    <div className="text-right shrink-0 w-16">
                       <p className={`text-xs font-bold ${entry.metrics.annualizedROI >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                         {formatROI(entry.metrics.annualizedROI)}
                       </p>
@@ -311,13 +311,13 @@ const CopyTrading: React.FC = () => {
                     </div>
 
                     {/* Sharpe */}
-                    <div className="text-right flex-shrink-0 w-12 hidden sm:block">
+                    <div className="text-right shrink-0 w-12 hidden sm:block">
                       <p className="text-xs font-bold text-slate-300">{entry.metrics.sharpeRatio.toFixed(2)}</p>
                       <p className="text-[9px] text-slate-600">Sharpe</p>
                     </div>
 
                     {/* Followers */}
-                    <div className="text-right flex-shrink-0 w-14 hidden md:block">
+                    <div className="text-right shrink-0 w-14 hidden md:block">
                       <p className="text-xs text-slate-400">{entry.collector.followerCount.toLocaleString()}</p>
                       <p className="text-[9px] text-slate-600">followers</p>
                     </div>
@@ -325,7 +325,7 @@ const CopyTrading: React.FC = () => {
                     {/* Follow Button */}
                     <button
                       onClick={(e) => { e.stopPropagation(); handleFollow(entry.collector.id); }}
-                      className={`flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors ${
+                      className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-colors ${
                         entry.collector.isFollowing
                           ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
                           : 'bg-slate-700 text-slate-300 hover:bg-amber-500/15 hover:text-amber-400 border border-slate-600'
@@ -438,12 +438,12 @@ const CopyTrading: React.FC = () => {
                     {collectorTrades.slice(0, 5).map(trade => (
                       <div key={trade.id} className="flex items-center justify-between py-1.5 px-2 bg-slate-800/50 rounded-lg">
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <div className={`p-0.5 rounded ${trade.action === 'buy' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
+                          <div className={`p-0.5 rounded-sm ${trade.action === 'buy' ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
                             {trade.action === 'buy' ? <ArrowUpRight size={9} /> : <ArrowDownRight size={9} />}
                           </div>
                           <span className="text-[9px] text-slate-400 truncate">{trade.cardName}</span>
                         </div>
-                        <span className="text-[9px] font-bold text-slate-400 flex-shrink-0 ml-2">${trade.price.toFixed(0)}</span>
+                        <span className="text-[9px] font-bold text-slate-400 shrink-0 ml-2">${trade.price.toFixed(0)}</span>
                       </div>
                     ))}
                   </div>
@@ -585,7 +585,7 @@ const CopyTrading: React.FC = () => {
               onChange={e => setMirrorBudget(Number(e.target.value))}
               min={100}
               step={500}
-              className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500/50"
+              className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-hidden focus:border-blue-500/50"
             />
           </div>
           <div className="flex items-end">
@@ -632,7 +632,7 @@ const CopyTrading: React.FC = () => {
                     <p className="text-xs font-bold text-white truncate">{alloc.cardName}</p>
                     <p className="text-[9px] text-slate-500">{alloc.leaderWeightPct.toFixed(1)}% weight &middot; {alloc.estimatedShares} unit{alloc.estimatedShares !== 1 ? 's' : ''}</p>
                   </div>
-                  <div className="text-right ml-3 flex-shrink-0">
+                  <div className="text-right ml-3 shrink-0">
                     <p className="text-xs font-bold text-white">${alloc.targetAmount.toLocaleString()}</p>
                     <p className="text-[9px] text-slate-500">@ ${alloc.currentPrice.toFixed(2)}</p>
                   </div>
@@ -662,7 +662,7 @@ const CopyTrading: React.FC = () => {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Benchmark Comparison */}
-          <div className="p-4 bg-gradient-to-br from-amber-500/5 to-transparent border border-amber-500/20 rounded-xl space-y-3">
+          <div className="p-4 bg-linear-to-br from-amber-500/5 to-transparent border border-amber-500/20 rounded-xl space-y-3">
             <p className="text-[10px] font-bold text-amber-400/70 uppercase tracking-widest">Community Benchmark</p>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
@@ -683,7 +683,7 @@ const CopyTrading: React.FC = () => {
               </div>
             </div>
             <div className="relative h-3 bg-slate-800 rounded-full overflow-hidden">
-              <div className="absolute inset-y-0 left-0 bg-gradient-to-r from-red-500/40 via-amber-500/40 to-green-500/40 w-full rounded-full" />
+              <div className="absolute inset-y-0 left-0 bg-linear-to-r from-red-500/40 via-amber-500/40 to-green-500/40 w-full rounded-full" />
               <div
                 className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white rounded-full border-2 border-amber-400 shadow-lg"
                 style={{ left: `${benchmark.percentile}%` }}

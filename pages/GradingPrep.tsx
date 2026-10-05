@@ -231,18 +231,18 @@ const GradingPrep: React.FC = () => {
                       <h3 className="text-lg font-semibold">{guide.title}</h3>
                       <div className="flex gap-2 mt-1">
                         <span
-                          className="px-2 py-0.5 rounded text-xs font-medium"
+                          className="px-2 py-0.5 rounded-sm text-xs font-medium"
                           style={{ backgroundColor: getCategoryColor(guide.category) + '20', color: getCategoryColor(guide.category) }}
                         >
                           {getCategoryLabel(guide.category)}
                         </span>
                         <span
-                          className="px-2 py-0.5 rounded text-xs font-medium"
+                          className="px-2 py-0.5 rounded-sm text-xs font-medium"
                           style={{ backgroundColor: getDifficultyColor(guide.difficulty) + '20', color: getDifficultyColor(guide.difficulty) }}
                         >
                           {guide.difficulty}
                         </span>
-                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-slate-700 text-slate-300">
+                        <span className="px-2 py-0.5 rounded-sm text-xs font-medium bg-slate-700 text-slate-300">
                           {guide.estimatedTime}
                         </span>
                       </div>
@@ -261,7 +261,7 @@ const GradingPrep: React.FC = () => {
                       <div className="space-y-3 mb-4">
                         {guide.steps.map((step) => (
                           <div key={step.stepNumber} className="flex gap-3">
-                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold">
+                            <div className="shrink-0 w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-sm font-bold">
                               {step.stepNumber}
                             </div>
                             <div className="flex-1">
@@ -285,11 +285,11 @@ const GradingPrep: React.FC = () => {
                       </div>
 
                       {/* Tools */}
-                      <div className="bg-slate-700/50 rounded p-3">
+                      <div className="bg-slate-700/50 rounded-sm p-3">
                         <div className="text-sm font-medium text-slate-300 mb-2">Tools Needed:</div>
                         <div className="flex flex-wrap gap-2">
                           {guide.tools.map((tool) => (
-                            <span key={tool} className="px-2 py-1 bg-slate-600 rounded text-xs text-slate-200">
+                            <span key={tool} className="px-2 py-1 bg-slate-600 rounded-sm text-xs text-slate-200">
                               {tool}
                             </span>
                           ))}
@@ -324,7 +324,7 @@ const GradingPrep: React.FC = () => {
               <div className="grid md:grid-cols-2 gap-2">
                 {tips.slice(0, 6).map((tip, i) => (
                   <div key={i} className="flex items-start gap-2 text-sm text-slate-300">
-                    <Lightbulb className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5" />
+                    <Lightbulb className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" />
                     {tip}
                   </div>
                 ))}
@@ -372,7 +372,7 @@ const GradingPrep: React.FC = () => {
                             type="checkbox"
                             checked={item.completed}
                             onChange={() => handleChecklistToggle(checklist.id, idx, item.completed)}
-                            className="w-4 h-4 rounded border-slate-600 text-blue-600 focus:ring-blue-500"
+                            className="w-4 h-4 rounded-sm border-slate-600 text-blue-600 focus:ring-blue-500"
                           />
                           <span className={`text-sm ${item.completed ? 'line-through text-slate-500' : 'text-slate-300'}`}>
                             {item.task}
@@ -420,19 +420,19 @@ const GradingPrep: React.FC = () => {
                     <h3 className="font-semibold">{mistake.title}</h3>
                     <div className="flex gap-2">
                       <span
-                        className="px-2 py-0.5 rounded text-xs font-medium"
+                        className="px-2 py-0.5 rounded-sm text-xs font-medium"
                         style={{ backgroundColor: getSeverityColor(mistake.severity) + '20', color: getSeverityColor(mistake.severity) }}
                       >
                         {mistake.severity}
                       </span>
-                      <span className="px-2 py-0.5 rounded text-xs font-medium bg-slate-700 text-slate-300">
+                      <span className="px-2 py-0.5 rounded-sm text-xs font-medium bg-slate-700 text-slate-300">
                         {getFrequencyLabel(mistake.frequency)}
                       </span>
                     </div>
                   </div>
                   <p className="text-slate-400 text-sm mb-3">{mistake.description}</p>
-                  <div className="flex items-start gap-2 bg-green-900/20 rounded p-2">
-                    <Shield className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 bg-green-900/20 rounded-sm p-2">
+                    <Shield className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
                     <span className="text-sm text-green-300">{mistake.prevention}</span>
                   </div>
                 </div>
@@ -506,9 +506,9 @@ const GradingPrep: React.FC = () => {
                       <td className="p-3 text-sm text-right">${rec.cost.toFixed(2)}</td>
                       <td className="p-3 text-center">
                         {rec.recommended ? (
-                          <span className="px-2 py-0.5 rounded text-xs bg-green-900/30 text-green-400">Yes</span>
+                          <span className="px-2 py-0.5 rounded-sm text-xs bg-green-900/30 text-green-400">Yes</span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded text-xs bg-slate-700 text-slate-500">No</span>
+                          <span className="px-2 py-0.5 rounded-sm text-xs bg-slate-700 text-slate-500">No</span>
                         )}
                       </td>
                     </tr>
@@ -525,7 +525,7 @@ const GradingPrep: React.FC = () => {
               </h3>
               <div className="grid md:grid-cols-3 gap-3">
                 {Array.from(new Set(guides.flatMap((g) => g.tools))).sort().map((tool) => (
-                  <div key={tool} className="flex items-center gap-2 text-sm text-slate-300 bg-slate-700/50 rounded p-2">
+                  <div key={tool} className="flex items-center gap-2 text-sm text-slate-300 bg-slate-700/50 rounded-sm p-2">
                     <div className="w-2 h-2 rounded-full bg-purple-400" />
                     {tool}
                   </div>

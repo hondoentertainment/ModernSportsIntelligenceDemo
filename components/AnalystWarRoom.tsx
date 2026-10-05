@@ -237,9 +237,9 @@ const AnalystWarRoom: React.FC = () => {
 
                                 {isGenerating ? (
                                     <div className="space-y-4 animate-pulse">
-                                        <div className="h-4 bg-slate-800 rounded w-full" />
-                                        <div className="h-4 bg-slate-800 rounded w-11/12" />
-                                        <div className="h-4 bg-slate-800 rounded w-5/6" />
+                                        <div className="h-4 bg-slate-800 rounded-sm w-full" />
+                                        <div className="h-4 bg-slate-800 rounded-sm w-11/12" />
+                                        <div className="h-4 bg-slate-800 rounded-sm w-5/6" />
                                     </div>
                                 ) : (
                                     <div className="space-y-6">

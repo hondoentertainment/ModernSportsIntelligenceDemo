@@ -138,7 +138,7 @@ const GuidedTour: React.FC = () => {
   const progress = ((currentStep + 1) / TOUR_STEPS.length) * 100;
 
   return (
-    <div className="fixed inset-0 z-[250] pointer-events-none">
+    <div className="fixed inset-0 z-250 pointer-events-none">
       {/* Dimmed overlay */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] pointer-events-auto" />
 
@@ -175,7 +175,7 @@ const GuidedTour: React.FC = () => {
           {/* Content */}
           <div className="px-5 pb-4">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-brand-charcoal border border-slate-800 flex items-center justify-center flex-shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-brand-charcoal border border-slate-800 flex items-center justify-center shrink-0">
                 {step.icon}
               </div>
               <div className="flex-1 min-w-0">

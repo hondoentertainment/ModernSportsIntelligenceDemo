@@ -49,7 +49,7 @@ const MSITerminalWidget: React.FC<MSITerminalWidgetProps> = ({ onOpenModal }) =>
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-sm bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
             <Terminal size={16} className="text-emerald-400" />
           </div>
           <div>
@@ -73,10 +73,10 @@ const MSITerminalWidget: React.FC<MSITerminalWidgetProps> = ({ onOpenModal }) =>
 
       {/* Mini command input */}
       <div
-        className="flex items-center gap-2 bg-slate-950 border border-emerald-500/20 rounded px-3 py-2 mb-2"
+        className="flex items-center gap-2 bg-slate-950 border border-emerald-500/20 rounded-sm px-3 py-2 mb-2"
         onClick={(e) => { e.stopPropagation(); inputRef.current?.focus(); }}
       >
-        <ChevronRight size={12} className="text-emerald-500 flex-shrink-0" />
+        <ChevronRight size={12} className="text-emerald-500 shrink-0" />
         <input
           ref={inputRef}
           type="text"
@@ -84,7 +84,7 @@ const MSITerminalWidget: React.FC<MSITerminalWidgetProps> = ({ onOpenModal }) =>
           onChange={(e) => setInput(e.target.value.toUpperCase())}
           onKeyDown={handleKeyDown}
           placeholder="Type command..."
-          className="bg-transparent text-emerald-400 text-xs flex-1 outline-none placeholder-emerald-800/60"
+          className="bg-transparent text-emerald-400 text-xs flex-1 outline-hidden placeholder-emerald-800/60"
           style={{ fontFamily: "'Courier New', monospace" }}
           onClick={(e) => e.stopPropagation()}
         />
@@ -93,14 +93,14 @@ const MSITerminalWidget: React.FC<MSITerminalWidgetProps> = ({ onOpenModal }) =>
       {/* Last result preview */}
       {resultPreview && (
         <div className="flex items-center gap-2 mt-2">
-          <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${lastResult?.resultType === 'error' ? 'bg-red-500' : 'bg-emerald-500'}`} />
+          <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${lastResult?.resultType === 'error' ? 'bg-red-500' : 'bg-emerald-500'}`} />
           <span
             className={`text-[10px] truncate ${lastResult?.resultType === 'error' ? 'text-red-400/80' : 'text-emerald-500/80'}`}
             style={{ fontFamily: "'Courier New', monospace" }}
           >
             {resultPreview}
           </span>
-          <span className="text-[9px] text-emerald-800/60 flex-shrink-0 ml-auto" style={{ fontFamily: "'Courier New', monospace" }}>
+          <span className="text-[9px] text-emerald-800/60 shrink-0 ml-auto" style={{ fontFamily: "'Courier New', monospace" }}>
             {lastResult ? `${Math.round(lastResult.executionTime)}ms` : ''}
           </span>
         </div>
@@ -112,7 +112,7 @@ const MSITerminalWidget: React.FC<MSITerminalWidgetProps> = ({ onOpenModal }) =>
           {['HELP', 'PORT', 'MSI500'].map(cmd => (
             <span
               key={cmd}
-              className="text-[9px] text-emerald-700/60 px-1.5 py-0.5 border border-emerald-900/30 rounded"
+              className="text-[9px] text-emerald-700/60 px-1.5 py-0.5 border border-emerald-900/30 rounded-sm"
               style={{ fontFamily: "'Courier New', monospace" }}
             >
               {cmd}

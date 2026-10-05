@@ -220,11 +220,11 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
 
         {/* Header */}
-        <div className="p-8 border-b border-slate-700 flex items-center justify-between flex-shrink-0">
+        <div className="p-8 border-b border-slate-700 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-2xl border border-emerald-500/30">
               <Repeat size={22} />
@@ -251,7 +251,7 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-slate-700 flex-shrink-0">
+        <div className="flex border-b border-slate-700 shrink-0">
           {tabs.map(tab => {
             const isActive = activeTab === tab.id;
             const hasBadge = tab.id === 'offers' && stats.pendingOffers > 0;
@@ -315,7 +315,7 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
                       placeholder="Search cards..."
                       value={cardPickerSearch}
                       onChange={e => setCardPickerSearch(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+                      className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-emerald-500/50"
                     />
                   </div>
                   <div className="max-h-48 overflow-y-auto no-scrollbar space-y-1">
@@ -370,7 +370,7 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
                           <p className="text-sm text-white font-medium truncate">{card.player}</p>
                           <p className="text-[10px] text-slate-500">{card.year} {card.set} &middot; {card.sport} &middot; {card.condition}</p>
                         </div>
-                        <div className="text-right flex-shrink-0">
+                        <div className="text-right shrink-0">
                           <p className="text-sm font-mono text-emerald-400">${listing.askPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                           <p className="text-[10px] text-slate-500">
                             Min: ${listing.minAcceptable.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -405,7 +405,7 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
                               type="number"
                               value={askPrice}
                               onChange={e => setAskPrice(e.target.value)}
-                              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
+                              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white font-mono focus:outline-hidden focus:border-emerald-500/50"
                             />
                           </div>
                           <div>
@@ -414,7 +414,7 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
                               type="number"
                               value={minAcceptable}
                               onChange={e => setMinAcceptable(e.target.value)}
-                              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
+                              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white font-mono focus:outline-hidden focus:border-emerald-500/50"
                             />
                           </div>
                           <div>
@@ -424,7 +424,7 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
                               value={preferences}
                               onChange={e => setPreferences(e.target.value)}
                               placeholder="e.g. Cash only, no lowballs"
-                              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500/50"
+                              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-emerald-500/50"
                             />
                           </div>
                         </div>
@@ -550,7 +550,7 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
                             placeholder="Counter $"
                             value={counterInput[offer.id] || ''}
                             onChange={e => setCounterInput(prev => ({ ...prev, [offer.id]: e.target.value }))}
-                            className="w-28 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white font-mono placeholder-slate-600 focus:outline-none focus:border-amber-500/50"
+                            className="w-28 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white font-mono placeholder-slate-600 focus:outline-hidden focus:border-amber-500/50"
                           />
                           <button
                             onClick={() => handleCounterOffer(offer.id)}
@@ -609,7 +609,7 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
                           {trade.sport} &middot; Sold to {trade.offererName} &middot; {completedDate.toLocaleDateString()}
                         </p>
                       </div>
-                      <div className="text-right flex-shrink-0 space-y-0.5">
+                      <div className="text-right shrink-0 space-y-0.5">
                         <div className="flex items-center gap-2 text-xs">
                           <span className="text-slate-500">Ask:</span>
                           <span className="font-mono text-slate-400">${trade.askPrice.toFixed(2)}</span>
@@ -659,7 +659,7 @@ export const TradeBlockModal: React.FC<TradeBlockModalProps> = ({
                           : 'bg-slate-800/30 border-slate-700/50 hover:border-slate-600 text-slate-300'
                       }`}
                     >
-                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 ${
+                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${
                         isSelected ? 'border-emerald-400 bg-emerald-500/20' : 'border-slate-600'
                       }`}>
                         {isSelected && <Check size={12} className="text-emerald-400" />}

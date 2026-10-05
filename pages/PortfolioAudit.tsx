@@ -96,7 +96,7 @@ const PortfolioAudit: React.FC = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {benchmarks.slice(0, 4).map((b, i) => (
-                            <div key={i} className="p-5 bg-brand-slate border border-slate-800 rounded-[1.5rem] flex items-center justify-between group hover:border-white/10 transition-all">
+                            <div key={i} className="p-5 bg-brand-slate border border-slate-800 rounded-3xl flex items-center justify-between group hover:border-white/10 transition-all">
                                 <div className="flex items-center gap-4">
                                     <div className="w-2 h-10 rounded-full" style={{ backgroundColor: b.color }}></div>
                                     <div>
@@ -175,7 +175,7 @@ const PortfolioAudit: React.FC = () => {
 
             {/* Comparative HUD */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-brand-charcoal border border-slate-800 p-8 rounded-[2rem] flex flex-col gap-4">
+                <div className="bg-brand-charcoal border border-slate-800 p-8 rounded-4xl flex flex-col gap-4">
                     <div className="w-12 h-12 bg-brand-blue/10 rounded-2xl flex items-center justify-center text-brand-blue">
                         <GitCompare size={24} />
                     </div>
@@ -186,7 +186,7 @@ const PortfolioAudit: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="bg-brand-charcoal border border-slate-800 p-8 rounded-[2rem] flex flex-col gap-4">
+                <div className="bg-brand-charcoal border border-slate-800 p-8 rounded-4xl flex flex-col gap-4">
                     <div className="w-12 h-12 bg-brand-orange/10 rounded-2xl flex items-center justify-center text-brand-orange">
                         <AlertTriangle size={24} />
                     </div>
@@ -197,7 +197,7 @@ const PortfolioAudit: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="bg-brand-charcoal border border-slate-800 p-8 rounded-[2rem] flex flex-col gap-4">
+                <div className="bg-brand-charcoal border border-slate-800 p-8 rounded-4xl flex flex-col gap-4">
                     <div className="w-12 h-12 bg-brand-lime/10 rounded-2xl flex items-center justify-center text-brand-lime">
                         <Briefcase size={24} />
                     </div>
@@ -208,7 +208,7 @@ const PortfolioAudit: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="bg-brand-charcoal border border-slate-800 p-8 rounded-[2rem] flex flex-col gap-4">
+                <div className="bg-brand-charcoal border border-slate-800 p-8 rounded-4xl flex flex-col gap-4">
                     <div className="w-12 h-12 bg-brand-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400">
                         <Target size={24} />
                     </div>

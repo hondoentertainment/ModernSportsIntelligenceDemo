@@ -401,7 +401,7 @@ const CrossHobbyArbitrageBridge: React.FC = () => {
                         <span className="text-red-400 font-medium">{sig.sellItem}</span>
                       </p>
                     </div>
-                    <div className="flex-shrink-0 text-right">
+                    <div className="shrink-0 text-right">
                       <p className="text-xl font-black text-amber-400">+{sig.potentialGain}%</p>
                       <p className="text-[10px] text-slate-500">potential gain</p>
                     </div>
@@ -468,7 +468,7 @@ const CrossHobbyArbitrageBridge: React.FC = () => {
                 <span className="text-slate-600 text-xs">↔</span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 font-bold whitespace-nowrap">{corr.hobby2}</span>
               </div>
-              <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="flex items-center gap-3 shrink-0">
                 <div className="w-24 bg-slate-700/50 rounded-full h-2 overflow-hidden">
                   <div
                     className={`h-2 rounded-full ${corr.correlation >= 0.7 ? 'bg-emerald-500' : corr.correlation >= 0.4 ? 'bg-amber-500' : 'bg-slate-500'}`}
@@ -517,7 +517,7 @@ const CrossHobbyArbitrageBridge: React.FC = () => {
             { icon: <Target size={14} />, text: 'Cross-hobby arbitrage opportunities arise because sports card price discovery is faster and more efficient than adjacent markets.' },
           ].map((point, idx) => (
             <div key={idx} className="flex items-start gap-3 text-sm text-slate-400">
-              <span className="text-emerald-400 flex-shrink-0 mt-0.5">{point.icon}</span>
+              <span className="text-emerald-400 shrink-0 mt-0.5">{point.icon}</span>
               <p>{point.text}</p>
             </div>
           ))}

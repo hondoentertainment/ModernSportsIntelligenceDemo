@@ -204,7 +204,7 @@ const LiveBreakHub: React.FC = () => {
                 <div className="flex items-center justify-between mb-2">
                   <span className={`text-[10px] px-2 py-0.5 rounded-full ${pc.bg} ${pc.text} ${pc.border} border`}>{pc.label}</span>
                   <div className="flex items-center gap-2">
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${fc.bg} ${fc.text}`}>{fc.label}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-sm ${fc.bg} ${fc.text}`}>{fc.label}</span>
                     <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${sc.bg} ${sc.text} animate-pulse`}>{sc.label}</span>
                   </div>
                 </div>
@@ -320,13 +320,13 @@ const LiveBreakHub: React.FC = () => {
                 <div key={hit.id} className="flex items-center justify-between p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <span className="text-sm font-bold text-slate-600 w-5">#{idx + 1}</span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${pc.bg} ${pc.text} border ${pc.border} flex-shrink-0`}>{pc.label}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${pc.bg} ${pc.text} border ${pc.border} shrink-0`}>{pc.label}</span>
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-white truncate">{hit.player}</p>
                       <p className="text-[10px] text-slate-500 truncate">{hit.cardPulled}</p>
                     </div>
                   </div>
-                  <span className="text-sm font-bold text-emerald-400 flex-shrink-0 ml-2">{formatCurrency(hit.estimatedValue)}</span>
+                  <span className="text-sm font-bold text-emerald-400 shrink-0 ml-2">{formatCurrency(hit.estimatedValue)}</span>
                 </div>
               );
             })}
@@ -434,14 +434,14 @@ const LiveBreakHub: React.FC = () => {
               return (
                 <div key={s.id} className="flex items-center justify-between p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${pc.bg} ${pc.text} border ${pc.border} flex-shrink-0`}>{pc.label}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${pc.bg} ${pc.text} border ${pc.border} shrink-0`}>{pc.label}</span>
                     <div className="min-w-0">
                       <p className="text-sm font-bold text-white truncate">{s.breakerName}</p>
                       <p className="text-[10px] text-slate-500 truncate">{s.product}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 flex-shrink-0 ml-2">
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${fc.bg} ${fc.text}`}>{fc.label}</span>
+                  <div className="flex items-center gap-3 shrink-0 ml-2">
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-sm ${fc.bg} ${fc.text}`}>{fc.label}</span>
                     <span className="text-sm font-bold text-white">{formatCurrency(s.estimatedSpotPrice)}</span>
                     <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${statusColors[s.status] || ''}`}>
                       {s.status.toUpperCase().replace('_', ' ')}
@@ -524,7 +524,7 @@ const LiveBreakHub: React.FC = () => {
                 {ht.recentPulls.slice(0, 3).map((p, idx) => (
                   <div key={idx} className="flex items-center justify-between text-[10px]">
                     <span className="text-slate-400 truncate flex-1 mr-2">{p.card}</span>
-                    <span className="text-emerald-400 font-bold flex-shrink-0">{formatCurrency(p.value)}</span>
+                    <span className="text-emerald-400 font-bold shrink-0">{formatCurrency(p.value)}</span>
                   </div>
                 ))}
               </div>
@@ -549,13 +549,13 @@ const LiveBreakHub: React.FC = () => {
                 const viewerPct = totalViewers > 0 ? (p.totalViewers / totalViewers) * 100 : 0;
                 return (
                   <div key={p.platform} className="flex items-center gap-3 p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl">
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${pc.bg} ${pc.text} border ${pc.border} flex-shrink-0 w-24 text-center`}>{pc.label}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${pc.bg} ${pc.text} border ${pc.border} shrink-0 w-24 text-center`}>{pc.label}</span>
                     <div className="flex-1">
                       <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
                         <div className="h-full bg-blue-500 rounded-full" style={{ width: `${viewerPct}%` }} />
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 flex-shrink-0">
+                    <div className="flex items-center gap-3 shrink-0">
                       <span className="text-xs text-white font-bold">{p.totalViewers.toLocaleString()}</span>
                       <span className="text-[10px] text-slate-500">{p.liveBreaks} live</span>
                     </div>

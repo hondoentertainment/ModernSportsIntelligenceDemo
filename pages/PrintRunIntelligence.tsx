@@ -432,7 +432,7 @@ const PrintRunIntelligence: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex gap-1 flex-wrap">
                     {alert.affectedParallels.map(p => (
-                      <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-400">{p}</span>
+                      <span key={p} className="text-[10px] px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded-sm text-slate-400">{p}</span>
                     ))}
                   </div>
                   <span className={`text-xs font-bold ${alert.estimatedImpact < 0 ? 'text-red-400' : 'text-emerald-400'}`}>

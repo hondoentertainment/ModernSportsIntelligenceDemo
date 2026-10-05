@@ -13,11 +13,11 @@ export const PROFILE_LOADING_WAIT_MS = 6000;
 
 const SessionLoadingShell: React.FC = () => (
     <div className="min-h-screen bg-brand-charcoal flex items-center justify-center overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-charcoal via-slate-900 to-brand-charcoal" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-lime/5 via-transparent to-transparent opacity-50" />
+        <div className="absolute inset-0 bg-linear-to-br from-brand-charcoal via-slate-900 to-brand-charcoal" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-brand-lime/5 via-transparent to-transparent opacity-50" />
 
         <div className="relative z-10 text-center flex flex-col items-center animate-in fade-in zoom-in-95 duration-500">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-lime to-brand-teal flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(190,242,100,0.2)]">
+            <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-brand-lime to-brand-teal flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(190,242,100,0.2)]">
                 <TrendingUp className="w-8 h-8 text-brand-charcoal" />
             </div>
             <h1 className="font-bebas text-3xl tracking-[0.2em] text-white mb-2">MODERN SPORTS INTELLIGENCE</h1>

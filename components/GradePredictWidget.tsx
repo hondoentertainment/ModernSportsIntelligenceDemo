@@ -80,7 +80,7 @@ export const GradePredictWidget: React.FC<GradePredictWidgetProps> = ({ cards, o
               key={rec.cardId}
               className="flex items-center gap-3 px-4 py-3 bg-slate-800/30 border border-slate-700/50 rounded-xl"
             >
-              <Target size={14} className="text-cyan-400 flex-shrink-0" />
+              <Target size={14} className="text-cyan-400 shrink-0" />
               <div className="flex-1 min-w-0">
                 <span className="text-xs text-white font-medium truncate block">
                   {rec.player}
@@ -101,7 +101,7 @@ export const GradePredictWidget: React.FC<GradePredictWidgetProps> = ({ cards, o
         </div>
       ) : (
         <div className="flex items-center gap-3 px-4 py-3 bg-cyan-500/5 border border-cyan-500/15 rounded-xl">
-          <Sparkles size={14} className="text-cyan-400 flex-shrink-0" />
+          <Sparkles size={14} className="text-cyan-400 shrink-0" />
           <span className="text-xs text-slate-400">
             Add ungraded cards to get AI-powered submission recommendations.
           </span>

@@ -91,12 +91,12 @@ export const WaxInvestWidget: React.FC<WaxInvestWidgetProps> = ({ onClick }) => 
       {/* Top Performer */}
       {topPerformer && (
         <div className="flex items-center gap-3 px-4 py-3 bg-brand-lime/5 border border-brand-lime/15 rounded-xl">
-          <Award size={14} className="text-brand-lime flex-shrink-0" />
-          <span className="text-xs text-slate-400 flex-shrink-0">Top:</span>
+          <Award size={14} className="text-brand-lime shrink-0" />
+          <span className="text-xs text-slate-400 shrink-0">Top:</span>
           <span className="text-xs text-white font-medium truncate">
             {topPerformer.product.name}
           </span>
-          <span className={`ml-auto text-xs font-bold flex-shrink-0 ${
+          <span className={`ml-auto text-xs font-bold shrink-0 ${
             topPerformer.roi >= 0 ? 'text-green-400' : 'text-red-400'
           }`}>
             {topPerformer.roi >= 0 ? '+' : ''}{topPerformer.roi.toFixed(1)}%
@@ -107,13 +107,13 @@ export const WaxInvestWidget: React.FC<WaxInvestWidgetProps> = ({ onClick }) => 
       {/* Next Release */}
       {nextRelease && (
         <div className="flex items-center gap-3 px-4 py-3 bg-purple-500/5 border border-purple-500/15 rounded-xl">
-          <Calendar size={14} className="text-purple-400 flex-shrink-0" />
-          <span className="text-xs text-slate-400 flex-shrink-0">Next:</span>
+          <Calendar size={14} className="text-purple-400 shrink-0" />
+          <span className="text-xs text-slate-400 shrink-0">Next:</span>
           <span className="text-xs text-white font-medium truncate">
             {nextRelease.name}
           </span>
           {nextReleaseDays !== null && (
-            <span className="ml-auto text-xs font-bold text-purple-400 flex-shrink-0">
+            <span className="ml-auto text-xs font-bold text-purple-400 shrink-0">
               {nextReleaseDays}d
             </span>
           )}

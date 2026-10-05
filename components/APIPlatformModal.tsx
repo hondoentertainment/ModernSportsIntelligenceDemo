@@ -182,7 +182,7 @@ const APIKeysTab: React.FC<{
               value={newName}
               onChange={e => setNewName(e.target.value)}
               placeholder="e.g. Production App"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-lime-500"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-lime-500"
             />
           </div>
           <div>
@@ -222,7 +222,7 @@ const APIKeysTab: React.FC<{
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${STATUS_DOT[k.status]}`} />
                 <span className="text-sm font-semibold text-white">{k.name}</span>
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${TIER_COLORS[k.tier]}`}>
+                <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${TIER_COLORS[k.tier]}`}>
                   {k.tier}
                 </span>
               </div>
@@ -283,11 +283,11 @@ const DocsTab: React.FC<{ endpoints: APIEndpoint[] }> = ({ endpoints }) => {
               onClick={() => setExpandedPath(isExpanded ? null : ep.path)}
               className="w-full flex items-center gap-3 p-3 hover:bg-slate-800/60 transition-colors text-left"
             >
-              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${methodColor}`}>
+              <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold ${methodColor}`}>
                 {ep.method}
               </span>
               <code className="text-sm font-mono text-white flex-1">{ep.path}</code>
-              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${TIER_COLORS[ep.tier]}`}>
+              <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${TIER_COLORS[ep.tier]}`}>
                 {ep.tier}
               </span>
               {isExpanded ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-500" />}
@@ -430,7 +430,7 @@ const WebhooksTab: React.FC<{
               value={newName}
               onChange={e => setNewName(e.target.value)}
               placeholder="e.g. Price Alert Relay"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-lime-500"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-lime-500"
             />
           </div>
           <div>
@@ -440,7 +440,7 @@ const WebhooksTab: React.FC<{
               value={newUrl}
               onChange={e => setNewUrl(e.target.value)}
               placeholder="https://your-app.com/webhook"
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-lime-500"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-lime-500"
             />
           </div>
           <div>
@@ -510,7 +510,7 @@ const WebhooksTab: React.FC<{
               <code className="text-xs font-mono text-slate-500 block mb-2">{wh.url}</code>
               <div className="flex flex-wrap gap-1 mb-2">
                 {wh.events.map(evt => (
-                  <span key={evt} className="px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded text-[10px]">{evt}</span>
+                  <span key={evt} className="px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded-sm text-[10px]">{evt}</span>
                 ))}
               </div>
               <div className="flex items-center gap-4 text-[11px] text-slate-500">
@@ -612,13 +612,13 @@ const ExportsTab: React.FC<{
         <div className="space-y-2">
           {exportList.map(exp => (
             <div key={exp.id} className="flex items-center gap-3 bg-slate-800/40 border border-slate-700/50 rounded-xl p-3">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 {FORMAT_ICONS[exp.format] || <File size={16} className="text-slate-400" />}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-semibold text-white capitalize">{exp.dataType.replace('_', ' ')}</span>
-                  <span className="px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded text-[10px] uppercase">{exp.format}</span>
+                  <span className="px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded-sm text-[10px] uppercase">{exp.format}</span>
                   {exp.status === 'complete' && (
                     <span className="text-[10px] text-green-400 flex items-center gap-0.5">
                       <CheckCircle2 size={10} /> Complete
@@ -776,7 +776,7 @@ const APIPlatformModal: React.FC<APIPlatformModalProps> = ({ isOpen, onClose }) 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4">
       <div className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-slate-800">

@@ -44,7 +44,7 @@ const Teams: React.FC = () => {
               placeholder="Search teams..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-9 pr-4 text-sm focus:outline-none focus:ring-1 focus:ring-brand-lime w-full md:w-64"
+              className="bg-slate-900 border border-slate-800 rounded-xl py-2 pl-9 pr-4 text-sm focus:outline-hidden focus:ring-1 focus:ring-brand-lime w-full md:w-64"
             />
           </div>
         </div>
@@ -60,7 +60,7 @@ const Teams: React.FC = () => {
           <select 
             value={leagueFilter}
             onChange={(e) => setLeagueFilter(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-300 focus:outline-none focus:border-brand-lime"
+            className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-300 focus:outline-hidden focus:border-brand-lime"
           >
             {leagues.map(l => <option key={l} value={l}>{l}</option>)}
           </select>
@@ -71,7 +71,7 @@ const Teams: React.FC = () => {
         {filteredTeams.map((team) => (
           <div key={team.id} className="bg-slate-950 border border-slate-800 rounded-[2.5rem] p-8 hover:border-brand-lime/50 transition-all group">
             <div className="flex flex-col md:flex-row gap-8 items-start">
-              <div className="w-24 h-24 mb-4 p-4 bg-slate-900 rounded-[2rem] border border-slate-800 flex items-center justify-center">
+              <div className="w-24 h-24 mb-4 p-4 bg-slate-900 rounded-4xl border border-slate-800 flex items-center justify-center">
                 <img src={team.logo} alt="" className="w-full h-full object-contain" />
               </div>
               <div className="flex-1 space-y-4">

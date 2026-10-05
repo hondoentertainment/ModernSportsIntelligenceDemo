@@ -420,9 +420,9 @@ const HobbyLiquidityCrisisModal: React.FC<HobbyLiquidityCrisisModalProps> = ({ i
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-5xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
-        <div className="p-8 border-b border-slate-700 bg-gradient-to-r from-amber-500/10 to-slate-900">
+        <div className="p-8 border-b border-slate-700 bg-linear-to-r from-amber-500/10 to-slate-900">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-amber-500/20 rounded-2xl border border-amber-500/30 text-amber-400">

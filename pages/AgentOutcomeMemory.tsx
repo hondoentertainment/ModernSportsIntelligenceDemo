@@ -106,7 +106,7 @@ const AgentOutcomeMemory: React.FC = () => {
               <li key={rec.id} className="rounded-xl bg-slate-800/50 p-3 text-sm space-y-2">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-slate-300 truncate max-w-md">{rec.summary || rec.recommendedAction}</span>
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium shrink-0 ${rec.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : rec.status === 'rejected' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>{rec.status}</span>
+                  <span className={`px-2 py-0.5 rounded-sm text-xs font-medium shrink-0 ${rec.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : rec.status === 'rejected' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>{rec.status}</span>
                 </div>
                 {rec.agents && rec.agents.length > 0 ? (
                   <AgentConsensusView

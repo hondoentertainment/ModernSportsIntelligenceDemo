@@ -459,7 +459,7 @@ const CollectionHedgeConstructor: React.FC = () => {
                 <select
                   value={longCardId}
                   onChange={e => setLongCardId(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:border-green-500 focus:outline-none"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:border-green-500 focus:outline-hidden"
                 >
                   <option value="">Select card to go long...</option>
                   {cards.map(c => (
@@ -494,7 +494,7 @@ const CollectionHedgeConstructor: React.FC = () => {
                 <select
                   value={shortCardId}
                   onChange={e => setShortCardId(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:border-red-500 focus:outline-none"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:border-red-500 focus:outline-hidden"
                 >
                   <option value="">Select card to short...</option>
                   {cards.filter(c => c.id !== longCardId).map(c => (
@@ -664,23 +664,23 @@ const CollectionHedgeConstructor: React.FC = () => {
             {/* Legend */}
             <div className="flex items-center justify-center gap-4 mt-4 text-[10px] text-slate-500">
               <div className="flex items-center gap-1">
-                <div className="w-4 h-3 rounded" style={{ backgroundColor: 'rgba(239, 68, 68, 0.7)' }} />
+                <div className="w-4 h-3 rounded-sm" style={{ backgroundColor: 'rgba(239, 68, 68, 0.7)' }} />
                 <span>Strong Negative</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-4 h-3 rounded" style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)' }} />
+                <div className="w-4 h-3 rounded-sm" style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)' }} />
                 <span>Weak Negative</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-4 h-3 rounded" style={{ backgroundColor: 'rgba(100, 116, 139, 0.25)' }} />
+                <div className="w-4 h-3 rounded-sm" style={{ backgroundColor: 'rgba(100, 116, 139, 0.25)' }} />
                 <span>Neutral</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-4 h-3 rounded" style={{ backgroundColor: 'rgba(34, 197, 94, 0.4)' }} />
+                <div className="w-4 h-3 rounded-sm" style={{ backgroundColor: 'rgba(34, 197, 94, 0.4)' }} />
                 <span>Positive</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-4 h-3 rounded" style={{ backgroundColor: 'rgba(34, 197, 94, 0.7)' }} />
+                <div className="w-4 h-3 rounded-sm" style={{ backgroundColor: 'rgba(34, 197, 94, 0.7)' }} />
                 <span>Strong Positive</span>
               </div>
             </div>
@@ -730,7 +730,7 @@ const CollectionHedgeConstructor: React.FC = () => {
             <select
               value={selectedPairId}
               onChange={e => setSelectedPairId(e.target.value)}
-              className="w-full md:w-96 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:border-blue-500 focus:outline-none"
+              className="w-full md:w-96 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-sm text-slate-200 focus:border-blue-500 focus:outline-hidden"
             >
               {pairs.map(p => (
                 <option key={p.id} value={p.id}>{p.longCard.player} / {p.shortCard.player} ({strategyLabel(p.strategy)})</option>

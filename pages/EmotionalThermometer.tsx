@@ -344,7 +344,7 @@ const EmotionalThermometer: React.FC = () => {
         {cooldownActive && (
           <div className="bg-blue-900/30 border border-blue-500/30 rounded-xl p-4">
             <div className="flex items-start gap-3">
-              <Shield className="text-blue-400 mt-0.5 flex-shrink-0" size={20} />
+              <Shield className="text-blue-400 mt-0.5 shrink-0" size={20} />
               <div>
                 <div className="font-medium text-blue-300 mb-1">Cooldown Active - {formatCooldownTime(cooldownTimeLeft)} remaining</div>
                 <div className="text-sm text-blue-400/80 mb-2">{cooldown.reason}</div>
@@ -715,7 +715,7 @@ const EmotionalThermometer: React.FC = () => {
                 {session.emotionalJourney.map((state, i) => (
                   <React.Fragment key={i}>
                     <div
-                      className="flex-shrink-0 px-3 py-2 rounded-lg text-xs font-medium border whitespace-nowrap"
+                      className="shrink-0 px-3 py-2 rounded-lg text-xs font-medium border whitespace-nowrap"
                       style={{
                         color: getStateColor(state),
                         borderColor: getStateColor(state) + '44',
@@ -725,7 +725,7 @@ const EmotionalThermometer: React.FC = () => {
                       Trade {i + 1}: {state}
                     </div>
                     {i < session.emotionalJourney.length - 1 && (
-                      <ChevronRight size={14} className="text-slate-600 flex-shrink-0" />
+                      <ChevronRight size={14} className="text-slate-600 shrink-0" />
                     )}
                   </React.Fragment>
                 ))}
@@ -790,10 +790,10 @@ const EmotionalThermometer: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2 mb-2 text-xs">
                       <span className="text-slate-500">Before:</span>
-                      <span className="px-2 py-0.5 rounded bg-slate-700 text-slate-300">{emotionTagLabel[entry.preTradeFeeling]}</span>
+                      <span className="px-2 py-0.5 rounded-sm bg-slate-700 text-slate-300">{emotionTagLabel[entry.preTradeFeeling]}</span>
                       <ChevronRight size={12} className="text-slate-600" />
                       <span className="text-slate-500">After:</span>
-                      <span className="px-2 py-0.5 rounded bg-slate-700 text-slate-300">{emotionTagLabel[entry.postTradeFeeling]}</span>
+                      <span className="px-2 py-0.5 rounded-sm bg-slate-700 text-slate-300">{emotionTagLabel[entry.postTradeFeeling]}</span>
                     </div>
                     <div className="text-sm text-slate-400 italic">"{entry.notes}"</div>
                   </div>

@@ -80,7 +80,7 @@ const DeepSearch: React.FC = () => {
                     </div>
                 )}
                 <div className="relative group">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-brand-blue to-brand-lime rounded-[2.5rem] blur opacity-25 group-focus-within:opacity-100 transition duration-1000 group-focus-within:duration-200"></div>
+                    <div className="absolute -inset-1 bg-linear-to-r from-brand-blue to-brand-lime rounded-[2.5rem] blur-sm opacity-25 group-focus-within:opacity-100 transition duration-1000 group-focus-within:duration-200"></div>
                     <div className="relative bg-brand-charcoal border border-slate-800 rounded-[2.5rem] p-4 flex items-center gap-4">
                         <Search className="ml-4 text-brand-muted group-focus-within:text-brand-blue transition-colors" size={24} />
                         <input
@@ -89,7 +89,7 @@ const DeepSearch: React.FC = () => {
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleDeepSearch()}
-                            className="flex-1 bg-transparent border-none text-xl font-bold text-white focus:outline-none placeholder:text-slate-600"
+                            className="flex-1 bg-transparent border-none text-xl font-bold text-white focus:outline-hidden placeholder:text-slate-600"
                         />
                         <button
                             onClick={handleDeepSearch}
@@ -154,7 +154,7 @@ const DeepSearch: React.FC = () => {
                                             enableLightbox={true}
                                             onImageClick={() => setLightboxResult(result)}
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-brand-slate via-transparent to-transparent opacity-60"></div>
+                                        <div className="absolute inset-0 bg-linear-to-t from-brand-slate via-transparent to-transparent opacity-60"></div>
                                         <div className="absolute top-4 right-4 px-3 py-1 bg-brand-charcoal/80 backdrop-blur-md rounded-full border border-white/5 flex items-center gap-1.5 shadow-xl">
                                             <ShieldCheck size={12} className="text-brand-blue" />
                                             <span className="text-[10px] font-black text-white uppercase tracking-widest">{result.similarityScore}% Match</span>
@@ -176,7 +176,7 @@ const DeepSearch: React.FC = () => {
                                         </div>
 
                                         <div className="p-4 bg-brand-charcoal/50 rounded-2xl border border-white/5 relative group-hover:bg-brand-charcoal/80 transition-colors">
-                                            <div className="absolute -top-3 left-4 px-2 bg-brand-charcoal text-[8px] font-black text-brand-muted uppercase tracking-[0.2em] border border-white/10 rounded flex items-center gap-1">
+                                            <div className="absolute -top-3 left-4 px-2 bg-brand-charcoal text-[8px] font-black text-brand-muted uppercase tracking-[0.2em] border border-white/10 rounded-sm flex items-center gap-1">
                                                 <Info size={10} />
                                                 Alpha Rationale
                                             </div>
@@ -208,7 +208,7 @@ const DeepSearch: React.FC = () => {
             {/* Empty State */}
             {!hasSearched && (
                 <div className="relative overflow-hidden bg-brand-charcoal border border-slate-800 rounded-[3rem] p-12 text-center group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    <div className="absolute inset-0 bg-linear-to-br from-brand-blue/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                     <Target size={64} className="mx-auto text-brand-blue/20 mb-6 group-hover:scale-110 transition-transform duration-500" />
                     <h2 className="text-4xl font-bebas tracking-tight text-white mb-4">Awaiting Signal Ingestion</h2>
                     <p className="text-brand-muted max-w-xl mx-auto text-lg leading-relaxed">

@@ -747,19 +747,19 @@ const SentimentVelocity: React.FC = () => {
 
               {/* Extra stats */}
               <div className="grid grid-cols-2 gap-2 mt-3 text-[10px]">
-                <div className="bg-slate-800/30 rounded p-2">
+                <div className="bg-slate-800/30 rounded-sm p-2">
                   <span className="text-slate-500">Price Corr:</span>
                   <span className="text-slate-200 font-bold ml-1">{selectedVelocity.priceCorrelation.toFixed(2)}</span>
                 </div>
-                <div className="bg-slate-800/30 rounded p-2">
+                <div className="bg-slate-800/30 rounded-sm p-2">
                   <span className="text-slate-500">Accuracy:</span>
                   <span className="text-slate-200 font-bold ml-1">{Math.round(selectedVelocity.historicalAccuracy * 100)}%</span>
                 </div>
-                <div className="bg-slate-800/30 rounded p-2">
+                <div className="bg-slate-800/30 rounded-sm p-2">
                   <span className="text-slate-500">Dir Change:</span>
                   <span className="text-amber-400 font-bold ml-1">{Math.round(selectedVelocity.directionChangeProbability * 100)}%</span>
                 </div>
-                <div className="bg-slate-800/30 rounded p-2">
+                <div className="bg-slate-800/30 rounded-sm p-2">
                   <span className="text-slate-500">State:</span>
                   <span className={`font-bold ml-1 ${selectedVelocity.isAccelerating ? 'text-amber-400' : selectedVelocity.isDecelerating ? 'text-blue-400' : 'text-slate-400'}`}>
                     {selectedVelocity.isAccelerating ? 'Accelerating' : selectedVelocity.isDecelerating ? 'Decelerating' : 'Steady'}

@@ -381,7 +381,7 @@ const CompareTab: React.FC<{
           <select
             value={dateA}
             onChange={e => setDateA(e.target.value)}
-            className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-hidden focus:border-blue-500"
           >
             <option value="">Select date...</option>
             {availableDates.map(d => (
@@ -399,7 +399,7 @@ const CompareTab: React.FC<{
           <select
             value={dateB}
             onChange={e => setDateB(e.target.value)}
-            className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+            className="w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-hidden focus:border-blue-500"
           >
             <option value="">Select date...</option>
             {availableDates.map(d => (
@@ -475,7 +475,7 @@ const CompareTab: React.FC<{
                     const isPositive = drift >= 0;
                     return (
                       <div key={sport} className="flex items-center gap-3 text-xs">
-                        <span className="w-20 text-right text-slate-400 flex-shrink-0">{sport}</span>
+                        <span className="w-20 text-right text-slate-400 shrink-0">{sport}</span>
                         <div className="flex-1 flex items-center">
                           <div className="w-1/2 flex justify-end">
                             {!isPositive && (
@@ -485,7 +485,7 @@ const CompareTab: React.FC<{
                               />
                             )}
                           </div>
-                          <div className="w-px h-4 bg-slate-600 flex-shrink-0" />
+                          <div className="w-px h-4 bg-slate-600 shrink-0" />
                           <div className="w-1/2">
                             {isPositive && (
                               <div
@@ -600,7 +600,7 @@ const JournalTab: React.FC<{
                 type="date"
                 value={newDate}
                 onChange={e => setNewDate(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white focus:outline-hidden focus:border-blue-500"
               />
             </div>
           </div>
@@ -611,7 +611,7 @@ const JournalTab: React.FC<{
               onChange={e => setNewNote(e.target.value)}
               placeholder="Why did you make this decision? What was your thesis?"
               rows={3}
-              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 resize-none"
+              className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-hidden focus:border-blue-500 resize-none"
             />
           </div>
           {/* Card Selector */}
@@ -683,7 +683,7 @@ const JournalTab: React.FC<{
                   return (
                     <span
                       key={id}
-                      className="px-2 py-0.5 bg-slate-700 text-slate-400 rounded text-[10px]"
+                      className="px-2 py-0.5 bg-slate-700 text-slate-400 rounded-sm text-[10px]"
                     >
                       {card?.player ?? id}
                     </span>
@@ -736,7 +736,7 @@ export const TimeMachineModal: React.FC<TimeMachineModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-blue-500/5">

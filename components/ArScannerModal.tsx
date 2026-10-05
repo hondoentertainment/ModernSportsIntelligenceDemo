@@ -85,7 +85,7 @@ export const ArScannerModal: React.FC<ArScannerModalProps> = ({ isOpen, onClose 
   const valuation = scanResult ? getQuickValuation(scanResult.cardId) : null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-5xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-brand-lime/5 shrink-0">
@@ -141,7 +141,7 @@ export const ArScannerModal: React.FC<ArScannerModalProps> = ({ isOpen, onClose 
               <div className="relative bg-slate-950 rounded-2xl border border-slate-700 overflow-hidden">
                 <div className="aspect-video flex items-center justify-center relative">
                   {/* Camera Feed Simulation */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+                  <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900" />
                   <div className="absolute inset-8 border-2 border-dashed border-brand-lime/30 rounded-xl" />
                   <div className="absolute top-10 left-10 w-6 h-6 border-t-2 border-l-2 border-brand-lime" />
                   <div className="absolute top-10 right-10 w-6 h-6 border-t-2 border-r-2 border-brand-lime" />
@@ -182,10 +182,10 @@ export const ArScannerModal: React.FC<ArScannerModalProps> = ({ isOpen, onClose 
 
                   {/* Camera Config Info */}
                   <div className="absolute bottom-3 left-3 flex gap-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800/80 text-slate-400 border border-slate-700">
+                    <span className="px-2 py-0.5 rounded-sm text-[10px] font-bold bg-slate-800/80 text-slate-400 border border-slate-700">
                       {cameraConfig.resolution}
                     </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800/80 text-slate-400 border border-slate-700">
+                    <span className="px-2 py-0.5 rounded-sm text-[10px] font-bold bg-slate-800/80 text-slate-400 border border-slate-700">
                       AF {cameraConfig.autofocus ? 'ON' : 'OFF'}
                     </span>
                   </div>

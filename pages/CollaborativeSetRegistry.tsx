@@ -100,7 +100,7 @@ function CardChecklistTab({ set }: { set: CollaborativeSet }) {
             placeholder="Search cards by name or number..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50"
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50"
           />
         </div>
         <div className="flex gap-2">
@@ -132,7 +132,7 @@ function CardChecklistTab({ set }: { set: CollaborativeSet }) {
           >
             <div className="flex items-center gap-3 min-w-0">
               <div
-                className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                   card.ownedBy
                     ? 'bg-emerald-500/20'
                     : 'bg-red-500/20'
@@ -149,7 +149,7 @@ function CardChecklistTab({ set }: { set: CollaborativeSet }) {
                   <span className="text-slate-500 text-xs font-mono">#{card.number}</span>
                   <span className="text-white font-medium text-sm truncate">{card.name}</span>
                   {card.verified && (
-                    <ShieldCheck size={14} className="text-blue-400 flex-shrink-0" />
+                    <ShieldCheck size={14} className="text-blue-400 shrink-0" />
                   )}
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
@@ -157,12 +157,12 @@ function CardChecklistTab({ set }: { set: CollaborativeSet }) {
                     <>
                       <span>Owned by <span className="text-slate-300">@{card.ownedBy}</span></span>
                       {card.grade && (
-                        <span className="bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded text-[10px] font-bold">
+                        <span className="bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded-sm text-[10px] font-bold">
                           {card.grade}
                         </span>
                       )}
                       {card.condition === 'raw' && (
-                        <span className="bg-slate-600/40 text-slate-400 px-1.5 py-0.5 rounded text-[10px]">
+                        <span className="bg-slate-600/40 text-slate-400 px-1.5 py-0.5 rounded-sm text-[10px]">
                           Raw
                         </span>
                       )}
@@ -175,7 +175,7 @@ function CardChecklistTab({ set }: { set: CollaborativeSet }) {
                 </div>
               </div>
             </div>
-            <div className="text-right flex-shrink-0 ml-4">
+            <div className="text-right shrink-0 ml-4">
               <p className={`text-sm font-semibold ${card.ownedBy ? 'text-emerald-400' : 'text-slate-400'}`}>
                 {formatFullCurrency(card.estimatedValue)}
               </p>
@@ -372,7 +372,7 @@ function MilestonesTab({ set }: { set: CollaborativeSet }) {
             }`}
           >
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-sm ${
+              className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 font-bold text-sm ${
                 reached
                   ? 'bg-emerald-500/20 text-emerald-400'
                   : isCurrent
@@ -412,7 +412,7 @@ function MilestonesTab({ set }: { set: CollaborativeSet }) {
               )}
             </div>
             {reached && (
-              <Trophy size={18} className="text-emerald-500/50 flex-shrink-0" />
+              <Trophy size={18} className="text-emerald-500/50 shrink-0" />
             )}
           </div>
         );
@@ -474,7 +474,7 @@ const SetRegistry: React.FC = () => {
                 setSelectedSetId(s.id);
                 setDetailTab('checklist');
               }}
-              className={`flex-shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium transition-all border ${
+              className={`shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium transition-all border ${
                 selectedSetId === s.id
                   ? 'bg-purple-500/20 text-purple-400 border-purple-500/50'
                   : 'bg-slate-800/60 text-slate-400 border-slate-700 hover:text-white hover:border-slate-600'
@@ -521,7 +521,7 @@ const SetRegistry: React.FC = () => {
                     <span>Created by <span className="text-slate-300">@{selectedSet.creatorHandle}</span></span>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="text-right shrink-0">
                   <p className="text-slate-500 text-xs uppercase tracking-wide mb-1">Set Value</p>
                   <p className="text-white font-bold text-2xl">{formatFullCurrency(selectedSet.estimatedSetValue)}</p>
                 </div>

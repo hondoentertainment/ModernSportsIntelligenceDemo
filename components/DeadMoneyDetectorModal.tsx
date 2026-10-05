@@ -71,7 +71,7 @@ const DeadMoneyDetectorModal: React.FC<DeadMoneyDetectorModalProps> = ({ isOpen,
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-3xl max-h-[85vh] bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden flex flex-col">
@@ -105,7 +105,7 @@ const DeadMoneyDetectorModal: React.FC<DeadMoneyDetectorModalProps> = ({ isOpen,
             >
               {t.label}
               {t.id === 'alerts' && unreadAlerts > 0 && (
-                <span className="absolute -top-0 -right-0 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white flex items-center justify-center font-bold">{unreadAlerts}</span>
+                <span className="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full text-[9px] text-white flex items-center justify-center font-bold">{unreadAlerts}</span>
               )}
               {tab === t.id && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-400 rounded-full" />}
             </button>
@@ -164,7 +164,7 @@ const DeadMoneyDetectorModal: React.FC<DeadMoneyDetectorModalProps> = ({ isOpen,
                 <div className="space-y-1.5">
                   {health.recommendations.slice(0, 3).map((r, i) => (
                     <div key={i} className="flex items-start gap-2 bg-slate-800/40 rounded-lg p-2.5 border border-slate-700/50">
-                      <Shield size={12} className="text-emerald-400 mt-0.5 flex-shrink-0" />
+                      <Shield size={12} className="text-emerald-400 mt-0.5 shrink-0" />
                       <p className="text-xs text-slate-300">{r}</p>
                     </div>
                   ))}

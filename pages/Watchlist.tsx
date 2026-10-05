@@ -186,7 +186,7 @@ const Watchlist: React.FC = () => {
           <select
             value={sportFilter}
             onChange={e => setSportFilter(e.target.value)}
-            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
           >
             {SPORTS.map(s => (
               <option key={s} value={s}>{s}</option>
@@ -501,7 +501,7 @@ const Watchlist: React.FC = () => {
 
       {/* Detail Modal */}
       {selectedItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSelectedItem(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs" onClick={() => setSelectedItem(null)}>
           <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-lg w-full mx-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">

@@ -82,20 +82,20 @@ const WeatherImpactWidget: React.FC<WeatherImpactWidgetProps> = ({ onOpenModal }
                       <span className="text-sm font-semibold text-white truncate">
                         {alert.player}
                       </span>
-                      <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded border ${rec.bg} ${rec.text} ${rec.border}`}>
+                      <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm border ${rec.bg} ${rec.text} ${rec.border}`}>
                         {rec.label}
                       </span>
                     </div>
                     <p className="text-xs text-slate-400 truncate">{alert.forecast}</p>
                   </div>
 
-                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                  <div className="flex flex-col items-end gap-1 shrink-0">
                     <span className={`text-xs font-semibold ${alert.expectedImpact >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                       {alert.expectedImpact >= 0 ? '+' : ''}{alert.expectedImpact}%
                     </span>
                   </div>
 
-                  <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors flex-shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-colors shrink-0" />
                 </button>
               );
             })}
@@ -119,7 +119,7 @@ const WeatherImpactWidget: React.FC<WeatherImpactWidgetProps> = ({ onOpenModal }
                   key={game.gameId}
                   className={`flex items-start gap-2 p-2.5 rounded-lg border text-xs ${statusColor.bg} ${statusColor.border}`}
                 >
-                  <Thermometer className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${condColor.text}`} />
+                  <Thermometer className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${condColor.text}`} />
                   <div className="flex-1 min-w-0">
                     <span className={`font-semibold ${statusColor.text}`}>
                       {game.teams}

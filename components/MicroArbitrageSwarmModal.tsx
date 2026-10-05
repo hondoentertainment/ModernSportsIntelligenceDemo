@@ -97,7 +97,7 @@ export default function MicroArbitrageSwarmModal({ isOpen, onClose, onSightingRe
                 placeholder="e.g., 2023 Topps Chrome #201"
                 value={form.cardDescription}
                 onChange={e => setForm(f => ({ ...f, cardDescription: e.target.value }))}
-                className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
               />
             </div>
 
@@ -109,7 +109,7 @@ export default function MicroArbitrageSwarmModal({ isOpen, onClose, onSightingRe
                 placeholder="Player name"
                 value={form.player}
                 onChange={e => setForm(f => ({ ...f, player: e.target.value }))}
-                className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
               />
             </div>
 
@@ -125,7 +125,7 @@ export default function MicroArbitrageSwarmModal({ isOpen, onClose, onSightingRe
                   placeholder="0"
                   value={form.price || ''}
                   onChange={e => setForm(f => ({ ...f, price: Number(e.target.value) }))}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
                 />
               </div>
               <div>
@@ -187,7 +187,7 @@ export default function MicroArbitrageSwarmModal({ isOpen, onClose, onSightingRe
                   placeholder="City"
                   value={form.city}
                   onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
                 />
               </div>
               <div>
@@ -197,7 +197,7 @@ export default function MicroArbitrageSwarmModal({ isOpen, onClose, onSightingRe
                   placeholder="e.g., TX"
                   value={form.state}
                   onChange={e => setForm(f => ({ ...f, state: e.target.value }))}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
                 />
               </div>
             </div>

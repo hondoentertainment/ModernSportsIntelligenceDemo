@@ -440,7 +440,7 @@ const PreGradeIntelligence: React.FC = () => {
                 type="number"
                 value={customRawValue || roi.rawValue}
                 onChange={(e) => setCustomRawValue(Number(e.target.value))}
-                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-hidden focus:border-orange-500"
               />
             </div>
             <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4">

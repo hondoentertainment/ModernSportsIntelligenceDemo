@@ -167,7 +167,7 @@ const SearchTab: React.FC = () => {
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Search cards across all marketplaces..."
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-lime-500/50"
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-lime-500/50"
           />
         </div>
         <button
@@ -228,11 +228,11 @@ const SearchTab: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className="text-sm font-semibold text-white truncate">{listing.player}</span>
-                    <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded border ${PLATFORM_BG[listing.platform]} ${PLATFORM_COLORS[listing.platform]}`}>
+                    <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded-sm border ${PLATFORM_BG[listing.platform]} ${PLATFORM_COLORS[listing.platform]}`}>
                       {getPlatformLabel(listing.platform)}
                     </span>
                     {listing.bestOffer && (
-                      <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                      <span className="px-1.5 py-0.5 text-[9px] font-bold rounded-sm bg-blue-500/20 text-blue-400 border border-blue-500/30">
                         BEST OFFER
                       </span>
                     )}
@@ -244,7 +244,7 @@ const SearchTab: React.FC = () => {
                     <span className="text-[10px] text-slate-500">{listing.watchers} watching</span>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                <div className="flex flex-col items-end gap-1.5 shrink-0">
                   <div className="text-right">
                     <p className="text-sm font-bold text-white">${listing.askingPrice.toLocaleString()}</p>
                     <p className="text-[10px] text-slate-500">Net ${netInfo.netCost.toLocaleString()}</p>
@@ -319,7 +319,7 @@ const CompareTab: React.FC = () => {
           value={searchPlayer}
           onChange={e => setSearchPlayer(e.target.value)}
           placeholder="Filter comparisons by player or card..."
-          className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-lime-500/50"
+          className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-hidden focus:border-lime-500/50"
         />
       </div>
 
@@ -366,7 +366,7 @@ const CompareTab: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="flex items-center gap-3 shrink-0">
                     <div className="text-right">
                       <p className="text-sm font-bold text-lime-400">${comparison.bestNetCost.toLocaleString()}</p>
                       <p className="text-[10px] text-emerald-400">Save ${comparison.potentialSavings.toLocaleString()}</p>
@@ -492,10 +492,10 @@ const OrdersTab: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                     <span className="text-sm font-semibold text-white truncate">{order.player}</span>
-                    <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded border ${PLATFORM_BG[order.platform]} ${PLATFORM_COLORS[order.platform]}`}>
+                    <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded-sm border ${PLATFORM_BG[order.platform]} ${PLATFORM_COLORS[order.platform]}`}>
                       {getPlatformLabel(order.platform)}
                     </span>
-                    <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded ${statusCfg.bg} ${statusCfg.color}`}>
+                    <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded-sm ${statusCfg.bg} ${statusCfg.color}`}>
                       {statusCfg.label.toUpperCase()}
                     </span>
                   </div>
@@ -510,7 +510,7 @@ const OrdersTab: React.FC = () => {
                     )}
                   </div>
                 </div>
-                <div className="flex flex-col items-end flex-shrink-0">
+                <div className="flex flex-col items-end shrink-0">
                   <span className="text-sm font-bold text-white">${order.totalCost.toLocaleString()}</span>
                   <span className="text-[10px] text-slate-500">
                     Item ${order.purchasePrice.toLocaleString()}
@@ -557,12 +557,12 @@ const SavedTab: React.FC = () => {
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <Search size={12} className="text-lime-400 flex-shrink-0" />
+                  <Search size={12} className="text-lime-400 shrink-0" />
                   <span className="text-sm font-semibold text-white truncate">{search.query}</span>
                 </div>
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {search.platforms.map(p => (
-                    <span key={p} className={`px-1.5 py-0.5 text-[9px] font-bold rounded border ${PLATFORM_BG[p]} ${PLATFORM_COLORS[p]}`}>
+                    <span key={p} className={`px-1.5 py-0.5 text-[9px] font-bold rounded-sm border ${PLATFORM_BG[p]} ${PLATFORM_COLORS[p]}`}>
                       {getPlatformLabel(p)}
                     </span>
                   ))}
@@ -644,7 +644,7 @@ const PlatformsTab: React.FC = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <span className={`text-sm font-bold ${ph.color}`}>{ph.label}</span>
-                  <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-bold rounded border ${statusCfg.bg} ${statusCfg.color}`}>
+                  <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-bold rounded-sm border ${statusCfg.bg} ${statusCfg.color}`}>
                     {statusCfg.icon}
                     {statusCfg.label}
                   </span>
@@ -697,11 +697,11 @@ const MarketplaceAggregatorModal: React.FC<MarketplaceAggregatorModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
 
         {/* Header */}
-        <div className="p-5 border-b border-slate-700 bg-gradient-to-r from-slate-800/80 to-slate-900 flex-shrink-0">
+        <div className="p-5 border-b border-slate-700 bg-linear-to-r from-slate-800/80 to-slate-900 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-lime-500/20">

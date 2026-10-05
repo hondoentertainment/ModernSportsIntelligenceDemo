@@ -95,7 +95,7 @@ const LeagueHubWidget: React.FC<LeagueHubWidgetProps> = ({ sport: initialSport, 
               <span className="text-[10px] text-slate-500 w-4">{idx + 1}</span>
               <span className="text-xs text-white truncate">{team.team}</span>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2 shrink-0">
               <span className="text-[10px] text-slate-400">{team.wins}-{team.losses}</span>
               <span className={`text-[10px] font-medium ${team.cardMarketChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                 {team.cardMarketChange >= 0 ? '+' : ''}{team.cardMarketChange}%
@@ -114,12 +114,12 @@ const LeagueHubWidget: React.FC<LeagueHubWidgetProps> = ({ sport: initialSport, 
           {topRookies.map(rookie => (
             <div key={rookie.id} className="flex items-center justify-between py-1">
               <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className={`text-[10px] px-1 py-0.5 rounded ${config.bgColor} ${config.color} font-bold`}>
+                <span className={`text-[10px] px-1 py-0.5 rounded-sm ${config.bgColor} ${config.color} font-bold`}>
                   {rookie.seasonGrade}
                 </span>
                 <span className="text-xs text-white truncate">{rookie.name}</span>
               </div>
-              <div className="text-right flex-shrink-0 ml-2">
+              <div className="text-right shrink-0 ml-2">
                 <span className="text-xs text-white font-medium">${rookie.topCardValue}</span>
                 <span className={`ml-1 text-[10px] ${rookie.weeklyChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {rookie.weeklyChange >= 0 ? '+' : ''}{rookie.weeklyChange}%

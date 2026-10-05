@@ -254,27 +254,27 @@ const CampaignsTab: React.FC = () => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] text-slate-500 uppercase block mb-1">Player *</label>
-              <input value={newPlayer} onChange={e => setNewPlayer(e.target.value)} placeholder="e.g. Mike Trout" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50" />
+              <input value={newPlayer} onChange={e => setNewPlayer(e.target.value)} placeholder="e.g. Mike Trout" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-violet-500/50" />
             </div>
             <div>
               <label className="text-[10px] text-slate-500 uppercase block mb-1">Set</label>
-              <input value={newSet} onChange={e => setNewSet(e.target.value)} placeholder="e.g. Topps Chrome" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50" />
+              <input value={newSet} onChange={e => setNewSet(e.target.value)} placeholder="e.g. Topps Chrome" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-violet-500/50" />
             </div>
             <div>
               <label className="text-[10px] text-slate-500 uppercase block mb-1">Grade</label>
-              <input value={newGrade} onChange={e => setNewGrade(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50" />
+              <input value={newGrade} onChange={e => setNewGrade(e.target.value)} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-violet-500/50" />
             </div>
             <div>
               <label className="text-[10px] text-slate-500 uppercase block mb-1">Max Price *</label>
-              <input value={newMax} onChange={e => setNewMax(e.target.value)} type="number" placeholder="$" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50" />
+              <input value={newMax} onChange={e => setNewMax(e.target.value)} type="number" placeholder="$" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-violet-500/50" />
             </div>
             <div>
               <label className="text-[10px] text-slate-500 uppercase block mb-1">Target ROI %</label>
-              <input value={newROI} onChange={e => setNewROI(e.target.value)} type="number" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50" />
+              <input value={newROI} onChange={e => setNewROI(e.target.value)} type="number" className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-violet-500/50" />
             </div>
             <div>
               <label className="text-[10px] text-slate-500 uppercase block mb-1">Urgency</label>
-              <select value={newUrgency} onChange={e => setNewUrgency(e.target.value as UrgencyLevel)} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50">
+              <select value={newUrgency} onChange={e => setNewUrgency(e.target.value as UrgencyLevel)} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-violet-500/50">
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
@@ -323,7 +323,7 @@ const CampaignsTab: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className="text-sm font-semibold text-white truncate">{c.name}</span>
-                      <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded border ${statusCfg.bg} ${statusCfg.color} ${statusCfg.border}`}>
+                      <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded-sm border ${statusCfg.bg} ${statusCfg.color} ${statusCfg.border}`}>
                         {statusCfg.label.toUpperCase()}
                       </span>
                     </div>
@@ -341,7 +341,7 @@ const CampaignsTab: React.FC = () => {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="flex items-center gap-3 shrink-0">
                     <div className="flex flex-col items-end gap-0.5">
                       <div className="w-20 h-1.5 bg-slate-700 rounded-full overflow-hidden">
                         <div className="h-full rounded-full bg-violet-500" style={{ width: `${c.progressPct}%` }} />
@@ -453,7 +453,7 @@ const ActivityFeedTab: React.FC = () => {
               </div>
             </div>
             {a.amount && (
-              <span className="text-xs font-mono text-slate-300 flex-shrink-0">${a.amount.toLocaleString()}</span>
+              <span className="text-xs font-mono text-slate-300 shrink-0">${a.amount.toLocaleString()}</span>
             )}
           </div>
         ))}
@@ -515,7 +515,7 @@ const NegotiationsTab: React.FC = () => {
               setSelectedPlaybookId(id);
               setPlaybookId(id);
             }}
-            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50"
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-violet-500/50"
           >
             {playbooks.map((p) => (
               <option key={p.id} value={p.id}>
@@ -547,7 +547,7 @@ const NegotiationsTab: React.FC = () => {
         <select
           value={selectedId}
           onChange={e => setSelectedId(e.target.value)}
-          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-violet-500/50"
+          className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden focus:border-violet-500/50"
         >
           {negotiations.map(n => {
             const stageCfg = STAGE_CONFIG[n.stage];
@@ -671,7 +671,7 @@ const NegotiationsTab: React.FC = () => {
               </div>
               <div className="flex-1 h-1 bg-slate-700 rounded-full mx-2 relative">
                 <div
-                  className="absolute h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full"
+                  className="absolute h-full bg-linear-to-r from-blue-500 to-violet-500 rounded-full"
                   style={{ width: `${Math.min(100, ((selected.currentOffer - selected.openingOffer) / (selected.listingPrice - selected.openingOffer)) * 100)}%` }}
                 />
               </div>
@@ -771,8 +771,8 @@ const EscrowTab: React.FC = () => {
             <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
               {tx.events.map((evt, i) => (
                 <div key={i} className="flex items-start gap-2 text-xs">
-                  <span className="text-[10px] text-slate-600 w-28 flex-shrink-0">{formatDate(evt.timestamp)}</span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-violet-400 mt-1.5 flex-shrink-0" />
+                  <span className="text-[10px] text-slate-600 w-28 shrink-0">{formatDate(evt.timestamp)}</span>
+                  <div className="w-1.5 h-1.5 rounded-full bg-violet-400 mt-1.5 shrink-0" />
                   <div>
                     <span className="text-slate-300 font-medium">{evt.event}</span>
                     <span className="text-slate-500 ml-1">— {evt.detail}</span>
@@ -960,7 +960,7 @@ const AnalyticsTab: React.FC = () => {
                 <p className="text-sm text-white font-medium truncate">{r.cardDescription}</p>
                 <p className="text-[10px] text-slate-500">{r.platform} &middot; {r.sellerName} &middot; {r.negotiationRounds} rounds</p>
               </div>
-              <div className="text-right flex-shrink-0">
+              <div className="text-right shrink-0">
                 <p className="text-sm font-mono text-white">${r.acquiredPrice.toLocaleString()}</p>
                 <p className="text-emerald-400 text-[10px] font-bold">-{r.savingsPct}% (${r.savings})</p>
               </div>
@@ -980,11 +980,11 @@ const AutonomousAcquisitionModal: React.FC<AutonomousAcquisitionModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="w-full max-w-5xl bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
 
         {/* Header */}
-        <div className="p-5 border-b border-slate-700 bg-gradient-to-r from-slate-800/80 to-slate-900 flex-shrink-0">
+        <div className="p-5 border-b border-slate-700 bg-linear-to-r from-slate-800/80 to-slate-900 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-violet-500/20">
@@ -994,7 +994,7 @@ const AutonomousAcquisitionModal: React.FC<AutonomousAcquisitionModalProps> = ({
                 <h2 className="text-lg font-bold text-white">AI Acquisition Agent</h2>
                 <p className="text-xs text-slate-400">
                   Autonomous deal negotiation &amp; card acquisition
-                  <span className="ml-2 rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-amber-300">
+                  <span className="ml-2 rounded-sm border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-amber-300">
                     {AUTONOMOUS_ACQUISITION_DATA_MODE}
                   </span>
                 </p>

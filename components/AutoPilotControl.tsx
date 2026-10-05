@@ -92,7 +92,7 @@ const AutoPilotControl: React.FC = () => {
                     onClick={toggleActive}
                     className={`relative w-16 h-8 rounded-full transition-all duration-500 ${config.isActive ? 'bg-brand-lime' : 'bg-slate-800'}`}
                 >
-                    <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform duration-500 shadow-sm ${config.isActive ? 'translate-x-8' : 'translate-x-0'}`} />
+                    <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform duration-500 shadow-xs ${config.isActive ? 'translate-x-8' : 'translate-x-0'}`} />
                 </button>
             </div>
 
@@ -136,7 +136,7 @@ const AutoPilotControl: React.FC = () => {
                                     type="number"
                                     value={config.collar.maxBudget}
                                     onChange={(e) => updateCollar('maxBudget', parseInt(e.target.value))}
-                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-none"
+                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-hidden"
                                 />
                             </div>
                         </div>
@@ -149,7 +149,7 @@ const AutoPilotControl: React.FC = () => {
                                     type="number"
                                     value={config.collar.maxSpendPerAsset}
                                     onChange={(e) => updateCollar('maxSpendPerAsset', parseInt(e.target.value))}
-                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-none"
+                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-hidden"
                                 />
                             </div>
                         </div>
@@ -161,7 +161,7 @@ const AutoPilotControl: React.FC = () => {
                                     type="number"
                                     value={config.collar.maxDailyBudget || 0}
                                     onChange={(e) => updateCollar('maxDailyBudget', parseInt(e.target.value))}
-                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-none"
+                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-hidden"
                                 />
                             </div>
                             <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
@@ -172,7 +172,7 @@ const AutoPilotControl: React.FC = () => {
                                     max="100"
                                     value={config.collar.maxDrawdownPct || 0}
                                     onChange={(e) => updateCollar('maxDrawdownPct', parseFloat(e.target.value))}
-                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-none"
+                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-hidden"
                                 />
                             </div>
                         </div>
@@ -187,7 +187,7 @@ const AutoPilotControl: React.FC = () => {
                                     max="1"
                                     value={config.collar.minActionConfidence || 0}
                                     onChange={(e) => updateCollar('minActionConfidence', parseFloat(e.target.value))}
-                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-none"
+                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-hidden"
                                 />
                             </div>
                             <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
@@ -196,7 +196,7 @@ const AutoPilotControl: React.FC = () => {
                                     type="number"
                                     value={config.collar.requireApprovalAbove || 0}
                                     onChange={(e) => updateCollar('requireApprovalAbove', parseInt(e.target.value))}
-                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-none"
+                                    className="bg-transparent text-xl font-bold text-white w-full focus:outline-hidden"
                                 />
                             </div>
                         </div>
@@ -208,7 +208,7 @@ const AutoPilotControl: React.FC = () => {
                                 value={(config.collar.blockedPlayers || []).join(', ')}
                                 onChange={(e) => handleBlockedPlayersChange(e.target.value)}
                                 placeholder="Comma-separated names"
-                                className="bg-transparent text-sm font-medium text-white w-full focus:outline-none placeholder:text-slate-500"
+                                className="bg-transparent text-sm font-medium text-white w-full focus:outline-hidden placeholder:text-slate-500"
                             />
                         </div>
 
@@ -262,7 +262,7 @@ const AutoPilotControl: React.FC = () => {
                         ) : (
                             <div className="space-y-3">
                                 {actions.map((action) => (
-                                    <div key={action.id} className="p-3 rounded-xl bg-white/5 border-l-2 border-brand-lime flex gap-3 items-start group hover:bg-white/[0.08] transition-colors">
+                                    <div key={action.id} className="p-3 rounded-xl bg-white/5 border-l-2 border-brand-lime flex gap-3 items-start group hover:bg-white/8 transition-colors">
                                         <div className="mt-1">
                                             {action.type === 'BUY' ? <Zap className="text-brand-lime" size={12} /> :
                                                 action.type === 'SELL' ? <AlertCircle className="text-brand-orange" size={12} /> :

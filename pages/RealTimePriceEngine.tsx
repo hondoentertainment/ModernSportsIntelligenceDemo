@@ -29,7 +29,7 @@ import {
 
 const SourceBadge: React.FC<{ source: string }> = ({ source }) => (
   <span
-    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+    className="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium"
     style={{ backgroundColor: `${getSourceColor(source as any)}20`, color: getSourceColor(source as any) }}
   >
     {source.toUpperCase()}
@@ -44,7 +44,7 @@ const GradePill: React.FC<{ grade: string }> = ({ grade }) => {
     ? 'bg-emerald-500/10 text-emerald-400'
     : 'bg-blue-500/10 text-blue-400';
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${bgClass}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-semibold ${bgClass}`}>
       {grade}
     </span>
   );
@@ -81,7 +81,7 @@ const PriorityBadge: React.FC<{ priority: 'high' | 'medium' | 'low' }> = ({ prio
     low: 'bg-slate-500/10 text-slate-400',
   };
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${styles[priority]}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium ${styles[priority]}`}>
       {priority.charAt(0).toUpperCase() + priority.slice(1)}
     </span>
   );
@@ -215,7 +215,7 @@ const RealTimePriceEngine: React.FC = () => {
               placeholder="Search cards, players..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-lime w-64"
+              className="pl-9 pr-4 py-2 bg-slate-800/50 border border-slate-700/50 rounded-lg text-slate-100 text-sm placeholder-slate-500 focus:outline-hidden focus:ring-1 focus:ring-brand-lime w-64"
             />
           </div>
           {/* Time Range Filter */}

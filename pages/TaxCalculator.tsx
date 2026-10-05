@@ -261,7 +261,7 @@ const TaxCalculator: React.FC = () => {
             <div key={idx} className="bg-slate-900/50 border border-slate-700/30 rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-bold text-white truncate flex-1 mr-2">{h.cardName}</p>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 flex-shrink-0">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 shrink-0">
                   {h.urgency}
                 </span>
               </div>
@@ -295,13 +295,13 @@ const TaxCalculator: React.FC = () => {
           {washAlerts.map((alert, idx) => (
             <div key={idx} className="flex items-center justify-between p-3 bg-slate-900/50 border border-red-500/20 rounded-xl">
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <AlertTriangle size={16} className="text-red-400 flex-shrink-0" />
+                <AlertTriangle size={16} className="text-red-400 shrink-0" />
                 <div className="min-w-0">
                   <p className="text-sm font-bold text-white truncate">{alert.cardName}</p>
                   <p className="text-[10px] text-slate-500">{alert.description}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+              <div className="flex items-center gap-3 shrink-0 ml-2">
                 <span className="text-sm font-bold text-red-400">{formatCurrency(alert.disallowedLoss)}</span>
                 <span className={`text-[10px] px-2 py-0.5 rounded-full ${alert.severity === 'high' ? 'bg-red-500/10 text-red-400' : alert.severity === 'medium' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}`}>
                   {alert.severity.toUpperCase()}
@@ -328,7 +328,7 @@ const TaxCalculator: React.FC = () => {
                     <p className="text-[10px] text-slate-500 truncate">{exp.description}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+                <div className="flex items-center gap-3 shrink-0 ml-2">
                   <span className="text-sm font-bold text-emerald-400">{formatCurrency(exp.amount)}</span>
                   <span className="text-[10px] text-slate-500">{exp.date}</span>
                 </div>

@@ -324,7 +324,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
             return (
               <div key={s.stage} className="group/funnel">
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-slate-400 w-28 text-right flex-shrink-0">{s.label}</span>
+                  <span className="text-xs text-slate-400 w-28 text-right shrink-0">{s.label}</span>
                   <div className="flex-1 relative">
                     <div
                       className="h-8 rounded-lg flex items-center px-3 transition-all"
@@ -352,7 +352,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
           <select
             value={sportFilter}
             onChange={e => setSportFilter(e.target.value as Sport | 'All')}
-            className="bg-transparent text-xs text-slate-300 outline-none cursor-pointer"
+            className="bg-transparent text-xs text-slate-300 outline-hidden cursor-pointer"
           >
             {SPORTS.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
@@ -362,7 +362,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
           <select
             value={stageFilter}
             onChange={e => setStageFilter(e.target.value as ProspectStage | 'all')}
-            className="bg-transparent text-xs text-slate-300 outline-none cursor-pointer"
+            className="bg-transparent text-xs text-slate-300 outline-hidden cursor-pointer"
           >
             <option value="all">All Stages</option>
             {STAGES.filter(s => s !== 'all').map(s => (
@@ -376,7 +376,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search prospects..."
-            className="bg-transparent text-xs text-slate-300 outline-none w-full placeholder-slate-500"
+            className="bg-transparent text-xs text-slate-300 outline-hidden w-full placeholder-slate-500"
           />
         </div>
       </div>
@@ -397,7 +397,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="text-sm font-semibold text-white truncate">{p.name}</span>
                   {followed && <Star size={10} className="text-amber-400" fill="currentColor" />}
-                  <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded border ${badge.cls}`}>{badge.label}</span>
+                  <span className={`px-1.5 py-0.5 text-[9px] font-bold rounded-sm border ${badge.cls}`}>{badge.label}</span>
                 </div>
                 <div className="flex items-center gap-2 text-[11px]">
                   <span className={sportTextClass(p.sport)}>{p.sport}</span>
@@ -405,11 +405,11 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
                   <span className="text-slate-500">{p.position} &middot; {p.team}</span>
                 </div>
               </div>
-              <div className="text-right flex-shrink-0">
+              <div className="text-right shrink-0">
                 <p className="text-xs font-mono font-semibold text-emerald-400">{p.callUpProbability}%</p>
                 <p className="text-[10px] text-slate-500">${getValueAtStage(p, p.stage)}</p>
               </div>
-              <ChevronRight size={14} className="text-slate-600 flex-shrink-0" />
+              <ChevronRight size={14} className="text-slate-600 shrink-0" />
             </button>
           );
         })}
@@ -475,7 +475,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
                 <p className="text-sm font-semibold text-white truncate">{d.prospect?.name || 'Unknown'}</p>
                 <p className="text-[11px] text-slate-500">{d.team}</p>
               </div>
-              <div className="text-right flex-shrink-0 space-y-0.5">
+              <div className="text-right shrink-0 space-y-0.5">
                 <p className="text-xs text-slate-400">Pre: <span className="text-white font-mono">${d.preDraftValue}</span></p>
                 <p className="text-xs text-emerald-400 font-mono font-semibold">+{d.postDraftImpact}%</p>
               </div>
@@ -516,7 +516,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
                 {!a.acknowledged && (
                   <button
                     onClick={() => handleAckAlert(a.id)}
-                    className="text-[10px] text-slate-400 hover:text-white bg-slate-800 px-2 py-1 rounded transition-colors"
+                    className="text-[10px] text-slate-400 hover:text-white bg-slate-800 px-2 py-1 rounded-sm transition-colors"
                   >
                     Dismiss
                   </button>
@@ -571,7 +571,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
           <select
             value={stashForm.prospectId}
             onChange={e => setStashForm(f => ({ ...f, prospectId: e.target.value }))}
-            className="bg-slate-900 text-xs text-slate-300 rounded-lg px-3 py-2 border border-slate-700 outline-none"
+            className="bg-slate-900 text-xs text-slate-300 rounded-lg px-3 py-2 border border-slate-700 outline-hidden"
           >
             <option value="">Select prospect...</option>
             {allProspects.map(p => (
@@ -583,20 +583,20 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
             onChange={e => setStashForm(f => ({ ...f, purchasePrice: e.target.value }))}
             placeholder="Purchase price"
             type="number"
-            className="bg-slate-900 text-xs text-slate-300 rounded-lg px-3 py-2 border border-slate-700 outline-none placeholder-slate-500"
+            className="bg-slate-900 text-xs text-slate-300 rounded-lg px-3 py-2 border border-slate-700 outline-hidden placeholder-slate-500"
           />
           <input
             value={stashForm.targetExit}
             onChange={e => setStashForm(f => ({ ...f, targetExit: e.target.value }))}
             placeholder="Target exit price"
             type="number"
-            className="bg-slate-900 text-xs text-slate-300 rounded-lg px-3 py-2 border border-slate-700 outline-none placeholder-slate-500"
+            className="bg-slate-900 text-xs text-slate-300 rounded-lg px-3 py-2 border border-slate-700 outline-hidden placeholder-slate-500"
           />
           <input
             value={stashForm.notes}
             onChange={e => setStashForm(f => ({ ...f, notes: e.target.value }))}
             placeholder="Notes (optional)"
-            className="bg-slate-900 text-xs text-slate-300 rounded-lg px-3 py-2 border border-slate-700 outline-none placeholder-slate-500"
+            className="bg-slate-900 text-xs text-slate-300 rounded-lg px-3 py-2 border border-slate-700 outline-hidden placeholder-slate-500"
           />
         </div>
         <button
@@ -640,7 +640,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
                     </div>
                   )}
                 </div>
-                <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                <div className="flex flex-col items-end gap-1 shrink-0">
                   <span className={`text-xs font-mono font-bold ${roi >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {roi >= 0 ? '+' : ''}{roi}%
                   </span>
@@ -668,7 +668,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
         <select
           value={compareA}
           onChange={e => setCompareA(e.target.value)}
-          className="bg-slate-800 text-xs text-slate-300 rounded-lg px-3 py-2.5 border border-slate-700 outline-none"
+          className="bg-slate-800 text-xs text-slate-300 rounded-lg px-3 py-2.5 border border-slate-700 outline-hidden"
         >
           <option value="">Select Prospect A...</option>
           {allProspects.map(p => (
@@ -678,7 +678,7 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
         <select
           value={compareB}
           onChange={e => setCompareB(e.target.value)}
-          className="bg-slate-800 text-xs text-slate-300 rounded-lg px-3 py-2.5 border border-slate-700 outline-none"
+          className="bg-slate-800 text-xs text-slate-300 rounded-lg px-3 py-2.5 border border-slate-700 outline-hidden"
         >
           <option value="">Select Prospect B...</option>
           {allProspects.map(p => (
@@ -758,10 +758,10 @@ const ProspectModal: React.FC<ProspectModalProps> = ({ isOpen, onClose, _cards }
 
   // ── Main render ───────────────────────────────────────────────────────────────
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col relative">
         {/* Header */}
-        <div className="p-6 border-b border-slate-700 bg-gradient-to-r from-slate-800/80 to-slate-900 flex-shrink-0">
+        <div className="p-6 border-b border-slate-700 bg-linear-to-r from-slate-800/80 to-slate-900 shrink-0">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-blue-500/10 rounded-xl text-blue-400">

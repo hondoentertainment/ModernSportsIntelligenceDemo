@@ -100,7 +100,7 @@ const WeatherImpact: React.FC = () => {
                       <p className="text-xs text-slate-400">{alert.upcomingGame}</p>
                       <p className="text-xs text-slate-500 mt-1">{alert.forecast}</p>
                     </div>
-                    <div className="text-right flex-shrink-0 ml-4">
+                    <div className="text-right shrink-0 ml-4">
                       <p className="text-lg font-bold text-emerald-400">+{alert.expectedImpact}%</p>
                       <p className="text-[10px] text-slate-500 uppercase">Expected</p>
                     </div>
@@ -132,7 +132,7 @@ const WeatherImpact: React.FC = () => {
                         <p className="text-xs text-slate-400">{alert.upcomingGame}</p>
                         <p className="text-xs text-slate-500 mt-1">{alert.reasoning}</p>
                       </div>
-                      <div className="text-right flex-shrink-0 ml-4">
+                      <div className="text-right shrink-0 ml-4">
                         <p className="text-lg font-bold text-red-400">{alert.expectedImpact}%</p>
                         <p className="text-[10px] text-slate-500 uppercase">Expected</p>
                       </div>
@@ -155,7 +155,7 @@ const WeatherImpact: React.FC = () => {
                 return (
                   <div key={event.id} className="p-4 bg-slate-900/50 rounded-xl border border-slate-700/30">
                     <div className="flex items-center justify-between mb-2">
-                      <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded ${condColor.bg} ${condColor.text}`}>
+                      <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-sm ${condColor.bg} ${condColor.text}`}>
                         {getConditionLabel(event.weather.condition)}
                       </span>
                       <span className="text-lg font-black text-emerald-400">{event.memorabiliaMultiplier}x</span>
@@ -201,14 +201,14 @@ const WeatherImpact: React.FC = () => {
                         </td>
                         <td className="py-3 pr-4 text-xs text-slate-400">{game.venue}</td>
                         <td className="py-3 pr-4 text-center">
-                          <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded ${condColor.bg} ${condColor.text}`}>
+                          <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-sm ${condColor.bg} ${condColor.text}`}>
                             {getConditionLabel(game.weather.condition)}
                           </span>
                         </td>
                         <td className="py-3 pr-4 text-center text-white font-semibold">{game.weather.temp}°F</td>
                         <td className="py-3 pr-4 text-center text-slate-400">{game.weather.windSpeed} mph</td>
                         <td className="py-3 text-center">
-                          <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded ${statusColor.bg} ${statusColor.text}`}>
+                          <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-sm ${statusColor.bg} ${statusColor.text}`}>
                             {game.gameStatus.replace('_', ' ')}
                           </span>
                         </td>

@@ -220,19 +220,19 @@ const NarrativePremiumIndexModal: React.FC<NarrativePremiumIndexModalProps> = ({
         </div>
         <ul className="space-y-2">
           <li className="flex items-start gap-2 text-xs text-slate-300">
-            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 flex-shrink-0" />
+            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 shrink-0" />
             Championship narratives typically add 20-40% premium that fades within 6 months
           </li>
           <li className="flex items-start gap-2 text-xs text-slate-300">
-            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 flex-shrink-0" />
+            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 shrink-0" />
             Rookie hype premiums are most volatile - buy before consensus forms
           </li>
           <li className="flex items-start gap-2 text-xs text-slate-300">
-            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 flex-shrink-0" />
+            <ArrowUpRight size={12} className="text-lime-400 mt-0.5 shrink-0" />
             Hall of Fame narratives provide the most sustained long-term premium
           </li>
           <li className="flex items-start gap-2 text-xs text-slate-300">
-            <ArrowDownRight size={12} className="text-red-400 mt-0.5 flex-shrink-0" />
+            <ArrowDownRight size={12} className="text-red-400 mt-0.5 shrink-0" />
             Scandal narratives cause immediate 30-60% drops with slow recovery
           </li>
         </ul>
@@ -242,7 +242,7 @@ const NarrativePremiumIndexModal: React.FC<NarrativePremiumIndexModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-5xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
           <div className="flex items-center gap-3">

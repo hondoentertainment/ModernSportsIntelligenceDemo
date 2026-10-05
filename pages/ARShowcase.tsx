@@ -227,7 +227,7 @@ const ARShowcase: React.FC = () => {
       {/* Shareable Link */}
       <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
         <div className="flex items-center gap-3">
-          <Share2 size={14} className="text-brand-lime flex-shrink-0" />
+          <Share2 size={14} className="text-brand-lime shrink-0" />
           <span className="text-[10px] font-black text-brand-muted uppercase tracking-widest">
             Shareable Link
           </span>
@@ -284,7 +284,7 @@ const GridView: React.FC<{
         style={{ perspective: '800px' }}
       >
         <div
-          className="rounded-xl border border-slate-600/50 bg-slate-800/80 backdrop-blur-sm p-4 transition-all duration-500"
+          className="rounded-xl border border-slate-600/50 bg-slate-800/80 backdrop-blur-xs p-4 transition-all duration-500"
           style={{
             transform: hoveredCard === card.id
               ? 'rotateY(10deg) rotateX(-5deg) translateZ(20px) scale(1.05)'
@@ -325,7 +325,7 @@ const SpotlightView: React.FC<{
       {/* Main spotlight card */}
       <div style={{ perspective: '1200px' }} className="w-full max-w-sm">
         <div
-          className="rounded-2xl border-2 border-brand-lime/30 bg-slate-800/90 backdrop-blur-sm p-8 transition-all duration-700 mx-auto"
+          className="rounded-2xl border-2 border-brand-lime/30 bg-slate-800/90 backdrop-blur-xs p-8 transition-all duration-700 mx-auto"
           style={{
             transform: 'rotateY(0deg) rotateX(2deg) translateZ(30px)',
             transformStyle: 'preserve-3d',
@@ -379,7 +379,7 @@ const SpotlightView: React.FC<{
           <button
             key={card.id}
             onClick={() => onChangeIndex(index)}
-            className={`flex-shrink-0 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
+            className={`shrink-0 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
               index === activeIndex
                 ? 'border-brand-lime text-brand-lime bg-brand-lime/10'
                 : 'border-slate-700 text-slate-500 hover:border-slate-600 hover:text-slate-300'
@@ -423,7 +423,7 @@ const StackView: React.FC<{
             }}
           >
             <div
-              className="w-full h-full rounded-2xl border bg-slate-800/95 backdrop-blur-sm p-6 flex flex-col items-center justify-center"
+              className="w-full h-full rounded-2xl border bg-slate-800/95 backdrop-blur-xs p-6 flex flex-col items-center justify-center"
               style={{
                 borderColor: isHovered ? 'rgba(132,204,22,0.4)' : 'rgba(100,116,139,0.3)',
                 boxShadow: isHovered
@@ -443,7 +443,7 @@ const StackView: React.FC<{
               </p>
 
               <div className="flex items-center gap-2 mt-3">
-                <span className="px-2 py-0.5 bg-brand-lime/10 border border-brand-lime/30 text-brand-lime rounded text-xs font-bold">
+                <span className="px-2 py-0.5 bg-brand-lime/10 border border-brand-lime/30 text-brand-lime rounded-sm text-xs font-bold">
                   {card.grade}
                 </span>
                 <span className="text-xs text-slate-500">{card.sport}</span>
@@ -494,7 +494,7 @@ const CardContent: React.FC<{ card: ShowcaseCard }> = ({ card }) => {
       </p>
 
       <div className="flex items-center gap-2 mt-2">
-        <span className="text-[10px] font-bold px-1.5 py-0.5 bg-brand-lime/10 border border-brand-lime/30 text-brand-lime rounded">
+        <span className="text-[10px] font-bold px-1.5 py-0.5 bg-brand-lime/10 border border-brand-lime/30 text-brand-lime rounded-sm">
           {card.grade}
         </span>
         <span className="text-[10px] text-slate-500">{card.sport}</span>

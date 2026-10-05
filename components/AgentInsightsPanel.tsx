@@ -33,7 +33,7 @@ const AgentInsightsPanel: React.FC<AgentInsightsPanelProps> = ({ inventory, onCa
 
   return (
     <div className="luminous-card rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden shadow-2xl">
-      <div className="absolute bottom-0 right-0 w-64 h-64 bg-brand-blue/5 blur-[100px] rounded-full mr-[-4rem] mb-[-4rem] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-64 h-64 bg-brand-blue/5 blur-[100px] rounded-full -mr-16 -mb-16 pointer-events-none" />
 
       {/* Header */}
       <div className="flex items-center justify-between mb-8">

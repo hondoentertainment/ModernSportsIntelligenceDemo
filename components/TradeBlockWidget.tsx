@@ -121,7 +121,7 @@ export const TradeBlockWidget: React.FC<TradeBlockWidgetProps> = ({ inventory, o
                 key={trade.id}
                 className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl text-xs"
               >
-                <Clock size={12} className="text-slate-500 flex-shrink-0" />
+                <Clock size={12} className="text-slate-500 shrink-0" />
                 <span className="text-white font-medium truncate flex-1">
                   {trade.player}
                 </span>

@@ -159,7 +159,7 @@ const AuditTrail: React.FC = () => {
             <button
               type="button"
               onClick={reloadEvents}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide bg-violet-500/20 text-violet-300 border border-violet-500/40 hover:bg-violet-500/30 transition-colors flex-shrink-0"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wide bg-violet-500/20 text-violet-300 border border-violet-500/40 hover:bg-violet-500/30 transition-colors shrink-0"
             >
               <RefreshCw size={14} aria-hidden />
               Refresh
@@ -264,7 +264,7 @@ const AuditTrail: React.FC = () => {
                     <div>
                       <div className="flex items-center gap-2">
                         <h4 className="text-white font-semibold text-sm">{r.name}</h4>
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${getComplianceStatusColor(r.status)}`}>
+                        <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold ${getComplianceStatusColor(r.status)}`}>
                           {r.status.replace('-', ' ')}
                         </span>
                         {r.autoEnforced && <Lock size={10} className="text-green-400" />}

@@ -62,7 +62,7 @@ const DealerFlowIntelligenceModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const avgTrust = Math.round(dealers.reduce((sum, d) => sum + d.trustScore, 0) / dealers.length);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
       <div className="bg-slate-900 border border-slate-700/50 rounded-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">

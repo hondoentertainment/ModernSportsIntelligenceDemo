@@ -198,7 +198,7 @@ const ProvenanceChainVerifier: React.FC = () => {
         <select
           value={selectedCardId}
           onChange={e => setSelectedCardId(e.target.value)}
-          className="w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-violet-500"
+          className="w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-sm focus:outline-hidden focus:border-violet-500"
         >
           {allCards.map(c => (
             <option key={c.id} value={c.id}>{c.name} — {c.grade} — {formatCurrency(c.currentValue)}</option>

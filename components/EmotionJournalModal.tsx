@@ -118,7 +118,7 @@ const EmotionJournalModal: React.FC<EmotionJournalModalProps> = ({ isOpen, onClo
       {Array.from({ length: 10 }, (_, i) => (
         <div
           key={i}
-          className={`w-1.5 h-3 rounded-sm ${
+          className={`w-1.5 h-3 rounded-xs ${
             i < val
               ? val >= 8 ? 'bg-rose-400' : val >= 5 ? 'bg-amber-400' : 'bg-emerald-400'
               : 'bg-slate-700'
@@ -383,7 +383,7 @@ const EmotionJournalModal: React.FC<EmotionJournalModalProps> = ({ isOpen, onClo
               </div>
               <div className="w-full bg-slate-700/50 rounded-full h-2.5 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-rose-500 to-rose-400"
+                  className="h-full rounded-full bg-linear-to-r from-rose-500 to-rose-400"
                   style={{ width: `${Math.min(100, Math.abs(ep.totalPnL) / 3)}%` }}
                 />
               </div>
@@ -399,7 +399,7 @@ const EmotionJournalModal: React.FC<EmotionJournalModalProps> = ({ isOpen, onClo
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-6xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
         {/* Header */}
         <div className="p-6 border-b border-slate-700/50 flex items-center justify-between">

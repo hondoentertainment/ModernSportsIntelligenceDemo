@@ -246,7 +246,7 @@ const RuleChangeImpactModeler: React.FC = () => {
           <select
             value={sportFilter}
             onChange={e => setSportFilter(e.target.value as Sport | 'all')}
-            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-300 focus:outline-hidden focus:ring-1 focus:ring-indigo-500"
           >
             <option value="all">All Sports</option>
             <option value="mlb">MLB</option>
@@ -663,11 +663,11 @@ const RuleChangeImpactModeler: React.FC = () => {
                       <span className="text-xs font-bold text-emerald-400">{formatPct(p.cardValueChangePct)}</span>
                     </div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded" style={{ backgroundColor: `${SPORT_COLORS[p.sport]}20`, color: SPORT_COLORS[p.sport] }}>
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-sm" style={{ backgroundColor: `${SPORT_COLORS[p.sport]}20`, color: SPORT_COLORS[p.sport] }}>
                         {getSportLabel(p.sport)}
                       </span>
                       <span className="text-[10px] text-slate-500">{p.team} &middot; {p.position}</span>
-                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-emerald-500/20 text-emerald-300">
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-sm bg-emerald-500/20 text-emerald-300">
                         Score: {p.impactScore}
                       </span>
                     </div>
@@ -678,7 +678,7 @@ const RuleChangeImpactModeler: React.FC = () => {
                         const before = p.keyStatsBefore[stat] ?? 0;
                         const diff = after - before;
                         return (
-                          <div key={stat} className="px-2 py-1 bg-slate-900/50 rounded text-[10px]">
+                          <div key={stat} className="px-2 py-1 bg-slate-900/50 rounded-sm text-[10px]">
                             <span className="text-slate-500">{stat}: </span>
                             <span className="text-slate-400">{before}</span>
                             <span className="text-slate-600 mx-0.5">&rarr;</span>
@@ -711,7 +711,7 @@ const RuleChangeImpactModeler: React.FC = () => {
                       <span className="text-xs font-bold text-red-400">{formatPct(h.topLoserImpactPct)}</span>
                     </div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded" style={{ backgroundColor: `${SPORT_COLORS[h.sport]}20`, color: SPORT_COLORS[h.sport] }}>
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-sm" style={{ backgroundColor: `${SPORT_COLORS[h.sport]}20`, color: SPORT_COLORS[h.sport] }}>
                         {getSportLabel(h.sport)}
                       </span>
                       <span className="text-[10px] text-slate-500">Due to: {h.name}</span>
@@ -741,7 +741,7 @@ const RuleChangeImpactModeler: React.FC = () => {
                 <div key={pi.id} className="p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-bold text-slate-300">{pi.position}</span>
-                    <span className="px-1.5 py-0.5 text-[10px] font-bold rounded" style={{ backgroundColor: `${SPORT_COLORS[pi.sport]}20`, color: SPORT_COLORS[pi.sport] }}>
+                    <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-sm" style={{ backgroundColor: `${SPORT_COLORS[pi.sport]}20`, color: SPORT_COLORS[pi.sport] }}>
                       {getSportLabel(pi.sport)}
                     </span>
                   </div>
@@ -784,10 +784,10 @@ const RuleChangeImpactModeler: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded" style={{ backgroundColor: `${SPORT_COLORS[s.sport]}20`, color: SPORT_COLORS[s.sport] }}>
+                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-sm" style={{ backgroundColor: `${SPORT_COLORS[s.sport]}20`, color: SPORT_COLORS[s.sport] }}>
                       {getSportLabel(s.sport)}
                     </span>
-                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${s.probability >= 50 ? 'bg-emerald-500/20 text-emerald-300' : s.probability >= 25 ? 'bg-amber-500/20 text-amber-300' : 'bg-red-500/20 text-red-300'}`}>
+                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-sm ${s.probability >= 50 ? 'bg-emerald-500/20 text-emerald-300' : s.probability >= 25 ? 'bg-amber-500/20 text-amber-300' : 'bg-red-500/20 text-red-300'}`}>
                       {s.probability}% likely
                     </span>
                   </div>
@@ -991,10 +991,10 @@ const RuleChangeImpactModeler: React.FC = () => {
                         <div className="p-3 bg-slate-900/50 border border-slate-700/30 rounded-xl">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-xs text-slate-500">{event.date}</span>
-                            <span className="px-1.5 py-0.5 text-[10px] font-bold rounded" style={{ backgroundColor: `${SPORT_COLORS[event.sport]}20`, color: SPORT_COLORS[event.sport] }}>
+                            <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-sm" style={{ backgroundColor: `${SPORT_COLORS[event.sport]}20`, color: SPORT_COLORS[event.sport] }}>
                               {getSportLabel(event.sport)}
                             </span>
-                            <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded text-white/80 ${typeColors[event.type] || 'bg-slate-500'}`}>
+                            <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-sm text-white/80 ${typeColors[event.type] || 'bg-slate-500'}`}>
                               {typeLabels[event.type] || event.type}
                             </span>
                           </div>

@@ -78,12 +78,12 @@ export const SmartStorageWidget: React.FC<SmartStorageWidgetProps> = ({ onOpenMo
       {/* Most critical environmental alert */}
       {criticalAlert && (
         <div className="flex items-center gap-3 p-3 bg-cyan-500/5 border border-cyan-500/20 rounded-xl mb-4">
-          <AlertTriangle size={14} className="text-cyan-400 flex-shrink-0" />
+          <AlertTriangle size={14} className="text-cyan-400 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest">Critical Alert</p>
             <p className="text-xs text-white font-medium truncate">{criticalAlert.message}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <p className="text-xs font-bold text-amber-400 capitalize">{criticalAlert.severity}</p>
           </div>
         </div>

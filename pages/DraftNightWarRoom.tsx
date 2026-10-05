@@ -79,7 +79,7 @@ function actionBadge(action: 'buy' | 'sell' | 'hold'): React.ReactNode {
     hold: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
   };
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold uppercase rounded border ${styles[action]}`}>
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold uppercase rounded-sm border ${styles[action]}`}>
       {action}
     </span>
   );
@@ -93,7 +93,7 @@ function predictionTypeBadge(type: string): React.ReactNode {
     'sleeper': 'bg-amber-500/20 text-amber-400',
   };
   return (
-    <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded ${styles[type] || 'bg-slate-700 text-slate-300'}`}>
+    <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-sm ${styles[type] || 'bg-slate-700 text-slate-300'}`}>
       {type.replace('-', ' ')}
     </span>
   );
@@ -202,7 +202,7 @@ const DraftWarRoom: React.FC = () => {
           <button
             key={room.id}
             onClick={() => setSelectedRoomId(room.id)}
-            className={`flex-shrink-0 px-4 py-3 rounded-xl border transition-all text-left min-w-[260px] ${
+            className={`shrink-0 px-4 py-3 rounded-xl border transition-all text-left min-w-[260px] ${
               selectedRoomId === room.id
                 ? 'bg-slate-800 border-red-500/50 ring-1 ring-red-500/20'
                 : 'bg-slate-900 border-slate-800 hover:border-slate-700'
@@ -286,7 +286,7 @@ const DraftWarRoom: React.FC = () => {
                       <div key={pick.pickNumber} className="px-4 py-3 hover:bg-slate-800/30 transition-colors">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
                               <span className="text-xs font-bold text-slate-300">#{pick.pickNumber}</span>
                             </div>
                             <div>
@@ -299,7 +299,7 @@ const DraftWarRoom: React.FC = () => {
                               </p>
                             </div>
                           </div>
-                          <div className="text-right flex-shrink-0">
+                          <div className="text-right shrink-0">
                             <div className="flex items-center gap-1.5">
                               <span className="text-xs text-slate-500 line-through">${pick.preDraftCardPrice}</span>
                               <ArrowUpRight size={12} className="text-emerald-400" />
@@ -352,7 +352,7 @@ const DraftWarRoom: React.FC = () => {
                             </p>
                           </div>
                         </div>
-                        <div className="text-right flex-shrink-0">
+                        <div className="text-right shrink-0">
                           <p className="text-sm font-bold text-slate-200">{formatCurrency(trade.price)}</p>
                           {trade.pnl !== null && (
                             <p className={`text-xs font-semibold ${trade.pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>

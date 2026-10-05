@@ -69,12 +69,12 @@ const ClubManagement: React.FC = () => {
         {club && (
           <>
             {/* Club Header */}
-            <div className="bg-gradient-to-r from-slate-900 via-slate-900/95 to-slate-800/50 rounded-xl border border-slate-800 p-6">
+            <div className="bg-linear-to-r from-slate-900 via-slate-900/95 to-slate-800/50 rounded-xl border border-slate-800 p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-white font-bold text-xl">{club.name}</h3>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${getTierColor(club.tier)}`}>{getTierLabel(club.tier)}</span>
+                    <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase border ${getTierColor(club.tier)}`}>{getTierLabel(club.tier)}</span>
                   </div>
                   <p className="text-slate-400 text-sm italic mt-1">"{club.motto}"</p>
                 </div>

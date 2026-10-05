@@ -139,12 +139,12 @@ const OverviewTab: React.FC = () => {
         <div className="space-y-1.5">
           {recentHits.map(hit => (
             <div key={hit.id} className="flex items-center gap-3 px-3 py-2.5 bg-slate-700/30 rounded-xl">
-              <Star size={14} className="text-amber-400 flex-shrink-0" />
+              <Star size={14} className="text-amber-400 shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">{hit.player}</p>
                 <p className="text-[10px] text-slate-500">{hit.cardDescription}</p>
               </div>
-              <span className="text-sm font-bold text-green-400 flex-shrink-0">
+              <span className="text-sm font-bold text-green-400 shrink-0">
                 ${hit.estimatedValue.toLocaleString()}
               </span>
             </div>
@@ -276,7 +276,7 @@ const ProvidersTab: React.FC = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-4 gap-4 text-right flex-shrink-0">
+            <div className="grid grid-cols-4 gap-4 text-right shrink-0">
               <div>
                 <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-0.5">ROI</p>
                 <p className={`text-sm font-bold ${p.avgMonthlyROI >= 0 ? 'text-green-400' : 'text-red-400'}`}>
@@ -596,7 +596,7 @@ const ReportsTab: React.FC = () => {
           <div className="space-y-1.5">
             {report.notableHits.map(hit => (
               <div key={hit.id} className="flex items-center gap-3 px-3 py-2 bg-slate-700/20 rounded-xl">
-                <Star size={14} className="text-amber-400 flex-shrink-0" />
+                <Star size={14} className="text-amber-400 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">{hit.player}</p>
                   <p className="text-[10px] text-slate-500">{hit.cardDescription}</p>
@@ -623,7 +623,7 @@ export const SubscriptionBoxModal: React.FC<SubscriptionBoxModalProps> = ({ isOp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="p-8 border-b border-slate-700 flex items-center justify-between bg-brand-lime/5">

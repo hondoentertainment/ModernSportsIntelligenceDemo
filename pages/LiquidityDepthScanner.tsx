@@ -257,7 +257,7 @@ function DashboardTab({ profiles, onSelectCard }: { profiles: LiquidityProfile[]
             placeholder="Search player or card..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-slate-600"
+            className="w-full pl-9 pr-3 py-2 bg-slate-800/60 border border-slate-700/50 rounded-lg text-sm text-white placeholder:text-slate-500 focus:outline-hidden focus:border-slate-600"
           />
         </div>
         <div className="flex items-center gap-1.5">
@@ -265,7 +265,7 @@ function DashboardTab({ profiles, onSelectCard }: { profiles: LiquidityProfile[]
           <select
             value={filterTier}
             onChange={(e) => setFilterTier(e.target.value as LiquidityTier | 'all')}
-            className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-2.5 py-2 text-sm text-white focus:outline-none"
+            className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-2.5 py-2 text-sm text-white focus:outline-hidden"
           >
             <option value="all">All Tiers</option>
             <option value="ultra-liquid">Ultra-Liquid</option>
@@ -278,7 +278,7 @@ function DashboardTab({ profiles, onSelectCard }: { profiles: LiquidityProfile[]
         <select
           value={filterSport}
           onChange={(e) => setFilterSport(e.target.value)}
-          className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-2.5 py-2 text-sm text-white focus:outline-none"
+          className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-2.5 py-2 text-sm text-white focus:outline-hidden"
         >
           <option value="all">All Sports</option>
           <option value="basketball">Basketball</option>
@@ -288,7 +288,7 @@ function DashboardTab({ profiles, onSelectCard }: { profiles: LiquidityProfile[]
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as 'score' | 'value' | 'days')}
-          className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-2.5 py-2 text-sm text-white focus:outline-none"
+          className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-2.5 py-2 text-sm text-white focus:outline-hidden"
         >
           <option value="score">Sort: Liquidity Score</option>
           <option value="value">Sort: Value</option>
@@ -405,7 +405,7 @@ function DepthTab({ profiles, selectedCardId }: { profiles: LiquidityProfile[]; 
         <select
           value={cardId}
           onChange={(e) => setCardId(e.target.value)}
-          className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none min-w-[300px]"
+          className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden min-w-[300px]"
         >
           {profiles.map((p) => (
             <option key={p.cardId} value={p.cardId}>{p.player} — {p.cardName}</option>
@@ -509,7 +509,7 @@ function ExitPlannerTab({ profiles, selectedCardId }: { profiles: LiquidityProfi
         <select
           value={cardId}
           onChange={(e) => setCardId(e.target.value)}
-          className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none min-w-[300px]"
+          className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden min-w-[300px]"
         >
           {profiles.map((p) => (
             <option key={p.cardId} value={p.cardId}>{p.player} — {p.cardName}</option>
@@ -570,7 +570,7 @@ function ExitPlannerTab({ profiles, selectedCardId }: { profiles: LiquidityProfi
                       <div className="flex items-center gap-2">
                         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: methodColors[s.method] || '#64748b' }} />
                         <span className="text-white font-medium capitalize">{s.method.replace('-', ' ')}</span>
-                        {isBest && <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-semibold">BEST</span>}
+                        {isBest && <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-sm font-semibold">BEST</span>}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-right text-white">{fmtCurrency(s.estimatedPrice)}</td>
@@ -682,7 +682,7 @@ function VolumeTab({ profiles, selectedCardId }: { profiles: LiquidityProfile[];
         <select
           value={cardId}
           onChange={(e) => setCardId(e.target.value)}
-          className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-none min-w-[300px]"
+          className="bg-slate-800/60 border border-slate-700/50 rounded-lg px-3 py-2 text-sm text-white focus:outline-hidden min-w-[300px]"
         >
           {profiles.map((p) => (
             <option key={p.cardId} value={p.cardId}>{p.player} — {p.cardName}</option>
@@ -856,7 +856,7 @@ function PortfolioTab({ profiles }: { profiles: LiquidityProfile[] }) {
             <select
               value={urgency}
               onChange={(e) => setUrgency(e.target.value as typeof urgency)}
-              className="bg-slate-700/60 border border-slate-600/50 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none"
+              className="bg-slate-700/60 border border-slate-600/50 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-hidden"
             >
               <option value="relaxed">Relaxed (max value)</option>
               <option value="normal">Normal</option>
@@ -982,7 +982,7 @@ function CrisisTab({ profiles }: { profiles: LiquidityProfile[] }) {
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="text-white font-semibold">{crisis.player}</p>
-                          <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${sev.bg} ${sev.text} border ${sev.border}`}>
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${sev.bg} ${sev.text} border ${sev.border}`}>
                             {crisis.severity}
                           </span>
                         </div>

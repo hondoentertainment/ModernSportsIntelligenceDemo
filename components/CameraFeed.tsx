@@ -124,7 +124,7 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive, onBarcodeD
 
     if (error) {
         return (
-            <div className="flex flex-col items-center justify-center p-8 text-center space-y-4 bg-brand-charcoal/50 rounded-[2rem] border border-red-500/20">
+            <div className="flex flex-col items-center justify-center p-8 text-center space-y-4 bg-brand-charcoal/50 rounded-4xl border border-red-500/20">
                 <AlertCircle className="text-red-500" size={48} />
                 <p className="text-sm font-medium text-red-400">{error}</p>
                 <button
@@ -138,7 +138,7 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ onCapture, isActive, onBarcodeD
     }
 
     return (
-        <div className="relative aspect-video rounded-[2rem] overflow-hidden bg-black border border-slate-800 shadow-2xl">
+        <div className="relative aspect-video rounded-4xl overflow-hidden bg-black border border-slate-800 shadow-2xl">
             <video
                 ref={videoRef}
                 autoPlay

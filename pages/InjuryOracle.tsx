@@ -103,13 +103,13 @@ function formatCurrency(value: number): string {
 function LoadingSkeleton() {
   return (
     <div className="animate-pulse space-y-4">
-      <div className="h-8 bg-gray-700 rounded w-1/3" />
+      <div className="h-8 bg-gray-700 rounded-sm w-1/3" />
       <div className="grid grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-32 bg-gray-700 rounded" />
+          <div key={i} className="h-32 bg-gray-700 rounded-sm" />
         ))}
       </div>
-      <div className="h-64 bg-gray-700 rounded" />
+      <div className="h-64 bg-gray-700 rounded-sm" />
     </div>
   );
 }
@@ -236,7 +236,7 @@ function RiskDashboard({ sport, threshold }: { sport: Sport | 'all'; threshold: 
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs px-2 py-0.5 rounded border ${riskBg(p.currentRiskScore)}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-sm border ${riskBg(p.currentRiskScore)}`}>
                     {riskLabel(p.currentRiskScore)}
                   </span>
                   <span className="text-xs text-gray-400">{trendArrow(p.riskTrend)} {p.riskTrend}</span>
@@ -344,10 +344,10 @@ function PlayerDeepDive({ playerId }: { playerId: string | null }) {
             const pct = Math.min(100, factor.currentValue);
             const overThreshold = factor.currentValue >= factor.threshold;
             return (
-              <div key={idx} className="bg-gray-900 rounded p-3">
+              <div key={idx} className="bg-gray-900 rounded-sm p-3">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-400 uppercase tracking-wider">
+                    <span className="text-xs px-1.5 py-0.5 rounded-sm bg-gray-700 text-gray-400 uppercase tracking-wider">
                       {factor.category}
                     </span>
                     <span className="text-sm text-gray-200">{factor.name}</span>
@@ -478,7 +478,7 @@ function ValueImpactSimulator({ playerId }: { playerId: string | null }) {
           <select
             value={injuryToSimulate}
             onChange={(e) => setSelectedInjury(e.target.value)}
-            className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-200 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="bg-gray-900 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-200 w-full sm:w-auto focus:outline-hidden focus:ring-2 focus:ring-purple-500"
           >
             {availableInjuries.map((inj) => (
               <option key={inj} value={inj}>{inj}</option>
@@ -489,15 +489,15 @@ function ValueImpactSimulator({ playerId }: { playerId: string | null }) {
         {simulation && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-              <div className="bg-gray-900 rounded p-3 text-center">
+              <div className="bg-gray-900 rounded-sm p-3 text-center">
                 <p className="text-xs text-gray-500">Pre-Injury Value</p>
                 <p className="text-lg font-bold text-gray-200">{formatCurrency(simulation.before.currentValue)}</p>
               </div>
-              <div className="bg-gray-900 rounded p-3 text-center">
+              <div className="bg-gray-900 rounded-sm p-3 text-center">
                 <p className="text-xs text-gray-500">Post-Injury (Immediate)</p>
                 <p className="text-lg font-bold text-red-400">{formatCurrency(simulation.after.currentValue)}</p>
               </div>
-              <div className="bg-gray-900 rounded p-3 text-center">
+              <div className="bg-gray-900 rounded-sm p-3 text-center">
                 <p className="text-xs text-gray-500">90d Recovery Estimate</p>
                 <p className="text-lg font-bold text-yellow-400">{formatCurrency(simulation.after.projected90.baseline)}</p>
               </div>
@@ -786,7 +786,7 @@ function EarlyWarningsTab({ sport }: { sport: Sport | 'all' }) {
           </h4>
           <div className="space-y-2">
             {actionRequired.slice(0, 5).map((ev, idx) => (
-              <div key={idx} className="flex items-start gap-3 bg-red-900/10 rounded p-2">
+              <div key={idx} className="flex items-start gap-3 bg-red-900/10 rounded-sm p-2">
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
                   style={{ backgroundColor: riskColor(ev.riskLevel) + '33', color: riskColor(ev.riskLevel) }}
@@ -892,7 +892,7 @@ export default function InjuryOracle() {
             <select
               value={selectedSport}
               onChange={handleSportChange}
-              className="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-hidden focus:ring-2 focus:ring-purple-500"
             >
               {SPORTS.map((s) => (
                 <option key={s} value={s}>{s === 'all' ? 'All Sports' : s}</option>
@@ -905,7 +905,7 @@ export default function InjuryOracle() {
             <select
               value={selectedPlayerId || ''}
               onChange={handlePlayerChange}
-              className="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 min-w-[200px]"
+              className="bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-hidden focus:ring-2 focus:ring-purple-500 min-w-[200px]"
             >
               <option value="">Select a player...</option>
               {filteredPlayers.map((p) => (

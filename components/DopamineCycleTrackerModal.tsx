@@ -356,7 +356,7 @@ const DopamineCycleTrackerModal: React.FC<DopamineCycleTrackerModalProps> = ({ i
         <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50 overflow-x-auto">
           <div className="min-w-[700px]">
             <div className="flex mb-1">
-              <div className="w-10 flex-shrink-0" />
+              <div className="w-10 shrink-0" />
               {timeSlots.map((slot, i) => (
                 <div key={i} className="flex-1 text-center">
                   {i % 3 === 0 && (
@@ -367,11 +367,11 @@ const DopamineCycleTrackerModal: React.FC<DopamineCycleTrackerModalProps> = ({ i
             </div>
             {daysOfWeek.map((day, dayIdx) => (
               <div key={day} className="flex items-center mb-1">
-                <div className="w-10 flex-shrink-0 text-xs text-slate-400">{day}</div>
+                <div className="w-10 shrink-0 text-xs text-slate-400">{day}</div>
                 {heatmapData[dayIdx].map((value, hourIdx) => (
                   <div
                     key={hourIdx}
-                    className={`flex-1 h-6 mx-px rounded-sm ${getHeatmapColor(value)} transition-colors`}
+                    className={`flex-1 h-6 mx-px rounded-xs ${getHeatmapColor(value)} transition-colors`}
                     title={`${day} ${timeSlots[hourIdx]}: ${(value * 100).toFixed(0)}% activity`}
                   />
                 ))}
@@ -389,7 +389,7 @@ const DopamineCycleTrackerModal: React.FC<DopamineCycleTrackerModalProps> = ({ i
                   'bg-violet-500/70',
                   'bg-violet-400/80',
                 ].map((c, i) => (
-                  <div key={i} className={`w-4 h-3 rounded-sm ${c}`} />
+                  <div key={i} className={`w-4 h-3 rounded-xs ${c}`} />
                 ))}
               </div>
               <span className="text-[10px] text-slate-500">High</span>
@@ -399,7 +399,7 @@ const DopamineCycleTrackerModal: React.FC<DopamineCycleTrackerModalProps> = ({ i
       </div>
 
       <div className="flex items-center gap-3 p-4 bg-violet-500/10 border border-violet-500/30 rounded-xl">
-        <Clock size={16} className="text-violet-400 flex-shrink-0" />
+        <Clock size={16} className="text-violet-400 shrink-0" />
         <div>
           <p className="text-xs text-violet-300 font-semibold">
             Most Active Hour: {behaviorStats.mostActiveHour}:00
@@ -647,7 +647,7 @@ const DopamineCycleTrackerModal: React.FC<DopamineCycleTrackerModalProps> = ({ i
           </div>
           <div className="w-full h-3 bg-slate-700 rounded-full overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-violet-600 to-violet-400"
+              className="h-full rounded-full bg-linear-to-r from-violet-600 to-violet-400"
               style={{
                 width: `${Math.min(
                   (cooldownScore.daysSinceLastPurchase /
@@ -790,7 +790,7 @@ const DopamineCycleTrackerModal: React.FC<DopamineCycleTrackerModalProps> = ({ i
                 </div>
               </div>
               <div className="bg-slate-900/50 rounded-lg p-3 flex items-start gap-2">
-                <BarChart3 size={14} className="text-violet-400 mt-0.5 flex-shrink-0" />
+                <BarChart3 size={14} className="text-violet-400 mt-0.5 shrink-0" />
                 <div>
                   <p className="text-xs font-medium text-violet-300 mb-0.5">
                     Suggested Action
@@ -807,7 +807,7 @@ const DopamineCycleTrackerModal: React.FC<DopamineCycleTrackerModalProps> = ({ i
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 pb-8 px-4 overflow-y-auto">
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={onClose} />
       <div className="relative w-full max-w-6xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl">
         <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
           <div className="flex items-center gap-3">

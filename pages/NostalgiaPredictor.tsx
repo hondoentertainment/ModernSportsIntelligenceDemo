@@ -171,7 +171,7 @@ const NostalgiaPredictor: React.FC = () => {
   return (
     <div className="space-y-0">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur border-b border-slate-700/50 pb-3 pt-4 px-4">
+      <div className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700/50 pb-3 pt-4 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -334,7 +334,7 @@ const DashboardTab: React.FC<{
                       <span className="text-sm font-medium text-slate-200">{player.playerName}</span>
                       <div className="flex items-center gap-2">
                         <span
-                          className="px-2 py-0.5 rounded text-xs font-medium"
+                          className="px-2 py-0.5 rounded-sm text-xs font-medium"
                           style={{ backgroundColor: `${COHORT_COLORS[primaryCohort]}22`, color: COHORT_COLORS[primaryCohort] }}
                         >
                           {COHORT_LABELS[primaryCohort]}
@@ -344,7 +344,7 @@ const DashboardTab: React.FC<{
                     </div>
                     <div className="w-full bg-slate-700/50 rounded-full h-1.5">
                       <div
-                        className="h-1.5 rounded-full bg-gradient-to-r from-rose-500 to-amber-500"
+                        className="h-1.5 rounded-full bg-linear-to-r from-rose-500 to-amber-500"
                         style={{ width: `${player.overallNostalgiaIndex}%` }}
                       />
                     </div>
@@ -861,10 +861,10 @@ const TriggerCalendarTab: React.FC<{ triggers: CulturalMoment[] }> = ({ triggers
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${style.bg} ${style.text}`}>
+                        <span className={`px-2 py-0.5 rounded-sm text-xs font-medium ${style.bg} ${style.text}`}>
                           {t.estimatedImpact.toUpperCase()}
                         </span>
-                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-slate-700/50 text-slate-300">
+                        <span className="px-2 py-0.5 rounded-sm text-xs font-medium bg-slate-700/50 text-slate-300">
                           {TRIGGER_LABELS[t.trigger] || t.trigger}
                         </span>
                       </div>
@@ -873,7 +873,7 @@ const TriggerCalendarTab: React.FC<{ triggers: CulturalMoment[] }> = ({ triggers
                     <div className="flex items-center justify-between">
                       <div className="flex gap-1.5 flex-wrap">
                         {t.affectedPlayers.map(p => (
-                          <span key={p} className="px-2 py-0.5 rounded bg-slate-700/40 text-xs text-slate-300">{p}</span>
+                          <span key={p} className="px-2 py-0.5 rounded-sm bg-slate-700/40 text-xs text-slate-300">{p}</span>
                         ))}
                       </div>
                       <span className="text-sm font-bold text-emerald-400">{formatPercent(t.priceImpactPercent)}</span>
@@ -882,7 +882,7 @@ const TriggerCalendarTab: React.FC<{ triggers: CulturalMoment[] }> = ({ triggers
                       {t.affectedCohorts.map(c => (
                         <span
                           key={c}
-                          className="px-2 py-0.5 rounded text-xs font-medium"
+                          className="px-2 py-0.5 rounded-sm text-xs font-medium"
                           style={{ backgroundColor: `${COHORT_COLORS[c]}22`, color: COHORT_COLORS[c] }}
                         >
                           {COHORT_LABELS[c]}
@@ -952,15 +952,15 @@ const TopPlaysTab: React.FC<{ plays: TopNostalgiaPlay[] }> = ({ plays }) => {
               </div>
               <div className="flex items-center gap-2">
                 <span
-                  className="px-2.5 py-1 rounded text-xs font-medium"
+                  className="px-2.5 py-1 rounded-sm text-xs font-medium"
                   style={{ backgroundColor: `${COHORT_COLORS[play.primaryCohort]}22`, color: COHORT_COLORS[play.primaryCohort] }}
                 >
                   {COHORT_LABELS[play.primaryCohort]}
                 </span>
-                <span className="px-2.5 py-1 rounded text-xs font-medium bg-slate-700/50 text-slate-300">
+                <span className="px-2.5 py-1 rounded-sm text-xs font-medium bg-slate-700/50 text-slate-300">
                   {TRIGGER_LABELS[play.triggerType] || play.triggerType}
                 </span>
-                <span className="px-2.5 py-1 rounded text-xs font-bold bg-emerald-900/40 text-emerald-400">
+                <span className="px-2.5 py-1 rounded-sm text-xs font-bold bg-emerald-900/40 text-emerald-400">
                   {formatPercent(play.expectedReturn)}
                 </span>
               </div>

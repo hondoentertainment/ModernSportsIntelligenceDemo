@@ -64,7 +64,7 @@ const ProductionConfigBanner: React.FC = () => {
             ))}
           </ul>
           {adminHints.length > 0 && (
-            <div className="mt-3 rounded border border-red-500/30 bg-red-950/60 px-3 py-2">
+            <div className="mt-3 rounded-sm border border-red-500/30 bg-red-950/60 px-3 py-2">
               <p className="font-semibold text-xs uppercase tracking-wide text-red-200 mb-1.5">
                 Admin fix (server API auth)
               </p>

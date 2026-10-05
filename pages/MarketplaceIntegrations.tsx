@@ -174,7 +174,7 @@ const MarketplaceIntegrations: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
       {/* Header */}
-      <div className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-10">
+      <div className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-xs sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
@@ -498,7 +498,7 @@ const MarketplaceIntegrations: React.FC = () => {
                     .filter((i) => i.errorMessage)
                     .map((i) => (
                       <div key={i.id} className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400 flex items-start gap-2">
-                        <AlertTriangle size={16} className="mt-0.5 flex-shrink-0" />
+                        <AlertTriangle size={16} className="mt-0.5 shrink-0" />
                         <span>
                           <strong>{i.platformLabel}:</strong> {i.errorMessage}
                         </span>
@@ -517,7 +517,7 @@ const MarketplaceIntegrations: React.FC = () => {
               <select
                 value={listingFilter}
                 onChange={(e) => setListingFilter(e.target.value)}
-                className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                className="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500/40"
               >
                 <option value="all">All Platforms</option>
                 {connections
@@ -607,7 +607,7 @@ const MarketplaceIntegrations: React.FC = () => {
                   onChange={(e) => setPriceSearch(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handlePriceSearch()}
                   placeholder="Search cards across marketplaces..."
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-sm placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500/40"
                 />
               </div>
               <button
@@ -652,7 +652,7 @@ const MarketplaceIntegrations: React.FC = () => {
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-xs font-medium text-slate-300">{p.platformLabel}</span>
                             {isBest && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-emerald-500/20 text-emerald-400">
                                 BEST
                               </span>
                             )}

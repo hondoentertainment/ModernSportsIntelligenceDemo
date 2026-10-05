@@ -64,12 +64,12 @@ export const TradeDeadlineWidget: React.FC<TradeDeadlineWidgetProps> = ({ onOpen
       {/* Biggest trade highlight */}
       {biggestTrade && (
         <div className="flex items-center gap-3 p-3 bg-red-500/5 border border-red-500/20 rounded-xl mb-4">
-          <AlertTriangle size={14} className="text-red-400 flex-shrink-0" />
+          <AlertTriangle size={14} className="text-red-400 shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black text-red-400 uppercase tracking-widest">Biggest Trade</p>
             <p className="text-xs text-white font-medium truncate">{biggestTrade.playerName} → {biggestTrade.toTeam}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <p className="text-xs text-slate-500">Impact</p>
             <p className="text-sm font-bold text-red-400">+{biggestTrade.impactScore}%</p>
           </div>

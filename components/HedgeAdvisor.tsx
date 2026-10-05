@@ -21,7 +21,7 @@ export const HedgeAdvisor: React.FC<HedgeAdvisorProps> = ({ inventory, onDeployH
 
     if (recommendations.length === 0) {
         return (
-            <div className="p-8 bg-brand-slate border border-slate-800 rounded-[2rem] flex flex-col items-center justify-center text-center space-y-4 h-full">
+            <div className="p-8 bg-brand-slate border border-slate-800 rounded-4xl flex flex-col items-center justify-center text-center space-y-4 h-full">
                 <div className="bg-brand-lime/10 p-4 rounded-full text-brand-lime">
                     <ShieldCheck size={32} />
                 </div>

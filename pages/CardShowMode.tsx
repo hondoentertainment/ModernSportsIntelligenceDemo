@@ -204,7 +204,7 @@ const CardShowMode: React.FC = () => {
 
       {/* Best Deal Banner */}
       {summary.stats.bestDeal && (
-        <div className="bg-gradient-to-r from-emerald-500/10 to-lime-500/10 border border-emerald-500/20 rounded-2xl p-5 flex items-center gap-4">
+        <div className="bg-linear-to-r from-emerald-500/10 to-lime-500/10 border border-emerald-500/20 rounded-2xl p-5 flex items-center gap-4">
           <div className="p-3 bg-emerald-500/20 rounded-xl">
             <Award size={24} className="text-emerald-400" />
           </div>
@@ -213,7 +213,7 @@ const CardShowMode: React.FC = () => {
             <p className="text-lg font-bold text-slate-100">{summary.stats.bestDeal.player}</p>
             <p className="text-sm text-slate-400">{summary.stats.bestDeal.cardDescription}</p>
           </div>
-          <div className="text-right flex-shrink-0">
+          <div className="text-right shrink-0">
             <p className="text-3xl font-bold text-emerald-400">{summary.stats.bestDeal.dealScore}</p>
             <p className="text-xs text-emerald-400/70">
               ${summary.stats.bestDeal.marketValue - summary.stats.bestDeal.askingPrice} saved
@@ -237,7 +237,7 @@ const CardShowMode: React.FC = () => {
               placeholder="e.g. 'Ohtani PSA 10' or 'Trout PSA 8'"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-800/60 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20"
+              className="w-full pl-10 pr-4 py-3 bg-slate-800/60 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder:text-slate-600 focus:outline-hidden focus:border-lime-500/50 focus:ring-1 focus:ring-lime-500/20"
             />
           </div>
 
@@ -327,7 +327,7 @@ const CardShowMode: React.FC = () => {
                   <p className="text-sm font-semibold text-slate-200">{deal.player}</p>
                   <p className="text-xs text-slate-500 truncate">{deal.cardDescription}</p>
                 </div>
-                <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                <div className="flex items-center gap-2 ml-4 shrink-0">
                   <span className={`text-2xl font-bold ${getDealScoreColor(deal.dealScore)}`}>
                     {deal.dealScore}
                   </span>
@@ -385,7 +385,7 @@ const CardShowMode: React.FC = () => {
         <div className="mb-5">
           <div className="h-2.5 bg-slate-800 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-lime-500 to-emerald-500 rounded-full transition-all duration-500"
+              className="h-full bg-linear-to-r from-lime-500 to-emerald-500 rounded-full transition-all duration-500"
               style={{ width: `${(foundCount / wantList.length) * 100}%` }}
             />
           </div>
@@ -403,9 +403,9 @@ const CardShowMode: React.FC = () => {
               }`}
             >
               {item.found ? (
-                <CheckCircle2 size={22} className="text-emerald-400 flex-shrink-0" />
+                <CheckCircle2 size={22} className="text-emerald-400 shrink-0" />
               ) : (
-                <Circle size={22} className="text-slate-600 flex-shrink-0" />
+                <Circle size={22} className="text-slate-600 shrink-0" />
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
@@ -420,7 +420,7 @@ const CardShowMode: React.FC = () => {
                   {item.cardDescription}
                 </p>
               </div>
-              <span className="text-sm font-medium text-slate-400 flex-shrink-0">
+              <span className="text-sm font-medium text-slate-400 shrink-0">
                 &le;${item.maxPrice}
               </span>
             </button>

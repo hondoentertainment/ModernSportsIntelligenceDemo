@@ -42,13 +42,13 @@ const TransactionRow: React.FC<{ txn: Transaction }> = ({ txn }) => {
     <div className="flex items-center justify-between gap-2 py-2 border-b border-slate-700/30 last:border-b-0">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          {txn.isNotable && <Zap size={10} className="text-amber-400 flex-shrink-0" />}
+          {txn.isNotable && <Zap size={10} className="text-amber-400 shrink-0" />}
           <span className="text-xs font-semibold text-slate-200 truncate">{txn.player}</span>
           <span className={`text-[10px] font-bold ${SPORT_COLOR[txn.sport] || 'text-slate-400'}`}>{txn.sport}</span>
         </div>
         <p className="text-[10px] text-slate-500 truncate">{txn.cardDescription}</p>
       </div>
-      <div className="text-right flex-shrink-0">
+      <div className="text-right shrink-0">
         <p className="text-xs font-bold text-slate-200">{formatPrice(txn.price)}</p>
         <div className="flex items-center justify-end gap-0.5">
           {isUp ? (

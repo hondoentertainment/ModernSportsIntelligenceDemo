@@ -25,7 +25,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ isOpen, onClose, src, alt
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-9999 flex items-center justify-center bg-black/95 backdrop-blur-md animate-in fade-in duration-200"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -33,7 +33,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ isOpen, onClose, src, alt
     >
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10 focus:outline-none focus:ring-2 focus:ring-brand-lime"
+        className="absolute top-6 right-6 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10 focus:outline-hidden focus:ring-2 focus:ring-brand-lime"
         aria-label="Close"
       >
         <X size={24} />

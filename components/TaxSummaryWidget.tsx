@@ -106,7 +106,7 @@ const TaxSummaryWidget: React.FC<TaxSummaryWidgetProps> = ({ inventory, onCardCl
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-brand-charcoal/30 border border-slate-800 rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-3 h-3 rounded bg-brand-orange"></div>
+            <div className="w-3 h-3 rounded-sm bg-brand-orange"></div>
             <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Short-Term (32%)</p>
           </div>
           <div className="flex items-center justify-between">
@@ -132,7 +132,7 @@ const TaxSummaryWidget: React.FC<TaxSummaryWidgetProps> = ({ inventory, onCardCl
         </div>
         <div className="bg-brand-charcoal/30 border border-slate-800 rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-3 h-3 rounded bg-brand-lime"></div>
+            <div className="w-3 h-3 rounded-sm bg-brand-lime"></div>
             <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest">Long-Term (15%)</p>
           </div>
           <div className="flex items-center justify-between">

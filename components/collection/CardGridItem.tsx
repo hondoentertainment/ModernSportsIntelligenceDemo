@@ -124,7 +124,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
           <CheckCircle2 size={16} strokeWidth={3} />
         </button>
       )}
-      <div className="aspect-[4/5] bg-slate-950 relative overflow-hidden group">
+      <div className="aspect-4/5 bg-slate-950 relative overflow-hidden group">
         <CardImage
           src={card.image}
           playerName={card.player}
@@ -135,7 +135,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
           onImageClick={onOpenLightbox ? () => onOpenLightbox(card) : undefined}
         />
         <div
-          className={`absolute inset-0 bg-gradient-to-t ${styles.glow || 'from-black/80'} via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity`}
+          className={`absolute inset-0 bg-linear-to-t ${styles.glow || 'from-black/80'} via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity`}
         ></div>
         <div className="absolute top-6 left-6 flex flex-col gap-2">
           {tier !== 'Common' && tier !== 'Uncommon' && (
@@ -208,7 +208,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
             e.preventDefault();
             toggleFavorite(card);
           }}
-          className={`absolute top-6 right-[8.5rem] p-3 rounded-xl transition-all backdrop-blur-md ${isFavorite(card.id) ? 'bg-amber-500/20 text-amber-400 opacity-100' : 'bg-brand-charcoal/30 text-white opacity-0 group-hover:opacity-100 hover:bg-amber-500/20 hover:text-amber-400'}`}
+          className={`absolute top-6 right-34 p-3 rounded-xl transition-all backdrop-blur-md ${isFavorite(card.id) ? 'bg-amber-500/20 text-amber-400 opacity-100' : 'bg-brand-charcoal/30 text-white opacity-0 group-hover:opacity-100 hover:bg-amber-500/20 hover:text-amber-400'}`}
         >
           <Star size={20} fill={isFavorite(card.id) ? 'currentColor' : 'none'} />
         </button>
@@ -217,7 +217,7 @@ const CardGridItem: React.FC<CardGridItemProps> = React.memo(({
             e.preventDefault();
             handleAddToWatchlist(card);
           }}
-          className="absolute top-6 right-[12rem] p-3 bg-brand-charcoal/30 text-white rounded-xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-brand-charcoal hover:text-brand-lime backdrop-blur-md"
+          className="absolute top-6 right-48 p-3 bg-brand-charcoal/30 text-white rounded-xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-brand-charcoal hover:text-brand-lime backdrop-blur-md"
           title="Add to Watchlist"
         >
           <Target size={20} />

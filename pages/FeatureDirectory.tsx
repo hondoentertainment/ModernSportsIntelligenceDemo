@@ -191,7 +191,7 @@ const FeatureDirectory: React.FC = () => {
           <h3 className="text-sm font-bold text-white group-hover:text-brand-lime transition-colors leading-tight">
             {feature.name}
           </h3>
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             <span className={`w-2 h-2 rounded-full ${
               feature.status === 'live' ? 'bg-brand-lime' :
               feature.status === 'beta' ? 'bg-amber-400' :
@@ -311,7 +311,7 @@ const FeatureDirectory: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search GA features by name, description, or keyword..."
-            className="w-full bg-brand-slate border border-slate-800 rounded-xl py-2.5 pl-10 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-brand-lime placeholder:text-slate-500 text-white"
+            className="w-full bg-brand-slate border border-slate-800 rounded-xl py-2.5 pl-10 pr-10 text-sm focus:outline-hidden focus:ring-1 focus:ring-brand-lime placeholder:text-slate-500 text-white"
             aria-label="Search features"
           />
           {searchQuery && (
@@ -326,7 +326,7 @@ const FeatureDirectory: React.FC = () => {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="appearance-none bg-brand-slate border border-slate-800 rounded-xl py-2.5 pl-9 pr-8 text-sm text-white focus:outline-none focus:ring-1 focus:ring-brand-lime cursor-pointer"
+            className="appearance-none bg-brand-slate border border-slate-800 rounded-xl py-2.5 pl-9 pr-8 text-sm text-white focus:outline-hidden focus:ring-1 focus:ring-brand-lime cursor-pointer"
             aria-label="Filter by category"
           >
             <option value="all">All Categories</option>

@@ -56,7 +56,7 @@ const InsuranceAppraisalModal: React.FC<InsuranceAppraisalModalProps> = ({ isOpe
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
       <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
@@ -64,7 +64,7 @@ const InsuranceAppraisalModal: React.FC<InsuranceAppraisalModalProps> = ({ isOpe
             <FileText size={20} className="text-blue-400" />
             <h2 className="text-lg font-semibold text-slate-100">Quick Appraisal</h2>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-200 p-1 rounded hover:bg-slate-700">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-200 p-1 rounded-sm hover:bg-slate-700">
             <X size={20} />
           </button>
         </div>
@@ -85,7 +85,7 @@ const InsuranceAppraisalModal: React.FC<InsuranceAppraisalModalProps> = ({ isOpe
                   value={cardName}
                   onChange={e => setCardName(e.target.value)}
                   placeholder="e.g., 1986 Fleer Michael Jordan #57"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
                 />
               </div>
 
@@ -97,7 +97,7 @@ const InsuranceAppraisalModal: React.FC<InsuranceAppraisalModalProps> = ({ isOpe
                     value={cardYear}
                     onChange={e => setCardYear(e.target.value)}
                     placeholder="e.g., 1986"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -105,7 +105,7 @@ const InsuranceAppraisalModal: React.FC<InsuranceAppraisalModalProps> = ({ isOpe
                   <select
                     value={cardGrade}
                     onChange={e => setCardGrade(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-blue-500"
                   >
                     <option value="PSA 10">PSA 10</option>
                     <option value="PSA 9">PSA 9</option>
@@ -126,7 +126,7 @@ const InsuranceAppraisalModal: React.FC<InsuranceAppraisalModalProps> = ({ isOpe
                   value={estimatedValue}
                   onChange={e => setEstimatedValue(e.target.value)}
                   placeholder="e.g., 42500"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
                 />
               </div>
 
@@ -152,17 +152,17 @@ const InsuranceAppraisalModal: React.FC<InsuranceAppraisalModalProps> = ({ isOpe
               {/* Certification Badges */}
               <div className="flex flex-wrap gap-2">
                 {report.certification.irsCompliant && (
-                  <span className="flex items-center gap-1 px-2 py-1 rounded bg-blue-500/15 text-blue-400 text-xs font-medium border border-blue-500/30">
+                  <span className="flex items-center gap-1 px-2 py-1 rounded-sm bg-blue-500/15 text-blue-400 text-xs font-medium border border-blue-500/30">
                     <FileCheck size={12} /> IRS-Compliant
                   </span>
                 )}
                 {report.certification.insuranceGrade && (
-                  <span className="flex items-center gap-1 px-2 py-1 rounded bg-green-500/15 text-green-400 text-xs font-medium border border-green-500/30">
+                  <span className="flex items-center gap-1 px-2 py-1 rounded-sm bg-green-500/15 text-green-400 text-xs font-medium border border-green-500/30">
                     <Award size={12} /> Insurance-Grade
                   </span>
                 )}
                 {report.certification.uspap && (
-                  <span className="flex items-center gap-1 px-2 py-1 rounded bg-purple-500/15 text-purple-400 text-xs font-medium border border-purple-500/30">
+                  <span className="flex items-center gap-1 px-2 py-1 rounded-sm bg-purple-500/15 text-purple-400 text-xs font-medium border border-purple-500/30">
                     <CheckCircle size={12} /> USPAP Compliant
                   </span>
                 )}

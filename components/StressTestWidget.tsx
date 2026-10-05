@@ -77,7 +77,7 @@ export const StressTestWidget: React.FC<StressTestWidgetProps> = ({ inventory, o
       {summary && (
         <div className="flex items-center gap-4 p-4 bg-slate-800/50 border border-slate-700 rounded-2xl">
           {/* Circular score */}
-          <div className="relative w-16 h-16 flex-shrink-0">
+          <div className="relative w-16 h-16 shrink-0">
             <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
               <circle cx="32" cy="32" r="28" fill="none" stroke="#1e293b" strokeWidth="5" />
               <circle

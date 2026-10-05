@@ -101,7 +101,7 @@ const ResetPassword: React.FC = () => {
                     <div className="flex flex-col gap-3">
                         <Link
                             to="/forgot-password"
-                            className="inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-lg tracking-wider hover:opacity-90 transition-all"
+                            className="inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-linear-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-lg tracking-wider hover:opacity-90 transition-all"
                         >
                             REQUEST RESET LINK
                         </Link>
@@ -123,7 +123,7 @@ const ResetPassword: React.FC = () => {
             <div className="w-full max-w-md">
                 {/* Logo */}
                 <div className="flex items-center gap-3 mb-10 justify-center">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-lime to-brand-teal flex items-center justify-center shadow-[0_0_20px_rgba(190,242,100,0.3)]">
+                    <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-brand-lime to-brand-teal flex items-center justify-center shadow-[0_0_20px_rgba(190,242,100,0.3)]">
                         <TrendingUp className="w-7 h-7 text-brand-charcoal" />
                     </div>
                     <span className="font-bebas text-4xl tracking-wider text-white">MSI</span>
@@ -166,7 +166,7 @@ const ResetPassword: React.FC = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-3.5 pl-12 pr-12 rounded-2xl bg-slate-800/40 border border-slate-700 text-white placeholder-slate-600 focus:outline-none focus:border-brand-lime focus:ring-1 focus:ring-brand-lime/50 transition-all backdrop-blur-sm"
+                                    className="w-full px-4 py-3.5 pl-12 pr-12 rounded-2xl bg-slate-800/40 border border-slate-700 text-white placeholder-slate-600 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime/50 transition-all backdrop-blur-xs"
                                     placeholder="••••••••"
                                     required
                                 />
@@ -188,7 +188,7 @@ const ResetPassword: React.FC = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className={`w-full px-4 py-3.5 pl-12 rounded-2xl bg-slate-800/40 border text-white placeholder-slate-600 focus:outline-none focus:ring-1 transition-all backdrop-blur-sm ${confirmPassword && confirmPassword !== password ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:border-brand-lime focus:ring-brand-lime/50'}`}
+                                    className={`w-full px-4 py-3.5 pl-12 rounded-2xl bg-slate-800/40 border text-white placeholder-slate-600 focus:outline-hidden focus:ring-1 transition-all backdrop-blur-xs ${confirmPassword && confirmPassword !== password ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:border-brand-lime focus:ring-brand-lime/50'}`}
                                     placeholder="••••••••"
                                     required
                                 />
@@ -221,7 +221,7 @@ const ResetPassword: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading || passwordStrength < 3}
-                        className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 shadow-[0_4px_20px_rgba(190,242,100,0.2)]"
+                        className="w-full py-4 px-6 rounded-2xl bg-linear-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 shadow-[0_4px_20px_rgba(190,242,100,0.2)]"
                     >
                         {loading ? (
                             <>

@@ -95,7 +95,7 @@ function MySetsTab() {
       <div className="flex items-center gap-3 mb-6">
         <Filter className="w-5 h-5 text-slate-400" />
         <select
-          className="bg-slate-700 text-white border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="bg-slate-700 text-white border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           value={sportFilter}
           onChange={e => setSportFilter(e.target.value)}
         >
@@ -140,7 +140,7 @@ function MissingCardsTab() {
     <div>
       <div className="mb-6">
         <select
-          className="bg-slate-700 text-white border border-slate-600 rounded-lg px-3 py-2 text-sm w-full max-w-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="bg-slate-700 text-white border border-slate-600 rounded-lg px-3 py-2 text-sm w-full max-w-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
           value={selectedSetId}
           onChange={e => setSelectedSetId(e.target.value)}
         >
@@ -167,7 +167,7 @@ function MissingCardsTab() {
                   <tr key={card.cardNumber} className={i % 2 === 0 ? 'bg-slate-800' : 'bg-slate-800/50'}>
                     <td className="px-4 py-3 text-white">
                       <div className="flex items-center gap-2">
-                        <input type="checkbox" className="rounded border-slate-600 bg-slate-700" />
+                        <input type="checkbox" className="rounded-sm border-slate-600 bg-slate-700" />
                         <span>#{card.cardNumber} - {card.cardName}</span>
                       </div>
                     </td>
@@ -227,7 +227,7 @@ function SourceFinderTab() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
-            className="bg-slate-700 text-white border border-slate-600 rounded-lg pl-10 pr-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-slate-700 text-white border border-slate-600 rounded-lg pl-10 pr-3 py-2 text-sm w-full focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             placeholder="Search for a card..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
@@ -363,7 +363,7 @@ function CompletionStatsTab() {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-white font-semibold">Missing Cards Rarity Breakdown</h3>
           <select
-            className="bg-slate-700 text-white border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-slate-700 text-white border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             value={selectedSetId}
             onChange={e => setSelectedSetId(e.target.value)}
           >

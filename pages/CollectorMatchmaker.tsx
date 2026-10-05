@@ -299,7 +299,7 @@ const CollectorMatchmaker: React.FC = () => {
                         {currentMatch.collector2.needsList.slice(0, 3).map(need => {
                           const youHave = myProfile?.surplusList.find(s => s.player === need.player);
                           return (
-                            <div key={need.id} className={`text-sm p-2 rounded mb-1 ${youHave ? 'bg-emerald-500/10 text-emerald-300' : 'bg-slate-900 text-slate-400'}`}>
+                            <div key={need.id} className={`text-sm p-2 rounded-sm mb-1 ${youHave ? 'bg-emerald-500/10 text-emerald-300' : 'bg-slate-900 text-slate-400'}`}>
                               {need.year} {need.player} {need.set}
                               {youHave && <Check size={12} className="inline ml-2 text-emerald-400" />}
                             </div>
@@ -309,7 +309,7 @@ const CollectorMatchmaker: React.FC = () => {
                       <div>
                         <h4 className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">You Need (They Have)</h4>
                         {currentMatch.gaps.length > 0 ? currentMatch.gaps.slice(0, 3).map(gap => (
-                          <div key={gap.id} className="text-sm p-2 rounded mb-1 bg-blue-500/10 text-blue-300">
+                          <div key={gap.id} className="text-sm p-2 rounded-sm mb-1 bg-blue-500/10 text-blue-300">
                             {gap.description}
                             <Check size={12} className="inline ml-2 text-blue-400" />
                           </div>
@@ -383,7 +383,7 @@ const CollectorMatchmaker: React.FC = () => {
                   </div>
                   <div className="flex flex-wrap gap-1 mb-2">
                     {match.collector2.collectionFocus.sports.map(s => (
-                      <span key={s} className="bg-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded">{s}</span>
+                      <span key={s} className="bg-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded-sm">{s}</span>
                     ))}
                   </div>
                   <p className="text-slate-400 text-xs line-clamp-1">{match.matchReason}</p>
@@ -504,7 +504,7 @@ const CollectorMatchmaker: React.FC = () => {
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {overlap.sharedInterests.slice(0, 4).map((s, i) => (
-                        <span key={i} className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded">{s}</span>
+                        <span key={i} className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded-sm">{s}</span>
                       ))}
                     </div>
                   </div>
@@ -743,8 +743,8 @@ const CollectorMatchmaker: React.FC = () => {
                     }`}>{gap.priority}</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-slate-400 mb-2">
-                    <span className="bg-slate-700 px-2 py-0.5 rounded">{gap.sport}</span>
-                    <span className="bg-slate-700 px-2 py-0.5 rounded">{gap.era}</span>
+                    <span className="bg-slate-700 px-2 py-0.5 rounded-sm">{gap.sport}</span>
+                    <span className="bg-slate-700 px-2 py-0.5 rounded-sm">{gap.era}</span>
                     <span>~{formatCurrency(gap.estimatedCost)}</span>
                   </div>
                   {gap.potentialFillers.length > 0 && (
@@ -899,7 +899,7 @@ const CollectorMatchmaker: React.FC = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-white font-medium text-sm">{notif.title}</p>
-                    {!notif.read && <span className="w-2 h-2 bg-emerald-400 rounded-full flex-shrink-0" />}
+                    {!notif.read && <span className="w-2 h-2 bg-emerald-400 rounded-full shrink-0" />}
                   </div>
                   <p className="text-slate-400 text-sm mt-0.5">{notif.message}</p>
                   <p className="text-slate-500 text-xs mt-1">{new Date(notif.timestamp).toLocaleString()}</p>

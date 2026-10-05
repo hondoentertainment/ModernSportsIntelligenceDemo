@@ -170,7 +170,7 @@ const InfluencerImpact: React.FC = () => {
                   <div>
                     <p className="text-xs font-bold text-white">{r.name}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className={`text-[9px] px-1 py-0.5 rounded border ${platformBadgeColor(r.platform)}`}>
+                      <span className={`text-[9px] px-1 py-0.5 rounded-sm border ${platformBadgeColor(r.platform)}`}>
                         {platformLabel(r.platform)}
                       </span>
                       <span className="text-[9px] text-slate-600">{r.total_events} events</span>
@@ -253,7 +253,7 @@ const InfluencerImpact: React.FC = () => {
                 <p className="text-[10px] text-slate-500 line-clamp-1 mb-2">{evt.title}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-slate-600 truncate">{evt.card_mentioned.split(' ').slice(-3).join(' ')}</span>
-                  <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                  <div className="flex items-center gap-1 shrink-0 ml-2">
                     {impact24h >= 0 ? (
                       <TrendingUp size={10} className="text-emerald-400" />
                     ) : (
@@ -338,7 +338,7 @@ const InfluencerImpact: React.FC = () => {
             {platformData.map(p => (
               <div key={p.platform} className="flex items-center justify-between p-2 bg-slate-900/50 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded border ${platformBadgeColor(p.platform)}`}>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-sm border ${platformBadgeColor(p.platform)}`}>
                     {platformLabel(p.platform)}
                   </span>
                   <span className="text-[10px] text-slate-500">{p.total_events} events</span>

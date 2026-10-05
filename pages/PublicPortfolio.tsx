@@ -153,7 +153,7 @@ const PublicPortfolio: React.FC = () => {
                 <p className="text-[10px] text-slate-500 font-semibold">{PORTFOLIO_EMBED_DISCLOSURE}</p>
             )}
             {/* Profile Header */}
-            <div className="bg-slate-900/50 border border-slate-800 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8 backdrop-blur-sm">
+            <div className="bg-slate-900/50 border border-slate-800 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8 backdrop-blur-xs">
                 <div className="relative">
                     <img
                         src={profile.avatarUrl || `https://ui-avatars.com/api/?name=${profile.displayName}&background=random`}
@@ -217,7 +217,7 @@ const PublicPortfolio: React.FC = () => {
                             placeholder="Search assets..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-slate-900/50 border border-slate-800 rounded-2xl py-3 pl-12 pr-4 text-slate-200 focus:outline-none focus:border-brand-lime/50 focus:ring-1 focus:ring-brand-lime/50 transition-all placeholder:text-slate-600"
+                            className="w-full bg-slate-900/50 border border-slate-800 rounded-2xl py-3 pl-12 pr-4 text-slate-200 focus:outline-hidden focus:border-brand-lime/50 focus:ring-1 focus:ring-brand-lime/50 transition-all placeholder:text-slate-600"
                         />
                     </div>
                     <div className="flex gap-2">
@@ -259,7 +259,7 @@ const PublicPortfolio: React.FC = () => {
                     const styles = getTierStyles(tier);
                     return (
                         <div key={card.id} className={`group bg-brand-slate border ${styles.border} rounded-[2.5rem] overflow-hidden relative opacity-90 hover:opacity-100 hover:scale-[1.01] transition-all duration-300`}>
-                            <div className="aspect-[4/5] bg-slate-950 relative overflow-hidden">
+                            <div className="aspect-4/5 bg-slate-950 relative overflow-hidden">
                                 <CardImage
                                     src={card.image}
                                     playerName={card.player}
@@ -267,7 +267,7 @@ const PublicPortfolio: React.FC = () => {
                                     manufacturer={card.manufacturer}
                                     className="w-full h-full"
                                 />
-                                <div className={`absolute inset-0 bg-gradient-to-t ${styles.glow || 'from-black/80'} via-transparent to-transparent opacity-60`}></div>
+                                <div className={`absolute inset-0 bg-linear-to-t ${styles.glow || 'from-black/80'} via-transparent to-transparent opacity-60`}></div>
                                 <div className="absolute top-6 left-6 flex flex-col gap-2">
                                     {card.isGraded && (
                                         <div className="bg-brand-lime text-brand-charcoal px-3 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest shadow-xl">
@@ -291,7 +291,7 @@ const PublicPortfolio: React.FC = () => {
                                     {card.popCount !== undefined && (
                                         <div className="text-right">
                                             <p className="text-[9px] font-black text-brand-muted uppercase tracking-tighter mb-0.5">Scarcity</p>
-                                            <span className="text-xs font-bold text-brand-lime px-2 py-0.5 bg-brand-lime/10 rounded">Pop {card.popCount}</span>
+                                            <span className="text-xs font-bold text-brand-lime px-2 py-0.5 bg-brand-lime/10 rounded-sm">Pop {card.popCount}</span>
                                         </div>
                                     )}
                                 </div>

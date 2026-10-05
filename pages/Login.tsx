@@ -50,9 +50,9 @@ const Login: React.FC = () => {
         <div className="min-h-screen bg-brand-charcoal flex">
             {/* Left Panel - Branding */}
             <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-charcoal via-slate-900 to-brand-charcoal" />
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-lime/20 via-transparent to-transparent" />
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-brand-teal/20 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-br from-brand-charcoal via-slate-900 to-brand-charcoal" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-brand-lime/20 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,var(--tw-gradient-stops))] from-brand-teal/20 via-transparent to-transparent" />
 
                 <div className="absolute inset-0 opacity-10" style={{
                     backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)',
@@ -62,7 +62,7 @@ const Login: React.FC = () => {
                 <div className="relative z-10 flex flex-col justify-center p-12">
                     <div className="mb-12">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-lime to-brand-teal flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-brand-lime to-brand-teal flex items-center justify-center">
                                 <TrendingUp className="w-7 h-7 text-brand-charcoal" />
                             </div>
                             <span className="font-bebas text-4xl tracking-wider text-white">MSI</span>
@@ -78,7 +78,7 @@ const Login: React.FC = () => {
 
                     <div className="space-y-4">
                         <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-brand-lime/10 flex items-center justify-center flex-shrink-0">
+                            <div className="w-10 h-10 rounded-xl bg-brand-lime/10 flex items-center justify-center shrink-0">
                                 <Zap className="w-5 h-5 text-brand-lime" />
                             </div>
                             <div>
@@ -87,7 +87,7 @@ const Login: React.FC = () => {
                             </div>
                         </div>
                         <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-brand-teal/10 flex items-center justify-center flex-shrink-0">
+                            <div className="w-10 h-10 rounded-xl bg-brand-teal/10 flex items-center justify-center shrink-0">
                                 <Shield className="w-5 h-5 text-brand-teal" />
                             </div>
                             <div>
@@ -104,7 +104,7 @@ const Login: React.FC = () => {
                 <div className="w-full max-w-md">
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex items-center gap-3 mb-6 justify-center">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-lime to-brand-teal flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-brand-lime to-brand-teal flex items-center justify-center">
                             <TrendingUp className="w-6 h-6 text-brand-charcoal" />
                         </div>
                         <span className="font-bebas text-3xl tracking-wider text-white">MSI</span>
@@ -157,7 +157,7 @@ const Login: React.FC = () => {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all text-sm"
+                                className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all text-sm"
                                 placeholder="investor@example.com"
                                 required
                             />
@@ -172,7 +172,7 @@ const Login: React.FC = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all pr-12 text-sm"
+                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all pr-12 text-sm"
                                     placeholder="••••••••"
                                     required
                                 />
@@ -189,7 +189,7 @@ const Login: React.FC = () => {
 
                         <div className="flex items-center justify-between text-[11px]">
                             <label className="flex items-center gap-2 text-slate-400 cursor-pointer">
-                                <input type="checkbox" className="w-3.5 h-3.5 rounded bg-slate-800 border-slate-600 text-brand-lime focus:ring-brand-lime focus:ring-offset-0" />
+                                <input type="checkbox" className="w-3.5 h-3.5 rounded-sm bg-slate-800 border-slate-600 text-brand-lime focus:ring-brand-lime focus:ring-offset-0" />
                                 Remember
                             </label>
                             <Link to="/forgot-password" title="Recover Access?" className="text-brand-lime hover:text-brand-lime/80 transition-colors font-bold uppercase tracking-widest">
@@ -200,7 +200,7 @@ const Login: React.FC = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-lg tracking-wider hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                            className="w-full py-3 px-4 rounded-xl bg-linear-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-lg tracking-wider hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                         >
                             {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> SIGNING IN...</> : 'SIGN IN'}
                         </button>
@@ -226,7 +226,7 @@ const Login: React.FC = () => {
                         {isDemoMode ? (
                             <button
                                 onClick={handleDemoLogin}
-                                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bebas text-lg tracking-wider hover:opacity-90 transition-all flex items-center justify-center gap-3"
+                                className="w-full py-3 px-4 rounded-xl bg-linear-to-r from-amber-500 to-orange-500 text-white font-bebas text-lg tracking-wider hover:opacity-90 transition-all flex items-center justify-center gap-3"
                             >
                                 <Zap size={18} /> ENTER DEMO MODE
                             </button>

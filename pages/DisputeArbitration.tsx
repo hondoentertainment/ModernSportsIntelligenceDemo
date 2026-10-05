@@ -141,7 +141,7 @@ function EvidenceItem({ ev }: { key?: React.Key; ev: Evidence }) {
   const Icon = getEvidenceIcon(ev.type);
   return (
     <div className="flex items-start gap-3 p-3 bg-slate-800/50 rounded-lg border border-slate-700/50">
-      <div className="p-1.5 bg-slate-700 rounded">
+      <div className="p-1.5 bg-slate-700 rounded-sm">
         <Icon className="w-3.5 h-3.5 text-slate-300" />
       </div>
       <div className="flex-1 min-w-0">
@@ -189,7 +189,7 @@ function ArbitratorBadge({ arb }: { key?: React.Key; arb: Arbitrator }) {
         </span>
       </div>
       {arb.vote && (
-        <div className="mt-2 p-2 bg-slate-900/60 rounded border border-slate-700/30">
+        <div className="mt-2 p-2 bg-slate-900/60 rounded-sm border border-slate-700/30">
           <div className="text-xs font-medium text-slate-300 mb-1">
             Vote: <span className="text-blue-400">{getResolutionLabel(arb.vote)}</span>
           </div>
@@ -218,7 +218,7 @@ function DisputeCard({ dispute }: { key?: React.Key; dispute: Dispute }) {
               <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${getStatusBgColor(dispute.status)}`}>
                 {STATUS_LABELS[dispute.status] ?? dispute.status}
               </span>
-              <span className="text-xs text-slate-500 bg-slate-800 px-2 py-0.5 rounded">
+              <span className="text-xs text-slate-500 bg-slate-800 px-2 py-0.5 rounded-sm">
                 {getCategoryLabel(dispute.category)}
               </span>
               <span className="text-xs text-slate-600">{dispute.id}</span>
@@ -336,7 +336,7 @@ function ArbitratorLeaderboard({ arbitrators }: { arbitrators: Arbitrator[] }) {
             </div>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               {arb.specialties.map(s => (
-                <span key={s} className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">{s}</span>
+                <span key={s} className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-sm">{s}</span>
               ))}
             </div>
           </div>
@@ -452,7 +452,7 @@ const DisputeArbitration: React.FC = () => {
               onClick={() => setActiveTab(tab)}
               className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab
-                  ? 'bg-slate-800 text-white shadow-sm'
+                  ? 'bg-slate-800 text-white shadow-xs'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
               }`}
             >

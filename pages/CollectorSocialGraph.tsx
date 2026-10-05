@@ -329,7 +329,7 @@ function NetworkMapTab({
         <div className="flex items-center gap-3 ml-auto text-xs text-gray-500">
           {Object.entries(EDGE_TYPE_COLORS).map(([type, color]) => (
             <span key={type} className="flex items-center gap-1">
-              <span className="w-3 h-0.5 inline-block rounded" style={{ backgroundColor: color }} />
+              <span className="w-3 h-0.5 inline-block rounded-sm" style={{ backgroundColor: color }} />
               {type}
             </span>
           ))}
@@ -505,7 +505,7 @@ function NetworkMapTab({
                 <div className="text-xs text-gray-500 mb-1">Specialty</div>
                 <div className="flex flex-wrap gap-1">
                   {selectedProfile.specialty.map(s => (
-                    <span key={s} className="px-2 py-0.5 bg-gray-700/50 rounded text-xs text-gray-300">{s}</span>
+                    <span key={s} className="px-2 py-0.5 bg-gray-700/50 rounded-sm text-xs text-gray-300">{s}</span>
                   ))}
                 </div>
               </div>

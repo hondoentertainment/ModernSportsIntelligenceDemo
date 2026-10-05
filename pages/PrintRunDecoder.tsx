@@ -98,9 +98,9 @@ const RangeBar: React.FC<{ low: number; median: number; high: number; maxVal: nu
   const widthPct = scale(high - low);
   const medPct = scale(median);
   return (
-    <div className="relative h-5 w-full rounded bg-slate-700/50">
+    <div className="relative h-5 w-full rounded-sm bg-slate-700/50">
       <div
-        className="absolute top-0.5 bottom-0.5 rounded bg-gradient-to-r from-blue-500/40 via-blue-500/60 to-blue-500/40"
+        className="absolute top-0.5 bottom-0.5 rounded-sm bg-linear-to-r from-blue-500/40 via-blue-500/60 to-blue-500/40"
         style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
       />
       <div
@@ -261,8 +261,8 @@ const PrintRunDecoder: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-3 text-xs text-slate-500">
-          <span className="px-2 py-1 bg-slate-800 rounded">{estimates.length} cards analyzed</span>
-          <span className="px-2 py-1 bg-slate-800 rounded">{setAnalyses.length} sets decoded</span>
+          <span className="px-2 py-1 bg-slate-800 rounded-sm">{estimates.length} cards analyzed</span>
+          <span className="px-2 py-1 bg-slate-800 rounded-sm">{setAnalyses.length} sets decoded</span>
         </div>
       </div>
 
@@ -298,7 +298,7 @@ const PrintRunDecoder: React.FC = () => {
               placeholder="Search cards, players, sets..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              className="w-full bg-slate-900 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-blue-500"
             />
           </div>
 
@@ -403,7 +403,7 @@ const PrintRunDecoder: React.FC = () => {
             <select
               value={selectedCardId ?? ''}
               onChange={e => setSelectedCardId(e.target.value)}
-              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500 max-w-md"
+              className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-blue-500 max-w-md"
             >
               {estimates.map(e => (
                 <option key={e.cardId} value={e.cardId}>
@@ -648,9 +648,9 @@ const PrintRunDecoder: React.FC = () => {
                       {[s.absoluteScarcity, s.relativeScarcity, s.functionalScarcity, s.populationAdjusted].map(
                         (v, i) => (
                           <div key={i} className="hidden md:flex items-center justify-center">
-                            <div className="w-full bg-slate-700 rounded h-2 relative">
+                            <div className="w-full bg-slate-700 rounded-sm h-2 relative">
                               <div
-                                className="h-2 rounded"
+                                className="h-2 rounded-sm"
                                 style={{
                                   width: `${v}%`,
                                   backgroundColor:
@@ -676,7 +676,7 @@ const PrintRunDecoder: React.FC = () => {
           <select
             value={selectedSet}
             onChange={e => setSelectedSet(e.target.value)}
-            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500"
+            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-blue-500"
           >
             {setAnalyses.map(sa => (
               <option key={sa.setName} value={sa.setName}>
@@ -778,7 +778,7 @@ const PrintRunDecoder: React.FC = () => {
           <select
             value={selectedCardId ?? ''}
             onChange={e => setSelectedCardId(e.target.value)}
-            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500 max-w-md"
+            className="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-hidden focus:border-blue-500 max-w-md"
           >
             {estimates.map(e => (
               <option key={e.cardId} value={e.cardId}>
@@ -846,9 +846,9 @@ const PrintRunDecoder: React.FC = () => {
                 <div key={d.metric} className="flex items-center gap-3">
                   <TrendIcon trend={d.trend} />
                   <span className="text-sm text-slate-300 w-48">{d.metric}</span>
-                  <div className="flex-1 bg-slate-700 rounded h-2">
+                  <div className="flex-1 bg-slate-700 rounded-sm h-2">
                     <div
-                      className="h-2 rounded"
+                      className="h-2 rounded-sm"
                       style={{
                         width: `${Math.min(100, (d.value / Math.max(...selectedProjection.demandIndicators.map(x => x.value))) * 100)}%`,
                         backgroundColor: d.trend === 'up' ? '#10b981' : d.trend === 'down' ? '#f87171' : '#94a3b8',
@@ -983,9 +983,9 @@ const PrintRunDecoder: React.FC = () => {
                   <span className="text-slate-500 w-20 shrink-0">{s.freshness}</span>
                   <div className="flex items-center gap-1 flex-1">
                     <span className="text-slate-500 w-24 shrink-0">Completeness</span>
-                    <div className="flex-1 bg-slate-700 rounded h-1.5">
+                    <div className="flex-1 bg-slate-700 rounded-sm h-1.5">
                       <div
-                        className="h-1.5 rounded"
+                        className="h-1.5 rounded-sm"
                         style={{
                           width: `${s.completeness}%`,
                           backgroundColor: s.completeness >= 80 ? '#10b981' : s.completeness >= 50 ? '#fbbf24' : '#f87171',
@@ -996,9 +996,9 @@ const PrintRunDecoder: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-1 flex-1">
                     <span className="text-slate-500 w-20 shrink-0">Reliability</span>
-                    <div className="flex-1 bg-slate-700 rounded h-1.5">
+                    <div className="flex-1 bg-slate-700 rounded-sm h-1.5">
                       <div
-                        className="h-1.5 rounded"
+                        className="h-1.5 rounded-sm"
                         style={{
                           width: `${s.reliability}%`,
                           backgroundColor: s.reliability >= 80 ? '#10b981' : s.reliability >= 50 ? '#fbbf24' : '#f87171',

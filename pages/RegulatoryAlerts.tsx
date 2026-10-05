@@ -44,7 +44,7 @@ const RegulatoryAlerts: React.FC = () => {
                 <span className="text-white font-medium">{a.title}</span>
                 <p className="text-slate-500 text-xs mt-1">{a.jurisdiction} · {a.date}</p>
               </div>
-              <span className={`px-2 py-0.5 rounded text-xs font-medium ${a.severity === 'high' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>{a.severity}</span>
+              <span className={`px-2 py-0.5 rounded-sm text-xs font-medium ${a.severity === 'high' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>{a.severity}</span>
             </li>
           ))}
         </ul>

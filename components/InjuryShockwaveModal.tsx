@@ -104,7 +104,7 @@ const ShockwaveMapTab: React.FC = () => {
           <button
             key={ev.id}
             onClick={() => setSelectedEventId(ev.id)}
-            className={`flex-shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               selectedEventId === ev.id
                 ? 'bg-red-500/20 text-red-400 border border-red-500/40'
                 : 'bg-slate-800/50 text-slate-400 border border-slate-700 hover:border-slate-600 hover:text-white'
@@ -166,7 +166,7 @@ const ShockwaveMapTab: React.FC = () => {
                     className="flex items-center gap-3 p-3 bg-slate-800/30 border border-slate-700/50 rounded-xl text-xs group hover:bg-slate-800/60 hover:border-slate-600 transition-all"
                   >
                     {/* Distance indicator */}
-                    <div className="flex items-center gap-1 w-8 flex-shrink-0">
+                    <div className="flex items-center gap-1 w-8 shrink-0">
                       {Array.from({ length: Math.min(idx + 1, 4) }).map((_, i) => (
                         <span
                           key={i}
@@ -205,7 +205,7 @@ const ShockwaveMapTab: React.FC = () => {
                     </span>
 
                     {/* Confidence */}
-                    <div className="w-12 flex-shrink-0">
+                    <div className="w-12 shrink-0">
                       <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className={`h-full rounded-full ${
@@ -222,7 +222,7 @@ const ShockwaveMapTab: React.FC = () => {
                     </div>
 
                     {/* Delay */}
-                    <span className="text-[10px] text-slate-500 w-16 text-right flex-shrink-0">
+                    <span className="text-[10px] text-slate-500 w-16 text-right shrink-0">
                       {node.propagationDelay}
                     </span>
                   </div>
@@ -264,7 +264,7 @@ const ActiveEventsTab: React.FC = () => {
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           placeholder="Search events by player, team, or injury..."
-          className="w-full pl-9 pr-3 py-2.5 bg-slate-800/50 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-lime/40 transition-colors"
+          className="w-full pl-9 pr-3 py-2.5 bg-slate-800/50 border border-slate-700 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-hidden focus:border-brand-lime/40 transition-colors"
         />
       </div>
 
@@ -640,11 +640,11 @@ const InjuryShockwaveModal: React.FC<InjuryShockwaveModalProps> = ({ isOpen, onC
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-brand-charcoal/80 backdrop-blur-xl animate-in fade-in duration-300">
       <div className="w-full max-w-5xl bg-slate-900 border border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
 
         {/* Gradient Header */}
-        <div className="p-8 border-b border-slate-700 bg-gradient-to-r from-red-500/10 to-slate-900">
+        <div className="p-8 border-b border-slate-700 bg-linear-to-r from-red-500/10 to-slate-900">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-red-500/20 rounded-2xl border border-red-500/30 text-red-400">

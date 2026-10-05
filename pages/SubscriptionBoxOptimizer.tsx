@@ -250,7 +250,7 @@ const SubscriptionBoxOptimizer: React.FC = () => {
                 <p className="text-[9px] text-slate-500 mb-1">Key Rookies</p>
                 <div className="flex flex-wrap gap-1">
                   {box.keyRookies.slice(0, 2).map((r, i) => (
-                    <span key={i} className="text-[9px] px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded">
+                    <span key={i} className="text-[9px] px-1.5 py-0.5 bg-slate-700/50 text-slate-300 rounded-sm">
                       {r}
                     </span>
                   ))}

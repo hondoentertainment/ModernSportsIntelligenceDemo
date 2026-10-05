@@ -33,7 +33,7 @@ const ArVaultWalkthrough: React.FC = () => {
       {/* Info Section */}
       <div className="p-6 bg-slate-800/40 border border-slate-700/50 rounded-2xl">
         <div className="flex items-start gap-4">
-          <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20 flex-shrink-0">
+          <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20 shrink-0">
             <View size={20} className="text-purple-400" />
           </div>
           <div>

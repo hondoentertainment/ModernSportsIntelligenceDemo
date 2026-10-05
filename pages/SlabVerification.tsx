@@ -354,7 +354,7 @@ const SlabVerification: React.FC = () => {
                             <div className="font-medium">{r.cardName}</div>
                             <div className="text-sm text-slate-400">{r.certNumber} - {r.company} {r.grade}</div>
                           </div>
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(r.verificationStatus)}`}>
+                          <span className={`px-2 py-1 rounded-sm text-xs font-medium ${getStatusColor(r.verificationStatus)}`}>
                             {getStatusLabel(r.verificationStatus)}
                           </span>
                         </>

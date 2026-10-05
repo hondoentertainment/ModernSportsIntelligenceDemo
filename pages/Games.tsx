@@ -71,10 +71,10 @@ const Games: React.FC = () => {
 
               {/* Matchup Column */}
               <div className="lg:col-span-4 p-8 bg-brand-charcoal/50 border-r border-slate-800 flex flex-col justify-center relative overflow-hidden">
-                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-brand-lime/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute top-0 inset-x-0 h-1 bg-linear-to-r from-transparent via-brand-lime/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                 <div className="flex justify-between items-center mb-6">
-                  <span className="text-[10px] font-black bg-slate-800 text-brand-muted px-2 py-1 rounded text-center uppercase tracking-widest">{game.league}</span>
+                  <span className="text-[10px] font-black bg-slate-800 text-brand-muted px-2 py-1 rounded-sm text-center uppercase tracking-widest">{game.league}</span>
                   <span className="text-[10px] font-black text-white flex items-center gap-2 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
                     <Clock size={12} className="text-brand-lime" /> {game.time}
                   </span>
@@ -89,7 +89,7 @@ const Games: React.FC = () => {
 
                   <div className="flex flex-col items-center gap-1 z-10">
                     <span className="text-2xl font-bebas text-brand-muted opacity-50">VS</span>
-                    <span className="text-[10px] font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                    <span className="text-[10px] font-bold text-slate-500 bg-slate-900 px-2 py-0.5 rounded-sm border border-slate-800">
                       {game.odds.spread}
                     </span>
                   </div>
@@ -130,7 +130,7 @@ const Games: React.FC = () => {
                       <p className="text-[10px] font-black text-brand-muted uppercase tracking-widest mb-1">Advantage</p>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-bold text-white">{game.narrative.advantage}</span>
-                        <span className="text-[10px] font-mono text-brand-green bg-brand-green/10 px-1.5 rounded">{game.narrative.confidence}% CONF</span>
+                        <span className="text-[10px] font-mono text-brand-green bg-brand-green/10 px-1.5 rounded-sm">{game.narrative.confidence}% CONF</span>
                       </div>
                     </div>
                   </div>
