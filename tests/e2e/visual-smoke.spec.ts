@@ -17,6 +17,12 @@ test.describe('Visual regression smoke', () => {
     test.use({ viewport: VIEWPORT });
 
     test.beforeEach(async ({ page }) => {
+        // The Dashboard opens the Morning Briefing modal ~1s after first load each day.
+        // Its overlay sits above the sidebar, so mark today's briefing as seen to keep
+        // the snapshots and the sidebar toggle click deterministic.
+        await page.addInitScript(() => {
+            window.localStorage.setItem('lastMorningBriefing', JSON.stringify(new Date().toDateString()));
+        });
         await enterDemoMode(page);
         await page.setViewportSize(VIEWPORT);
     });
