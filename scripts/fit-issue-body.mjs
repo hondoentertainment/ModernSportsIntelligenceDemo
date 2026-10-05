@@ -188,6 +188,19 @@ function capSignatureBlock(block) {
 function truncatePreservingFooter(text, footer, limit) {
   if (footer.length >= limit) return sliceCodeUnits(footer, limit);
   const withoutFooter = text.endsWith(footer) ? text.slice(0, -footer.length) : text;
+  const healthAt = withoutFooter.lastIndexOf('### Health Score');
+  if (healthAt !== -1) {
+    const health = withoutFooter.slice(healthAt);
+    const tail = appendFooter(health, footer);
+    if (tail.length <= limit) {
+      const budget = limit - tail.length;
+      let head = sliceCodeUnits(withoutFooter.slice(0, healthAt), budget);
+      const lastNl = head.lastIndexOf('\n');
+      if (lastNl > Math.floor(budget * 0.5)) head = head.slice(0, lastNl + 1);
+      const combined = head + tail;
+      if (combined.length <= limit) return combined;
+    }
+  }
   const budget = limit - footer.length;
   let head = sliceCodeUnits(withoutFooter, budget);
   const lastNl = head.lastIndexOf('\n');

@@ -95,6 +95,21 @@ describe('fitIssueBody', () => {
     expect(body).toContain('https://example.test/run/1');
   });
 
+  it('keeps the health score when a non-bulk section is what overflows', () => {
+    const report = healthReport({
+      largeFiles: 1,
+      duplicates: 1,
+      padding: '',
+    }).replace(
+      '```\n```',
+      `\`\`\`\n${'unused export line that should be cut\n'.repeat(200)}\`\`\``,
+    );
+    const body = fitIssueBody(report, { limit: 900, runUrl: 'https://example.test/run/3' });
+    expect(body.length).toBeLessThanOrEqual(900);
+    expect(body).toContain('| **Overall health** | **50/100** |');
+    expect(body).toContain('https://example.test/run/3');
+  });
+
   it('truncates a heading-free report without exceeding the limit', () => {
     const report = `${'line of duplicate detail\n'.repeat(4000)}done`;
     expect(report.length).toBeGreaterThan(GITHUB_ISSUE_BODY_LIMIT);
