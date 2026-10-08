@@ -1,58 +1,131 @@
-import React, { useState } from 'react';
-import { BarChart3, Plus, TrendingUp, Layers } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { BarChart3 } from 'lucide-react';
+import { FrontierDesk } from '../components/FrontierDesk';
+import {
+  formatDeskMoney,
+  type IndexDefinition,
+  NEXT_FEATURE_DISCLOSURE,
+  priceIndex,
+} from '../lib/analytics/nextFeatureDesk';
+import { store } from '../lib/dal/syncStore';
+import { useInventory } from '../lib/utils/useInventory';
+import type { Sport } from '../types';
 
-const MOCK_INDICES = [
-  { name: 'PSA 10 Rookie QBs 2018–2022', value: 100, change1d: 0.4, constituents: 12 },
-  { name: 'Vintage HOF Top 50', value: 98.2, change1d: -0.2, constituents: 50 },
-];
+const INDEX_KEY = 'msi_synthetic_indices_v1';
+const SPORTS: Array<Sport | 'All'> = ['All', 'Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
+
+function blankDefinition(): IndexDefinition {
+  return {
+    id: `idx-${Date.now()}`,
+    name: 'Custom index',
+    sport: 'All',
+    yearMin: 1950,
+    yearMax: new Date().getFullYear(),
+    gradedOnly: false,
+    playerQuery: '',
+  };
+}
 
 const SyntheticIndexBuilder: React.FC = () => {
-  const [indices] = useState(MOCK_INDICES);
+  const { inventory } = useInventory();
+  const [saved, setSaved] = useState<IndexDefinition[]>(() => store.get<IndexDefinition[]>(INDEX_KEY, []));
+  const [draft, setDraft] = useState<IndexDefinition>(blankDefinition);
+  const priced = useMemo(() => saved.map(definition => ({ definition, quote: priceIndex(inventory, definition) })), [saved, inventory]);
+  const draftQuote = useMemo(() => priceIndex(inventory, draft), [inventory, draft]);
+
+  const persist = (next: IndexDefinition[]) => {
+    setSaved(next);
+    store.set(INDEX_KEY, next);
+  };
 
   return (
-    <div className="space-y-8 pb-16">
-      <div>
-        <div className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-red-300">
-          <BarChart3 size={12} />
-          v5.1 Frontier
+    <FrontierDesk
+      badge="v5.1 Frontier"
+      title="Synthetic Index Builder"
+      lede="Index level 100 means the matched holdings are unchanged versus cost. Level 110 means the marks are 10% above cost. One-day change is omitted until a prior close is stored."
+      icon={<BarChart3 size={12} />}
+      stats={[
+        { label: 'Saved indices', value: String(saved.length) },
+        { label: 'Draft constituents', value: String(draftQuote.constituents) },
+        { label: 'Draft level', value: draftQuote.level === null ? '—' : String(draftQuote.level) },
+      ]}
+      sectionTitle="Saved indices"
+      rows={priced.map(({ definition, quote }) => ({
+        id: definition.id,
+        title: definition.name,
+        detail: `${quote.constituents} cards · cost ${formatDeskMoney(quote.cost)} · mark ${formatDeskMoney(quote.mark)}`,
+        aside: quote.level === null ? '—' : String(quote.level),
+      }))}
+      empty="Save a definition to keep it on this device."
+      disclosure={NEXT_FEATURE_DISCLOSURE}
+    >
+      <form
+        className="grid gap-3 rounded-2xl border border-slate-700/50 bg-slate-900/60 p-5 md:grid-cols-2"
+        onSubmit={event => {
+          event.preventDefault();
+          persist([{ ...draft, id: `idx-${Date.now()}`, name: draft.name.trim() || 'Custom index' }, ...saved]);
+          setDraft(blankDefinition());
+        }}
+      >
+        <label className="text-sm text-slate-300">
+          Name
+          <input
+            value={draft.name}
+            onChange={event => setDraft({ ...draft, name: event.target.value })}
+            className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-white"
+          />
+        </label>
+        <label className="text-sm text-slate-300">
+          Sport
+          <select
+            value={draft.sport}
+            onChange={event => setDraft({ ...draft, sport: event.target.value as Sport | 'All' })}
+            className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-white"
+          >
+            {SPORTS.map(sport => <option key={sport} value={sport}>{sport}</option>)}
+          </select>
+        </label>
+        <label className="text-sm text-slate-300">
+          Year from
+          <input
+            type="number"
+            value={draft.yearMin}
+            onChange={event => setDraft({ ...draft, yearMin: Number(event.target.value) || 0 })}
+            className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-white"
+          />
+        </label>
+        <label className="text-sm text-slate-300">
+          Year to
+          <input
+            type="number"
+            value={draft.yearMax}
+            onChange={event => setDraft({ ...draft, yearMax: Number(event.target.value) || 0 })}
+            className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-white"
+          />
+        </label>
+        <label className="text-sm text-slate-300 md:col-span-2">
+          Player contains
+          <input
+            value={draft.playerQuery}
+            onChange={event => setDraft({ ...draft, playerQuery: event.target.value })}
+            className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-white"
+          />
+        </label>
+        <label className="flex items-center gap-2 text-sm text-slate-300">
+          <input
+            type="checkbox"
+            checked={draft.gradedOnly}
+            onChange={event => setDraft({ ...draft, gradedOnly: event.target.checked })}
+          />
+          Graded only
+        </label>
+        <div className="flex items-end">
+          <button type="submit" className="rounded-xl bg-brand-lime/20 px-4 py-2 text-sm font-semibold text-brand-lime">
+            Save index
+          </button>
         </div>
-        <h1 className="mt-3 text-4xl font-bebas tracking-wide text-white">Synthetic Index Builder</h1>
-        <p className="max-w-3xl text-sm text-slate-400">
-          User-defined custom index (e.g. PSA 10 Rookie QBs 2018–2022) with daily index value and attribution. No platform offers user-defined collectible indices with live valuation.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-5">
-          <div className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500"><Layers size={12} className="text-sky-400" /> Custom indices</div>
-          <div className="text-2xl font-bold text-sky-400">{indices.length}</div>
-        </div>
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-5">
-          <div className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500"><TrendingUp size={12} className="text-emerald-400" /> Base value</div>
-          <div className="text-2xl font-bold text-emerald-400">100</div>
-        </div>
-        <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-5">
-          <div className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500"><Plus size={12} className="text-amber-400" /> Create new</div>
-          <div className="text-2xl font-bold text-amber-400">—</div>
-        </div>
-      </div>
-      <div className="rounded-2xl border border-slate-700/50 bg-slate-900/60 p-6">
-        <h3 className="text-sm font-semibold text-white mb-4">Your indices (mock)</h3>
-        <ul className="space-y-3">
-          {indices.map((idx, i) => (
-            <li key={i} className="flex items-center justify-between rounded-xl bg-slate-800/50 p-3 text-sm">
-              <div>
-                <span className="text-white font-medium">{idx.name}</span>
-                <p className="text-slate-500 text-xs mt-1">{idx.constituents} constituents</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-slate-300">Index {idx.value}</span>
-                <span className={idx.change1d >= 0 ? 'text-emerald-400' : 'text-red-400'}>{idx.change1d >= 0 ? '+' : ''}{idx.change1d}% (1d)</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+      </form>
+    </FrontierDesk>
   );
 };
 
