@@ -103,6 +103,7 @@ const DealerDashboard = lazy(() => import('./pages/DealerDashboard.tsx'));
 const FundManager = lazy(() => import('./pages/FundManager.tsx'));
 const ApiLicensing = lazy(() => import('./pages/ApiLicensing.tsx'));
 const CardShowModePage = lazy(() => import('./pages/CardShowModePage.tsx'));
+const LocalCardShows = lazy(() => import('./pages/LocalCardShows.tsx'));
 const ArScanner = lazy(() => import('./pages/ArScanner.tsx'));
 const HypeRadar = lazy(() => import('./pages/HypeRadar.tsx'));
 const NonSportsExpansion = lazy(() => import('./pages/NonSportsExpansion.tsx'));
@@ -601,6 +602,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 {/* Bloomberg distribution + dealer floor — always-on (not Labs). */}
                 <Route path="/api-licensing" element={<ApiLicensing />} />
                 <Route path="/card-show-mode" element={<CardShowModePage />} />
+                <Route path="/local-card-shows" element={<LocalCardShows />} />
                 {/* Labs surface — the long tail ships only when VITE_FF_ENABLE_BETA_SURFACES
                     is set (see lib/productionLaunch.ts and docs/MVP_LAUNCH_SCOPE.md).
                     Production hides these routes; unknown paths fall through to the

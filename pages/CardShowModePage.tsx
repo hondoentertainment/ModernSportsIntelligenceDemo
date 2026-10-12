@@ -151,6 +151,13 @@ const CardShowModePage: React.FC = () => {
             )}
           </Link>
           <Link
+            to="/local-card-shows"
+            className="inline-flex items-center gap-1.5 min-h-[44px] px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-600 text-xs font-bold text-slate-100 hover:border-brand-lime/50"
+          >
+            <MapPin size={14} className="text-amber-300" />
+            Local shows & buy calls
+          </Link>
+          <Link
             to="/war-room"
             className="inline-flex items-center gap-1.5 min-h-[44px] px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-600 text-xs font-bold text-slate-100 hover:border-brand-lime/50"
           >

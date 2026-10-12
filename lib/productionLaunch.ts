@@ -28,6 +28,7 @@ export const MVP_LAUNCH_ROUTES = [
   '/grading-vision-engine',
   '/api-licensing',
   '/card-show-mode',
+  '/local-card-shows',
 ] as const;
 
 export type MvpLaunchRoute = (typeof MVP_LAUNCH_ROUTES)[number];

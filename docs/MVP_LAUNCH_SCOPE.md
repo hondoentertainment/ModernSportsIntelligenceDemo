@@ -17,6 +17,7 @@ Updated 2026-07-19 for the Bloomberg terminal core promotion.
 - Analyst War Room (`/war-room`) as Alpha terminal home.
 - Institutional export: collector audit dossier (`/audit-dossier`) + audit trail.
 - Dealer floor: Card Show Mode (`/card-show-mode`) on mobile nav.
+- Local card-show desk (`/local-card-shows`): seeded venue calendar ranked into buy calls from the local book. Not a live promoter feed.
 - Developer distribution desk: `/api-licensing` (live `/api/*` catalog; metering UI may still show demo keys).
 - Supabase-backed auth and inventory sync for signed-in users.
 - CI and release gates listed in `docs/RELEASE_GATES.md`.

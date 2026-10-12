@@ -24,6 +24,7 @@ export const PRIMARY_NAV_IDS = [
   'catalyst-market',
   'api-licensing',
   'card-show-mode',
+  'local-card-shows',
   'collection-narrative',
   'frontier-lab',
   'billing',
@@ -74,6 +75,7 @@ export const SEARCHABLE_FEATURE_IDS = [
   'provenance-chain',
   'api-licensing',
   'card-show-mode',
+  'local-card-shows',
   'portfolio-builder',
   'prospect-pipeline',
   'notification-center',
@@ -327,5 +329,12 @@ export const COMMAND_ROUTES = [
     path: '/card-show-mode',
     // Avoid bare "scan" — that keyword owns the /scan Alpha slash command.
     keywords: ['show', 'dealer', 'floor', 'booth', 'mobile', 'field'],
+  },
+  {
+    id: 'nav-local-card-shows',
+    label: 'Go to Local Card Shows',
+    description: 'Seeded show calendar ranked into buy-at-show calls from your book',
+    path: '/local-card-shows',
+    keywords: ['show', 'local', 'venue', 'buying', 'deal', 'gap'],
   },
 ] as const;

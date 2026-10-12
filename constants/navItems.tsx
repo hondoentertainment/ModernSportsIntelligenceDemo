@@ -162,6 +162,7 @@ export const NAV_ITEMS = [
   { id: 'fund-manager', label: 'Fund Manager', icon: <Landmark size={20} />, path: '/fund-manager' },
   { id: 'api-licensing', label: 'API & Licensing', icon: <KeyRound size={20} />, path: '/api-licensing' },
   { id: 'card-show-mode', label: 'Card Show Mode', icon: <MapPin size={20} />, path: '/card-show-mode' },
+  { id: 'local-card-shows', label: 'Local Shows', icon: <MapPin size={20} />, path: '/local-card-shows' },
   { id: 'ar-scanner', label: 'AR Scanner', icon: <ScanLine size={20} />, path: '/ar-scanner' },
   { id: 'hype-radar', label: 'Hype Radar', icon: <Radio size={20} />, path: '/hype-radar' },
   { id: 'non-sports', label: 'Non-Sports', icon: <Sparkles size={20} />, path: '/non-sports' },
