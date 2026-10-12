@@ -12,10 +12,12 @@
 # `--legacy-peer-deps` mirrors what other CI workflows use because eslint v10
 # conflicts with `eslint-plugin-react-hooks@7` peer ranges.
 #
-# TODO: the current budget (~2.96 MB gzipped) is set to measured-current * 1.05
+# TODO: the current budget (~2.98 MB gzipped) is set to measured-current * 1.05
 # because the app ships a very large `lib-services` chunk (~1.1 MB gzipped on
 # its own). Once that chunk is code-split / tree-shaken, ratchet `--max=` in
 # `scripts.size:check` downward in a follow-up PR (see docs/MONITORING.md).
+# 2026-10-12: raised 3030000 → 3055000 for the local card-show desk
+# (production build measured 3041726 gzipped bytes).
 name: Bundle size
 
 on:

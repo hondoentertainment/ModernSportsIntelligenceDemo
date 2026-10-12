@@ -11,7 +11,7 @@
     "build": "vite build",
     "build:e2e": "vite build --mode e2e",
     "build:size": "vite build && node scripts/bundle-size.cjs",
-    "size:check": "node scripts/bundle-size.cjs --max=3030000",
+    "size:check": "node scripts/bundle-size.cjs --max=3055000",
     "preview": "vite preview",
     "prepare": "husky",
     "lint": "eslint --rule \"no-unused-vars: off\" vite.config.ts playwright.config.ts \"api/**/*.ts\" \"components/**/*.{ts,tsx}\" \"pages/**/*.{ts,tsx}\" \"lib/**/*.{ts,tsx}\" \"contexts/**/*.{ts,tsx}\" \"hooks/**/*.{ts,tsx}\" \"features/**/*.{ts,tsx}\" \"tests/**/*.{ts,tsx}\" App.tsx index.tsx constants.tsx",
