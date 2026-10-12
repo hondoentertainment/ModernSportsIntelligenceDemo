@@ -2,7 +2,7 @@
 
 This document outlines the prioritized next steps for transitioning **Modern Sports Intelligence** from a high-fidelity prototype to a production-ready asset management platform.
 
-> **Sep 2026 refresh.** Eng-safe Waves 2–5 are shipped (`#139` / `b1a6ca5` on `main`). Owner-facing order is [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md). **T0 = Phase A complete** (#77 closed). If #77 slips, the 30/60/90 clock does not start. This file keeps Priority 1–6 history and Phases 31–42.
+> **Sequencing superseded (2026-10-12).** Owner-facing order is [`NEXT_STEPS.md`](../NEXT_STEPS.md) and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md). **T0 = #77 closed** (Stripe smoke + eBay live are the critical path; restore and Vercel Supabase env presence are done). If #77 slips, the 30/60/90 clock does not start. This file keeps Priority 1–6 history and Phases 31–42. Do not treat “INACTIVE” or “restore the paused project” lines below as current — they are corrected in place where they would send an agent to pause, restore, or apply `00011`.
 
 ---
 
@@ -187,14 +187,14 @@ Modern Sports Intelligence reached the "Sentinel" stage (Phase 24) and then ship
 
 **Objective:** Make MSI production-safe for real users and paid tiers.
 
-**Status (Sep 2026):** Viewer + RLS + runbooks shipped (July). Hosted project is **INACTIVE**. **Immutability residual:** `audit_events` RLS is still `FOR ALL` (user UPDATE/DELETE). Remaining checks are Phase A / #77 after restore.
+**Status (2026-10-12):** Viewer + RLS + runbooks shipped (July). Hosted project `vhbsokjqchaafluimgjh` is **ACTIVE_HEALTHY** (the September “INACTIVE” note is superseded). **Immutability residual:** `audit_events` RLS is still `FOR ALL` (user UPDATE/DELETE). That residual is not the #77 checklist and is not a signal to apply `00011`. Remaining owner checks are the #77 list in `NEXT_STEPS.md`.
 
-- [x] Enforce public/private social visibility with validated Supabase RLS rollout and migration checklist (applied 2026-07-18 on `vhbsokjqchaafluimgjh`; re-verify after restore).
+- [x] Enforce public/private social visibility with validated Supabase RLS rollout and migration checklist (applied 2026-07-18 on `vhbsokjqchaafluimgjh`, which is ACTIVE_HEALTHY).
 - [x] Audit trail **viewer** for valuation updates, auto-actions, and portfolio edits (`/audit-trail` + admin viewer).
-- [ ] **Append-only / immutable rows** — `00001_rls_audit_events.sql` still uses `FOR ALL` (“Users can CRUD own audit events”), so an authenticated user can UPDATE/DELETE their own history. Restrict to INSERT + SELECT (or revoke UPDATE/DELETE) after restore. Do not treat the trail as immutable until that lands.
+- [ ] **Append-only / immutable rows** — `00001_rls_audit_events.sql` still uses `FOR ALL` (“Users can CRUD own audit events”), so an authenticated user can UPDATE/DELETE their own history. This residual is **not** on the current #77 checklist and is **not** migration `00011`. Do not apply a new migration for it from an engineering PR. Do not treat the trail as immutable until an owner-approved change lands.
 - [x] Secret hygiene: startup env validation, key rotation runbook, leaked-key kill switch.
 - [x] Incident playbooks for auth lockout, sync drift, and failed pricing syncs.
-- **Exit Criteria:** Zero critical auth/RLS findings in security review; all critical actions are auditable. **Re-confirm after restore.**
+- **Exit Criteria:** Zero critical auth/RLS findings in security review; all critical actions are auditable. The project is already ACTIVE_HEALTHY; do not restore it to re-confirm.
 
 ### Phase 32: Pricing Truth Layer
 
@@ -209,7 +209,7 @@ Modern Sports Intelligence reached the "Sentinel" stage (Phase 24) and then ship
 - [x] **Phase B UI scaffold (2026-09-10):** sold-comp display default + stale / thin-tape / low-liquidity badges + provenance chip (source, freshness, disclosed confidence or unknown, comps count) on Collection, Dashboard recents, Favorites, watchlist/targets, Compare. `lib/pricing/pricingTruth.ts`. Flags not flipped.
 - [x] **Freshness SLA helpers + Pulse / War Room badges (2026-09-15)** — `lib/pricing/freshnessSla.ts`. Live-tape SLA still needs #77 eBay.
 - [x] **Provenance completeness (2026-09-15)** — confidence only when a sold/thin formula (or stored model score) exists.
-- [x] **`price_history` SLA SQL file only** — `00011_price_history_freshness_sla.sql` (owner apply after env sync; not applied from engineering).
+- [x] **`price_history` SLA SQL file only** — `00011_price_history_freshness_sla.sql` stays file-only. Optional owner SQL-editor item. Engineering agents must not apply it.
 - [ ] **Remaining (Phase B exit):** sold comps **default** on apply + core desks once `VITE_FF_REAL_EBAY` is on; freshness **SLA against live tape**.
 - **Exit Criteria:** 95% of active assets priced from verifiable market sources within freshness SLA — **blocked on #77 / live eBay**.
 
@@ -266,7 +266,7 @@ Modern Sports Intelligence reached the "Sentinel" stage (Phase 24) and then ship
 
 ## 30/60/90 Day Execution Plan
 
-**T0 = Phase A complete** — the day [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closes (restore + Vercel env sync + Stripe smoke + eBay live). PSA may still be off (eBay-first). If #77 slips, **the clocks below do not start**.
+**T0 = Phase A complete** — the day [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closes. Restore, migrations `00001`–`00010`, health, and Vercel Supabase env presence are done. Critical path left: Stripe smoke + eBay live. PSA may still be off (eBay-first). Optional `00011` does not gate T0 and must not be applied by an agent. If #77 slips, **the clocks below do not start**.
 
 ### Days T0–T0+30 (Observe + start Phase B)
 
@@ -347,11 +347,11 @@ Completed in this iteration:
   Gemini / PSA paths), and the drill-log template. Linked from
   `plans/incidents/README.md`.
 
-Remaining for Phase 31 hardening (procedural, non-code) — **blocked on #77 restore**:
+Remaining for Phase 31 hardening (procedural, non-code) — **not blocked on a restore** (`vhbsokjqchaafluimgjh` is ACTIVE_HEALTHY):
 
 - ~~First key-rotation drill (Supabase cutover)~~ — logged 2026-07-18. Full multi-provider quarterly drill still needs Stripe staging keys (Phase A optional).
 - ~~First admin bootstrap~~ — `msi-launch-admin@example.com` promoted. Promote a personal operator after signup.
-- Confirm `/audit-trail/admin` writes `audit.cross_user_read` while signed in as an operator (Priority 1 item 0.3). **Restore the paused project first.**
+- Confirm `/audit-trail/admin` writes `audit.cross_user_read` while signed in as an operator (Priority 1 item 0.3). The project is **ACTIVE_HEALTHY** — do not restore or pause it first.
 - Restrict `audit_events` RLS from `FOR ALL` to append/select (INSERT + SELECT) so valuation / portfolio / auto-action history cannot be rewritten by the subject user.
 
 ---

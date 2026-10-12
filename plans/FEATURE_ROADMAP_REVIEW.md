@@ -3,7 +3,7 @@
 **Purpose:** Single document to review **what exists in the product**, **what is production-grade vs demo/beta**, and **what remains open**.  
 **Sources:** `PRD.md` §4 & §14, `lib/utils/featureCatalog.ts`, `PRODUCTION_READINESS.md`, `plans/next-steps-recommendation.md`, `plans/roadmap-review-and-enhancements.md`, routing in `App.tsx`.
 
-**Last updated:** September 10, 2026 (Wave-5 shipped `#139` / `b1a6ca5`; forward plan in [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) and [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap)
+**Last updated:** October 12, 2026 (eng-safe waves through `#144` / Phase B UI `#141` on `main`; prod includes `#166` / `742bc5e`. Forward plan in [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) and [`NEXT_STEPS.md`](../NEXT_STEPS.md). Sequencing in this file’s “open” columns that still say “Vercel env sync” is superseded by the #77 checklist.)
 
 ---
 
@@ -28,12 +28,12 @@
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Feature catalog** | Core catalog + auto route supplement; `DISCOVERABLE_FEATURE_CATALOG` hides `beta` and `demo` by default                                                                                                                                                              |
 | **Routing**         | 100+ lazy-loaded pages in `App.tsx` (full vertical: portfolio, trading, intelligence, frontier); many route supplements are explicitly `demo`                                                                                                                        |
-| **Data**            | DAL + `useSupabaseInventory`; local → cloud **migration** with merge summaries in UI; consignment snapshot **embedded in card notes** for sync. Hosted project `vhbsokjqchaafluimgjh` restore **complete (ACTIVE_HEALTHY)**; remaining #77 is Vercel env sync + keys |
+| **Data**            | DAL + `useSupabaseInventory`; local → cloud **migration** with merge summaries in UI; consignment snapshot **embedded in card notes** for sync. Hosted project `vhbsokjqchaafluimgjh` is **ACTIVE_HEALTHY**; migrations `00001`–`00010` applied; Vercel Supabase env presence done. Remaining #77 is Stripe / eBay / PSA / optional `00011` (file-only; agents must not apply) |
 | **Auth**            | Supabase + demo mode; password reset; **ProtectedRoute** loading shell until `INITIAL_SESSION` **and** profile ready (`profileLoading`)                                                                                                                              |
 | **Ops**             | Vercel, GitHub Actions, health API, rate limits on serverless routes, optional Sentry, CSP rollout docs                                                                                                                                                              |
 | **Tests**           | Vitest (lib/components), Playwright E2E (collection add-asset + Scout-to-Acquire smoke); coverage policy documented                                                                                                                                                  |
 
-**Strategic gap (Sep 2026):** Eng-safe Waves 2–5 plus Phase B–D **code scaffolds** are shipped. Largest remaining risk is **owner-held #77 cloud ops** (Vercel env sync, Stripe, eBay, PSA both runtimes — [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)), then **pricing truth default** once eBay is live. Consumer-intel UX vs SCI / Market Movers is local-book complete; live comps / live Pulse still theirs until Phase A. Do not claim live Pulse parity.
+**Strategic gap (2026-10-12):** Eng-safe waves through #144 plus the Phase B UI scaffold (#141, flags off) are shipped. Largest remaining risk is **owner-held #77** (Stripe smoke, eBay then PSA on both PSA runtimes, optional Sentry, admin-audit confirm, legal, rotation drill, optional file-only `00011` — [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)). Restore and Vercel Supabase env presence are done. Pricing-truth default still waits on live eBay. Consumer-intel UX vs SCI / Market Movers is local-book complete; live comps / live Pulse still theirs until eBay is live. Do not claim live Pulse parity.
 
 ---
 
@@ -209,13 +209,13 @@ Inventory above is **what exists**. Sequencing of what to do next lives in [`NEX
 
 | Phase | Intent                                                                                                        | Blocked on              |
 | ----- | ------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| **A** | Env sync + Stripe / eBay / PSA on **both** PSA runtimes (#77). Restore is done. **T0 = this phase complete.** | Owner only              |
+| **A** | Open #77 items: optional file-only `00011` (agents must not apply), Stripe smoke, eBay then PSA on **both** PSA runtimes. Restore and Vercel env presence are done. **T0 = #77 closed.** | Owner only              |
 | **B** | Sold-comps default + live-tape SLA (code scaffold shipped; live tape remaining)                               | eBay live               |
 | **C** | Owner VAPID keys + optional live MLB wire (server/adapters shipped)                                           | Phase A (+ owner VAPID) |
 | **D** | Live P2P/escrow/fills (matching lite + adapter stubs shipped)                                                 | Phase B + legal         |
 | **E** | Real Alpha keys, Guilds, risk/compliance, multi-tenant (demo tokens + webhook stubs shipped)                  | A–C boring              |
 
-**Non-goals:** new Labs pages; Tailwind 4 / eslint half-migrates; both real-data flags at once; pausing Supabase from eng PRs; `fractional-vault` live without legal.
+**Non-goals:** new Labs pages; another Tailwind / ESLint major (`tailwindcss` ^4.3.3 and `eslint` ^10.12.0 are already on `main`; `@eslint/js` stays 9.x); both real-data flags at once; pausing Supabase or applying `00011` from eng PRs; `fractional-vault` live without legal; live Market Movers / SCI parity claims before eBay is live.
 
 ## 9. Suggested review cadence
 

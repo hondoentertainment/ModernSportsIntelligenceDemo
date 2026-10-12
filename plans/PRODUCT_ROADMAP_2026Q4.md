@@ -1,24 +1,24 @@
 # Product roadmap — post Wave-5 (2026 Q4)
 
 **Audience:** owner / Kyle  
-**Status:** planning + Phase B–D **eng-safe code scaffolds** (2026-09-15) — no secrets or `VITE_FF_REAL_*` flips. Supabase restore is done. Full Phase B exit still needs #77 live tape.  
-**Canonical ops:** [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap · [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)
+**Status:** refreshed 2026-10-12. Eng-safe waves through #144 and the Phase B UI scaffold (#141, flags off) are on `main`. No secrets or `VITE_FF_REAL_*` flips in this plan. Full Phase B exit still needs #77 live eBay tape. Do not claim live Market Movers / SCI Pulse parity before that.  
+**Canonical ops:** [`NEXT_STEPS.md`](../NEXT_STEPS.md) · [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)
 
-Eng-safe Waves 2–5 plus the 2026-09-15 B–D scaffolds are on the engineering branch. Remaining unlock is **owner-held #77 keys / env sync**. If #77 slips, Phase A (cloud ops) stays the only critical path.
+Production on `main` is healthy (`742bc5e`, [#166](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/166), safe patch/minor from Dependency Guardian [#155](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/155)). No open pull requests. Remaining unlock is **owner-held #77** (optional file-only `00011`, Stripe smoke, eBay then PSA, optional Sentry, admin-audit confirm, legal, rotation drill). Restore and Vercel Supabase env presence are done. If #77 slips, Phase A stays the only critical path. Engineering agents must not apply `00011`.
 
 ---
 
-## 1. Where we are (Sep 2026)
+## 1. Where we are (Oct 2026)
 
 | Fact                                  | Reality                                                                                                                                                                                 |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Bloomberg / institutional core        | Engineering-complete: consensus ledger, War Room, audit dossier, tax lots (demo-honest), card-show loop, agents                                                                         |
 | Consumer intel vs SCI / Market Movers | Wave-5 shipped: ratio intel, collection/favorites movers, deal finder lite, multi-segment Pulse, 2–3 card compare, whale list, wax/TCG rail                                             |
 | Catalog                               | Six of seven former betas are `live`. Only `fractional-vault` remains `beta` (legal)                                                                                                    |
-| Hosted data                           | Supabase `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) restore **complete (ACTIVE_HEALTHY)**. Remaining #77 = Vercel env sync + Stripe/eBay/PSA/Sentry/admin-audit/legal/rotation |
+| Hosted data                           | Supabase `vhbsokjqchaafluimgjh` **ACTIVE_HEALTHY**. Migrations `00001`–`00010` applied. Health `ok` / `serverApiAuth: true`. Vercel Supabase env presence done. Optional `00011` file-only (agents must not apply). Remaining #77 = Stripe smoke, eBay then PSA, optional Sentry, admin-audit, legal, rotation drill |
 | Honest copy                           | Seeded Pulse / movers / deals are local + disclosed — not live marketplace scrapes                                                                                                      |
 
-Do **not** restore Supabase or set live-data flags from an engineering PR.
+Do **not** pause Supabase, apply `00011`, or set live-data flags from an engineering PR.
 
 ---
 
@@ -55,13 +55,14 @@ Map to older phase numbers in [`next-steps-recommendation.md`](./next-steps-reco
 
 Ordered. Do not implement keys in a docs or feature PR.
 
-1. ~~Restore Supabase `vhbsokjqchaafluimgjh`~~ **done (ACTIVE_HEALTHY)**. Remaining: Vercel / GitHub env sync
-2. Stripe lifecycle smoke (subscribe → upgrade → downgrade → cancel → failed-payment)
-3. eBay → set server keys, then `VITE_FF_REAL_EBAY` (watch deployed-E2E + pricing-truth)
-4. PSA (after eBay is stable) — **both** runtimes, then `VITE_FF_REAL_PSA`:
+1. ~~Restore Supabase `vhbsokjqchaafluimgjh`~~ **done (ACTIVE_HEALTHY)**. ~~Vercel Supabase env presence~~ **done** (re-sync only if keys rotate).
+2. Optional `00011_price_history_freshness_sla.sql` — file-only. Owner SQL editor only. **Agents must not apply it.**
+3. Stripe lifecycle smoke (subscribe → upgrade → downgrade → cancel → failed-payment)
+4. eBay → set server keys, then `VITE_FF_REAL_EBAY` (watch deployed-E2E + pricing-truth)
+5. PSA (after eBay is stable; not in the same change) — **both** runtimes, then `VITE_FF_REAL_PSA`:
    - Vercel `PSA_API_KEY` → `api/grading/psa/cert.ts`
    - Supabase secret `PSA_API_KEY` + `verify-psa-cert` deployed → `/slab-verification` (`lookupPsaCert`). Absent secret → silent mock fallback.
-5. Optional: Sentry DSN, `/audit-trail/admin` confirm, `fractional-vault` legal sign-off, full multi-provider key-rotation drill
+6. Optional: Sentry DSN, `/audit-trail/admin` confirm, `fractional-vault` legal sign-off, full multi-provider key-rotation drill
 
 Refs: [`docs/DEPLOY_ENV_CHECKLIST.md`](../docs/DEPLOY_ENV_CHECKLIST.md) · [`docs/LAUNCH_OPS_PUNCH_LIST.md`](../docs/LAUNCH_OPS_PUNCH_LIST.md) · [issue #77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)
 
@@ -71,7 +72,7 @@ Phase 32 style. Consensus / Comps Used / collection provenance chips already exi
 
 **UI scaffold shipped (2026-09-10):** sold-comp default + stale / thin-tape badges + provenance chips on Collection, Dashboard, Favorites, watchlist/targets, and Compare **without** flipping `VITE_FF_REAL_*`. Honest labels while the eBay flag is off.
 
-**Code remainder shipped (2026-09-15):** freshness SLA policy + Pulse / War Room / chip badges; confidence only with a formula; `00011_price_history_freshness_sla.sql` **file only** (owner apply after env sync).
+**Code remainder shipped (2026-09-15, #144):** freshness SLA policy + Pulse / War Room / chip badges; confidence only with a formula; `00011_price_history_freshness_sla.sql` **file only** (optional owner SQL; agents must not apply it).
 
 **Full Phase B exit still needs** #77 live eBay tape + freshness SLA against real comps.
 
@@ -106,21 +107,21 @@ Already known; do not invent Labs pages.
 
 ## 4. 30 / 60 / 90 — T0 = Phase A complete
 
-**T0** = [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closed (restore **done**; remaining = env sync + Stripe smoke + eBay live). PSA may lag (eBay-first). If #77 slips, **the clock does not start**.
+**T0** = [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closed. Restore, migrations `00001`–`00010`, health, and Vercel Supabase env presence are **done**. Critical path left inside Phase A: Stripe smoke + eBay live. PSA may lag (eBay-first). Optional `00011` does not gate T0. If #77 slips, **the clock does not start**. Eng-safe B–D scaffolds (#141 / #144) already shipped with flags off; that is not the live-tape clock.
 
-| Window      | Outcome                                                                                           |
-| ----------- | ------------------------------------------------------------------------------------------------- |
-| **Pre-T0**  | Phase A only. No B–E, no Labs, no both-flags-at-once.                                             |
-| **T0 + 30** | eBay tape observed. PSA on both runtimes only if eBay is stable. Phase B started.                 |
-| **T0 + 60** | Phase B default-on + freshness SLA. Phase C Web Push or MLB wire started.                         |
-| **T0 + 90** | Phase C usable. Phase D design / lite matching scoped. Phase E not started unless A–C are boring. |
+| Window      | Outcome                                                                                                    |
+| ----------- | ---------------------------------------------------------------------------------------------------------- |
+| **Pre-T0**  | Finish open #77 items. No new Labs. No both-flags-at-once. Do not apply `00011` from an engineering PR.    |
+| **T0 + 30** | eBay tape observed. PSA on both runtimes only if eBay is stable. Live Phase B exit started.                |
+| **T0 + 60** | Phase B default-on + freshness SLA against real comps. Phase C Web Push or MLB wire started.               |
+| **T0 + 90** | Phase C usable. Phase D design / lite matching scoped. Phase E not started unless A–C are boring.          |
 
 ---
 
 ## 5. Explicit non-goals
 
 - No new Labs pages
-- No Tailwind 4 / `@eslint/js` 10 half-migrates as roadmap items
+- Tailwind CSS 4 and ESLint 10 are already on `main` (`tailwindcss` ^4.3.3, `eslint` ^10.12.0). `@eslint/js` stays 9.x. Do not start another major migration as roadmap work.
 - Do not flip both `VITE_FF_REAL_EBAY` and `VITE_FF_REAL_PSA` at once
 - Do not restore Supabase from engineering PRs
 - Do not promote `fractional-vault` without legal

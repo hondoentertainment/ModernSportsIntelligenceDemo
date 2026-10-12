@@ -54,9 +54,11 @@ Use this when promoting a build to **production** (Vercel + Supabase + Stripe + 
 
 **Current production project:** `ModernSportsIntelligence` — ref `vhbsokjqchaafluimgjh` (`https://vhbsokjqchaafluimgjh.supabase.co`). The older paused project `iwxqemiqtusgmemlnrby` is not used.
 
-**Status (2026-09-15):** `vhbsokjqchaafluimgjh` restore is **complete (ACTIVE_HEALTHY)**. July 18 cutover (migrations `00001`–`00010`, Edge Functions, Vercel/GitHub env) is the last successful activation. **Re-sync Vercel env** before owner-held live-data steps (Stripe smoke, eBay/PSA flags, admin-audit confirm). Optional `00011_price_history_freshness_sla.sql` is in-repo as a file only — owner applies after env sync. Do **not** pause from an engineering PR.
+**Status (2026-10-12):** `vhbsokjqchaafluimgjh` is **ACTIVE_HEALTHY**. Migrations `00001`–`00010` are applied. Vercel production already has `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, the service role, and `ALLOWED_ORIGIN` (presence checked 2026-09-27 on [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77); values are not stored in git). **Re-sync only if those keys rotate.** Health is `ok: true` with `config.serverApiAuth: true`. Optional `00011_price_history_freshness_sla.sql` is file-only. The owner may apply it in the SQL editor. Engineering agents must not apply it, and must not pause the project.
 
 ## Supabase unpause + Vercel env sync
+
+The production project is **not paused** as of 2026-10-12. The steps below apply only if a future pause happens. Do not run them as the current launch action.
 
 If the linked Supabase project is **paused** (free-tier slot or inactivity), restore it before migrations or env sync:
 

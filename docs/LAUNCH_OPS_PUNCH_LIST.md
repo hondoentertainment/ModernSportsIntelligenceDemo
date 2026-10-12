@@ -2,9 +2,9 @@
 
 Engineering work for the world-class pass is in the repo (Labs route gating, domain-split bundles, Lighthouse a11y fix, honest adapter sourcing). The items below need credentials or accounts only the project owner holds. Each is small; together they complete `docs/PRODUCTION_ROLLOUT_PHASES.md`.
 
-> **2026-09-15:** Hosted project `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) restore is **complete (ACTIVE_HEALTHY)**. July checkmarks below record the last successful activation; **re-sync Vercel/GitHub env** (`docs/DEPLOY_ENV_CHECKLIST.md`) before Stripe smoke, eBay/PSA flags, health/RLS re-checks, or admin-audit confirm. Do not pause or set `VITE_FF_REAL_*` from an engineering PR. Optional `supabase/migrations/00011_price_history_freshness_sla.sql` is file-only until the owner applies it after env sync.
+> **2026-10-12:** Hosted project `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **ACTIVE_HEALTHY**. Migrations `00001`–`00010` are applied. Production `GET /api/health` is `ok: true` with `config.serverApiAuth: true` (reconfirmed on [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77), 2026-09-27). Vercel Supabase env presence (URL, anon, service role, `ALLOWED_ORIGIN`) is already confirmed — re-sync only if those keys rotate (`docs/DEPLOY_ENV_CHECKLIST.md`). Do not pause Supabase, set `VITE_FF_REAL_*`, or apply migrations from an engineering PR. Optional `supabase/migrations/00011_price_history_freshness_sla.sql` stays **file-only**. The owner may apply it in the SQL editor. Engineering agents must not apply it. Latest prod deploy includes `742bc5e` ([#166](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/166)). No open pull requests.
 
-**Still open (#77 remainder):** Vercel env sync · eBay keys · PSA key (both runtimes) · Stripe lifecycle smoke · optional `VITE_SENTRY_DSN` · admin-audit confirm · fractional-vault legal · rotation drill. **Closed in-repo (2026-09):** quarterly catalog sweep (`fractional-vault` stays beta) · restore · eng-safe Phase B–D scaffolds.
+**Still open (#77 remainder):** optional migration `00011` · Stripe lifecycle smoke · eBay keys then `VITE_FF_REAL_EBAY` · `PSA_API_KEY` then `VITE_FF_REAL_PSA` (not in the same change as eBay; both runtimes) · optional `VITE_SENTRY_DSN` · `/audit-trail/admin` confirm · fractional-vault legal · multi-provider key-rotation drill. **Already done:** restore · Vercel Supabase env presence · migrations `00001`–`00010` · health / `serverApiAuth` · quarterly catalog sweep (`fractional-vault` stays beta) · eng-safe waves through #144 and Phase B UI #141 (flags off).
 
 ## 1. RLS verification with real users (Phase A2)
 
@@ -37,7 +37,7 @@ Set GitHub repo secret `PLAYWRIGHT_DEPLOYMENT_URL=https://<prod>.vercel.app` and
 
 Point any uptime service (UptimeRobot, Checkly, Vercel checks) at `GET /api/health` on the production URL. Alert at 2 consecutive failures.
 
-- [x] Monitor live — `HEALTH_CHECK_URL` pings production. As of **2026-07-18** redeploy after Vercel Supabase env sync: `GET /api/health` → `ok: true`, `config.serverApiAuth: true` (project `vhbsokjqchaafluimgjh`).
+- [x] Monitor live — `HEALTH_CHECK_URL` pings production. **2026-07-18** redeploy after Vercel Supabase env sync: `GET /api/health` → `ok: true`, `config.serverApiAuth: true` (project `vhbsokjqchaafluimgjh`). **2026-09-27:** same health result while the project is ACTIVE_HEALTHY ([#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)).
 
 ## 5. Real-data API keys (when ready to leave mock mode)
 
