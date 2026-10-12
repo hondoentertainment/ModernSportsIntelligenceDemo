@@ -1,10 +1,10 @@
 # Roadmap Review & Feature Enhancement Recommendations
 
 **Date:** 2026-03-08
-**Last updated:** 2026-09-10 (Wave-5 `#139` / `b1a6ca5` on top of Wave-4 #136/#137/#138)
+**Last updated:** 2026-10-12 (status addendum corrected; inventory itself is historical)
 **Scope:** Review of the 24-phase roadmap (PRD.md) and strategic next-steps (next-steps-recommendation.md)
 
-> **Sequencing superseded.** This file remains the historical enhancement inventory. Owner-facing order after Wave-5 is [`NEXT_STEPS.md`](../NEXT_STEPS.md) § Forward roadmap and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) (Phases A–E, **T0 = Phase A complete** / #77 closed). Do not use §4 below as the current execution order.
+> **Sequencing superseded.** This file remains the historical enhancement inventory. Owner-facing order is [`NEXT_STEPS.md`](../NEXT_STEPS.md) and [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) (Phases A–E, **T0 = #77 closed**). Do not use §4 below, and do not use the pre-October “restore / INACTIVE / Tailwind still deferred” lines, as the current execution order.
 
 ## Status addendum (2026-09-06)
 
@@ -58,7 +58,7 @@ Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-sa
 | Whale Collection list (Priority 6.2)             | **Shipped (Wave-5)** — tanstack virtual list above 24 rows.                                              |
 | Adjacent wax / TCG on core desks                 | **Shipped (lite, Wave-5)** — Dashboard + Collection rail. Disclosed proxies.                             |
 
-Still **owner-held / open:** #77 Supabase restore, Stripe/eBay/PSA keys, Sentry DSN, fractional-vault legal, custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness, server Web Push (VAPID + backend). Tailwind 4 and `@eslint/js` 10 deferred. **Waves 2–5 shipped** on top of #123/#124/#130. Forward order is Phase A (#77) → B (pricing default) → C (push/wires) → D (trading moat) → E (platform) — not §4 below.
+**Owner-held / open (2026-10-12, matches #77):** optional file-only `00011` (agents must not apply), Stripe lifecycle smoke, eBay keys then `VITE_FF_REAL_EBAY`, `PSA_API_KEY` then `VITE_FF_REAL_PSA` (not with eBay), optional Sentry DSN, `/audit-trail/admin` confirm, fractional-vault legal, multi-provider key-rotation drill. Restore and Vercel Supabase env presence are done. Also still out of eng-safe scope: custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness, owner VAPID. `tailwindcss` ^4.3.3 and `eslint` ^10.12.0 are already on `main`; do not start another major. **Waves through #144 shipped** (including #141 flags-off). Forward order is Phase A (#77) → live B → C → D → E — not §4 below.
 
 ---
 
@@ -75,7 +75,7 @@ Still **owner-held / open:** #77 Supabase restore, Stripe/eBay/PSA keys, Sentry 
 
 | Area                     | Gap                                                                                              | Risk Level |
 | ------------------------ | ------------------------------------------------------------------------------------------------ | ---------- |
-| **Trusted book (#77)**   | Supabase `vhbsokjqchaafluimgjh` INACTIVE; live eBay/PSA tape and Stripe smoke owner-held         | High       |
+| **Trusted book (#77)**   | Supabase `vhbsokjqchaafluimgjh` ACTIVE_HEALTHY; live eBay/PSA tape and Stripe smoke still owner-held | High       |
 | **Data freshness**       | Sold-comp consensus + Comps Used shipped; **default-on live comps** still wait for eBay flag     | High       |
 | **Offline reliability**  | PWA + pending/failed queue retry shipped (Wave-4); not battle-tested on restored cloud           | Medium     |
 | **Test coverage**        | NAV / fiscal / Scout-to-Acquire smoke shipped; cloud/live-tape E2E still owner-held              | Medium     |
@@ -258,4 +258,4 @@ The existing 24-phase roadmap is ambitious and well-structured. The enhancements
 2. **Complete the lifecycle** — Discovery through tax reporting exists on existing desks; execution/P2P remain Phase D.
 3. **Build trust through transparency** — Agent why/consensus, audit trails, insurance packet, Schedule D–style export shipped (advisory).
 
-**Sep 2026:** Bloomberg positioning is engineering-complete. The constraint is no longer feature inventory — it is **owner-held #77** (restore + keys), then pricing-truth default, then always-on wires and a real trading moat. Do not add Labs pages or treat Tailwind 4 / eslint majors as roadmap work.
+**2026-10-12:** Bloomberg positioning is engineering-complete through #144. The constraint is **owner-held #77** (Stripe smoke, eBay then PSA, and the other open checklist items — not another restore). Then pricing-truth default on live tape, then always-on wires and a real trading moat. Do not add Labs pages, apply `00011`, or start another Tailwind / ESLint major.
