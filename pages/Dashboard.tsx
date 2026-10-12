@@ -107,6 +107,7 @@ const PortfolioConcentrationRail = lazy(() => import('../components/PortfolioCon
 const RatioIntelligenceRail = lazy(() => import('../components/RatioIntelligenceRail.tsx'));
 const PortfolioMoversRail = lazy(() => import('../components/PortfolioMoversRail.tsx'));
 const DealFinderLiteRail = lazy(() => import('../components/DealFinderLiteRail.tsx'));
+const LocalCardShowRail = lazy(() => import('../components/LocalCardShowRail.tsx'));
 const MarketPulseRail = lazy(() => import('../components/MarketPulseRail.tsx'));
 const AdjacentHobbyMarketsRail = lazy(() => import('../components/AdjacentHobbyMarketsRail.tsx'));
 const PerformanceVsPriceChart = lazy(() => import('../components/PerformanceVsPriceChart.tsx'));
@@ -438,6 +439,12 @@ const Dashboard: React.FC = () => {
           </LazyErrorBoundary>
         </div>
       )}
+
+      <LazyErrorBoundary compact>
+        <Suspense fallback={<WidgetLoadingFallback />}>
+          <LocalCardShowRail inventory={inventory} targets={targets} />
+        </Suspense>
+      </LazyErrorBoundary>
 
       {(userTier === 'alpha' || isDemoMode) && (
         <section className="rounded-2xl border border-brand-lime/30 bg-brand-lime/5 px-5 py-4">

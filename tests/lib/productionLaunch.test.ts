@@ -24,6 +24,7 @@ describe('productionLaunch', () => {
     expect(isMvpLaunchRoute('/war-room')).toBe(true);
     expect(isMvpLaunchRoute('/api-licensing')).toBe(true);
     expect(isMvpLaunchRoute('/card-show-mode')).toBe(true);
+    expect(isMvpLaunchRoute('/local-card-shows')).toBe(true);
     expect(isPublicLaunchRoute('/login')).toBe(true);
     expect(isPublicLaunchRoute('/p/collector1')).toBe(true);
     expect(isPublicLaunchRoute('/collection')).toBe(false);

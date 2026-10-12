@@ -764,6 +764,9 @@ const Collection: React.FC = () => {
                   {filterReviewOnly ? 'Show all' : `${reviewIds.length} in review`}
                 </button>
               )}
+              <Link to="/local-card-shows" className="ml-3 underline text-amber-200">
+                Local shows
+              </Link>
               <Link to="/card-show-mode" className="ml-3 underline text-emerald-300">
                 Show bag
               </Link>
