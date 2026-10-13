@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { Suspense, lazy, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Navigation, ShoppingBag, Scale, BadgePercent } from 'lucide-react';
 import type { Sport } from '../types';
@@ -15,11 +15,13 @@ import {
   type ShowVerdict,
 } from '../lib/shows/showBuyingDesk';
 import { buildTripBudget, formatTripUsd, toTripLine } from '../lib/shows/showTripLoop';
-import { SHOW_SHOPPING_LIST_DISCLOSURE } from '../lib/shows/showShoppingList';
-import { getShowAlertPrefs, type ShowAlertHome } from '../lib/shows/showAlerts';
-import ShowAlertDesk from '../components/ShowAlertDesk';
-import ShowShoppingList from '../components/ShowShoppingList';
 import ShowTripLoopPanel from '../components/ShowTripLoopPanel';
+
+const loadShowDesk = () => import('../components/showDeskPanels');
+const ShowAlertDesk = lazy(() => loadShowDesk().then((mod) => ({ default: mod.ShowAlertDesk })));
+const ShowShoppingList = lazy(() => loadShowDesk().then((mod) => ({ default: mod.ShowShoppingList })));
+
+type AlertHome = { label: string; lat: number; lng: number };
 
 const SPORTS: Array<Sport | 'all'> = ['all', 'Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
 
@@ -36,20 +38,11 @@ const LocalCardShows: React.FC = () => {
   const [cityQuery, setCityQuery] = useState('');
   const [openShowId, setOpenShowId] = useState<string | null>(null);
   const [sport, setSport] = useState<Sport | 'all'>('all');
-  const savedHome = getShowAlertPrefs().home;
-  const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(() => (
-    savedHome ? { lat: savedHome.lat, lng: savedHome.lng } : null
-  ));
-  const [geoNote, setGeoNote] = useState(() => (
-    savedHome
-      ? `Alert home is ${savedHome.label}. Ranking uses that point. The show list is still the seeded calendar.`
-      : 'Location off — distance unknown. Ranking uses dates and your book.'
-  ));
-  const [geoState, setGeoState] = useState<'idle' | 'pending' | 'ready' | 'denied'>(() => (
-    savedHome ? 'ready' : 'idle'
-  ));
+  const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(null);
+  const [geoNote, setGeoNote] = useState('Location off — distance unknown. Ranking uses dates and your book.');
+  const [geoState, setGeoState] = useState<'idle' | 'pending' | 'ready' | 'denied'>('idle');
 
-  const applyAlertHome = (home: ShowAlertHome | null) => {
+  const applyAlertHome = (home: AlertHome | null) => {
     if (!home) {
       setGeo(null);
       setGeoState('idle');
@@ -148,7 +141,9 @@ const LocalCardShows: React.FC = () => {
         <p className="mt-2 text-[11px] text-amber-100/80">{geoNote}</p>
       </section>
 
-      <ShowAlertDesk onHomeChange={applyAlertHome} />
+      <Suspense fallback={null}>
+        <ShowAlertDesk onHomeChange={applyAlertHome} />
+      </Suspense>
 
       <div className="flex flex-col gap-3 md:flex-row md:items-end">
         <label className="flex-1 text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -196,10 +191,8 @@ const LocalCardShows: React.FC = () => {
       {report.emptyReason ? (
         <p className="rounded-xl border border-slate-800 bg-slate-900/50 px-4 py-6 text-sm text-slate-400">{report.emptyReason}</p>
       ) : (
-        <>
-        <p className="text-[11px] leading-relaxed text-slate-500">{SHOW_SHOPPING_LIST_DISCLOSURE}</p>
         <ul className="space-y-4">
-          {report.shows.map((row) => {
+          {report.shows.map((row, index) => {
             const fallbackSport = row.show.sports.length === 1 ? row.show.sports[0] : null;
             const tripNeed = buildTripBudget({
               showId: row.show.id,
@@ -282,12 +275,15 @@ const LocalCardShows: React.FC = () => {
                   ))}
                 </ul>
               )}
-              <ShowShoppingList
-                show={row.show}
-                inventory={inventory}
-                targets={targets}
-                liveTape={liveTape}
-              />
+              <Suspense fallback={null}>
+                <ShowShoppingList
+                  show={row.show}
+                  inventory={inventory}
+                  targets={targets}
+                  liveTape={liveTape}
+                  disclose={index === 0}
+                />
+              </Suspense>
               <p className="mt-3 text-[11px] text-slate-400">
                 Trip need {formatTripUsd(tripNeed)} · admission, travel stub, buy reserve, and sell credit.
               </p>
@@ -318,7 +314,6 @@ const LocalCardShows: React.FC = () => {
           );
           })}
         </ul>
-        </>
       )}
     </div>
   );

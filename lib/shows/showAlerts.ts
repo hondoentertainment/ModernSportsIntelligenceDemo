@@ -37,8 +37,10 @@ export const DEFAULT_LEAD_DAYS = 14;
 export const SHOW_ALERT_LOG_LIMIT = 40;
 export const INBOX_LIMIT = 50;
 
+const VAPID_NOTE = 'Server Web Push still needs owner-held VAPID keys.';
+
 export const SHOW_ALERT_DISCLOSURE =
-  'In-app alerts use this seeded calendar and a home point you set. They are not a promoter feed. Browser delivery follows your existing alert prefs (quiet hours and browser notifications). Server Web Push still needs owner-held VAPID keys — this desk does not add any. Not live Market Movers or Sports Card Investor parity.';
+  `Not a promoter feed. ${VAPID_NOTE} Not live Market Movers or Sports Card Investor parity.`;
 
 const HomeSchema = z.object({
   label: z.string().trim().min(1).max(80),
@@ -176,7 +178,7 @@ function titleFor(show: ResolvedLocalCardShow): string {
 
 function describeShowAlert(show: ResolvedLocalCardShow, miles: number, prefs: ShowAlertPrefs): string {
   const home = prefs.home?.label ?? 'home';
-  return `${show.venue}, ${show.city}, ${show.state} · ${miles.toFixed(1)} mi from ${home} · inside ${prefs.radiusMiles} mi and ${prefs.leadDays} days. Seeded calendar, not a promoter feed.`;
+  return `${show.venue}, ${show.city} ${show.state} · ${miles.toFixed(1)} mi from ${home}.`;
 }
 
 function alertId(show: ResolvedLocalCardShow): string {
@@ -201,17 +203,7 @@ function isRecord(value: unknown): value is ShowAlertRecord {
 
 export function readShowAlertLog(): ShowAlertRecord[] {
   const raw = store.get<unknown>(SHOW_ALERT_LOG_KEY, []);
-  if (!Array.isArray(raw)) return [];
-  return raw.filter(isRecord).map((row) => ({
-    ...row,
-    venue: typeof row.venue === 'string' ? row.venue : '',
-    city: typeof row.city === 'string' ? row.city : '',
-    state: typeof row.state === 'string' ? row.state : '',
-    daysUntilStart: typeof row.daysUntilStart === 'number' && Number.isFinite(row.daysUntilStart) ? row.daysUntilStart : 0,
-    distanceMiles: typeof row.distanceMiles === 'number' && Number.isFinite(row.distanceMiles) ? row.distanceMiles : 0,
-    isRead: row.isRead === true,
-    pushDelivered: row.pushDelivered === true,
-  }));
+  return Array.isArray(raw) ? raw.filter(isRecord) : [];
 }
 
 function trimLog(records: ShowAlertRecord[], activeIds: ReadonlySet<string>): ShowAlertRecord[] {
@@ -270,14 +262,9 @@ export function showAlertDeliveryNote(
   now: Date = new Date(),
   prefs: AlertPreferences = getAlertPreferences(),
 ): string {
-  const vapid = 'Server Web Push still needs owner-held VAPID keys — none are stored here.';
-  if (!prefs.browserNotificationsEnabled) {
-    return `In-app alerts still record. Browser notifications are off, so delivery stays on this page. ${vapid}`;
-  }
-  if (isWithinQuietHours(now, prefs)) {
-    return `In-app alerts still record. Quiet hours suppress browser notifications and Web Push delivery. ${vapid}`;
-  }
-  return `Browser notifications can fire for a new show when this browser has already granted permission. ${vapid}`;
+  if (!prefs.browserNotificationsEnabled) return `Browser notifications are off. ${VAPID_NOTE}`;
+  if (isWithinQuietHours(now, prefs)) return `Quiet hours. ${VAPID_NOTE}`;
+  return VAPID_NOTE;
 }
 
 export function notifyShowAlertInBrowser(title: string, body: string, tag: string): boolean {

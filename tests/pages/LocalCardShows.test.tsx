@@ -60,7 +60,7 @@ describe('LocalCardShows page', () => {
         <LocalCardShows />
       </MemoryRouter>,
     );
-    const alerts = screen.getByRole('region', { name: /show alerts/i });
+    const alerts = await screen.findByRole('region', { name: /show alerts/i });
     expect(within(alerts).getByText(/alerts are off/i)).toBeInTheDocument();
     await user.selectOptions(within(alerts).getByLabelText(/show alert home/i), 'New York, NY');
     const lead = within(alerts).getByLabelText(/days before the show/i);

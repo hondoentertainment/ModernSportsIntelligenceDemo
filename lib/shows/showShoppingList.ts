@@ -13,7 +13,7 @@ import type { ResolvedLocalCardShow } from './localCardShowCatalog';
 import { TAPE_LABEL_DEMO, TAPE_LABEL_LIVE, isCollectionGap } from './showBuyingDesk';
 
 export const SHOW_SHOPPING_LIST_DISCLOSURE =
-  'Shopping list is your active watchlist and collection gaps, plus extra copies from duplicate stacks (same player, year, manufacturer, set, and card number). Target buy is the lower of the preferred local mark and your collector target. Marks stay on demo or stale tape until live eBay is on. Not a dealer inventory and not live Market Movers or Sports Card Investor parity.';
+  'Watchlist, gaps, and duplicate extras. Not a dealer inventory and not live Market Movers or Sports Card Investor parity.';
 
 export type ShopLineKind = 'collection-gap' | 'watchlist' | 'duplicate-sell' | 'duplicate-trade';
 export type ShopSide = 'buy' | 'sell';
@@ -71,9 +71,7 @@ function tapeLabel(liveTape: boolean): string {
 }
 
 function tapeNote(liveTape: boolean): string {
-  return liveTape
-    ? 'Live comps flag is on — confirm the table price in person.'
-    : 'Local / demo tape — not a live eBay sold and not a Market Movers print.';
+  return liveTape ? 'Live comps flag is on.' : 'Local / demo tape.';
 }
 
 function showCovers(show: ResolvedLocalCardShow, sport: Sport | null | undefined): boolean {
@@ -118,7 +116,7 @@ function buyPrice(target: TargetWatchlist, nowMs: number): {
     const targetBuyUsd = roundUsd(Math.min(market, ceiling));
     const priceSource = market <= ceiling
       ? `${valuation.label} is at or under your collector target`
-      : `Collector target is under the ${valuation.label.toLowerCase()} mark`;
+      : 'Collector target is under the local mark';
     return { targetBuyUsd, marketMarkUsd: market, collectorCeilingUsd: ceiling, priceSource };
   }
   if (market != null) {
@@ -141,7 +139,7 @@ function buyPrice(target: TargetWatchlist, nowMs: number): {
     targetBuyUsd: null,
     marketMarkUsd: null,
     collectorCeilingUsd: null,
-    priceSource: 'No local mark or collector target',
+    priceSource: 'No local mark',
   };
 }
 
@@ -190,10 +188,8 @@ function duplicateExtras(inventory: readonly CardInventory[], nowMs: number): Ex
 
 function keeperNote(keeper: CardInventory): string {
   if (!keeper.isGraded) return 'Keep the higher local mark.';
-  const company = keeper.gradingCompany?.trim();
-  const grade = keeper.grade?.trim();
-  const slab = [company, grade].filter(Boolean).join(' ');
-  return slab ? `Keep the higher mark (${slab} on a tie).` : 'Keep the higher mark (graded copy on a tie).';
+  const slab = [keeper.gradingCompany, keeper.grade].map((part) => part?.trim()).filter(Boolean).join(' ');
+  return slab ? `Keep the higher mark (${slab}).` : 'Keep the higher local mark.';
 }
 
 export function shopLineLabel(kind: ShopLineKind): string {
@@ -248,8 +244,8 @@ export function buildShowShoppingList(input: {
       priceSource: price.priceSource,
       tapeLabel: label,
       why: gap
-        ? `Collection gap in ${target.sport}. Pay at or under the target buy.${focusNote} ${note}`
-        : `Already in the book for this description. Buy another only at or under the target buy.${focusNote} ${note}`,
+        ? `Collection gap in ${target.sport}.${focusNote} ${note}`
+        : `Already in the book.${focusNote} ${note}`,
       cardId: null,
       targetId: target.id,
       copies: null,
@@ -285,11 +281,9 @@ export function buildShowShoppingList(input: {
       targetBuyUsd: mark,
       marketMarkUsd: mark,
       collectorCeilingUsd: null,
-      priceSource: mark == null ? 'No local mark on the extra copy' : row.extra.source,
+      priceSource: mark == null ? 'No local mark' : row.extra.source,
       tapeLabel: label,
-      why: trade
-        ? `Extra copy (${row.copies} in the stack). Same player is on the buy list — offer this toward that gap. ${keeperNote(row.keeper.card)} ${note}`
-        : `Extra copy (${row.copies} in the stack). ${keeperNote(row.keeper.card)} ${note}`,
+      why: `${trade ? 'On the buy list. ' : ''}${keeperNote(row.keeper.card)} ${note}`,
       cardId: card.id,
       targetId: null,
       copies: row.copies,
@@ -306,7 +300,7 @@ export function buildShowShoppingList(input: {
   });
 
   const emptyReason = buys.length === 0 && sells.length === 0
-    ? 'No active watchlist rows or duplicate extras match this show’s sports.'
+    ? 'No active watchlist rows match this show.'
     : null;
 
   return {
