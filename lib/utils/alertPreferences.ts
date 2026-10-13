@@ -5,6 +5,9 @@
 import { store } from '../dal/syncStore';
 
 export const ALERT_PREFERENCES_KEY = 'msi_alert_preferences_v1';
+/** In-app inbox written by `useAlerts` and by show-alert sync. */
+export const IN_APP_ALERTS_KEY = 'msi_alerts';
+export const IN_APP_ALERTS_UPDATED_EVENT = 'msi-alerts-updated';
 const LEGACY_NOTIFICATION_PREFS_KEY = 'msi_notification_prefs';
 
 export interface AlertPreferences {

@@ -1,16 +1,25 @@
 import React from 'react';
-import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { store } from '../../lib/dal/syncStore';
+import { SHOW_ALERT_LOG_KEY, SHOW_ALERT_PREFS_KEY } from '../../lib/shows/showAlerts';
 import LocalCardShows from '../../pages/LocalCardShows';
 
 vi.mock('../../lib/utils/useSupabaseInventory', () => ({
   useSupabaseInventory: () => ({
     inventory: [],
     targets: [],
+    addCard: vi.fn(),
+    updateCard: vi.fn(),
   }),
 }));
+
+beforeEach(() => {
+  store.remove(SHOW_ALERT_PREFS_KEY);
+  store.remove(SHOW_ALERT_LOG_KEY);
+});
 
 describe('LocalCardShows page', () => {
   it('shows the seeded calendar and an honest empty location state', async () => {
@@ -42,5 +51,25 @@ describe('LocalCardShows page', () => {
     );
     await user.type(screen.getByLabelText(/city or venue/i), 'zzzz-no-city');
     expect(screen.getByText(/no seeded shows match/i)).toBeInTheDocument();
+  });
+
+  it('arms a home radius and records an in-app alert for a nearby seeded show', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <LocalCardShows />
+      </MemoryRouter>,
+    );
+    const alerts = await screen.findByRole('region', { name: /show alerts/i });
+    expect(within(alerts).getByText(/alerts are off/i)).toBeInTheDocument();
+    await user.selectOptions(within(alerts).getByLabelText(/show alert home/i), 'New York, NY');
+    const lead = within(alerts).getByLabelText(/days before the show/i);
+    await user.clear(lead);
+    await user.type(lead, '366');
+    await user.click(within(alerts).getByRole('checkbox', { name: /enable show alerts/i }));
+    expect(await within(alerts).findByRole('button', { name: /mark nyc monthly card meetup alert read/i })).toBeInTheDocument();
+    expect(within(alerts).getAllByText(/owner-held VAPID/i).length).toBeGreaterThan(0);
+    await user.click(within(alerts).getByRole('button', { name: /mark nyc monthly card meetup alert read/i }));
+    expect(within(alerts).getByText('Read')).toBeInTheDocument();
   });
 });
