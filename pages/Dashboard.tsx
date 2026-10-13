@@ -106,6 +106,7 @@ const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail.t
 const PortfolioConcentrationRail = lazy(() => import('../components/PortfolioConcentrationRail.tsx'));
 const RatioIntelligenceRail = lazy(() => import('../components/RatioIntelligenceRail.tsx'));
 const PortfolioMoversRail = lazy(() => import('../components/PortfolioMoversRail.tsx'));
+const PortfolioInsightsPanel = lazy(() => import('../components/PortfolioInsightsPanel.tsx'));
 const DealFinderLiteRail = lazy(() => import('../components/DealFinderLiteRail.tsx'));
 const LocalCardShowRail = lazy(() => import('../components/LocalCardShowRail.tsx'));
 const MarketPulseRail = lazy(() => import('../components/MarketPulseRail.tsx'));
@@ -435,6 +436,7 @@ const Dashboard: React.FC = () => {
               <DealFinderLiteRail inventory={inventory} targets={targets} />
               <MarketPulseRail inventory={inventory} />
               <AdjacentHobbyMarketsRail compact />
+              <PortfolioInsightsPanel inventory={inventory} />
             </Suspense>
           </LazyErrorBoundary>
         </div>

@@ -70,6 +70,7 @@ type SortDir = 'asc' | 'desc';
 const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail'));
 const TradeProposalPanel = lazy(() => import('../components/TradeProposalPanel'));
 const PortfolioConcentrationRail = lazy(() => import('../components/PortfolioConcentrationRail'));
+const PortfolioInsightsPanel = lazy(() => import('../components/PortfolioInsightsPanel'));
 const P2PIntentBoard = lazy(() => import('../components/P2PIntentBoard'));
 const ShowBagPanel = lazy(() => import('../components/ShowBagPanel'));
 const GradingRoiLitePanel = lazy(() => import('../components/GradingRoiLitePanel'));
@@ -611,6 +612,7 @@ const Collection: React.FC = () => {
         <div className="space-y-4">
           <LazyErrorBoundary compact>
             <Suspense fallback={<WidgetLoadingFallback />}>
+              <PortfolioInsightsPanel inventory={inventory} />
               <SeasonalWindowRail inventory={inventory} />
               <PortfolioConcentrationRail inventory={inventory} />
               <TradeProposalPanel inventory={inventory} />

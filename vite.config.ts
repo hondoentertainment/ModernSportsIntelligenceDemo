@@ -161,6 +161,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/trading/autoPilotImpactPreview.ts',
         'lib/trading/autoPilotReplay.ts',
         'lib/analytics/portfolioConcentration.ts',
+        'lib/analytics/portfolioInsights.ts',
         'lib/analytics/capitalGainsExit.ts',
         'lib/utils/syncProductDefaults.ts',
         'lib/utils/webPushSubscription.ts',
