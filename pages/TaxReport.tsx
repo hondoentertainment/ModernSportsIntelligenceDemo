@@ -103,6 +103,11 @@ const TaxReport: React.FC = () => {
     return ['all', ...Array.from(set)];
   }, [transactions]);
 
+  const specificIdLots = useMemo(
+    () => inventory.filter((card) => card.status !== 'sold' && card.status !== 'consignment').slice(0, 12),
+    [inventory],
+  );
+
   // Chart data
   const monthlyChartData = useMemo(
     () =>
@@ -899,26 +904,38 @@ const TaxReport: React.FC = () => {
                   Illustrative only — not IRS Form 8949 substantiation.
                 </p>
                 {settings.costBasisMethod === 'specific_id' && (
-                  <ul className="mt-3 space-y-2 max-h-40 overflow-y-auto">
-                    {transactions.slice(0, 12).map((tx) => {
-                      const checked = lotPrefs.specificLotIds.includes(tx.id);
-                      return (
-                        <li key={tx.id}>
-                          <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              onChange={() => {
-                                setLotPrefs(toggleSpecificLotId(tx.id));
-                                setSettings(getTaxSettings());
-                              }}
-                            />
-                            <span className="truncate">{tx.cardName} · acquired {tx.dateAcquired}</span>
-                          </label>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  <div className="mt-3">
+                    <p className="text-xs text-slate-500 mb-2">
+                      Mark active book lots. These ids match the sell planner. Sample sold transactions are a different list.
+                    </p>
+                    {specificIdLots.length === 0 ? (
+                      <p className="text-xs text-slate-500">No active holdings to identify.</p>
+                    ) : (
+                      <ul className="space-y-2 max-h-40 overflow-y-auto">
+                        {specificIdLots.map((lot) => {
+                          const checked = lotPrefs.specificLotIds.includes(lot.id);
+                          return (
+                            <li key={lot.id}>
+                              <label className="flex min-h-[44px] items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={checked}
+                                  onChange={() => {
+                                    setLotPrefs(toggleSpecificLotId(lot.id));
+                                    setSettings(getTaxSettings());
+                                  }}
+                                  className="h-4 w-4"
+                                />
+                                <span className="truncate">
+                                  {lot.player} · {lot.year} {lot.manufacturer} · acquired {lot.purchaseDate || 'unknown'}
+                                </span>
+                              </label>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

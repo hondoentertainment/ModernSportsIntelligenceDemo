@@ -18,6 +18,9 @@
 # `scripts.size:check` downward in a follow-up PR (see docs/MONITORING.md).
 # 2026-10-12: raised 3030000 → 3055000 for the local card-show desk
 # (production build measured 3041726 gzipped bytes).
+# 2026-10-13: cap stays 3055000. The sell / trade-in planner stays a lazy chunk.
+# Used Lucide icons share one `icons` chunk so that chunk plus show alerts
+# still fit the existing summed JS cap.
 name: Bundle size
 
 on:

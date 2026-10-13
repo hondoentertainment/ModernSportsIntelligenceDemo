@@ -146,21 +146,24 @@ const LocalCardShows: React.FC = () => {
       </Suspense>
 
       <div className="flex flex-col gap-3 md:flex-row md:items-end">
-        <label className="flex-1 text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <label className="flex-1 text-[10px] font-black uppercase tracking-widest text-slate-400" htmlFor="local-show-city">
           City or venue
           <input
+            id="local-show-city"
             value={cityQuery}
             onChange={(event) => setCityQuery(event.target.value)}
             placeholder="Dallas, NY, convention…"
-            className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-medium normal-case tracking-normal text-white"
+            autoComplete="off"
+            className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-base font-medium normal-case tracking-normal text-white md:text-sm"
           />
         </label>
-        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400" htmlFor="local-show-sport">
           Sport
           <select
+            id="local-show-sport"
             value={sport}
             onChange={(event) => setSport(event.target.value as Sport | 'all')}
-            className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-medium normal-case tracking-normal text-white md:w-40"
+            className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-base font-medium normal-case tracking-normal text-white md:w-40 md:text-sm"
           >
             {SPORTS.map((option) => (
               <option key={option} value={option}>{option === 'all' ? 'All sports' : option}</option>
@@ -171,6 +174,7 @@ const LocalCardShows: React.FC = () => {
           type="button"
           onClick={requestGeo}
           disabled={geoState === 'pending'}
+          aria-pressed={geoState === 'ready'}
           className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-100 disabled:opacity-60"
         >
           <Navigation size={14} />
@@ -202,11 +206,11 @@ const LocalCardShows: React.FC = () => {
             }).netNeedUsd;
             const tripOpen = (openShowId ?? report.shows[0]?.show.id) === row.show.id;
             return (
-            <li key={row.show.id} className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 md:p-5">
+            <li key={row.show.id} className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900/40 p-4 md:p-5">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                <div>
+                <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-lg font-semibold text-white">{row.show.name}</h2>
+                    <h2 className="break-words text-lg font-semibold text-white">{row.show.name}</h2>
                     <span className={`rounded-full border px-2 py-0.5 text-[10px] font-black uppercase tracking-widest ${verdictClass(row.verdict)}`}>
                       {verdictLabel(row.verdict)} · {row.worthAttendingScore}
                     </span>
@@ -260,15 +264,15 @@ const LocalCardShows: React.FC = () => {
                       <p className="mt-1 text-[11px] leading-relaxed text-slate-500">{opportunity.why}</p>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {opportunity.compsHref && (
-                          <Link to={opportunity.compsHref} className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-brand-lime">
-                            <Scale size={12} /> Comps
+                          <Link to={opportunity.compsHref} className="inline-flex min-h-[44px] items-center gap-1 rounded-lg px-2 text-[10px] font-black uppercase tracking-widest text-brand-lime">
+                            <Scale size={12} aria-hidden /> Comps
                           </Link>
                         )}
-                        <Link to={opportunity.collectionHref} className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-brand-lime">
-                          <BadgePercent size={12} /> Collection
+                        <Link to={opportunity.collectionHref} className="inline-flex min-h-[44px] items-center gap-1 rounded-lg px-2 text-[10px] font-black uppercase tracking-widest text-brand-lime">
+                          <BadgePercent size={12} aria-hidden /> Collection
                         </Link>
-                        <Link to={opportunity.showBagHref} className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-brand-lime">
-                          <ShoppingBag size={12} /> Show bag
+                        <Link to={opportunity.showBagHref} className="inline-flex min-h-[44px] items-center gap-1 rounded-lg px-2 text-[10px] font-black uppercase tracking-widest text-brand-lime">
+                          <ShoppingBag size={12} aria-hidden /> Show bag
                         </Link>
                       </div>
                     </li>

@@ -58,6 +58,12 @@ export default defineConfig(({ command, mode }) => {
           if (id.includes('node_modules/recharts/') || id.includes('node_modules/d3-') || id.includes('node_modules/victory-vendor/')) {
             return 'recharts-vendor';
           }
+          // Lucide ships one module per icon. Separate chunks add a gzip
+          // header each and blow the summed JS budget. One shared chunk
+          // keeps new lazy panels from forcing a cap raise.
+          if (id.includes('node_modules/lucide-react/')) {
+            return 'icons';
+          }
           // Lib services: split by domain so a route only pulls the domains it
           // imports instead of one ~4.3 MB monolith. Bridge files that are
           // imported across domains are pinned to their consumer's chunk to
@@ -162,6 +168,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/trading/autoPilotReplay.ts',
         'lib/analytics/portfolioConcentration.ts',
         'lib/analytics/portfolioInsights.ts',
+        'lib/analytics/sellTradePlanner.ts',
         'lib/analytics/capitalGainsExit.ts',
         'lib/utils/syncProductDefaults.ts',
         'lib/utils/webPushSubscription.ts',
@@ -192,16 +199,17 @@ export default defineConfig(({ command, mode }) => {
       // values for v8 run-to-run stability; ratchet UP as tests are added,
       // never down. Branches lag (~91%) due to defensive branches,
       // import.meta / env splits, and optional chaining.
-      // Measured 98.54 / 92.09 / 99.36 / 99.17 (identical locally and in CI —
-      // v8 is deterministic for this suite). Thresholds sit ~0.15-0.6pp under
-      // that: tight enough to catch a real regression, loose enough that one
-      // incidental uncovered statement does not fail the gate with an opaque
-      // threshold error. Ratchet UP as tests are added, never down.
+      // Measured 98.76 / 93.76 / 99.23 / 99.50 after the sell planner
+      // (identical locally and in CI — v8 is deterministic for this suite).
+      // Thresholds sit ~0.2-0.6pp under that: tight enough to catch a real
+      // regression, loose enough that one incidental uncovered statement does
+      // not fail the gate with an opaque threshold error. Ratchet UP as tests
+      // are added, never down.
       thresholds: {
-        statements: 98.4,
-        branches: 91.5,
-        functions: 99,
-        lines: 99,
+        statements: 98.5,
+        branches: 93.1,
+        functions: 99.1,
+        lines: 99.3,
       },
       exclude: [
         '**/node_modules/**',

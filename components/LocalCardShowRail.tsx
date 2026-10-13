@@ -44,7 +44,10 @@ const LocalCardShowRail: React.FC<Props> = ({ inventory, targets = [], compact }
             </p>
           </div>
         </div>
-        <Link to="/local-card-shows" className="text-[10px] font-black uppercase tracking-widest text-brand-lime">
+        <Link
+          to="/local-card-shows"
+          className="inline-flex min-h-[44px] shrink-0 items-center rounded-lg px-2 text-[10px] font-black uppercase tracking-widest text-brand-lime"
+        >
           Show desk
         </Link>
       </div>
