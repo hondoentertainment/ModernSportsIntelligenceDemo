@@ -74,17 +74,53 @@ function patchReportCostBasisMethod(method: CostBasisMethod): void {
   store.set(TAX_REPORT_SETTINGS_KEY, next);
 }
 
-export function getTaxLotPreferences(): TaxLotPreferences {
+let snapshot: TaxLotPreferences = {
+  method: DEFAULT_TAX_LOT_PREFERENCES.method,
+  specificLotIds: [],
+};
+
+const preferenceListeners = new Set<() => void>();
+
+function preferencesEqual(a: TaxLotPreferences, b: TaxLotPreferences): boolean {
+  if (a.method !== b.method || a.specificLotIds.length !== b.specificLotIds.length) return false;
+  return a.specificLotIds.every((id, index) => id === b.specificLotIds[index]);
+}
+
+function readTaxLotPreferences(): TaxLotPreferences {
   const stored = store.get<unknown>(TAX_LOT_PREFERENCES_KEY, null);
   if (stored != null) return normalizeTaxLotPreferences(stored);
-  return hydrateFromReportSettings() ?? { ...DEFAULT_TAX_LOT_PREFERENCES };
+  return hydrateFromReportSettings() ?? { method: 'FIFO', specificLotIds: [] };
+}
+
+/**
+ * Stable snapshot for useSyncExternalStore. Same contents return the same object.
+ */
+export function getTaxLotPreferences(): TaxLotPreferences {
+  const next = readTaxLotPreferences();
+  if (preferencesEqual(snapshot, next)) return snapshot;
+  snapshot = next;
+  return snapshot;
+}
+
+/** Notifies subscribers after setTaxLotPreferences / setTaxLotMethod / toggleSpecificLotId. */
+export function subscribeTaxLotPreferences(listener: () => void): () => void {
+  preferenceListeners.add(listener);
+  return () => {
+    preferenceListeners.delete(listener);
+  };
+}
+
+function notifyTaxLotPreferences(): void {
+  for (const listener of preferenceListeners) listener();
 }
 
 export function setTaxLotPreferences(partial: Partial<TaxLotPreferences>): TaxLotPreferences {
   const next = normalizeTaxLotPreferences({ ...getTaxLotPreferences(), ...partial });
   store.set(TAX_LOT_PREFERENCES_KEY, next);
   patchReportCostBasisMethod(next.method);
-  return next;
+  const saved = getTaxLotPreferences();
+  notifyTaxLotPreferences();
+  return saved;
 }
 
 export function setTaxLotMethod(method: CostBasisMethod): TaxLotPreferences {
