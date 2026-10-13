@@ -180,6 +180,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/trading/p2pMatchingEngine.ts',
         'lib/trading/executionAdapterStub.ts',
         'lib/integrations/showFloorPartner.ts',
+        'lib/shows/showTripLoop.ts',
         'lib/platform/apiLicenseModel.ts',
         'lib/platform/webhookEvents.ts',
         'lib/platform/webhookDispatcher.ts',

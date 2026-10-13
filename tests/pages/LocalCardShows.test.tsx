@@ -13,7 +13,8 @@ vi.mock('../../lib/utils/useSupabaseInventory', () => ({
 }));
 
 describe('LocalCardShows page', () => {
-  it('shows the seeded calendar and an honest empty location state', () => {
+  it('shows the seeded calendar and an honest empty location state', async () => {
+    const user = userEvent.setup();
     render(
       <MemoryRouter>
         <LocalCardShows />
@@ -24,6 +25,12 @@ describe('LocalCardShows page', () => {
     expect(screen.getAllByText(/distance unknown/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/NYC Monthly Card Meetup/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Javits Center North Hall/i)).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /trip budget/i })).toBeInTheDocument();
+    expect(screen.getByText(/filing a buy or a sale writes what you typed/i)).toBeInTheDocument();
+    await user.click(screen.getByRole('tab', { name: /floor calls/i }));
+    expect(screen.getByText(/no buy or sell calls on this show yet/i)).toBeInTheDocument();
+    await user.click(screen.getByRole('tab', { name: /recap/i }));
+    expect(screen.getByText(/no floor calls logged/i)).toBeInTheDocument();
   });
 
   it('clears the list when the city filter matches nothing', async () => {
