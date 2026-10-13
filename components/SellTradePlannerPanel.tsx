@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useSyncExternalStore } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeftRight, Scale } from 'lucide-react';
 import type { CardInventory } from '../types';
@@ -8,7 +8,7 @@ import {
   type SellTradeAction,
   type SellTradeRow,
 } from '../lib/analytics/sellTradePlanner';
-import { getTaxLotPreferences } from '../lib/utils/taxLotPreferences';
+import { getTaxLotPreferences, subscribeTaxLotPreferences } from '../lib/utils/taxLotPreferences';
 
 interface Props {
   inventory: CardInventory[];
@@ -82,13 +82,15 @@ function RowCard({ row }: { row: SellTradeRow }) {
 
 const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
   const [filter, setFilter] = useState<FilterId>('all');
-  const plan = useMemo(() => {
-    const prefs = getTaxLotPreferences();
-    return buildSellTradePlan(inventory, {
-      method: prefs.method,
-      specificLotIds: prefs.specificLotIds,
-    });
-  }, [inventory]);
+  const prefs = useSyncExternalStore(subscribeTaxLotPreferences, getTaxLotPreferences, getTaxLotPreferences);
+  const plan = useMemo(
+    () =>
+      buildSellTradePlan(inventory, {
+        method: prefs.method,
+        specificLotIds: prefs.specificLotIds,
+      }),
+    [inventory, prefs],
+  );
 
   if (inventory.length === 0) return null;
 
