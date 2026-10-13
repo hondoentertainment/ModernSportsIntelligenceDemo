@@ -6,7 +6,7 @@
 
 MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger across Dashboard, War Room, and Audit Dossier; holdings catalysts; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; command palette keeps `/scan` on dashboard. **Eng-safe product waves through [#144](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/144)** (`3ca10f4`, Phase B–D scaffolds, plus the [#145](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/145) follow-up) are on `main`. The Phase B pricing-truth UI scaffold ([#141](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/141), `db907e3`) shipped **without** live flags. Waves 2–5 ([#131](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/131)–[#139](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/139)) shipped earlier. Six of seven catalog betas are `live`; only `fractional-vault` remains `beta` for legal sign-off (2026-09 quarterly sweep — no promotions, no new hides).
 
-**Production (2026-10-13):** healthy on `main` @ [`505f6e3`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/505f6e3) from [#169](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/169) (card-show trip budget, floor calls, and recap). Prior desk remains [`8dc031d`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/8dc031d) from [#168](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/168). Prior safe dependency land remains [`742bc5e`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/742bc5e) from [#166](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/166) (Dependency Guardian [#155](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/155)). Toolchain on `main`: Node ≥22.22.2, TypeScript 7 (`@typescript/native` ^7.0.2) side-by-side with the TypeScript 6 API for ESLint, jsdom 30, `tailwindcss` ^4.3.3 ([#161](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/161)), `eslint` ^10.12.0. `@eslint/js` stays on 9.x. Do not add another major migration in an eng-safe PR.
+**Production (2026-10-13):** healthy on `main` @ [`1b65481`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/1b65481) from [#170](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/170) (portfolio book insights). Prior trip loop remains [`505f6e3`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/505f6e3) from [#169](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/169) (card-show trip budget, floor calls, and recap). Prior desk remains [`8dc031d`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/8dc031d) from [#168](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/168). Prior safe dependency land remains [`742bc5e`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/742bc5e) from [#166](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/166) (Dependency Guardian [#155](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/155)). Toolchain on `main`: Node ≥22.22.2, TypeScript 7 (`@typescript/native` ^7.0.2) side-by-side with the TypeScript 6 API for ESLint, jsdom 30, `tailwindcss` ^4.3.3 ([#161](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/161)), `eslint` ^10.12.0. `@eslint/js` stays on 9.x. Do not add another major migration in an eng-safe PR.
 
 **Hosted data:** Supabase `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **ACTIVE_HEALTHY**. Migrations `00001`–`00010` are applied. Production `GET /api/health` is `ok: true` with `config.serverApiAuth: true`. Vercel already has the Supabase URL, anon key, service role, and `ALLOWED_ORIGIN` (presence checked 2026-09-27; re-sync only if those keys rotate). Optional `supabase/migrations/00011_price_history_freshness_sla.sql` stays **file-only**. It is an owner-held optional item. **Engineering agents must not apply it.**
 
@@ -25,9 +25,9 @@ Owner direction (2026-10-12): local card-show discovery and buying-opportunity s
 
 The older `/card-show-planner` demo calendar is unchanged and is not a second source of shows. Card Show Mode stays the bag and floor tools and links here for the trip and recap.
 
-## Portfolio book insights — this wave
+## Portfolio book insights — shipped (#170, `1b65481`)
 
-Sports Card Investor / Market Movers still lead on live tape. On the local book, MSI already has movers and a concentration rail, and collectors still cannot see cost-basis P/L, duplicate copies, and slab / era / print-run mix in one place. This wave adds that desk. It reads cards already in the collection. Marks stay demo or stale until eBay is on.
+Sports Card Investor / Market Movers still lead on live tape. On the local book, MSI already has movers and a concentration rail. This desk adds cost-basis P/L, duplicate copies, and slab / era / print-run mix in one place. It reads cards already in the collection. Marks stay demo or stale until eBay is on.
 
 | Slice                        | Where                                                                                                                                                                                         | Honest limit                                                                              |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
@@ -37,6 +37,17 @@ Sports Card Investor / Market Movers still lead on live tape. On the local book,
 | **Slab, era, print-run mix** | Same desk. Grading company or raw, year bucket, and a print run parsed from the end of the set name (`/499`).                                                                                 | Not a Beckett checklist and not a live population report.                                 |
 
 Copy does not claim a live Sports Card Investor portfolio.
+
+## Show alerts and shopping list — this wave
+
+Sports Card Investor and Market Movers still lead on live tape. On the seeded calendar, a collector can arm a home radius and walk into a show with a shopping list built from the watchlist and the local book.
+
+| Slice             | Where                                                                                                                                                                                                                                                                                                                                                                      | Honest limit                                                                                                            |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Show alerts**   | `/local-card-shows`. Home city or this browser’s location, a radius, and a lead time. In-app alerts record that many days before a seeded show inside the radius. Browser delivery follows existing quiet hours and browser-notification prefs.                                                                                                                            | Not a promoter feed. Server Web Push still needs owner-held VAPID keys. This change adds none.                          |
+| **Shopping list** | Same desk, on each show. Active watchlist targets, collection gaps, and duplicate extras (same player, year, manufacturer, set, and card number). Target buy is the lower of the preferred local mark and the collector target. Extra copies are sell or trade lines. The higher mark stays, and a graded copy wins a tie. A same-player buy turns the extra into a trade. | Not a dealer inventory. Marks stay demo or stale until eBay is on. Grade and condition can still differ inside a stack. |
+
+Copy does not claim a live Market Movers or Sports Card Investor show calendar.
 
 ## Owner-held checklist — [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (open)
 
@@ -146,15 +157,15 @@ Waves 2–5 and the #141 / #144 scaffolds closed the first engineering-safe cons
 
 ### Competitive positioning
 
-| Capability                                                 | MSI                                     | Market Movers / Sports Card Investor |
-| ---------------------------------------------------------- | --------------------------------------- | ------------------------------------ |
-| Agents, War Room, why / consensus                          | **Lead**                                | Absent                               |
-| Tax / fiscal (lots, ST/LT, wash-sale, Fiscal Shield)       | **Lead** (advisory; not IRS-complete)   | Thin or absent                       |
-| Audit dossier + admin trail                                | **Lead**                                | Absent                               |
-| Card-show floor loop (discover, trip budget, floor, recap) | **Lead** (seeded calendar + local book) | Absent                               |
-| Ratio intel, movers, deals, compare, whale list, wax/TCG   | **Parity-plus on local book** (Wave-5)  | Strong on live tape                  |
-| Live multi-marketplace sold comps                          | Behind #77                              | **They lead until Phase A**          |
-| Live Market Pulse / hobby indexes                          | Seeded + local Δ                        | **They lead until Phase A**          |
+| Capability                                                                 | MSI                                     | Market Movers / Sports Card Investor |
+| -------------------------------------------------------------------------- | --------------------------------------- | ------------------------------------ |
+| Agents, War Room, why / consensus                                          | **Lead**                                | Absent                               |
+| Tax / fiscal (lots, ST/LT, wash-sale, Fiscal Shield)                       | **Lead** (advisory; not IRS-complete)   | Thin or absent                       |
+| Audit dossier + admin trail                                                | **Lead**                                | Absent                               |
+| Card-show floor loop (discover, trip, floor, recap, alerts, shopping list) | **Lead** (seeded calendar + local book) | Absent                               |
+| Ratio intel, movers, deals, compare, whale list, wax/TCG                   | **Parity-plus on local book** (Wave-5)  | Strong on live tape                  |
+| Live multi-marketplace sold comps                                          | Behind #77                              | **They lead until Phase A**          |
+| Live Market Pulse / hobby indexes                                          | Seeded + local Δ                        | **They lead until Phase A**          |
 
 ### Phase A — Unlock trusted book (#77) — OWNER ONLY
 

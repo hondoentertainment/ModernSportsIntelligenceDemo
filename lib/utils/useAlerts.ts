@@ -1,11 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
 import { Alert, AlertType } from '../../types.ts';
 import { migrateLocalStorageJsonKeyOnce, store } from '../dal/syncStore';
+import { IN_APP_ALERTS_KEY, IN_APP_ALERTS_UPDATED_EVENT } from './alertPreferences';
 import { vibrateForPriceAlert } from './haptics';
 
 migrateLocalStorageJsonKeyOnce('cardx_alerts', 'msi_alerts', 'msi_migration_done_alerts_v1');
 
-const STORAGE_KEY = 'msi_alerts';
+const STORAGE_KEY = IN_APP_ALERTS_KEY;
 const MAX_ALERTS = 50; // Keep last 50 alerts
 
 /**
@@ -20,10 +21,26 @@ export function useAlerts() {
         return [];
     });
 
-    // Persist changes to localStorage
+    // Skip the mount write. The initial state was just read from the store, and a
+    // child effect (show alerts) may append rows before this effect runs.
+    const skipPersist = useRef(true);
     useEffect(() => {
+        if (skipPersist.current) {
+            skipPersist.current = false;
+            return;
+        }
         store.set(STORAGE_KEY, alerts.slice(0, MAX_ALERTS));
     }, [alerts]);
+
+    useLayoutEffect(() => {
+        if (typeof window === 'undefined') return undefined;
+        const refresh = () => {
+            const parsed = store.get<Alert[]>(STORAGE_KEY, []);
+            setAlerts(Array.isArray(parsed) ? parsed.slice(0, MAX_ALERTS) : []);
+        };
+        window.addEventListener(IN_APP_ALERTS_UPDATED_EVENT, refresh);
+        return () => window.removeEventListener(IN_APP_ALERTS_UPDATED_EVENT, refresh);
+    }, []);
 
     const addAlert = useCallback((
         type: AlertType,
