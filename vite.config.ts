@@ -58,6 +58,12 @@ export default defineConfig(({ command, mode }) => {
           if (id.includes('node_modules/recharts/') || id.includes('node_modules/d3-') || id.includes('node_modules/victory-vendor/')) {
             return 'recharts-vendor';
           }
+          // Lucide ships one module per icon. Separate chunks add a gzip
+          // header each and blow the summed JS budget. One shared chunk
+          // keeps new lazy panels from forcing a cap raise.
+          if (id.includes('node_modules/lucide-react/')) {
+            return 'icons';
+          }
           // Lib services: split by domain so a route only pulls the domains it
           // imports instead of one ~4.3 MB monolith. Bridge files that are
           // imported across domains are pinned to their consumer's chunk to
