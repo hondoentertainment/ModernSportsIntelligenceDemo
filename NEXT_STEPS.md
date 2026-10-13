@@ -1,16 +1,29 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed **2026-10-12**. Production on `main` is healthy. Canonical owner checklist: [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (body refreshed 2026-09-27). Forward narrative: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). Launch ops: [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md).
+> Refreshed **2026-10-13**. Production on `main` is healthy. Canonical owner checklist: [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (body refreshed 2026-09-27). Forward narrative: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). Launch ops: [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md).
 
 ## Current state
 
 MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger across Dashboard, War Room, and Audit Dossier; holdings catalysts; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; command palette keeps `/scan` on dashboard. **Eng-safe product waves through [#144](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/144)** (`3ca10f4`, Phase B–D scaffolds, plus the [#145](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/145) follow-up) are on `main`. The Phase B pricing-truth UI scaffold ([#141](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/141), `db907e3`) shipped **without** live flags. Waves 2–5 ([#131](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/131)–[#139](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/139)) shipped earlier. Six of seven catalog betas are `live`; only `fractional-vault` remains `beta` for legal sign-off (2026-09 quarterly sweep — no promotions, no new hides).
 
-**Production (2026-10-12):** healthy on `main`. Latest prod deploy includes [`742bc5e`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/742bc5e) from [#166](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/166) (safe patch/minor updates from Dependency Guardian [#155](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/155)). **No open pull requests.** Toolchain on `main`: Node ≥22.22.2, TypeScript 7 (`@typescript/native` ^7.0.2) side-by-side with the TypeScript 6 API for ESLint, jsdom 30, `tailwindcss` ^4.3.3 ([#161](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/161)), `eslint` ^10.12.0. `@eslint/js` stays on 9.x. Do not add another major migration in an eng-safe PR.
+**Production (2026-10-13):** healthy on `main` @ [`8dc031d`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/8dc031d) from [#168](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/168) (local card-show buying desk). Prior safe dependency land remains [`742bc5e`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/742bc5e) from [#166](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/166) (Dependency Guardian [#155](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/155)). Toolchain on `main`: Node ≥22.22.2, TypeScript 7 (`@typescript/native` ^7.0.2) side-by-side with the TypeScript 6 API for ESLint, jsdom 30, `tailwindcss` ^4.3.3 ([#161](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/161)), `eslint` ^10.12.0. `@eslint/js` stays on 9.x. Do not add another major migration in an eng-safe PR.
 
 **Hosted data:** Supabase `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **ACTIVE_HEALTHY**. Migrations `00001`–`00010` are applied. Production `GET /api/health` is `ok: true` with `config.serverApiAuth: true`. Vercel already has the Supabase URL, anon key, service role, and `ALLOWED_ORIGIN` (presence checked 2026-09-27; re-sync only if those keys rotate). Optional `supabase/migrations/00011_price_history_freshness_sla.sql` stays **file-only**. It is an owner-held optional item. **Engineering agents must not apply it.**
 
 **Still do not claim live Market Movers / SCI Pulse parity** before eBay is live. `npm run ops:check-real-data` is a readiness check for the owner after keys exist. Do not flip `VITE_FF_REAL_*` from an engineering PR.
+
+## Local card-show loop — shipped (2026-10-12 → 2026-10-13)
+
+Owner direction (2026-10-12): local card-show discovery and buying-opportunity surfacing are a **headline** of the platform, and eng-safe daily builds continue toward a complete collector loop on demo/stale tape — deeper than Sports Card Investor / Market Movers on the local book. **[#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) stays the only path to live tape.** That override replaces the older “if #77 slips, do not invent a new product wave” line. It does not authorize secrets, `VITE_FF_REAL_*` flips, applying `00011`, new Labs pages, or live-listings copy.
+
+| Slice                                                                                                            | Where                                                                                                                                                                                   | Honest limit                                                            |
+| ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Buying desk** ([#168](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/168), `8dc031d`) | `/local-card-shows` + Dashboard rail. Seeded venue calendar ranked into buy / attend / sell-into-room calls from collection gaps, deal-finder lite, portfolio movers, and the show bag. | Not a promoter scrape. Marks stay demo or stale until eBay is on.       |
+| **Trip budget**                                                                                                  | Same desk. Admission + distance-band travel stub + buy reserve − sell credit, against cash the collector is bringing.                                                                   | Travel is a stub, not a fare or hotel quote.                            |
+| **Floor calls**                                                                                                  | Same desk. Buy / pass / sell at a typed table price versus the local mark.                                                                                                              | Prices are what you type. Not a live marketplace.                       |
+| **Recap into the book**                                                                                          | Same desk. Paper ROI on marked buys, realized gain when a sell has a cost basis, then file the buy or record the sale on the existing collection.                                       | Filing writes the typed row. Not a settlement and not IRS completeness. |
+
+The older `/card-show-planner` demo calendar is unchanged and is not a second source of shows. Card Show Mode stays the bag and floor tools and links here for the trip and recap.
 
 ## Owner-held checklist — [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (open)
 
@@ -45,14 +58,14 @@ Leave #77 **open** until the unchecked items land.
 
 ## Bloomberg program — status
 
-| Bet                       | Engineering                                                                        | Owner blocker                                      |
-| ------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------- |
-| Consensus pricing ledger  | ✅ `lib/pricing/consensusMarketLedger` + Dashboard strip + `/api/market/consensus` | Flip `VITE_FF_REAL_EBAY` when keys set             |
-| Holdings-linked news rail | ✅ Dashboard `HoldingsCatalystRail` + `/catalyst-market`                           | Optional `VITE_FF_REAL_SPORTS` later               |
-| War Room as Alpha home    | ✅ Dashboard CTA + ledger context in committee prompts                             | Live tape when eBay flag on                        |
-| Institutional export      | ✅ `/audit-dossier` + consensus ledger strip + Schedule D–style packet             | Full IRS regulatory completeness still legal-gated |
-| Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later                      |
-| Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show                      |
+| Bet                       | Engineering                                                                        | Owner blocker                                            |
+| ------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Consensus pricing ledger  | ✅ `lib/pricing/consensusMarketLedger` + Dashboard strip + `/api/market/consensus` | Flip `VITE_FF_REAL_EBAY` when keys set                   |
+| Holdings-linked news rail | ✅ Dashboard `HoldingsCatalystRail` + `/catalyst-market`                           | Optional `VITE_FF_REAL_SPORTS` later                     |
+| War Room as Alpha home    | ✅ Dashboard CTA + ledger context in committee prompts                             | Live tape when eBay flag on                              |
+| Institutional export      | ✅ `/audit-dossier` + consensus ledger strip + Schedule D–style packet             | Full IRS regulatory completeness still legal-gated       |
+| Developer API desk        | ✅ `/api-licensing` GA; demo metering opt-in / watermarked                         | Real Alpha key issuance later                            |
+| Dealer mobile loop        | ✅ `MOBILE_NAV` + floor-loop CTAs; `/scan` palette intent preserved                | Field friction at a real show                            |
 | eBay / PSA tape           | ✅ adapters + readiness script (+ Stripe/Sentry presence checks)                   | **Owner keys, then one flag at a time** (eBay, then PSA) |
 
 ## Shipped eng-safe detail (2026-09)
@@ -67,7 +80,7 @@ Demo/DAL-safe. **No secrets, no `VITE_FF_REAL_*` flips, no new Labs pages, no js
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Freshness SLA helpers + UI**          | `lib/pricing/freshnessSla.ts` — stamp (≤2d / 3–6d / ≥7d) + tape (≤30d / 31–89d / ≥90d). Badges on Pulse, War Room, Pricing Truth Health, and provenance chips.       |
 | **Provenance completeness**             | Confidence only when a sold-comp / thin-tape formula exists (or a stored model score). Preferred valuation stays sold → historical → AI.                             |
-| **`price_history` SLA SQL (file only)** | `supabase/migrations/00011_price_history_freshness_sla.sql` — **not applied**. Optional owner SQL-editor item. Engineering agents must not apply it.                  |
+| **`price_history` SLA SQL (file only)** | `supabase/migrations/00011_price_history_freshness_sla.sql` — **not applied**. Optional owner SQL-editor item. Engineering agents must not apply it.                 |
 | **Server Web Push scaffold**            | `GET/POST /api/push/subscribe` reads `WEB_PUSH_VAPID_*` at runtime, **503 VAPID_UNSET** when missing. Wave-4 client calls the route when configured. No keys in git. |
 | **MLB catalyst / PvP wire adapters**    | `lib/integrations/mlbLiveWire.ts` — seeded fallback default; live path structured behind owner sports flag/env. Honest disclosure.                                   |
 | **P2P matching lite**                   | Local crossings + reputation stub + escrow **state machine / ledger stubs** on `msi_p2p_intents_v1`. No real money.                                                  |
@@ -116,19 +129,19 @@ MSI now covers **ratio intel + collection/favorites movers + deals + multi-segme
 
 ## Forward roadmap (post-eng-safe)
 
-Waves 2–5 and the #141 / #144 scaffolds closed the engineering-safe consumer-intel gap **on the local book**. The remaining unlock is owner-held [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (checklist at the top). Owner narrative: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). If #77 slips, **Phase A stays the only critical path** — do not invent a new product wave to fill the gap. Do not claim live Market Movers / SCI Pulse parity before eBay is live.
+Waves 2–5 and the #141 / #144 scaffolds closed the first engineering-safe consumer-intel gap **on the local book**. Owner direction (2026-10-12) keeps eng-safe product depth in scope while [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) is open — including the card-show loop above — so a slipped #77 is not a reason to stop demo-tape buildout. **#77 remains the only path to live tape.** Do not flip `VITE_FF_REAL_*`, apply `00011`, or claim live Market Movers / SCI Pulse parity before eBay is live. Owner narrative: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md).
 
 ### Competitive positioning
 
-| Capability                                               | MSI                                    | Market Movers / Sports Card Investor |
-| -------------------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| Agents, War Room, why / consensus                        | **Lead**                               | Absent                               |
-| Tax / fiscal (lots, ST/LT, wash-sale, Fiscal Shield)     | **Lead** (advisory; not IRS-complete)  | Thin or absent                       |
-| Audit dossier + admin trail                              | **Lead**                               | Absent                               |
-| Card-show floor loop                                     | **Lead**                               | Absent                               |
-| Ratio intel, movers, deals, compare, whale list, wax/TCG | **Parity-plus on local book** (Wave-5) | Strong on live tape                  |
-| Live multi-marketplace sold comps                        | Behind #77                             | **They lead until Phase A**          |
-| Live Market Pulse / hobby indexes                        | Seeded + local Δ                       | **They lead until Phase A**          |
+| Capability                                                 | MSI                                     | Market Movers / Sports Card Investor |
+| ---------------------------------------------------------- | --------------------------------------- | ------------------------------------ |
+| Agents, War Room, why / consensus                          | **Lead**                                | Absent                               |
+| Tax / fiscal (lots, ST/LT, wash-sale, Fiscal Shield)       | **Lead** (advisory; not IRS-complete)   | Thin or absent                       |
+| Audit dossier + admin trail                                | **Lead**                                | Absent                               |
+| Card-show floor loop (discover, trip budget, floor, recap) | **Lead** (seeded calendar + local book) | Absent                               |
+| Ratio intel, movers, deals, compare, whale list, wax/TCG   | **Parity-plus on local book** (Wave-5)  | Strong on live tape                  |
+| Live multi-marketplace sold comps                          | Behind #77                              | **They lead until Phase A**          |
+| Live Market Pulse / hobby indexes                          | Seeded + local Δ                        | **They lead until Phase A**          |
 
 ### Phase A — Unlock trusted book (#77) — OWNER ONLY
 
@@ -178,12 +191,12 @@ Phase 32 style. Consensus / Comps Used / Collection chips already exist.
 
 Eng-safe Phase B–D **scaffolds already shipped** before T0 (#141 / #144) with flags off. That does not start the live-tape clock.
 
-| Window      | Outcome                                                                                          |
-| ----------- | ------------------------------------------------------------------------------------------------ |
-| **Pre-T0**  | Finish the open #77 items. No new Labs. Do not flip both real-data flags. Do not apply `00011`. |
-| **T0 + 30** | eBay tape observed. PSA on **both** runtimes only if eBay is stable. Live Phase B exit started.  |
-| **T0 + 60** | Phase B default-on + freshness SLA against real comps. Phase C started (Web Push or MLB wire).   |
-| **T0 + 90** | Phase C usable. Phase D scoped. Phase E waits until A–C are boring.                              |
+| Window      | Outcome                                                                                                                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pre-T0**  | Finish the open #77 items. Eng-safe demo-tape depth may continue (owner override, 2026-10-12). No new Labs. Do not flip both real-data flags. Do not apply `00011`. |
+| **T0 + 30** | eBay tape observed. PSA on **both** runtimes only if eBay is stable. Live Phase B exit started.                                                                     |
+| **T0 + 60** | Phase B default-on + freshness SLA against real comps. Phase C started (Web Push or MLB wire).                                                                      |
+| **T0 + 90** | Phase C usable. Phase D scoped. Phase E waits until A–C are boring.                                                                                                 |
 
 ### Explicit non-goals (still)
 
@@ -320,13 +333,13 @@ Audit of `lib/utils/featureCatalog.ts` + route supplement + `DISCOVERABLE_FEATUR
 Two security findings surfaced through the Dependabot queue and were traced to a
 single root cause: the Node 20 floor had fallen behind what the ecosystem ships.
 
-| Change                                                    | Detail                                                                                                                                                                                                                                                           |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Node floor 20 → 22** (`def3e06`)                        | `.nvmrc` = `22`, `engines.node` = `>=22.22.2`. Every workflow reads `.nvmrc`; `rls-verify.yml` already pinned 22 independently.                                                                                                                                  |
-| **jsdom 29 → 30** (`def3e06`)                             | Required the Node bump (jsdom 30 floor is `^22.22.2`). Pulls patched `undici@^8.9.0`, closing 5 high-severity advisories.                                                                                                                                        |
-| **`brace-expansion` → 5.0.9** (`e47efc8`)                 | Override bump; closes the DoS that bypassed the CVE-2026-14257 mitigation.                                                                                                                                                                                       |
-| **TypeScript 7.0.2** (`49c077e`, #102)                    | TS 7 has no programmatic compiler API, so `typescript` is aliased to `@typescript/typescript6` for typescript-eslint while TS 7 installs as `@typescript/native`. No bin collision — the TS 6 alias ships its binary as `tsc6`, so `tsc` is unambiguously 7.0.2. |
-| **Stripe API version sync** (#97, later #105 / `10407e1`) | `stripe@22.x` `apiVersion` pin follows the 2026 dahlia generation.                                                                                                                                                                                               |
+| Change                                                    | Detail                                                                                                                                                                                                                                                                                                                                       |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Node floor 20 → 22** (`def3e06`)                        | `.nvmrc` = `22`, `engines.node` = `>=22.22.2`. Every workflow reads `.nvmrc`; `rls-verify.yml` already pinned 22 independently.                                                                                                                                                                                                              |
+| **jsdom 29 → 30** (`def3e06`)                             | Required the Node bump (jsdom 30 floor is `^22.22.2`). Pulls patched `undici@^8.9.0`, closing 5 high-severity advisories.                                                                                                                                                                                                                    |
+| **`brace-expansion` → 5.0.9** (`e47efc8`)                 | Override bump; closes the DoS that bypassed the CVE-2026-14257 mitigation.                                                                                                                                                                                                                                                                   |
+| **TypeScript 7.0.2** (`49c077e`, #102)                    | TS 7 has no programmatic compiler API, so `typescript` is aliased to `@typescript/typescript6` for typescript-eslint while TS 7 installs as `@typescript/native`. No bin collision — the TS 6 alias ships its binary as `tsc6`, so `tsc` is unambiguously 7.0.2.                                                                             |
+| **Stripe API version sync** (#97, later #105 / `10407e1`) | `stripe@22.x` `apiVersion` pin follows the 2026 dahlia generation.                                                                                                                                                                                                                                                                           |
 | **Dependabot queue**                                      | August pass drained #89 and #92–#103. Later safe bumps continued through [#166](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/166) (`742bc5e`, 2026-10-12) from Dependency Guardian [#155](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/155). No open pull requests as of 2026-10-12. |
 
 Why it matters beyond hygiene: the `undici` advisories were failing
@@ -336,13 +349,13 @@ upgrade** — `npm ci` will refuse the engine constraint.
 
 ## Status of the June recommendation (implemented on the July-3 branch)
 
-| Item                                    | Status                                                                                                                                                                                                                                                                                                                                                                         |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| P0 — open-PR queue (#74, #75, #59, #58) | ✅ Resolved: dependency groups applied here with the Stripe `apiVersion` fix #74 was missing; #59's goal already shipped on main (June 10 consolidation); #58's unique audit work (filters/search/CSV/pagination + runbook + admin spec) ported here. All four closed as superseded.                                                                                           |
+| Item                                    | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| P0 — open-PR queue (#74, #75, #59, #58) | ✅ Resolved: dependency groups applied here with the Stripe `apiVersion` fix #74 was missing; #59's goal already shipped on main (June 10 consolidation); #58's unique audit work (filters/search/CSV/pagination + runbook + admin spec) ported here. All four closed as superseded.                                                                                                                                                                                                                   |
 | P1 — punch-list items 1/3/4             | ✅ Items 1/3/4 done (2026-07-18): new Supabase project linked, secrets set, RLS smoke green locally, health `serverApiAuth: true`, Deployed E2E live. **2026-10-12:** `vhbsokjqchaafluimgjh` is ACTIVE_HEALTHY again; Vercel Supabase env presence is confirmed; health and `serverApiAuth` still hold. The September “INACTIVE / re-sync first” caveat is superseded. Remaining owner punch-list is the #77 checklist at the top (Stripe smoke, eBay then PSA, optional Sentry). GDPR closed 2026-08. |
-| P2 — beta exits                         | ✅ `provenance-chain` live · ✅ `liquidity-pool` live · ✅ `fractional-vault-v2` removed (duplicate). ✅ `vision-grading` live. **2026-09 sweep:** remaining `fractional-vault` stays `beta` (legal sign-off — no engineering).                                                                                                                                                |
-| P3 — integration depth                  | ✅ eBay comp pagination (offset pages), last-known-good comps served as `source: 'stale'` on live failure, PSA `CertVerifiedBadge` on any card with a `certNumber`.                                                                                                                                                                                                            |
-| P4 — onboarding                         | ✅ Scan-first empty state, `/demo-flow` tour link, first-card pricing toast pointing at the data-source badge.                                                                                                                                                                                                                                                                 |
+| P2 — beta exits                         | ✅ `provenance-chain` live · ✅ `liquidity-pool` live · ✅ `fractional-vault-v2` removed (duplicate). ✅ `vision-grading` live. **2026-09 sweep:** remaining `fractional-vault` stays `beta` (legal sign-off — no engineering).                                                                                                                                                                                                                                                                        |
+| P3 — integration depth                  | ✅ eBay comp pagination (offset pages), last-known-good comps served as `source: 'stale'` on live failure, PSA `CertVerifiedBadge` on any card with a `certNumber`.                                                                                                                                                                                                                                                                                                                                    |
+| P4 — onboarding                         | ✅ Scan-first empty state, `/demo-flow` tour link, first-card pricing toast pointing at the data-source badge.                                                                                                                                                                                                                                                                                                                                                                                         |
 
 ## Priority 1 — Remaining owner-held launch actions
 
@@ -397,17 +410,17 @@ upgrade** — `npm ci` will refuse the engine constraint.
 
 ## Key references
 
-| Purpose                         | File                                                                     |
-| ------------------------------- | ------------------------------------------------------------------------ |
-| Owner-held launch ops           | `docs/LAUNCH_OPS_PUNCH_LIST.md`                                          |
-| Env checklist (presence done)   | `docs/DEPLOY_ENV_CHECKLIST.md` (unpause steps apply only if a future pause happens) |
-| Beta status / criteria          | `docs/BETA_FEATURE_EXIT_CRITERIA.md`, `docs/BETA_EXIT_READINESS_PASS.md` |
-| Admin audit viewer design       | `plans/admin-audit-viewer-spec.md`                                       |
-| Key-rotation runbook            | `plans/incidents/key-rotation-drill.md`                                  |
-| MVP launch scope                | `docs/MVP_LAUNCH_SCOPE.md`                                               |
-| Production rollout              | `docs/PRODUCTION_ROLLOUT_PHASES.md`                                      |
-| Rollback runbook                | `docs/ROLLBACK_AND_STABILIZATION.md`                                     |
-| Coverage policy                 | `docs/COVERAGE_POLICY.md`                                                |
-| Labs boundary                   | `lib/productionLaunch.ts`                                                |
-| Forward roadmap (post Wave-5)   | `plans/PRODUCT_ROADMAP_2026Q4.md`                                        |
-| Feature inventory vs catalog    | `plans/FEATURE_ROADMAP_REVIEW.md`                                        |
+| Purpose                       | File                                                                                |
+| ----------------------------- | ----------------------------------------------------------------------------------- |
+| Owner-held launch ops         | `docs/LAUNCH_OPS_PUNCH_LIST.md`                                                     |
+| Env checklist (presence done) | `docs/DEPLOY_ENV_CHECKLIST.md` (unpause steps apply only if a future pause happens) |
+| Beta status / criteria        | `docs/BETA_FEATURE_EXIT_CRITERIA.md`, `docs/BETA_EXIT_READINESS_PASS.md`            |
+| Admin audit viewer design     | `plans/admin-audit-viewer-spec.md`                                                  |
+| Key-rotation runbook          | `plans/incidents/key-rotation-drill.md`                                             |
+| MVP launch scope              | `docs/MVP_LAUNCH_SCOPE.md`                                                          |
+| Production rollout            | `docs/PRODUCTION_ROLLOUT_PHASES.md`                                                 |
+| Rollback runbook              | `docs/ROLLBACK_AND_STABILIZATION.md`                                                |
+| Coverage policy               | `docs/COVERAGE_POLICY.md`                                                           |
+| Labs boundary                 | `lib/productionLaunch.ts`                                                           |
+| Forward roadmap (post Wave-5) | `plans/PRODUCT_ROADMAP_2026Q4.md`                                                   |
+| Feature inventory vs catalog  | `plans/FEATURE_ROADMAP_REVIEW.md`                                                   |

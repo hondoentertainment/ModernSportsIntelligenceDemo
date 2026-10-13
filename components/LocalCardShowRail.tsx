@@ -40,7 +40,7 @@ const LocalCardShowRail: React.FC<Props> = ({ inventory, targets = [], compact }
           <div>
             <h3 className="text-sm font-semibold text-white">Local card shows</h3>
             <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
-              Seeded calendar · {report.tapeLabel}
+              Seeded calendar · {report.tapeLabel} · trip and recap
             </p>
           </div>
         </div>

@@ -1,22 +1,22 @@
 # Product roadmap — post Wave-5 (2026 Q4)
 
 **Audience:** owner / Kyle  
-**Status:** refreshed 2026-10-12. Eng-safe waves through #144 and the Phase B UI scaffold (#141, flags off) are on `main`. No secrets or `VITE_FF_REAL_*` flips in this plan. Full Phase B exit still needs #77 live eBay tape. Do not claim live Market Movers / SCI Pulse parity before that.  
+**Status:** refreshed 2026-10-13. Eng-safe waves through #144, the Phase B UI scaffold (#141, flags off), the #168 local-show buying desk, and the show-trip / floor / recap loop are on the local book. No secrets or `VITE_FF_REAL_*` flips in this plan. Full Phase B exit still needs #77 live eBay tape. Do not claim live Market Movers / SCI Pulse parity before that. Owner direction (2026-10-12): eng-safe demo-tape buildout continues while #77 is open. **#77 stays the only path to live tape.**  
 **Canonical ops:** [`NEXT_STEPS.md`](../NEXT_STEPS.md) · [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)
 
-Production on `main` is healthy (`742bc5e`, [#166](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/166), safe patch/minor from Dependency Guardian [#155](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/155)). No open pull requests. Remaining unlock is **owner-held #77** (optional file-only `00011`, Stripe smoke, eBay then PSA, optional Sentry, admin-audit confirm, legal, rotation drill). Restore and Vercel Supabase env presence are done. If #77 slips, Phase A stays the only critical path. Engineering agents must not apply `00011`.
+Production on `main` is healthy (`8dc031d`, [#168](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/168), local card-show buying desk; prior dependency land `742bc5e`, [#166](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/166)). Remaining unlock for **live tape** is **owner-held #77** (optional file-only `00011`, Stripe smoke, eBay then PSA, optional Sentry, admin-audit confirm, legal, rotation drill). Restore and Vercel Supabase env presence are done. If #77 slips, live tape waits — eng-safe depth on demo/stale tape does not. Engineering agents must not apply `00011`.
 
 ---
 
 ## 1. Where we are (Oct 2026)
 
-| Fact                                  | Reality                                                                                                                                                                                 |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Bloomberg / institutional core        | Engineering-complete: consensus ledger, War Room, audit dossier, tax lots (demo-honest), card-show loop, agents                                                                         |
-| Consumer intel vs SCI / Market Movers | Wave-5 shipped: ratio intel, collection/favorites movers, deal finder lite, multi-segment Pulse, 2–3 card compare, whale list, wax/TCG rail                                             |
-| Catalog                               | Six of seven former betas are `live`. Only `fractional-vault` remains `beta` (legal)                                                                                                    |
+| Fact                                  | Reality                                                                                                                                                                                                                                                                                                              |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bloomberg / institutional core        | Engineering-complete: consensus ledger, War Room, audit dossier, tax lots (demo-honest), card-show loop, agents                                                                                                                                                                                                      |
+| Consumer intel vs SCI / Market Movers | Wave-5 shipped: ratio intel, collection/favorites movers, deal finder lite, multi-segment Pulse, 2–3 card compare, whale list, wax/TCG rail                                                                                                                                                                          |
+| Catalog                               | Six of seven former betas are `live`. Only `fractional-vault` remains `beta` (legal)                                                                                                                                                                                                                                 |
 | Hosted data                           | Supabase `vhbsokjqchaafluimgjh` **ACTIVE_HEALTHY**. Migrations `00001`–`00010` applied. Health `ok` / `serverApiAuth: true`. Vercel Supabase env presence done. Optional `00011` file-only (agents must not apply). Remaining #77 = Stripe smoke, eBay then PSA, optional Sentry, admin-audit, legal, rotation drill |
-| Honest copy                           | Seeded Pulse / movers / deals are local + disclosed — not live marketplace scrapes                                                                                                      |
+| Honest copy                           | Seeded Pulse / movers / deals are local + disclosed — not live marketplace scrapes                                                                                                                                                                                                                                   |
 
 Do **not** pause Supabase, apply `00011`, or set live-data flags from an engineering PR.
 
@@ -24,16 +24,16 @@ Do **not** pause Supabase, apply `00011`, or set live-data flags from an enginee
 
 ## 2. Competitive positioning
 
-| Capability                                      | MSI                                    | Market Movers / Sports Card Investor |
-| ----------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| Multi-agent War Room + why / consensus          | **Lead**                               | Absent                               |
-| Tax lots, ST/LT, wash-sale rail, Fiscal Shield  | **Lead** (advisory; not IRS-complete)  | Thin or absent                       |
-| Audit dossier + admin audit trail               | **Lead**                               | Absent                               |
-| Card-show floor loop (scan, swipe, show bag)    | **Lead**                               | Absent                               |
-| Negotiation Arena / Auto-Pilot (advisory)       | **Lead**                               | Absent                               |
-| Ratio intel, movers, deals, compare, whale list | **Parity-plus on local book** (Wave-5) | Strong on live tape                  |
-| Live multi-marketplace sold comps               | Behind #77                             | **They lead today**                  |
-| Live Market Pulse / hobby indexes               | Seeded + local Δ                       | **They lead today**                  |
+| Capability                                           | MSI                                    | Market Movers / Sports Card Investor |
+| ---------------------------------------------------- | -------------------------------------- | ------------------------------------ |
+| Multi-agent War Room + why / consensus               | **Lead**                               | Absent                               |
+| Tax lots, ST/LT, wash-sale rail, Fiscal Shield       | **Lead** (advisory; not IRS-complete)  | Thin or absent                       |
+| Audit dossier + admin audit trail                    | **Lead**                               | Absent                               |
+| Card-show loop (discover, trip budget, floor, recap) | **Lead** (seeded + local book)         | Absent                               |
+| Negotiation Arena / Auto-Pilot (advisory)            | **Lead**                               | Absent                               |
+| Ratio intel, movers, deals, compare, whale list      | **Parity-plus on local book** (Wave-5) | Strong on live tape                  |
+| Live multi-marketplace sold comps                    | Behind #77                             | **They lead today**                  |
+| Live Market Pulse / hobby indexes                    | Seeded + local Δ                       | **They lead today**                  |
 
 MSI wins on **agents, fiscal, War Room, show-floor, audit**. SCI / Market Movers still win on **live comps depth and live Pulse** until Phase A lands.
 
@@ -41,7 +41,7 @@ MSI wins on **agents, fiscal, War Room, show-floor, audit**. SCI / Market Movers
 
 ## 3. Forward phases (ordered)
 
-Map to older phase numbers in [`next-steps-recommendation.md`](./next-steps-recommendation.md). Do not start B–E until A is done (or A is explicitly waived by the owner).
+Map to older phase numbers in [`next-steps-recommendation.md`](./next-steps-recommendation.md). Do not start **live** B–E until A is done. Eng-safe demo-tape depth is already in scope under the 2026-10-12 owner override (card-show loop included) and is not a live-tape phase.
 
 | Phase | Name                     | Who                  | Older map                      |
 | ----- | ------------------------ | -------------------- | ------------------------------ |
@@ -109,12 +109,12 @@ Already known; do not invent Labs pages.
 
 **T0** = [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) closed. Restore, migrations `00001`–`00010`, health, and Vercel Supabase env presence are **done**. Critical path left inside Phase A: Stripe smoke + eBay live. PSA may lag (eBay-first). Optional `00011` does not gate T0. If #77 slips, **the clock does not start**. Eng-safe B–D scaffolds (#141 / #144) already shipped with flags off; that is not the live-tape clock.
 
-| Window      | Outcome                                                                                                    |
-| ----------- | ---------------------------------------------------------------------------------------------------------- |
-| **Pre-T0**  | Finish open #77 items. No new Labs. No both-flags-at-once. Do not apply `00011` from an engineering PR.    |
-| **T0 + 30** | eBay tape observed. PSA on both runtimes only if eBay is stable. Live Phase B exit started.                |
-| **T0 + 60** | Phase B default-on + freshness SLA against real comps. Phase C Web Push or MLB wire started.               |
-| **T0 + 90** | Phase C usable. Phase D design / lite matching scoped. Phase E not started unless A–C are boring.          |
+| Window      | Outcome                                                                                                                                                                     |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pre-T0**  | Finish open #77 items. Eng-safe demo-tape depth may continue (owner override, 2026-10-12). No new Labs. No both-flags-at-once. Do not apply `00011` from an engineering PR. |
+| **T0 + 30** | eBay tape observed. PSA on both runtimes only if eBay is stable. Live Phase B exit started.                                                                                 |
+| **T0 + 60** | Phase B default-on + freshness SLA against real comps. Phase C Web Push or MLB wire started.                                                                                |
+| **T0 + 90** | Phase C usable. Phase D design / lite matching scoped. Phase E not started unless A–C are boring.                                                                           |
 
 ---
 

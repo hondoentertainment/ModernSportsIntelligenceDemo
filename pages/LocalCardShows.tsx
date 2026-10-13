@@ -14,6 +14,8 @@ import {
   type ShowBagHint,
   type ShowVerdict,
 } from '../lib/shows/showBuyingDesk';
+import { buildTripBudget, formatTripUsd, toTripLine } from '../lib/shows/showTripLoop';
+import ShowTripLoopPanel from '../components/ShowTripLoopPanel';
 
 const SPORTS: Array<Sport | 'all'> = ['all', 'Baseball', 'Basketball', 'Football', 'Hockey', 'Soccer'];
 
@@ -26,8 +28,9 @@ function verdictClass(verdict: ShowVerdict): string {
 }
 
 const LocalCardShows: React.FC = () => {
-  const { inventory, targets } = useSupabaseInventory();
+  const { inventory, targets, addCard, updateCard } = useSupabaseInventory();
   const [cityQuery, setCityQuery] = useState('');
+  const [openShowId, setOpenShowId] = useState<string | null>(null);
   const [sport, setSport] = useState<Sport | 'all'>('all');
   const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(null);
   const [geoNote, setGeoNote] = useState('Location off — distance unknown. Ranking uses dates and your book.');
@@ -93,7 +96,7 @@ const LocalCardShows: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-slate-100">Local card shows</h1>
             <p className="text-sm text-slate-400">
-              Venues, dates, and cities — then the buys that match your book.
+              Venues and buy calls, then a trip budget, floor log, and recap back into the book.
             </p>
           </div>
         </div>
@@ -167,7 +170,16 @@ const LocalCardShows: React.FC = () => {
         <p className="rounded-xl border border-slate-800 bg-slate-900/50 px-4 py-6 text-sm text-slate-400">{report.emptyReason}</p>
       ) : (
         <ul className="space-y-4">
-          {report.shows.map((row) => (
+          {report.shows.map((row) => {
+            const fallbackSport = row.show.sports.length === 1 ? row.show.sports[0] : null;
+            const tripNeed = buildTripBudget({
+              showId: row.show.id,
+              admissionUsd: row.show.admissionUsd,
+              distanceMiles: row.distanceMiles,
+              items: row.opportunities.map((opportunity) => toTripLine(opportunity, inventory, targets, fallbackSport)),
+            }).netNeedUsd;
+            const tripOpen = (openShowId ?? report.shows[0]?.show.id) === row.show.id;
+            return (
             <li key={row.show.id} className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 md:p-5">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div>
@@ -241,8 +253,35 @@ const LocalCardShows: React.FC = () => {
                   ))}
                 </ul>
               )}
+              <p className="mt-3 text-[11px] text-slate-400">
+                Trip need {formatTripUsd(tripNeed)} · admission, travel stub, buy reserve, and sell credit.
+              </p>
+              <button
+                type="button"
+                aria-expanded={tripOpen}
+                onClick={() => setOpenShowId(tripOpen ? '' : row.show.id)}
+                className="mt-2 inline-flex min-h-[44px] items-center rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-100"
+              >
+                {tripOpen ? 'Hide trip loop' : 'Plan trip, floor, and recap'}
+              </button>
+              {tripOpen && (
+                <ShowTripLoopPanel
+                  showId={row.show.id}
+                  showName={row.show.name}
+                  admissionUsd={row.show.admissionUsd}
+                  distanceMiles={row.distanceMiles}
+                  purchaseDate={row.show.endDate}
+                  opportunities={row.opportunities}
+                  inventory={inventory}
+                  targets={targets}
+                  fallbackSport={fallbackSport}
+                  onFileBuy={addCard}
+                  onRecordSale={updateCard}
+                />
+              )}
             </li>
-          ))}
+          );
+          })}
         </ul>
       )}
     </div>

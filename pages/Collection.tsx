@@ -765,7 +765,7 @@ const Collection: React.FC = () => {
                 </button>
               )}
               <Link to="/local-card-shows" className="ml-3 underline text-amber-200">
-                Local shows
+                Show trip and recap
               </Link>
               <Link to="/card-show-mode" className="ml-3 underline text-emerald-300">
                 Show bag
