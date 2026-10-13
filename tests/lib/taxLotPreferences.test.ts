@@ -8,6 +8,7 @@ import {
   normalizeTaxLotPreferences,
   setTaxLotMethod,
   setTaxLotPreferences,
+  subscribeTaxLotPreferences,
   toggleSpecificLotId,
   LOT_METHOD_TO_REPORT,
   taxLotMethodDisclaimer,
@@ -60,6 +61,24 @@ describe('taxLotPreferences', () => {
     setTaxLotMethod('AvgCost');
     expect(getTaxSettings().filingStatus).toBe('married_joint');
     expect(getTaxSettings().costBasisMethod).toBe('average');
+  });
+
+  it('keeps a stable snapshot and notifies subscribers on change', () => {
+    setTaxLotPreferences({ method: 'FIFO', specificLotIds: [] });
+    const first = getTaxLotPreferences();
+    expect(getTaxLotPreferences()).toBe(first);
+
+    const seen: string[] = [];
+    const unsubscribe = subscribeTaxLotPreferences(() => {
+      seen.push(getTaxLotPreferences().method);
+    });
+    setTaxLotMethod('LIFO');
+    expect(seen).toEqual(['LIFO']);
+    expect(getTaxLotPreferences()).not.toBe(first);
+    expect(getTaxLotPreferences()).toBe(getTaxLotPreferences());
+    unsubscribe();
+    setTaxLotMethod('FIFO');
+    expect(seen).toEqual(['LIFO']);
   });
 
   it('hydrates lot preferences from Tax Report settings when the prefs key is absent', () => {

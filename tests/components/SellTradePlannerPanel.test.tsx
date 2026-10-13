@@ -1,15 +1,21 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import React from 'react';
+import React, { act } from 'react';
 import SellTradePlannerPanel from '../../components/SellTradePlannerPanel';
 import { SELL_TRADE_PLANNER_DISCLOSURE } from '../../lib/analytics/sellTradePlanner';
+import { setTaxLotMethod, setTaxLotPreferences, toggleSpecificLotId } from '../../lib/utils/taxLotPreferences';
 import { makeCard } from '../helpers';
 
 const AS_OF_PURCHASE = '2020-01-01';
 
 describe('SellTradePlannerPanel', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    setTaxLotPreferences({ method: 'FIFO', specificLotIds: [] });
+  });
+
   it('renders nothing for an empty book', () => {
     const { container } = render(
       <MemoryRouter>
@@ -89,5 +95,56 @@ describe('SellTradePlannerPanel', () => {
       </MemoryRouter>,
     );
     expect(screen.getByText(/nothing in this book stands out/i)).toBeInTheDocument();
+  });
+
+  it('rebuilds when the saved tax-lot method or specific lots change', () => {
+    render(
+      <MemoryRouter>
+        <SellTradePlannerPanel
+          inventory={[
+            makeCard({
+              id: 'keep',
+              player: 'Julio Rodriguez',
+              year: 2019,
+              manufacturer: 'Bowman',
+              set: 'Chrome',
+              cardNumber: '1',
+              purchasePrice: 40,
+              currentValue: 180,
+              purchaseDate: AS_OF_PURCHASE,
+              isGraded: true,
+              gradingCompany: 'PSA',
+              grade: '10',
+            }),
+            makeCard({
+              id: 'extra',
+              player: 'Julio Rodriguez',
+              year: 2019,
+              manufacturer: 'Bowman',
+              set: 'Chrome',
+              cardNumber: '1',
+              purchasePrice: 30,
+              currentValue: 70,
+              purchaseDate: AS_OF_PURCHASE,
+            }),
+          ]}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText(/net of fees · FIFO/i)).toBeInTheDocument();
+    expect(screen.getByText(/Extra copy/i)).toBeInTheDocument();
+
+    act(() => {
+      setTaxLotMethod('SpecificID');
+    });
+    expect(screen.getByText(/net of fees · SpecificID/i)).toBeInTheDocument();
+    expect(screen.getByText(/no lots are marked/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Extra copy/i)).not.toBeInTheDocument();
+
+    act(() => {
+      toggleSpecificLotId('extra');
+    });
+    expect(screen.getByText(/Extra copy/i)).toBeInTheDocument();
   });
 });
