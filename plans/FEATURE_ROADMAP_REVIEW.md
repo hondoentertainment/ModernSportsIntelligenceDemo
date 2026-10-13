@@ -3,7 +3,7 @@
 **Purpose:** Single document to review **what exists in the product**, **what is production-grade vs demo/beta**, and **what remains open**.  
 **Sources:** `PRD.md` §4 & §14, `lib/utils/featureCatalog.ts`, `PRODUCTION_READINESS.md`, `plans/next-steps-recommendation.md`, `plans/roadmap-review-and-enhancements.md`, routing in `App.tsx`.
 
-**Last updated:** October 12, 2026 (eng-safe waves through `#144` / Phase B UI `#141` on `main`; prod includes `#166` / `742bc5e`. Forward plan in [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) and [`NEXT_STEPS.md`](../NEXT_STEPS.md). Sequencing in this file’s “open” columns that still say “Vercel env sync” is superseded by the #77 checklist.)
+**Last updated:** October 13, 2026 (portfolio book insights on `main` @ `1b65481` / `#170`, plus the sell and trade-in planner). Forward plan in [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) and [`NEXT_STEPS.md`](../NEXT_STEPS.md). Sequencing in this file’s “open” columns that still say “Vercel env sync” is superseded by the #77 checklist.)
 
 ---
 
@@ -189,6 +189,7 @@ These were proposed as **high-value additions**; overlap with existing tools is 
 | Whale Collection list virtualization            | **Shipped (Wave-5, 2026-09-10)** — tanstack virtual list above 24 rows; memoized rows; stable virtual keys.                                                                                                                                                                                                                                                                                                                                                                                       |
 | Adjacent wax / TCG on core desks                | **Shipped (lite, Wave-5, 2026-09-10)** — AdjacentHobbyMarketsRail on Dashboard + Collection. Disclosed proxies.                                                                                                                                                                                                                                                                                                                                                                                   |
 | Portfolio book insights                         | **Shipped (local book)** — Dashboard + Collection desk: all-in cost vs preferred mark, cost-basis gainers/losers, duplicate stacks, slab / era / numbered-parallel mix. Not a live SCI portfolio and not a checklist.                                                                                                                                                                                                                                                                             |
+| Sell and trade-in planner                       | **Shipped (local book, 2026-10-13)** — Dashboard + Collection. Duplicate extras, cost-basis losers, and long-term winners, with eBay ~13% / card-show ~4% net proceeds, the saved tax-lot method, and a 30-day wash-sale hold. Not a listing, not a dealer quote, and not IRS completeness.                                                                                                                                                                                                       |
 
 ---
 

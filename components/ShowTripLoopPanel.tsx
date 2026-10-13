@@ -229,10 +229,11 @@ const ShowTripLoopPanel: React.FC<Props> = ({
                 setDrafts((prev) => ({ ...prev, [showId]: event.target.value }));
               }}
               onBlur={commitCash}
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-medium normal-case tracking-normal text-white"
+              aria-invalid={cashError ? true : undefined}
+              className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-base font-medium normal-case tracking-normal text-white md:text-sm"
             />
           </label>
-          {cashError && <p className="text-[11px] text-rose-300">{cashError}</p>}
+          {cashError && <p className="text-[11px] text-rose-300" role="alert">{cashError}</p>}
           <p className="text-[11px] text-slate-300" role="status">
             {parsedCash == null
               ? 'Enter a cash amount to see if this trip fits.'
@@ -279,7 +280,7 @@ const ShowTripLoopPanel: React.FC<Props> = ({
                         inputMode="decimal"
                         value={priceText(item)}
                         onChange={(event) => setPrices((prev) => ({ ...prev, [item.id]: event.target.value }))}
-                        className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm font-medium normal-case tracking-normal text-white"
+                        className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-base font-medium normal-case tracking-normal text-white md:text-sm"
                       />
                     </label>
                     <div className="mt-2 flex flex-wrap gap-2">
@@ -287,6 +288,7 @@ const ShowTripLoopPanel: React.FC<Props> = ({
                         <button
                           key={call}
                           type="button"
+                          aria-pressed={logged?.call === call}
                           onClick={() => logCall(item, call)}
                           className={`min-h-[44px] rounded-lg border px-3 py-2 text-[10px] font-black uppercase tracking-widest ${
                             logged?.call === call
@@ -317,7 +319,7 @@ const ShowTripLoopPanel: React.FC<Props> = ({
                         {logged.call !== 'pass' ? ` · ${versusCopy(logged.versusMark)}` : ''}.
                       </p>
                     )}
-                    {rowErrors[item.id] && <p className="mt-1 text-[11px] text-rose-300">{rowErrors[item.id]}</p>}
+                    {rowErrors[item.id] && <p className="mt-1 text-[11px] text-rose-300" role="alert">{rowErrors[item.id]}</p>}
                   </li>
                 );
               })}

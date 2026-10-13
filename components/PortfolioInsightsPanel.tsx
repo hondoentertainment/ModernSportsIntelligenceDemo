@@ -39,15 +39,15 @@ const TONE_CLASS: Record<PortfolioInsight['tone'], string> = {
 
 function MixList({ title, rows }: { title: string; rows: MixSlice[] }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-brand-muted">{title}</p>
       {rows.length === 0 ? (
         <p className="text-[11px] text-slate-500">Nothing to mix.</p>
       ) : (
         <ul className="space-y-2">
           {rows.slice(0, 4).map((row) => (
-            <li key={row.key} className="flex items-center justify-between gap-3 text-sm">
-              <span className="text-white">
+            <li key={row.key} className="flex min-w-0 items-center justify-between gap-3 text-sm">
+              <span className="min-w-0 break-words text-white">
                 {row.label}
                 <span className="ml-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">
                   {row.count}
@@ -62,23 +62,31 @@ function MixList({ title, rows }: { title: string; rows: MixSlice[] }) {
   );
 }
 
+function scrollToPlanner(): void {
+  const node = document.getElementById('sell-trade-planner');
+  if (!node) return;
+  const reduce = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  node.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  node.focus({ preventScroll: true });
+}
+
 function PerformerList({ title, rows, empty }: { title: string; rows: PerformerRow[]; empty: string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-brand-muted">{title}</p>
       {rows.length === 0 ? (
         <p className="text-[11px] text-slate-500">{empty}</p>
       ) : (
         <ul className="space-y-2">
           {rows.map((row) => (
-            <li key={row.cardId} className="rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-2">
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="text-sm text-white">{row.player}</p>
+            <li key={row.cardId} className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+                <p className="break-words text-sm text-white">{row.player}</p>
                 <p className={`font-mono text-xs ${row.gain >= 0 ? 'text-emerald-300' : 'text-rose-300'}`}>
                   {signedDollars(row.gain)} ({signedPct(row.gainPct)})
                 </p>
               </div>
-              <p className="mt-1 text-[11px] text-slate-500">
+              <p className="mt-1 break-words text-[11px] text-slate-500">
                 {row.label} · cost {dollars(row.cost)} · mark {dollars(row.mark)}
               </p>
             </li>
@@ -91,7 +99,7 @@ function PerformerList({ title, rows, empty }: { title: string; rows: PerformerR
 
 function DuplicateList({ rows, stackCount }: { rows: DuplicateStack[]; stackCount: number }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-brand-muted">
         Duplicate stacks · {stackCount}
       </p>
@@ -100,14 +108,14 @@ function DuplicateList({ rows, stackCount }: { rows: DuplicateStack[]; stackCoun
       ) : (
         <ul className="space-y-2">
           {rows.map((row) => (
-            <li key={row.key} className="rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-2">
-              <div className="flex items-baseline justify-between gap-3">
-                <p className="text-sm text-white">{row.player}</p>
+            <li key={row.key} className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+                <p className="break-words text-sm text-white">{row.player}</p>
                 <p className="font-mono text-xs text-slate-300">
                   {row.copies} copies · extras {dollars(row.extraMark)}
                 </p>
               </div>
-              <p className="mt-1 text-[11px] text-slate-500">
+              <p className="mt-1 break-words text-[11px] text-slate-500">
                 {row.label} · {row.grades.join(', ')}
               </p>
             </li>
@@ -128,39 +136,48 @@ const PortfolioInsightsPanel: React.FC<Props> = ({ inventory }) => {
 
   return (
     <section
-      className="rounded-2xl border border-slate-800 bg-brand-charcoal/60 p-5 md:p-6"
+      className="rounded-2xl border border-slate-800 bg-brand-charcoal/60 p-4 sm:p-5 md:p-6"
       aria-label="Portfolio book insights"
     >
-      <div className="mb-3 flex items-center gap-2">
-        <Library size={16} className="text-sky-300" aria-hidden />
-        <div>
-          <h3 className="text-sm font-semibold text-white">Portfolio book insights</h3>
-          <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
-            All-in cost · preferred marks · duplicate stacks
-          </p>
+      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-center gap-2">
+          <Library size={16} className="shrink-0 text-sky-300" aria-hidden />
+          <div className="min-w-0">
+            <h3 className="text-sm font-semibold text-white">Portfolio book insights</h3>
+            <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">
+              All-in cost · preferred marks · duplicate stacks
+            </p>
+          </div>
         </div>
+        <button
+          type="button"
+          onClick={scrollToPlanner}
+          className="inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-lg border border-sky-500/40 bg-sky-500/10 px-3 text-xs font-bold text-sky-100"
+        >
+          Plan sells and trade-ins
+        </button>
       </div>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-400">{PORTFOLIO_INSIGHTS_DISCLOSURE}</p>
 
-      <dl className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <div className="rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-2">
+      <dl className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
+            <div className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
               <dt className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Preferred mark</dt>
               <dd className="mt-1 font-mono text-sm text-white">{dollars(totals.mark)}</dd>
             </div>
-            <div className="rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-2">
+            <div className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
               <dt className="text-[10px] font-black uppercase tracking-widest text-brand-muted">All-in cost</dt>
               <dd className="mt-1 font-mono text-sm text-white">{dollars(totals.allInCost)}</dd>
               {totals.feeDrag > 0 ? (
                 <p className="mt-1 text-[10px] text-slate-500">Includes {dollars(totals.feeDrag)} in fees</p>
               ) : null}
             </div>
-            <div className="rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-2">
+            <div className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
               <dt className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Unrealized</dt>
               <dd className={`mt-1 font-mono text-sm ${unrealizedClass}`}>
                 {signedDollars(totals.unrealized)} ({signedPct(totals.unrealizedPct)})
               </dd>
             </div>
-            <div className="rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-2">
+            <div className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
               <dt className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Realized</dt>
               <dd className="mt-1 font-mono text-sm text-white">{signedDollars(totals.realized)}</dd>
               <p className="mt-1 text-[10px] text-slate-500">
@@ -180,9 +197,9 @@ const PortfolioInsightsPanel: React.FC<Props> = ({ inventory }) => {
           {report.insights.length > 0 ? (
             <ul className="mt-4 space-y-3" aria-label="Book insight notes">
               {report.insights.map((insight) => (
-                <li key={insight.id} className="rounded-xl border border-slate-800/80 bg-brand-slate/20 px-4 py-3">
-                  <p className={`text-sm font-medium ${TONE_CLASS[insight.tone]}`}>{insight.title}</p>
-                  <p className="mt-1 text-[11px] leading-relaxed text-slate-400">{insight.detail}</p>
+                <li key={insight.id} className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/20 px-4 py-3">
+                  <p className={`break-words text-sm font-medium ${TONE_CLASS[insight.tone]}`}>{insight.title}</p>
+                  <p className="mt-1 break-words text-[11px] leading-relaxed text-slate-400">{insight.detail}</p>
                 </li>
               ))}
             </ul>

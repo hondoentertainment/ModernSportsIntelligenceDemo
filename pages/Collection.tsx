@@ -71,6 +71,7 @@ const SeasonalWindowRail = lazy(() => import('../components/SeasonalWindowRail')
 const TradeProposalPanel = lazy(() => import('../components/TradeProposalPanel'));
 const PortfolioConcentrationRail = lazy(() => import('../components/PortfolioConcentrationRail'));
 const PortfolioInsightsPanel = lazy(() => import('../components/PortfolioInsightsPanel'));
+const SellTradePlannerPanel = lazy(() => import('../components/SellTradePlannerPanel'));
 const P2PIntentBoard = lazy(() => import('../components/P2PIntentBoard'));
 const ShowBagPanel = lazy(() => import('../components/ShowBagPanel'));
 const GradingRoiLitePanel = lazy(() => import('../components/GradingRoiLitePanel'));
@@ -613,6 +614,7 @@ const Collection: React.FC = () => {
           <LazyErrorBoundary compact>
             <Suspense fallback={<WidgetLoadingFallback />}>
               <PortfolioInsightsPanel inventory={inventory} />
+              <SellTradePlannerPanel inventory={inventory} />
               <SeasonalWindowRail inventory={inventory} />
               <PortfolioConcentrationRail inventory={inventory} />
               <TradeProposalPanel inventory={inventory} />
