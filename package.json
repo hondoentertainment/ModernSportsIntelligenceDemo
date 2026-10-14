@@ -27,7 +27,7 @@
     "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit -p tsconfig.release.json",
     "typecheck:strict": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc --noEmit -p tsconfig.strict.json",
     "test:e2e": "playwright test",
-    "test:e2e:smoke": "playwright test tests/e2e/auth.spec.ts tests/e2e/dashboard.spec.ts tests/e2e/release-smoke.spec.ts tests/e2e/billing-checkout.spec.ts tests/e2e/command-palette.spec.ts tests/e2e/audit-trail.spec.ts tests/e2e/scout-to-acquire.spec.ts tests/e2e/sell-trade-planner.spec.ts tests/e2e/show-shopping-alerts.spec.ts tests/e2e/portfolio-set-gaps.spec.ts --project=chromium --workers=2",
+    "test:e2e:smoke": "playwright test tests/e2e/auth.spec.ts tests/e2e/dashboard.spec.ts tests/e2e/release-smoke.spec.ts tests/e2e/billing-checkout.spec.ts tests/e2e/command-palette.spec.ts tests/e2e/audit-trail.spec.ts tests/e2e/scout-to-acquire.spec.ts tests/e2e/sell-trade-planner.spec.ts tests/e2e/show-shopping-alerts.spec.ts tests/e2e/alert-digest.spec.ts tests/e2e/portfolio-set-gaps.spec.ts --project=chromium --workers=2",
     "test:a11y": "playwright test tests/e2e/a11y.spec.ts --project=chromium",
     "test:visual": "playwright test tests/e2e/visual-smoke.spec.ts --project=chromium",
     "test:visual:update": "playwright test tests/e2e/visual-smoke.spec.ts --project=chromium --update-snapshots",
