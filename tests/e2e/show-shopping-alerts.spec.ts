@@ -2,6 +2,15 @@ import { expect, test, type Page } from '@playwright/test';
 import { enterDemoMode } from '../helpers/e2eAuth';
 
 async function seedBook(page: Page): Promise<void> {
+    await expect.poll(async () => page.evaluate(() => {
+        try {
+            const rows = JSON.parse(localStorage.getItem('cardx_inventory') || '[]') as unknown;
+            return Array.isArray(rows) ? rows.length : 0;
+        } catch {
+            return 0;
+        }
+    }), { timeout: 20_000 }).toBeGreaterThan(100);
+
     await page.evaluate(() => {
         const card = (overrides: Record<string, unknown>) => ({
             id: 'card',
@@ -21,6 +30,22 @@ async function seedBook(page: Page): Promise<void> {
             status: 'active',
             ...overrides,
         });
+        // Dashboard replaces a short book with the demo set. Pad past that
+        // length with football rows this baseball/basketball show does not list.
+        const existing = JSON.parse(localStorage.getItem('cardx_inventory') || '[]') as unknown[];
+        const fillerCount = Math.max(130, Array.isArray(existing) ? existing.length : 0);
+        const fillers = Array.from({ length: fillerCount }, (_, index) => card({
+            id: `pad-${index}`,
+            player: `Pad ${index}`,
+            year: 1999,
+            manufacturer: 'Pad',
+            cardNumber: String(index),
+            set: 'Pad',
+            sport: 'Football',
+            league: 'NFL',
+            currentValue: 1,
+            purchasePrice: 1,
+        }));
         localStorage.setItem('cardx_inventory', JSON.stringify([
             card({ id: 'trout-raw', currentValue: 80 }),
             card({
@@ -30,6 +55,7 @@ async function seedBook(page: Page): Promise<void> {
                 gradingCompany: 'PSA',
                 grade: '10',
             }),
+            ...fillers,
         ]));
         localStorage.setItem('cardx_targets', JSON.stringify([
             {
@@ -85,7 +111,7 @@ test.describe('Show alerts and shopping list', () => {
         await expect(alerts.getByText('Read', { exact: true })).toBeVisible();
 
         const shopping = page.getByRole('region', { name: /shopping list for nyc monthly card meetup/i });
-        await expect(shopping.getByText('Jayson Tatum')).toBeVisible();
+        await expect(shopping.locator('p').filter({ hasText: /Jayson Tatum\s+Collection gap/ })).toBeVisible();
         await expect(shopping.getByText('Collection gap', { exact: true })).toBeVisible();
         await expect(shopping.getByText(/target buy \$180/i)).toBeVisible();
         await expect(shopping.getByText('Mike Trout')).toBeVisible();
@@ -96,7 +122,7 @@ test.describe('Show alerts and shopping list', () => {
 
         await page.reload();
         await expect(page.getByRole('region', { name: 'Show alerts' }).getByText('Read', { exact: true })).toBeVisible({ timeout: 20_000 });
-        await expect(page.getByRole('region', { name: /shopping list for nyc monthly card meetup/i }).getByText('Jayson Tatum')).toBeVisible();
+        await expect(page.getByRole('region', { name: /shopping list for nyc monthly card meetup/i }).locator('p').filter({ hasText: /Jayson Tatum\s+Collection gap/ })).toBeVisible();
     });
 
     test('files a shopping-list buy into the collection with the paid price as cost basis', async ({ page }) => {
@@ -106,7 +132,7 @@ test.describe('Show alerts and shopping list', () => {
         await page.reload();
         await page.goto('/#/local-card-shows');
         const shopping = page.getByRole('region', { name: /shopping list for nyc monthly card meetup/i });
-        await expect(shopping.getByText('Jayson Tatum')).toBeVisible({ timeout: 20_000 });
+        await expect(shopping.getByLabel('Paid price for Jayson Tatum')).toBeVisible({ timeout: 20_000 });
         await shopping.getByLabel('Paid price for Jayson Tatum').fill('150');
         await shopping.getByRole('button', { name: 'Add Jayson Tatum to collection' }).click();
         await expect(shopping.getByText(/Jayson Tatum in the collection · cost basis \$150\.00/i)).toBeVisible();
