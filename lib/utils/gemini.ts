@@ -1,4 +1,4 @@
-import { Type } from '@google/genai';
+import { Type } from '../geminiSchemaType.ts';
 import { CardInventory, PricingAnalysis, TargetWatchlist, VisualAuditResult, MacroSignal, GradingPremiumAnalysis } from '../../types.ts';
 import { ebayApi } from './ebayApi.ts';
 import { showToast } from './toast.ts';

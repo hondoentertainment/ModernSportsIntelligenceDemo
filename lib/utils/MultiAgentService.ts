@@ -1,4 +1,4 @@
-import { Type } from "@google/genai";
+import { Type } from "../geminiSchemaType.ts";
 import { AgentRecommendationOrigin, CardInventory, CollaborativeThesis, SwarmInsight } from "../../types.ts";
 import { showToast } from "./toast.ts";
 import { createGeminiClient } from "./geminiClient.ts";
