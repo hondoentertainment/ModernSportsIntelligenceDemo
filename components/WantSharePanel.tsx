@@ -1,19 +1,28 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import type { TargetWatchlist } from '../types';
+import { store } from '../lib/dal/syncStore';
 import {
   WANT_SHARE_DISCLOSURE,
   decodeWantShare,
   encodeWantShare,
-  wantItemsFromTargets,
+  readActiveWants,
   wantShareHref,
 } from '../lib/watchlist/wantShare';
 
-const WantSharePanel: React.FC<{ targets: TargetWatchlist[] }> = ({ targets }) => {
+const WantSharePanel: React.FC = () => {
   const [params] = useSearchParams();
   const token = params.get('want') ?? '';
   const shared = useMemo(() => (token ? decodeWantShare(token) : null), [token]);
-  const mine = useMemo(() => wantItemsFromTargets(targets), [targets]);
+  const [mine, setMine] = useState(() => readActiveWants());
+  useEffect(() => {
+    const refresh = () => setMine(readActiveWants());
+    const stopWrite = store.onWrite(refresh);
+    const stopStatus = store.onStatusChange(refresh);
+    return () => {
+      stopWrite();
+      stopStatus();
+    };
+  }, []);
   const href = mine.length ? wantShareHref(window.location.href, encodeWantShare(mine)) : '';
 
   return (

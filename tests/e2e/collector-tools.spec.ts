@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { enterDemoMode } from '../helpers/e2eAuth';
+import { enterDemoMode, restoreLocalKeysOnNextLoad } from '../helpers/e2eAuth';
 import fs from 'node:fs';
 
 async function seedBook(page: Page): Promise<void> {
@@ -12,7 +12,7 @@ async function seedBook(page: Page): Promise<void> {
     }
   }), { timeout: 20_000 }).toBeGreaterThan(100);
 
-  await page.evaluate(() => {
+  const seeded = await page.evaluate(() => {
     const card = (overrides: Record<string, unknown>) => ({
       id: 'card',
       player: 'Aaron Judge',
@@ -46,11 +46,11 @@ async function seedBook(page: Page): Promise<void> {
       currentValue: 1,
       purchaseDate: '1999-01-01',
     }));
-    localStorage.setItem('cardx_inventory', JSON.stringify([
+    const inventory = JSON.stringify([
       card({ id: 'judge', player: 'Aaron Judge', currentValue: 100, purchasePrice: 40 }),
       ...fillers,
-    ]));
-    localStorage.setItem('cardx_targets', JSON.stringify([{
+    ]);
+    const targets = JSON.stringify([{
       id: 'tatum',
       player: 'Jayson Tatum',
       cardDescription: '2024 Prizm',
@@ -60,8 +60,12 @@ async function seedBook(page: Page): Promise<void> {
       league: 'NBA',
       status: 'active',
       createdAt: '2026-01-01T00:00:00.000Z',
-    }]));
+    }]);
+    localStorage.setItem('cardx_inventory', inventory);
+    localStorage.setItem('cardx_targets', targets);
+    return { cardx_inventory: inventory, cardx_targets: targets };
   });
+  await restoreLocalKeysOnNextLoad(page, seeded);
 }
 
 test.describe('Collector desk tools', () => {
@@ -179,8 +183,9 @@ test.describe('Collector desk tools', () => {
     await page.goto('/#/alerts');
     const share = page.getByRole('region', { name: 'Want-list share' });
     await expect(share.getByText(/no server copy/i)).toBeVisible({ timeout: 20_000 });
-    const href = await share.getByLabel('Want-list share link').inputValue();
-    expect(href).toContain('#/alerts?want=');
+    const link = share.getByLabel('Want-list share link');
+    await expect(link).toHaveValue(/#\/alerts\?want=/, { timeout: 20_000 });
+    const href = await link.inputValue();
     await page.goto(href);
     const shared = page.getByLabel('Shared want list');
     await expect(shared.getByText(/read-only/i)).toBeVisible();

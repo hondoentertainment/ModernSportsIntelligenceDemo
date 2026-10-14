@@ -15,7 +15,6 @@ import {
   Info,
 } from 'lucide-react';
 import { useAlerts } from '../lib/utils/useAlerts.ts';
-import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
 import { AlertType } from '../types.ts';
 import AlertDeliverySettings from '../components/AlertDeliverySettings';
 
@@ -23,7 +22,6 @@ const CollectorAlertDigest = lazy(() => import('../components/CollectorAlertDige
 const WantSharePanel = lazy(() => import('../components/WantSharePanel'));
 
 const Alerts: React.FC = () => {
-  const { targets } = useSupabaseInventory();
   const {
     alerts,
     markAsRead,
@@ -113,7 +111,7 @@ const Alerts: React.FC = () => {
 
       <Suspense fallback={null}>
         <CollectorAlertDigest />
-        <WantSharePanel targets={targets} />
+        <WantSharePanel />
       </Suspense>
 
       {/* Stats Bar */}

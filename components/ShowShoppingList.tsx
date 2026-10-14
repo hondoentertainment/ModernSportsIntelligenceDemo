@@ -54,30 +54,32 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
     [show, inventory, targets, liveTape],
   );
   return (
-    <section className="mt-3 text-slate-300" aria-label={`Shopping list for ${show.name}`}>
-      {disclose && <p className="text-xs text-slate-500">{SHOW_SHOPPING_LIST_DISCLOSURE}</p>}
-      <h3 className="text-xs text-slate-200">Shopping list · {list.buys.length + list.sells.length}</h3>
-      {list.emptyReason ? <p className="text-sm text-slate-400">{list.emptyReason}</p> : (
-        <>
-          <h4 className="text-xs text-emerald-200">Buy</h4>
-          {list.buys.length === 0 ? <p className="text-xs text-slate-500">No buys.</p> : <Lines lines={list.buys} />}
-          {onFileBuy && list.buys.length > 0 && (
-            <>
-              <p className="mt-2 text-[11px] text-slate-500">{SHOPPING_INGEST_DISCLOSURE}</p>
-              <ShoppingBuyFiles
-                lines={list.buys}
-                inventory={inventory}
-                showName={show.name}
-                purchaseDate={show.endDate}
-                idPrefix={`list-${show.id}`}
-                onFileBuy={onFileBuy}
-              />
-            </>
-          )}
-          <h4 className="text-xs text-sky-200">Sell or trade</h4>
-          {list.sells.length === 0 ? <p className="text-xs text-slate-500">No extras.</p> : <Lines lines={list.sells} />}
-        </>
-      )}
+    <>
+      <section className="mt-3 text-slate-300" aria-label={`Shopping list for ${show.name}`}>
+        {disclose && <p className="text-xs text-slate-500">{SHOW_SHOPPING_LIST_DISCLOSURE}</p>}
+        <h3 className="text-xs text-slate-200">Shopping list · {list.buys.length + list.sells.length}</h3>
+        {list.emptyReason ? <p className="text-sm text-slate-400">{list.emptyReason}</p> : (
+          <>
+            <h4 className="text-xs text-emerald-200">Buy</h4>
+            {list.buys.length === 0 ? <p className="text-xs text-slate-500">No buys.</p> : <Lines lines={list.buys} />}
+            {onFileBuy && list.buys.length > 0 && (
+              <>
+                <p className="mt-2 text-[11px] text-slate-500">{SHOPPING_INGEST_DISCLOSURE}</p>
+                <ShoppingBuyFiles
+                  lines={list.buys}
+                  inventory={inventory}
+                  showName={show.name}
+                  purchaseDate={show.endDate}
+                  idPrefix={`list-${show.id}`}
+                  onFileBuy={onFileBuy}
+                />
+              </>
+            )}
+            <h4 className="text-xs text-sky-200">Sell or trade</h4>
+            {list.sells.length === 0 ? <p className="text-xs text-slate-500">No extras.</p> : <Lines lines={list.sells} />}
+          </>
+        )}
+      </section>
       <Suspense fallback={null}>
         <ShowDayPanel
           showId={show.id}
@@ -90,7 +92,7 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
           }))}
         />
       </Suspense>
-    </section>
+    </>
   );
 };
 

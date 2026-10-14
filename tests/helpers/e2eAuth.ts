@@ -105,6 +105,27 @@ export async function signInWithTestCredentials(
  * (`npm run build:e2e && npm run preview`) configured in
  * playwright.config.ts.
  */
+/**
+ * The inventory hook can persist its in-memory book over a localStorage
+ * write that happened before the next reload. Re-apply these entries once,
+ * before app scripts, on the next document load. Later reloads in the same
+ * tab keep whatever the test wrote after that.
+ */
+export async function restoreLocalKeysOnNextLoad(
+    page: Page,
+    entries: Record<string, string>,
+): Promise<void> {
+    const token = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    await page.addInitScript(({ entries: next, token: stamp }) => {
+        const flag = 'msi-e2e-restore-token';
+        if (sessionStorage.getItem(flag) === stamp) return;
+        for (const [key, value] of Object.entries(next)) {
+            localStorage.setItem(key, value);
+        }
+        sessionStorage.setItem(flag, stamp);
+    }, { entries, token });
+}
+
 export async function enterDemoMode(page: Page): Promise<void> {
     await prepareFreshBrowserSession(page);
     const demoButton = page.getByRole('button', { name: /demo|enter demo mode/i });

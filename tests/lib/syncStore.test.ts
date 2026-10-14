@@ -72,6 +72,15 @@ describe('syncStore', () => {
       expect(store.get('test-key', 'default')).toBe('value');
     });
 
+    it('notifies write listeners until they unsubscribe', () => {
+      const seen: string[] = [];
+      const stop = store.onWrite(() => seen.push(store.get('write-probe', '')));
+      store.set('write-probe', 'a');
+      stop();
+      store.set('write-probe', 'b');
+      expect(seen).toEqual(['a']);
+    });
+
     it('writes to localStorage', () => {
       store.set('test-key', 'value');
       expect(localStorage.getItem('test-key')).toBe(JSON.stringify('value'));

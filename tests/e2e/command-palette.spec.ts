@@ -19,23 +19,35 @@ test.describe('Command Palette (Ctrl+K)', () => {
         // dispatching a fake event triggers it.
         await page.evaluate(() => {
             let fired = false;
-            const probe = () => {
+            // Capture + stopImmediatePropagation: the probe must not toggle the
+            // real AppLayout listener (that leaves the dialog open and the next
+            // pointer click on #main-content times out).
+            const probe = (event: Event) => {
                 fired = true;
+                event.stopImmediatePropagation();
             };
-            window.addEventListener('keydown', probe);
-            window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }));
-            window.removeEventListener('keydown', probe);
+            window.addEventListener('keydown', probe, true);
+            window.dispatchEvent(new KeyboardEvent('keydown', {
+                key: 'k',
+                ctrlKey: true,
+                bubbles: true,
+                cancelable: true,
+            }));
+            window.removeEventListener('keydown', probe, true);
             console.log('[probe] keydown fired=', fired);
         });
     });
 
     async function openPalette(page: Page): Promise<void> {
+        const dialog = page.getByRole('dialog', { name: /command palette/i });
         await expect(page.locator('#main-content')).toBeVisible({ timeout: 15_000 });
-        await page.locator('#main-content').click({ position: { x: 8, y: 8 } });
+        if (await dialog.count()) {
+            await page.keyboard.press('Escape');
+            await expect(dialog).toHaveCount(0, { timeout: 5_000 });
+        }
+        await page.locator('#main-content').focus();
         await page.keyboard.press('Control+K');
-        await expect(
-            page.getByRole('dialog', { name: /command palette/i }),
-        ).toBeVisible({ timeout: 10_000 });
+        await expect(dialog).toBeVisible({ timeout: 10_000 });
     }
 
     test('opens with Ctrl+K and exposes Navigate / Run / Features sections', async ({ page }) => {

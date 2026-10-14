@@ -58,6 +58,9 @@ class SyncedStore {
   /** Listeners subscribed to sync-status changes */
   private statusListeners: Set<() => void> = new Set();
 
+  /** Listeners subscribed to synchronous writes. */
+  private writeListeners: Set<() => void> = new Set();
+
   // ─── Public API (Synchronous) ──────────────────────────────────────
 
   /**
@@ -118,6 +121,22 @@ class SyncedStore {
     // Mark for async DAL write-back
     this.dirty.add(key);
     this.scheduleFlush();
+    this.notifyWrite();
+  }
+
+  /**
+   * Subscribe to synchronous writes. Returns an unsubscribe function.
+   * Hydration still arrives through onStatusChange.
+   */
+  onWrite(listener: () => void): () => void {
+    this.writeListeners.add(listener);
+    return () => {
+      this.writeListeners.delete(listener);
+    };
+  }
+
+  private notifyWrite(): void {
+    for (const fn of this.writeListeners) fn();
   }
 
   /**
