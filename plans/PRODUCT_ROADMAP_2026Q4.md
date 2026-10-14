@@ -129,7 +129,11 @@ Already known; do not invent Labs pages.
 
 ---
 
-## 6. Doc map
+## 6. Eng-safe depth — 2026-10-14
+
+Checked against `main` @ `2aedeb8` (#177). Still owner-held: #77. Shipped in this pass, demo tape only: show table notes, grading submit decision (demo PSA/BGS fees, turnaround, pop), portfolio performance chart, collection CSV round-trip, and a read-only want-list link. No live flags, no applied migration, gzip cap unchanged.
+
+## 7. Doc map
 
 | Doc                                                                          | Role after this refresh                                      |
 | ---------------------------------------------------------------------------- | ------------------------------------------------------------ |
