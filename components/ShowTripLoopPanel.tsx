@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { Suspense, lazy, useMemo, useState } from 'react';
 import type { CardInventory, Sport, TargetWatchlist } from '../types';
+import type { ResolvedLocalCardShow } from '../lib/shows/localCardShowCatalog';
 import type { ShowBuyOpportunity } from '../lib/shows/showBuyingDesk';
 import {
   SHOW_TRIP_LOOP_DISCLOSURE,
@@ -27,6 +28,8 @@ import {
   type VersusMark,
 } from '../lib/shows/showTripLoop';
 
+const ShoppingRecapIngest = lazy(() => import('./showDeskPanels').then((mod) => ({ default: mod.ShoppingRecapIngest })));
+
 interface Props {
   showId: string;
   showName: string;
@@ -36,6 +39,8 @@ interface Props {
   opportunities: ShowBuyOpportunity[];
   inventory: CardInventory[];
   targets?: TargetWatchlist[];
+  show?: ResolvedLocalCardShow | null;
+  liveTape?: boolean;
   fallbackSport?: Sport | null;
   onFileBuy: (card: CardInventory) => Promise<void> | void;
   onRecordSale: (cardId: string, patch: Partial<CardInventory>) => Promise<void> | void;
@@ -65,6 +70,8 @@ const ShowTripLoopPanel: React.FC<Props> = ({
   opportunities,
   inventory,
   targets = [],
+  show = null,
+  liveTape = false,
   fallbackSport = null,
   onFileBuy,
   onRecordSale,
@@ -412,6 +419,17 @@ const ShowTripLoopPanel: React.FC<Props> = ({
             })}
           </ul>
           {writeError && <p className="text-[11px] text-rose-300">{writeError}</p>}
+          {show && (
+            <Suspense fallback={null}>
+              <ShoppingRecapIngest
+                show={show}
+                inventory={inventory}
+                targets={targets}
+                liveTape={liveTape}
+                onFileBuy={onFileBuy}
+              />
+            </Suspense>
+          )}
         </div>
       )}
     </section>
