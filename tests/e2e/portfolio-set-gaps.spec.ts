@@ -5,6 +5,14 @@ test.describe('Set completion from the book', () => {
   test('tracks a started demo checklist from collection gaps', async ({ page }) => {
     test.setTimeout(120_000);
     await enterDemoMode(page);
+    await expect.poll(async () => page.evaluate(() => {
+      try {
+        const rows = JSON.parse(localStorage.getItem('cardx_inventory') || '[]') as unknown;
+        return Array.isArray(rows) ? rows.length : 0;
+      } catch {
+        return 0;
+      }
+    }), { timeout: 20_000 }).toBeGreaterThan(100);
     await page.evaluate(() => {
       const card = (overrides: Record<string, unknown>) => ({
         id: 'card',
@@ -24,9 +32,22 @@ test.describe('Set completion from the book', () => {
         status: 'active',
         ...overrides,
       });
+      const existing = JSON.parse(localStorage.getItem('cardx_inventory') || '[]') as unknown[];
+      const fillerCount = Math.max(130, Array.isArray(existing) ? existing.length : 0);
+      const fillers = Array.from({ length: fillerCount }, (_, index) => card({
+        id: `pad-${index}`,
+        player: `Pad ${index}`,
+        year: 1999,
+        manufacturer: 'Pad',
+        cardNumber: String(index),
+        set: 'Pad',
+        sport: 'Football',
+        league: 'NFL',
+      }));
       localStorage.setItem('cardx_inventory', JSON.stringify([
         card({ id: 'judge', player: 'Aaron Judge', cardNumber: '1' }),
         card({ id: 'skenes', player: 'Paul Skenes', cardNumber: '250' }),
+        ...fillers,
       ]));
     });
     await page.reload();
