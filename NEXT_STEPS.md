@@ -135,6 +135,20 @@ Copy does not claim a live Market Movers or Sports Card Investor import.
 
 Copy does not claim a live Market Movers or Sports Card Investor want list.
 
+## Show day, comps snapshot, trade balance, location, weekly recap — this change
+
+Demo book only. The five #178 review notes are fixed here too: CSV import stays available on an empty demo book and applies every row inside the file-size limit, cloud accounts do not get a local-only import, the want-list link follows hydrated targets, and a stored mark of $0 is not replaced by cost.
+
+| Slice              | Where                                                              | Honest limit                                                                                              |
+| ------------------ | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| **Show day**       | `/local-card-shows`, under each shopping list.                     | Offline checklist on this browser. Budget left uses saved trip cash, or the trip need when cash is blank. |
+| **Comps snapshot** | Collection. Last sales sparkline and median for the card you pick. | Sold comps when the card has them. Otherwise a stable demo sketch around the local mark.                  |
+| **Trade balancer** | Collection. Give, receive, and cash against local marks.           | Fair within 5%. Not a marketplace fill.                                                                   |
+| **Card location**  | Collection. Binder, box, or slab case, with a filter.              | This browser. Not a warehouse system.                                                                     |
+| **Weekly recap**   | Collection. Value change, buys, sells, and top movers.             | Demo path from cost to the local mark. Not a live week.                                                   |
+
+Copy does not claim a live Market Movers or Sports Card Investor tape.
+
 ## Sell and trade-in planner — shipped (#172 / #173)
 
 The book desk can now name what to sell or trade in. It reads the portfolio insights above (duplicate extras, cost-basis losers, unrealized P/L) and the saved tax-lot method. Marks stay demo or stale until eBay is on.
@@ -162,7 +176,7 @@ Show alerts and the shopping list are the section above. The mobile pass does no
 
 ## Eng-safe audit — 2026-10-14
 
-`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `2aedeb8` (#177 set completion is on main, with #171 show alerts, #172 / #173 sell planner, #175 alert digest, and #176 shopping-list cost basis). Table notes, the grading submit decision, the portfolio chart, collection CSV, and the want-list link were still open and land in this change. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git. Gzip cap stays 3,055,000.
+`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `2e1a09a` (#178). Show day, the comps snapshot, the trade balancer, card location, and the weekly recap were still open and land in this change, with the #178 CSV, want-list, and zero-mark review notes. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git. Gzip cap stays 3,055,000.
 
 ## Eng-safe audit — 2026-10-13
 

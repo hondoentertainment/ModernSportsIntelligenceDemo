@@ -49,4 +49,13 @@ describe('gradingSubmit', () => {
     expect(rows[0].summary).toMatch(/Submit PSA Economy/);
     expect(rows[1].summary).toMatch(/Hold raw/);
   });
+
+  it('keeps an explicit zero mark instead of the purchase price', () => {
+    const rows = listGradeSubmits([
+      card({ id: 'zero', currentValue: 0, purchasePrice: 400 }),
+      card({ id: 'missing', player: 'Missing', currentValue: undefined, purchasePrice: 100 }),
+    ]);
+    expect(rows.map((row) => row.cardId)).toEqual(['missing']);
+    expect(rows[0].rawUsd).toBe(100);
+  });
 });

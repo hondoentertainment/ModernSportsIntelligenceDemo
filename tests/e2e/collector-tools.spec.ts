@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { enterDemoMode } from '../helpers/e2eAuth';
+import { enterDemoMode, restoreLocalKeysOnNextLoad } from '../helpers/e2eAuth';
 import fs from 'node:fs';
 
 async function seedBook(page: Page): Promise<void> {
@@ -12,7 +12,7 @@ async function seedBook(page: Page): Promise<void> {
     }
   }), { timeout: 20_000 }).toBeGreaterThan(100);
 
-  await page.evaluate(() => {
+  const seeded = await page.evaluate(() => {
     const card = (overrides: Record<string, unknown>) => ({
       id: 'card',
       player: 'Aaron Judge',
@@ -46,11 +46,11 @@ async function seedBook(page: Page): Promise<void> {
       currentValue: 1,
       purchaseDate: '1999-01-01',
     }));
-    localStorage.setItem('cardx_inventory', JSON.stringify([
+    const inventory = JSON.stringify([
       card({ id: 'judge', player: 'Aaron Judge', currentValue: 100, purchasePrice: 40 }),
       ...fillers,
-    ]));
-    localStorage.setItem('cardx_targets', JSON.stringify([{
+    ]);
+    const targets = JSON.stringify([{
       id: 'tatum',
       player: 'Jayson Tatum',
       cardDescription: '2024 Prizm',
@@ -60,8 +60,12 @@ async function seedBook(page: Page): Promise<void> {
       league: 'NBA',
       status: 'active',
       createdAt: '2026-01-01T00:00:00.000Z',
-    }]));
+    }]);
+    localStorage.setItem('cardx_inventory', inventory);
+    localStorage.setItem('cardx_targets', targets);
+    return { cardx_inventory: inventory, cardx_targets: targets };
   });
+  await restoreLocalKeysOnNextLoad(page, seeded);
 }
 
 test.describe('Collector desk tools', () => {
@@ -129,6 +133,46 @@ test.describe('Collector desk tools', () => {
       const rows = JSON.parse(localStorage.getItem('cardx_inventory') || '[]') as Array<{ id?: string; currentValue?: number }>;
       return rows.find((row) => row.id === 'judge')?.currentValue ?? 0;
     })).toBe(99);
+
+    const desk = page.getByRole('region', { name: 'Weekly collection recap' });
+    await expect(desk).toContainText(/buys/i);
+    await expect(desk).toContainText(/sells/i);
+    const comps = page.getByRole('region', { name: 'Comps snapshot' });
+    await comps.getByLabel('Comps snapshot card').selectOption('judge');
+    await expect(comps.getByRole('img', { name: 'Demo sales sparkline' })).toBeVisible();
+    await expect(comps).toContainText(/median/i);
+    const trade = page.getByRole('region', { name: 'Trade value balancer' });
+    await trade.getByLabel('Trade card').selectOption('pad-0');
+    await trade.getByRole('button', { name: 'Add to give' }).click();
+    await trade.getByLabel('Trade card').selectOption('judge');
+    await trade.getByRole('button', { name: 'Add to receive' }).click();
+    await expect(trade.getByLabel('Trade call')).toContainText('you ahead');
+    const place = page.getByRole('region', { name: 'Card location' });
+    await place.getByLabel('Location card').selectOption('judge');
+    await place.getByLabel('Location place').selectOption('slab');
+    await place.getByRole('button', { name: 'Save location' }).click();
+    await place.getByRole('button', { name: 'slab' }).click();
+    await expect(place).toContainText('Aaron Judge · slab');
+
+    await page.evaluate(() => localStorage.setItem('cardx_inventory', '[]'));
+    await page.reload();
+    await expect(page.getByLabel('Import collection CSV')).toBeAttached();
+  });
+
+  test('checks off a show-day line and keeps the budget on this browser', async ({ page }) => {
+    test.setTimeout(120_000);
+    await enterDemoMode(page);
+    await seedBook(page);
+    await page.reload();
+    await page.goto('/#/local-card-shows');
+    const line = page.getByRole('checkbox', { name: 'buy Jayson Tatum' }).first();
+    await expect(line).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText(/budget left/i).first()).toBeVisible();
+    await expect(page.getByText(/offline checklist/i).first()).toBeVisible();
+    await line.check();
+    await expect(line).toBeChecked();
+    await page.reload();
+    await expect(page.getByRole('checkbox', { name: 'buy Jayson Tatum' }).first()).toBeChecked();
   });
 
   test('opens a read-only want-list link with no server copy', async ({ page }) => {
@@ -139,8 +183,9 @@ test.describe('Collector desk tools', () => {
     await page.goto('/#/alerts');
     const share = page.getByRole('region', { name: 'Want-list share' });
     await expect(share.getByText(/no server copy/i)).toBeVisible({ timeout: 20_000 });
-    const href = await share.getByLabel('Want-list share link').inputValue();
-    expect(href).toContain('#/alerts?want=');
+    const link = share.getByLabel('Want-list share link');
+    await expect(link).toHaveValue(/#\/alerts\?want=/, { timeout: 20_000 });
+    const href = await link.inputValue();
     await page.goto(href);
     const shared = page.getByLabel('Shared want list');
     await expect(shared.getByText(/read-only/i)).toBeVisible();

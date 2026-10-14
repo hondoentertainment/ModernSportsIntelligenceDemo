@@ -48,6 +48,18 @@ describe('collectionCsv', () => {
     expect(exported).toContain('99');
   });
 
+  it('imports every data row inside the file size limit', () => {
+    const header = exportCollectionCsv([]).split('\n')[0];
+    const lines = [header];
+    for (let i = 0; i < 201; i += 1) {
+      lines.push(`n${i},Player ${i},2020,Topps,${i},Set,Baseball,MLB,1,2020-01-01,2,active`);
+    }
+    const parsed = applyCollectionCsv([], lines.join('\n'));
+    expect(parsed.error).toBeNull();
+    expect(parsed.added).toBe(201);
+    expect(parsed.skipped).toBe(0);
+  });
+
   it('leaves the book alone when the file is not a collection export', () => {
     const book = [card()];
     const parsed = applyCollectionCsv(book, 'player,year\nA,2024');

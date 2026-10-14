@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { enterDemoMode } from '../helpers/e2eAuth';
+import { enterDemoMode, restoreLocalKeysOnNextLoad } from '../helpers/e2eAuth';
 
 async function seedBook(page: Page): Promise<void> {
     await expect.poll(async () => page.evaluate(() => {
@@ -11,7 +11,7 @@ async function seedBook(page: Page): Promise<void> {
         }
     }), { timeout: 20_000 }).toBeGreaterThan(100);
 
-    await page.evaluate(() => {
+    const seeded = await page.evaluate(() => {
         const card = (overrides: Record<string, unknown>) => ({
             id: 'card',
             player: 'Mike Trout',
@@ -46,7 +46,7 @@ async function seedBook(page: Page): Promise<void> {
             currentValue: 1,
             purchasePrice: 1,
         }));
-        localStorage.setItem('cardx_inventory', JSON.stringify([
+        const inventory = JSON.stringify([
             card({ id: 'trout-raw', currentValue: 80 }),
             card({
                 id: 'trout-slab',
@@ -56,8 +56,8 @@ async function seedBook(page: Page): Promise<void> {
                 grade: '10',
             }),
             ...fillers,
-        ]));
-        localStorage.setItem('cardx_targets', JSON.stringify([
+        ]);
+        const targets = JSON.stringify([
             {
                 id: 'tatum-gap',
                 player: 'Jayson Tatum',
@@ -82,8 +82,12 @@ async function seedBook(page: Page): Promise<void> {
                 status: 'active',
                 createdAt: '2026-01-01T00:00:00.000Z',
             },
-        ]));
+        ]);
+        localStorage.setItem('cardx_inventory', inventory);
+        localStorage.setItem('cardx_targets', targets);
+        return { cardx_inventory: inventory, cardx_targets: targets };
     });
+    await restoreLocalKeysOnNextLoad(page, seeded);
 }
 
 test.describe('Show alerts and shopping list', () => {
