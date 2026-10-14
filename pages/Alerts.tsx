@@ -1,5 +1,5 @@
 
-import React, { useMemo } from 'react';
+import React, { Suspense, lazy, useMemo } from 'react';
 import {
   Bell,
   Zap,
@@ -17,6 +17,8 @@ import {
 import { useAlerts } from '../lib/utils/useAlerts.ts';
 import { AlertType } from '../types.ts';
 import AlertDeliverySettings from '../components/AlertDeliverySettings';
+
+const CollectorAlertDigest = lazy(() => import('../components/CollectorAlertDigest'));
 
 const Alerts: React.FC = () => {
   const {
@@ -105,6 +107,10 @@ const Alerts: React.FC = () => {
           )}
         </div>
       </div>
+
+      <Suspense fallback={null}>
+        <CollectorAlertDigest />
+      </Suspense>
 
       {/* Stats Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

@@ -49,6 +49,17 @@ Sports Card Investor and Market Movers still lead on live tape. On the seeded ca
 
 Copy does not claim a live Market Movers or Sports Card Investor show calendar.
 
+## Watchlist and show alert digest — this change
+
+`/alerts` joins two local signals into one in-app list: watchlist marks at least 5% under the collector target, and seeded shows inside the home radius already saved for show alerts.
+
+| Slice              | Where                                                                      | Honest limit                                                        |
+| ------------------ | -------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| **Price drops**    | `/alerts`. Active watchlist rows.                                          | Local or demo tape. Not a live print.                               |
+| **Show proximity** | Same digest. Home, radius, and lead time from show alerts on this browser. | Seeded calendar. Server Web Push still needs owner-held VAPID keys. |
+
+Copy does not claim a live Market Movers or Sports Card Investor tape.
+
 ## Sell and trade-in planner — shipped (#172 / #173)
 
 The book desk can now name what to sell or trade in. It reads the portfolio insights above (duplicate extras, cost-basis losers, unrealized P/L) and the saved tax-lot method. Marks stay demo or stale until eBay is on.
@@ -76,7 +87,7 @@ Show alerts and the shopping list are the section above. The mobile pass does no
 
 ## Eng-safe audit — 2026-10-13
 
-`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `175d354`. The sell planner and the mobile pass above shipped in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) / [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173). Show alerts and the shopping list are the open wave on this branch. Everything still open besides that wave is the #77 list below. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git.
+`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `175d354`. The sell planner and the mobile pass above shipped in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) / [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173). Show alerts and the shopping list shipped in [#171](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/171). `/alerts` now digests watchlist price drops and nearby seeded shows. Everything still open besides that digest is the #77 list below. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git.
 
 ## Owner-held checklist — [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (open)
 
