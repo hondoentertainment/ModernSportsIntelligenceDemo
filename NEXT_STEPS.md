@@ -60,7 +60,7 @@ Copy does not claim a live Market Movers or Sports Card Investor show calendar.
 
 Copy does not claim a live Market Movers or Sports Card Investor tape.
 
-## Shopping-list buys into the book — this change
+## Shopping-list buys into the book — shipped (#176)
 
 A shopping-list buy can be filed from the list or from the post-show recap. The price typed at the show is purchase price and tax basis. The local mark, when one exists, is stored as the current value.
 
@@ -70,6 +70,17 @@ A shopping-list buy can be filed from the list or from the post-show recap. The 
 | **Cost basis**               | Same draft. `purchasePrice` and `taxBasis` are the paid price.           | A card with no typed price stays off the book.              |
 
 Copy does not claim a live Market Movers or Sports Card Investor fill.
+
+## Set completion from the book — this change
+
+Collection and `/set-completion` score demo checklists the book has already started. A pinned goal remembers the target on this browser.
+
+| Slice                | Where                                                                               | Honest limit                                                          |
+| -------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| **Started-set gaps** | Collection and `/set-completion`. Owned card numbers versus a short demo checklist. | Not a Beckett registry. Sets with no matching card stay off the desk. |
+| **Completion goal**  | Same desk. Track to 100% and the percent still left.                                | A local pin. Not a live buy list.                                     |
+
+Copy does not claim a live Market Movers or Sports Card Investor checklist.
 
 ## Sell and trade-in planner — shipped (#172 / #173)
 
@@ -98,7 +109,7 @@ Show alerts and the shopping list are the section above. The mobile pass does no
 
 ## Eng-safe audit — 2026-10-13
 
-`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `fb16a8a`. The sell planner and the mobile pass above shipped in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) / [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173). Show alerts and the shopping list shipped in [#171](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/171). The watchlist and show alert digest shipped in [#175](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/175). Shopping-list buys now file into the collection with the paid price as cost basis. Everything still open besides that ingest is the #77 list below. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git.
+`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `ee57364`. The sell planner and the mobile pass above shipped in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) / [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173). Show alerts and the shopping list shipped in [#171](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/171). The watchlist and show alert digest shipped in [#175](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/175). Shopping-list buys file into the collection with the paid price as cost basis in [#176](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/176). Collection now tracks demo-checklist gaps for sets the book has started. Everything still open besides that tracker is the #77 list below. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git.
 
 ## Owner-held checklist — [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (open)
 
