@@ -98,4 +98,35 @@ test.describe('Show alerts and shopping list', () => {
         await expect(page.getByRole('region', { name: 'Show alerts' }).getByText('Read', { exact: true })).toBeVisible({ timeout: 20_000 });
         await expect(page.getByRole('region', { name: /shopping list for nyc monthly card meetup/i }).getByText('Jayson Tatum')).toBeVisible();
     });
+
+    test('files a shopping-list buy into the collection with the paid price as cost basis', async ({ page }) => {
+        test.setTimeout(120_000);
+        await enterDemoMode(page);
+        await seedBook(page);
+        await page.reload();
+        await page.goto('/#/local-card-shows');
+        const shopping = page.getByRole('region', { name: /shopping list for nyc monthly card meetup/i });
+        await expect(shopping.getByText('Jayson Tatum')).toBeVisible({ timeout: 20_000 });
+        await shopping.getByLabel('Paid price for Jayson Tatum').fill('150');
+        await shopping.getByRole('button', { name: 'Add Jayson Tatum to collection' }).click();
+        await expect(shopping.getByText(/Jayson Tatum in the collection · cost basis \$150\.00/i)).toBeVisible();
+
+        const show = page.getByRole('listitem').filter({ has: shopping });
+        await show.getByRole('button', { name: /plan trip, floor, and recap/i }).click();
+        await show.getByRole('tab', { name: 'Recap' }).click();
+        const recap = show.getByRole('region', { name: /shopping list recap for nyc monthly card meetup/i });
+        await expect(recap.getByText(/Jayson Tatum in the collection · cost basis \$150\.00/i)).toBeVisible();
+        await expect(recap.getByText(/not a marketplace fill/i)).toBeVisible();
+
+        await expect.poll(async () => page.evaluate(() => {
+            const rows = JSON.parse(localStorage.getItem('cardx_inventory') || '[]') as Array<{ player?: string; purchasePrice?: number; taxBasis?: number }>;
+            const filed = rows.find((row) => row.player === 'Jayson Tatum');
+            return filed ? `${filed.purchasePrice}:${filed.taxBasis}` : '';
+        })).toBe('150:150');
+
+        await page.goto('/#/collection');
+        await expect(page.getByRole('heading', { name: /asset repository/i })).toBeVisible({ timeout: 20_000 });
+        await page.getByPlaceholder(/query collection/i).fill('Jayson Tatum');
+        await expect(page.getByText('Jayson Tatum').first()).toBeVisible();
+    });
 });
