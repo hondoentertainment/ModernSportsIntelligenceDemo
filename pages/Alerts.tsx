@@ -19,6 +19,7 @@ import { AlertType } from '../types.ts';
 import AlertDeliverySettings from '../components/AlertDeliverySettings';
 
 const CollectorAlertDigest = lazy(() => import('../components/CollectorAlertDigest'));
+const WantSharePanel = lazy(() => import('../components/WantSharePanel'));
 
 const Alerts: React.FC = () => {
   const {
@@ -110,6 +111,7 @@ const Alerts: React.FC = () => {
 
       <Suspense fallback={null}>
         <CollectorAlertDigest />
+        <WantSharePanel />
       </Suspense>
 
       {/* Stats Bar */}

@@ -29,6 +29,7 @@ import {
 } from '../lib/shows/showTripLoop';
 
 const ShoppingRecapIngest = lazy(() => import('./showDeskPanels').then((mod) => ({ default: mod.ShoppingRecapIngest })));
+const ShowHagglePanel = lazy(() => import('./ShowHagglePanel'));
 
 interface Props {
   showId: string;
@@ -46,7 +47,7 @@ interface Props {
   onRecordSale: (cardId: string, patch: Partial<CardInventory>) => Promise<void> | void;
 }
 
-type TabId = 'budget' | 'floor' | 'recap';
+type TabId = 'budget' | 'floor' | 'recap' | 'notes';
 
 function versusCopy(value: VersusMark): string {
   if (value === 'under') return 'under the local mark';
@@ -179,6 +180,7 @@ const ShowTripLoopPanel: React.FC<Props> = ({
     { id: 'budget', label: 'Trip budget' },
     { id: 'floor', label: `Floor calls${decisions.length ? ` (${decisions.length})` : ''}` },
     { id: 'recap', label: 'Recap' },
+    { id: 'notes', label: 'Table notes' },
   ];
 
   return (
@@ -431,6 +433,11 @@ const ShowTripLoopPanel: React.FC<Props> = ({
             </Suspense>
           )}
         </div>
+      )}
+      {tab === 'notes' && (
+        <Suspense fallback={null}>
+          <ShowHagglePanel showId={showId} showName={showName} />
+        </Suspense>
       )}
     </section>
   );

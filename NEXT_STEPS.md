@@ -1,6 +1,6 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed **2026-10-13**. Production on `main` is healthy. Canonical owner checklist: [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (body refreshed 2026-09-27). Forward narrative: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). Launch ops: [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md).
+> Refreshed **2026-10-14**. Production on `main` is healthy. Canonical owner checklist: [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (body refreshed 2026-09-27). Forward narrative: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). Launch ops: [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md).
 
 ## Current state
 
@@ -82,6 +82,59 @@ Collection and `/set-completion` score demo checklists the book has already star
 
 Copy does not claim a live Market Movers or Sports Card Investor checklist.
 
+## Show table notes — this change
+
+A seeded show trip can keep the dealer, table, ask, offer, and a short note. The log stays on this browser with that show.
+
+| Slice             | Where                                                          | Honest limit                                |
+| ----------------- | -------------------------------------------------------------- | ------------------------------------------- |
+| **Table notes**   | `/local-card-shows`, on the trip’s Table notes tab.            | Typed by the collector. Not a dealer quote. |
+| **Haggle result** | Same tab. Open, bought, or passed, with the ask and the offer. | Not a settlement and not a live tape.       |
+
+Copy does not claim a live Market Movers or Sports Card Investor show floor.
+
+## Grading submit decision — this change
+
+Collection names a demo PSA or BGS lane for the raw cards with the highest local mark, or tells you to hold.
+
+| Slice                 | Where                                                                    | Honest limit                                                       |
+| --------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| **PSA and BGS lanes** | Collection. Economy, regular, and BGS standard.                          | Disclosed demo fees, days, and population. Not a submission quote. |
+| **Submit or hold**    | Same desk. Highest demo net, faster turnaround on a tie, hold under $15. | Live PSA stays owner-held.                                         |
+
+Copy does not claim a live PSA or BGS price.
+
+## Portfolio performance — this change
+
+Collection draws a six-month demo path from cost to the local mark for cards still held.
+
+| Slice         | Where                   | Honest limit                                              |
+| ------------- | ----------------------- | --------------------------------------------------------- |
+| **Demo path** | Collection. Lazy chart. | Not a live price history and not a `price_history` table. |
+
+Copy does not claim a live Market Movers or Sports Card Investor portfolio chart.
+
+## Collection CSV — this change
+
+Export the book and import that file back. Matching ids update. New rows append. Cards missing from the file stay.
+
+| Slice          | Where       | Honest limit                                   |
+| -------------- | ----------- | ---------------------------------------------- |
+| **Round-trip** | Collection. | This browser’s book. Not a marketplace import. |
+
+Copy does not claim a live Market Movers or Sports Card Investor import.
+
+## Want-list share — this change
+
+`/alerts` builds a read-only link from active targets. The list is in the URL. Opening it does not write the book.
+
+| Slice              | Where                    | Honest limit                                |
+| ------------------ | ------------------------ | ------------------------------------------- |
+| **Share link**     | `/alerts`.               | Local demo. No server copy.                 |
+| **Read-only view** | Same page with `?want=`. | Not a live list and not an editable target. |
+
+Copy does not claim a live Market Movers or Sports Card Investor want list.
+
 ## Sell and trade-in planner — shipped (#172 / #173)
 
 The book desk can now name what to sell or trade in. It reads the portfolio insights above (duplicate extras, cost-basis losers, unrealized P/L) and the saved tax-lot method. Marks stay demo or stale until eBay is on.
@@ -106,6 +159,10 @@ Touch targets and stacking on the desks a collector actually opens on a phone. N
 | **Dashboard show rail**       | Show-desk link is a 44px target.                                                                                                                                |
 
 Show alerts and the shopping list are the section above. The mobile pass does not edit `lib/shows/showBuyingDesk.ts`.
+
+## Eng-safe audit — 2026-10-14
+
+`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `2aedeb8` (#177 set completion is on main, with #171 show alerts, #172 / #173 sell planner, #175 alert digest, and #176 shopping-list cost basis). Table notes, the grading submit decision, the portfolio chart, collection CSV, and the want-list link were still open and land in this change. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git. Gzip cap stays 3,055,000.
 
 ## Eng-safe audit — 2026-10-13
 
