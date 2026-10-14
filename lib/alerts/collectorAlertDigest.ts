@@ -1,0 +1,108 @@
+/**
+ * In-app digest of watchlist marks under target and seeded shows inside
+ * the saved home radius. Demo tape only. Does not send Web Push.
+ */
+import type { TargetWatchlist } from '../../types';
+import {
+  getShowAlertPrefs,
+  showsInAlertWindow,
+  type ShowAlertPrefs,
+} from '../shows/showAlerts';
+import {
+  listResolvedLocalCardShows,
+  type ResolvedLocalCardShow,
+} from '../shows/localCardShowCatalog';
+
+export const ALERT_DIGEST_DISCLOSURE =
+  'Local marks and the seeded show calendar. Not a live tape. Not live Market Movers or Sports Card Investor parity. Server Web Push still needs owner-held VAPID keys.';
+
+export const MIN_PRICE_DROP = 0.05;
+
+export interface DigestRow {
+  id: string;
+  title: string;
+  detail: string;
+  href: string;
+}
+
+export interface CollectorAlertDigest {
+  drops: DigestRow[];
+  shows: DigestRow[];
+  showAlertsArmed: boolean;
+  disclosure: string;
+}
+
+function money(value: number): string {
+  return `$${Math.round(value).toLocaleString('en-US')}`;
+}
+
+function pctLabel(drop: number): string {
+  const pct = Math.round(drop * 1000) / 10;
+  return Number.isInteger(pct) ? `${pct}%` : `${pct.toFixed(1)}%`;
+}
+
+export function readDigestTargets(raw: unknown): TargetWatchlist[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((row): row is TargetWatchlist => {
+    if (!row || typeof row !== 'object') return false;
+    const target = row as TargetWatchlist;
+    return typeof target.id === 'string'
+      && typeof target.player === 'string'
+      && typeof target.targetPrice === 'number'
+      && (target.status === 'active' || target.status === 'acquired' || target.status === 'expired');
+  });
+}
+
+export function priceDropRows(targets: readonly TargetWatchlist[], minDrop = MIN_PRICE_DROP): DigestRow[] {
+  const rows: Array<DigestRow & { drop: number }> = [];
+  for (const target of targets) {
+    if (target.status !== 'active') continue;
+    const market = target.currentMarketPrice;
+    const ceiling = target.targetPrice;
+    if (typeof market !== 'number' || !Number.isFinite(market) || market <= 0) continue;
+    if (!Number.isFinite(ceiling) || ceiling <= 0 || market >= ceiling) continue;
+    const drop = (ceiling - market) / ceiling;
+    if (drop + 1e-9 < minDrop) continue;
+    const player = target.player.trim() || 'Watchlist card';
+    rows.push({
+      id: `drop:${target.id}`,
+      title: `${player} under target`,
+      detail: `Local mark ${money(market)} is ${pctLabel(drop)} under your ${money(ceiling)} target. ${target.cardDescription?.trim() || 'Watchlist row'}.`,
+      href: '/collection',
+      drop,
+    });
+  }
+  rows.sort((a, b) => b.drop - a.drop || a.title.localeCompare(b.title));
+  return rows.map((row) => ({ id: row.id, title: row.title, detail: row.detail, href: row.href }));
+}
+
+export function showProximityRows(shows: readonly ResolvedLocalCardShow[], prefs: ShowAlertPrefs): DigestRow[] {
+  return showsInAlertWindow(shows, prefs).map((hit) => ({
+    id: `show:${hit.show.id}:${hit.show.startDate}`,
+    title: hit.show.name,
+    detail: `${hit.distanceMiles.toFixed(1)} mi · ${hit.show.city}, ${hit.show.state} · ${hit.show.daysUntilStart === 0 ? 'Open now' : `In ${hit.show.daysUntilStart} days`}.`,
+    href: '/local-card-shows',
+  }));
+}
+
+export function buildCollectorAlertDigest(input: {
+  targets: readonly TargetWatchlist[];
+  shows: readonly ResolvedLocalCardShow[];
+  prefs: ShowAlertPrefs;
+}): CollectorAlertDigest {
+  const armed = input.prefs.enabled && input.prefs.home != null;
+  return {
+    drops: priceDropRows(input.targets),
+    shows: armed ? showProximityRows(input.shows, input.prefs) : [],
+    showAlertsArmed: armed,
+    disclosure: ALERT_DIGEST_DISCLOSURE,
+  };
+}
+
+export function loadCollectorAlertDigest(targetsRaw: unknown, now = new Date()): CollectorAlertDigest {
+  return buildCollectorAlertDigest({
+    targets: readDigestTargets(targetsRaw),
+    shows: listResolvedLocalCardShows(now),
+    prefs: getShowAlertPrefs(),
+  });
+}
