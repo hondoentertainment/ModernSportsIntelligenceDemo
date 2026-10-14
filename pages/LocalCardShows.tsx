@@ -286,6 +286,7 @@ const LocalCardShows: React.FC = () => {
                   targets={targets}
                   liveTape={liveTape}
                   disclose={index === 0}
+                  onFileBuy={addCard}
                 />
               </Suspense>
               <p className="mt-3 text-[11px] text-slate-400">
@@ -309,6 +310,8 @@ const LocalCardShows: React.FC = () => {
                   opportunities={row.opportunities}
                   inventory={inventory}
                   targets={targets}
+                  show={row.show}
+                  liveTape={liveTape}
                   fallbackSport={fallbackSport}
                   onFileBuy={addCard}
                   onRecordSale={updateCard}
