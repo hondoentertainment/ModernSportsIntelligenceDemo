@@ -49,6 +49,17 @@ Sports Card Investor and Market Movers still lead on live tape. On the seeded ca
 
 Copy does not claim a live Market Movers or Sports Card Investor show calendar.
 
+## Set completion from the book — this change
+
+Collection and `/set-completion` score demo checklists the book has already started. A pinned goal remembers the target on this browser.
+
+| Slice                | Where                                                                               | Honest limit                                                          |
+| -------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| **Started-set gaps** | Collection and `/set-completion`. Owned card numbers versus a short demo checklist. | Not a Beckett registry. Sets with no matching card stay off the desk. |
+| **Completion goal**  | Same desk. Track to 100% and the percent still left.                                | A local pin. Not a live buy list.                                     |
+
+Copy does not claim a live Market Movers or Sports Card Investor checklist.
+
 ## Sell and trade-in planner — shipped (#172 / #173)
 
 The book desk can now name what to sell or trade in. It reads the portfolio insights above (duplicate extras, cost-basis losers, unrealized P/L) and the saved tax-lot method. Marks stay demo or stale until eBay is on.
@@ -76,7 +87,7 @@ Show alerts and the shopping list are the section above. The mobile pass does no
 
 ## Eng-safe audit — 2026-10-13
 
-`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `175d354`. The sell planner and the mobile pass above shipped in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) / [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173). Show alerts and the shopping list are the open wave on this branch. Everything still open besides that wave is the #77 list below. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git.
+`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `175d354`. The sell planner and the mobile pass above shipped in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) / [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173). Show alerts and the shopping list shipped in [#171](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/171). Collection now tracks demo-checklist gaps for sets the book has started. Everything still open besides that tracker is the #77 list below. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git.
 
 ## Owner-held checklist — [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (open)
 

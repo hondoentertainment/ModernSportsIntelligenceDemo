@@ -81,6 +81,7 @@ const PortfolioMoversRail = lazy(() => import('../components/PortfolioMoversRail
 const DealFinderLiteRail = lazy(() => import('../components/DealFinderLiteRail'));
 const MarketPulseRail = lazy(() => import('../components/MarketPulseRail'));
 const AdjacentHobbyMarketsRail = lazy(() => import('../components/AdjacentHobbyMarketsRail'));
+const PortfolioSetGapPanel = lazy(() => import('../components/PortfolioSetGapPanel'));
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -614,6 +615,7 @@ const Collection: React.FC = () => {
           <LazyErrorBoundary compact>
             <Suspense fallback={<WidgetLoadingFallback />}>
               <PortfolioInsightsPanel inventory={inventory} />
+              <PortfolioSetGapPanel inventory={inventory} />
               <SellTradePlannerPanel inventory={inventory} />
               <SeasonalWindowRail inventory={inventory} />
               <PortfolioConcentrationRail inventory={inventory} />

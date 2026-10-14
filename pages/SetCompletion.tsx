@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { Suspense, lazy, useState, useMemo } from 'react';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
 import {
   CheckCircle,
   Search,
@@ -51,6 +52,16 @@ const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
 ];
 
 const PIE_COLORS = ['#9ca3af', '#60a5fa', '#a78bfa', '#facc15'];
+const PortfolioSetGapPanel = lazy(() => import('../components/PortfolioSetGapPanel'));
+
+function BookSetGaps() {
+  const { inventory } = useSupabaseInventory();
+  return (
+    <Suspense fallback={null}>
+      <PortfolioSetGapPanel inventory={inventory} note="Advisor tabs on this page stay a separate demo." />
+    </Suspense>
+  );
+}
 
 function CircularProgress({ percent }: { percent: number }) {
   const radius = 36;
@@ -419,6 +430,7 @@ export default function SetCompletion() {
           </h1>
           <p className="text-slate-400 mt-1">Track your card set progress, find missing cards, and discover the cheapest sources.</p>
         </div>
+        <BookSetGaps />
 
         {/* Tabs */}
         <div className="flex gap-1 bg-slate-800 rounded-xl p-1 mb-6 w-fit">
