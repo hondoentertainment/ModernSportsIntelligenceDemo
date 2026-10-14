@@ -129,6 +129,46 @@ test.describe('Collector desk tools', () => {
       const rows = JSON.parse(localStorage.getItem('cardx_inventory') || '[]') as Array<{ id?: string; currentValue?: number }>;
       return rows.find((row) => row.id === 'judge')?.currentValue ?? 0;
     })).toBe(99);
+
+    const desk = page.getByRole('region', { name: 'Weekly collection recap' });
+    await expect(desk).toContainText(/buys/i);
+    await expect(desk).toContainText(/sells/i);
+    const comps = page.getByRole('region', { name: 'Comps snapshot' });
+    await comps.getByLabel('Comps snapshot card').selectOption('judge');
+    await expect(comps.getByRole('img', { name: 'Demo sales sparkline' })).toBeVisible();
+    await expect(comps).toContainText(/median/i);
+    const trade = page.getByRole('region', { name: 'Trade value balancer' });
+    await trade.getByLabel('Trade card').selectOption('pad-0');
+    await trade.getByRole('button', { name: 'Add to give' }).click();
+    await trade.getByLabel('Trade card').selectOption('judge');
+    await trade.getByRole('button', { name: 'Add to receive' }).click();
+    await expect(trade.getByLabel('Trade call')).toContainText('you ahead');
+    const place = page.getByRole('region', { name: 'Card location' });
+    await place.getByLabel('Location card').selectOption('judge');
+    await place.getByLabel('Location place').selectOption('slab');
+    await place.getByRole('button', { name: 'Save location' }).click();
+    await place.getByRole('button', { name: 'slab' }).click();
+    await expect(place).toContainText('Aaron Judge · slab');
+
+    await page.evaluate(() => localStorage.setItem('cardx_inventory', '[]'));
+    await page.reload();
+    await expect(page.getByLabel('Import collection CSV')).toBeAttached();
+  });
+
+  test('checks off a show-day line and keeps the budget on this browser', async ({ page }) => {
+    test.setTimeout(120_000);
+    await enterDemoMode(page);
+    await seedBook(page);
+    await page.reload();
+    await page.goto('/#/local-card-shows');
+    const line = page.getByRole('checkbox', { name: 'buy Jayson Tatum' }).first();
+    await expect(line).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText(/budget left/i).first()).toBeVisible();
+    await expect(page.getByText(/offline checklist/i).first()).toBeVisible();
+    await line.check();
+    await expect(line).toBeChecked();
+    await page.reload();
+    await expect(page.getByRole('checkbox', { name: 'buy Jayson Tatum' }).first()).toBeChecked();
   });
 
   test('opens a read-only want-list link with no server copy', async ({ page }) => {

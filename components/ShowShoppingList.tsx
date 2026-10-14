@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { Suspense, lazy, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import type { CardInventory, TargetWatchlist } from '../types';
 import type { ResolvedLocalCardShow } from '../lib/shows/localCardShowCatalog';
@@ -11,12 +11,15 @@ import {
 import { SHOPPING_INGEST_DISCLOSURE } from '../lib/shows/showShoppingIngest';
 import { ShoppingBuyFiles } from './ShoppingBuyFile';
 
+const ShowDayPanel = lazy(() => import('./DeskNext').then((mod) => ({ default: mod.ShowDayPanel })));
+
 interface Props {
   show: ResolvedLocalCardShow;
   inventory: CardInventory[];
   targets: TargetWatchlist[];
   liveTape: boolean;
   disclose?: boolean;
+  cashUsd?: number | null;
   onFileBuy?: (card: CardInventory) => Promise<void> | void;
 }
 
@@ -45,7 +48,7 @@ function Lines({ lines }: { lines: ShopLine[] }) {
   );
 }
 
-const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape, disclose = false, onFileBuy }) => {
+const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape, disclose = false, cashUsd = null, onFileBuy }) => {
   const list = useMemo(
     () => buildShowShoppingList({ show, inventory, targets, liveTape }),
     [show, inventory, targets, liveTape],
@@ -75,6 +78,18 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
           {list.sells.length === 0 ? <p className="text-xs text-slate-500">No extras.</p> : <Lines lines={list.sells} />}
         </>
       )}
+      <Suspense fallback={null}>
+        <ShowDayPanel
+          showId={show.id}
+          cashUsd={cashUsd}
+          lines={[...list.buys, ...list.sells].map((line) => ({
+            id: line.id,
+            side: line.side,
+            player: line.player,
+            usd: line.targetBuyUsd,
+          }))}
+        />
+      </Suspense>
     </section>
   );
 };

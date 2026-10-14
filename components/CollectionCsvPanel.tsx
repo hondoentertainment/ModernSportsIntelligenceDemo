@@ -4,7 +4,7 @@ import { CSV_DISCLOSURE, applyCollectionCsv, exportCollectionCsv } from '../lib/
 
 interface Props {
   inventory: CardInventory[];
-  onApply: (cards: CardInventory[]) => void;
+  onApply?: (cards: CardInventory[]) => void;
 }
 
 const CollectionCsvPanel: React.FC<Props> = ({ inventory, onApply }) => {
@@ -34,8 +34,9 @@ const CollectionCsvPanel: React.FC<Props> = ({ inventory, onApply }) => {
       setError(result.error);
       return;
     }
-    onApply(result.inventory);
-    setMessage(`Applied ${result.applied} rows (${result.added} new, ${result.updated} updated).`);
+    onApply?.(result.inventory);
+    const skipped = result.skipped ? `, ${result.skipped} skipped` : '';
+    setMessage(`Applied ${result.applied} rows (${result.added} new, ${result.updated} updated${skipped}).`);
   };
 
   return (
@@ -46,20 +47,24 @@ const CollectionCsvPanel: React.FC<Props> = ({ inventory, onApply }) => {
         <button type="button" onClick={download} className="min-h-[44px] rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100">
           Export collection CSV
         </button>
-        <label className="inline-flex min-h-[44px] cursor-pointer items-center rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100">
-          Import collection CSV
-          <input
-            type="file"
-            accept=".csv,text/csv"
-            aria-label="Import collection CSV"
-            className="sr-only"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              event.target.value = '';
-              void onFile(file);
-            }}
-          />
-        </label>
+        {onApply ? (
+          <label className="inline-flex min-h-[44px] cursor-pointer items-center rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100">
+            Import collection CSV
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              aria-label="Import collection CSV"
+              className="sr-only"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = '';
+                void onFile(file);
+              }}
+            />
+          </label>
+        ) : (
+          <p className="text-xs text-slate-500">Import stays on the demo book in this browser.</p>
+        )}
       </div>
       {message && <p className="mt-2 text-xs text-emerald-300" role="status">{message}</p>}
       {error && <p className="mt-2 text-xs text-rose-300" role="alert">{error}</p>}

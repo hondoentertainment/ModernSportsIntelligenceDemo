@@ -85,6 +85,7 @@ const PortfolioSetGapPanel = lazy(() => import('../components/PortfolioSetGapPan
 const PortfolioSeriesChart = lazy(() => import('../components/PortfolioSeriesChart'));
 const GradingSubmitPanel = lazy(() => import('../components/GradingSubmitPanel'));
 const CollectionCsvPanel = lazy(() => import('../components/CollectionCsvPanel'));
+const DeskNext = lazy(() => import('../components/DeskNext'));
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -161,6 +162,7 @@ const Collection: React.FC = () => {
   const [consignmentCard, setConsignmentCard] = useState<CardInventory | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const { user, isDemoMode } = useAuth();
+  const localBook = isDemoMode || !user || user.id === 'demo-user';
   const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
@@ -613,6 +615,12 @@ const Collection: React.FC = () => {
         ))}
       </section>
 
+      <LazyErrorBoundary compact>
+        <Suspense fallback={null}>
+          <CollectionCsvPanel inventory={inventory} onApply={localBook ? setInventory : undefined} />
+        </Suspense>
+      </LazyErrorBoundary>
+
       {inventory.length > 0 && (
         <div className="space-y-4">
           <LazyErrorBoundary compact>
@@ -621,7 +629,7 @@ const Collection: React.FC = () => {
               <PortfolioSetGapPanel inventory={inventory} />
               <PortfolioSeriesChart inventory={inventory} />
               <GradingSubmitPanel inventory={inventory} />
-              <CollectionCsvPanel inventory={inventory} onApply={setInventory} />
+              <DeskNext inventory={inventory} />
               <SellTradePlannerPanel inventory={inventory} />
               <SeasonalWindowRail inventory={inventory} />
               <PortfolioConcentrationRail inventory={inventory} />

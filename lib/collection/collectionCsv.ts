@@ -143,9 +143,7 @@ export function applyCollectionCsv(existing: CardInventory[], text: string): Csv
   let added = 0;
   let updated = 0;
   let skipped = 0;
-  const body = rows.slice(1, 201);
-  skipped += Math.max(0, rows.length - 1 - body.length);
-  for (const raw of body) {
+  for (const raw of rows.slice(1)) {
     const cell = (name: string) => unescapeCell((raw[index[name]] ?? '').trim());
     const player = cell('player').slice(0, 80);
     const year = Number(cell('year'));

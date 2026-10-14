@@ -131,7 +131,7 @@ Already known; do not invent Labs pages.
 
 ## 6. Eng-safe depth — 2026-10-14
 
-Checked against `main` @ `2aedeb8` (#177). Still owner-held: #77. Shipped in this pass, demo tape only: show table notes, grading submit decision (demo PSA/BGS fees, turnaround, pop), portfolio performance chart, collection CSV round-trip, and a read-only want-list link. No live flags, no applied migration, gzip cap unchanged.
+Checked against `main` @ `2e1a09a` (#178). Still owner-held: #77. Shipped in this pass, demo tape only: show-day checklist, comps snapshot, trade-value balancer, card location, and weekly collection recap. #178 review notes fixed: empty-book CSV import, no silent 200-row cut, demo-only import, want-list refresh, and a real $0 mark. No live flags, no applied migration, gzip cap unchanged.
 
 ## 7. Doc map
 

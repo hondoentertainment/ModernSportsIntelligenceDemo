@@ -87,7 +87,7 @@ export function decideGradingSubmit(rawUsd: number): GradeDecision | null {
 export function listGradeSubmits(cards: CardInventory[], limit = 3): GradeRow[] {
   return cards
     .filter((card) => card.status !== 'sold' && !card.isGraded)
-    .map((card) => ({ card, rawUsd: card.currentValue || card.purchasePrice || 0 }))
+    .map((card) => ({ card, rawUsd: card.currentValue ?? card.purchasePrice ?? 0 }))
     .filter((row) => row.rawUsd > 0)
     .sort((a, b) => b.rawUsd - a.rawUsd)
     .slice(0, limit)

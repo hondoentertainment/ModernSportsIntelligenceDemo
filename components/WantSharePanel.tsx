@@ -1,18 +1,19 @@
 import React, { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import type { TargetWatchlist } from '../types';
 import {
   WANT_SHARE_DISCLOSURE,
   decodeWantShare,
   encodeWantShare,
-  readActiveWants,
+  wantItemsFromTargets,
   wantShareHref,
 } from '../lib/watchlist/wantShare';
 
-const WantSharePanel: React.FC = () => {
+const WantSharePanel: React.FC<{ targets: TargetWatchlist[] }> = ({ targets }) => {
   const [params] = useSearchParams();
   const token = params.get('want') ?? '';
   const shared = useMemo(() => (token ? decodeWantShare(token) : null), [token]);
-  const mine = useMemo(() => readActiveWants(), []);
+  const mine = useMemo(() => wantItemsFromTargets(targets), [targets]);
   const href = mine.length ? wantShareHref(window.location.href, encodeWantShare(mine)) : '';
 
   return (

@@ -14,7 +14,7 @@ import {
   type ShowBagHint,
   type ShowVerdict,
 } from '../lib/shows/showBuyingDesk';
-import { buildTripBudget, formatTripUsd, toTripLine } from '../lib/shows/showTripLoop';
+import { buildTripBudget, formatTripUsd, readCashBudget, toTripLine } from '../lib/shows/showTripLoop';
 import ShowTripLoopPanel from '../components/ShowTripLoopPanel';
 
 const loadShowDesk = () => import('../components/showDeskPanels');
@@ -286,6 +286,7 @@ const LocalCardShows: React.FC = () => {
                   targets={targets}
                   liveTape={liveTape}
                   disclose={index === 0}
+                  cashUsd={readCashBudget(row.show.id) ?? tripNeed}
                   onFileBuy={addCard}
                 />
               </Suspense>
