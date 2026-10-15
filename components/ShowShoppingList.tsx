@@ -8,6 +8,8 @@ import {
   shopLineLabel,
   type ShopLine,
 } from '../lib/shows/showShoppingList';
+import { readPlaces, type Place } from '../lib/collector/deskNext';
+import { pullCopy } from '../lib/collector/floorPack';
 import { SHOPPING_INGEST_DISCLOSURE } from '../lib/shows/showShoppingIngest';
 import { ShoppingBuyFiles } from './ShoppingBuyFile';
 
@@ -27,7 +29,7 @@ function usd(value: number | null): string {
   return value == null ? 'no price' : `$${Math.round(value).toLocaleString('en-US')}`;
 }
 
-function Lines({ lines }: { lines: ShopLine[] }) {
+function Lines({ lines, places }: { lines: ShopLine[]; places: Record<string, Place> }) {
   return (
     <ul className="space-y-2">
       {lines.map((line) => (
@@ -39,6 +41,7 @@ function Lines({ lines }: { lines: ShopLine[] }) {
             {line.marketMarkUsd != null ? ` · mark ${usd(line.marketMarkUsd)}` : ''}
             {line.collectorCeilingUsd != null ? ` · ceiling ${usd(line.collectorCeilingUsd)}` : ''}
           </p>
+          {line.side === 'sell' && line.cardId ? <p className="text-xs text-slate-300">{pullCopy(places[line.cardId])}</p> : null}
           <p className="text-xs text-slate-500">{line.priceSource}. {line.why}</p>
           {line.cardId && <Link className="text-xs text-brand-lime" to={`/compare?card1=${encodeURIComponent(line.cardId)}`}>Comps</Link>}
           <Link className="ml-2 text-xs text-brand-lime" to="/collection">Collection</Link>
@@ -53,6 +56,7 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
     () => buildShowShoppingList({ show, inventory, targets, liveTape }),
     [show, inventory, targets, liveTape],
   );
+  const places = readPlaces();
   return (
     <>
       <section className="mt-3 text-slate-300" aria-label={`Shopping list for ${show.name}`}>
@@ -61,7 +65,7 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
         {list.emptyReason ? <p className="text-sm text-slate-400">{list.emptyReason}</p> : (
           <>
             <h4 className="text-xs text-emerald-200">Buy</h4>
-            {list.buys.length === 0 ? <p className="text-xs text-slate-500">No buys.</p> : <Lines lines={list.buys} />}
+            {list.buys.length === 0 ? <p className="text-xs text-slate-500">No buys.</p> : <Lines lines={list.buys} places={places} />}
             {onFileBuy && list.buys.length > 0 && (
               <>
                 <p className="mt-2 text-[11px] text-slate-500">{SHOPPING_INGEST_DISCLOSURE}</p>
@@ -76,7 +80,7 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
               </>
             )}
             <h4 className="text-xs text-sky-200">Sell or trade</h4>
-            {list.sells.length === 0 ? <p className="text-xs text-slate-500">No extras.</p> : <Lines lines={list.sells} />}
+            {list.sells.length === 0 ? <p className="text-xs text-slate-500">No extras.</p> : <Lines lines={list.sells} places={places} />}
           </>
         )}
       </section>

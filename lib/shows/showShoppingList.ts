@@ -9,13 +9,14 @@ import {
   preferredValuationForCard,
   preferredValuationForTarget,
 } from '../pricing/compConsensus';
+import { gapHunts } from '../collector/floorPack';
 import type { ResolvedLocalCardShow } from './localCardShowCatalog';
 import { TAPE_LABEL_DEMO, TAPE_LABEL_LIVE, isCollectionGap } from './showBuyingDesk';
 
 export const SHOW_SHOPPING_LIST_DISCLOSURE =
-  'Watchlist, gaps, and duplicate extras. Not a dealer inventory and not live Market Movers or Sports Card Investor parity.';
+  'Watchlist, started-set holes, and duplicate extras. Set holes use a short demo checklist, not a Beckett registry. Not a dealer inventory and not live Market Movers or Sports Card Investor parity.';
 
-export type ShopLineKind = 'collection-gap' | 'watchlist' | 'duplicate-sell' | 'duplicate-trade';
+export type ShopLineKind = 'collection-gap' | 'watchlist' | 'set-hole' | 'duplicate-sell' | 'duplicate-trade';
 export type ShopSide = 'buy' | 'sell';
 
 export interface ShopLine {
@@ -198,6 +199,8 @@ export function shopLineLabel(kind: ShopLineKind): string {
       return 'Collection gap';
     case 'watchlist':
       return 'Watchlist';
+    case 'set-hole':
+      return 'Set hole';
     case 'duplicate-trade':
       return 'Trade duplicate';
     default:
@@ -263,6 +266,33 @@ export function buildShowShoppingList(input: {
     return a.player.localeCompare(b.player) || a.detail.localeCompare(b.detail);
   });
 
+  for (const hunt of gapHunts({
+    show: input.show,
+    inventory: input.inventory,
+    claimed: buys.map((row) => ({ player: row.player, detail: row.detail })),
+  })) {
+    const focusNote = hunt.focused ? ' This room highlights that name.' : '';
+    buys.push({
+      id: `${input.show.id}:set:${hunt.setId}:${hunt.number}`,
+      showId: input.show.id,
+      kind: 'set-hole',
+      side: 'buy',
+      player: hunt.player.trim(),
+      detail: `${hunt.setLabel} #${hunt.number}`,
+      sport: hunt.sport,
+      targetBuyUsd: hunt.estimateUsd > 0 ? hunt.estimateUsd : null,
+      marketMarkUsd: null,
+      collectorCeilingUsd: hunt.estimateUsd > 0 ? hunt.estimateUsd : null,
+      priceSource: 'Demo checklist estimate',
+      tapeLabel: label,
+      why: `Demo checklist hole in ${hunt.setLabel}.${focusNote} ${note}`,
+      cardId: null,
+      targetId: null,
+      copies: null,
+      extraCopies: null,
+    });
+  }
+
   const buyPlayers = new Set(buys.map((row) => norm(row.player)));
   const sells: ShopLine[] = [];
   for (const row of duplicateExtras(input.inventory, nowMs)) {
@@ -300,7 +330,7 @@ export function buildShowShoppingList(input: {
   });
 
   const emptyReason = buys.length === 0 && sells.length === 0
-    ? 'No active watchlist rows match this show.'
+    ? 'No active watchlist rows or started-set holes match this show.'
     : null;
 
   return {

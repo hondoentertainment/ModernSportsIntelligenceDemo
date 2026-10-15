@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import type { CardInventory } from '../types';
+import { compsSnapshot } from '../lib/collector/deskNext';
+import { askCallCopy, askVersusMedian } from '../lib/collector/floorPack';
 import {
   HAGGLE_DISCLOSURE,
   addHaggle,
@@ -10,9 +13,36 @@ import {
 interface Props {
   showId: string;
   showName: string;
+  inventory?: CardInventory[];
 }
 
-const ShowHagglePanel: React.FC<Props> = ({ showId, showName }) => {
+function heldCards(inventory: CardInventory[]): CardInventory[] {
+  return inventory.filter((card) => card.status !== 'sold' && card.status !== 'consignment');
+}
+
+function parsedAsk(raw: string): number | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  const value = Number(trimmed);
+  return Number.isFinite(value) && value >= 0 ? value : null;
+}
+
+function savedAskCopy(cards: CardInventory[], cardId: string | undefined, askUsd: number): string | null {
+  if (!cardId) return null;
+  const card = cards.find((item) => item.id === cardId);
+  if (!card) return 'That card is no longer in the book.';
+  return askCopy(card, askUsd);
+}
+
+function askCopy(card: CardInventory, askUsd: number): string {
+  const snap = compsSnapshot(card);
+  const versus = askVersusMedian(askUsd, snap.median);
+  const basis = snap.source === 'comps' ? 'comps' : snap.source === 'demo' ? 'demo' : 'none';
+  return askCallCopy({ call: versus.call, gapPct: versus.gapPct, basis, medianUsd: snap.median });
+}
+
+const ShowHagglePanel: React.FC<Props> = ({ showId, showName, inventory = [] }) => {
+  const cards = heldCards(inventory);
   const [notes, setNotes] = useState(() => readHaggle(showId));
   const [dealer, setDealer] = useState('');
   const [table, setTable] = useState('');
@@ -20,7 +50,11 @@ const ShowHagglePanel: React.FC<Props> = ({ showId, showName }) => {
   const [offer, setOffer] = useState('');
   const [result, setResult] = useState<HaggleResult>('open');
   const [note, setNote] = useState('');
+  const [cardId, setCardId] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const askUsd = parsedAsk(ask);
+  const picked = cards.find((card) => card.id === cardId);
+  const liveAsk = picked && askUsd != null ? askCopy(picked, askUsd) : null;
 
   const save = () => {
     const saved = addHaggle({
@@ -31,6 +65,7 @@ const ShowHagglePanel: React.FC<Props> = ({ showId, showName }) => {
       offerUsd: Number(offer),
       result,
       note,
+      cardId: cardId || undefined,
     });
     setNotes(saved.notes);
     setError(saved.error);
@@ -41,6 +76,7 @@ const ShowHagglePanel: React.FC<Props> = ({ showId, showName }) => {
       setOffer('');
       setNote('');
       setResult('open');
+      setCardId('');
     }
   };
 
@@ -65,6 +101,16 @@ const ShowHagglePanel: React.FC<Props> = ({ showId, showName }) => {
           <input inputMode="decimal" value={offer} onChange={(event) => setOffer(event.target.value)} aria-label={`Offer at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm" />
         </label>
       </div>
+      {cards.length > 0 && (
+        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
+          Card for the ask
+          <select value={cardId} onChange={(event) => setCardId(event.target.value)} aria-label={`Card for the ask at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm">
+            <option value="">No card</option>
+            {cards.map((card) => <option key={card.id} value={card.id}>{card.player}</option>)}
+          </select>
+        </label>
+      )}
+      {liveAsk ? <p className="text-xs text-slate-200" aria-label="Ask versus median">{liveAsk}</p> : null}
       <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
         Result
         <select value={result} onChange={(event) => setResult(event.target.value as HaggleResult)} aria-label={`Result at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm">
@@ -85,22 +131,26 @@ const ShowHagglePanel: React.FC<Props> = ({ showId, showName }) => {
         <p className="text-sm text-slate-400">No table notes for this show yet.</p>
       ) : (
         <ul className="space-y-2">
-          {notes.map((row) => (
-            <li key={row.id} className="rounded-lg border border-slate-800 px-3 py-3" aria-label={`${row.dealer} ${row.table}`}>
-              <p className="text-sm text-white">{row.dealer} · table {row.table}</p>
-              <p className="font-mono text-xs text-slate-300">
-                Ask ${row.askUsd.toFixed(2)} · offer ${row.offerUsd.toFixed(2)} · {row.result}
-              </p>
-              {row.note ? <p className="text-xs text-slate-400">{row.note}</p> : null}
-              <button
-                type="button"
-                onClick={() => setNotes(removeHaggle(showId, row.id))}
-                className="mt-2 min-h-[44px] rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100"
-              >
-                Remove {row.dealer}
-              </button>
-            </li>
-          ))}
+          {notes.map((row) => {
+            const versus = savedAskCopy(cards, row.cardId, row.askUsd);
+            return (
+              <li key={row.id} className="rounded-lg border border-slate-800 px-3 py-3" aria-label={`${row.dealer} ${row.table}`}>
+                <p className="text-sm text-white">{row.dealer} · table {row.table}</p>
+                <p className="font-mono text-xs text-slate-300">
+                  Ask ${row.askUsd.toFixed(2)} · offer ${row.offerUsd.toFixed(2)} · {row.result}
+                </p>
+                {row.note ? <p className="text-xs text-slate-400">{row.note}</p> : null}
+                {versus ? <p className="text-xs text-slate-300">{versus}</p> : null}
+                <button
+                  type="button"
+                  onClick={() => setNotes(removeHaggle(showId, row.id))}
+                  className="mt-2 min-h-[44px] rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100"
+                >
+                  Remove {row.dealer}
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

@@ -7,7 +7,7 @@ import { store } from '../dal/syncStore';
 export const HAGGLE_KEY = 'msi_show_haggle_v1';
 
 export const HAGGLE_DISCLOSURE =
-  'Notes you type for this seeded show. Not a dealer quote and not a live tape.';
+  'Notes you type for this seeded show. An ask compared with a card uses sold comps when that card has them, otherwise a demo sketch. Not a dealer quote and not a live tape.';
 
 export type HaggleResult = 'bought' | 'passed' | 'open';
 
@@ -20,6 +20,8 @@ export interface HaggleNote {
   offerUsd: number;
   result: HaggleResult;
   note: string;
+  savedAt?: string;
+  cardId?: string;
 }
 
 export interface HaggleDraft {
@@ -30,13 +32,42 @@ export interface HaggleDraft {
   offerUsd: number;
   result: HaggleResult;
   note: string;
+  savedAt?: string;
+  cardId?: string;
 }
 
 const RESULTS = new Set<HaggleResult>(['bought', 'passed', 'open']);
 
+function cleanCardId(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const id = value.trim();
+  return /^[A-Za-z0-9:_-]{1,80}$/.test(id) ? id : undefined;
+}
+
+function savedStamp(value: string | undefined): string {
+  const parsed = Date.parse(value ?? '');
+  return Number.isFinite(parsed) ? new Date(parsed).toISOString() : new Date().toISOString();
+}
+
 function readAll(): HaggleNote[] {
   const rows = store.get<HaggleNote[]>(HAGGLE_KEY, []);
   return Array.isArray(rows) ? rows : [];
+}
+
+let haggleCacheKey = '';
+let haggleCache: HaggleNote[] = [];
+
+export function haggleSnapshot(): HaggleNote[] {
+  const rows = readAll();
+  const key = JSON.stringify(rows);
+  if (key === haggleCacheKey) return haggleCache;
+  haggleCacheKey = key;
+  haggleCache = rows;
+  return haggleCache;
+}
+
+export function subscribeHaggle(listener: () => void): () => void {
+  return store.onWrite(listener);
 }
 
 function writeAll(rows: HaggleNote[]): void {
@@ -69,6 +100,8 @@ export function addHaggle(draft: HaggleDraft): { notes: HaggleNote[]; error: str
     offerUsd: Math.round(draft.offerUsd * 100) / 100,
     result: draft.result,
     note,
+    savedAt: savedStamp(draft.savedAt),
+    cardId: cleanCardId(draft.cardId),
   };
   const next = [entry, ...readAll()].slice(0, 80);
   writeAll(next);

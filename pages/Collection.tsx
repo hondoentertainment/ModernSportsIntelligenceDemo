@@ -626,7 +626,11 @@ const Collection: React.FC = () => {
           <LazyErrorBoundary compact>
             <Suspense fallback={<WidgetLoadingFallback />}>
               <PortfolioInsightsPanel inventory={inventory} />
-              <PortfolioSetGapPanel inventory={inventory} />
+              <PortfolioSetGapPanel
+                inventory={inventory}
+                targets={targets}
+                onWatch={(draft) => { void addTarget(draft); }}
+              />
               <PortfolioSeriesChart inventory={inventory} />
               <GradingSubmitPanel inventory={inventory} />
               <DeskNext inventory={inventory} />

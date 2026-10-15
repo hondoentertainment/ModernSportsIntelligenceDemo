@@ -1,12 +1,12 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed **2026-10-14**. Production on `main` is healthy. Canonical owner checklist: [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (body refreshed 2026-09-27). Forward narrative: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). Launch ops: [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md).
+> Refreshed **2026-10-15**. Production on `main` is healthy. Canonical owner checklist: [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (body refreshed 2026-09-27). Forward narrative: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). Launch ops: [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md).
 
 ## Current state
 
 MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger across Dashboard, War Room, and Audit Dossier; holdings catalysts; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; command palette keeps `/scan` on dashboard. **Eng-safe product waves through [#144](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/144)** (`3ca10f4`, Phase B–D scaffolds, plus the [#145](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/145) follow-up) are on `main`. The Phase B pricing-truth UI scaffold ([#141](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/141), `db907e3`) shipped **without** live flags. Waves 2–5 ([#131](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/131)–[#139](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/139)) shipped earlier. Six of seven catalog betas are `live`; only `fractional-vault` remains `beta` for legal sign-off (2026-09 quarterly sweep — no promotions, no new hides).
 
-**Production (2026-10-13):** healthy on `main` @ [`175d354`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/175d354) from [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173) (sell planner follows the saved tax-lot method). The planner landed in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) (`2fe2bc2`). Prior book insights remain [`1b65481`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/1b65481) from [#170](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/170). Prior trip loop remains [`505f6e3`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/505f6e3) from [#169](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/169). Prior desk remains [`8dc031d`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/8dc031d) from [#168](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/168). Prior safe dependency land remains [`742bc5e`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/742bc5e) from [#166](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/166) (Dependency Guardian [#155](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/155)). Toolchain on `main`: Node ≥22.22.2, TypeScript 7 (`@typescript/native` ^7.0.2) side-by-side with the TypeScript 6 API for ESLint, jsdom 30, `tailwindcss` ^4.3.3 ([#161](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/161)), `eslint` ^10.12.0. `@eslint/js` stays on 9.x. Do not add another major migration in an eng-safe PR.
+**Production (2026-10-15):** healthy on `main` @ [`d0bd552`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/d0bd552) from [#181](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/181) (gzip cap 3,350,000 bytes). [#180](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/180) dropped the Gemini web SDK from the client bundle. Collector desks already on `main`: [#179](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/179) show day, comps snapshot, trade balance, card location, and weekly recap; [#178](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/178) table notes, grading submit, portfolio chart, CSV, and want-list share; [#177](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/177) set completion from the book. The sell planner landed in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) / [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173). Toolchain on `main`: Node ≥22.22.2, TypeScript 7 (`@typescript/native` ^7.0.2) side-by-side with the TypeScript 6 API for ESLint, jsdom 30, `tailwindcss` ^4.3.3 ([#161](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/161)), `eslint` ^10.12.0. `@eslint/js` stays on 9.x. Do not add another major migration in an eng-safe PR.
 
 **Hosted data:** Supabase `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **ACTIVE_HEALTHY**. Migrations `00001`–`00010` are applied. Production `GET /api/health` is `ok: true` with `config.serverApiAuth: true`. Vercel already has the Supabase URL, anon key, service role, and `ALLOWED_ORIGIN` (presence checked 2026-09-27; re-sync only if those keys rotate). Optional `supabase/migrations/00011_price_history_freshness_sla.sql` stays **file-only**. It is an owner-held optional item. **Engineering agents must not apply it.**
 
@@ -71,7 +71,7 @@ A shopping-list buy can be filed from the list or from the post-show recap. The 
 
 Copy does not claim a live Market Movers or Sports Card Investor fill.
 
-## Set completion from the book — this change
+## Set completion from the book — shipped (#177)
 
 Collection and `/set-completion` score demo checklists the book has already started. A pinned goal remembers the target on this browser.
 
@@ -82,7 +82,7 @@ Collection and `/set-completion` score demo checklists the book has already star
 
 Copy does not claim a live Market Movers or Sports Card Investor checklist.
 
-## Show table notes — this change
+## Show table notes — shipped (#178)
 
 A seeded show trip can keep the dealer, table, ask, offer, and a short note. The log stays on this browser with that show.
 
@@ -93,7 +93,7 @@ A seeded show trip can keep the dealer, table, ask, offer, and a short note. The
 
 Copy does not claim a live Market Movers or Sports Card Investor show floor.
 
-## Grading submit decision — this change
+## Grading submit decision — shipped (#178)
 
 Collection names a demo PSA or BGS lane for the raw cards with the highest local mark, or tells you to hold.
 
@@ -104,7 +104,7 @@ Collection names a demo PSA or BGS lane for the raw cards with the highest local
 
 Copy does not claim a live PSA or BGS price.
 
-## Portfolio performance — this change
+## Portfolio performance — shipped (#178)
 
 Collection draws a six-month demo path from cost to the local mark for cards still held.
 
@@ -114,7 +114,7 @@ Collection draws a six-month demo path from cost to the local mark for cards sti
 
 Copy does not claim a live Market Movers or Sports Card Investor portfolio chart.
 
-## Collection CSV — this change
+## Collection CSV — shipped (#178)
 
 Export the book and import that file back. Matching ids update. New rows append. Cards missing from the file stay.
 
@@ -124,7 +124,7 @@ Export the book and import that file back. Matching ids update. New rows append.
 
 Copy does not claim a live Market Movers or Sports Card Investor import.
 
-## Want-list share — this change
+## Want-list share — shipped (#178)
 
 `/alerts` builds a read-only link from active targets. The list is in the URL. Opening it does not write the book.
 
@@ -135,7 +135,7 @@ Copy does not claim a live Market Movers or Sports Card Investor import.
 
 Copy does not claim a live Market Movers or Sports Card Investor want list.
 
-## Show day, comps snapshot, trade balance, location, weekly recap — this change
+## Show day, comps snapshot, trade balance, location, weekly recap — shipped (#179)
 
 Demo book only. The five #178 review notes are fixed here too: CSV import stays available on an empty demo book and applies every row inside the file-size limit, cloud accounts do not get a local-only import, the want-list link follows hydrated targets, and a stored mark of $0 is not replaced by cost.
 
@@ -146,6 +146,20 @@ Demo book only. The five #178 review notes are fixed here too: CSV import stays 
 | **Trade balancer** | Collection. Give, receive, and cash against local marks.           | Fair within 5%. Not a marketplace fill.                                                                   |
 | **Card location**  | Collection. Binder, box, or slab case, with a filter.              | This browser. Not a warehouse system.                                                                     |
 | **Weekly recap**   | Collection. Value change, buys, sells, and top movers.             | Demo path from cost to the local mark. Not a live week.                                                   |
+
+Copy does not claim a live Market Movers or Sports Card Investor tape.
+
+## Floor pack — this change
+
+The show list, the set desk, the sell planner, and the weekly recap now share one local book. Sports Card Investor and Market Movers still lead on live tape. They do not pack a show from the cards you already hold.
+
+| Slice                              | Where                                                                                                                                                                                                                  | Honest limit                                                                    |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **Set holes on the shopping list** | `/local-card-shows`, on each show. Missing numbers from a demo checklist the book has started, when the show covers that sport. A watched hole is not listed twice. Filing the buy uses the typed price as cost basis. | Not a Beckett registry. The estimate is not a market mark.                      |
+| **Watch a hole**                   | Collection and `/set-completion`. One button adds that missing number to the active watchlist.                                                                                                                         | Local or cloud target the existing watchlist already saves. Not a live listing. |
+| **Pull from a saved place**        | Shopping-list sell lines and the sell planner. Binder, box, or slab case when one is saved.                                                                                                                            | This browser. Not a warehouse system.                                           |
+| **Ask versus median**              | `/local-card-shows`, table notes. Pick a held card and the typed ask is under, at, or over that card's median. Within 5% counts as at.                                                                                 | Sold comps when the card has them. Otherwise a demo sketch. Not a dealer quote. |
+| **Floor notes on the week**        | Collection weekly recap. Bought, passed, and open notes dated in the last 7 days, plus typed spend on bought notes.                                                                                                    | Notes with no date stay off the count. Not a settlement.                        |
 
 Copy does not claim a live Market Movers or Sports Card Investor tape.
 
@@ -161,7 +175,7 @@ The book desk can now name what to sell or trade in. It reads the portfolio insi
 
 Copy does not claim a live Sports Card Investor or Market Movers sale feed.
 
-## Mobile polish — shipped (this change)
+## Mobile polish — shipped (#172)
 
 Touch targets and stacking on the desks a collector actually opens on a phone. No new routes.
 
@@ -174,9 +188,13 @@ Touch targets and stacking on the desks a collector actually opens on a phone. N
 
 Show alerts and the shopping list are the section above. The mobile pass does not edit `lib/shows/showBuyingDesk.ts`.
 
+## Eng-safe audit — 2026-10-15
+
+`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `d0bd552` (#181). Sections that still said "this change" for merged work now name the PR: set completion [#177](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/177), table notes / grading submit / portfolio chart / CSV / want-list share [#178](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/178), show day / comps snapshot / trade balance / location / weekly recap [#179](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/179), mobile polish [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172). This change connects those desks on demo tape: set holes on the shopping list, a watch button for a hole, pull-from place on sells, ask versus median on table notes, and dated floor notes on the weekly recap. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git. Gzip cap is 3,350,000.
+
 ## Eng-safe audit — 2026-10-14
 
-`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `2e1a09a` (#178). Show day, the comps snapshot, the trade balancer, card location, and the weekly recap were still open and land in this change, with the #178 CSV, want-list, and zero-mark review notes. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git. Gzip cap is 3,350,000.
+`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `2e1a09a` (#178). Show day, the comps snapshot, the trade balancer, card location, and the weekly recap were still open and landed in [#179](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/179), with the #178 CSV, want-list, and zero-mark review notes. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git. Gzip cap is 3,350,000.
 
 ## Eng-safe audit — 2026-10-13
 

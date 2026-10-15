@@ -7,6 +7,7 @@ import {
   shopLineLabel,
 } from '../../lib/shows/showShoppingList';
 import { makeCard } from '../helpers';
+import { buildShoppingBuyDraft } from '../../lib/shows/showShoppingIngest';
 
 const NOW = Date.parse('2026-10-13T00:00:00Z');
 
@@ -320,6 +321,7 @@ describe('buildShowShoppingList', () => {
     expect(baseball.sells[0]).toMatchObject({ cardId: 'a', kind: 'duplicate-sell', targetBuyUsd: 30 });
     expect(baseball.sells[0].why).toMatch(/keep the higher local mark/i);
     expect(shopLineLabel('duplicate-sell')).toBe('Sell duplicate');
+    expect(shopLineLabel('set-hole')).toBe('Set hole');
 
     const unpriced = buildShowShoppingList({
       show: show({ sports: ['Baseball'], focusPlayers: [] }),
@@ -367,5 +369,37 @@ describe('buildShowShoppingList', () => {
       'show-nyc:buy:harper-late',
     ]);
     expect(list.sells.map((row) => row.cardId)).toEqual(['j1b', 'j2b', 'ob']);
+  });
+
+  it('adds demo checklist holes and turns a same-player extra into a trade', () => {
+    const list = buildShowShoppingList({
+      show: show({ sports: ['Baseball'], focusPlayers: ['Juan Soto'] }),
+      inventory: [
+        makeCard({ id: 'judge', player: 'Aaron Judge', year: 2024, manufacturer: 'Topps', set: 'Series 1', cardNumber: '1', sport: 'Baseball', currentValue: 20 }),
+        makeCard({ id: 'soto-a', player: 'Juan Soto', year: 2019, manufacturer: 'Topps', set: 'Chrome', cardNumber: '9', sport: 'Baseball', currentValue: 40 }),
+        makeCard({ id: 'soto-b', player: 'Juan Soto', year: 2019, manufacturer: 'Topps', set: 'Chrome', cardNumber: '9', sport: 'Baseball', currentValue: 30 }),
+      ],
+      targets: [target({ id: 'alonso', player: 'Pete Alonso', cardDescription: '2024 Topps Series 1 #120', sport: 'Baseball', league: 'MLB', targetPrice: 12 })],
+      nowMs: NOW,
+    });
+    const holes = list.buys.filter((row) => row.kind === 'set-hole');
+    expect(holes.map((row) => row.player)).toEqual(['Juan Soto', 'Paul Skenes']);
+    expect(holes[0]).toMatchObject({
+      targetBuyUsd: 4,
+      marketMarkUsd: null,
+      priceSource: 'Demo checklist estimate',
+    });
+    expect(holes[0].why).toMatch(/this room highlights that name/i);
+    expect(holes[0].why).toMatch(/demo checklist/i);
+    expect(list.buys.some((row) => row.player === 'Pete Alonso' && row.kind === 'set-hole')).toBe(false);
+    expect(list.sells[0]).toMatchObject({ player: 'Juan Soto', kind: 'duplicate-trade' });
+    const draft = buildShoppingBuyDraft({
+      line: holes[0],
+      paidUsd: 4,
+      showName: 'Metro Card Meetup',
+      purchaseDate: '2026-10-18',
+    });
+    expect(draft).toMatchObject({ player: 'Juan Soto', year: 2024, manufacturer: 'Topps', set: 'Series 1', cardNumber: '15', purchasePrice: 4, taxBasis: 4 });
+    expect(draft?.currentValue).toBeUndefined();
   });
 });

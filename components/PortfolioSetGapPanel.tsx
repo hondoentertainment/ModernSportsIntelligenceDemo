@@ -11,13 +11,28 @@ import {
   saveSetGoal,
   type SetGoal,
 } from '../lib/collection/portfolioSetGaps';
+import { holeAlreadyWatched, holeTarget, type GapHunt, type HoleTarget } from '../lib/collector/floorPack';
 
 interface Props {
   inventory: CardInventory[];
+  targets?: readonly { status?: string; player: string; cardDescription: string }[];
   note?: string;
+  onWatch?: (draft: HoleTarget) => void;
 }
 
-const PortfolioSetGapPanel: React.FC<Props> = ({ inventory, note }) => {
+function huntFor(gap: { id: string; label: string; sport: GapHunt['sport'] }, card: { number: string; player: string; estimateUsd: number }): GapHunt {
+  return {
+    setId: gap.id,
+    setLabel: gap.label,
+    sport: gap.sport,
+    number: card.number,
+    player: card.player,
+    estimateUsd: card.estimateUsd,
+    focused: false,
+  };
+}
+
+const PortfolioSetGapPanel: React.FC<Props> = ({ inventory, targets = [], note, onWatch }) => {
   const [goals, setGoals] = useState<SetGoal[]>(() => readSetGoals());
   const gaps = buildPortfolioSetGaps(inventory);
   const goalFor = (setId: string) => goals.find((goal) => goal.setId === setId);
@@ -44,6 +59,26 @@ const PortfolioSetGapPanel: React.FC<Props> = ({ inventory, note }) => {
                 <p className="text-xs text-slate-400">
                   {gap.missing.length === 0 ? 'Checklist complete.' : `Missing ${gap.missing.map((card) => card.player).join(', ')}`}
                 </p>
+                {onWatch && gap.missing.length > 0 ? (
+                  <ul className="mt-2 space-y-2">
+                    {gap.missing.map((card) => {
+                      const hole = huntFor(gap, card);
+                      const watched = holeAlreadyWatched(targets, hole);
+                      return (
+                        <li key={`${gap.id}-${card.number}`}>
+                          <button
+                            type="button"
+                            disabled={watched}
+                            onClick={() => onWatch(holeTarget(hole))}
+                            className="min-h-[44px] rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100 disabled:opacity-60"
+                          >
+                            {watched ? `${card.player} #${card.number} is on the watchlist` : `Watch ${card.player} #${card.number}`}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : null}
                 {goal ? (
                   <p className="mt-1 text-[11px] text-emerald-300">{left === 0 ? 'Goal met' : `${formatGapPercent(left)} left to the goal`}</p>
                 ) : null}

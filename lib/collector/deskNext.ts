@@ -121,6 +121,22 @@ export function tradeFairness(give: TradeSide[], receive: TradeSide[], cashUsd: 
   return { giveUsd, receiveUsd, net, gapPct, call };
 }
 
+let placeCacheKey = '';
+let placeCache: Record<string, Place> = {};
+
+export function placesSnapshot(): Record<string, Place> {
+  const raw = store.get<Record<string, string>>(PLACE_KEY, {});
+  const key = JSON.stringify(raw && typeof raw === 'object' ? raw : {});
+  if (key === placeCacheKey) return placeCache;
+  placeCacheKey = key;
+  placeCache = readPlaces();
+  return placeCache;
+}
+
+export function subscribePlaces(listener: () => void): () => void {
+  return store.onWrite(listener);
+}
+
 export function readPlaces(): Record<string, Place> {
   const raw = store.get<Record<string, string>>(PLACE_KEY, {});
   const places: Record<string, Place> = {};
