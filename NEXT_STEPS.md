@@ -176,7 +176,7 @@ Show alerts and the shopping list are the section above. The mobile pass does no
 
 ## Eng-safe audit — 2026-10-14
 
-`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `2e1a09a` (#178). Show day, the comps snapshot, the trade balancer, card location, and the weekly recap were still open and land in this change, with the #178 CSV, want-list, and zero-mark review notes. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git. Gzip cap stays 3,055,000.
+`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `2e1a09a` (#178). Show day, the comps snapshot, the trade balancer, card location, and the weekly recap were still open and land in this change, with the #178 CSV, want-list, and zero-mark review notes. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git. Gzip cap is 3,350,000.
 
 ## Eng-safe audit — 2026-10-13
 
