@@ -9,6 +9,7 @@ const Login: React.FC = () => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [googleLoading, setGoogleLoading] = useState(false);
     const [error, setError] = useState('');
 
     const { signIn, signInWithGoogle, demoLogin, isDemoMode } = useAuth();
@@ -35,9 +36,16 @@ const Login: React.FC = () => {
 
     const handleGoogleLogin = async () => {
         setError('');
-        const { error } = await signInWithGoogle();
-        if (error) {
-            setError(getFriendlyAuthMessage(error));
+        setGoogleLoading(true);
+        try {
+            const { error } = await signInWithGoogle();
+            if (error) {
+                setError(getFriendlyAuthMessage(error));
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Sign-in failed. Please try again.');
+        } finally {
+            setGoogleLoading(false);
         }
     };
 
@@ -232,8 +240,10 @@ const Login: React.FC = () => {
                             </button>
                         ) : (
                             <button
+                                type="button"
                                 onClick={handleGoogleLogin}
-                                className="w-full py-3 px-4 rounded-xl bg-slate-800 border border-slate-700 text-white font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-all flex items-center justify-center gap-3"
+                                disabled={googleLoading || loading}
+                                className="w-full py-3 px-4 rounded-xl bg-slate-800 border border-slate-700 text-white font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                             >
                                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                                     <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />

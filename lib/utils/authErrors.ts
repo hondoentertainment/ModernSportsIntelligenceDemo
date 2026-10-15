@@ -3,6 +3,7 @@
  */
 
 import type { AuthError } from '@supabase/supabase-js';
+import { isProviderDisabledMessage } from '../googleOAuth';
 
 const FRIENDLY_MESSAGES: Record<string, string> = {
     invalid_credentials: 'Invalid email or password. Please check your credentials.',
@@ -14,7 +15,7 @@ const FRIENDLY_MESSAGES: Record<string, string> = {
     signup_disabled: 'New account creation is temporarily disabled. Please try again later.',
     weak_password: 'Password does not meet security requirements. Use 8+ characters with uppercase, lowercase, and numbers.',
     validation_failed: 'Invalid input. Please check your details and try again.',
-    provider_disabled: 'Sign in with this provider is currently unavailable. Try email/password instead.',
+    provider_disabled: 'Sign in with Google is currently unavailable. Use the email form on this page.',
     otp_expired: 'Your sign-in link has expired. Please request a new one.',
     session_expired: 'Your session has expired. Please sign in again.',
     // Password reset
@@ -38,6 +39,13 @@ export function getFriendlyAuthMessage(error: AuthError | null): string {
 
     const code = (error as { code?: string }).code;
     const message = error.message?.toLowerCase() ?? '';
+
+    // GoTrue reports a disabled Google provider as `validation_failed`
+    // ("Unsupported provider: provider is not enabled"). That code also means
+    // a generic invalid input, so the message has to win.
+    if (isProviderDisabledMessage(message)) {
+        return FRIENDLY_MESSAGES.provider_disabled;
+    }
 
     if (code && FRIENDLY_MESSAGES[code]) {
         return FRIENDLY_MESSAGES[code];

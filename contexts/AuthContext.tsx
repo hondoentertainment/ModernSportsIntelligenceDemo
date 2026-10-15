@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isDemoMode } from '../lib/supabase';
+import { beginGoogleSignIn } from '../lib/googleOAuth';
 import { logger } from '../lib/logger';
 import { store } from '../lib/dal/syncStore';
 
@@ -301,13 +302,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const signInWithGoogle = async () => {
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: window.location.origin
-            }
+        // Bare origin matches the Supabase Site URL. HashRouter owns the fragment,
+        // and the implicit grant appends tokens there after this redirect.
+        const { error } = await beginGoogleSignIn({
+            origin: window.location.origin,
+            startOAuth: async (redirectTo) => {
+                const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo,
+                        skipBrowserRedirect: true,
+                    },
+                });
+                return {
+                    url: data?.url ?? null,
+                    error: oauthError
+                        ? { message: oauthError.message, code: oauthError.code, status: oauthError.status }
+                        : null,
+                };
+            },
+            probeAuthorize: async (url) => {
+                const response = await fetch(url, { redirect: 'manual' });
+                const body = response.type === 'opaqueredirect' ? '' : await response.text();
+                return { type: response.type, status: response.status, body };
+            },
+            assign: (url) => {
+                window.location.assign(url);
+            },
         });
-        return { error };
+        return { error: error as AuthError | null };
     };
 
     const signOut = async () => {
