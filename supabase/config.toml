@@ -9,11 +9,21 @@ enabled = true
 [auth]
 enabled = true
 site_url = "https://modern-sports-intelligence-demo.vercel.app"
+# signInWithOAuth sends redirectTo = window.location.origin (no path, no hash).
+# `/**` does not match that bare origin. List both forms. `*` does not match
+# "." so preview hosts need their own pattern. Hosted Auth URL configuration
+# is separate from this file — set the same values in the dashboard.
 additional_redirect_urls = [
+  "https://modern-sports-intelligence-demo.vercel.app",
   "https://modern-sports-intelligence-demo.vercel.app/**",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
   "http://localhost:5173/**",
   "http://127.0.0.1:5173/**",
+  "https://*-hondo4185-5820s-projects.vercel.app",
   "https://*-hondo4185-5820s-projects.vercel.app/**",
+  "https://modern-sports-intelligence-demo-*.vercel.app",
+  "https://modern-sports-intelligence-demo-*.vercel.app/**",
 ]
 
 # Keep hosted-project defaults (config push merges these; do not loosen prod).

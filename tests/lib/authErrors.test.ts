@@ -36,6 +36,20 @@ describe('getFriendlyAuthMessage', () => {
         expect(getFriendlyAuthMessage(error)).toContain('Invalid email or password');
     });
 
+    it('maps a disabled Google provider even when GoTrue uses validation_failed', () => {
+        const error = {
+            code: 'validation_failed',
+            message: 'Unsupported provider: provider is not enabled',
+        } as any;
+        expect(getFriendlyAuthMessage(error)).toContain('currently unavailable');
+        expect(getFriendlyAuthMessage(error)).not.toMatch(/Invalid input/);
+    });
+
+    it('still maps a plain validation_failed code', () => {
+        const error = { code: 'validation_failed', message: 'Invalid payload' } as any;
+        expect(getFriendlyAuthMessage(error)).toContain('Invalid input');
+    });
+
     it('falls back to raw message for unknown errors', () => {
         const error = { code: 'unknown', message: 'Something went wrong' } as any;
         expect(getFriendlyAuthMessage(error)).toBe('Something went wrong');
