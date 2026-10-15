@@ -9,6 +9,8 @@ import {
   type SellTradeRow,
 } from '../lib/analytics/sellTradePlanner';
 import { getTaxLotPreferences, subscribeTaxLotPreferences } from '../lib/utils/taxLotPreferences';
+import { placesSnapshot, subscribePlaces } from '../lib/collector/deskNext';
+import { pullCopy } from '../lib/collector/floorPack';
 
 interface Props {
   inventory: CardInventory[];
@@ -40,7 +42,7 @@ function actionLabel(action: SellTradeAction): string {
   return 'Sell';
 }
 
-function RowCard({ row }: { row: SellTradeRow }) {
+function RowCard({ row, place }: { row: SellTradeRow; place: string | undefined }) {
   return (
     <li className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -76,6 +78,7 @@ function RowCard({ row }: { row: SellTradeRow }) {
         {row.washSaleDisallowed > 0 ? ` · ${dollars(row.washSaleDisallowed)} flagged disallowed` : ''}
       </p>
       <p className="mt-1 text-[11px] leading-relaxed text-slate-500">{row.note}</p>
+      <p className="mt-1 text-[11px] text-slate-300">{pullCopy(place)}</p>
     </li>
   );
 }
@@ -83,6 +86,7 @@ function RowCard({ row }: { row: SellTradeRow }) {
 const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
   const [filter, setFilter] = useState<FilterId>('all');
   const prefs = useSyncExternalStore(subscribeTaxLotPreferences, getTaxLotPreferences, getTaxLotPreferences);
+  const places = useSyncExternalStore(subscribePlaces, placesSnapshot, placesSnapshot);
   const plan = useMemo(
     () =>
       buildSellTradePlan(inventory, {
@@ -189,7 +193,7 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
       ) : (
         <ul className="mt-4 space-y-3" aria-label="Sell and trade-in suggestions">
           {visible.map((row) => (
-            <RowCard key={row.cardId} row={row} />
+            <RowCard key={row.cardId} row={row} place={places[row.cardId]} />
           ))}
         </ul>
       )}

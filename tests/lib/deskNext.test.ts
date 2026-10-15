@@ -6,6 +6,7 @@ import {
   dayLeft,
   filterByPlace,
   readChecked,
+  placesSnapshot,
   readPlaces,
   setPlace,
   tradeFairness,
@@ -82,6 +83,13 @@ describe('deskNext', () => {
     expect(filterByPlace(cards, readPlaces(), 'all')).toHaveLength(3);
     setPlace('a', '');
     expect(readPlaces().a).toBeUndefined();
+    const first = placesSnapshot();
+    expect(first).toEqual({ b: 'box' });
+    expect(placesSnapshot()).toBe(first);
+    setPlace('a', 'binder');
+    const next = placesSnapshot();
+    expect(next).not.toBe(first);
+    expect(next).toEqual({ a: 'binder', b: 'box' });
   });
 
   it('recaps the demo week, buys, sells, and movers', () => {

@@ -436,7 +436,7 @@ const ShowTripLoopPanel: React.FC<Props> = ({
       )}
       {tab === 'notes' && (
         <Suspense fallback={null}>
-          <ShowHagglePanel showId={showId} showName={showName} />
+          <ShowHagglePanel showId={showId} showName={showName} inventory={inventory} />
         </Suspense>
       )}
     </section>

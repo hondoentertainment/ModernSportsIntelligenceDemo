@@ -6,6 +6,7 @@ import React, { act } from 'react';
 import SellTradePlannerPanel from '../../components/SellTradePlannerPanel';
 import { SELL_TRADE_PLANNER_DISCLOSURE } from '../../lib/analytics/sellTradePlanner';
 import { setTaxLotMethod, setTaxLotPreferences, toggleSpecificLotId } from '../../lib/utils/taxLotPreferences';
+import { setPlace } from '../../lib/collector/deskNext';
 import { makeCard } from '../helpers';
 
 const AS_OF_PURCHASE = '2020-01-01';
@@ -84,6 +85,24 @@ describe('SellTradePlannerPanel', () => {
 
     await user.click(screen.getByRole('radio', { name: 'Hold' }));
     expect(screen.getByText(/nothing in this filter/i)).toBeInTheDocument();
+  });
+
+  it('names the saved place for a sell card', () => {
+    setPlace('loser', 'slab');
+    render(
+      <MemoryRouter>
+        <SellTradePlannerPanel
+          inventory={[makeCard({
+            id: 'loser',
+            player: 'Cost Basis',
+            purchasePrice: 150,
+            currentValue: 40,
+            purchaseDate: AS_OF_PURCHASE,
+          })]}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText('Pull from Slab case')).toBeInTheDocument();
   });
 
   it('shows the honest empty line when the book has no sell or trade-in', () => {

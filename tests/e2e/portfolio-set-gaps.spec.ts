@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { enterDemoMode } from '../helpers/e2eAuth';
+import { enterDemoMode, restoreLocalKeysOnNextLoad } from '../helpers/e2eAuth';
 
 test.describe('Set completion from the book', () => {
   test('tracks a started demo checklist from collection gaps', async ({ page }) => {
@@ -13,7 +13,7 @@ test.describe('Set completion from the book', () => {
         return 0;
       }
     }), { timeout: 20_000 }).toBeGreaterThan(100);
-    await page.evaluate(() => {
+    const seeded = await page.evaluate(() => {
       const card = (overrides: Record<string, unknown>) => ({
         id: 'card',
         player: 'Aaron Judge',
@@ -44,12 +44,15 @@ test.describe('Set completion from the book', () => {
         sport: 'Football',
         league: 'NFL',
       }));
-      localStorage.setItem('cardx_inventory', JSON.stringify([
+      const inventory = JSON.stringify([
         card({ id: 'judge', player: 'Aaron Judge', cardNumber: '1' }),
         card({ id: 'skenes', player: 'Paul Skenes', cardNumber: '250' }),
         ...fillers,
-      ]));
+      ]);
+      localStorage.setItem('cardx_inventory', inventory);
+      return { cardx_inventory: inventory };
     });
+    await restoreLocalKeysOnNextLoad(page, seeded);
     await page.reload();
     await page.goto('/#/collection');
     const tracker = page.getByRole('region', { name: 'Set completion from your book' });

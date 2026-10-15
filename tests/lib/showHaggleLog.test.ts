@@ -15,8 +15,27 @@ describe('showHaggleLog', () => {
     expect(saved.error).toBeNull();
     expect(saved.notes).toHaveLength(1);
     expect(saved.notes[0]).toMatchObject({ dealer: 'Rivera Cards', table: '12', result: 'bought', askUsd: 80, offerUsd: 65 });
-    expect(readHaggle('nyc')).toHaveLength(1);
+    expect(saved.notes[0].savedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    const dated = addHaggle({
+      showId: 'nyc',
+      dealer: 'Ace',
+      table: '2',
+      askUsd: 10,
+      offerUsd: 8,
+      result: 'open',
+      note: '',
+      savedAt: '2026-10-14T00:00:00Z',
+      cardId: 'judge-1',
+    });
+    expect(dated.notes[0]).toMatchObject({ cardId: 'judge-1', savedAt: '2026-10-14T00:00:00.000Z' });
+    const dropped = addHaggle({
+      showId: 'nyc', dealer: 'Ace', table: '3', askUsd: 10, offerUsd: 8, result: 'open', note: '', cardId: 'bad id',
+    });
+    expect(dropped.notes[0].cardId).toBeUndefined();
+    expect(readHaggle('nyc')).toHaveLength(3);
     expect(readHaggle('other')).toHaveLength(0);
+    removeHaggle('nyc', dropped.notes[0].id);
+    removeHaggle('nyc', dated.notes[0].id);
     expect(removeHaggle('nyc', saved.notes[0].id)).toHaveLength(0);
     expect(readHaggle('nyc')).toHaveLength(0);
   });

@@ -169,6 +169,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/analytics/portfolioConcentration.ts',
         'lib/analytics/portfolioInsights.ts',
         'lib/analytics/sellTradePlanner.ts',
+        'lib/collector/floorPack.ts',
         'lib/analytics/capitalGainsExit.ts',
         'lib/utils/syncProductDefaults.ts',
         'lib/utils/webPushSubscription.ts',
@@ -199,15 +200,12 @@ export default defineConfig(({ command, mode }) => {
       // values for v8 run-to-run stability; ratchet UP as tests are added,
       // never down. Branches lag (~91%) due to defensive branches,
       // import.meta / env splits, and optional chaining.
-      // Measured 98.76 / 93.76 / 99.23 / 99.50 after the sell planner
-      // (identical locally and in CI — v8 is deterministic for this suite).
-      // Thresholds sit ~0.2-0.6pp under that: tight enough to catch a real
-      // regression, loose enough that one incidental uncovered statement does
-      // not fail the gate with an opaque threshold error. Ratchet UP as tests
-      // are added, never down.
+      // Measured 98.79 / 93.93 / 99.25 / 99.51 after the floor pack
+      // (v8 is deterministic for this suite). Thresholds sit ~0.2-0.6pp under
+      // that. Ratchet UP as tests are added, never down.
       thresholds: {
         statements: 98.5,
-        branches: 93.1,
+        branches: 93.4,
         functions: 99.1,
         lines: 99.3,
       },

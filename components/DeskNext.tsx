@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useSyncExternalStore } from 'react';
 import type { CardInventory } from '../types';
 import {
   DESK_NOTE,
@@ -15,6 +15,8 @@ import {
   type Place,
   type PlaceFilter,
 } from '../lib/collector/deskNext';
+import { floorWeek } from '../lib/collector/floorPack';
+import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
 
 const field = 'mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm';
 const btn = 'min-h-[44px] rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100';
@@ -213,12 +215,20 @@ function CardPlacePanel({ inventory }: { inventory: CardInventory[] }) {
 
 function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
   const recap = useMemo(() => weeklyRecap(inventory), [inventory]);
+  const notes = useSyncExternalStore(subscribeHaggle, haggleSnapshot, haggleSnapshot);
+  const floor = useMemo(() => floorWeek(notes), [notes]);
+  const floorCount = floor.bought + floor.passed + floor.open;
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" aria-label="Weekly collection recap">
       <h2 className="text-sm font-black uppercase tracking-widest text-white">Weekly recap</h2>
       <p className="mt-2 text-xs text-slate-400">Value change, buys, sells, and movers. {DESK_NOTE}</p>
       <p className="mt-2 font-mono text-xs text-slate-200">
         Value {usd(recap.nowUsd)} · change {usd(recap.deltaUsd)} · buys {recap.buyCount} ({usd(recap.buyUsd)}) · sells {recap.sellCount} ({usd(recap.sellUsd)})
+      </p>
+      <p className="mt-2 text-xs text-slate-300">
+        {floorCount === 0
+          ? 'No dated floor notes this week. Notes with no date stay off this count.'
+          : `Floor notes this week: ${floor.bought} bought, ${floor.passed} passed, ${floor.open} open${floor.bought > 0 ? ` · typed spend ${usd(floor.typedSpendUsd)}` : ''}. Not a settlement.`}
       </p>
       {recap.movers.length === 0 ? <p className="mt-2 text-sm text-slate-400">No held cards.</p> : (
         <ul className="mt-2 space-y-1">

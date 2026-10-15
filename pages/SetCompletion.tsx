@@ -55,10 +55,15 @@ const PIE_COLORS = ['#9ca3af', '#60a5fa', '#a78bfa', '#facc15'];
 const PortfolioSetGapPanel = lazy(() => import('../components/PortfolioSetGapPanel'));
 
 function BookSetGaps() {
-  const { inventory } = useSupabaseInventory();
+  const { inventory, targets, addTarget } = useSupabaseInventory();
   return (
     <Suspense fallback={null}>
-      <PortfolioSetGapPanel inventory={inventory} note="Advisor tabs on this page stay a separate demo." />
+      <PortfolioSetGapPanel
+        inventory={inventory}
+        targets={targets}
+        note="Advisor tabs on this page stay a separate demo."
+        onWatch={(draft) => { void addTarget(draft); }}
+      />
     </Suspense>
   );
 }
