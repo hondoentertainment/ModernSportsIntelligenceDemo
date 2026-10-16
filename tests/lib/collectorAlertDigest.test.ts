@@ -11,6 +11,7 @@ import {
   readDigestTargets,
   showProximityRows,
 } from '../../lib/alerts/collectorAlertDigest';
+import { addHaggle } from '../../lib/shows/showHaggleLog';
 
 function target(overrides: Partial<TargetWatchlist> = {}): TargetWatchlist {
   return {
@@ -119,5 +120,51 @@ describe('collector alert digest', () => {
     expect(digest.drops[0]?.title).toMatch(/Jayson Tatum/);
     expect(digest.showAlertsArmed).toBe(true);
     expect(digest.shows.some((row) => row.title === 'NYC Monthly Card Meetup')).toBe(true);
+    expect(digest.follows).toEqual([]);
+  });
+
+  it('adds open notes and a cheap pass from this browser', () => {
+    addHaggle({
+      showId: 'nyc-monthly',
+      dealer: 'Rivera',
+      table: '4',
+      askUsd: 12,
+      offerUsd: 0,
+      result: 'open',
+      note: '',
+      player: 'Showclose Player',
+    });
+    addHaggle({
+      showId: 'nyc-monthly',
+      dealer: 'Ace',
+      table: '2',
+      askUsd: 40,
+      offerUsd: 0,
+      result: 'passed',
+      note: '',
+      player: 'Showclose Player',
+      cardId: 'slab',
+    });
+    const digest = loadCollectorAlertDigest(
+      [target({ id: 'showclose', player: 'Showclose Player', targetPrice: 100, currentMarketPrice: undefined, cardDescription: 'other' })],
+      new Date('2026-10-16T12:00:00.000Z'),
+      [
+        null,
+        { id: 'bad' },
+        { id: 'out', player: 'Out', status: 'consignment', currentValue: 10 },
+        { id: 'empty', player: 'Empty', status: 'active' },
+        {
+          id: 'slab',
+          player: 'Showclose Player',
+          status: 'active',
+          salesData: [
+            { price: 100, soldAt: '2026-09-01' },
+            { price: 120, soldAt: '2026-09-02' },
+          ],
+        },
+      ],
+    );
+    expect(digest.follows.some(row => row.title === 'Open at NYC Monthly Card Meetup')).toBe(true);
+    expect(digest.follows.some(row => row.kind === 'revisit' && row.watch)).toBe(true);
   });
 });

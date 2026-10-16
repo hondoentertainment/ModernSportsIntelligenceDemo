@@ -34,7 +34,7 @@ function verdictClass(verdict: ShowVerdict): string {
 }
 
 const LocalCardShows: React.FC = () => {
-  const { inventory, targets, addCard, updateCard } = useSupabaseInventory();
+  const { inventory, targets, addCard, updateCard, addTarget } = useSupabaseInventory();
   const [cityQuery, setCityQuery] = useState('');
   const [openShowId, setOpenShowId] = useState<string | null>(null);
   const [sport, setSport] = useState<Sport | 'all'>('all');
@@ -316,6 +316,7 @@ const LocalCardShows: React.FC = () => {
                   fallbackSport={fallbackSport}
                   onFileBuy={addCard}
                   onRecordSale={updateCard}
+                  onWatch={draft => { void addTarget(draft); }}
                 />
               )}
             </li>

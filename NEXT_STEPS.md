@@ -6,7 +6,7 @@
 
 MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger across Dashboard, War Room, and Audit Dossier; holdings catalysts; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; command palette keeps `/scan` on dashboard. **Eng-safe product waves through [#144](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/144)** (`3ca10f4`, Phase B–D scaffolds, plus the [#145](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/145) follow-up) are on `main`. The Phase B pricing-truth UI scaffold ([#141](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/141), `db907e3`) shipped **without** live flags. Waves 2–5 ([#131](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/131)–[#139](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/139)) shipped earlier. Six of seven catalog betas are `live`; only `fractional-vault` remains `beta` for legal sign-off (2026-09 quarterly sweep — no promotions, no new hides).
 
-**Production (2026-10-15):** healthy on `main` @ [`d0bd552`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/d0bd552) from [#181](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/181) (gzip cap 3,350,000 bytes). [#180](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/180) dropped the Gemini web SDK from the client bundle. Collector desks already on `main`: [#179](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/179) show day, comps snapshot, trade balance, card location, and weekly recap; [#178](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/178) table notes, grading submit, portfolio chart, CSV, and want-list share; [#177](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/177) set completion from the book. The sell planner landed in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) / [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173). Toolchain on `main`: Node ≥22.22.2, TypeScript 7 (`@typescript/native` ^7.0.2) side-by-side with the TypeScript 6 API for ESLint, jsdom 30, `tailwindcss` ^4.3.3 ([#161](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/161)), `eslint` ^10.12.0. `@eslint/js` stays on 9.x. Do not add another major migration in an eng-safe PR.
+**Production (2026-10-16):** healthy on `main` @ [`557fe23`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/557fe23). [#182](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/182) connected the local book to the show floor. [#183](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/183) keeps Google sign-in on the login page when the provider is off. [#181](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/181) set the gzip cap at 3,350,000 bytes. [#180](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/180) dropped the Gemini web SDK from the client bundle. Collector desks already on `main`: [#179](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/179) show day, comps snapshot, trade balance, card location, and weekly recap; [#178](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/178) table notes, grading submit, portfolio chart, CSV, and want-list share; [#177](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/177) set completion from the book. The sell planner landed in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) / [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173). Toolchain on `main`: Node ≥22.22.2, TypeScript 7 (`@typescript/native` ^7.0.2) side-by-side with the TypeScript 6 API for ESLint, jsdom 30, `tailwindcss` ^4.3.3 ([#161](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/161)), `eslint` ^10.12.0. `@eslint/js` stays on 9.x. Do not add another major migration in an eng-safe PR.
 
 **Hosted data:** Supabase `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **ACTIVE_HEALTHY**. Migrations `00001`–`00010` are applied. Production `GET /api/health` is `ok: true` with `config.serverApiAuth: true`. Vercel already has the Supabase URL, anon key, service role, and `ALLOWED_ORIGIN` (presence checked 2026-09-27; re-sync only if those keys rotate). Optional `supabase/migrations/00011_price_history_freshness_sla.sql` stays **file-only**. It is an owner-held optional item. **Engineering agents must not apply it.**
 
@@ -149,7 +149,7 @@ Demo book only. The five #178 review notes are fixed here too: CSV import stays 
 
 Copy does not claim a live Market Movers or Sports Card Investor tape.
 
-## Floor pack — this change
+## Floor pack — shipped (#182)
 
 The show list, the set desk, the sell planner, and the weekly recap now share one local book. Sports Card Investor and Market Movers still lead on live tape. They do not pack a show from the cards you already hold.
 
@@ -162,6 +162,25 @@ The show list, the set desk, the sell planner, and the weekly recap now share on
 | **Floor notes on the week**        | Collection weekly recap. Bought, passed, and open notes dated in the last 7 days, plus typed spend on bought notes.                                                                                                    | Notes with no date stay off the count. Not a settlement.                        |
 
 Copy does not claim a live Market Movers or Sports Card Investor tape.
+
+## Google sign-in — shipped (#183)
+
+The login page stays put when Google auth is off. GoTrue answers a disabled provider with a JSON 400, and the client was navigating there. The page probes the authorize URL and shows that failure on the form. This is not a tape change. No `VITE_FF_REAL_*` flip.
+
+## Show close — this change
+
+The table, the shopping list, the weekly recap, and `/alerts` now share one local book. Sports Card Investor and Market Movers still lead on live tape. They do not file a show-floor buy or tell you which ask in the room was cheaper.
+
+| Slice                           | Where                                                                                                                                                                                                                                                               | Honest limit                                                                              |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Name the card**               | `/local-card-shows`, table notes. Player, card line, and sport, including a card that is not in the book.                                                                                                                                                           | Typed by the collector. Not a dealer inventory.                                           |
+| **Cheapest ask**                | Same tab. Two or more notes with the same player. The lowest typed ask, and the high ask when they differ.                                                                                                                                                          | Not a dealer quote. A single note stays off this line.                                    |
+| **File a bought note**          | Same tab, into the collection. The offer is the cost basis when it is above zero. Otherwise the ask.                                                                                                                                                                | Writes the typed row. Not a settlement. A note with no player stays off the book.         |
+| **Open notes and cheap passes** | `/alerts`, and the dashboard show rail when a note is still open. A pass is listed when the ask is under the held-card median or the shopping-list mark. One button adds it to the watchlist, and the row stays marked on the watchlist after that target is saved. | Local or demo reference. Not Web Push. Server delivery still needs owner-held VAPID keys. |
+| **Cash fit**                    | `/local-card-shows`, on each shopping list. Cheapest buys first, against saved trip cash, or the trip need when cash is blank.                                                                                                                                      | Not a fare or a hotel quote. A line with no price does not take cash.                     |
+| **Unfiled buys**                | Collection weekly recap. Bought notes with a player that are not in the book yet.                                                                                                                                                                                   | This browser. Not a settlement.                                                           |
+
+The digest also refreshes when watchlist targets hydrate, the same way the want-list link already does. Copy does not claim a live Market Movers or Sports Card Investor tape.
 
 ## Sell and trade-in planner — shipped (#172 / #173)
 
@@ -187,6 +206,10 @@ Touch targets and stacking on the desks a collector actually opens on a phone. N
 | **Dashboard show rail**       | Show-desk link is a 44px target.                                                                                                                                |
 
 Show alerts and the shopping list are the section above. The mobile pass does not edit `lib/shows/showBuyingDesk.ts`.
+
+## Eng-safe audit — 2026-10-16
+
+`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `557fe23`. The floor pack is [#182](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/182). Google sign-in staying on the login page is [#183](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/183). This change closes the show on demo tape: a named card on the table note, the cheapest ask in the room, filing a bought note, open notes and cheap passes on `/alerts`, cash fit on the shopping list, and unfiled buys on the weekly recap. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git. Gzip cap is 3,350,000.
 
 ## Eng-safe audit — 2026-10-15
 

@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useMemo, useState } from 'react';
 import type { CardInventory, Sport, TargetWatchlist } from '../types';
+import type { HoleTarget } from '../lib/collector/floorPack';
 import type { ResolvedLocalCardShow } from '../lib/shows/localCardShowCatalog';
 import type { ShowBuyOpportunity } from '../lib/shows/showBuyingDesk';
 import {
@@ -45,6 +46,7 @@ interface Props {
   fallbackSport?: Sport | null;
   onFileBuy: (card: CardInventory) => Promise<void> | void;
   onRecordSale: (cardId: string, patch: Partial<CardInventory>) => Promise<void> | void;
+  onWatch?: (draft: HoleTarget) => void;
 }
 
 type TabId = 'budget' | 'floor' | 'recap' | 'notes';
@@ -76,6 +78,7 @@ const ShowTripLoopPanel: React.FC<Props> = ({
   fallbackSport = null,
   onFileBuy,
   onRecordSale,
+  onWatch,
 }) => {
   const [tab, setTab] = useState<TabId>('budget');
   const [, setTick] = useState(0);
@@ -436,7 +439,15 @@ const ShowTripLoopPanel: React.FC<Props> = ({
       )}
       {tab === 'notes' && (
         <Suspense fallback={null}>
-          <ShowHagglePanel showId={showId} showName={showName} inventory={inventory} />
+          <ShowHagglePanel
+            showId={showId}
+            showName={showName}
+            inventory={inventory}
+            targets={targets}
+            purchaseDate={purchaseDate}
+            onFileBuy={onFileBuy}
+            onWatch={onWatch}
+          />
         </Suspense>
       )}
     </section>

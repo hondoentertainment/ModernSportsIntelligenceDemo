@@ -2,16 +2,21 @@
  * In-app digest of watchlist marks under target and seeded shows inside
  * the saved home radius. Demo tape only. Does not send Web Push.
  */
-import type { TargetWatchlist } from '../../types';
+import type { CardInventory, TargetWatchlist } from '../../types';
 import {
   getShowAlertPrefs,
   showsInAlertWindow,
   type ShowAlertPrefs,
 } from '../shows/showAlerts';
 import {
+  LOCAL_CARD_SHOW_CATALOG,
   listResolvedLocalCardShows,
   type ResolvedLocalCardShow,
 } from '../shows/localCardShowCatalog';
+import { compsSnapshot } from '../collector/deskNext';
+import { followUps, type FollowUp, type MarkRef } from '../collector/showClose';
+import { haggleSnapshot, type HaggleNote } from '../shows/showHaggleLog';
+import { store } from '../dal/syncStore';
 
 export const ALERT_DIGEST_DISCLOSURE =
   'Local marks and the seeded show calendar. Not a live tape. Not live Market Movers or Sports Card Investor parity. Server Web Push still needs owner-held VAPID keys.';
@@ -28,6 +33,7 @@ export interface DigestRow {
 export interface CollectorAlertDigest {
   drops: DigestRow[];
   shows: DigestRow[];
+  follows: FollowUp[];
   showAlertsArmed: boolean;
   disclosure: string;
 }
@@ -85,24 +91,61 @@ export function showProximityRows(shows: readonly ResolvedLocalCardShow[], prefs
   }));
 }
 
+function medianByCard(inventory: readonly CardInventory[]): Record<string, MarkRef> {
+  const map: Record<string, MarkRef> = {};
+  for (const card of inventory) {
+    if (card.status === 'sold' || card.status === 'consignment') continue;
+    const snap = compsSnapshot(card);
+    if (snap.median == null || snap.median <= 0) continue;
+    if (snap.source === 'comps' || snap.source === 'demo') map[card.id] = { usd: snap.median, kind: snap.source };
+  }
+  return map;
+}
+
+function readInventory(raw: unknown): CardInventory[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((row): row is CardInventory => {
+    if (!row || typeof row !== 'object') return false;
+    const card = row as CardInventory;
+    return typeof card.id === 'string' && typeof card.player === 'string';
+  });
+}
+
 export function buildCollectorAlertDigest(input: {
   targets: readonly TargetWatchlist[];
   shows: readonly ResolvedLocalCardShow[];
   prefs: ShowAlertPrefs;
+  notes?: readonly HaggleNote[];
+  inventory?: readonly CardInventory[];
 }): CollectorAlertDigest {
   const armed = input.prefs.enabled && input.prefs.home != null;
+  const notes = input.notes ?? [];
+  const inventory = input.inventory ?? [];
   return {
     drops: priceDropRows(input.targets),
     shows: armed ? showProximityRows(input.shows, input.prefs) : [],
+    follows: followUps({
+      notes,
+      shows: LOCAL_CARD_SHOW_CATALOG.map(show => ({ id: show.id, name: show.name })),
+      medianByCardId: medianByCard(inventory),
+      targets: input.targets,
+    }),
     showAlertsArmed: armed,
     disclosure: ALERT_DIGEST_DISCLOSURE,
   };
 }
 
-export function loadCollectorAlertDigest(targetsRaw: unknown, now = new Date()): CollectorAlertDigest {
+export function loadCollectorAlertDigest(
+  targetsRaw: unknown,
+  now = new Date(),
+  inventoryRaw: unknown = undefined,
+): CollectorAlertDigest {
+  const inventory = inventoryRaw === undefined ? store.get('cardx_inventory', []) : inventoryRaw;
   return buildCollectorAlertDigest({
     targets: readDigestTargets(targetsRaw),
     shows: listResolvedLocalCardShows(now),
     prefs: getShowAlertPrefs(),
+    notes: haggleSnapshot(),
+    inventory: readInventory(inventory),
   });
 }

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useMemo } from 'react';
+import React, { Suspense, lazy, useMemo, useSyncExternalStore } from 'react';
 import { Link } from 'react-router-dom';
 import type { CardInventory, TargetWatchlist } from '../types';
 import type { ResolvedLocalCardShow } from '../lib/shows/localCardShowCatalog';
@@ -10,7 +10,10 @@ import {
 } from '../lib/shows/showShoppingList';
 import { readPlaces, type Place } from '../lib/collector/deskNext';
 import { pullCopy } from '../lib/collector/floorPack';
+import { cashFit, cashFitCopy, cashLineCopy, type CashFitCall, type CashSource } from '../lib/collector/showClose';
+import { store } from '../lib/dal/syncStore';
 import { SHOPPING_INGEST_DISCLOSURE } from '../lib/shows/showShoppingIngest';
+import { readCashBudget } from '../lib/shows/showTripLoop';
 import { ShoppingBuyFiles } from './ShoppingBuyFile';
 
 const ShowDayPanel = lazy(() => import('./DeskNext').then((mod) => ({ default: mod.ShowDayPanel })));
@@ -29,7 +32,7 @@ function usd(value: number | null): string {
   return value == null ? 'no price' : `$${Math.round(value).toLocaleString('en-US')}`;
 }
 
-function Lines({ lines, places }: { lines: ShopLine[]; places: Record<string, Place> }) {
+function Lines({ lines, places, calls }: { lines: ShopLine[]; places: Record<string, Place>; calls?: Record<string, CashFitCall> }) {
   return (
     <ul className="space-y-2">
       {lines.map((line) => (
@@ -41,6 +44,7 @@ function Lines({ lines, places }: { lines: ShopLine[]; places: Record<string, Pl
             {line.marketMarkUsd != null ? ` · mark ${usd(line.marketMarkUsd)}` : ''}
             {line.collectorCeilingUsd != null ? ` · ceiling ${usd(line.collectorCeilingUsd)}` : ''}
           </p>
+          {calls ? <p className="text-xs text-slate-300">{cashLineCopy(calls[line.id] ?? 'no price')}</p> : null}
           {line.side === 'sell' && line.cardId ? <p className="text-xs text-slate-300">{pullCopy(places[line.cardId])}</p> : null}
           <p className="text-xs text-slate-500">{line.priceSource}. {line.why}</p>
           {line.cardId && <Link className="text-xs text-brand-lime" to={`/compare?card1=${encodeURIComponent(line.cardId)}`}>Comps</Link>}
@@ -57,15 +61,29 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
     [show, inventory, targets, liveTape],
   );
   const places = readPlaces();
+  const savedCash = useSyncExternalStore(
+    listener => store.onWrite(listener),
+    () => readCashBudget(show.id),
+    () => readCashBudget(show.id),
+  );
+  const cash = savedCash ?? cashUsd;
+  const source: CashSource = savedCash != null ? 'saved' : cash != null ? 'trip need' : 'unset';
+  const fit = useMemo(
+    () => cashFit(list.buys.map(line => ({ id: line.id, usd: line.targetBuyUsd })), cash),
+    [list.buys, cash],
+  );
   return (
     <>
       <section className="mt-3 text-slate-300" aria-label={`Shopping list for ${show.name}`}>
         {disclose && <p className="text-xs text-slate-500">{SHOW_SHOPPING_LIST_DISCLOSURE}</p>}
         <h3 className="text-xs text-slate-200">Shopping list · {list.buys.length + list.sells.length}</h3>
+        {list.buys.length > 0 && (
+          <p className="text-xs text-slate-300" aria-label="Cash fit">{cashFitCopy(fit, cash, source)}</p>
+        )}
         {list.emptyReason ? <p className="text-sm text-slate-400">{list.emptyReason}</p> : (
           <>
             <h4 className="text-xs text-emerald-200">Buy</h4>
-            {list.buys.length === 0 ? <p className="text-xs text-slate-500">No buys.</p> : <Lines lines={list.buys} places={places} />}
+            {list.buys.length === 0 ? <p className="text-xs text-slate-500">No buys.</p> : <Lines lines={list.buys} places={places} calls={fit.byId} />}
             {onFileBuy && list.buys.length > 0 && (
               <>
                 <p className="mt-2 text-[11px] text-slate-500">{SHOPPING_INGEST_DISCLOSURE}</p>

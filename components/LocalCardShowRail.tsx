@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useSyncExternalStore } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import type { CardInventory, TargetWatchlist } from '../types';
@@ -9,6 +9,7 @@ import {
   assembleShowBuyingDesk,
   verdictLabel,
 } from '../lib/shows/showBuyingDesk';
+import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
 
 interface Props {
   inventory: CardInventory[];
@@ -22,6 +23,8 @@ const LocalCardShowRail: React.FC<Props> = ({ inventory, targets = [], compact }
     () => assembleShowBuyingDesk({ inventory, targets, liveTape }),
     [inventory, targets, liveTape],
   );
+  const notes = useSyncExternalStore(subscribeHaggle, haggleSnapshot, haggleSnapshot);
+  const openNotes = notes.filter(note => note.result === 'open').length;
   const rows = (report.shows.filter((row) => row.verdict !== 'skip').slice(0, compact ? 2 : 3));
   const visible = rows.length > 0 ? rows : report.shows.slice(0, compact ? 2 : 3);
 
@@ -53,6 +56,12 @@ const LocalCardShowRail: React.FC<Props> = ({ inventory, targets = [], compact }
       </div>
       {!compact && (
         <p className="mb-4 text-[11px] leading-relaxed text-slate-400">{SHOW_BUYING_DESK_DISCLOSURE}</p>
+      )}
+      {openNotes > 0 && (
+        <p className="mb-3 text-[11px] text-amber-100">
+          {openNotes} open table {openNotes === 1 ? 'note' : 'notes'} on this browser.{' '}
+          <Link to="/alerts" className="text-brand-lime">Floor follow-ups</Link>
+        </p>
       )}
       {visible.length === 0 ? (
         <p className="text-[11px] text-slate-500">{report.emptyReason ?? 'No seeded shows to rank.'}</p>

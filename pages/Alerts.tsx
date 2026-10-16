@@ -15,6 +15,7 @@ import {
   Info,
 } from 'lucide-react';
 import { useAlerts } from '../lib/utils/useAlerts.ts';
+import { useSupabaseInventory } from '../lib/utils/useSupabaseInventory';
 import { AlertType } from '../types.ts';
 import AlertDeliverySettings from '../components/AlertDeliverySettings';
 
@@ -30,6 +31,7 @@ const Alerts: React.FC = () => {
     clearAllAlerts,
     unreadCount
   } = useAlerts();
+  const { inventory, targets, addTarget } = useSupabaseInventory();
 
   const getAlertIcon = (type: AlertType) => {
     switch (type) {
@@ -110,7 +112,11 @@ const Alerts: React.FC = () => {
       </div>
 
       <Suspense fallback={null}>
-        <CollectorAlertDigest />
+        <CollectorAlertDigest
+          inventory={inventory}
+          targets={targets}
+          onWatch={draft => { void addTarget(draft); }}
+        />
         <WantSharePanel />
       </Suspense>
 
