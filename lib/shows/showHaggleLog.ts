@@ -2,12 +2,14 @@
  * Dealer and table notes for one seeded show trip.
  * Typed by the collector. Not a dealer quote and not a live tape.
  */
+import type { Sport } from '../../types';
 import { store } from '../dal/syncStore';
+import { cleanDetail, cleanPlayer, cleanSport } from '../collector/showClose';
 
 export const HAGGLE_KEY = 'msi_show_haggle_v1';
 
 export const HAGGLE_DISCLOSURE =
-  'Notes you type for this seeded show. An ask compared with a card uses sold comps when that card has them, otherwise a demo sketch. Not a dealer quote and not a live tape.';
+  'Notes you type for this seeded show. Name the player to compare asks across tables and to file a buy. An ask compared with a held card uses sold comps when that card has them, otherwise a demo sketch. A shopping-list mark is the local target, not a live print. Not a dealer quote and not a live tape.';
 
 export type HaggleResult = 'bought' | 'passed' | 'open';
 
@@ -22,6 +24,9 @@ export interface HaggleNote {
   note: string;
   savedAt?: string;
   cardId?: string;
+  player?: string;
+  detail?: string;
+  sport?: Sport;
 }
 
 export interface HaggleDraft {
@@ -34,6 +39,9 @@ export interface HaggleDraft {
   note: string;
   savedAt?: string;
   cardId?: string;
+  player?: string;
+  detail?: string;
+  sport?: Sport;
 }
 
 const RESULTS = new Set<HaggleResult>(['bought', 'passed', 'open']);
@@ -102,6 +110,9 @@ export function addHaggle(draft: HaggleDraft): { notes: HaggleNote[]; error: str
     note,
     savedAt: savedStamp(draft.savedAt),
     cardId: cleanCardId(draft.cardId),
+    player: cleanPlayer(draft.player),
+    detail: cleanDetail(draft.detail),
+    sport: cleanSport(draft.sport),
   };
   const next = [entry, ...readAll()].slice(0, 80);
   writeAll(next);

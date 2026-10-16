@@ -1,10 +1,10 @@
 # Product roadmap — post Wave-5 (2026 Q4)
 
 **Audience:** owner / Kyle  
-**Status:** refreshed 2026-10-15. Eng-safe waves through #144, the Phase B UI scaffold (#141, flags off), the #168 local-show buying desk, the show-trip / floor / recap loop, portfolio book insights (#170), the sell / trade-in planner, set completion (#177), table notes / grading submit / portfolio chart / CSV / want-list share (#178), and show day / comps snapshot / trade balance / location / weekly recap (#179) are on the local book. #180 dropped the Gemini web SDK from the client bundle. #181 raised the gzip cap to 3,350,000 bytes. No secrets or `VITE_FF_REAL_*` flips in this plan. Full Phase B exit still needs #77 live eBay tape. Do not claim live Market Movers / SCI Pulse parity before that. Owner direction (2026-10-12): eng-safe demo-tape buildout continues while #77 is open. **#77 stays the only path to live tape.**  
+**Status:** refreshed 2026-10-16. Eng-safe waves through #144, the Phase B UI scaffold (#141, flags off), the #168 local-show buying desk, the show-trip / floor / recap loop, portfolio book insights (#170), the sell / trade-in planner, set completion (#177), table notes / grading submit / portfolio chart / CSV / want-list share (#178), and show day / comps snapshot / trade balance / location / weekly recap (#179) are on the local book. #180 dropped the Gemini web SDK from the client bundle. #181 raised the gzip cap to 3,350,000 bytes. #182 connected set holes, pull-from place, ask versus median, and floor notes. #183 keeps Google sign-in on the login page when the provider is off. No secrets or `VITE_FF_REAL_*` flips in this plan. Full Phase B exit still needs #77 live eBay tape. Do not claim live Market Movers / SCI Pulse parity before that. Owner direction (2026-10-12): eng-safe demo-tape buildout continues while #77 is open. **#77 stays the only path to live tape.**  
 **Canonical ops:** [`NEXT_STEPS.md`](../NEXT_STEPS.md) · [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)
 
-Production on `main` is healthy (`d0bd552`, [#181](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/181)). Remaining unlock for **live tape** is **owner-held #77** (optional file-only `00011`, Stripe smoke, eBay then PSA, optional Sentry, admin-audit confirm, legal, rotation drill). Restore and Vercel Supabase env presence are done. If #77 slips, live tape waits — eng-safe depth on demo/stale tape does not. Engineering agents must not apply `00011`.
+Production on `main` is healthy (`557fe23`, [#182](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/182) on top of [#183](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/183) and [#181](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/181)). Remaining unlock for **live tape** is **owner-held #77** (optional file-only `00011`, Stripe smoke, eBay then PSA, optional Sentry, admin-audit confirm, legal, rotation drill). Restore and Vercel Supabase env presence are done. If #77 slips, live tape waits — eng-safe depth on demo/stale tape does not. Engineering agents must not apply `00011`.
 
 ---
 
@@ -129,7 +129,11 @@ Already known; do not invent Labs pages.
 
 ---
 
-## 6. Eng-safe depth — 2026-10-15
+## 6. Eng-safe depth — 2026-10-16
+
+Checked against `main` @ `557fe23` (#182, with #183 on the login page). Still owner-held: #77. This pass closes the show on the local book: name the card on a table note, the cheapest typed ask in the room, file a bought note as cost basis, open notes and cheap passes on `/alerts`, cash fit on the shopping list, and unfiled buys on the weekly recap. No live flags, no applied migration, gzip cap stays 3,350,000.
+
+## 6c. Eng-safe depth — 2026-10-15
 
 Checked against `main` @ `d0bd552` (#181). Still owner-held: #77. This pass connects desks that were already on the local book: demo set holes on the show shopping list, a watch button for a hole, the saved binder / box / slab on sell lines, a typed ask versus the card median, and dated floor notes on the weekly recap. No live flags, no applied migration, gzip cap stays 3,350,000.
 

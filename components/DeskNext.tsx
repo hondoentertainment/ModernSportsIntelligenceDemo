@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useSyncExternalStore } from 'react';
+import { Link } from 'react-router-dom';
 import type { CardInventory } from '../types';
 import {
   DESK_NOTE,
@@ -16,7 +17,10 @@ import {
   type PlaceFilter,
 } from '../lib/collector/deskNext';
 import { floorWeek } from '../lib/collector/floorPack';
+import { unfiledBuys, unfiledCopy } from '../lib/collector/showClose';
+import { store } from '../lib/dal/syncStore';
 import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
+import { readCashBudget } from '../lib/shows/showTripLoop';
 
 const field = 'mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm';
 const btn = 'min-h-[44px] rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100';
@@ -46,10 +50,16 @@ export function ShowDayPanel({ showId, lines, cashUsd }: {
   cashUsd: number | null;
 }) {
   const [checked, setChecked] = useState(() => readChecked(showId));
+  const savedCash = useSyncExternalStore(
+    listener => store.onWrite(listener),
+    () => readCashBudget(showId),
+    () => readCashBudget(showId),
+  );
+  const cash = savedCash ?? cashUsd;
   const openBuy = lines.reduce((sum, line) => (
     line.side === 'buy' && !checked.includes(line.id) && line.usd != null ? sum + line.usd : sum
   ), 0);
-  const left = dayLeft(cashUsd, openBuy);
+  const left = dayLeft(cash, openBuy);
   return (
     <section className="mt-3 rounded-xl border border-slate-800 p-3" aria-label="Show day checklist">
       <h3 className="text-xs font-black uppercase tracking-widest text-white">Show day</h3>
@@ -217,6 +227,7 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
   const recap = useMemo(() => weeklyRecap(inventory), [inventory]);
   const notes = useSyncExternalStore(subscribeHaggle, haggleSnapshot, haggleSnapshot);
   const floor = useMemo(() => floorWeek(notes), [notes]);
+  const waiting = useMemo(() => unfiledBuys(notes, inventory), [notes, inventory]);
   const floorCount = floor.bought + floor.passed + floor.open;
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" aria-label="Weekly collection recap">
@@ -230,6 +241,8 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
           ? 'No dated floor notes this week. Notes with no date stay off this count.'
           : `Floor notes this week: ${floor.bought} bought, ${floor.passed} passed, ${floor.open} open${floor.bought > 0 ? ` · typed spend ${usd(floor.typedSpendUsd)}` : ''}. Not a settlement.`}
       </p>
+      <p className="mt-2 text-xs text-slate-300">{unfiledCopy(waiting)}</p>
+      <Link to="/local-card-shows" className="inline-flex min-h-[44px] items-center text-xs text-brand-lime">Show desk</Link>
       {recap.movers.length === 0 ? <p className="mt-2 text-sm text-slate-400">No held cards.</p> : (
         <ul className="mt-2 space-y-1">
           {recap.movers.map((row) => (

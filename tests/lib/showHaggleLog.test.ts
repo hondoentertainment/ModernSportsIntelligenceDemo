@@ -32,10 +32,29 @@ describe('showHaggleLog', () => {
       showId: 'nyc', dealer: 'Ace', table: '3', askUsd: 10, offerUsd: 8, result: 'open', note: '', cardId: 'bad id',
     });
     expect(dropped.notes[0].cardId).toBeUndefined();
-    expect(readHaggle('nyc')).toHaveLength(3);
+    const named = addHaggle({
+      showId: 'nyc',
+      dealer: 'Named',
+      table: '5',
+      askUsd: 12,
+      offerUsd: 0,
+      result: 'passed',
+      note: '',
+      player: '  Showclose   Player ',
+      detail: '  2024 Topps  ',
+      sport: 'Basketball',
+    });
+    expect(named.notes[0]).toMatchObject({ player: 'Showclose Player', detail: '2024 Topps', sport: 'Basketball' });
+    const droppedSport = addHaggle({
+      showId: 'nyc', dealer: 'Named', table: '6', askUsd: 12, offerUsd: 0, result: 'open', note: '', sport: 'Cricket' as 'Baseball',
+    });
+    expect(droppedSport.notes[0].sport).toBeUndefined();
+    expect(readHaggle('nyc')).toHaveLength(5);
     expect(readHaggle('other')).toHaveLength(0);
     removeHaggle('nyc', dropped.notes[0].id);
     removeHaggle('nyc', dated.notes[0].id);
+    removeHaggle('nyc', named.notes[0].id);
+    removeHaggle('nyc', droppedSport.notes[0].id);
     expect(removeHaggle('nyc', saved.notes[0].id)).toHaveLength(0);
     expect(readHaggle('nyc')).toHaveLength(0);
   });

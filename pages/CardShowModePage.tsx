@@ -166,7 +166,7 @@ const CardShowModePage: React.FC = () => {
           </Link>
         </div>
         <p className="mt-2 text-[11px] text-emerald-100/80">
-          Live comps: {preferRealCompsWhenConfigured() ? 'ON (eBay flag)' : 'OFF — mock/stale labels until VITE_FF_REAL_EBAY'}
+          Live comps: {preferRealCompsWhenConfigured() ? 'ON (eBay flag)' : 'OFF — mock/stale labels until VITE_FF_REAL_EBAY'}. Table notes, the cheapest ask in the room, and filing a buy stay on the local show desk.
           {' · '}
           PSA: {isFeatureEnabled('USE_REAL_PSA') ? 'live' : 'demo badges'}
         </p>
