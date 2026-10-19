@@ -118,10 +118,14 @@ test.describe('Show alerts and shopping list', () => {
         await expect(shopping.locator('p').filter({ hasText: /Jayson Tatum\s+Collection gap/ })).toBeVisible();
         await expect(shopping.getByText('Collection gap', { exact: true })).toBeVisible();
         await expect(shopping.getByText(/target buy \$180/i)).toBeVisible();
-        await expect(shopping.getByText('Mike Trout')).toBeVisible();
+        await expect(shopping.locator('p').filter({ hasText: /Mike Trout\s+Sell duplicate/ })).toBeVisible();
         await expect(shopping.getByText('Sell duplicate', { exact: true })).toBeVisible();
         await expect(shopping.getByText(/offer near \$80/i)).toBeVisible();
         await expect(shopping.getByText('Patrick Mahomes')).toHaveCount(0);
+        const pull = shopping.getByRole('region', { name: /pull sheet for nyc monthly card meetup/i });
+        await expect(pull.getByText(/1 card to pull: 1 from No saved place/i)).toBeVisible();
+        await expect(pull.getByText(/Mike Trout/)).toBeVisible();
+        await expect(pull.getByText(/not a live tape/i)).toBeVisible();
         await expect(page.getByText(/not a dealer inventory/i)).toBeVisible();
 
         await page.reload();
