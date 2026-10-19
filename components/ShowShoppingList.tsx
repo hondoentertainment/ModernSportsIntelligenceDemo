@@ -11,6 +11,7 @@ import {
 import { readPlaces, type Place } from '../lib/collector/deskNext';
 import { pullCopy } from '../lib/collector/floorPack';
 import { cashFit, cashFitCopy, cashLineCopy, type CashFitCall, type CashSource } from '../lib/collector/showClose';
+import { buildPullSheet, pullSheetCopy } from '../lib/collector/pullSheet';
 import { store } from '../lib/dal/syncStore';
 import { SHOPPING_INGEST_DISCLOSURE } from '../lib/shows/showShoppingIngest';
 import { readCashBudget } from '../lib/shows/showTripLoop';
@@ -72,6 +73,16 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
     () => cashFit(list.buys.map(line => ({ id: line.id, usd: line.targetBuyUsd })), cash),
     [list.buys, cash],
   );
+  const pullSheet = buildPullSheet(
+    list.sells.map(line => ({
+      id: line.id,
+      cardId: line.cardId,
+      player: line.player,
+      detail: line.detail,
+      markUsd: line.marketMarkUsd,
+    })),
+    places,
+  );
   return (
     <>
       <section className="mt-3 text-slate-300" aria-label={`Shopping list for ${show.name}`}>
@@ -99,6 +110,27 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
             )}
             <h4 className="text-xs text-sky-200">Sell or trade</h4>
             {list.sells.length === 0 ? <p className="text-xs text-slate-500">No extras.</p> : <Lines lines={list.sells} places={places} />}
+            {pullSheet.count > 0 && (
+              <section className="mt-3" aria-label={`Pull sheet for ${show.name}`}>
+                <h4 className="text-xs text-slate-200">Pull sheet</h4>
+                <p className="text-xs text-slate-400">{pullSheetCopy(pullSheet)}</p>
+                <ul className="mt-2 space-y-2">
+                  {pullSheet.groups.map(group => (
+                    <li key={group.place}>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{group.label}</p>
+                      <ul>
+                        {group.items.map(item => (
+                          <li key={item.id} className="text-xs text-slate-200">
+                            {item.player}
+                            {item.detail ? <span className="text-slate-400"> · {item.detail}</span> : null}
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
           </>
         )}
       </section>

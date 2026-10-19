@@ -206,6 +206,66 @@ export function isAuthRateLimited(error: ErrorLike): boolean {
   );
 }
 
+function errorText(error: unknown): { code: string; message: string } {
+  if (!error || typeof error !== 'object') {
+    return { code: '', message: typeof error === 'string' ? error.toLowerCase() : '' };
+  }
+  const record = error as { code?: unknown; message?: unknown };
+  return {
+    code: typeof record.code === 'string' ? record.code.toLowerCase() : '',
+    message: typeof record.message === 'string' ? record.message.toLowerCase() : '',
+  };
+}
+
+/** Refresh and JWT failures. A hung refresh timeout is not an expired session. */
+export function isSessionExpiredError(error: unknown): boolean {
+  const { code, message } = errorText(error);
+  if (message.includes('timed out') || message.includes('timeout')) return false;
+  if (
+    code === 'session_expired' ||
+    code === 'refresh_token_not_found' ||
+    code === 'session_not_found'
+  ) {
+    return true;
+  }
+  if (message.includes('jwt expired') || message.includes('token has expired')) return true;
+  if (message.includes('refresh token')) return true;
+  if (message.includes('auth session missing') || message.includes('session missing')) return true;
+  if (message.includes('session expired') || message.includes('session has expired')) return true;
+  return false;
+}
+
+/** Recovery links that can no longer set a password. */
+export function isStaleRecoveryError(error: unknown): boolean {
+  const { code, message } = errorText(error);
+  if (code === 'otp_expired' || code === 'flow_state_expired') return true;
+  if (message.includes('flow state') || message.includes('flow_state')) return true;
+  if (message.includes('otp') && message.includes('expired')) return true;
+  if (message.includes('link') && (message.includes('expired') || message.includes('invalid'))) return true;
+  return false;
+}
+
+export function currentPasswordFailure(error: ErrorLike): { message: string; code: string; status: number } {
+  if (isSessionExpiredError(error)) {
+    return {
+      message: 'Your session has expired. Please sign in again.',
+      code: 'session_expired',
+      status: 401,
+    };
+  }
+  if (isAuthRateLimited(error)) {
+    return { message: AUTH_RATE_LIMIT_ERROR, code: 'over_request_rate_limit', status: 429 };
+  }
+  if (isCredentialFailure(error)) {
+    return { message: 'Current password is incorrect.', code: 'current_password_incorrect', status: 401 };
+  }
+  return {
+    message: 'Could not verify the current password. Please try again.',
+    code: 'server_error',
+    status: 500,
+  };
+}
+
 /** Reset and sign-in must not tell the caller whether the account exists. */
 export function isHiddenAccountError(error: ErrorLike): boolean {
   if (!error) return false;

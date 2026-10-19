@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 
 const updateUsername = vi.fn();
 const changePassword = vi.fn();
@@ -21,11 +22,24 @@ vi.mock('../../lib/supabase', () => ({
 
 import AccountCredentialsForm from '../../components/AccountCredentialsForm';
 
+function renderForm() {
+  return render(
+    <MemoryRouter>
+      <AccountCredentialsForm />
+    </MemoryRouter>,
+  );
+}
+
 describe('Account credentials form', () => {
+  it('shows the password rules before a new password is typed', () => {
+    renderForm();
+    expect(screen.getByText(/8\+ characters with an uppercase letter, a lowercase letter, and a number/i)).toBeInTheDocument();
+  });
+
   it('saves a new username', async () => {
     updateUsername.mockResolvedValue({ error: null });
     const user = userEvent.setup();
-    render(<AccountCredentialsForm />);
+    renderForm();
 
     const field = screen.getByLabelText(/^username$/i);
     await user.clear(field);
@@ -39,7 +53,7 @@ describe('Account credentials form', () => {
   it('shows a username validation error', async () => {
     updateUsername.mockClear();
     const user = userEvent.setup();
-    render(<AccountCredentialsForm />);
+    renderForm();
 
     const field = screen.getByLabelText(/^username$/i);
     await user.clear(field);
@@ -53,7 +67,7 @@ describe('Account credentials form', () => {
   it('updates the password and can reveal it', async () => {
     changePassword.mockResolvedValue({ error: null });
     const user = userEvent.setup();
-    render(<AccountCredentialsForm />);
+    renderForm();
 
     expect(screen.getByLabelText(/^current password$/i)).toHaveAttribute('type', 'password');
     await user.click(screen.getByRole('button', { name: /show password/i }));
@@ -78,7 +92,7 @@ describe('Account credentials form', () => {
       },
     });
     const user = userEvent.setup();
-    render(<AccountCredentialsForm />);
+    renderForm();
 
     await user.type(screen.getByLabelText(/^current password$/i), 'nope');
     await user.type(screen.getByLabelText(/^new password$/i), 'NewPassword1');
@@ -86,5 +100,25 @@ describe('Account credentials form', () => {
     await user.click(screen.getByRole('button', { name: /update password/i }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/current password is incorrect/i);
+  });
+
+  it('offers sign-in when the session expired during a password change', async () => {
+    changePassword.mockResolvedValue({
+      error: {
+        name: 'AuthError',
+        message: 'Your session has expired. Please sign in again.',
+        code: 'session_expired',
+        status: 401,
+      },
+    });
+    const user = userEvent.setup();
+    renderForm();
+    await user.type(screen.getByLabelText(/^current password$/i), 'OldPassword1');
+    await user.type(screen.getByLabelText(/^new password$/i), 'NewPassword1');
+    await user.type(screen.getByLabelText(/^confirm new password$/i), 'NewPassword1');
+    await user.click(screen.getByRole('button', { name: /update password/i }));
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(/session has expired/i);
+    expect(alert).toHaveTextContent(/sign in/i);
   });
 });

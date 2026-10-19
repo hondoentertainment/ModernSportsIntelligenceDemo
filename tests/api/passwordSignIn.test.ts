@@ -100,6 +100,32 @@ describe('POST /api/auth/password-sign-in', () => {
     expect(signInWithPassword).not.toHaveBeenCalled();
   });
 
+  it('throttles repeated attempts with one generic body that does not echo the username', async () => {
+    delete process.env.RATE_LIMIT_DISABLED;
+    rpc.mockResolvedValue({ data: null, error: null });
+    const headers = { 'x-forwarded-for': '203.0.113.44' };
+    for (let i = 0; i < 20; i += 1) {
+      const res = makeRes();
+      await signInHandler({ method: 'POST', headers, body: { identifier: 'Card_Fan', password: 'Password1' } }, res);
+      expect(res.statusCode).toBe(401);
+    }
+    const first = makeRes();
+    await signInHandler({ method: 'POST', headers, body: { identifier: 'Card_Fan', password: 'Password1' } }, first);
+    const second = makeRes();
+    await signInHandler({ method: 'POST', headers, body: { identifier: 'Other_Fan', password: 'OtherPass1' } }, second);
+    expect(first.statusCode).toBe(429);
+    expect(second.statusCode).toBe(429);
+    expect(first.body).toEqual(second.body);
+    expect(first.headers['Retry-After']).toBeTruthy();
+    const text = JSON.stringify(first.body);
+    expect(text).not.toContain('Card_Fan');
+    expect(text).not.toContain('Other_Fan');
+    expect(text).not.toContain('@');
+    expect(first.body).toMatchObject({ code: 'RATE_LIMITED' });
+    expect(rpc).toHaveBeenCalledTimes(20);
+    expect(signInWithPassword).not.toHaveBeenCalled();
+  });
+
   it('rejects a non-POST and a body that is missing a password', async () => {
     const method = makeRes();
     await signInHandler({ method: 'GET' }, method);

@@ -6,7 +6,7 @@
 
 MSI's **Bloomberg terminal core** is engineering-complete: consensus ledger across Dashboard, War Room, and Audit Dossier; holdings catalysts; Alpha War Room CTA; `/api-licensing` + `/card-show-mode` GA; command palette keeps `/scan` on dashboard. **Eng-safe product waves through [#144](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/144)** (`3ca10f4`, Phase B–D scaffolds, plus the [#145](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/145) follow-up) are on `main`. The Phase B pricing-truth UI scaffold ([#141](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/141), `db907e3`) shipped **without** live flags. Waves 2–5 ([#131](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/131)–[#139](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/139)) shipped earlier. Six of seven catalog betas are `live`; only `fractional-vault` remains `beta` for legal sign-off (2026-09 quarterly sweep — no promotions, no new hides).
 
-**Production (2026-10-16):** healthy on `main` @ [`557fe23`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/557fe23). [#182](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/182) connected the local book to the show floor. [#183](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/183) keeps Google sign-in on the login page when the provider is off. [#181](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/181) set the gzip cap at 3,350,000 bytes. [#180](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/180) dropped the Gemini web SDK from the client bundle. Collector desks already on `main`: [#179](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/179) show day, comps snapshot, trade balance, card location, and weekly recap; [#178](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/178) table notes, grading submit, portfolio chart, CSV, and want-list share; [#177](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/177) set completion from the book. The sell planner landed in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) / [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173). Toolchain on `main`: Node ≥22.22.2, TypeScript 7 (`@typescript/native` ^7.0.2) side-by-side with the TypeScript 6 API for ESLint, jsdom 30, `tailwindcss` ^4.3.3 ([#161](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/161)), `eslint` ^10.12.0. `@eslint/js` stays on 9.x. Do not add another major migration in an eng-safe PR.
+**Production (2026-10-19):** healthy on `main` @ [`569dd05`](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/commit/569dd05). [#186](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/186) added username + password auth. [#185](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/185) aligned frontier desk tests with the collection. [#184](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/184) closed the show floor back into the local book. [#182](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/182) connected the local book to the show floor. [#183](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/183) keeps Google sign-in on the login page when the provider is off. [#181](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/181) set the gzip cap at 3,350,000 bytes. [#180](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/180) dropped the Gemini web SDK from the client bundle. Collector desks already on `main`: [#179](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/179) show day, comps snapshot, trade balance, card location, and weekly recap; [#178](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/178) table notes, grading submit, portfolio chart, CSV, and want-list share; [#177](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/177) set completion from the book. The sell planner landed in [#172](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/172) / [#173](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/173). Toolchain on `main`: Node ≥22.22.2, TypeScript 7 (`@typescript/native` ^7.0.2) side-by-side with the TypeScript 6 API for ESLint, jsdom 30, `tailwindcss` ^4.3.3 ([#161](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/161)), `eslint` ^10.12.0. `@eslint/js` stays on 9.x. Do not add another major migration in an eng-safe PR.
 
 **Hosted data:** Supabase `ModernSportsIntelligence` (`vhbsokjqchaafluimgjh`) is **ACTIVE_HEALTHY**. Migrations `00001`–`00010` are applied. Production `GET /api/health` is `ok: true` with `config.serverApiAuth: true`. Vercel already has the Supabase URL, anon key, service role, and `ALLOWED_ORIGIN` (presence checked 2026-09-27; re-sync only if those keys rotate). Optional `supabase/migrations/00011_price_history_freshness_sla.sql` stays **file-only**. It is an owner-held optional item. **Engineering agents must not apply it.**
 
@@ -163,13 +163,17 @@ The show list, the set desk, the sell planner, and the weekly recap now share on
 
 Copy does not claim a live Market Movers or Sports Card Investor tape.
 
+## Frontier desk tests — shipped (#185)
+
+[#185](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/185) (`213b827`) aligned frontier desk tests with collection-driven output. Those desks read the collection. They do not render sample rows. This is not a tape change. No `VITE_FF_REAL_*` flip.
+
 ## Google sign-in — shipped (#183)
 
 The login page stays put when Google auth is off. GoTrue answers a disabled provider with a JSON 400, and the client was navigating there. The page probes the authorize URL and shows that failure on the form. This is not a tape change. No `VITE_FF_REAL_*` flip.
 
-## Username + password — this change
+## Username + password — shipped (#186)
 
-Sign-up collects a username (3-20 letters, numbers, or underscores), email, and a password that needs 8+ characters with uppercase, lowercase, and a number. Sign-in accepts a username or an email. A username is resolved to an email on the server (`POST /api/auth/password-sign-in`) with the service role calling `resolve_username_email`. The browser never receives that email, and a miss looks the same as a wrong password. Google sign-in on the login page is unchanged.
+[#186](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/186) (`569dd05`) is on `main`. Sign-up collects a username (3-20 letters, numbers, or underscores), email, and a password that needs 8+ characters with uppercase, lowercase, and a number. Sign-in accepts a username or an email. A username is resolved to an email on the server (`POST /api/auth/password-sign-in`) with the service role calling `resolve_username_email`. The browser never receives that email, and a miss looks the same as a wrong password. Google sign-in on the login page is unchanged.
 
 Until the owner applies the migration, a username sign-in says to use email instead. Email sign-in, Google, and password reset by email keep working.
 
@@ -180,7 +184,7 @@ Until the owner applies the migration, a username sign-in says to use email inst
 | **Forgot / reset password**     | `/forgot-password` → email → `/reset-password` | The reset link uses the site origin. Supabase has to allow that origin.                                              |
 | **Change username or password** | `/settings`                                    | Password change checks the current password. Username change writes the signed-in user's own `profiles` row.         |
 
-Copy does not claim a live Market Movers or Sports Card Investor tape. No `VITE_FF_REAL_*` flip. The migration is not applied from this PR.
+Copy does not claim a live Market Movers or Sports Card Investor tape. No `VITE_FF_REAL_*` flip. The migration is not applied from that PR. The 2026-10-19 audit below is the follow-through on these same pages: the password hint, loading and error states, a stale reset link, a dead session, and the sign-in throttle. It does not apply `00013`.
 
 **Owner steps (do not run from an engineering agent):**
 
@@ -190,9 +194,9 @@ Copy does not claim a live Market Movers or Sports Card Investor tape. No `VITE_
 4. Authentication → SMTP: the built-in mailer is rate limited. Add custom SMTP before relying on reset or confirmation volume.
 5. Vercel already has the service role (presence checked earlier). Username sign-in uses it only on the server. Do not add a `VITE_` copy.
 
-## Show close — this change
+## Show close — shipped (#184)
 
-The table, the shopping list, the weekly recap, and `/alerts` now share one local book. Sports Card Investor and Market Movers still lead on live tape. They do not file a show-floor buy or tell you which ask in the room was cheaper.
+[#184](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/184) (`a133799`) is on `main`. The table, the shopping list, the weekly recap, and `/alerts` now share one local book. Sports Card Investor and Market Movers still lead on live tape. They do not file a show-floor buy or tell you which ask in the room was cheaper.
 
 | Slice                           | Where                                                                                                                                                                                                                                                               | Honest limit                                                                              |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
@@ -204,6 +208,16 @@ The table, the shopping list, the weekly recap, and `/alerts` now share one loca
 | **Unfiled buys**                | Collection weekly recap. Bought notes with a player that are not in the book yet.                                                                                                                                                                                   | This browser. Not a settlement.                                                           |
 
 The digest also refreshes when watchlist targets hydrate, the same way the want-list link already does. Copy does not claim a live Market Movers or Sports Card Investor tape.
+
+## Pull sheet — this change
+
+The shopping list already names a sell copy and where that copy sits. This groups those sell lines so the cards come out of the binder, box, or slab case before the seeded show. Sports Card Investor and Market Movers still lead on live tape. They do not pack a show from the place saved on the book.
+
+| Slice          | Where                                                                                                                        | Honest limit                                                                            |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **Pull sheet** | `/local-card-shows`, under each shopping list. Binder, then box, then slab case, then no saved place. One row per sell copy. | This browser. Not a warehouse system. The copy that stays in the book is off the sheet. |
+
+Copy does not claim a live Market Movers or Sports Card Investor tape.
 
 ## Sell and trade-in planner — shipped (#172 / #173)
 
@@ -229,6 +243,10 @@ Touch targets and stacking on the desks a collector actually opens on a phone. N
 | **Dashboard show rail**       | Show-desk link is a 44px target.                                                                                                                                |
 
 Show alerts and the shopping list are the section above. The mobile pass does not edit `lib/shows/showBuyingDesk.ts`.
+
+## Eng-safe audit — 2026-10-19
+
+`NEXT_STEPS.md`, [`plans/FEATURE_ROADMAP_REVIEW.md`](plans/FEATURE_ROADMAP_REVIEW.md), and [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md) were checked against `main` @ `569dd05` ([#186](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/186)). Sections that still said "this change" for merged work now name the PR: username + password [#186](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/186), show close [#184](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/184), frontier desk test alignment [#185](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/185). This change follows those auth flows on demo and pre-`00013` conditions. The password hint stays visible and matches 8+ characters with uppercase, lowercase, and a number. Sign-in, sign-up, forgot password, reset, and settings keep an accessible error and a loading state. A stale reset link, or a session that died on refresh, asks for a new sign-in. `POST /api/auth/password-sign-in` keeps an in-memory throttle. The 429 body does not echo the username. The collector slice groups shopping-list sell lines into a pull sheet by the saved place. Owner steps for `00013` stay owner-only. Left in place on purpose: vanity DNS, a full P2P exchange, production centering CV, IRS completeness, owner VAPID, and live tape. No `VITE_FF_REAL_*` flip, no applied migration, no secret in git. Gzip cap is 3,350,000.
 
 ## Eng-safe audit — 2026-10-16
 

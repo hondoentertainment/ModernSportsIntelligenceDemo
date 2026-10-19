@@ -17,14 +17,18 @@ const ForgotPassword: React.FC = () => {
         setError('');
         setLoading(true);
 
-        const { error } = await resetPassword(email);
-
-        if (error) {
-            setError(getFriendlyAuthMessage(error));
-        } else {
-            setSuccess(true);
+        try {
+            const { error } = await resetPassword(email);
+            if (error) {
+                setError(getFriendlyAuthMessage(error));
+            } else {
+                setSuccess(true);
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Could not send a reset link. Please try again.');
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     if (success) {
@@ -78,6 +82,7 @@ const ForgotPassword: React.FC = () => {
 
                 {error && (
                     <div
+                        id="forgot-error"
                         role="alert"
                         aria-live="polite"
                         className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 animate-in fade-in slide-in-from-top-2"
@@ -89,7 +94,7 @@ const ForgotPassword: React.FC = () => {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-5" aria-busy={loading}>
                     <div>
                         <label htmlFor="forgot-identifier" className="block text-slate-400 text-sm mb-2">Username or email</label>
                         <div className="relative">
@@ -103,6 +108,8 @@ const ForgotPassword: React.FC = () => {
                                 spellCheck={false}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                aria-invalid={error ? true : undefined}
+                                aria-describedby={error ? 'forgot-error' : undefined}
                                 className="w-full px-4 py-3 pl-12 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all"
                                 placeholder="username or you@example.com"
                                 required
@@ -113,17 +120,19 @@ const ForgotPassword: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
+                        aria-busy={loading}
                         className="w-full py-3 px-4 rounded-xl bg-linear-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-lg tracking-wider hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                         {loading ? (
                             <>
-                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <Loader2 className="w-5 h-5 animate-spin" aria-hidden />
                                 SENDING...
                             </>
                         ) : (
                             'SEND RESET LINK'
                         )}
                     </button>
+                    {loading ? <span className="sr-only" role="status">Sending reset link</span> : null}
                 </form>
 
                 <p className="text-center text-slate-400 mt-8">

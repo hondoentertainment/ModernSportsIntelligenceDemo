@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { consumeSessionExpiredNotice } from '../lib/authSessionNotice';
 import { getFriendlyAuthMessage } from '../lib/utils/authErrors';
 import { Eye, EyeOff, Loader2, TrendingUp, Zap, Shield } from 'lucide-react';
 
@@ -14,6 +15,12 @@ const Login: React.FC = () => {
 
     const { signIn, signInWithGoogle, demoLogin, isDemoMode } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (consumeSessionExpiredNotice()) {
+            setError('Your session has expired. Please sign in again.');
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -134,6 +141,7 @@ const Login: React.FC = () => {
 
                     {error && (
                         <div
+                            id="login-error"
                             role="alert"
                             aria-live="polite"
                             className={`mb-6 p-4 rounded-2xl border animate-in fade-in slide-in-from-top-2 ${error.includes('wait') || error.includes('rate') ? 'bg-amber-500/10 border-amber-500/30' : 'bg-red-500/10 border-red-500/30'}`}
@@ -158,7 +166,7 @@ const Login: React.FC = () => {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4" aria-busy={loading}>
                         <div>
                             <label htmlFor="login-identifier" className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Username or email</label>
                             <input
@@ -170,6 +178,8 @@ const Login: React.FC = () => {
                                 spellCheck={false}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                aria-invalid={error ? true : undefined}
+                                aria-describedby={error ? 'login-error' : undefined}
                                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all text-sm"
                                 placeholder="username or you@example.com"
                                 required
@@ -188,6 +198,8 @@ const Login: React.FC = () => {
                                     autoComplete="current-password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    aria-invalid={error ? true : undefined}
+                                    aria-describedby={error ? 'login-error' : undefined}
                                     className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all pr-12 text-sm"
                                     placeholder="••••••••"
                                     required
@@ -216,10 +228,12 @@ const Login: React.FC = () => {
                         <button
                             type="submit"
                             disabled={loading}
+                            aria-busy={loading}
                             className="w-full py-3 px-4 rounded-xl bg-linear-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-lg tracking-wider hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                         >
-                            {loading ? <><Loader2 className="w-5 h-5 animate-spin" /> SIGNING IN...</> : 'SIGN IN'}
+                            {loading ? <><Loader2 className="w-5 h-5 animate-spin" aria-hidden /> SIGNING IN...</> : 'SIGN IN'}
                         </button>
+                        {loading ? <span className="sr-only" role="status">Signing in</span> : null}
                     </form>
 
                     <p className="text-center text-slate-500 text-[11px] font-bold uppercase tracking-widest mt-6">
@@ -251,6 +265,7 @@ const Login: React.FC = () => {
                                 type="button"
                                 onClick={handleGoogleLogin}
                                 disabled={googleLoading || loading}
+                                aria-busy={googleLoading}
                                 className="w-full py-3 px-4 rounded-xl bg-slate-800 border border-slate-700 text-white font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                             >
                                 <svg className="w-4 h-4" viewBox="0 0 24 24">
