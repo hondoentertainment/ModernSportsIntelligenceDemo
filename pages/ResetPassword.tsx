@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getFriendlyAuthMessage } from '../lib/utils/authErrors';
+import { getPasswordChecks, passwordRuleError } from '../lib/authCredentials';
 import { Lock, Loader2, Check, X, TrendingUp, Eye, EyeOff, AlertTriangle, ArrowLeft, Shield } from 'lucide-react';
 
 const ResetPassword: React.FC = () => {
@@ -18,13 +19,7 @@ const ResetPassword: React.FC = () => {
     // Determine if the user has a valid recovery session
     const hasValidSession = recoveryMode || !!session;
 
-    // Password strength checks (consistent with Signup page)
-    const passwordChecks = {
-        length: password.length >= 8,
-        uppercase: /[A-Z]/.test(password),
-        lowercase: /[a-z]/.test(password),
-        number: /[0-9]/.test(password),
-    };
+    const passwordChecks = getPasswordChecks(password);
     const passwordStrength = Object.values(passwordChecks).filter(Boolean).length;
 
     // Clean up recovery mode if user navigates away
@@ -37,6 +32,12 @@ const ResetPassword: React.FC = () => {
         };
     }, [recoveryMode, success, clearRecoveryMode]);
 
+    useEffect(() => {
+        if (!success) return;
+        const timer = window.setTimeout(() => navigate('/login'), 3000);
+        return () => window.clearTimeout(timer);
+    }, [success, navigate]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
@@ -46,8 +47,9 @@ const ResetPassword: React.FC = () => {
             return;
         }
 
-        if (passwordStrength < 3) {
-            setError('Please create a stronger password');
+        const ruleError = passwordRuleError(password);
+        if (ruleError) {
+            setError(ruleError);
             return;
         }
 
@@ -59,9 +61,6 @@ const ResetPassword: React.FC = () => {
             setError(getFriendlyAuthMessage(error));
         } else {
             setSuccess(true);
-            setTimeout(() => {
-                navigate('/login');
-            }, 3000);
         }
         setLoading(false);
     };
@@ -159,10 +158,11 @@ const ResetPassword: React.FC = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-2.5 ml-1">New Security Key</label>
+                            <label htmlFor="reset-password" className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-2.5 ml-1">New Security Key</label>
                             <div className="relative">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                                 <input
+                                    id="reset-password"
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -173,6 +173,7 @@ const ResetPassword: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                                     className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -181,10 +182,11 @@ const ResetPassword: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-2.5 ml-1">Confirm Security Key</label>
+                            <label htmlFor="reset-confirm" className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-2.5 ml-1">Confirm Security Key</label>
                             <div className="relative">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                                 <input
+                                    id="reset-confirm"
                                     type={showPassword ? 'text' : 'password'}
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -220,7 +222,7 @@ const ResetPassword: React.FC = () => {
 
                     <button
                         type="submit"
-                        disabled={loading || passwordStrength < 3}
+                        disabled={loading || passwordRuleError(password) !== null}
                         className="w-full py-4 px-6 rounded-2xl bg-linear-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 shadow-[0_4px_20px_rgba(190,242,100,0.2)]"
                     >
                         {loading ? (

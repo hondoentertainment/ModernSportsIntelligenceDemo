@@ -22,6 +22,7 @@ import {
 } from '../lib/utils/migration';
 import { MIGRATION_CONFLICT_POLICY_OPTIONS } from '../lib/utils/migrationPolicyOptions';
 import { Link } from 'react-router-dom';
+import AccountCredentialsForm from '../components/AccountCredentialsForm';
 
 interface UserSettings {
   insightDepth: 'context' | 'balanced' | 'data';
@@ -136,6 +137,8 @@ const Profile: React.FC = () => {
           {saved ? 'Saved!' : 'Save Changes'}
         </button>
       </section>
+
+      <AccountCredentialsForm />
 
       {/* Subscription & Billing */}
       <section className="bg-slate-950 border border-slate-800 rounded-3xl p-8">

@@ -167,6 +167,29 @@ Copy does not claim a live Market Movers or Sports Card Investor tape.
 
 The login page stays put when Google auth is off. GoTrue answers a disabled provider with a JSON 400, and the client was navigating there. The page probes the authorize URL and shows that failure on the form. This is not a tape change. No `VITE_FF_REAL_*` flip.
 
+## Username + password — this change
+
+Sign-up collects a username (3-20 letters, numbers, or underscores), email, and a password that needs 8+ characters with uppercase, lowercase, and a number. Sign-in accepts a username or an email. A username is resolved to an email on the server (`POST /api/auth/password-sign-in`) with the service role calling `resolve_username_email`. The browser never receives that email, and a miss looks the same as a wrong password. Google sign-in on the login page is unchanged.
+
+Until the owner applies the migration, a username sign-in says to use email instead. Email sign-in, Google, and password reset by email keep working.
+
+| Slice                           | Where                                          | Honest limit                                                                                                         |
+| ------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Username sign-up**            | `/signup`                                      | Case-insensitive uniqueness starts when `00013` is applied. Before that, the handle is stored on the auth user only. |
+| **Username or email sign-in**   | `/login`                                       | Username lookup needs `00013` and `SUPABASE_SERVICE_ROLE_KEY` on Vercel.                                             |
+| **Forgot / reset password**     | `/forgot-password` → email → `/reset-password` | The reset link uses the site origin. Supabase has to allow that origin.                                              |
+| **Change username or password** | `/settings`                                    | Password change checks the current password. Username change writes the signed-in user's own `profiles` row.         |
+
+Copy does not claim a live Market Movers or Sports Card Investor tape. No `VITE_FF_REAL_*` flip. The migration is not applied from this PR.
+
+**Owner steps (do not run from an engineering agent):**
+
+1. On Supabase `vhbsokjqchaafluimgjh`, run the preflight query in `supabase/migrations/00013_profiles_username_login.sql`. If it returns rows, rename the duplicate handles, then apply that file in the SQL editor. Do not apply `00011` in the same pass unless you mean to. After it is applied, run `npm run types:supabase` and commit `types/supabase.gen.ts` so the drift check matches the live schema. The generated file is unchanged in this PR because the functions are not on the live database yet.
+2. Authentication → Providers: keep Email enabled. Set the minimum password length to 8 so it matches the form. Confirm email is optional; if it stays on, new accounts must open the confirmation link before sign-in.
+3. Authentication → URL configuration: Site URL is the production origin (no hash). Add redirect URLs for production and preview origins. Reset emails use that origin; the app then opens `/#/reset-password`.
+4. Authentication → SMTP: the built-in mailer is rate limited. Add custom SMTP before relying on reset or confirmation volume.
+5. Vercel already has the service role (presence checked earlier). Username sign-in uses it only on the server. Do not add a `VITE_` copy.
+
 ## Show close — this change
 
 The table, the shopping list, the weekly recap, and `/alerts` now share one local book. Sports Card Investor and Market Movers still lead on live tape. They do not file a show-floor buy or tell you which ask in the room was cheaper.
@@ -602,7 +625,7 @@ upgrade** — `npm ci` will refuse the engine constraint.
 4. **Don't let `main` idle behind open PRs again.** The deployed-E2E gate exists precisely so merging is cheap. As of 2026-10-12 there are none.
 5. **Don't pause Supabase from an engineering PR.** The project is ACTIVE_HEALTHY. Owner-held dashboard action only.
 6. **Don't set real API keys or `VITE_FF_REAL_*` in git or in this class of PR.**
-7. **Don't apply `00011_price_history_freshness_sla.sql`.** It stays file-only until the owner chooses the SQL editor.
+7. **Don't apply `00011_price_history_freshness_sla.sql` or `00013_profiles_username_login.sql`.** Both stay file-only until the owner chooses the SQL editor. `00013` is the username sign-in migration.
 8. **Don't put secrets in git, jsPDF on live briefing paths, or live Market Movers / SCI parity claims in copy** before eBay is live.
 9. **Don't start another Tailwind or ESLint major migration.** `tailwindcss` ^4.3.3 and `eslint` ^10.12.0 are already on `main`; `@eslint/js` stays 9.x.
 

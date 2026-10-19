@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getFriendlyAuthMessage } from '../lib/utils/authErrors';
+import { getPasswordChecks, passwordRuleError, validateAuthUsername } from '../lib/authCredentials';
 import {
   Eye,
   EyeOff,
@@ -26,25 +27,27 @@ const Signup: React.FC = () => {
     const { signUp, signInWithGoogle, demoLogin, isDemoMode } = useAuth();
     const navigate = useNavigate();
 
-    const passwordChecks = {
-        length: password.length >= 8,
-        uppercase: /[A-Z]/.test(password),
-        lowercase: /[a-z]/.test(password),
-        number: /[0-9]/.test(password),
-    };
+    const passwordChecks = getPasswordChecks(password);
     const passwordStrength = Object.values(passwordChecks).filter(Boolean).length;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
+        const usernameResult = validateAuthUsername(username);
+        if (!usernameResult.ok) {
+            setError(usernameResult.error);
+            return;
+        }
+
         if (password !== confirmPassword) {
             setError('Passwords do not match');
             return;
         }
 
-        if (passwordStrength < 3) {
-            setError('Please create a stronger password');
+        const ruleError = passwordRuleError(password);
+        if (ruleError) {
+            setError(ruleError);
             return;
         }
 
@@ -55,7 +58,7 @@ const Signup: React.FC = () => {
 
         setLoading(true);
 
-        const { error } = await signUp(email, password, username);
+        const { error } = await signUp(email, password, usernameResult.username);
 
         if (error) {
             setError(getFriendlyAuthMessage(error));
@@ -185,9 +188,14 @@ const Signup: React.FC = () => {
 
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                         <div className="md:col-span-1">
-                            <label className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Username</label>
+                            <label htmlFor="signup-username" className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Username</label>
                             <input
+                                id="signup-username"
+                                name="username"
                                 type="text"
+                                autoComplete="username"
+                                autoCapitalize="none"
+                                spellCheck={false}
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all text-sm"
@@ -197,9 +205,11 @@ const Signup: React.FC = () => {
                         </div>
 
                         <div className="md:col-span-1">
-                            <label className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Email</label>
+                            <label htmlFor="signup-email" className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Email</label>
                             <input
+                                id="signup-email"
                                 type="email"
+                                autoComplete="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all text-sm"
@@ -209,10 +219,12 @@ const Signup: React.FC = () => {
                         </div>
 
                         <div className="md:col-span-1">
-                            <label className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Password</label>
+                            <label htmlFor="signup-password" className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Password</label>
                             <div className="relative">
                                 <input
+                                    id="signup-password"
                                     type={showPassword ? 'text' : 'password'}
+                                    autoComplete="new-password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all pr-12 text-sm"
@@ -222,7 +234,8 @@ const Signup: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center min-w-[44px] min-h-[44px] text-slate-500 hover:text-slate-300 transition-colors"
                                 >
                                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                 </button>
@@ -230,9 +243,11 @@ const Signup: React.FC = () => {
                         </div>
 
                         <div className="md:col-span-1">
-                            <label className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Confirm</label>
+                            <label htmlFor="signup-confirm" className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Confirm</label>
                             <input
-                                type="password"
+                                id="signup-confirm"
+                                type={showPassword ? 'text' : 'password'}
+                                autoComplete="new-password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 className={`w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border text-white placeholder-slate-500 focus:outline-hidden focus:ring-1 transition-all text-sm ${confirmPassword && confirmPassword !== password ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:border-brand-lime focus:ring-brand-lime'}`}

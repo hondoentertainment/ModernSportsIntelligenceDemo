@@ -8,7 +8,7 @@ describe('getFriendlyAuthMessage', () => {
 
     it('maps invalid_credentials code', () => {
         const error = { code: 'invalid_credentials', message: 'Invalid login credentials' } as any;
-        expect(getFriendlyAuthMessage(error)).toContain('Invalid email or password');
+        expect(getFriendlyAuthMessage(error)).toContain('Invalid username or password');
     });
 
     it('maps over_request_rate_limit code', () => {
@@ -33,7 +33,7 @@ describe('getFriendlyAuthMessage', () => {
 
     it('falls back to message match for invalid login', () => {
         const error = { code: 'unknown', message: 'Invalid login credentials' } as any;
-        expect(getFriendlyAuthMessage(error)).toContain('Invalid email or password');
+        expect(getFriendlyAuthMessage(error)).toContain('Invalid username or password');
     });
 
     it('maps a disabled Google provider even when GoTrue uses validation_failed', () => {
