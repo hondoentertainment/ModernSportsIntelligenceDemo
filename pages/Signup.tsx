@@ -3,13 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getFriendlyAuthMessage } from '../lib/utils/authErrors';
 import { getPasswordChecks, passwordRuleError, validateAuthUsername } from '../lib/authCredentials';
+import PasswordRulesHint from '../components/PasswordRulesHint';
 import {
   Eye,
   EyeOff,
   Loader2,
   TrendingUp,
   Check,
-  X,
   Shield,
 } from 'lucide-react';
 
@@ -57,14 +57,17 @@ const Signup: React.FC = () => {
         }
 
         setLoading(true);
-
-        const { error } = await signUp(email, password, usernameResult.username);
-
-        if (error) {
-            setError(getFriendlyAuthMessage(error));
+        try {
+            const { error } = await signUp(email, password, usernameResult.username);
+            if (error) {
+                setError(getFriendlyAuthMessage(error));
+            } else {
+                setSuccess(true);
+            }
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Sign-up failed. Please try again.');
+        } finally {
             setLoading(false);
-        } else {
-            setSuccess(true);
         }
     };
 
@@ -168,6 +171,7 @@ const Signup: React.FC = () => {
 
                     {error && (
                         <div
+                            id="signup-error"
                             role="alert"
                             aria-live="polite"
                             className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 animate-in fade-in slide-in-from-top-2"
@@ -186,7 +190,7 @@ const Signup: React.FC = () => {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4" aria-busy={loading}>
                         <div className="md:col-span-1">
                             <label htmlFor="signup-username" className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Username</label>
                             <input
@@ -227,6 +231,8 @@ const Signup: React.FC = () => {
                                     autoComplete="new-password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    aria-invalid={error ? true : undefined}
+                                    aria-describedby={error ? 'signup-password-rules signup-error' : 'signup-password-rules'}
                                     className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all pr-12 text-sm"
                                     placeholder="••••••••"
                                     required
@@ -257,9 +263,9 @@ const Signup: React.FC = () => {
                         </div>
 
                         <div className="md:col-span-2">
-                            {password && (
-                                <div className="p-3 bg-brand-charcoal rounded-xl border border-slate-800 space-y-2">
-                                    <div className="flex gap-1">
+                            <div className="p-3 bg-brand-charcoal rounded-xl border border-slate-800 space-y-2">
+                                {password ? (
+                                    <div className="flex gap-1" aria-hidden>
                                         {[1, 2, 3, 4].map((i) => (
                                             <div
                                                 key={i}
@@ -267,16 +273,9 @@ const Signup: React.FC = () => {
                                             />
                                         ))}
                                     </div>
-                                    <div className="grid grid-cols-4 gap-1 text-[9px] uppercase font-black tracking-tighter">
-                                        {Object.entries(passwordChecks).map(([key, valid]) => (
-                                            <div key={key} className={`flex items-center gap-1 ${valid ? 'text-brand-lime' : 'text-slate-500'}`}>
-                                                {valid ? <Check className="w-2 h-2" /> : <X className="w-2 h-2" />}
-                                                {key}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+                                ) : null}
+                                <PasswordRulesHint id="signup-password-rules" password={password} />
+                            </div>
                         </div>
 
                         <div className="md:col-span-2">
@@ -297,10 +296,12 @@ const Signup: React.FC = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
+                                aria-busy={loading}
                                 className="w-full py-4 px-4 rounded-xl bg-linear-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-xl tracking-wider hover:opacity-90 transition-all font-black flex items-center justify-center gap-2"
                             >
-                                {loading ? <><Loader2 className="w-6 h-6 animate-spin" /> INITIALIZING...</> : isDemoMode ? 'INITIALIZE LOCAL SESSION' : 'CREATE ACCOUNT'}
+                                {loading ? <><Loader2 className="w-6 h-6 animate-spin" aria-hidden /> INITIALIZING...</> : isDemoMode ? 'INITIALIZE LOCAL SESSION' : 'CREATE ACCOUNT'}
                             </button>
+                            {loading ? <span className="sr-only" role="status">Creating account</span> : null}
                         </div>
                     </form>
 

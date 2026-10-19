@@ -17,6 +17,16 @@ vi.mock('../../contexts/AuthContext', () => ({
 import Signup from '../../pages/Signup';
 
 describe('Signup form', () => {
+  it('shows the password rules before anything is typed', () => {
+    render(
+      <MemoryRouter>
+        <Signup />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText(/8\+ characters with an uppercase letter, a lowercase letter, and a number/i)).toBeInTheDocument();
+    expect(screen.getByRole('list', { name: /password requirements/i })).toHaveTextContent(/8\+ characters/i);
+  });
+
   it('blocks a short username before creating an account', async () => {
     signUp.mockClear();
     const user = userEvent.setup();

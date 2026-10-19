@@ -1,7 +1,8 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { consumeSessionExpiredNotice, rememberSessionExpired } from '../../lib/authSessionNotice';
 
 const signInWithGoogle = vi.fn();
 const signIn = vi.fn();
@@ -18,6 +19,12 @@ vi.mock('../../contexts/AuthContext', () => ({
 import Login from '../../pages/Login';
 
 describe('Login Google auth', () => {
+    beforeEach(() => {
+        consumeSessionExpiredNotice();
+        signIn.mockReset();
+        signInWithGoogle.mockReset();
+    });
+
     it('shows the disabled-provider message and stays on the page', async () => {
         signInWithGoogle.mockResolvedValue({
             error: {
@@ -91,5 +98,36 @@ describe('Login Google auth', () => {
 
         expect(await screen.findByRole('alert')).toHaveTextContent(/sign in with your email/i);
         expect(screen.getByRole('button', { name: /google auth/i })).toBeInTheDocument();
+    });
+
+    it('explains a session that expired before this page opened', () => {
+        rememberSessionExpired();
+        render(
+            <MemoryRouter>
+                <Login />
+            </MemoryRouter>,
+        );
+        expect(screen.getByRole('alert')).toHaveTextContent(/session has expired/i);
+        expect(consumeSessionExpiredNotice()).toBe(false);
+    });
+
+    it('announces that sign-in is in progress', async () => {
+        let finish: (value: { error: null }) => void = () => undefined;
+        signIn.mockImplementation(() => new Promise(resolve => {
+            finish = resolve;
+        }));
+        const user = userEvent.setup();
+        render(
+            <MemoryRouter>
+                <Login />
+            </MemoryRouter>,
+        );
+        await user.type(screen.getByLabelText(/username or email/i), 'fan@example.com');
+        await user.type(screen.getByLabelText(/^password$/i), 'Password1');
+        const pending = user.click(screen.getByRole('button', { name: /^sign in$/i }));
+        expect(await screen.findByRole('status')).toHaveTextContent(/signing in/i);
+        expect(screen.getByRole('button', { name: /signing in/i })).toHaveAttribute('aria-busy', 'true');
+        finish({ error: null });
+        await pending;
     });
 });

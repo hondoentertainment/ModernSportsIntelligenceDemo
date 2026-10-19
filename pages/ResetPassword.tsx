@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getFriendlyAuthMessage } from '../lib/utils/authErrors';
-import { getPasswordChecks, passwordRuleError } from '../lib/authCredentials';
-import { Lock, Loader2, Check, X, TrendingUp, Eye, EyeOff, AlertTriangle, ArrowLeft, Shield } from 'lucide-react';
+import { getPasswordChecks, isSessionExpiredError, isStaleRecoveryError, passwordRuleError } from '../lib/authCredentials';
+import PasswordRulesHint from '../components/PasswordRulesHint';
+import { Lock, Loader2, Check, TrendingUp, Eye, EyeOff, AlertTriangle, ArrowLeft, Shield } from 'lucide-react';
 
 const ResetPassword: React.FC = () => {
     const [password, setPassword] = useState('');
@@ -11,6 +12,7 @@ const ResetPassword: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [staleLink, setStaleLink] = useState(false);
     const [error, setError] = useState('');
 
     const { updatePassword, isDemoMode, recoveryMode, session, clearRecoveryMode } = useAuth();
@@ -54,15 +56,27 @@ const ResetPassword: React.FC = () => {
         }
 
         setLoading(true);
-
-        const { error } = await updatePassword(password);
-
-        if (error) {
-            setError(getFriendlyAuthMessage(error));
-        } else {
-            setSuccess(true);
+        try {
+            const { error } = await updatePassword(password);
+            if (error) {
+                if (isStaleRecoveryError(error) || isSessionExpiredError(error)) {
+                    setStaleLink(true);
+                } else {
+                    setError(getFriendlyAuthMessage(error));
+                }
+            } else {
+                setSuccess(true);
+            }
+        } catch (err) {
+            const fallback = err instanceof Error ? err.message : 'Could not update the password. Please try again.';
+            if (isStaleRecoveryError(err) || isSessionExpiredError(err)) {
+                setStaleLink(true);
+            } else {
+                setError(fallback);
+            }
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     // Success state
@@ -86,16 +100,20 @@ const ResetPassword: React.FC = () => {
     }
 
     // No valid recovery session — user navigated here directly
-    if (!hasValidSession && !isDemoMode) {
+    if (staleLink || (!hasValidSession && !isDemoMode)) {
         return (
             <div className="min-h-screen bg-brand-charcoal flex items-center justify-center p-8">
                 <div className="w-full max-w-md text-center">
                     <div className="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center mx-auto mb-6">
                         <AlertTriangle className="w-8 h-8 text-amber-400" />
                     </div>
-                    <h2 className="font-bebas text-3xl tracking-wide text-white mb-4">NO ACTIVE RECOVERY SESSION</h2>
+                    <h2 className="font-bebas text-3xl tracking-wide text-white mb-4">
+                        {staleLink ? 'RESET LINK EXPIRED' : 'NO ACTIVE RECOVERY SESSION'}
+                    </h2>
                     <p className="text-slate-400 mb-8 leading-relaxed">
-                        This page requires a valid password recovery link. Request a new reset link from the forgot password page.
+                        {staleLink
+                            ? 'This reset link is no longer valid. Request a new one. If your session expired, sign in again after it arrives.'
+                            : 'This page requires a valid password recovery link. Request a new reset link from the forgot password page.'}
                     </p>
                     <div className="flex flex-col gap-3">
                         <Link
@@ -144,6 +162,7 @@ const ResetPassword: React.FC = () => {
 
                 {error && (
                     <div
+                        id="reset-error"
                         role="alert"
                         aria-live="polite"
                         className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 animate-in fade-in slide-in-from-top-2"
@@ -155,7 +174,7 @@ const ResetPassword: React.FC = () => {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6" aria-busy={loading}>
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="reset-password" className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-2.5 ml-1">New Security Key</label>
@@ -166,7 +185,9 @@ const ResetPassword: React.FC = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full px-4 py-3.5 pl-12 pr-12 rounded-2xl bg-slate-800/40 border border-slate-700 text-white placeholder-slate-600 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime/50 transition-all backdrop-blur-xs"
+                                    aria-invalid={error ? true : undefined}
+                                    aria-describedby={error ? 'reset-password-rules reset-error' : 'reset-password-rules'}
+                                    className="w-full px-4 py-3.5 pl-12 pr-14 rounded-2xl bg-slate-800/40 border border-slate-700 text-white placeholder-slate-600 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime/50 transition-all backdrop-blur-xs"
                                     placeholder="••••••••"
                                     required
                                 />
@@ -174,7 +195,7 @@ const ResetPassword: React.FC = () => {
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                     aria-label={showPassword ? 'Hide password' : 'Show password'}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center min-w-[44px] min-h-[44px] text-slate-500 hover:text-slate-300 transition-colors"
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
@@ -198,9 +219,9 @@ const ResetPassword: React.FC = () => {
                         </div>
 
                         {/* Password strength indicator */}
-                        {password && (
-                            <div className="p-3 bg-brand-charcoal rounded-xl border border-slate-800 space-y-2">
-                                <div className="flex gap-1">
+                        <div className="p-3 bg-brand-charcoal rounded-xl border border-slate-800 space-y-2">
+                            {password ? (
+                                <div className="flex gap-1" aria-hidden>
                                     {[1, 2, 3, 4].map((i) => (
                                         <div
                                             key={i}
@@ -208,32 +229,27 @@ const ResetPassword: React.FC = () => {
                                         />
                                     ))}
                                 </div>
-                                <div className="grid grid-cols-4 gap-1 text-[9px] uppercase font-black tracking-tighter">
-                                    {Object.entries(passwordChecks).map(([key, valid]) => (
-                                        <div key={key} className={`flex items-center gap-1 ${valid ? 'text-brand-lime' : 'text-slate-500'}`}>
-                                            {valid ? <Check className="w-2 h-2" /> : <X className="w-2 h-2" />}
-                                            {key}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                            ) : null}
+                            <PasswordRulesHint id="reset-password-rules" password={password} />
+                        </div>
                     </div>
 
                     <button
                         type="submit"
                         disabled={loading || passwordRuleError(password) !== null}
+                        aria-busy={loading}
                         className="w-full py-4 px-6 rounded-2xl bg-linear-to-r from-brand-lime to-brand-teal text-brand-charcoal font-bebas text-xl tracking-wider hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 shadow-[0_4px_20px_rgba(190,242,100,0.2)]"
                     >
                         {loading ? (
                             <>
-                                <Loader2 className="w-6 h-6 animate-spin" />
+                                <Loader2 className="w-6 h-6 animate-spin" aria-hidden />
                                 UPDATING...
                             </>
                         ) : (
                             'REFRESH SECURITY KEY'
                         )}
                     </button>
+                    {loading ? <span className="sr-only" role="status">Updating password</span> : null}
                 </form>
 
                 <p className="text-center text-slate-500 text-[11px] font-bold uppercase tracking-widest mt-8">

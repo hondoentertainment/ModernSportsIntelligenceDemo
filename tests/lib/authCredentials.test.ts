@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   classifyLoginIdentifier,
+  currentPasswordFailure,
   interpretUsernameWriteError,
+  isSessionExpiredError,
+  isStaleRecoveryError,
   isUsernameLookupUnavailable,
   lookupOutcomeFromRpc,
   passwordIsStrong,
@@ -141,6 +144,34 @@ describe('username writes and redirects', () => {
     expect(safeRedirectOrigin('https://msi.example/reset-password?x=1#hash')).toBe('https://msi.example');
     expect(safeRedirectOrigin('javascript:alert(1)')).toBeNull();
     expect(safeRedirectOrigin('not a url')).toBeNull();
+  });
+});
+
+describe('session and recovery failures', () => {
+  it('treats a dead refresh token as an expired session and leaves a timeout alone', () => {
+    expect(isSessionExpiredError({ message: 'Invalid Refresh Token: Refresh Token Not Found' })).toBe(true);
+    expect(isSessionExpiredError({ message: 'JWT expired' })).toBe(true);
+    expect(isSessionExpiredError({ message: 'Auth session missing!' })).toBe(true);
+    expect(isSessionExpiredError({ code: 'session_expired', message: '' })).toBe(true);
+    expect(isSessionExpiredError(new Error('Session refresh timed out'))).toBe(false);
+    expect(isSessionExpiredError(null)).toBe(false);
+  });
+
+  it('recognizes a stale reset link without treating a bad password as one', () => {
+    expect(isStaleRecoveryError({ code: 'otp_expired', message: 'Email link is invalid or has expired' })).toBe(true);
+    expect(isStaleRecoveryError({ message: 'Email link is invalid or has expired' })).toBe(true);
+    expect(isStaleRecoveryError({ code: 'flow_state_expired', message: 'Flow state expired' })).toBe(true);
+    expect(isStaleRecoveryError({ message: 'Invalid login credentials' })).toBe(false);
+  });
+
+  it('maps a current-password check without hiding a dead session or a throttle', () => {
+    expect(currentPasswordFailure({ message: 'Invalid login credentials', code: 'invalid_credentials' })).toMatchObject({
+      code: 'current_password_incorrect',
+    });
+    expect(currentPasswordFailure({ message: 'JWT expired' })).toMatchObject({ code: 'session_expired' });
+    expect(currentPasswordFailure({ message: 'Too many requests', code: 'over_request_rate_limit' }).message).toMatch(/few minutes/i);
+    expect(currentPasswordFailure({ message: 'database unavailable' })).toMatchObject({ code: 'server_error' });
+    expect(currentPasswordFailure(null)).toMatchObject({ code: 'server_error' });
   });
 });
 

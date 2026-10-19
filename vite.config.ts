@@ -171,6 +171,8 @@ export default defineConfig(({ command, mode }) => {
         'lib/analytics/sellTradePlanner.ts',
         'lib/collector/floorPack.ts',
         'lib/collector/showClose.ts',
+        'lib/collector/pullSheet.ts',
+        'lib/authSessionNotice.ts',
         'lib/analytics/capitalGainsExit.ts',
         'lib/utils/syncProductDefaults.ts',
         'lib/utils/webPushSubscription.ts',

@@ -18,13 +18,16 @@ import {
     USERNAME_TAKEN_ERROR,
     classifyLoginIdentifier,
     interpretUsernameWriteError,
+    currentPasswordFailure,
     isCredentialFailure,
     isHiddenAccountError,
+    isSessionExpiredError,
     isUsernameTakenError,
     passwordRuleError,
     toAuthError,
     validateAuthUsername,
 } from '../lib/authCredentials';
+import { rememberSessionExpired } from '../lib/authSessionNotice';
 import {
     requestUsernameAvailability,
     requestUsernamePasswordReset,
@@ -155,12 +158,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 const { data, error } = await refreshSessionWithTimeout(SESSION_REFRESH_TIMEOUT_MS);
                 if (error) {
                     logger.warn('Session refresh failed:', error.message);
+                    if (isSessionExpiredError(error)) {
+                        rememberSessionExpired();
+                        if (refreshTimerRef.current) {
+                            clearInterval(refreshTimerRef.current);
+                            refreshTimerRef.current = null;
+                        }
+                        await supabase.auth.signOut();
+                    }
                 } else if (data.session) {
                     setSession(data.session);
                     setUser(data.session.user);
                 }
             } catch (e) {
                 logger.warn('Session refresh error:', e);
+                if (isSessionExpiredError(e)) {
+                    rememberSessionExpired();
+                    if (refreshTimerRef.current) {
+                        clearInterval(refreshTimerRef.current);
+                        refreshTimerRef.current = null;
+                    }
+                    await supabase.auth.signOut();
+                }
             }
         }, SESSION_REFRESH_INTERVAL);
     }, []);
@@ -452,6 +471,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             .eq('id', user.id)
             .select('username')
             .maybeSingle();
+        if (isSessionExpiredError(error)) {
+            rememberSessionExpired();
+            return { error: toAuthError('Your session has expired. Please sign in again.', 'session_expired', 401) as AuthError };
+        }
         const outcome = interpretUsernameWriteError(error);
         if (outcome === 'taken') return { error: toAuthError(USERNAME_TAKEN_ERROR, 'username_taken') as AuthError };
         if (outcome === 'unavailable') {
@@ -498,7 +521,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             password: currentPassword,
         });
         if (currentError) {
-            return { error: toAuthError('Current password is incorrect.', 'current_password_incorrect', 401) as AuthError };
+            const failure = currentPasswordFailure(currentError);
+            if (failure.code === 'session_expired') rememberSessionExpired();
+            return { error: toAuthError(failure.message, failure.code, failure.status) as AuthError };
         }
         return updatePassword(nextPassword);
     };
@@ -509,6 +534,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             const { data, error } = await refreshSessionWithTimeout(SESSION_REFRESH_TIMEOUT_MS);
             if (error) {
                 logger.warn('Manual session refresh failed:', error.message);
+                if (isSessionExpiredError(error)) {
+                    rememberSessionExpired();
+                    stopSessionRefreshTimer();
+                    await supabase.auth.signOut();
+                }
             } else if (data.session) {
                 setSession(data.session);
                 setUser(data.session.user);

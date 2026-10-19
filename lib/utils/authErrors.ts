@@ -4,6 +4,7 @@
 
 import type { AuthError } from '@supabase/supabase-js';
 import { isProviderDisabledMessage } from '../googleOAuth';
+import { isSessionExpiredError, isStaleRecoveryError } from '../authCredentials';
 
 const FRIENDLY_MESSAGES: Record<string, string> = {
     invalid_credentials: 'Invalid username or password. Please check your credentials.',
@@ -49,6 +50,13 @@ export function getFriendlyAuthMessage(error: AuthError | null): string {
     // a generic invalid input, so the message has to win.
     if (isProviderDisabledMessage(message)) {
         return FRIENDLY_MESSAGES.provider_disabled;
+    }
+
+    if (isStaleRecoveryError(error)) {
+        return 'This reset link is no longer valid. Request a new one.';
+    }
+    if (code === 'session_expired' || isSessionExpiredError(error)) {
+        return FRIENDLY_MESSAGES.session_expired;
     }
 
     if (code && FRIENDLY_MESSAGES[code]) {

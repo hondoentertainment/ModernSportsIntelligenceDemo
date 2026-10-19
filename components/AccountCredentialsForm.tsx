@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Check, Eye, EyeOff, Loader2, Lock, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getFriendlyAuthMessage } from '../lib/utils/authErrors';
-import { getPasswordChecks, validateAuthUsername } from '../lib/authCredentials';
+import { validateAuthUsername } from '../lib/authCredentials';
+import PasswordRulesHint from './PasswordRulesHint';
 import { supabase } from '../lib/supabase';
 
 /**
@@ -25,7 +27,6 @@ const AccountCredentialsForm: React.FC = () => {
   const [passwordError, setPasswordError] = useState('');
   const [passwordSaving, setPasswordSaving] = useState(false);
 
-  const checks = getPasswordChecks(nextPassword);
   const metadataUsername = typeof user?.user_metadata?.username === 'string' ? user.user_metadata.username : '';
   const userId = user?.id;
 
@@ -59,14 +60,19 @@ const AccountCredentialsForm: React.FC = () => {
       return;
     }
     setUsernameSaving(true);
-    const { error } = await updateUsername(parsed.username);
-    setUsernameSaving(false);
-    if (error) {
-      setUsernameError(getFriendlyAuthMessage(error));
-      return;
+    try {
+      const { error } = await updateUsername(parsed.username);
+      if (error) {
+        setUsernameError(getFriendlyAuthMessage(error));
+        return;
+      }
+      setUsername(parsed.username);
+      setUsernameMessage(isDemoMode ? 'Username saved on this demo session.' : 'Username updated.');
+    } catch (err) {
+      setUsernameError(err instanceof Error ? err.message : 'Could not update username. Please try again.');
+    } finally {
+      setUsernameSaving(false);
     }
-    setUsername(parsed.username);
-    setUsernameMessage(isDemoMode ? 'Username saved on this demo session.' : 'Username updated.');
   };
 
   const savePassword = async (event: React.FormEvent) => {
@@ -78,17 +84,24 @@ const AccountCredentialsForm: React.FC = () => {
       return;
     }
     setPasswordSaving(true);
-    const { error } = await changePassword(currentPassword, nextPassword);
-    setPasswordSaving(false);
-    if (error) {
-      setPasswordError(getFriendlyAuthMessage(error));
-      return;
+    try {
+      const { error } = await changePassword(currentPassword, nextPassword);
+      if (error) {
+        setPasswordError(getFriendlyAuthMessage(error));
+        return;
+      }
+      setCurrentPassword('');
+      setNextPassword('');
+      setConfirmPassword('');
+      setPasswordMessage(isDemoMode ? 'Password change simulated in demo mode.' : 'Password updated.');
+    } catch (err) {
+      setPasswordError(err instanceof Error ? err.message : 'Could not update the password. Please try again.');
+    } finally {
+      setPasswordSaving(false);
     }
-    setCurrentPassword('');
-    setNextPassword('');
-    setConfirmPassword('');
-    setPasswordMessage(isDemoMode ? 'Password change simulated in demo mode.' : 'Password updated.');
   };
+
+  const sessionEnded = (message: string) => /session has expired|sign in to continue|sign in again/i.test(message);
 
   return (
     <section className="bg-slate-950 border border-slate-800 rounded-3xl p-8 space-y-8">
@@ -111,21 +124,29 @@ const AccountCredentialsForm: React.FC = () => {
             spellCheck={false}
             value={username}
             onChange={event => setUsername(event.target.value)}
+            aria-invalid={usernameError ? true : undefined}
+            aria-describedby={usernameError ? 'account-username-error' : undefined}
             className="flex-1 px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime"
             placeholder="cardcollector99"
           />
           <button
             type="submit"
             disabled={usernameSaving}
-            className="px-6 py-3 rounded-xl bg-brand-lime text-brand-charcoal font-bold disabled:opacity-50 flex items-center justify-center gap-2"
+            aria-busy={usernameSaving}
+            className="min-h-[44px] px-6 py-3 rounded-xl bg-brand-lime text-brand-charcoal font-bold disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {usernameSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            Save username
+            {usernameSaving ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> : null}
+            {usernameSaving ? 'Saving username' : 'Save username'}
           </button>
         </div>
         <p className="text-slate-500 text-xs">3-20 characters. Letters, numbers, and underscores. Not case-sensitive.</p>
         {usernameError ? (
-          <p role="alert" className="text-red-400 text-sm">{usernameError}</p>
+          <p id="account-username-error" role="alert" className="text-red-400 text-sm">
+            {usernameError}
+            {sessionEnded(usernameError) ? (
+              <> <Link to="/login" className="text-brand-lime underline">Sign in</Link></>
+            ) : null}
+          </p>
         ) : null}
         {usernameMessage ? (
           <p className="text-brand-lime text-sm flex items-center gap-2"><Check size={16} /> {usernameMessage}</p>
@@ -159,6 +180,8 @@ const AccountCredentialsForm: React.FC = () => {
             autoComplete="new-password"
             value={nextPassword}
             onChange={event => setNextPassword(event.target.value)}
+            aria-invalid={passwordError ? true : undefined}
+            aria-describedby={passwordError ? 'account-password-rules account-password-error' : 'account-password-rules'}
             className="w-full px-4 py-3 pr-12 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-hidden focus:border-brand-lime"
             required
           />
@@ -183,25 +206,24 @@ const AccountCredentialsForm: React.FC = () => {
           className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-hidden focus:border-brand-lime"
           required
         />
-        {nextPassword ? (
-          <ul className="grid grid-cols-2 gap-1 text-[10px] uppercase font-bold tracking-wide">
-            <li className={checks.length ? 'text-brand-lime' : 'text-slate-500'}>8+ characters</li>
-            <li className={checks.uppercase ? 'text-brand-lime' : 'text-slate-500'}>Uppercase</li>
-            <li className={checks.lowercase ? 'text-brand-lime' : 'text-slate-500'}>Lowercase</li>
-            <li className={checks.number ? 'text-brand-lime' : 'text-slate-500'}>Number</li>
-          </ul>
-        ) : null}
+        <PasswordRulesHint id="account-password-rules" password={nextPassword} />
         <button
           type="submit"
           disabled={passwordSaving}
-          className="px-6 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold disabled:opacity-50 flex items-center gap-2"
+          aria-busy={passwordSaving}
+          className="min-h-[44px] px-6 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold disabled:opacity-50 flex items-center gap-2"
         >
-          {passwordSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-          Update password
+          {passwordSaving ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden /> : null}
+          {passwordSaving ? 'Updating password' : 'Update password'}
         </button>
         <p className="text-slate-500 text-xs">Google sign-in stays available on the login page.</p>
         {passwordError ? (
-          <p role="alert" className="text-red-400 text-sm">{passwordError}</p>
+          <p id="account-password-error" role="alert" className="text-red-400 text-sm">
+            {passwordError}
+            {sessionEnded(passwordError) ? (
+              <> <Link to="/login" className="text-brand-lime underline">Sign in</Link></>
+            ) : null}
+          </p>
         ) : null}
         {passwordMessage ? (
           <p className="text-brand-lime text-sm flex items-center gap-2"><Check size={16} /> {passwordMessage}</p>

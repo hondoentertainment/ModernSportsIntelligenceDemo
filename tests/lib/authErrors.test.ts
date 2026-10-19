@@ -50,6 +50,13 @@ describe('getFriendlyAuthMessage', () => {
         expect(getFriendlyAuthMessage(error)).toContain('Invalid input');
     });
 
+    it('maps an expired reset link and a dead session before the password catch-all', () => {
+        expect(getFriendlyAuthMessage({ code: 'otp_expired', message: 'Email link is invalid or has expired' } as any))
+            .toMatch(/reset link is no longer valid/i);
+        expect(getFriendlyAuthMessage({ code: 'unknown', message: 'JWT expired' } as any))
+            .toMatch(/session has expired/i);
+    });
+
     it('falls back to raw message for unknown errors', () => {
         const error = { code: 'unknown', message: 'Something went wrong' } as any;
         expect(getFriendlyAuthMessage(error)).toBe('Something went wrong');
