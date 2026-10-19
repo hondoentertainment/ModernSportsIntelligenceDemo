@@ -12,6 +12,24 @@ import { supabase, isDemoMode } from '../lib/supabase';
 import { beginGoogleSignIn } from '../lib/googleOAuth';
 import { logger } from '../lib/logger';
 import { store } from '../lib/dal/syncStore';
+import {
+    GENERIC_SIGN_IN_ERROR,
+    USERNAME_CHANGE_UNAVAILABLE,
+    USERNAME_TAKEN_ERROR,
+    classifyLoginIdentifier,
+    interpretUsernameWriteError,
+    isCredentialFailure,
+    isHiddenAccountError,
+    isUsernameTakenError,
+    passwordRuleError,
+    toAuthError,
+    validateAuthUsername,
+} from '../lib/authCredentials';
+import {
+    requestUsernameAvailability,
+    requestUsernamePasswordReset,
+    requestUsernamePasswordSignIn,
+} from '../lib/passwordAuth';
 
 const LS_DEMO_SESSION = 'msi_demo_session';
 const LS_USER_PROFILE = 'msi_user_profile';
@@ -26,8 +44,10 @@ interface AuthContextType {
     signUp: (_email: string, _password: string, _username?: string) => Promise<{ error: AuthError | null }>;
     signInWithGoogle: () => Promise<{ error: AuthError | null }>;
     signOut: () => Promise<void>;
-    resetPassword: (_email: string) => Promise<{ error: AuthError | null }>;
+    resetPassword: (_identifier: string) => Promise<{ error: AuthError | null }>;
     updatePassword: (_password: string) => Promise<{ error: AuthError | null }>;
+    updateUsername: (_username: string) => Promise<{ error: AuthError | null }>;
+    changePassword: (_currentPassword: string, _nextPassword: string) => Promise<{ error: AuthError | null }>;
     refreshSession: () => Promise<void>;
     clearRecoveryMode: () => void;
     demoLogin: () => void;
@@ -281,23 +301,62 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
     }, [startSessionRefreshTimer, stopSessionRefreshTimer, resetProfileState]);
 
-    const signIn = async (email: string, password: string) => {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        return { error };
+    const signIn = async (identifier: string, password: string) => {
+        if (isDemoMode) {
+            const { error } = await supabase.auth.signInWithPassword({ email: identifier, password });
+            return { error };
+        }
+        const classified = classifyLoginIdentifier(identifier);
+        if (classified.kind === 'email') {
+            const { error } = await supabase.auth.signInWithPassword({
+                email: classified.email,
+                password,
+            });
+            if (error && isCredentialFailure(error)) {
+                return { error: toAuthError(GENERIC_SIGN_IN_ERROR, 'invalid_credentials', 401) as AuthError };
+            }
+            return { error };
+        }
+        if (classified.kind !== 'username') {
+            return { error: toAuthError(GENERIC_SIGN_IN_ERROR, 'invalid_credentials', 401) as AuthError };
+        }
+        const result = await requestUsernamePasswordSignIn(classified.username, password);
+        if (result.ok) {
+            const { error } = await supabase.auth.setSession({
+                access_token: result.accessToken,
+                refresh_token: result.refreshToken,
+            });
+            return { error };
+        }
+        const status = result.code === 'username_signin_unavailable' ? 409 : 401;
+        return { error: toAuthError(result.message, result.code, status) as AuthError };
     };
 
     const signUp = async (email: string, password: string, username?: string) => {
+        const parsedName = validateAuthUsername(username ?? '');
+        if (!parsedName.ok) {
+            return { error: toAuthError(parsedName.error, 'validation_failed') as AuthError };
+        }
+        const rule = passwordRuleError(password);
+        if (rule) return { error: toAuthError(rule, 'weak_password') as AuthError };
         if (isDemoMode) {
             demoLogin();
             return { error: null };
         }
+        const availability = await requestUsernameAvailability(parsedName.username);
+        if (availability === 'taken') {
+            return { error: toAuthError(USERNAME_TAKEN_ERROR, 'username_taken') as AuthError };
+        }
         const { error } = await supabase.auth.signUp({
-            email,
+            email: email.trim(),
             password,
             options: {
-                data: { username }
-            }
+                data: { username: parsedName.username },
+            },
         });
+        if (error && isUsernameTakenError(error)) {
+            return { error: toAuthError(USERNAME_TAKEN_ERROR, 'username_taken') as AuthError };
+        }
         return { error };
     };
 
@@ -343,23 +402,105 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await supabase.auth.signOut();
     };
 
-    const resetPassword = async (email: string) => {
+    const resetPassword = async (identifier: string) => {
         if (isDemoMode) return { error: null };
-        // Use origin as redirect base — Supabase appends tokens as hash fragments.
-        // The onAuthStateChange PASSWORD_RECOVERY handler navigates to /reset-password.
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.origin,
-        });
-        return { error };
+        const classified = classifyLoginIdentifier(identifier);
+        if (classified.kind === 'invalid') {
+            return {
+                error: toAuthError('Enter a username or a valid email address.', 'invalid_identifier') as AuthError,
+            };
+        }
+        // Origin only. HashRouter reads the recovery session and opens /reset-password.
+        const redirectTo = window.location.origin;
+        if (classified.kind === 'email') {
+            const { error } = await supabase.auth.resetPasswordForEmail(classified.email, { redirectTo });
+            if (error && isHiddenAccountError(error)) return { error: null };
+            return { error };
+        }
+        const result = await requestUsernamePasswordReset(classified.username, redirectTo);
+        if (!result.ok) return { error: toAuthError(result.message, result.code) as AuthError };
+        return { error: null };
     };
 
     const updatePassword = async (password: string) => {
         if (isDemoMode) return { error: null };
+        const rule = passwordRuleError(password);
+        if (rule) return { error: toAuthError(rule, 'weak_password') as AuthError };
         const { error } = await supabase.auth.updateUser({ password });
         if (!error) {
             setRecoveryMode(false);
         }
         return { error };
+    };
+
+    const updateUsername = async (nextUsername: string) => {
+        const parsed = validateAuthUsername(nextUsername);
+        if (!parsed.ok) return { error: toAuthError(parsed.error, 'validation_failed') as AuthError };
+        if (isDemoMode) {
+            setUser(current => (
+                current
+                    ? { ...current, user_metadata: { ...current.user_metadata, username: parsed.username } } as User
+                    : current
+            ));
+            return { error: null };
+        }
+        if (!user) return { error: toAuthError('Please sign in to continue.', 'sign_in_required') as AuthError };
+
+        const { data, error } = await supabase
+            .from('profiles')
+            .update({ username: parsed.username })
+            .eq('id', user.id)
+            .select('username')
+            .maybeSingle();
+        const outcome = interpretUsernameWriteError(error);
+        if (outcome === 'taken') return { error: toAuthError(USERNAME_TAKEN_ERROR, 'username_taken') as AuthError };
+        if (outcome === 'unavailable') {
+            return { error: toAuthError(USERNAME_CHANGE_UNAVAILABLE, 'username_signin_unavailable') as AuthError };
+        }
+        if (outcome === 'error') {
+            return { error: toAuthError('Could not update username. Please try again.', 'username_update_failed') as AuthError };
+        }
+        if (!data) {
+            const inserted = await supabase
+                .from('profiles')
+                .insert({ id: user.id, username: parsed.username })
+                .select('username')
+                .maybeSingle();
+            const insertOutcome = interpretUsernameWriteError(inserted.error);
+            if (insertOutcome === 'taken') return { error: toAuthError(USERNAME_TAKEN_ERROR, 'username_taken') as AuthError };
+            if (insertOutcome === 'unavailable') {
+                return { error: toAuthError(USERNAME_CHANGE_UNAVAILABLE, 'username_signin_unavailable') as AuthError };
+            }
+            if (insertOutcome === 'error' || !inserted.data) {
+                return { error: toAuthError('Could not update username. Please try again.', 'username_update_failed') as AuthError };
+            }
+        }
+
+        const { data: updated, error: metaError } = await supabase.auth.updateUser({
+            data: { username: parsed.username },
+        });
+        if (updated.user) setUser(updated.user);
+        return { error: metaError };
+    };
+
+    const changePassword = async (currentPassword: string, nextPassword: string) => {
+        const rule = passwordRuleError(nextPassword);
+        if (rule) return { error: toAuthError(rule, 'weak_password') as AuthError };
+        if (isDemoMode) return { error: null };
+        const email = user?.email;
+        if (!email) {
+            return {
+                error: toAuthError('Add an email to this account before setting a password.', 'validation_failed') as AuthError,
+            };
+        }
+        const { error: currentError } = await supabase.auth.signInWithPassword({
+            email,
+            password: currentPassword,
+        });
+        if (currentError) {
+            return { error: toAuthError('Current password is incorrect.', 'current_password_incorrect', 401) as AuthError };
+        }
+        return updatePassword(nextPassword);
     };
 
     const refreshSession = async () => {
@@ -481,6 +622,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             signOut,
             resetPassword,
             updatePassword,
+            updateUsername,
+            changePassword,
             refreshSession,
             clearRecoveryMode,
             demoLogin,

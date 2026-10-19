@@ -174,18 +174,34 @@ CREATE POLICY "Users can CRUD their own price_history" ON price_history
   FOR ALL USING (auth.uid() = user_id);
 
 -- Auto-create profile on signup
+-- Username format and the case-insensitive unique index live in
+-- supabase/migrations/00013_profiles_username_login.sql (owner-applied).
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
 DECLARE
-  derived_username TEXT;
+  raw_username text;
+  clean_username text;
 BEGIN
-  derived_username := COALESCE(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1));
+  raw_username := NULLIF(btrim(NEW.raw_user_meta_data->>'username'), '');
+  IF raw_username ~ '^[A-Za-z0-9_]{3,20}$' THEN
+    clean_username := raw_username;
+  ELSE
+    clean_username := NULL;
+  END IF;
 
   INSERT INTO public.profiles (id, username, display_name)
-  VALUES (new.id, derived_username, COALESCE(new.raw_user_meta_data->>'username', derived_username));
-  RETURN new;
+  VALUES (
+    NEW.id,
+    clean_username,
+    COALESCE(raw_username, split_part(COALESCE(NEW.email, ''), '@', 1))
+  );
+  RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Trigger for new user profile creation
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;

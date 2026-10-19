@@ -36,11 +36,8 @@ const ForgotPassword: React.FC = () => {
                     </div>
                     <h2 className="font-bebas text-3xl tracking-wide text-white mb-4">CHECK YOUR EMAIL</h2>
                     <p className="text-slate-400 mb-8">
-                        {isDemoMode ? (
-                            <>Demo mode: Password reset would be sent to <span className="text-white font-medium">{email}</span></>
-                        ) : (
-                            <>We've sent a password reset link to <span className="text-white font-medium">{email}</span></>
-                        )}
+                        If an account matches that username or email, a reset link is on its way.
+                        {isDemoMode ? ' Demo mode does not send email.' : ' Check your inbox.'}
                     </p>
                     <Link
                         to="/login"
@@ -67,7 +64,7 @@ const ForgotPassword: React.FC = () => {
 
                 <div className="text-center mb-8">
                     <h2 className="font-bebas text-3xl tracking-wide text-white mb-2">RESET PASSWORD</h2>
-                    <p className="text-slate-400">Enter your email and we'll send you a reset link</p>
+                    <p className="text-slate-400">Enter your username or email and we&apos;ll send a reset link if an account matches.</p>
                 </div>
 
                 {/* Demo Mode Banner */}
@@ -94,15 +91,20 @@ const ForgotPassword: React.FC = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
-                        <label className="block text-slate-400 text-sm mb-2">Email Address</label>
+                        <label htmlFor="forgot-identifier" className="block text-slate-400 text-sm mb-2">Username or email</label>
                         <div className="relative">
                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                             <input
-                                type="email"
+                                id="forgot-identifier"
+                                name="username"
+                                type="text"
+                                autoComplete="username"
+                                autoCapitalize="none"
+                                spellCheck={false}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="w-full px-4 py-3 pl-12 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all"
-                                placeholder="investor@example.com"
+                                placeholder="username or you@example.com"
                                 required
                             />
                         </div>

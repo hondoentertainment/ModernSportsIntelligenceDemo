@@ -160,24 +160,32 @@ const Login: React.FC = () => {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Email</label>
+                            <label htmlFor="login-identifier" className="block text-slate-400 text-[10px] uppercase font-black tracking-widest mb-1.5">Username or email</label>
                             <input
-                                type="email"
+                                id="login-identifier"
+                                name="username"
+                                type="text"
+                                autoComplete="username"
+                                autoCapitalize="none"
+                                spellCheck={false}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all text-sm"
-                                placeholder="investor@example.com"
+                                placeholder="username or you@example.com"
                                 required
                             />
                         </div>
 
                         <div>
                             <div className="flex justify-between items-center mb-1.5">
-                                <label className="text-slate-400 text-[10px] uppercase font-black tracking-widest">Password</label>
+                                <label htmlFor="login-password" className="text-slate-400 text-[10px] uppercase font-black tracking-widest">Password</label>
                             </div>
                             <div className="relative">
                                 <input
+                                    id="login-password"
+                                    name="password"
                                     type={showPassword ? 'text' : 'password'}
+                                    autoComplete="current-password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-hidden focus:border-brand-lime focus:ring-1 focus:ring-brand-lime transition-all pr-12 text-sm"

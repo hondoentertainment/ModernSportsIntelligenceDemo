@@ -6,7 +6,9 @@ import type { AuthError } from '@supabase/supabase-js';
 import { isProviderDisabledMessage } from '../googleOAuth';
 
 const FRIENDLY_MESSAGES: Record<string, string> = {
-    invalid_credentials: 'Invalid email or password. Please check your credentials.',
+    invalid_credentials: 'Invalid username or password. Please check your credentials.',
+    username_signin_unavailable: 'Username sign-in is not available yet. Sign in with your email.',
+    username_taken: 'That username is taken. Choose another.',
     over_email_send_rate_limit: 'Too many emails sent to this address. Please wait an hour before trying again.',
     over_request_rate_limit: 'Too many sign-in attempts. Please try again in a few minutes.',
     email_not_confirmed: 'Please check your email and confirm your account before signing in.',
@@ -32,6 +34,8 @@ const FRIENDLY_MESSAGES: Record<string, string> = {
     server_error: 'Our servers are not responding. Please try again shortly.',
     flow_state_expired: 'This sign-in link expired. Start the flow again from the login page.',
     same_password: 'New password must be different from your current password.',
+    current_password_incorrect: 'Current password is incorrect.',
+    username_update_failed: 'Could not update username. Please try again.',
 };
 
 export function getFriendlyAuthMessage(error: AuthError | null): string {
