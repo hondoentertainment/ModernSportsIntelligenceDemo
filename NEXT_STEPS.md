@@ -184,7 +184,7 @@ Copy does not claim a live Market Movers or Sports Card Investor tape. No `VITE_
 
 **Owner steps (do not run from an engineering agent):**
 
-1. On Supabase `vhbsokjqchaafluimgjh`, run the preflight query in `supabase/migrations/00013_profiles_username_login.sql`. If it returns rows, rename the duplicate handles, then apply that file in the SQL editor. Do not apply `00011` in the same pass unless you mean to.
+1. On Supabase `vhbsokjqchaafluimgjh`, run the preflight query in `supabase/migrations/00013_profiles_username_login.sql`. If it returns rows, rename the duplicate handles, then apply that file in the SQL editor. Do not apply `00011` in the same pass unless you mean to. After it is applied, run `npm run types:supabase` and commit `types/supabase.gen.ts` so the drift check matches the live schema. The generated file is unchanged in this PR because the functions are not on the live database yet.
 2. Authentication → Providers: keep Email enabled. Set the minimum password length to 8 so it matches the form. Confirm email is optional; if it stays on, new accounts must open the confirmation link before sign-in.
 3. Authentication → URL configuration: Site URL is the production origin (no hash). Add redirect URLs for production and preview origins. Reset emails use that origin; the app then opens `/#/reset-password`.
 4. Authentication → SMTP: the built-in mailer is rate limited. Add custom SMTP before relying on reset or confirmation volume.

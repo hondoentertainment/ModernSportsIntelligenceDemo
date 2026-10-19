@@ -216,18 +216,7 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: {
-      /** service_role only. Returns auth.users.email or null. */
-      resolve_username_email: {
-        Args: { p_username: string };
-        Returns: string | null;
-      };
-      /** Boolean only. Does not return a profile row. */
-      username_available: {
-        Args: { p_username: string };
-        Returns: boolean;
-      };
-    };
+    Functions: Record<string, never>;
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };
