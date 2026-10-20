@@ -8,6 +8,7 @@ import {
   loadCollectorAlertDigest,
   type DigestRow,
 } from '../lib/alerts/collectorAlertDigest';
+import { SALE_RANGE_BLURB } from '../lib/collector/saleRange';
 import type { FollowUp } from '../lib/collector/showClose';
 
 interface Props {
@@ -91,6 +92,16 @@ const CollectorAlertDigest: React.FC<Props> = ({ inventory = [], targets, onWatc
       {digest.drops.length === 0
         ? <p className="mt-1 text-sm text-slate-400">No watchlist mark is 5% or more under your target.</p>
         : <Rows rows={digest.drops} />}
+      <h3 className="mt-4 text-xs font-black uppercase tracking-widest text-cyan-200">Target versus the sale range</h3>
+      <p className="mt-1 text-xs leading-relaxed text-slate-500">{SALE_RANGE_BLURB}</p>
+      {digest.ranges.length === 0
+        ? <p className="mt-1 text-sm text-slate-400">No active target has stored sales or a local mark to place.</p>
+        : <Rows rows={digest.ranges} />}
+      {digest.rangeOmitted > 0 ? (
+        <p className="mt-1 text-xs text-slate-500">
+          {digest.rangeOmitted} more {digest.rangeOmitted === 1 ? 'target stays' : 'targets stay'} off this list.
+        </p>
+      ) : null}
       <h3 className="mt-4 text-xs font-black uppercase tracking-widest text-amber-200">Shows inside your radius</h3>
       {!digest.showAlertsArmed
         ? <p className="mt-1 text-sm text-slate-400">Show alerts are off. Set a home radius on local card shows.</p>

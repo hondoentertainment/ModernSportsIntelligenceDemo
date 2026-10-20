@@ -14,6 +14,7 @@ import {
   type ResolvedLocalCardShow,
 } from '../shows/localCardShowCatalog';
 import { compsSnapshot } from '../collector/deskNext';
+import { targetRangeDesk, type RangeRow } from '../collector/saleRange';
 import { followUps, type FollowUp, type MarkRef } from '../collector/showClose';
 import { haggleSnapshot, type HaggleNote } from '../shows/showHaggleLog';
 import { store } from '../dal/syncStore';
@@ -34,6 +35,8 @@ export interface CollectorAlertDigest {
   drops: DigestRow[];
   shows: DigestRow[];
   follows: FollowUp[];
+  ranges: RangeRow[];
+  rangeOmitted: number;
   showAlertsArmed: boolean;
   disclosure: string;
 }
@@ -121,8 +124,11 @@ export function buildCollectorAlertDigest(input: {
   const armed = input.prefs.enabled && input.prefs.home != null;
   const notes = input.notes ?? [];
   const inventory = input.inventory ?? [];
+  const ranges = targetRangeDesk(input.targets);
   return {
     drops: priceDropRows(input.targets),
+    ranges: ranges.rows,
+    rangeOmitted: ranges.omitted,
     shows: armed ? showProximityRows(input.shows, input.prefs) : [],
     follows: followUps({
       notes,

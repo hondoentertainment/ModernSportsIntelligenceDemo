@@ -31,6 +31,8 @@ describe('ShowHagglePanel', () => {
     await user.selectOptions(screen.getByLabelText('Card for the ask at Metro Meetup'), 'judge');
     expect(screen.getByLabelText('Ask versus median')).toHaveTextContent(/under the sold comps median/i);
     expect(screen.getByLabelText('Ask versus median')).toHaveTextContent(/not a live tape/i);
+    expect(screen.getByLabelText('Ask versus sale range')).toHaveTextContent(/inside the range of sold comps/i);
+    expect(screen.getByLabelText('Ask versus sale range')).toHaveTextContent(/\$80–\$120/);
     await user.click(screen.getByRole('button', { name: 'Add table note' }));
     expect(screen.getByText(/under the sold comps median/i)).toBeInTheDocument();
   });

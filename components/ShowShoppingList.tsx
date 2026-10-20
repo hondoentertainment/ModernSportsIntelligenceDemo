@@ -12,6 +12,7 @@ import { readPlaces, type Place } from '../lib/collector/deskNext';
 import { pullCopy } from '../lib/collector/floorPack';
 import { cashFit, cashFitCopy, cashLineCopy, type CashFitCall, type CashSource } from '../lib/collector/showClose';
 import { buildPullSheet, pullSheetCopy } from '../lib/collector/pullSheet';
+import { SALE_RANGE_NOTE, rangeSeatCopy, saleRange } from '../lib/collector/saleRange';
 import { store } from '../lib/dal/syncStore';
 import { SHOPPING_INGEST_DISCLOSURE } from '../lib/shows/showShoppingIngest';
 import { readCashBudget } from '../lib/shows/showTripLoop';
@@ -33,25 +34,54 @@ function usd(value: number | null): string {
   return value == null ? 'no price' : `$${Math.round(value).toLocaleString('en-US')}`;
 }
 
-function Lines({ lines, places, calls }: { lines: ShopLine[]; places: Record<string, Place>; calls?: Record<string, CashFitCall> }) {
+function buyRangeCopy(line: ShopLine, inventory: CardInventory[], targets: TargetWatchlist[]): string | null {
+  if (line.side !== 'buy' || line.targetBuyUsd == null) return null;
+  const card = line.cardId ? inventory.find((row) => row.id === line.cardId) : undefined;
+  if (card) return rangeSeatCopy(line.targetBuyUsd, saleRange(card), 'This buy');
+  const target = line.targetId ? targets.find((row) => row.id === line.targetId) : undefined;
+  if (!target) return null;
+  return rangeSeatCopy(line.targetBuyUsd, saleRange({
+    id: target.id,
+    currentValue: target.currentMarketPrice,
+    salesData: target.salesData,
+  }), 'This buy');
+}
+
+function Lines({
+  lines,
+  places,
+  calls,
+  inventory,
+  targets,
+}: {
+  lines: ShopLine[];
+  places: Record<string, Place>;
+  calls?: Record<string, CashFitCall>;
+  inventory: CardInventory[];
+  targets: TargetWatchlist[];
+}) {
   return (
     <ul className="space-y-2">
-      {lines.map((line) => (
-        <li key={line.id}>
-          <p className="text-sm text-white">{line.player} <span className="text-xs text-slate-400">{shopLineLabel(line.kind)}</span></p>
-          <p className="text-xs text-slate-400">{line.detail}</p>
-          <p className="text-xs text-slate-300">
-            {line.side === 'buy' ? 'Target buy' : 'Offer near'} {usd(line.targetBuyUsd)}
-            {line.marketMarkUsd != null ? ` · mark ${usd(line.marketMarkUsd)}` : ''}
-            {line.collectorCeilingUsd != null ? ` · ceiling ${usd(line.collectorCeilingUsd)}` : ''}
-          </p>
-          {calls ? <p className="text-xs text-slate-300">{cashLineCopy(calls[line.id] ?? 'no price')}</p> : null}
-          {line.side === 'sell' && line.cardId ? <p className="text-xs text-slate-300">{pullCopy(places[line.cardId])}</p> : null}
-          <p className="text-xs text-slate-500">{line.priceSource}. {line.why}</p>
-          {line.cardId && <Link className="text-xs text-brand-lime" to={`/compare?card1=${encodeURIComponent(line.cardId)}`}>Comps</Link>}
-          <Link className="ml-2 text-xs text-brand-lime" to="/collection">Collection</Link>
-        </li>
-      ))}
+      {lines.map((line) => {
+        const rangeCopy = buyRangeCopy(line, inventory, targets);
+        return (
+          <li key={line.id}>
+            <p className="text-sm text-white">{line.player} <span className="text-xs text-slate-400">{shopLineLabel(line.kind)}</span></p>
+            <p className="text-xs text-slate-400">{line.detail}</p>
+            <p className="text-xs text-slate-300">
+              {line.side === 'buy' ? 'Target buy' : 'Offer near'} {usd(line.targetBuyUsd)}
+              {line.marketMarkUsd != null ? ` · mark ${usd(line.marketMarkUsd)}` : ''}
+              {line.collectorCeilingUsd != null ? ` · ceiling ${usd(line.collectorCeilingUsd)}` : ''}
+            </p>
+            {rangeCopy ? <p className="text-xs text-slate-300" aria-label={`Sale range for ${line.player}`}>{rangeCopy}</p> : null}
+            {calls ? <p className="text-xs text-slate-300">{cashLineCopy(calls[line.id] ?? 'no price')}</p> : null}
+            {line.side === 'sell' && line.cardId ? <p className="text-xs text-slate-300">{pullCopy(places[line.cardId])}</p> : null}
+            <p className="text-xs text-slate-500">{line.priceSource}. {line.why}</p>
+            {line.cardId && <Link className="inline-flex min-h-[44px] items-center text-xs text-brand-lime" to={`/compare?card1=${encodeURIComponent(line.cardId)}`}>Comps</Link>}
+            <Link className="ml-2 inline-flex min-h-[44px] items-center text-xs text-brand-lime" to="/collection">Collection</Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }
@@ -94,7 +124,12 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
         {list.emptyReason ? <p className="text-sm text-slate-400">{list.emptyReason}</p> : (
           <>
             <h4 className="text-xs text-emerald-200">Buy</h4>
-            {list.buys.length === 0 ? <p className="text-xs text-slate-500">No buys.</p> : <Lines lines={list.buys} places={places} calls={fit.byId} />}
+            {list.buys.length === 0 ? <p className="text-xs text-slate-500">No buys.</p> : (
+              <>
+                <p className="text-xs text-slate-500">{SALE_RANGE_NOTE}</p>
+                <Lines lines={list.buys} places={places} calls={fit.byId} inventory={inventory} targets={targets} />
+              </>
+            )}
             {onFileBuy && list.buys.length > 0 && (
               <>
                 <p className="mt-2 text-[11px] text-slate-500">{SHOPPING_INGEST_DISCLOSURE}</p>
@@ -109,7 +144,7 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
               </>
             )}
             <h4 className="text-xs text-sky-200">Sell or trade</h4>
-            {list.sells.length === 0 ? <p className="text-xs text-slate-500">No extras.</p> : <Lines lines={list.sells} places={places} />}
+            {list.sells.length === 0 ? <p className="text-xs text-slate-500">No extras.</p> : <Lines lines={list.sells} places={places} inventory={inventory} targets={targets} />}
             {pullSheet.count > 0 && (
               <section className="mt-3" aria-label={`Pull sheet for ${show.name}`}>
                 <h4 className="text-xs text-slate-200">Pull sheet</h4>
