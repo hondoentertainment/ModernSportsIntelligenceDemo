@@ -122,8 +122,8 @@ export function targetRangeDesk(
     if (seat === 'no price' || seat === 'no range') continue;
     const copy = rangeSeatCopy(price, range, 'Your target');
     if (!copy) continue;
-    const player = target.player.trim() || 'Watchlist card';
-    const detail = target.cardDescription.trim() || 'Watchlist row';
+    const player = (typeof target.player === 'string' ? target.player.trim() : '') || 'Watchlist card';
+    const detail = (typeof target.cardDescription === 'string' ? target.cardDescription.trim() : '') || 'Watchlist row';
     ranked.push({
       id: `range:${target.id}`,
       title: `${player} is ${where(seat)}`,

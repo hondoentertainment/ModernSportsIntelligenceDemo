@@ -81,6 +81,18 @@ describe('saleRange', () => {
     expect(desk.rows[0].title).toBe('Under is under the low');
     expect(desk.rows[0].detail).toMatch(/Your target \$40 is under the low of sold comps/);
     expect(desk.rows[0].detail).toMatch(/2024 Prizm Silver/);
+    const legacy = targetRangeDesk([
+      target({
+        id: 'legacy',
+        player: 'Legacy',
+        targetPrice: 40,
+        currentMarketPrice: 100,
+        salesData: sales,
+        cardDescription: undefined as unknown as string,
+      }),
+    ]);
+    expect(legacy.rows[0]?.detail).toMatch(/Watchlist row/);
+    expect(legacy.rows[0]?.title).toMatch(/Legacy is under the low/);
     expect(desk.rows[0].href).toBe('/collection');
     expect(desk.omitted).toBe(0);
 
