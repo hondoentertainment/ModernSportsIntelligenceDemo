@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import type { CardInventory, Sport, TargetWatchlist } from '../types';
 import { compsSnapshot } from '../lib/collector/deskNext';
+import { rangeSeatCopy, saleRange } from '../lib/collector/saleRange';
 import {
   askVersusBookCopy,
   buildFloorBuyDraft,
@@ -92,6 +93,9 @@ const ShowHagglePanel: React.FC<Props> = ({
   const liveAsk = askUsd != null && (picked || player.trim())
     ? askVersusBookCopy(askUsd, liveReference, Boolean(picked))
     : null;
+  const liveRange = picked && askUsd != null && askUsd > 0
+    ? rangeSeatCopy(askUsd, saleRange(picked), 'This ask')
+    : null;
 
   const save = () => {
     const saved = addHaggle({
@@ -147,6 +151,13 @@ const ShowHagglePanel: React.FC<Props> = ({
     return askVersusBookCopy(row.askUsd, reference, Boolean(row.cardId));
   };
 
+  const rangeFor = (row: HaggleNote): string | null => {
+    if (!row.cardId || !(row.askUsd > 0)) return null;
+    const card = cards.find((item) => item.id === row.cardId);
+    if (!card) return null;
+    return rangeSeatCopy(row.askUsd, saleRange(card), 'This ask');
+  };
+
   return (
     <div className="mt-4 space-y-3" role="tabpanel" aria-label={`Table notes for ${showName}`}>
       <p className="text-[11px] leading-relaxed text-slate-400">{HAGGLE_DISCLOSURE}</p>
@@ -192,6 +203,7 @@ const ShowHagglePanel: React.FC<Props> = ({
         </label>
       )}
       {liveAsk ? <p className="text-xs text-slate-200" aria-label="Ask versus median">{liveAsk}</p> : null}
+      {liveRange ? <p className="text-xs text-slate-200" aria-label="Ask versus sale range">{liveRange}</p> : null}
       <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
         Result
         <select value={result} onChange={event => setResult(event.target.value as HaggleResult)} aria-label={`Result at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm">
@@ -226,6 +238,7 @@ const ShowHagglePanel: React.FC<Props> = ({
         <ul className="space-y-2">
           {notes.map(row => {
             const versus = versusFor(row);
+            const rangeCopy = rangeFor(row);
             const filed = inventory.find(card => card.id === floorBuyId(row.id));
             const draft = buildFloorBuyDraft({ note: row, showName, purchaseDate });
             const revisit = isRevisit(row, referenceForNote(row, { medianByCardId: marks, targets }));
@@ -244,6 +257,7 @@ const ShowHagglePanel: React.FC<Props> = ({
                 </p>
                 {row.note ? <p className="text-xs text-slate-400">{row.note}</p> : null}
                 {versus ? <p className="text-xs text-slate-300">{versus}</p> : null}
+                {rangeCopy ? <p className="text-xs text-slate-300">{rangeCopy}</p> : null}
                 {filed ? (
                   <p className="mt-2 text-[11px] text-emerald-300">
                     {row.player} in the collection · cost basis ${filed.purchasePrice.toFixed(2)}

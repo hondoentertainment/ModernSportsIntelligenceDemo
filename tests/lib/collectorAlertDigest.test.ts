@@ -104,6 +104,9 @@ describe('collector alert digest', () => {
     expect(off.showAlertsArmed).toBe(false);
     expect(off.shows).toEqual([]);
     expect(off.drops).toHaveLength(1);
+    expect(off.ranges.length).toBeGreaterThan(0);
+    expect(off.ranges[0]?.title).toMatch(/Jayson Tatum is over the high/);
+    expect(off.ranges[0]?.detail).toMatch(/demo sales/);
     expect(off.disclosure).toMatch(/owner-held VAPID/i);
 
     const noHome = buildCollectorAlertDigest({

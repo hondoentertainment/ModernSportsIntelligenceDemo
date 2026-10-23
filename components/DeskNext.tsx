@@ -17,6 +17,7 @@ import {
   type PlaceFilter,
 } from '../lib/collector/deskNext';
 import { floorWeek } from '../lib/collector/floorPack';
+import { rangeSeatCopy, SALE_RANGE_NOTE, saleRange } from '../lib/collector/saleRange';
 import { unfiledBuys, unfiledCopy } from '../lib/collector/showClose';
 import { store } from '../lib/dal/syncStore';
 import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
@@ -99,7 +100,7 @@ function CompsSnapshotPanel({ inventory }: { inventory: CardInventory[] }) {
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" aria-label="Comps snapshot">
       <h2 className="text-sm font-black uppercase tracking-widest text-white">Comps snapshot</h2>
-      <p className="mt-2 text-xs text-slate-400">Last sales and the median. {DESK_NOTE}</p>
+      <p className="mt-2 text-xs text-slate-400">{SALE_RANGE_NOTE}</p>
       {!card || !snap ? <p className="mt-3 text-sm text-slate-400">No held cards.</p> : (
         <>
           <label className="mt-3 block text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -110,12 +111,13 @@ function CompsSnapshotPanel({ inventory }: { inventory: CardInventory[] }) {
           </label>
           {snap.points.length === 0 ? <p className="mt-3 text-sm text-slate-400">No mark to sketch.</p> : (
             <>
-              <svg viewBox="0 0 100 40" className="mt-3 h-16 w-full text-emerald-300" role="img" aria-label="Demo sales sparkline">
+              <svg viewBox="0 0 100 40" className="mt-3 h-16 w-full text-emerald-300" role="img" aria-label={snap.source === 'comps' ? 'Sold comps sparkline' : 'Demo sales sparkline'}>
                 <polyline fill="none" stroke="currentColor" strokeWidth="1.2" points={spark(snap.points)} />
               </svg>
-              <p className="mt-2 font-mono text-xs text-slate-200">
-                {snap.source === 'comps' ? 'Sold comps' : 'Demo sales'} · median {usd(snap.median ?? 0)} · {snap.points.length} sales
+              <p className="mt-2 font-mono text-xs text-slate-200" aria-label="Sale range">
+                {snap.source === 'comps' ? 'Sold comps' : 'Demo sales'} · low {usd(Math.min(...snap.points))} · median {usd(snap.median ?? 0)} · high {usd(Math.max(...snap.points))} · {snap.points.length} sales
               </p>
+              <p className="mt-1 text-xs text-slate-300">{rangeSeatCopy(markOf(card), saleRange(card), 'Local mark') ?? 'No local mark to place on this range.'}</p>
             </>
           )}
         </>

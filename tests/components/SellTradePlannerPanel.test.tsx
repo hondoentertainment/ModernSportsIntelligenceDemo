@@ -78,6 +78,8 @@ describe('SellTradePlannerPanel', () => {
     expect(screen.getByRole('radio', { name: 'All' })).toHaveClass('min-h-[44px]');
     expect(screen.getAllByText(/Julio Rodriguez/).length).toBeGreaterThan(0);
     expect(screen.getByText('Cost Basis')).toBeInTheDocument();
+    expect(screen.getByLabelText('Sale range for Cost Basis')).toHaveTextContent(/demo sales/);
+    expect(screen.getByText(/not a live tape/i)).toBeInTheDocument();
 
     await user.click(screen.getByRole('radio', { name: 'Sell' }));
     expect(screen.getByText('Cost Basis')).toBeInTheDocument();

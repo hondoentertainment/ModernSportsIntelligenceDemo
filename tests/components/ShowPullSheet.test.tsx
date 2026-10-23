@@ -41,7 +41,23 @@ describe('Show pull sheet', () => {
         <ShowShoppingList
           show={show}
           liveTape={false}
-          targets={[]}
+          targets={[{
+            id: 'hunt',
+            player: 'Aaron Judge',
+            cardDescription: '2017 Update',
+            priority: 'High',
+            targetPrice: 20,
+            currentMarketPrice: 100,
+            sport: 'Baseball',
+            league: 'MLB',
+            status: 'active',
+            createdAt: '2026-01-01',
+            salesData: [
+              { title: 'a', price: 80, condition: 'raw', soldAt: '2026-09-01' },
+              { title: 'b', price: 100, condition: 'raw', soldAt: '2026-09-02' },
+              { title: 'c', price: 120, condition: 'raw', soldAt: '2026-09-03' },
+            ],
+          }]}
           inventory={[
             makeCard({ id: 'extra', player: 'Shohei Ohtani', year: 2018, set: 'Update', cardNumber: '1', currentValue: 30 }),
             makeCard({ id: 'keeper', player: 'Shohei Ohtani', year: 2018, set: 'Update', cardNumber: '1', currentValue: 80 }),
@@ -55,6 +71,7 @@ describe('Show pull sheet', () => {
     expect(sheet).toHaveTextContent(/Shohei Ohtani/);
     expect(sheet).toHaveTextContent(/not a live tape/i);
     expect(sheet).not.toHaveTextContent(/from Box/i);
+    expect(screen.getByLabelText('Sale range for Aaron Judge')).toHaveTextContent(/under the low of sold comps/i);
     setPlace('extra', '');
     setPlace('keeper', '');
   });
