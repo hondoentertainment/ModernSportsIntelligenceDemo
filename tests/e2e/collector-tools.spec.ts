@@ -141,6 +141,8 @@ test.describe('Collector desk tools', () => {
     await comps.getByLabel('Comps snapshot card').selectOption('judge');
     await expect(comps.getByRole('img', { name: 'Demo sales sparkline' })).toBeVisible();
     await expect(comps).toContainText(/median/i);
+    await expect(comps.getByLabel('Sell ladder')).toContainText(/Ask \$/);
+    await expect(comps).toContainText(/not a dealer bid/i);
     const trade = page.getByRole('region', { name: 'Trade value balancer' });
     await trade.getByLabel('Trade card').selectOption('pad-0');
     await trade.getByRole('button', { name: 'Add to give' }).click();

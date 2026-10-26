@@ -13,6 +13,18 @@ describe('ShowHagglePanel', () => {
       <ShowHagglePanel
         showId="nyc"
         showName="Metro Meetup"
+        targets={[{
+          id: 'judge-target',
+          player: 'Aaron Judge',
+          cardDescription: '2017 Update',
+          priority: 'High',
+          targetPrice: 90,
+          currentMarketPrice: 100,
+          sport: 'Baseball',
+          league: 'MLB',
+          status: 'active',
+          createdAt: '2026-01-01',
+        }]}
         inventory={[makeCard({
           id: 'judge',
           player: 'Aaron Judge',
@@ -33,6 +45,8 @@ describe('ShowHagglePanel', () => {
     expect(screen.getByLabelText('Ask versus median')).toHaveTextContent(/not a live tape/i);
     expect(screen.getByLabelText('Ask versus sale range')).toHaveTextContent(/inside the range of sold comps/i);
     expect(screen.getByLabelText('Ask versus sale range')).toHaveTextContent(/\$80–\$120/);
+    expect(screen.getByLabelText('Offer ladder')).toHaveTextContent(/Open \$80, fair \$100, walk \$120 on sold comps/);
+    expect(screen.getByLabelText('Offer ladder')).not.toHaveTextContent(/Walk is the target/);
     await user.click(screen.getByRole('button', { name: 'Add table note' }));
     expect(screen.getByText(/under the sold comps median/i)).toBeInTheDocument();
   });

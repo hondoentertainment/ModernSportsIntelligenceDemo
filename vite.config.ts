@@ -172,6 +172,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/collector/floorPack.ts',
         'lib/collector/showClose.ts',
         'lib/collector/pullSheet.ts',
+        'lib/collector/offerLadder.ts',
         'lib/authSessionNotice.ts',
         'lib/analytics/capitalGainsExit.ts',
         'lib/utils/syncProductDefaults.ts',

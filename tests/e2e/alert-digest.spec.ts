@@ -29,7 +29,9 @@ test.describe('Watchlist and show alert digest', () => {
     await page.goto('/#/alerts');
     const digest = page.getByRole('region', { name: 'Watchlist and show alert digest' });
     await expect(digest).toBeVisible({ timeout: 20_000 });
-    await expect(digest.getByText(/not a live tape/i)).toBeVisible();
+    await expect(digest.getByText(/not a live tape/i).first()).toBeVisible();
+    await expect(digest.getByText(/not a dealer quote/i)).toBeVisible();
+    await expect(digest.getByText(/Open \$/)).toBeVisible();
     await expect(digest.getByText(/owner-held VAPID/i)).toBeVisible();
     await expect(digest.getByText('Jayson Tatum under target')).toBeVisible();
     await expect(digest.getByText(/60% under your \$200 target/i)).toBeVisible();

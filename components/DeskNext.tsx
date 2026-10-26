@@ -17,6 +17,7 @@ import {
   type PlaceFilter,
 } from '../lib/collector/deskNext';
 import { floorWeek } from '../lib/collector/floorPack';
+import { SELL_LADDER_NOTE, sellLadder, sellLadderCopy } from '../lib/collector/offerLadder';
 import { rangeSeatCopy, SALE_RANGE_NOTE, saleRange } from '../lib/collector/saleRange';
 import { unfiledBuys, unfiledCopy } from '../lib/collector/showClose';
 import { store } from '../lib/dal/syncStore';
@@ -97,10 +98,12 @@ function CompsSnapshotPanel({ inventory }: { inventory: CardInventory[] }) {
   const [cardId, setCardId] = useState(cards[0]?.id ?? '');
   const card = cards.find((row) => row.id === cardId) ?? cards[0];
   const snap = card ? compsSnapshot(card) : null;
+  const sellCopy = card ? sellLadderCopy(sellLadder(saleRange(card))) : null;
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" aria-label="Comps snapshot">
       <h2 className="text-sm font-black uppercase tracking-widest text-white">Comps snapshot</h2>
       <p className="mt-2 text-xs text-slate-400">{SALE_RANGE_NOTE}</p>
+      <p className="mt-1 text-xs text-slate-400">{SELL_LADDER_NOTE}</p>
       {!card || !snap ? <p className="mt-3 text-sm text-slate-400">No held cards.</p> : (
         <>
           <label className="mt-3 block text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -118,6 +121,7 @@ function CompsSnapshotPanel({ inventory }: { inventory: CardInventory[] }) {
                 {snap.source === 'comps' ? 'Sold comps' : 'Demo sales'} · low {usd(Math.min(...snap.points))} · median {usd(snap.median ?? 0)} · high {usd(Math.max(...snap.points))} · {snap.points.length} sales
               </p>
               <p className="mt-1 text-xs text-slate-300">{rangeSeatCopy(markOf(card), saleRange(card), 'Local mark') ?? 'No local mark to place on this range.'}</p>
+              {sellCopy ? <p className="mt-1 text-xs text-slate-300" aria-label="Sell ladder">{sellCopy}</p> : null}
             </>
           )}
         </>
