@@ -1,10 +1,10 @@
 # Product roadmap — post Wave-5 (2026 Q4)
 
 **Audience:** owner / Kyle  
-**Status:** refreshed 2026-10-20. Eng-safe waves through #144, the Phase B UI scaffold (#141, flags off), the #168 local-show buying desk, the show-trip / floor / recap loop, portfolio book insights (#170), the sell / trade-in planner, set completion (#177), table notes / grading submit / portfolio chart / CSV / want-list share (#178), and show day / comps snapshot / trade balance / location / weekly recap (#179) are on the local book. #180 dropped the Gemini web SDK from the client bundle. #181 raised the gzip cap to 3,350,000 bytes. #182 connected set holes, pull-from place, ask versus median, and floor notes. #183 keeps Google sign-in on the login page when the provider is off. #184 closed the show. #185 aligned frontier desk tests with the collection. #186 added username + password auth. #187 added the show pull sheet. #188 and #189 are the Dependabot dev and production bumps. `00013` stays file-only until the owner applies it. No secrets or `VITE_FF_REAL_*` flips in this plan. Full Phase B exit still needs #77 live eBay tape. Do not claim live Market Movers / SCI Pulse parity before that. Owner direction (2026-10-12): eng-safe demo-tape buildout continues while #77 is open. **#77 stays the only path to live tape.**  
+**Status:** refreshed 2026-10-26. Eng-safe waves through #144, the Phase B UI scaffold (#141, flags off), the #168 local-show buying desk, the show-trip / floor / recap loop, portfolio book insights (#170), the sell / trade-in planner, set completion (#177), table notes / grading submit / portfolio chart / CSV / want-list share (#178), and show day / comps snapshot / trade balance / location / weekly recap (#179) are on the local book. #180 dropped the Gemini web SDK from the client bundle. #181 raised the gzip cap to 3,350,000 bytes. #182 connected set holes, pull-from place, ask versus median, and floor notes. #183 keeps Google sign-in on the login page when the provider is off. #184 closed the show. #185 aligned frontier desk tests with the collection. #186 added username + password auth. #187 added the show pull sheet. #188 and #189 are the Dependabot dev and production bumps. #190 placed the collector's number on the sale range. `00013` stays file-only until the owner applies it. No secrets or `VITE_FF_REAL_*` flips in this plan. Full Phase B exit still needs #77 live eBay tape. Do not claim live Market Movers / SCI Pulse parity before that. Owner direction (2026-10-12): eng-safe demo-tape buildout continues while #77 is open. **#77 stays the only path to live tape.**  
 **Canonical ops:** [`NEXT_STEPS.md`](../NEXT_STEPS.md) · [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77)
 
-Production on `main` is healthy (`b35555e`, [#189](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/189) and [#188](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/188) on [#187](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/187), which is on [#186](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/186), [#185](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/185), [#184](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/184), [#182](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/182), [#183](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/183), and [#181](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/181)). Remaining unlock for **live tape** is **owner-held #77** (optional file-only `00011`, Stripe smoke, eBay then PSA, optional Sentry, admin-audit confirm, legal, rotation drill). Restore and Vercel Supabase env presence are done. If #77 slips, live tape waits — eng-safe depth on demo/stale tape does not. Engineering agents must not apply `00011`.
+Production on `main` is healthy (`c3d664e`, [#190](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/190) on [#189](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/189) and [#188](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/188) on [#187](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/187), which is on [#186](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/186), [#185](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/185), [#184](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/184), [#182](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/182), [#183](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/183), and [#181](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/pull/181)). Remaining unlock for **live tape** is **owner-held #77** (optional file-only `00011`, Stripe smoke, eBay then PSA, optional Sentry, admin-audit confirm, legal, rotation drill). Restore and Vercel Supabase env presence are done. If #77 slips, live tape waits — eng-safe depth on demo/stale tape does not. Engineering agents must not apply `00011`.
 
 ---
 
@@ -24,16 +24,17 @@ Do **not** pause Supabase, apply `00011`, or set live-data flags from an enginee
 
 ## 2. Competitive positioning
 
-| Capability                                               | MSI                                    | Market Movers / Sports Card Investor |
-| -------------------------------------------------------- | -------------------------------------- | ------------------------------------ |
-| Multi-agent War Room + why / consensus                   | **Lead**                               | Absent                               |
-| Tax lots, ST/LT, wash-sale rail, sell / trade-in planner | **Lead** (advisory; not IRS-complete)  | Thin or absent                       |
-| Audit dossier + admin audit trail                        | **Lead**                               | Absent                               |
-| Card-show loop (discover, trip budget, floor, recap)     | **Lead** (seeded + local book)         | Absent                               |
-| Negotiation Arena / Auto-Pilot (advisory)                | **Lead**                               | Absent                               |
-| Ratio intel, movers, deals, compare, whale list          | **Parity-plus on local book** (Wave-5) | Strong on live tape                  |
-| Live multi-marketplace sold comps                        | Behind #77                             | **They lead today**                  |
-| Live Market Pulse / hobby indexes                        | Seeded + local Δ                       | **They lead today**                  |
+| Capability                                               | MSI                                       | Market Movers / Sports Card Investor |
+| -------------------------------------------------------- | ----------------------------------------- | ------------------------------------ |
+| Multi-agent War Room + why / consensus                   | **Lead**                                  | Absent                               |
+| Tax lots, ST/LT, wash-sale rail, sell / trade-in planner | **Lead** (advisory; not IRS-complete)     | Thin or absent                       |
+| Audit dossier + admin audit trail                        | **Lead**                                  | Absent                               |
+| Card-show loop (discover, trip budget, floor, recap)     | **Lead** (seeded + local book)            | Absent                               |
+| Offer ladder (open / fair / walk, ask / take / pass)     | **Lead** (local range, target, cash left) | Absent                               |
+| Negotiation Arena / Auto-Pilot (advisory)                | **Lead**                                  | Absent                               |
+| Ratio intel, movers, deals, compare, whale list          | **Parity-plus on local book** (Wave-5)    | Strong on live tape                  |
+| Live multi-marketplace sold comps                        | Behind #77                                | **They lead today**                  |
+| Live Market Pulse / hobby indexes                        | Seeded + local Δ                          | **They lead today**                  |
 
 MSI wins on **agents, fiscal, War Room, show-floor, audit**. SCI / Market Movers still win on **live comps depth and live Pulse** until Phase A lands.
 
@@ -129,9 +130,13 @@ Already known; do not invent Labs pages.
 
 ---
 
+## 6f. Eng-safe depth — 2026-10-26
+
+Checked against `main` @ `c3d664e` (#190). Still owner-held: #77, including file-only `00011` and `00013` (agents must not apply them). The sale range is #190. This change adds the offer ladder on that same local book: open, fair, and walk on buys, and ask, take, and pass on sells. A target or the cash still left before a shopping-list buy can pull the walk down. A target or that cash under the low is not an offer. A demo checklist hole is not a ladder. No live flags, no applied migration, gzip cap stays 3,350,000.
+
 ## 6e. Eng-safe depth — 2026-10-20
 
-Checked against `main` @ `b35555e` (#187, plus Dependabot #188 and #189). Still owner-held: #77, including file-only `00013` (agents must not apply it). The pull sheet is #187. `npm ci` still warns about deprecated `node-domexception@1.0.0` under `@google/genai`; that transitive chain is not a trivial non-major fix. This change places the collector's number on the low, median, and high of stored sold comps, or a stable demo sketch when those sales are absent: comps snapshot, `/alerts`, shopping-list buys, a held-card table ask, and the sell planner. No live flags, no applied migration, gzip cap stays 3,350,000.
+Checked against `main` @ `b35555e` (#187, plus Dependabot #188 and #189). Still owner-held: #77, including file-only `00013` (agents must not apply it). The pull sheet is #187. The sale range shipped after this note as #190. `npm ci` still warns about deprecated `node-domexception@1.0.0` under `@google/genai`; that transitive chain is not a trivial non-major fix. That pass placed the collector's number on the low, median, and high of stored sold comps, or a stable demo sketch when those sales are absent: comps snapshot, `/alerts`, shopping-list buys, a held-card table ask, and the sell planner. No live flags, no applied migration, gzip cap stays 3,350,000.
 
 ## 6d. Eng-safe depth — 2026-10-19
 

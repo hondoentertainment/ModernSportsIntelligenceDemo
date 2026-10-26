@@ -9,7 +9,7 @@ import { cleanDetail, cleanPlayer, cleanSport } from '../collector/showClose';
 export const HAGGLE_KEY = 'msi_show_haggle_v1';
 
 export const HAGGLE_DISCLOSURE =
-  'Notes you type for this seeded show. Name the player to compare asks across tables and to file a buy. An ask compared with a held card uses sold comps when that card has them, otherwise a demo sketch. A shopping-list mark is the local target, not a live print. Not a dealer quote and not a live tape.';
+  'Notes you type for this seeded show. Name the player to compare asks across tables and to file a buy. An ask compared with a held card uses sold comps when that card has them, otherwise a demo sketch. The offer ladder opens at the low, calls the median fair, and walks at the high or at your lower target. A shopping-list mark is the local target, not a live print. Not a dealer quote and not a live tape.';
 
 export type HaggleResult = 'bought' | 'passed' | 'open';
 

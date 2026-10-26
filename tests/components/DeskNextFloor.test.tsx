@@ -14,6 +14,8 @@ describe('DeskNext floor week', () => {
       </MemoryRouter>,
     );
     expect(screen.getByText(/no dated floor notes this week/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Sell ladder')).toHaveTextContent(/Ask \$[\d,.]+, take \$[\d,.]+, pass under \$[\d,.]+ on demo sales/);
+    expect(screen.getByText(/not a dealer bid/i)).toBeInTheDocument();
     act(() => {
       addHaggle({
         showId: 'nyc',

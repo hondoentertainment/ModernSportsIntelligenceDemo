@@ -12,7 +12,14 @@ import { readPlaces, type Place } from '../lib/collector/deskNext';
 import { pullCopy } from '../lib/collector/floorPack';
 import { cashFit, cashFitCopy, cashLineCopy, type CashFitCall, type CashSource } from '../lib/collector/showClose';
 import { buildPullSheet, pullSheetCopy } from '../lib/collector/pullSheet';
-import { SALE_RANGE_NOTE, rangeSeatCopy, saleRange } from '../lib/collector/saleRange';
+import {
+  OFFER_LADDER_CASH_NOTE,
+  OFFER_LADDER_NOTE,
+  SELL_LADDER_NOTE,
+  ladderCashRoom,
+  shopLadderCopy,
+} from '../lib/collector/offerLadder';
+import { SALE_RANGE_NOTE, rangeSeatCopy, saleRange, type SaleRange } from '../lib/collector/saleRange';
 import { store } from '../lib/dal/syncStore';
 import { SHOPPING_INGEST_DISCLOSURE } from '../lib/shows/showShoppingIngest';
 import { readCashBudget } from '../lib/shows/showTripLoop';
@@ -34,17 +41,27 @@ function usd(value: number | null): string {
   return value == null ? 'no price' : `$${Math.round(value).toLocaleString('en-US')}`;
 }
 
-function buyRangeCopy(line: ShopLine, inventory: CardInventory[], targets: TargetWatchlist[]): string | null {
-  if (line.side !== 'buy' || line.targetBuyUsd == null) return null;
-  const card = line.cardId ? inventory.find((row) => row.id === line.cardId) : undefined;
-  if (card) return rangeSeatCopy(line.targetBuyUsd, saleRange(card), 'This buy');
-  const target = line.targetId ? targets.find((row) => row.id === line.targetId) : undefined;
+function shopRange(line: ShopLine, inventory: CardInventory[], targets: TargetWatchlist[]): SaleRange | null {
+  if (line.kind === 'set-hole') return null;
+  if (line.cardId) {
+    const card = inventory.find((row) => row.id === line.cardId);
+    return card ? saleRange(card) : null;
+  }
+  if (!line.targetId) return null;
+  const target = targets.find((row) => row.id === line.targetId);
   if (!target) return null;
-  return rangeSeatCopy(line.targetBuyUsd, saleRange({
+  return saleRange({
     id: target.id,
     currentValue: target.currentMarketPrice,
     salesData: target.salesData,
-  }), 'This buy');
+  });
+}
+
+function buyRangeCopy(line: ShopLine, inventory: CardInventory[], targets: TargetWatchlist[]): string | null {
+  if (line.side !== 'buy' || line.targetBuyUsd == null) return null;
+  const range = shopRange(line, inventory, targets);
+  if (!range) return null;
+  return rangeSeatCopy(line.targetBuyUsd, range, 'This buy');
 }
 
 function Lines({
@@ -53,17 +70,27 @@ function Lines({
   calls,
   inventory,
   targets,
+  cashRooms,
 }: {
   lines: ShopLine[];
   places: Record<string, Place>;
   calls?: Record<string, CashFitCall>;
   inventory: CardInventory[];
   targets: TargetWatchlist[];
+  cashRooms?: Record<string, number | null>;
 }) {
   return (
     <ul className="space-y-2">
       {lines.map((line) => {
         const rangeCopy = buyRangeCopy(line, inventory, targets);
+        const ladderCopy = shopLadderCopy({
+          side: line.side,
+          kind: line.kind,
+          range: shopRange(line, inventory, targets),
+          targetUsd: line.collectorCeilingUsd,
+          cashUsd: line.side === 'buy' ? cashRooms?.[line.id] ?? null : null,
+        });
+        const ladderLabel = `${line.side === 'sell' ? 'Sell ladder' : 'Offer ladder'} for ${line.player}`;
         return (
           <li key={line.id}>
             <p className="text-sm text-white">{line.player} <span className="text-xs text-slate-400">{shopLineLabel(line.kind)}</span></p>
@@ -74,6 +101,7 @@ function Lines({
               {line.collectorCeilingUsd != null ? ` · ceiling ${usd(line.collectorCeilingUsd)}` : ''}
             </p>
             {rangeCopy ? <p className="text-xs text-slate-300" aria-label={`Sale range for ${line.player}`}>{rangeCopy}</p> : null}
+            {ladderCopy ? <p className="text-xs text-slate-300" aria-label={ladderLabel}>{ladderCopy}</p> : null}
             {calls ? <p className="text-xs text-slate-300">{cashLineCopy(calls[line.id] ?? 'no price')}</p> : null}
             {line.side === 'sell' && line.cardId ? <p className="text-xs text-slate-300">{pullCopy(places[line.cardId])}</p> : null}
             <p className="text-xs text-slate-500">{line.priceSource}. {line.why}</p>
@@ -103,6 +131,10 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
     () => cashFit(list.buys.map(line => ({ id: line.id, usd: line.targetBuyUsd })), cash),
     [list.buys, cash],
   );
+  const cashRooms = useMemo(
+    () => ladderCashRoom(list.buys.map(line => ({ id: line.id, usd: line.targetBuyUsd })), cash),
+    [list.buys, cash],
+  );
   const pullSheet = buildPullSheet(
     list.sells.map(line => ({
       id: line.id,
@@ -126,8 +158,8 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
             <h4 className="text-xs text-emerald-200">Buy</h4>
             {list.buys.length === 0 ? <p className="text-xs text-slate-500">No buys.</p> : (
               <>
-                <p className="text-xs text-slate-500">{SALE_RANGE_NOTE}</p>
-                <Lines lines={list.buys} places={places} calls={fit.byId} inventory={inventory} targets={targets} />
+                <p className="text-xs text-slate-500">{SALE_RANGE_NOTE} {OFFER_LADDER_NOTE} {OFFER_LADDER_CASH_NOTE}</p>
+                <Lines lines={list.buys} places={places} calls={fit.byId} inventory={inventory} targets={targets} cashRooms={cashRooms} />
               </>
             )}
             {onFileBuy && list.buys.length > 0 && (
@@ -144,7 +176,12 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
               </>
             )}
             <h4 className="text-xs text-sky-200">Sell or trade</h4>
-            {list.sells.length === 0 ? <p className="text-xs text-slate-500">No extras.</p> : <Lines lines={list.sells} places={places} inventory={inventory} targets={targets} />}
+            {list.sells.length === 0 ? <p className="text-xs text-slate-500">No extras.</p> : (
+              <>
+                <p className="text-xs text-slate-500">{SELL_LADDER_NOTE}</p>
+                <Lines lines={list.sells} places={places} inventory={inventory} targets={targets} />
+              </>
+            )}
             {pullSheet.count > 0 && (
               <section className="mt-3" aria-label={`Pull sheet for ${show.name}`}>
                 <h4 className="text-xs text-slate-200">Pull sheet</h4>

@@ -72,7 +72,49 @@ describe('Show pull sheet', () => {
     expect(sheet).toHaveTextContent(/not a live tape/i);
     expect(sheet).not.toHaveTextContent(/from Box/i);
     expect(screen.getByLabelText('Sale range for Aaron Judge')).toHaveTextContent(/under the low of sold comps/i);
+    expect(screen.getByLabelText('Offer ladder for Aaron Judge')).toHaveTextContent(/No offer inside that range/);
+    expect(screen.getByLabelText('Sell ladder for Shohei Ohtani')).toHaveTextContent(/on demo sales/);
     setPlace('extra', '');
     setPlace('keeper', '');
+  });
+
+  it('caps the next buy when cash left is under the low', () => {
+    const sales = [
+      { title: 'a', price: 80, condition: 'raw' as const, soldAt: '2026-09-01' },
+      { title: 'b', price: 100, condition: 'raw' as const, soldAt: '2026-09-02' },
+      { title: 'c', price: 120, condition: 'raw' as const, soldAt: '2026-09-03' },
+    ];
+    const row = (id: string, player: string, targetPrice: number) => ({
+      id,
+      player,
+      cardDescription: '2017 Update',
+      priority: 'High' as const,
+      targetPrice,
+      currentMarketPrice: 100,
+      sport: 'Baseball' as const,
+      league: 'MLB' as const,
+      status: 'active' as const,
+      createdAt: '2026-01-01',
+      salesData: sales,
+    });
+    render(
+      <MemoryRouter>
+        <ShowShoppingList
+          show={show}
+          liveTape={false}
+          cashUsd={100}
+          targets={[row('tight', 'Tight Target', 90), row('wide', 'Wide Target', 200)]}
+          inventory={[]}
+        />
+      </MemoryRouter>,
+    );
+    expect(screen.getByLabelText('Offer ladder for Tight Target')).toHaveTextContent(
+      /Open \$80, fair \$90, walk \$90 on sold comps/,
+    );
+    expect(screen.getByLabelText('Offer ladder for Tight Target')).toHaveTextContent(/Walk is the target you set/);
+    expect(screen.getByLabelText('Offer ladder for Wide Target')).toHaveTextContent(
+      /Cash left \$10 is under the low of sold comps/,
+    );
+    expect(screen.getByText(/not a dealer quote/i)).toBeInTheDocument();
   });
 });

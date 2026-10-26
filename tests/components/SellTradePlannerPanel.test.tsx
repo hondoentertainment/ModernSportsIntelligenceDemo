@@ -79,7 +79,10 @@ describe('SellTradePlannerPanel', () => {
     expect(screen.getAllByText(/Julio Rodriguez/).length).toBeGreaterThan(0);
     expect(screen.getByText('Cost Basis')).toBeInTheDocument();
     expect(screen.getByLabelText('Sale range for Cost Basis')).toHaveTextContent(/demo sales/);
-    expect(screen.getByText(/not a live tape/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Sell ladder for Cost Basis')).toHaveTextContent(/pass under/);
+    expect(screen.getByLabelText('Sell ladder for Cost Basis')).toHaveTextContent(/Cost \$150 is over the high/);
+    expect(screen.getByText(/not a dealer bid/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/not a live tape/i).length).toBeGreaterThan(0);
 
     await user.click(screen.getByRole('radio', { name: 'Sell' }));
     expect(screen.getByText('Cost Basis')).toBeInTheDocument();

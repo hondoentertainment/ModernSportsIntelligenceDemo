@@ -39,6 +39,8 @@ describe('CollectorAlertDigest sale range', () => {
     expect(digest).toHaveTextContent(/target versus the sale range/i);
     expect(digest).toHaveTextContent(/stable demo sketch|sold comps when those sales are stored/i);
     expect(digest).toHaveTextContent(/Under Player is under the low/);
+    expect(digest).toHaveTextContent(/No offer inside that range/);
+    expect(digest).toHaveTextContent(/not a dealer quote/i);
     expect(digest).toHaveTextContent(/1 more target stays off this list/);
     expect(screen.getAllByRole('link', { name: 'Open' })[0]).toHaveClass('min-h-[44px]');
   });

@@ -14,7 +14,8 @@ import {
   type ResolvedLocalCardShow,
 } from '../shows/localCardShowCatalog';
 import { compsSnapshot } from '../collector/deskNext';
-import { targetRangeDesk, type RangeRow } from '../collector/saleRange';
+import { buyLadder, buyLadderCopy } from '../collector/offerLadder';
+import { saleRange, targetRangeDesk, type RangeRow } from '../collector/saleRange';
 import { followUps, type FollowUp, type MarkRef } from '../collector/showClose';
 import { haggleSnapshot, type HaggleNote } from '../shows/showHaggleLog';
 import { store } from '../dal/syncStore';
@@ -127,7 +128,17 @@ export function buildCollectorAlertDigest(input: {
   const ranges = targetRangeDesk(input.targets);
   return {
     drops: priceDropRows(input.targets),
-    ranges: ranges.rows,
+    ranges: ranges.rows.map((row) => {
+      const id = row.id.startsWith('range:') ? row.id.slice('range:'.length) : row.id;
+      const target = input.targets.find((item) => item.id === id);
+      if (!target) return row;
+      const copy = buyLadderCopy(buyLadder(saleRange({
+        id: target.id,
+        currentValue: target.currentMarketPrice,
+        salesData: target.salesData,
+      }), { targetUsd: target.targetPrice }));
+      return copy ? { ...row, detail: `${row.detail} ${copy}` } : row;
+    }),
     rangeOmitted: ranges.omitted,
     shows: armed ? showProximityRows(input.shows, input.prefs) : [],
     follows: followUps({
