@@ -45,8 +45,8 @@ describe('ShowHagglePanel', () => {
     expect(screen.getByLabelText('Ask versus median')).toHaveTextContent(/not a live tape/i);
     expect(screen.getByLabelText('Ask versus sale range')).toHaveTextContent(/inside the range of sold comps/i);
     expect(screen.getByLabelText('Ask versus sale range')).toHaveTextContent(/\$80–\$120/);
-    expect(screen.getByLabelText('Offer ladder')).toHaveTextContent(/Open \$80, fair \$90, walk \$90 on sold comps/);
-    expect(screen.getByLabelText('Offer ladder')).toHaveTextContent(/Walk is the target you set/);
+    expect(screen.getByLabelText('Offer ladder')).toHaveTextContent(/Open \$80, fair \$100, walk \$120 on sold comps/);
+    expect(screen.getByLabelText('Offer ladder')).not.toHaveTextContent(/Walk is the target/);
     await user.click(screen.getByRole('button', { name: 'Add table note' }));
     expect(screen.getByText(/under the sold comps median/i)).toBeInTheDocument();
   });

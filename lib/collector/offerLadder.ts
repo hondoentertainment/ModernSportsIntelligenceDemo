@@ -49,12 +49,6 @@ export interface LadderCaps {
   cashUsd?: number | null;
 }
 
-interface CeilingTarget {
-  status?: string;
-  player?: string;
-  targetPrice?: number;
-}
-
 function cents(value: number): number {
   return Math.round(value * 100) / 100;
 }
@@ -85,20 +79,6 @@ function usable(range: SaleRange): range is SaleRange & {
   high: number;
 } {
   return range.source !== 'none' && range.low != null && range.median != null && range.high != null;
-}
-
-export function activeTargetCeiling(player: string, targets: readonly CeilingTarget[]): number | null {
-  const name = player.trim().toLowerCase();
-  if (!name) return null;
-  let best: number | null = null;
-  for (const target of targets) {
-    if (target.status !== 'active') continue;
-    if ((target.player ?? '').trim().toLowerCase() !== name) continue;
-    const price = positive(target.targetPrice);
-    if (price == null) continue;
-    best = best == null ? price : Math.min(best, price);
-  }
-  return best;
 }
 
 export function buyLadder(range: SaleRange, caps: LadderCaps = {}): BuyLadder | null {

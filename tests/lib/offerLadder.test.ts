@@ -3,7 +3,6 @@ import {
   OFFER_LADDER_CASH_NOTE,
   OFFER_LADDER_NOTE,
   SELL_LADDER_NOTE,
-  activeTargetCeiling,
   buyLadder,
   buyLadderCopy,
   ladderCashRoom,
@@ -145,15 +144,5 @@ describe('offer ladder', () => {
       targetUsd: 90,
       cashUsd: 200,
     })).toMatch(/Walk is the target you set/);
-    expect(activeTargetCeiling('  ', [])).toBeNull();
-    expect(activeTargetCeiling('Aaron Judge', [
-      { status: 'acquired', player: 'Aaron Judge', targetPrice: 10 },
-      { status: 'active', player: 'aaron judge', targetPrice: 90 },
-      { status: 'active', player: 'Aaron Judge', targetPrice: 70 },
-      { status: 'active', player: 'Other', targetPrice: 5 },
-      { status: 'active', player: 'Aaron Judge', targetPrice: 0 },
-      { status: 'active', targetPrice: 12 },
-      { player: 'Aaron Judge', targetPrice: 1 },
-    ])).toBe(70);
   });
 });

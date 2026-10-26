@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import type { CardInventory, Sport, TargetWatchlist } from '../types';
 import { compsSnapshot } from '../lib/collector/deskNext';
-import { activeTargetCeiling, buyLadder, buyLadderCopy } from '../lib/collector/offerLadder';
+import { buyLadder, buyLadderCopy } from '../lib/collector/offerLadder';
 import { rangeSeatCopy, saleRange } from '../lib/collector/saleRange';
 import {
   askVersusBookCopy,
@@ -97,9 +97,7 @@ const ShowHagglePanel: React.FC<Props> = ({
   const liveRange = picked && askUsd != null && askUsd > 0
     ? rangeSeatCopy(askUsd, saleRange(picked), 'This ask')
     : null;
-  const liveLadder = picked
-    ? buyLadderCopy(buyLadder(saleRange(picked), { targetUsd: activeTargetCeiling(picked.player, targets) }))
-    : null;
+  const liveLadder = picked ? buyLadderCopy(buyLadder(saleRange(picked))) : null;
 
   const save = () => {
     const saved = addHaggle({
@@ -166,7 +164,7 @@ const ShowHagglePanel: React.FC<Props> = ({
     if (!row.cardId) return null;
     const card = cards.find((item) => item.id === row.cardId);
     if (!card) return null;
-    return buyLadderCopy(buyLadder(saleRange(card), { targetUsd: activeTargetCeiling(card.player, targets) }));
+    return buyLadderCopy(buyLadder(saleRange(card)));
   };
 
   return (

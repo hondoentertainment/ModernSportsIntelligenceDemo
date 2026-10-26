@@ -132,7 +132,7 @@ Already known; do not invent Labs pages.
 
 ## 6f. Eng-safe depth — 2026-10-26
 
-Checked against `main` @ `c3d664e` (#190). Still owner-held: #77, including file-only `00011` and `00013` (agents must not apply them). The sale range is #190. This change adds the offer ladder on that same local book: open, fair, and walk on buys, and ask, take, and pass on sells. A target or the cash still left before a shopping-list buy can pull the walk down. A target or that cash under the low is not an offer. A demo checklist hole is not a ladder. No live flags, no applied migration, gzip cap stays 3,350,000.
+Checked against `main` @ `c3d664e` (#190). Still owner-held: #77, including file-only `00011` and `00013` (agents must not apply them). The sale range is #190. This change adds the offer ladder on that same local book: open, fair, and walk on buys, and ask, take, and pass on sells. That target's own price, or the cash still left before a shopping-list buy, can pull the walk down. A table note uses the held card's range and does not borrow another card's target. A target or that cash under the low is not an offer. A demo checklist hole is not a ladder. No live flags, no applied migration, gzip cap stays 3,350,000.
 
 ## 6e. Eng-safe depth — 2026-10-20
 
