@@ -183,7 +183,7 @@ test.describe('Collector desk tools', () => {
     const notes = page.getByRole('tabpanel', { name: /table notes for/i }).first();
     await notes.getByLabel(/dealer at/i).fill('Rivera');
     await notes.getByLabel(/table at/i).fill('12');
-    await notes.getByLabel(/ask at/i).fill('5');
+    await notes.getByLabel(/^Ask at /i).fill('5');
     await notes.getByLabel(/offer at/i).fill('4');
     await notes.getByLabel(/result at/i).selectOption('bought');
     await notes.getByLabel(/card for the ask/i).selectOption('judge');
