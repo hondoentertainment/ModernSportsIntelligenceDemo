@@ -17,6 +17,7 @@ import {
   type PlaceFilter,
 } from '../lib/collector/deskNext';
 import { floorWeek } from '../lib/collector/floorPack';
+import { LADDER_SCORE_NOTE, cardRanges, sellScoreCopy, weekLadder, weekLadderCopy } from '../lib/collector/ladderScore';
 import { SELL_LADDER_NOTE, sellLadder, sellLadderCopy } from '../lib/collector/offerLadder';
 import { rangeSeatCopy, SALE_RANGE_NOTE, saleRange } from '../lib/collector/saleRange';
 import { unfiledBuys, unfiledCopy } from '../lib/collector/showClose';
@@ -99,11 +100,13 @@ function CompsSnapshotPanel({ inventory }: { inventory: CardInventory[] }) {
   const card = cards.find((row) => row.id === cardId) ?? cards[0];
   const snap = card ? compsSnapshot(card) : null;
   const sellCopy = card ? sellLadderCopy(sellLadder(saleRange(card))) : null;
+  const markScore = card ? sellScoreCopy(markOf(card), sellLadder(saleRange(card)), 'Local mark') : null;
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" aria-label="Comps snapshot">
       <h2 className="text-sm font-black uppercase tracking-widest text-white">Comps snapshot</h2>
       <p className="mt-2 text-xs text-slate-400">{SALE_RANGE_NOTE}</p>
       <p className="mt-1 text-xs text-slate-400">{SELL_LADDER_NOTE}</p>
+      <p className="mt-1 text-xs text-slate-400">{LADDER_SCORE_NOTE}</p>
       {!card || !snap ? <p className="mt-3 text-sm text-slate-400">No held cards.</p> : (
         <>
           <label className="mt-3 block text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -122,6 +125,7 @@ function CompsSnapshotPanel({ inventory }: { inventory: CardInventory[] }) {
               </p>
               <p className="mt-1 text-xs text-slate-300">{rangeSeatCopy(markOf(card), saleRange(card), 'Local mark') ?? 'No local mark to place on this range.'}</p>
               {sellCopy ? <p className="mt-1 text-xs text-slate-300" aria-label="Sell ladder">{sellCopy}</p> : null}
+              {markScore ? <p className="mt-1 text-xs text-slate-300" aria-label="Ladder score">{markScore}</p> : null}
             </>
           )}
         </>
@@ -234,6 +238,10 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
   const notes = useSyncExternalStore(subscribeHaggle, haggleSnapshot, haggleSnapshot);
   const floor = useMemo(() => floorWeek(notes), [notes]);
   const waiting = useMemo(() => unfiledBuys(notes, inventory), [notes, inventory]);
+  const ladderCopy = useMemo(
+    () => weekLadderCopy(weekLadder(notes, cardRanges(inventory))),
+    [notes, inventory],
+  );
   const floorCount = floor.bought + floor.passed + floor.open;
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" aria-label="Weekly collection recap">
@@ -247,6 +255,7 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
           ? 'No dated floor notes this week. Notes with no date stay off this count.'
           : `Floor notes this week: ${floor.bought} bought, ${floor.passed} passed, ${floor.open} open${floor.bought > 0 ? ` · typed spend ${usd(floor.typedSpendUsd)}` : ''}. Not a settlement.`}
       </p>
+      <p className="mt-2 text-xs text-slate-300" aria-label="Ladder this week">{ladderCopy}</p>
       <p className="mt-2 text-xs text-slate-300">{unfiledCopy(waiting)}</p>
       <Link to="/local-card-shows" className="inline-flex min-h-[44px] items-center text-xs text-brand-lime">Show desk</Link>
       {recap.movers.length === 0 ? <p className="mt-2 text-sm text-slate-400">No held cards.</p> : (

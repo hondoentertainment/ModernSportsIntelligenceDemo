@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import type { CardInventory, Sport, TargetWatchlist } from '../types';
 import { compsSnapshot } from '../lib/collector/deskNext';
+import { tableScore } from '../lib/collector/ladderScore';
 import { buyLadder, buyLadderCopy } from '../lib/collector/offerLadder';
 import { rangeSeatCopy, saleRange } from '../lib/collector/saleRange';
 import {
@@ -98,6 +99,9 @@ const ShowHagglePanel: React.FC<Props> = ({
     ? rangeSeatCopy(askUsd, saleRange(picked), 'This ask')
     : null;
   const liveLadder = picked ? buyLadderCopy(buyLadder(saleRange(picked))) : null;
+  const liveScore = picked
+    ? tableScore({ result, offerUsd: Number(offer), askUsd: askUsd ?? 0 }, buyLadder(saleRange(picked)))?.copy ?? null
+    : null;
 
   const save = () => {
     const saved = addHaggle({
@@ -153,18 +157,28 @@ const ShowHagglePanel: React.FC<Props> = ({
     return askVersusBookCopy(row.askUsd, reference, Boolean(row.cardId));
   };
 
+  const cardFor = (id: string | undefined): CardInventory | undefined => {
+    if (!id) return undefined;
+    return inventory.find((item) => item.id === id);
+  };
+
   const rangeFor = (row: HaggleNote): string | null => {
     if (!row.cardId || !(row.askUsd > 0)) return null;
-    const card = cards.find((item) => item.id === row.cardId);
+    const card = cardFor(row.cardId);
     if (!card) return null;
     return rangeSeatCopy(row.askUsd, saleRange(card), 'This ask');
   };
 
   const ladderFor = (row: HaggleNote): string | null => {
-    if (!row.cardId) return null;
-    const card = cards.find((item) => item.id === row.cardId);
+    const card = cardFor(row.cardId);
     if (!card) return null;
     return buyLadderCopy(buyLadder(saleRange(card)));
+  };
+
+  const scoreFor = (row: HaggleNote): string | null => {
+    const card = cardFor(row.cardId);
+    if (!card) return null;
+    return tableScore(row, buyLadder(saleRange(card)))?.copy ?? null;
   };
 
   return (
@@ -214,6 +228,7 @@ const ShowHagglePanel: React.FC<Props> = ({
       {liveAsk ? <p className="text-xs text-slate-200" aria-label="Ask versus median">{liveAsk}</p> : null}
       {liveRange ? <p className="text-xs text-slate-200" aria-label="Ask versus sale range">{liveRange}</p> : null}
       {liveLadder ? <p className="text-xs text-slate-200" aria-label="Offer ladder">{liveLadder}</p> : null}
+      {liveScore ? <p className="text-xs text-slate-200" aria-label="Ladder score">{liveScore}</p> : null}
       <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
         Result
         <select value={result} onChange={event => setResult(event.target.value as HaggleResult)} aria-label={`Result at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm">
@@ -250,6 +265,7 @@ const ShowHagglePanel: React.FC<Props> = ({
             const versus = versusFor(row);
             const rangeCopy = rangeFor(row);
             const ladderCopy = ladderFor(row);
+            const scoreCopy = scoreFor(row);
             const filed = inventory.find(card => card.id === floorBuyId(row.id));
             const draft = buildFloorBuyDraft({ note: row, showName, purchaseDate });
             const revisit = isRevisit(row, referenceForNote(row, { medianByCardId: marks, targets }));
@@ -270,6 +286,7 @@ const ShowHagglePanel: React.FC<Props> = ({
                 {versus ? <p className="text-xs text-slate-300">{versus}</p> : null}
                 {rangeCopy ? <p className="text-xs text-slate-300">{rangeCopy}</p> : null}
                 {ladderCopy ? <p className="text-xs text-slate-300" aria-label={`Offer ladder for ${row.player || 'this card'}`}>{ladderCopy}</p> : null}
+                {scoreCopy ? <p className="text-xs text-slate-300" aria-label={`Ladder score for ${row.dealer} table ${row.table}`}>{scoreCopy}</p> : null}
                 {filed ? (
                   <p className="mt-2 text-[11px] text-emerald-300">
                     {row.player} in the collection · cost basis ${filed.purchasePrice.toFixed(2)}

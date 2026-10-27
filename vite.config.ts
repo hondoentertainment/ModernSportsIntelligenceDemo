@@ -173,6 +173,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/collector/showClose.ts',
         'lib/collector/pullSheet.ts',
         'lib/collector/offerLadder.ts',
+        'lib/collector/ladderScore.ts',
         'lib/authSessionNotice.ts',
         'lib/analytics/capitalGainsExit.ts',
         'lib/utils/syncProductDefaults.ts',

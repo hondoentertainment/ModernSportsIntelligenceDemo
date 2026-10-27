@@ -73,7 +73,9 @@ describe('Show pull sheet', () => {
     expect(sheet).not.toHaveTextContent(/from Box/i);
     expect(screen.getByLabelText('Sale range for Aaron Judge')).toHaveTextContent(/under the low of sold comps/i);
     expect(screen.getByLabelText('Offer ladder for Aaron Judge')).toHaveTextContent(/No offer inside that range/);
+    expect(screen.queryByLabelText('Ladder score for Aaron Judge')).not.toBeInTheDocument();
     expect(screen.getByLabelText('Sell ladder for Shohei Ohtani')).toHaveTextContent(/on demo sales/);
+    expect(screen.getByLabelText('Ladder score for Shohei Ohtani')).toHaveTextContent(/This offer \$[\d,.]+ is .+ on demo sales/);
     setPlace('extra', '');
     setPlace('keeper', '');
   });
@@ -115,6 +117,10 @@ describe('Show pull sheet', () => {
     expect(screen.getByLabelText('Offer ladder for Wide Target')).toHaveTextContent(
       /Cash left \$10 is under the low of sold comps/,
     );
+    expect(screen.getByLabelText('Ladder score for Tight Target')).toHaveTextContent(
+      'This buy $90 is up to the fair on sold comps (open $80, fair $90, walk $90).',
+    );
+    expect(screen.queryByLabelText('Ladder score for Wide Target')).not.toBeInTheDocument();
     expect(screen.getByText(/not a dealer quote/i)).toBeInTheDocument();
   });
 });

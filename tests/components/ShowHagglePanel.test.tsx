@@ -47,8 +47,12 @@ describe('ShowHagglePanel', () => {
     expect(screen.getByLabelText('Ask versus sale range')).toHaveTextContent(/\$80–\$120/);
     expect(screen.getByLabelText('Offer ladder')).toHaveTextContent(/Open \$80, fair \$100, walk \$120 on sold comps/);
     expect(screen.getByLabelText('Offer ladder')).not.toHaveTextContent(/Walk is the target/);
+    expect(screen.getByLabelText('Ladder score')).toHaveTextContent(
+      'This ask $80 is at or under the open on sold comps (open $80, fair $100, walk $120). Still open, at or under the walk.',
+    );
     await user.click(screen.getByRole('button', { name: 'Add table note' }));
     expect(screen.getByText(/under the sold comps median/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Ladder score for Rivera table 4')).toHaveTextContent(/Still open, at or under the walk/);
   });
 
   it('names the cheaper table, watches a cheap pass, and files the paid price', async () => {

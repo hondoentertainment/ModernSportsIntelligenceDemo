@@ -3,7 +3,7 @@
 **Purpose:** Single document to review **what exists in the product**, **what is production-grade vs demo/beta**, and **what remains open**.  
 **Sources:** `PRD.md` §4 & §14, `lib/utils/featureCatalog.ts`, `PRODUCTION_READINESS.md`, `plans/next-steps-recommendation.md`, `plans/roadmap-review-and-enhancements.md`, routing in `App.tsx`.
 
-**Last updated:** October 26, 2026 (`main` @ `c3d664e` / `#190`). #190 placed the collector's number on the sale range. This pass adds the offer ladder: open, fair, and walk on buys, and ask, take, and pass on sells, on the comps snapshot, `/alerts`, the shopping list, a held-card table note, and the sell planner. #186 added username + password auth. Forward plan in [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) and [`NEXT_STEPS.md`](../NEXT_STEPS.md). Sequencing in this file’s “open” columns that still say “Vercel env sync” is superseded by the #77 checklist.
+**Last updated:** October 27, 2026 (`main` @ `529ccc0`). #193 and #192 are the Dependabot production and dev bumps. #191 added the offer ladder on the sale range. #190 placed the collector's number on that range. This pass scores the typed number on those rungs: shopping-list buys and sells, a held-card table note, the comps snapshot, the sell planner, and the week on the recap and `/alerts`. #186 added username + password auth. Forward plan in [`PRODUCT_ROADMAP_2026Q4.md`](./PRODUCT_ROADMAP_2026Q4.md) and [`NEXT_STEPS.md`](../NEXT_STEPS.md). Sequencing in this file’s “open” columns that still say “Vercel env sync” is superseded by the #77 checklist.
 
 ---
 

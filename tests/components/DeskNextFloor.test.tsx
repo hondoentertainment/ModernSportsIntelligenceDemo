@@ -14,7 +14,9 @@ describe('DeskNext floor week', () => {
       </MemoryRouter>,
     );
     expect(screen.getByText(/no dated floor notes this week/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Ladder this week')).toHaveTextContent(/no dated table note sits on a sale range this week/i);
     expect(screen.getByLabelText('Sell ladder')).toHaveTextContent(/Ask \$[\d,.]+, take \$[\d,.]+, pass under \$[\d,.]+ on demo sales/);
+    expect(screen.getByLabelText('Ladder score')).toHaveTextContent(/Local mark \$100 is .+ on demo sales/);
     expect(screen.getByText(/not a dealer bid/i)).toBeInTheDocument();
     act(() => {
       addHaggle({
@@ -46,5 +48,21 @@ describe('DeskNext floor week', () => {
       });
     });
     expect(screen.getByText(/1 bought note not in the book: Showclose Player/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Ladder this week')).toHaveTextContent(/no card in the book/i);
+    act(() => {
+      addHaggle({
+        showId: 'nyc',
+        dealer: 'Rivera',
+        table: '9',
+        askUsd: 20,
+        offerUsd: 1,
+        result: 'bought',
+        note: '',
+        cardId: '1',
+        savedAt: new Date().toISOString(),
+      });
+    });
+    expect(screen.getByLabelText('Ladder this week')).toHaveTextContent(/1 bought inside the walk/i);
+    expect(screen.getByLabelText('Ladder this week')).toHaveTextContent(/not a settlement and not a live tape/i);
   });
 });

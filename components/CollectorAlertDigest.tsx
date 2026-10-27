@@ -110,6 +110,7 @@ const CollectorAlertDigest: React.FC<Props> = ({ inventory = [], targets, onWatc
           ? <p className="mt-1 text-sm text-slate-400">No seeded show is inside that radius and lead time.</p>
           : <Rows rows={digest.shows} />}
       <h3 className="mt-4 text-xs font-black uppercase tracking-widest text-sky-200">From the show floor</h3>
+      <p className="mt-1 text-xs leading-relaxed text-slate-300" aria-label="Ladder this week">{digest.ladderCopy}</p>
       {digest.follows.length === 0
         ? <p className="mt-1 text-sm text-slate-400">No open table note, and no passed ask under a local mark.</p>
         : <FollowRows rows={digest.follows} onWatch={onWatch} />}
