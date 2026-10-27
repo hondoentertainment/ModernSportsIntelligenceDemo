@@ -12,11 +12,14 @@ import { readPlaces, type Place } from '../lib/collector/deskNext';
 import { pullCopy } from '../lib/collector/floorPack';
 import { cashFit, cashFitCopy, cashLineCopy, type CashFitCall, type CashSource } from '../lib/collector/showClose';
 import { buildPullSheet, pullSheetCopy } from '../lib/collector/pullSheet';
+import { LADDER_SCORE_NOTE, buyScoreCopy, sellScoreCopy } from '../lib/collector/ladderScore';
 import {
   OFFER_LADDER_CASH_NOTE,
   OFFER_LADDER_NOTE,
   SELL_LADDER_NOTE,
+  buyLadder,
   ladderCashRoom,
+  sellLadder,
   shopLadderCopy,
 } from '../lib/collector/offerLadder';
 import { SALE_RANGE_NOTE, rangeSeatCopy, saleRange, type SaleRange } from '../lib/collector/saleRange';
@@ -64,6 +67,19 @@ function buyRangeCopy(line: ShopLine, inventory: CardInventory[], targets: Targe
   return rangeSeatCopy(line.targetBuyUsd, range, 'This buy');
 }
 
+function shopScore(
+  line: ShopLine,
+  inventory: CardInventory[],
+  targets: TargetWatchlist[],
+  cashUsd: number | null,
+): string | null {
+  if (line.kind === 'set-hole' || line.targetBuyUsd == null) return null;
+  const range = shopRange(line, inventory, targets);
+  if (!range) return null;
+  if (line.side === 'sell') return sellScoreCopy(line.targetBuyUsd, sellLadder(range), 'This offer');
+  return buyScoreCopy(line.targetBuyUsd, buyLadder(range, { targetUsd: line.collectorCeilingUsd, cashUsd }), 'This buy');
+}
+
 function Lines({
   lines,
   places,
@@ -90,6 +106,12 @@ function Lines({
           targetUsd: line.collectorCeilingUsd,
           cashUsd: line.side === 'buy' ? cashRooms?.[line.id] ?? null : null,
         });
+        const scoreCopy = shopScore(
+          line,
+          inventory,
+          targets,
+          line.side === 'buy' ? cashRooms?.[line.id] ?? null : null,
+        );
         const ladderLabel = `${line.side === 'sell' ? 'Sell ladder' : 'Offer ladder'} for ${line.player}`;
         return (
           <li key={line.id}>
@@ -102,6 +124,7 @@ function Lines({
             </p>
             {rangeCopy ? <p className="text-xs text-slate-300" aria-label={`Sale range for ${line.player}`}>{rangeCopy}</p> : null}
             {ladderCopy ? <p className="text-xs text-slate-300" aria-label={ladderLabel}>{ladderCopy}</p> : null}
+            {scoreCopy ? <p className="text-xs text-slate-300" aria-label={`Ladder score for ${line.player}`}>{scoreCopy}</p> : null}
             {calls ? <p className="text-xs text-slate-300">{cashLineCopy(calls[line.id] ?? 'no price')}</p> : null}
             {line.side === 'sell' && line.cardId ? <p className="text-xs text-slate-300">{pullCopy(places[line.cardId])}</p> : null}
             <p className="text-xs text-slate-500">{line.priceSource}. {line.why}</p>
@@ -158,7 +181,7 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
             <h4 className="text-xs text-emerald-200">Buy</h4>
             {list.buys.length === 0 ? <p className="text-xs text-slate-500">No buys.</p> : (
               <>
-                <p className="text-xs text-slate-500">{SALE_RANGE_NOTE} {OFFER_LADDER_NOTE} {OFFER_LADDER_CASH_NOTE}</p>
+                <p className="text-xs text-slate-500">{SALE_RANGE_NOTE} {OFFER_LADDER_NOTE} {OFFER_LADDER_CASH_NOTE} {LADDER_SCORE_NOTE}</p>
                 <Lines lines={list.buys} places={places} calls={fit.byId} inventory={inventory} targets={targets} cashRooms={cashRooms} />
               </>
             )}
@@ -178,7 +201,7 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
             <h4 className="text-xs text-sky-200">Sell or trade</h4>
             {list.sells.length === 0 ? <p className="text-xs text-slate-500">No extras.</p> : (
               <>
-                <p className="text-xs text-slate-500">{SELL_LADDER_NOTE}</p>
+                <p className="text-xs text-slate-500">{SELL_LADDER_NOTE} {LADDER_SCORE_NOTE}</p>
                 <Lines lines={list.sells} places={places} inventory={inventory} targets={targets} />
               </>
             )}

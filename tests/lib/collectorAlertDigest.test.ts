@@ -111,6 +111,7 @@ describe('collector alert digest', () => {
     expect(off.ranges[0]?.detail).toMatch(/walk \$/);
     expect(off.ranges[0]?.detail).not.toMatch(/Walk is the target/);
     expect(off.disclosure).toMatch(/owner-held VAPID/i);
+    expect(off.ladderCopy).toMatch(/No dated table note sits on a sale range this week/);
 
     const noHome = buildCollectorAlertDigest({
       targets: [],
@@ -172,5 +173,7 @@ describe('collector alert digest', () => {
     );
     expect(digest.follows.some(row => row.title === 'Open at NYC Monthly Card Meetup')).toBe(true);
     expect(digest.follows.some(row => row.kind === 'revisit' && row.watch)).toBe(true);
+    expect(digest.ladderCopy).toMatch(/1 pass left the walk/);
+    expect(digest.ladderCopy).toMatch(/Not a settlement and not a live tape/);
   });
 });

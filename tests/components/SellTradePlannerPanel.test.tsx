@@ -81,6 +81,7 @@ describe('SellTradePlannerPanel', () => {
     expect(screen.getByLabelText('Sale range for Cost Basis')).toHaveTextContent(/demo sales/);
     expect(screen.getByLabelText('Sell ladder for Cost Basis')).toHaveTextContent(/pass under/);
     expect(screen.getByLabelText('Sell ladder for Cost Basis')).toHaveTextContent(/Cost \$150 is over the high/);
+    expect(screen.getByLabelText('Ladder score for Cost Basis')).toHaveTextContent(/This mark \$[\d,.]+ is .+ on demo sales/);
     expect(screen.getByText(/not a dealer bid/i)).toBeInTheDocument();
     expect(screen.getAllByText(/not a live tape/i).length).toBeGreaterThan(0);
 

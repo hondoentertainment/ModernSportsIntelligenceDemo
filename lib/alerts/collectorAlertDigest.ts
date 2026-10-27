@@ -14,6 +14,7 @@ import {
   type ResolvedLocalCardShow,
 } from '../shows/localCardShowCatalog';
 import { compsSnapshot } from '../collector/deskNext';
+import { cardRanges, weekLadder, weekLadderCopy } from '../collector/ladderScore';
 import { buyLadder, buyLadderCopy } from '../collector/offerLadder';
 import { saleRange, targetRangeDesk, type RangeRow } from '../collector/saleRange';
 import { followUps, type FollowUp, type MarkRef } from '../collector/showClose';
@@ -38,6 +39,7 @@ export interface CollectorAlertDigest {
   follows: FollowUp[];
   ranges: RangeRow[];
   rangeOmitted: number;
+  ladderCopy: string;
   showAlertsArmed: boolean;
   disclosure: string;
 }
@@ -140,6 +142,7 @@ export function buildCollectorAlertDigest(input: {
       return copy ? { ...row, detail: `${row.detail} ${copy}` } : row;
     }),
     rangeOmitted: ranges.omitted,
+    ladderCopy: weekLadderCopy(weekLadder(notes, cardRanges(inventory))),
     shows: armed ? showProximityRows(input.shows, input.prefs) : [],
     follows: followUps({
       notes,

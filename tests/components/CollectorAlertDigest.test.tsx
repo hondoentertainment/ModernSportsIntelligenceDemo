@@ -37,6 +37,7 @@ describe('CollectorAlertDigest sale range', () => {
     );
     const digest = screen.getByRole('region', { name: /watchlist and show alert digest/i });
     expect(digest).toHaveTextContent(/target versus the sale range/i);
+    expect(screen.getByLabelText('Ladder this week')).toHaveTextContent(/no dated table note sits on a sale range this week/i);
     expect(digest).toHaveTextContent(/stable demo sketch|sold comps when those sales are stored/i);
     expect(digest).toHaveTextContent(/Under Player is under the low/);
     expect(digest).toHaveTextContent(/No offer inside that range/);

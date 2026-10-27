@@ -142,7 +142,10 @@ test.describe('Collector desk tools', () => {
     await expect(comps.getByRole('img', { name: 'Demo sales sparkline' })).toBeVisible();
     await expect(comps).toContainText(/median/i);
     await expect(comps.getByLabel('Sell ladder')).toContainText(/Ask \$/);
+    await expect(comps.getByLabel('Ladder score')).toContainText(/Local mark/);
+    await expect(comps.getByLabel('Ladder score')).toContainText(/demo sales/);
     await expect(comps).toContainText(/not a dealer bid/i);
+    await expect(desk).toContainText(/no dated table note sits on a sale range this week/i);
     const trade = page.getByRole('region', { name: 'Trade value balancer' });
     await trade.getByLabel('Trade card').selectOption('pad-0');
     await trade.getByRole('button', { name: 'Add to give' }).click();
@@ -175,6 +178,19 @@ test.describe('Collector desk tools', () => {
     await expect(line).toBeChecked();
     await page.reload();
     await expect(page.getByRole('checkbox', { name: 'buy Jayson Tatum' }).first()).toBeChecked();
+
+    await page.getByRole('tab', { name: 'Table notes' }).first().click();
+    const notes = page.getByRole('tabpanel', { name: /table notes for/i }).first();
+    await notes.getByLabel(/dealer at/i).fill('Rivera');
+    await notes.getByLabel(/table at/i).fill('12');
+    await notes.getByLabel(/ask at/i).fill('5');
+    await notes.getByLabel(/offer at/i).fill('4');
+    await notes.getByLabel(/result at/i).selectOption('bought');
+    await notes.getByLabel(/card for the ask/i).selectOption('judge');
+    await expect(notes.getByLabel('Ladder score')).toContainText(/Paid \$4 is at or under the open on demo sales/);
+    await expect(notes.getByLabel('Ladder score')).toContainText(/Bought inside the walk/);
+    await notes.getByRole('button', { name: 'Add table note' }).click();
+    await expect(notes.getByLabel('Ladder score for Rivera table 12')).toContainText(/Bought inside the walk/);
   });
 
   test('opens a read-only want-list link with no server copy', async ({ page }) => {

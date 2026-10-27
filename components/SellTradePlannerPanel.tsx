@@ -11,6 +11,7 @@ import {
 import { getTaxLotPreferences, subscribeTaxLotPreferences } from '../lib/utils/taxLotPreferences';
 import { placesSnapshot, subscribePlaces } from '../lib/collector/deskNext';
 import { pullCopy } from '../lib/collector/floorPack';
+import { LADDER_SCORE_NOTE, sellScoreCopy } from '../lib/collector/ladderScore';
 import { SELL_LADDER_NOTE, sellLadder, sellLadderCopy } from '../lib/collector/offerLadder';
 import { SALE_RANGE_NOTE, rangeSeatCopy, saleRange } from '../lib/collector/saleRange';
 
@@ -49,11 +50,13 @@ function RowCard({
   place,
   rangeCopy,
   ladderCopy,
+  scoreCopy,
 }: {
   row: SellTradeRow;
   place: string | undefined;
   rangeCopy: string | null;
   ladderCopy: string | null;
+  scoreCopy: string | null;
 }) {
   return (
     <li className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
@@ -93,6 +96,7 @@ function RowCard({
       <p className="mt-1 text-[11px] text-slate-300">{pullCopy(place)}</p>
       {rangeCopy ? <p className="mt-1 text-[11px] leading-relaxed text-slate-300" aria-label={`Sale range for ${row.player}`}>{rangeCopy}</p> : null}
       {ladderCopy ? <p className="mt-1 text-[11px] leading-relaxed text-slate-300" aria-label={`Sell ladder for ${row.player}`}>{ladderCopy}</p> : null}
+      {scoreCopy ? <p className="mt-1 text-[11px] leading-relaxed text-slate-300" aria-label={`Ladder score for ${row.player}`}>{scoreCopy}</p> : null}
     </li>
   );
 }
@@ -135,6 +139,7 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{plan.lotDisclosure}</p>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{SALE_RANGE_NOTE}</p>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{SELL_LADDER_NOTE}</p>
+      <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{LADDER_SCORE_NOTE}</p>
 
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <div className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
@@ -212,8 +217,10 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
             const card = inventory.find((item) => item.id === row.cardId);
             const range = card ? saleRange(card) : null;
             const rangeCopy = range ? rangeSeatCopy(row.mark, range, 'This mark') : null;
-            const ladderCopy = range ? sellLadderCopy(sellLadder(range, row.costBasis)) : null;
-            return <RowCard key={row.cardId} row={row} place={places[row.cardId]} rangeCopy={rangeCopy} ladderCopy={ladderCopy} />;
+            const ladder = range ? sellLadder(range, row.costBasis) : null;
+            const ladderCopy = ladder ? sellLadderCopy(ladder) : null;
+            const scoreCopy = ladder ? sellScoreCopy(row.mark, ladder, 'This mark') : null;
+            return <RowCard key={row.cardId} row={row} place={places[row.cardId]} rangeCopy={rangeCopy} ladderCopy={ladderCopy} scoreCopy={scoreCopy} />;
           })}
         </ul>
       )}
