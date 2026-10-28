@@ -118,4 +118,58 @@ describe('ShowHagglePanel', () => {
     );
     expect(screen.getByText(/in the collection · cost basis \$25\.00/i)).toBeInTheDocument();
   });
+
+  it('saves a multi-card lot on one note and files each card from its ask', async () => {
+    const user = userEvent.setup();
+    const onFileBuy = vi.fn(async () => undefined);
+    const sales = [
+      { title: 'raw', price: 40, condition: 'raw', soldAt: '2026-09-01' },
+      { title: 'raw 2', price: 60, condition: 'raw', soldAt: '2026-09-02' },
+      { title: 'psa', price: 200, condition: 'PSA 10', soldAt: '2026-09-03' },
+      { title: 'psa 2', price: 240, condition: 'PSA 10', soldAt: '2026-09-04' },
+    ];
+    render(
+      <ShowHagglePanel
+        showId="lot-show"
+        showName="Lot Show"
+        purchaseDate="2026-10-20"
+        onFileBuy={onFileBuy}
+        inventory={[
+          makeCard({ id: 'judge', player: 'Aaron Judge', isGraded: false, currentValue: 50, salesData: sales }),
+          makeCard({
+            id: 'tatum',
+            player: 'Jayson Tatum',
+            isGraded: true,
+            gradingCompany: 'PSA',
+            grade: '10',
+            currentValue: 220,
+            salesData: sales,
+          }),
+        ]}
+      />,
+    );
+    await user.type(screen.getByLabelText('Dealer at Lot Show'), 'Rivera');
+    await user.type(screen.getByLabelText('Table at Lot Show'), '4');
+    await user.type(screen.getByLabelText('Ask at Lot Show'), '100');
+    await user.type(screen.getByLabelText('Offer at Lot Show'), '80');
+    await user.click(screen.getByRole('button', { name: 'Add a card to this lot' }));
+    await user.selectOptions(screen.getByLabelText('Card for the ask at Lot Show'), 'judge');
+    await user.type(screen.getByLabelText('Card ask for lot card 1 at Lot Show'), '40');
+    await user.type(screen.getByLabelText('Player for lot card 2 at Lot Show'), 'Jayson Tatum');
+    await user.type(screen.getByLabelText('Card ask for lot card 2 at Lot Show'), '60');
+    await user.selectOptions(screen.getByLabelText('Card for lot card 2 at Lot Show'), 'tatum');
+    expect(screen.getByLabelText('Table lot')).toHaveTextContent('2 cards in this lot for $100.00');
+    expect(screen.getByLabelText('Table lot')).toHaveTextContent(/not one card's sale/i);
+    expect(screen.getByLabelText('Lot cards')).toHaveTextContent(/raw sold comps/i);
+    expect(screen.getByLabelText('Lot cards')).toHaveTextContent(/PSA 10 sold comps/i);
+    expect(screen.getByLabelText('Lot cards')).toHaveTextContent(/The ladder uses the raw sales/);
+    expect(screen.getByLabelText('Lot cards')).toHaveTextContent(/The ladder uses the PSA 10 sales/);
+    await user.selectOptions(screen.getByLabelText('Result at Lot Show'), 'bought');
+    await user.click(screen.getByRole('button', { name: 'Add table note' }));
+    expect(screen.getByLabelText('Table lot for Rivera table 4')).toHaveTextContent(/2 cards in this lot for \$100\.00/);
+    await user.click(screen.getByRole('button', { name: 'Add this lot to the collection' }));
+    expect(onFileBuy).toHaveBeenCalledTimes(2);
+    expect(onFileBuy).toHaveBeenCalledWith(expect.objectContaining({ player: 'Aaron Judge', purchasePrice: 32, taxBasis: 32 }));
+    expect(onFileBuy).toHaveBeenCalledWith(expect.objectContaining({ player: 'Jayson Tatum', purchasePrice: 48, taxBasis: 48 }));
+  });
 });

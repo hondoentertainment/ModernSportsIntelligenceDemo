@@ -192,6 +192,55 @@ describe('ladder score', () => {
         scored: 0,
       })
     ).toMatch(/No dated table note sits on a sale range this week/);
+    const lot = weekLadder(
+      [{
+        result: 'bought',
+        offerUsd: 200,
+        askUsd: 200,
+        cardId: 'judge',
+        savedAt: at(now),
+        lines: [
+          { cardId: 'judge', askUsd: 90 },
+          { cardId: 'missing', askUsd: 40 },
+          { cardId: 'empty', askUsd: 50 },
+          { cardId: 'judge', askUsd: 0 },
+          { cardId: '  ', askUsd: 80 },
+        ],
+      }, {
+        result: 'passed',
+        offerUsd: 0,
+        askUsd: 200,
+        cardId: 'judge',
+        savedAt: at(now),
+        lines: [{ cardId: 'judge', askUsd: 140 }, { cardId: 'judge', askUsd: 90 }],
+      }, {
+        result: 'bought',
+        offerUsd: 90,
+        askUsd: 90,
+        cardId: 'judge',
+        savedAt: at(now),
+        lines: [{ cardId: 'missing', askUsd: 10 }],
+      }],
+      ranges,
+      now,
+    );
+    expect(lot).toMatchObject({ inside: 2, over: 0, left: 1, held: 1, scored: 4 });
+    expect(buyScoreCopy(55, buyLadder({
+      source: 'comps',
+      low: 40,
+      median: 50,
+      high: 60,
+      count: 2,
+      band: 'raw',
+    }), 'This buy')).toMatch(/on raw sold comps/);
+    expect(sellScoreCopy(55, sellLadder({
+      source: 'comps',
+      low: 40,
+      median: 50,
+      high: 60,
+      count: 2,
+      band: 'PSA 10',
+    }), 'This mark')).toMatch(/on PSA 10 sold comps/);
     expect(weekLadder([], {}, now).scored).toBe(0);
     expect(
       weekLadder(

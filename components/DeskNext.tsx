@@ -19,9 +19,10 @@ import {
 import { floorWeek } from '../lib/collector/floorPack';
 import { LADDER_SCORE_NOTE, cardRanges, sellScoreCopy, weekLadder, weekLadderCopy } from '../lib/collector/ladderScore';
 import { SELL_LADDER_NOTE, sellLadder, sellLadderCopy } from '../lib/collector/offerLadder';
-import { rangeSeatCopy, SALE_RANGE_NOTE, saleRange } from '../lib/collector/saleRange';
+import { GRADE_RANGE_NOTE, gradeSplitCopy, rangeForSeat, rangeSeatCopy, SALE_RANGE_NOTE } from '../lib/collector/saleRange';
 import { TRADE_LADDER_NOTE, tradeLadder, tradeLadderCopy } from '../lib/collector/tradeLadder';
-import { unfiledBuys, unfiledCopy } from '../lib/collector/showClose';
+import { unfiledCopy } from '../lib/collector/showClose';
+import { unfiledNotes } from '../lib/collector/tableLot';
 import { store } from '../lib/dal/syncStore';
 import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
 import { readCashBudget } from '../lib/shows/showTripLoop';
@@ -100,12 +101,15 @@ function CompsSnapshotPanel({ inventory }: { inventory: CardInventory[] }) {
   const [cardId, setCardId] = useState(cards[0]?.id ?? '');
   const card = cards.find((row) => row.id === cardId) ?? cards[0];
   const snap = card ? compsSnapshot(card) : null;
-  const sellCopy = card ? sellLadderCopy(sellLadder(saleRange(card))) : null;
-  const markScore = card ? sellScoreCopy(markOf(card), sellLadder(saleRange(card)), 'Local mark') : null;
+  const seated = card ? rangeForSeat(card) : null;
+  const sellCopy = seated ? sellLadderCopy(sellLadder(seated)) : null;
+  const markScore = card && seated ? sellScoreCopy(markOf(card), sellLadder(seated), 'Local mark') : null;
+  const gradeCopy = card ? gradeSplitCopy(card) : null;
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" aria-label="Comps snapshot">
       <h2 className="text-sm font-black uppercase tracking-widest text-white">Comps snapshot</h2>
       <p className="mt-2 text-xs text-slate-400">{SALE_RANGE_NOTE}</p>
+      <p className="mt-1 text-xs text-slate-400">{GRADE_RANGE_NOTE}</p>
       <p className="mt-1 text-xs text-slate-400">{SELL_LADDER_NOTE}</p>
       <p className="mt-1 text-xs text-slate-400">{LADDER_SCORE_NOTE}</p>
       {!card || !snap ? <p className="mt-3 text-sm text-slate-400">No held cards.</p> : (
@@ -124,7 +128,8 @@ function CompsSnapshotPanel({ inventory }: { inventory: CardInventory[] }) {
               <p className="mt-2 font-mono text-xs text-slate-200" aria-label="Sale range">
                 {snap.source === 'comps' ? 'Sold comps' : 'Demo sales'} · low {usd(Math.min(...snap.points))} · median {usd(snap.median ?? 0)} · high {usd(Math.max(...snap.points))} · {snap.points.length} sales
               </p>
-              <p className="mt-1 text-xs text-slate-300">{rangeSeatCopy(markOf(card), saleRange(card), 'Local mark') ?? 'No local mark to place on this range.'}</p>
+              <p className="mt-1 text-xs text-slate-300">{rangeSeatCopy(markOf(card), seated, 'Local mark') ?? 'No local mark to place on this range.'}</p>
+              {gradeCopy ? <p className="mt-1 text-xs text-slate-300" aria-label="Grade split">{gradeCopy}</p> : null}
               {sellCopy ? <p className="mt-1 text-xs text-slate-300" aria-label="Sell ladder">{sellCopy}</p> : null}
               {markScore ? <p className="mt-1 text-xs text-slate-300" aria-label="Ladder score">{markScore}</p> : null}
             </>
@@ -143,7 +148,7 @@ function TradeBalancePanel({ inventory }: { inventory: CardInventory[] }) {
   const [cash, setCash] = useState('0');
   const rows = (ids: string[]) => ids.flatMap((id) => {
     const card = cards.find((row) => row.id === id);
-    return card ? [{ id, player: card.player, usd: markOf(card), range: saleRange(card) }] : [];
+    return card ? [{ id, player: card.player, usd: markOf(card), range: rangeForSeat(card) }] : [];
   });
   const giveRows = rows(give);
   const receiveRows = rows(receive);
@@ -253,7 +258,7 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
   const recap = useMemo(() => weeklyRecap(inventory), [inventory]);
   const notes = useSyncExternalStore(subscribeHaggle, haggleSnapshot, haggleSnapshot);
   const floor = useMemo(() => floorWeek(notes), [notes]);
-  const waiting = useMemo(() => unfiledBuys(notes, inventory), [notes, inventory]);
+  const waiting = useMemo(() => unfiledNotes(notes, inventory), [notes, inventory]);
   const ladderCopy = useMemo(
     () => weekLadderCopy(weekLadder(notes, cardRanges(inventory))),
     [notes, inventory],

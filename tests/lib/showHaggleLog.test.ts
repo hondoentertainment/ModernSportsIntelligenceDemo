@@ -49,8 +49,40 @@ describe('showHaggleLog', () => {
       showId: 'nyc', dealer: 'Named', table: '6', askUsd: 12, offerUsd: 0, result: 'open', note: '', sport: 'Cricket' as 'Baseball',
     });
     expect(droppedSport.notes[0].sport).toBeUndefined();
-    expect(readHaggle('nyc')).toHaveLength(5);
+    const lot = addHaggle({
+      showId: 'nyc',
+      dealer: 'Lot Dealer',
+      table: '9',
+      askUsd: 100,
+      offerUsd: 80,
+      result: 'bought',
+      note: '',
+      player: 'Aaron Judge',
+      lines: [
+        { player: ' Aaron Judge ', askUsd: 40, cardId: 'judge' },
+        { player: 'Jayson Tatum', askUsd: 60, detail: ' 2024 Prizm ', sport: 'Basketball' },
+      ],
+    });
+    expect(lot.error).toBeNull();
+    expect(lot.notes[0].lines).toEqual([
+      { player: 'Aaron Judge', askUsd: 40, cardId: 'judge', detail: undefined, sport: undefined },
+      { player: 'Jayson Tatum', askUsd: 60, detail: '2024 Prizm', sport: 'Basketball', cardId: undefined },
+    ]);
+    expect(addHaggle({
+      showId: 'nyc', dealer: 'Lot', table: '1', askUsd: 10, offerUsd: 0, result: 'open', note: '',
+      lines: [{ player: 'One' }, { player: '' }],
+    }).error).toMatch(/name each card/i);
+    expect(addHaggle({
+      showId: 'nyc', dealer: 'Lot', table: '1', askUsd: 10, offerUsd: 0, result: 'open', note: '',
+      lines: [{ player: 'One', askUsd: -1 }, { player: 'Two', askUsd: 2 }],
+    }).error).toMatch(/card ask/i);
+    expect(addHaggle({
+      showId: 'nyc', dealer: 'Lot', table: '1', askUsd: 10, offerUsd: 0, result: 'open', note: '',
+      lines: Array.from({ length: 7 }, () => ({ player: 'Card', askUsd: 1 })),
+    }).error).toMatch(/up to 6/);
+    expect(readHaggle('nyc')).toHaveLength(6);
     expect(readHaggle('other')).toHaveLength(0);
+    removeHaggle('nyc', lot.notes[0].id);
     removeHaggle('nyc', dropped.notes[0].id);
     removeHaggle('nyc', dated.notes[0].id);
     removeHaggle('nyc', named.notes[0].id);

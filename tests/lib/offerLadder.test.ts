@@ -144,5 +144,17 @@ describe('offer ladder', () => {
       targetUsd: 90,
       cashUsd: 200,
     })).toMatch(/Walk is the target you set/);
+    const raw = {
+      source: 'comps' as const,
+      low: 40,
+      median: 50,
+      high: 60,
+      count: 2,
+      band: 'raw',
+    };
+    expect(buyLadderCopy(buyLadder(raw))).toBe('Open $40, fair $50, walk $60 on raw sold comps.');
+    expect(sellLadderCopy(sellLadder(raw))).toBe('Ask $60, take $50, pass under $40 on raw sold comps.');
+    expect(buyLadder(raw)?.band).toBe('raw');
+    expect(sellLadder(raw)?.band).toBe('raw');
   });
 });

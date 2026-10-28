@@ -33,6 +33,7 @@ export interface BuyLadder {
   low: number;
   targetUsd: number | null;
   cashUsd: number | null;
+  band: string | null;
 }
 
 export interface SellLadder {
@@ -42,6 +43,7 @@ export interface SellLadder {
   passUnder: number;
   costUsd: number | null;
   costSeat: CostSeat | null;
+  band: string | null;
 }
 
 export interface LadderCaps {
@@ -68,8 +70,9 @@ function cashOrNull(value: number | null | undefined): number | null {
   return cents(value);
 }
 
-function band(source: 'comps' | 'demo'): string {
-  return source === 'comps' ? 'sold comps' : 'demo sales';
+function tape(source: 'comps' | 'demo', grade?: string | null): string {
+  const where = source === 'comps' ? 'sold comps' : 'demo sales';
+  return grade ? `${grade} ${where}` : where;
 }
 
 function usable(range: SaleRange): range is SaleRange & {
@@ -117,12 +120,13 @@ export function buyLadder(range: SaleRange, caps: LadderCaps = {}): BuyLadder | 
     low,
     targetUsd: target,
     cashUsd: cash,
+    band: range.band ?? null,
   };
 }
 
 export function buyLadderCopy(ladder: BuyLadder | null): string | null {
   if (ladder == null) return null;
-  const where = band(ladder.source);
+  const where = tape(ladder.source, ladder.band);
   if (ladder.blocked === 'both' && ladder.targetUsd != null && ladder.cashUsd != null) {
     return `Your target ${money(ladder.targetUsd)} and cash left ${money(ladder.cashUsd)} are under the low of ${where} (${money(ladder.low)}). No offer inside that range.`;
   }
@@ -158,6 +162,7 @@ export function sellLadder(range: SaleRange, costUsd?: number | null): SellLadde
     passUnder: low,
     costUsd: cost,
     costSeat,
+    band: range.band ?? null,
   };
 }
 
@@ -169,7 +174,7 @@ export function sellLadderCopy(ladder: SellLadder | null): string | null {
   } else if (ladder.costUsd != null && ladder.costSeat === 'over low') {
     costNote = ` Cost ${money(ladder.costUsd)} is over the low.`;
   }
-  return `Ask ${money(ladder.ask)}, take ${money(ladder.take)}, pass under ${money(ladder.passUnder)} on ${band(ladder.source)}.${costNote}`;
+  return `Ask ${money(ladder.ask)}, take ${money(ladder.take)}, pass under ${money(ladder.passUnder)} on ${tape(ladder.source, ladder.band)}.${costNote}`;
 }
 
 export function ladderCashRoom(
