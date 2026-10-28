@@ -20,6 +20,7 @@ import { floorWeek } from '../lib/collector/floorPack';
 import { LADDER_SCORE_NOTE, cardRanges, sellScoreCopy, weekLadder, weekLadderCopy } from '../lib/collector/ladderScore';
 import { SELL_LADDER_NOTE, sellLadder, sellLadderCopy } from '../lib/collector/offerLadder';
 import { rangeSeatCopy, SALE_RANGE_NOTE, saleRange } from '../lib/collector/saleRange';
+import { TRADE_LADDER_NOTE, tradeLadder, tradeLadderCopy } from '../lib/collector/tradeLadder';
 import { unfiledBuys, unfiledCopy } from '../lib/collector/showClose';
 import { store } from '../lib/dal/syncStore';
 import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
@@ -142,9 +143,12 @@ function TradeBalancePanel({ inventory }: { inventory: CardInventory[] }) {
   const [cash, setCash] = useState('0');
   const rows = (ids: string[]) => ids.flatMap((id) => {
     const card = cards.find((row) => row.id === id);
-    return card ? [{ id, player: card.player, usd: markOf(card) }] : [];
+    return card ? [{ id, player: card.player, usd: markOf(card), range: saleRange(card) }] : [];
   });
-  const result = tradeFairness(rows(give), rows(receive), Number(cash));
+  const giveRows = rows(give);
+  const receiveRows = rows(receive);
+  const result = tradeFairness(giveRows, receiveRows, Number(cash));
+  const ladder = tradeLadder(giveRows, receiveRows);
   const add = (side: 'give' | 'receive') => {
     if (!pick) return;
     if (side === 'give') {
@@ -159,6 +163,7 @@ function TradeBalancePanel({ inventory }: { inventory: CardInventory[] }) {
     <section className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" aria-label="Trade value balancer">
       <h2 className="text-sm font-black uppercase tracking-widest text-white">Trade value balancer</h2>
       <p className="mt-2 text-xs text-slate-400">Two sides against local marks. {DESK_NOTE}</p>
+      <p className="mt-1 text-xs text-slate-400">{TRADE_LADDER_NOTE}</p>
       {cards.length === 0 ? <p className="mt-3 text-sm text-slate-400">No held cards.</p> : (
         <>
           <label className="mt-3 block text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -175,11 +180,22 @@ function TradeBalancePanel({ inventory }: { inventory: CardInventory[] }) {
             Cash you add
             <input aria-label="Trade cash" inputMode="decimal" value={cash} onChange={(event) => setCash(event.target.value)} className={field} />
           </label>
-          <p className="mt-2 text-sm text-white">Give {give.map((id) => rows([id])[0]?.player).filter(Boolean).join(', ') || 'none'}</p>
-          <p className="text-sm text-white">Receive {receive.map((id) => rows([id])[0]?.player).filter(Boolean).join(', ') || 'none'}</p>
+          <p className="mt-2 text-sm text-white">Give {giveRows.map((row) => row.player).filter(Boolean).join(', ') || 'none'}</p>
+          {giveRows.length > 0 ? (
+            <ul className="mt-1 space-y-1" aria-label="Give ladder">
+              {ladder.give.map((row) => <li key={row.id} className="text-xs text-slate-300">{row.copy}</li>)}
+            </ul>
+          ) : null}
+          <p className="text-sm text-white">Receive {receiveRows.map((row) => row.player).filter(Boolean).join(', ') || 'none'}</p>
+          {receiveRows.length > 0 ? (
+            <ul className="mt-1 space-y-1" aria-label="Receive ladder">
+              {ladder.receive.map((row) => <li key={row.id} className="text-xs text-slate-300">{row.copy}</li>)}
+            </ul>
+          ) : null}
           <p className="mt-1 font-mono text-xs text-slate-200" aria-label="Trade call">
             {result.call} · give {usd(result.giveUsd)} · receive {usd(result.receiveUsd)} · net {usd(result.net)}
           </p>
+          <p className="mt-1 text-xs text-slate-300" aria-label="Trade ladder">{tradeLadderCopy(ladder)}</p>
         </>
       )}
     </section>
