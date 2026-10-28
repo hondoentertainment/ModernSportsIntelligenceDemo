@@ -16,7 +16,7 @@ import {
 import { compsSnapshot } from '../collector/deskNext';
 import { cardRanges, weekLadder, weekLadderCopy } from '../collector/ladderScore';
 import { buyLadder, buyLadderCopy } from '../collector/offerLadder';
-import { saleRange, targetRangeDesk, type RangeRow } from '../collector/saleRange';
+import { rangeForSeat, targetRangeDesk, type RangeRow } from '../collector/saleRange';
 import { followUps, type FollowUp, type MarkRef } from '../collector/showClose';
 import { haggleSnapshot, type HaggleNote } from '../shows/showHaggleLog';
 import { store } from '../dal/syncStore';
@@ -134,10 +134,11 @@ export function buildCollectorAlertDigest(input: {
       const id = row.id.startsWith('range:') ? row.id.slice('range:'.length) : row.id;
       const target = input.targets.find((item) => item.id === id);
       if (!target) return row;
-      const copy = buyLadderCopy(buyLadder(saleRange({
+      const copy = buyLadderCopy(buyLadder(rangeForSeat({
         id: target.id,
         currentValue: target.currentMarketPrice,
         salesData: target.salesData,
+        gradeText: target.cardDescription,
       }), { targetUsd: target.targetPrice }));
       return copy ? { ...row, detail: `${row.detail} ${copy}` } : row;
     }),

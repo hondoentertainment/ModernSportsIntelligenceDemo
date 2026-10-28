@@ -129,6 +129,23 @@ export function buildLotDrafts(input: {
   return drafts.length === rows.length ? drafts : null;
 }
 
+export function boughtLotShares(note: {
+  result: string;
+  offerUsd: number;
+  askUsd: number;
+  lines?: readonly { askUsd?: number | null }[];
+}): number[] | null {
+  const lines = note.lines ?? [];
+  if (note.result !== 'bought' || lines.length < 2) return null;
+  const paid = paidOnNote(note);
+  if (!paid) return null;
+  const weights = lines.map((line) => (
+    typeof line.askUsd === 'number' && Number.isFinite(line.askUsd) && line.askUsd > 0 ? line.askUsd : 0
+  ));
+  if (weights.some((weight) => !(weight > 0))) return null;
+  return allocate(paid.usd, weights);
+}
+
 export function lotDraftIds(note: LotNote): string[] {
   if (!lotReady(note)) return [];
   return fileableLines(note).map((row) => lotCardId(note.id, row.index));

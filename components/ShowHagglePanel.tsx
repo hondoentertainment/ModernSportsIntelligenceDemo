@@ -5,6 +5,7 @@ import { tableScore } from '../lib/collector/ladderScore';
 import { buyLadder, buyLadderCopy } from '../lib/collector/offerLadder';
 import { gradeSplitCopy, rangeForSeat, rangeSeatCopy } from '../lib/collector/saleRange';
 import {
+  boughtLotShares,
   buildLotDrafts,
   expandLotNotes,
   isLot,
@@ -187,19 +188,22 @@ const ShowHagglePanel: React.FC<Props> = ({
     card: CardInventory | undefined,
     askValue: number | undefined,
     noteResult: HaggleResult = result,
+    paidUsd?: number | null,
   ): { range: string | null; ladder: string | null; score: string | null; grade: string | null } => {
     if (!card || askValue == null || !(askValue > 0)) {
       return { range: null, ladder: null, score: null, grade: card ? gradeSplitCopy(card) : null };
     }
     const range = rangeForSeat(card);
     const ladder = buyLadder(range);
+    const paid = noteResult === 'bought' ? paidUsd : null;
+    const scoreUsd = paid != null && paid > 0 ? paid : askValue;
     return {
       range: rangeSeatCopy(askValue, range, 'This ask'),
       ladder: buyLadderCopy(ladder),
       score: tableScore({
         result: noteResult,
-        offerUsd: noteResult === 'bought' ? askValue : 0,
-        askUsd: askValue,
+        offerUsd: noteResult === 'bought' ? scoreUsd : 0,
+        askUsd: noteResult === 'bought' ? scoreUsd : askValue,
       }, ladder)?.copy ?? null,
       grade: gradeSplitCopy(card),
     };
@@ -216,10 +220,15 @@ const ShowHagglePanel: React.FC<Props> = ({
         : 'Name the player and a paid price before filing.');
       return;
     }
+    const pending = drafts.filter((draft) => !inventory.some((card) => card.id === draft.id));
+    if (pending.length === 0) {
+      setFileError(isLot(row) ? 'This lot is already in the collection.' : 'That buy is already in the collection.');
+      return;
+    }
     setPendingId(row.id);
     setFileError(null);
     try {
-      for (const draft of drafts) await onFileBuy(draft);
+      for (const draft of pending) await onFileBuy(draft);
     } catch {
       setFileError('Could not file that buy. The collection was not changed.');
     } finally {
@@ -444,7 +453,8 @@ const ShowHagglePanel: React.FC<Props> = ({
                   <ul className="mt-1 space-y-1" aria-label={`Lot cards for ${row.dealer} table ${row.table}`}>
                     {(row.lines ?? []).map((line, index) => {
                       const card = cardFor(line.cardId);
-                      const preview = lineForCard(card, line.askUsd, row.result);
+                      const shares = boughtLotShares(row);
+                      const preview = lineForCard(card, line.askUsd, row.result, shares?.[index]);
                       return (
                         <li key={`${row.id}:${index}`} className="text-xs text-slate-300">
                           {lotLineLabel(line)}

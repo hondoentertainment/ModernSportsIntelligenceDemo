@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ShowHagglePanel from '../../components/ShowHagglePanel';
 import { floorBuyId } from '../../lib/collector/showClose';
+import { lotCardId } from '../../lib/collector/tableLot';
 import { readHaggle } from '../../lib/shows/showHaggleLog';
 import { makeCard } from '../helpers';
 
@@ -128,7 +129,7 @@ describe('ShowHagglePanel', () => {
       { title: 'psa', price: 200, condition: 'PSA 10', soldAt: '2026-09-03' },
       { title: 'psa 2', price: 240, condition: 'PSA 10', soldAt: '2026-09-04' },
     ];
-    render(
+    const view = render(
       <ShowHagglePanel
         showId="lot-show"
         showName="Lot Show"
@@ -167,9 +168,37 @@ describe('ShowHagglePanel', () => {
     await user.selectOptions(screen.getByLabelText('Result at Lot Show'), 'bought');
     await user.click(screen.getByRole('button', { name: 'Add table note' }));
     expect(screen.getByLabelText('Table lot for Rivera table 4')).toHaveTextContent(/2 cards in this lot for \$100\.00/);
+    expect(screen.getByLabelText('Lot cards for Rivera table 4')).toHaveTextContent(/Paid \$32/);
+    expect(screen.getByLabelText('Lot cards for Rivera table 4')).toHaveTextContent(/Paid \$48/);
+    expect(screen.getByLabelText('Lot cards for Rivera table 4')).not.toHaveTextContent(/Paid \$40/);
     await user.click(screen.getByRole('button', { name: 'Add this lot to the collection' }));
     expect(onFileBuy).toHaveBeenCalledTimes(2);
     expect(onFileBuy).toHaveBeenCalledWith(expect.objectContaining({ player: 'Aaron Judge', purchasePrice: 32, taxBasis: 32 }));
     expect(onFileBuy).toHaveBeenCalledWith(expect.objectContaining({ player: 'Jayson Tatum', purchasePrice: 48, taxBasis: 48 }));
+    const saved = readHaggle('lot-show')[0];
+    view.rerender(
+      <ShowHagglePanel
+        showId="lot-show"
+        showName="Lot Show"
+        purchaseDate="2026-10-20"
+        onFileBuy={onFileBuy}
+        inventory={[
+          makeCard({ id: lotCardId(saved.id, 0), player: 'Aaron Judge', purchasePrice: 32 }),
+          makeCard({ id: 'judge', player: 'Aaron Judge', isGraded: false, currentValue: 50, salesData: sales }),
+          makeCard({
+            id: 'tatum',
+            player: 'Jayson Tatum',
+            isGraded: true,
+            gradingCompany: 'PSA',
+            grade: '10',
+            currentValue: 220,
+            salesData: sales,
+          }),
+        ]}
+      />,
+    );
+    await user.click(screen.getByRole('button', { name: 'Add this lot to the collection' }));
+    expect(onFileBuy).toHaveBeenCalledTimes(3);
+    expect(onFileBuy.mock.calls[2][0]).toMatchObject({ id: lotCardId(saved.id, 1), player: 'Jayson Tatum' });
   });
 });

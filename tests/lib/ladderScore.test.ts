@@ -200,11 +200,18 @@ describe('ladder score', () => {
         cardId: 'judge',
         savedAt: at(now),
         lines: [
+          { cardId: 'judge', askUsd: 40 },
+          { cardId: 'judge', askUsd: 160 },
+        ],
+      }, {
+        result: 'bought',
+        offerUsd: 200,
+        askUsd: 200,
+        cardId: 'judge',
+        savedAt: at(now),
+        lines: [
           { cardId: 'judge', askUsd: 90 },
-          { cardId: 'missing', askUsd: 40 },
-          { cardId: 'empty', askUsd: 50 },
           { cardId: 'judge', askUsd: 0 },
-          { cardId: '  ', askUsd: 80 },
         ],
       }, {
         result: 'passed',
@@ -224,7 +231,7 @@ describe('ladder score', () => {
       ranges,
       now,
     );
-    expect(lot).toMatchObject({ inside: 2, over: 0, left: 1, held: 1, scored: 4 });
+    expect(lot).toMatchObject({ inside: 2, over: 1, left: 1, held: 1, scored: 5 });
     expect(buyScoreCopy(55, buyLadder({
       source: 'comps',
       low: 40,

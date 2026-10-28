@@ -8,6 +8,7 @@
  */
 import { buyLadder, type BuyLadder, type SellLadder } from './offerLadder';
 import { rangeForSeat, type SaleRange } from './saleRange';
+import { boughtLotShares } from './tableLot';
 
 export const LADDER_SCORE_NOTE =
   'The number on that row sits on the ladder. A buy over the walk, or a pass at or under the walk, is the line the week keeps. Sold comps when stored. Otherwise a demo sketch. Not a live tape.';
@@ -217,23 +218,26 @@ export function weekLadder(
     const saved = Date.parse(note.savedAt ?? '');
     if (!Number.isFinite(saved) || saved > now || saved < now - WEEK_MS) continue;
     if ((note.lines?.length ?? 0) >= 2) {
-      for (const line of note.lines ?? []) {
+      const shares = note.result === 'bought' ? boughtLotShares(note) : null;
+      if (note.result === 'bought' && !shares) continue;
+      (note.lines ?? []).forEach((line, index) => {
         const cardId = line.cardId?.trim() ?? '';
         const ask = positive(line.askUsd);
-        if (!cardId || ask == null) continue;
+        const paid = shares ? shares[index] : ask;
+        if (!cardId || ask == null || paid == null) return;
         const range = ranges[cardId];
-        if (range == null) continue;
+        if (range == null) return;
         const scored = tableScore(
           {
             result: note.result,
-            offerUsd: note.result === 'bought' ? ask : 0,
-            askUsd: ask,
+            offerUsd: note.result === 'bought' ? paid : 0,
+            askUsd: note.result === 'bought' ? paid : ask,
           },
           buyLadder(range),
         );
-        if (scored == null) continue;
+        if (scored == null) return;
         addCall(week, scored.call);
-      }
+      });
       continue;
     }
     const cardId = note.cardId?.trim() ?? '';
