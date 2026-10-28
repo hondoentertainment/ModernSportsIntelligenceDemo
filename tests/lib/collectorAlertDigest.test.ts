@@ -176,4 +176,30 @@ describe('collector alert digest', () => {
     expect(digest.ladderCopy).toMatch(/1 pass left the walk/);
     expect(digest.ladderCopy).toMatch(/Not a settlement and not a live tape/);
   });
+
+  it('builds the watchlist ladder from the grade named on the card line', () => {
+    const sales = [
+      { title: 'raw', price: 40, condition: 'raw', soldAt: '2026-09-01' },
+      { title: 'raw 2', price: 60, condition: 'raw', soldAt: '2026-09-02' },
+      { title: 'slab', price: 200, condition: 'PSA 10', soldAt: '2026-09-03' },
+      { title: 'slab 2', price: 240, condition: 'PSA 10', soldAt: '2026-09-04' },
+    ];
+    const digest = buildCollectorAlertDigest({
+      targets: [target({
+        id: 'slab',
+        player: 'Aaron Judge',
+        cardDescription: '2017 Update PSA 10',
+        targetPrice: 210,
+        currentMarketPrice: 220,
+        salesData: sales,
+      })],
+      shows: [],
+      prefs: { enabled: false, home: null, radiusMiles: 25, leadDays: 3 },
+      notes: [],
+      inventory: [],
+    });
+    expect(digest.ranges[0]?.detail).toMatch(/PSA 10 sold comps/);
+    expect(digest.ranges[0]?.detail).toMatch(/Open \$200, fair \$210, walk \$210 on PSA 10 sold comps/);
+    expect(digest.ranges[0]?.detail).not.toMatch(/Open \$40/);
+  });
 });

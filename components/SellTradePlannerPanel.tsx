@@ -13,7 +13,7 @@ import { placesSnapshot, subscribePlaces } from '../lib/collector/deskNext';
 import { pullCopy } from '../lib/collector/floorPack';
 import { LADDER_SCORE_NOTE, sellScoreCopy } from '../lib/collector/ladderScore';
 import { SELL_LADDER_NOTE, sellLadder, sellLadderCopy } from '../lib/collector/offerLadder';
-import { SALE_RANGE_NOTE, rangeSeatCopy, saleRange } from '../lib/collector/saleRange';
+import { GRADE_RANGE_NOTE, SALE_RANGE_NOTE, gradeSplitCopy, rangeForSeat, rangeSeatCopy } from '../lib/collector/saleRange';
 
 interface Props {
   inventory: CardInventory[];
@@ -49,12 +49,14 @@ function RowCard({
   row,
   place,
   rangeCopy,
+  gradeCopy,
   ladderCopy,
   scoreCopy,
 }: {
   row: SellTradeRow;
   place: string | undefined;
   rangeCopy: string | null;
+  gradeCopy: string | null;
   ladderCopy: string | null;
   scoreCopy: string | null;
 }) {
@@ -95,6 +97,7 @@ function RowCard({
       <p className="mt-1 text-[11px] leading-relaxed text-slate-500">{row.note}</p>
       <p className="mt-1 text-[11px] text-slate-300">{pullCopy(place)}</p>
       {rangeCopy ? <p className="mt-1 text-[11px] leading-relaxed text-slate-300" aria-label={`Sale range for ${row.player}`}>{rangeCopy}</p> : null}
+      {gradeCopy ? <p className="mt-1 text-[11px] leading-relaxed text-slate-300" aria-label={`Grade split for ${row.player}`}>{gradeCopy}</p> : null}
       {ladderCopy ? <p className="mt-1 text-[11px] leading-relaxed text-slate-300" aria-label={`Sell ladder for ${row.player}`}>{ladderCopy}</p> : null}
       {scoreCopy ? <p className="mt-1 text-[11px] leading-relaxed text-slate-300" aria-label={`Ladder score for ${row.player}`}>{scoreCopy}</p> : null}
     </li>
@@ -138,6 +141,7 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
       <p className="mb-4 text-[11px] leading-relaxed text-slate-400">{SELL_TRADE_PLANNER_DISCLOSURE}</p>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{plan.lotDisclosure}</p>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{SALE_RANGE_NOTE}</p>
+      <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{GRADE_RANGE_NOTE}</p>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{SELL_LADDER_NOTE}</p>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{LADDER_SCORE_NOTE}</p>
 
@@ -215,12 +219,13 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
         <ul className="mt-4 space-y-3" aria-label="Sell and trade-in suggestions">
           {visible.map((row) => {
             const card = inventory.find((item) => item.id === row.cardId);
-            const range = card ? saleRange(card) : null;
+            const range = card ? rangeForSeat(card) : null;
             const rangeCopy = range ? rangeSeatCopy(row.mark, range, 'This mark') : null;
+            const gradeCopy = card ? gradeSplitCopy(card) : null;
             const ladder = range ? sellLadder(range, row.costBasis) : null;
             const ladderCopy = ladder ? sellLadderCopy(ladder) : null;
             const scoreCopy = ladder ? sellScoreCopy(row.mark, ladder, 'This mark') : null;
-            return <RowCard key={row.cardId} row={row} place={places[row.cardId]} rangeCopy={rangeCopy} ladderCopy={ladderCopy} scoreCopy={scoreCopy} />;
+            return <RowCard key={row.cardId} row={row} place={places[row.cardId]} rangeCopy={rangeCopy} gradeCopy={gradeCopy} ladderCopy={ladderCopy} scoreCopy={scoreCopy} />;
           })}
         </ul>
       )}

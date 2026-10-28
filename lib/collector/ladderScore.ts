@@ -7,7 +7,8 @@
  * Not a settlement and not a live tape.
  */
 import { buyLadder, type BuyLadder, type SellLadder } from './offerLadder';
-import { saleRange, type SaleRange } from './saleRange';
+import { rangeForSeat, type SaleRange } from './saleRange';
+import { boughtLotShares } from './tableLot';
 
 export const LADDER_SCORE_NOTE =
   'The number on that row sits on the ladder. A buy over the walk, or a pass at or under the walk, is the line the week keeps. Sold comps when stored. Otherwise a demo sketch. Not a live tape.';
@@ -47,6 +48,7 @@ export interface TableNoteInput {
 export interface WeekNote extends TableNoteInput {
   cardId?: string;
   savedAt?: string;
+  lines?: readonly { cardId?: string; askUsd?: number | null }[];
 }
 
 export interface WeekLadder {
@@ -74,8 +76,9 @@ function positive(value: number | null | undefined): number | null {
   return rounded > 0 ? rounded : null;
 }
 
-function band(source: 'comps' | 'demo'): string {
-  return source === 'comps' ? 'sold comps' : 'demo sales';
+function tape(source: 'comps' | 'demo', grade?: string | null): string {
+  const where = source === 'comps' ? 'sold comps' : 'demo sales';
+  return grade ? `${grade} ${where}` : where;
 }
 
 function buySeatOf(value: number, ladder: BuyLadder): BuySeat {
@@ -93,7 +96,7 @@ export function buySeat(usd: number | null | undefined, ladder: BuyLadder | null
 }
 
 function buyLine(value: number, ladder: BuyLadder, seat: BuySeat, noun: string): string {
-  return `${noun} ${money(value)} is ${BUY_PHRASE[seat]} on ${band(ladder.source)} (open ${money(ladder.open)}, fair ${money(ladder.fair)}, walk ${money(ladder.walk)}).`;
+  return `${noun} ${money(value)} is ${BUY_PHRASE[seat]} on ${tape(ladder.source, ladder.band)} (open ${money(ladder.open)}, fair ${money(ladder.fair)}, walk ${money(ladder.walk)}).`;
 }
 
 export function buyScoreCopy(
@@ -125,7 +128,7 @@ export function sellSeat(
 }
 
 function sellLine(value: number, ladder: SellLadder, seat: SellSeat, noun: string): string {
-  return `${noun} ${money(value)} is ${SELL_PHRASE[seat]} on ${band(ladder.source)} (ask ${money(ladder.ask)}, take ${money(ladder.take)}, pass under ${money(ladder.passUnder)}).`;
+  return `${noun} ${money(value)} is ${SELL_PHRASE[seat]} on ${tape(ladder.source, ladder.band)} (ask ${money(ladder.ask)}, take ${money(ladder.take)}, pass under ${money(ladder.passUnder)}).`;
 }
 
 export function sellScoreCopy(
@@ -187,6 +190,16 @@ function tally(count: number, singular: string, plural = singular): string {
   return `${count} ${count === 1 ? singular : plural}`;
 }
 
+function addCall(week: WeekLadder, call: TableScore['call']): void {
+  week.scored += 1;
+  if (call === 'inside walk') week.inside += 1;
+  else if (call === 'over walk') week.over += 1;
+  else if (call === 'left the walk') week.left += 1;
+  else if (call === 'pass held') week.held += 1;
+  else if (call === 'open inside') week.openInside += 1;
+  else week.openOver += 1;
+}
+
 export function weekLadder(
   notes: readonly WeekNote[],
   ranges: Readonly<Record<string, SaleRange | null | undefined>>,
@@ -204,19 +217,36 @@ export function weekLadder(
   for (const note of notes) {
     const saved = Date.parse(note.savedAt ?? '');
     if (!Number.isFinite(saved) || saved > now || saved < now - WEEK_MS) continue;
+    if ((note.lines?.length ?? 0) >= 2) {
+      const shares = note.result === 'bought' ? boughtLotShares(note) : null;
+      if (note.result === 'bought' && !shares) continue;
+      (note.lines ?? []).forEach((line, index) => {
+        const cardId = line.cardId?.trim() ?? '';
+        const ask = positive(line.askUsd);
+        const paid = shares ? shares[index] : ask;
+        if (!cardId || ask == null || paid == null) return;
+        const range = ranges[cardId];
+        if (range == null) return;
+        const scored = tableScore(
+          {
+            result: note.result,
+            offerUsd: note.result === 'bought' ? paid : 0,
+            askUsd: note.result === 'bought' ? paid : ask,
+          },
+          buyLadder(range),
+        );
+        if (scored == null) return;
+        addCall(week, scored.call);
+      });
+      continue;
+    }
     const cardId = note.cardId?.trim() ?? '';
     if (!cardId) continue;
     const range = ranges[cardId];
     if (range == null) continue;
     const scored = tableScore(note, buyLadder(range));
     if (scored == null) continue;
-    week.scored += 1;
-    if (scored.call === 'inside walk') week.inside += 1;
-    else if (scored.call === 'over walk') week.over += 1;
-    else if (scored.call === 'left the walk') week.left += 1;
-    else if (scored.call === 'pass held') week.held += 1;
-    else if (scored.call === 'open inside') week.openInside += 1;
-    else week.openOver += 1;
+    addCall(week, scored.call);
   }
   return week;
 }
@@ -234,13 +264,16 @@ export function cardRanges(
     id: string;
     currentValue?: number;
     purchasePrice?: number;
-    salesData?: readonly { price: number; totalPrice?: number; soldAt?: string }[];
+    isGraded?: boolean;
+    gradingCompany?: string | null;
+    grade?: string | null;
+    salesData?: readonly { price: number; totalPrice?: number; soldAt?: string; title?: string; condition?: string }[];
   }[]
 ): Record<string, SaleRange> {
   const ranges: Record<string, SaleRange> = {};
   for (const card of cards) {
     if (!card.id) continue;
-    ranges[card.id] = saleRange(card);
+    ranges[card.id] = rangeForSeat(card);
   }
   return ranges;
 }

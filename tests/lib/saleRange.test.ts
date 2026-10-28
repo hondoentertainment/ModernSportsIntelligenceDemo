@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  GRADE_RANGE_NOTE,
   RANGE_LIMIT,
   SALE_RANGE_NOTE,
+  gradeSplitCopy,
+  preferredGradeKey,
+  rangeForSeat,
   rangeSeat,
   rangeSeatCopy,
   saleRange,
@@ -107,5 +111,85 @@ describe('saleRange', () => {
     const capped = targetRangeDesk(many);
     expect(capped.rows).toHaveLength(RANGE_LIMIT);
     expect(capped.omitted).toBe(2);
+    expect(desk.rows[0].detail).toMatch(/Raw sold comps \$80–\$120/);
+  });
+
+  it('splits stored sales by grade and keeps the ladder on the matching band', () => {
+    const sales = [
+      { title: 'old raw', price: 1, condition: 'raw', soldAt: '2026-01-01' },
+      { title: 'raw', price: 40, condition: 'raw', soldAt: '2026-09-01', totalPrice: 42 },
+      { title: 'raw two', price: 60, condition: 'Ungraded', soldAt: '2026-09-02' },
+      { title: 'slab', price: 200, condition: 'PSA 10', soldAt: '2026-09-03' },
+      { title: 'slab two', price: 240, condition: 'PSA10', soldAt: '2026-09-04' },
+      { title: 'bgs', price: 180, condition: 'BGS 9.5', soldAt: '2026-09-05' },
+      { title: 'quiet', price: 90, condition: 'Near Mint', soldAt: '2026-09-06' },
+      { title: 'skip', price: 15, condition: 'raw', soldAt: '' },
+    ];
+    const rawCard = {
+      id: 'judge',
+      isGraded: false,
+      currentValue: 50,
+      salesData: sales,
+    };
+    const mixed = saleRange(rawCard);
+    expect(mixed.band).toBeUndefined();
+    expect(mixed).toMatchObject({ source: 'comps', low: 42, high: 240 });
+    const seated = rangeForSeat(rawCard);
+    expect(seated.band).toBe('raw');
+    expect(seated).toMatchObject({ low: 42, high: 60, count: 2 });
+    expect(rangeSeatCopy(50, seated, 'Local mark')).toBe(
+      'Local mark $50 is inside the range of raw sold comps ($42–$60, median $51).',
+    );
+    expect(gradeSplitCopy(rawCard)).toMatch(/Raw sold comps \$42–\$60, median \$51 \(2\)/);
+    expect(gradeSplitCopy(rawCard)).toMatch(/PSA 10 sold comps \$200–\$240, median \$220 \(2\)/);
+    expect(gradeSplitCopy(rawCard)).toMatch(/BGS 9.5 sold comps \$180–\$180, median \$180 \(1\)/);
+    expect(gradeSplitCopy(rawCard)).toMatch(/1 sale does not name a grade/);
+    expect(gradeSplitCopy(rawCard)).toMatch(/The ladder uses the raw sales/);
+    expect(gradeSplitCopy(rawCard)).not.toMatch(/live market movers/i);
+
+    const slab = rangeForSeat({
+      id: 'slab',
+      isGraded: true,
+      gradingCompany: 'PSA',
+      grade: 'GEM MT 10',
+      currentValue: 220,
+      salesData: sales,
+    });
+    expect(slab.band).toBe('PSA 10');
+    expect(slab.low).toBe(200);
+    expect(slab.high).toBe(240);
+    const missing = gradeSplitCopy({
+      id: 'nine',
+      isGraded: true,
+      gradingCompany: 'PSA',
+      grade: '9',
+      currentValue: 100,
+      salesData: sales,
+    });
+    expect(missing).toMatch(/This card is PSA 9\. No PSA 9 sales are stored/);
+    expect(rangeForSeat({
+      id: 'nine',
+      isGraded: true,
+      gradingCompany: 'PSA',
+      grade: '9',
+      currentValue: 100,
+      salesData: sales,
+    }).band).toBeUndefined();
+
+    expect(gradeSplitCopy({ id: 'plain', currentValue: 80, salesData: [
+      { price: 80, soldAt: '2026-09-01' },
+      { price: 100, soldAt: '2026-09-02' },
+    ] })).toMatch(/do not name a grade/);
+    expect(gradeSplitCopy({ id: 'demo', currentValue: 80 })).toBe('A demo sketch is not split by grade.');
+    expect(gradeSplitCopy({ id: 'zero', currentValue: 0 })).toBeNull();
+    expect(rangeForSeat({
+      id: 'watch',
+      currentValue: 200,
+      gradeText: '2024 Prizm PSA 10',
+      salesData: sales,
+    }).band).toBe('PSA 10');
+    expect(preferredGradeKey({ id: 'other', isGraded: true, gradingCompany: 'Other', grade: '10' })).toBeNull();
+    expect(GRADE_RANGE_NOTE).toMatch(/not a population report/i);
+    expect(GRADE_RANGE_NOTE).toMatch(/not a live tape/i);
   });
 });

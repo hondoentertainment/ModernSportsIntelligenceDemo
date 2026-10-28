@@ -48,6 +48,18 @@ async function seedBook(page: Page): Promise<void> {
     }));
     const inventory = JSON.stringify([
       card({ id: 'judge', player: 'Aaron Judge', currentValue: 100, purchasePrice: 40 }),
+      card({
+        id: 'split-card',
+        player: 'Split Grade',
+        currentValue: 50,
+        isGraded: false,
+        salesData: [
+          { title: 'raw', price: 40, condition: 'raw', soldAt: '2026-09-01' },
+          { title: 'raw 2', price: 60, condition: 'raw', soldAt: '2026-09-02' },
+          { title: 'psa', price: 200, condition: 'PSA 10', soldAt: '2026-09-03' },
+          { title: 'psa 2', price: 240, condition: 'PSA 10', soldAt: '2026-09-04' },
+        ],
+      }),
       ...fillers,
     ]);
     const targets = JSON.stringify([{
@@ -144,6 +156,13 @@ test.describe('Collector desk tools', () => {
     await expect(comps.getByLabel('Sell ladder')).toContainText(/Ask \$/);
     await expect(comps.getByLabel('Ladder score')).toContainText(/Local mark/);
     await expect(comps.getByLabel('Ladder score')).toContainText(/demo sales/);
+    await expect(comps.getByLabel('Grade split')).toContainText(/a demo sketch is not split by grade/i);
+    await expect(comps).toContainText(/not a population report/i);
+    await comps.getByLabel('Comps snapshot card').selectOption('split-card');
+    await expect(comps.getByLabel('Grade split')).toContainText(/Raw sold comps/);
+    await expect(comps.getByLabel('Grade split')).toContainText(/PSA 10 sold comps/);
+    await expect(comps.getByLabel('Grade split')).toContainText(/The ladder uses the raw sales/);
+    await expect(comps.getByLabel('Sell ladder')).toContainText(/raw sold comps/);
     await expect(comps).toContainText(/not a dealer bid/i);
     await expect(desk).toContainText(/no dated table note sits on a sale range this week/i);
     const trade = page.getByRole('region', { name: 'Trade value balancer' });
@@ -200,6 +219,20 @@ test.describe('Collector desk tools', () => {
     await expect(notes.getByLabel('Ladder score')).toContainText(/Bought inside the walk/);
     await notes.getByRole('button', { name: 'Add table note' }).click();
     await expect(notes.getByLabel('Ladder score for Rivera table 12')).toContainText(/Bought inside the walk/);
+
+    await notes.getByRole('button', { name: 'Add a card to this lot' }).click();
+    await notes.getByLabel(/dealer at/i).fill('Rivera');
+    await notes.getByLabel(/table at/i).fill('12');
+    await notes.getByLabel(/^Player at /i).fill('Aaron Judge');
+    await notes.getByLabel(/Player for lot card 2/i).fill('Jayson Tatum');
+    await notes.getByLabel(/Card ask for lot card 1/i).fill('30');
+    await notes.getByLabel(/Card ask for lot card 2/i).fill('20');
+    await notes.getByLabel(/^Ask at /i).fill('50');
+    await notes.getByLabel(/offer at/i).fill('40');
+    await expect(notes.getByLabel('Table lot')).toContainText(/2 cards in this lot for \$50\.00/);
+    await expect(notes.getByLabel('Table lot')).toContainText(/not one card's sale/i);
+    await notes.getByRole('button', { name: 'Add table note' }).click();
+    await expect(notes.getByLabel(/Table lot for Rivera table/i)).toContainText(/2 cards in this lot/);
   });
 
   test('opens a read-only want-list link with no server copy', async ({ page }) => {

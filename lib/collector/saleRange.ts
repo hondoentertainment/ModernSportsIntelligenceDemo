@@ -16,19 +16,45 @@ export const RANGE_LIMIT = 8;
 
 export type RangeSeat = 'under low' | 'inside' | 'over high' | 'no price' | 'no range';
 
+export const GRADE_RANGE_NOTE =
+  'Raw and graded sales split when the title or condition names a grade. Sales that name neither stay on the mixed range. A demo sketch is not split. Not a population report and not a live tape.';
+
 export interface SaleRange {
   source: 'comps' | 'demo' | 'none';
   low: number | null;
   median: number | null;
   high: number | null;
   count: number;
+  /** Set when this range is one grade band, and that band is not the whole tape. */
+  band?: string;
+}
+
+interface SalePoint {
+  price: number;
+  totalPrice?: number;
+  soldAt?: string;
+  title?: string;
+  condition?: string;
 }
 
 interface SaleInput {
   id: string;
   currentValue?: number;
   purchasePrice?: number;
-  salesData?: readonly { price: number; totalPrice?: number; soldAt?: string }[];
+  salesData?: readonly SalePoint[];
+  isGraded?: boolean;
+  gradingCompany?: string | null;
+  grade?: string | null;
+  gradeText?: string | null;
+}
+
+export interface GradeBand {
+  key: string;
+  label: string;
+  low: number;
+  median: number;
+  high: number;
+  count: number;
 }
 
 export interface RangeRow {
@@ -87,8 +113,143 @@ export function rangeSeatCopy(price: number | null, range: SaleRange, noun: stri
   const seat = rangeSeat(price, range);
   if (seat === 'no price' || seat === 'no range') return null;
   if (range.low == null || range.median == null || range.high == null || price == null) return null;
-  const band = range.source === 'comps' ? 'sold comps' : 'demo sales';
+  const kind = range.source === 'comps' ? 'sold comps' : 'demo sales';
+  const band = range.band ? `${range.band} ${kind}` : kind;
   return `${noun} ${money(price)} is ${where(seat)} of ${band} (${money(range.low)}–${money(range.high)}, median ${money(range.median)}).`;
+}
+
+const GRADER = /\b(PSA|BGS|SGC|CGC|CSG|HGA)\s*(\d+(?:\.\d+)?)\b/i;
+const COMP_LIMIT = 6;
+
+function normalizeGradeNumber(raw: string): string | null {
+  const match = raw.match(/(\d+(?:\.\d+)?)/);
+  if (!match) return null;
+  const value = Number(match[1]);
+  return Number.isFinite(value) ? String(value) : null;
+}
+
+function gradeKeyFromHay(hay: string): string | null {
+  const match = hay.match(GRADER);
+  if (match) {
+    const grade = normalizeGradeNumber(match[2]);
+    return grade ? `${match[1].toUpperCase()} ${grade}` : null;
+  }
+  if (/\b(raw|ungraded)\b/i.test(hay)) return 'raw';
+  return null;
+}
+
+export function preferredGradeKey(input: SaleInput): string | null {
+  if (input.isGraded === true) {
+    const company = input.gradingCompany && input.gradingCompany !== 'Other'
+      ? input.gradingCompany.toUpperCase()
+      : '';
+    const grade = normalizeGradeNumber(input.grade ?? '');
+    if (company && grade) return `${company} ${grade}`;
+    return gradeKeyFromHay(input.gradeText ?? '');
+  }
+  if (input.isGraded === false) return 'raw';
+  return gradeKeyFromHay(input.gradeText ?? '');
+}
+
+interface PricedSale {
+  price: number;
+  key: string | null;
+}
+
+function pricedSales(input: SaleInput): PricedSale[] {
+  return (input.salesData ?? [])
+    .map((sale) => ({
+      price: typeof sale.totalPrice === 'number' && sale.totalPrice > 0 ? sale.totalPrice : sale.price,
+      soldAt: sale.soldAt ?? '',
+      key: gradeKeyFromHay(`${sale.title ?? ''} ${sale.condition ?? ''}`),
+    }))
+    .filter((sale) => sale.price > 0 && sale.soldAt)
+    .sort((a, b) => a.soldAt.localeCompare(b.soldAt))
+    .slice(-COMP_LIMIT)
+    .map((sale) => ({ price: sale.price, key: sale.key }));
+}
+
+function medianOf(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const value = sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+  return Math.round(value * 100) / 100;
+}
+
+export function gradeBands(input: SaleInput): GradeBand[] {
+  const groups = new Map<string, number[]>();
+  for (const sale of pricedSales(input)) {
+    if (!sale.key) continue;
+    const list = groups.get(sale.key);
+    if (list) list.push(sale.price);
+    else groups.set(sale.key, [sale.price]);
+  }
+  const bands: GradeBand[] = [];
+  for (const [key, prices] of groups) {
+    bands.push({
+      key,
+      label: key === 'raw' ? 'Raw' : key,
+      low: Math.min(...prices),
+      median: medianOf(prices),
+      high: Math.max(...prices),
+      count: prices.length,
+    });
+  }
+  bands.sort((a, b) => {
+    if (a.key === 'raw') return -1;
+    if (b.key === 'raw') return 1;
+    return a.key.localeCompare(b.key) || a.low - b.low;
+  });
+  return bands;
+}
+
+export function rangeForSeat(input: SaleInput): SaleRange {
+  const mixed = saleRange(input);
+  if (mixed.source !== 'comps') return mixed;
+  const key = preferredGradeKey(input);
+  if (!key) return mixed;
+  const band = gradeBands(input).find((row) => row.key === key);
+  if (!band) return mixed;
+  if (
+    band.count === mixed.count
+    && band.low === mixed.low
+    && band.high === mixed.high
+    && band.median === mixed.median
+  ) {
+    return mixed;
+  }
+  return {
+    source: 'comps',
+    low: band.low,
+    median: band.median,
+    high: band.high,
+    count: band.count,
+    band: key,
+  };
+}
+
+export function gradeSplitCopy(input: SaleInput): string | null {
+  const mixed = saleRange(input);
+  if (mixed.source === 'none') return null;
+  if (mixed.source === 'demo') return 'A demo sketch is not split by grade.';
+  const bands = gradeBands(input);
+  if (bands.length === 0) return 'Stored sales do not name a grade. This range still mixes them.';
+  const unnamed = pricedSales(input).filter((sale) => sale.key == null).length;
+  const parts = bands.map((band) => (
+    `${band.label} sold comps ${money(band.low)}–${money(band.high)}, median ${money(band.median)} (${band.count}).`
+  ));
+  if (unnamed > 0) {
+    const noun = unnamed === 1 ? 'sale does' : 'sales do';
+    parts.push(`${unnamed} ${noun} not name a grade and stay on the mixed range.`);
+  }
+  const key = preferredGradeKey(input);
+  const match = key ? bands.find((band) => band.key === key) : undefined;
+  if (key && !match) {
+    parts.push(`This card is ${key}. No ${key} sales are stored, so the ladder stays on the mixed range.`);
+  } else if (key && match && match.count !== mixed.count) {
+    parts.push(`The ladder uses the ${key} sales.`);
+  }
+  return parts.join(' ');
 }
 
 function sortGap(price: number, range: SaleRange, seat: RangeSeat): number {
@@ -113,21 +274,24 @@ export function targetRangeDesk(
     if (target.status !== 'active') continue;
     const price = positive(target.targetPrice);
     if (price == null) continue;
-    const range = saleRange({
+    const rangeInput: SaleInput = {
       id: target.id,
       currentValue: target.currentMarketPrice,
       salesData: target.salesData,
-    });
+      gradeText: typeof target.cardDescription === 'string' ? target.cardDescription : '',
+    };
+    const range = rangeForSeat(rangeInput);
     const seat = rangeSeat(price, range);
     if (seat === 'no price' || seat === 'no range') continue;
     const copy = rangeSeatCopy(price, range, 'Your target');
     if (!copy) continue;
     const player = (typeof target.player === 'string' ? target.player.trim() : '') || 'Watchlist card';
     const detail = (typeof target.cardDescription === 'string' ? target.cardDescription.trim() : '') || 'Watchlist row';
+    const split = gradeSplitCopy(rangeInput);
     ranked.push({
       id: `range:${target.id}`,
       title: `${player} is ${where(seat)}`,
-      detail: `${copy} ${detail}.`,
+      detail: `${copy} ${detail}.${split ? ` ${split}` : ''}`,
       href: '/collection',
       seat,
       gap: sortGap(price, range, seat),

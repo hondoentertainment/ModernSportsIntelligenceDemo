@@ -22,7 +22,7 @@ import {
   sellLadder,
   shopLadderCopy,
 } from '../lib/collector/offerLadder';
-import { SALE_RANGE_NOTE, rangeSeatCopy, saleRange, type SaleRange } from '../lib/collector/saleRange';
+import { GRADE_RANGE_NOTE, SALE_RANGE_NOTE, gradeSplitCopy, rangeForSeat, rangeSeatCopy, type SaleRange } from '../lib/collector/saleRange';
 import { store } from '../lib/dal/syncStore';
 import { SHOPPING_INGEST_DISCLOSURE } from '../lib/shows/showShoppingIngest';
 import { readCashBudget } from '../lib/shows/showTripLoop';
@@ -44,20 +44,31 @@ function usd(value: number | null): string {
   return value == null ? 'no price' : `$${Math.round(value).toLocaleString('en-US')}`;
 }
 
-function shopRange(line: ShopLine, inventory: CardInventory[], targets: TargetWatchlist[]): SaleRange | null {
+function shopInput(line: ShopLine, inventory: CardInventory[], targets: TargetWatchlist[]) {
   if (line.kind === 'set-hole') return null;
   if (line.cardId) {
     const card = inventory.find((row) => row.id === line.cardId);
-    return card ? saleRange(card) : null;
+    return card ?? null;
   }
   if (!line.targetId) return null;
   const target = targets.find((row) => row.id === line.targetId);
   if (!target) return null;
-  return saleRange({
+  return {
     id: target.id,
     currentValue: target.currentMarketPrice,
     salesData: target.salesData,
-  });
+    gradeText: target.cardDescription,
+  };
+}
+
+function shopRange(line: ShopLine, inventory: CardInventory[], targets: TargetWatchlist[]): SaleRange | null {
+  const input = shopInput(line, inventory, targets);
+  return input ? rangeForSeat(input) : null;
+}
+
+function shopGrade(line: ShopLine, inventory: CardInventory[], targets: TargetWatchlist[]): string | null {
+  const input = shopInput(line, inventory, targets);
+  return input ? gradeSplitCopy(input) : null;
 }
 
 function buyRangeCopy(line: ShopLine, inventory: CardInventory[], targets: TargetWatchlist[]): string | null {
@@ -99,6 +110,7 @@ function Lines({
     <ul className="space-y-2">
       {lines.map((line) => {
         const rangeCopy = buyRangeCopy(line, inventory, targets);
+        const gradeCopy = shopGrade(line, inventory, targets);
         const ladderCopy = shopLadderCopy({
           side: line.side,
           kind: line.kind,
@@ -123,6 +135,7 @@ function Lines({
               {line.collectorCeilingUsd != null ? ` · ceiling ${usd(line.collectorCeilingUsd)}` : ''}
             </p>
             {rangeCopy ? <p className="text-xs text-slate-300" aria-label={`Sale range for ${line.player}`}>{rangeCopy}</p> : null}
+            {gradeCopy ? <p className="text-xs text-slate-300" aria-label={`Grade split for ${line.player}`}>{gradeCopy}</p> : null}
             {ladderCopy ? <p className="text-xs text-slate-300" aria-label={ladderLabel}>{ladderCopy}</p> : null}
             {scoreCopy ? <p className="text-xs text-slate-300" aria-label={`Ladder score for ${line.player}`}>{scoreCopy}</p> : null}
             {calls ? <p className="text-xs text-slate-300">{cashLineCopy(calls[line.id] ?? 'no price')}</p> : null}
@@ -181,7 +194,7 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
             <h4 className="text-xs text-emerald-200">Buy</h4>
             {list.buys.length === 0 ? <p className="text-xs text-slate-500">No buys.</p> : (
               <>
-                <p className="text-xs text-slate-500">{SALE_RANGE_NOTE} {OFFER_LADDER_NOTE} {OFFER_LADDER_CASH_NOTE} {LADDER_SCORE_NOTE}</p>
+                <p className="text-xs text-slate-500">{SALE_RANGE_NOTE} {GRADE_RANGE_NOTE} {OFFER_LADDER_NOTE} {OFFER_LADDER_CASH_NOTE} {LADDER_SCORE_NOTE}</p>
                 <Lines lines={list.buys} places={places} calls={fit.byId} inventory={inventory} targets={targets} cashRooms={cashRooms} />
               </>
             )}

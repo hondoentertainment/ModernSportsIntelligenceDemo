@@ -3,7 +3,18 @@ import type { CardInventory, Sport, TargetWatchlist } from '../types';
 import { compsSnapshot } from '../lib/collector/deskNext';
 import { tableScore } from '../lib/collector/ladderScore';
 import { buyLadder, buyLadderCopy } from '../lib/collector/offerLadder';
-import { rangeSeatCopy, saleRange } from '../lib/collector/saleRange';
+import { gradeSplitCopy, rangeForSeat, rangeSeatCopy } from '../lib/collector/saleRange';
+import {
+  boughtLotShares,
+  buildLotDrafts,
+  expandLotNotes,
+  isLot,
+  lotCopy,
+  lotDraftIds,
+  lotLineLabel,
+  LOT_LIMIT,
+  type LotLine,
+} from '../lib/collector/tableLot';
 import {
   askVersusBookCopy,
   buildFloorBuyDraft,
@@ -48,6 +59,23 @@ function parsedAsk(raw: string): number | null {
   return Number.isFinite(value) && value >= 0 ? value : null;
 }
 
+function optionalAsk(raw: string): number | undefined {
+  const trimmed = raw.trim();
+  if (!trimmed) return undefined;
+  const value = Number(trimmed);
+  return Number.isFinite(value) ? value : undefined;
+}
+
+interface ExtraCard {
+  player: string;
+  detail: string;
+  sport: Sport;
+  cardId: string;
+  ask: string;
+}
+
+const EMPTY_EXTRA: ExtraCard = { player: '', detail: '', sport: 'Baseball', cardId: '', ask: '' };
+
 function medianMap(cards: CardInventory[]): Record<string, MarkRef> {
   const map: Record<string, MarkRef> = {};
   for (const card of cards) {
@@ -80,27 +108,47 @@ const ShowHagglePanel: React.FC<Props> = ({
   const [player, setPlayer] = useState('');
   const [detail, setDetail] = useState('');
   const [sport, setSport] = useState<Sport>('Baseball');
+  const [extras, setExtras] = useState<ExtraCard[]>([]);
+  const [cardAsk, setCardAsk] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const askUsd = parsedAsk(ask);
   const picked = cards.find(card => card.id === cardId);
-  const rooms = roomAsks(notes);
+  const rooms = roomAsks(expandLotNotes(notes));
+  const lotMode = extras.length > 0;
+  const draftLines: LotLine[] | undefined = lotMode
+    ? [
+      { player, detail, sport, cardId: cardId || undefined, askUsd: optionalAsk(cardAsk) },
+      ...extras.map((row) => ({
+        player: row.player,
+        detail: row.detail,
+        sport: row.sport,
+        cardId: row.cardId || undefined,
+        askUsd: optionalAsk(row.ask),
+      })),
+    ]
+    : undefined;
   const liveReference = picked
     ? { usd: marks[picked.id]?.usd ?? null, kind: marks[picked.id]?.kind ?? ('none' as const) }
     : referenceForNote(
       { id: 'draft', showId, dealer, table, askUsd: askUsd ?? 0, offerUsd: 0, result, player },
       { medianByCardId: marks, targets },
     );
-  const liveAsk = askUsd != null && (picked || player.trim())
+  const liveAsk = !lotMode && askUsd != null && (picked || player.trim())
     ? askVersusBookCopy(askUsd, liveReference, Boolean(picked))
     : null;
-  const liveRange = picked && askUsd != null && askUsd > 0
-    ? rangeSeatCopy(askUsd, saleRange(picked), 'This ask')
+  const seated = picked ? rangeForSeat(picked) : null;
+  const liveRange = !lotMode && picked && seated && askUsd != null && askUsd > 0
+    ? rangeSeatCopy(askUsd, seated, 'This ask')
     : null;
-  const liveLadder = picked ? buyLadderCopy(buyLadder(saleRange(picked))) : null;
-  const liveScore = picked
-    ? tableScore({ result, offerUsd: Number(offer), askUsd: askUsd ?? 0 }, buyLadder(saleRange(picked)))?.copy ?? null
+  const liveLadder = !lotMode && seated ? buyLadderCopy(buyLadder(seated)) : null;
+  const liveScore = !lotMode && seated
+    ? tableScore({ result, offerUsd: Number(offer), askUsd: askUsd ?? 0 }, buyLadder(seated))?.copy ?? null
+    : null;
+  const liveGrade = !lotMode && picked ? gradeSplitCopy(picked) : null;
+  const liveLot = lotMode
+    ? lotCopy({ askUsd: askUsd ?? 0, lines: draftLines })
     : null;
 
   const save = () => {
@@ -116,6 +164,7 @@ const ShowHagglePanel: React.FC<Props> = ({
       player,
       detail,
       sport,
+      lines: draftLines,
     });
     setNotes(saved.notes);
     setError(saved.error);
@@ -130,20 +179,56 @@ const ShowHagglePanel: React.FC<Props> = ({
       setPlayer('');
       setDetail('');
       setSport('Baseball');
+      setExtras([]);
+      setCardAsk('');
     }
+  };
+
+  const lineForCard = (
+    card: CardInventory | undefined,
+    askValue: number | undefined,
+    noteResult: HaggleResult = result,
+    paidUsd?: number | null,
+  ): { range: string | null; ladder: string | null; score: string | null; grade: string | null } => {
+    if (!card || askValue == null || !(askValue > 0)) {
+      return { range: null, ladder: null, score: null, grade: card ? gradeSplitCopy(card) : null };
+    }
+    const range = rangeForSeat(card);
+    const ladder = buyLadder(range);
+    const paid = noteResult === 'bought' ? paidUsd : null;
+    const scoreUsd = paid != null && paid > 0 ? paid : askValue;
+    return {
+      range: rangeSeatCopy(askValue, range, 'This ask'),
+      ladder: buyLadderCopy(ladder),
+      score: tableScore({
+        result: noteResult,
+        offerUsd: noteResult === 'bought' ? scoreUsd : 0,
+        askUsd: noteResult === 'bought' ? scoreUsd : askValue,
+      }, ladder)?.copy ?? null,
+      grade: gradeSplitCopy(card),
+    };
   };
 
   const fileNote = async (row: HaggleNote) => {
     if (!onFileBuy) return;
-    const draft = buildFloorBuyDraft({ note: row, showName, purchaseDate });
-    if (!draft) {
-      setFileError('Name the player and a paid price before filing.');
+    const drafts = isLot(row)
+      ? buildLotDrafts({ note: row, showName, purchaseDate })
+      : [buildFloorBuyDraft({ note: row, showName, purchaseDate })].filter((draft): draft is NonNullable<typeof draft> => draft != null);
+    if (!drafts || drafts.length === 0) {
+      setFileError(isLot(row)
+        ? 'Name a player and an ask on each card before filing this lot.'
+        : 'Name the player and a paid price before filing.');
+      return;
+    }
+    const pending = drafts.filter((draft) => !inventory.some((card) => card.id === draft.id));
+    if (pending.length === 0) {
+      setFileError(isLot(row) ? 'This lot is already in the collection.' : 'That buy is already in the collection.');
       return;
     }
     setPendingId(row.id);
     setFileError(null);
     try {
-      await onFileBuy(draft);
+      for (const draft of pending) await onFileBuy(draft);
     } catch {
       setFileError('Could not file that buy. The collection was not changed.');
     } finally {
@@ -166,19 +251,28 @@ const ShowHagglePanel: React.FC<Props> = ({
     if (!row.cardId || !(row.askUsd > 0)) return null;
     const card = cardFor(row.cardId);
     if (!card) return null;
-    return rangeSeatCopy(row.askUsd, saleRange(card), 'This ask');
+    if (isLot(row)) return null;
+    return rangeSeatCopy(row.askUsd, rangeForSeat(card), 'This ask');
   };
 
   const ladderFor = (row: HaggleNote): string | null => {
+    if (isLot(row)) return null;
     const card = cardFor(row.cardId);
     if (!card) return null;
-    return buyLadderCopy(buyLadder(saleRange(card)));
+    return buyLadderCopy(buyLadder(rangeForSeat(card)));
   };
 
   const scoreFor = (row: HaggleNote): string | null => {
+    if (isLot(row)) return null;
     const card = cardFor(row.cardId);
     if (!card) return null;
-    return tableScore(row, buyLadder(saleRange(card)))?.copy ?? null;
+    return tableScore(row, buyLadder(rangeForSeat(card)))?.copy ?? null;
+  };
+
+  const gradeFor = (row: HaggleNote): string | null => {
+    if (isLot(row)) return null;
+    const card = cardFor(row.cardId);
+    return card ? gradeSplitCopy(card) : null;
   };
 
   return (
@@ -194,11 +288,11 @@ const ShowHagglePanel: React.FC<Props> = ({
           <input value={table} onChange={event => setTable(event.target.value)} aria-label={`Table at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm" />
         </label>
         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-          Ask
+          {lotMode ? 'Lot ask' : 'Ask'}
           <input inputMode="decimal" value={ask} onChange={event => setAsk(event.target.value)} aria-label={`Ask at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm" />
         </label>
         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-          Offer
+          {lotMode ? 'Lot offer' : 'Offer'}
           <input inputMode="decimal" value={offer} onChange={event => setOffer(event.target.value)} aria-label={`Offer at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm" />
         </label>
         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -219,16 +313,81 @@ const ShowHagglePanel: React.FC<Props> = ({
       {cards.length > 0 && (
         <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
           Card for the ask
-          <select value={cardId} onChange={event => setCardId(event.target.value)} aria-label={`Card for the ask at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm">
+          <select value={cardId} onChange={event => {
+            const nextId = event.target.value;
+            setCardId(nextId);
+            const named = cards.find(card => card.id === nextId);
+            if (named && !player.trim()) setPlayer(named.player);
+          }} aria-label={`Card for the ask at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm">
             <option value="">No card</option>
             {cards.map(card => <option key={card.id} value={card.id}>{card.player}</option>)}
           </select>
         </label>
       )}
+      {lotMode ? (
+        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
+          Card ask
+          <input inputMode="decimal" value={cardAsk} onChange={event => setCardAsk(event.target.value)} aria-label={`Card ask for lot card 1 at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm" />
+        </label>
+      ) : null}
+      {extras.map((row, index) => (
+        <div key={`lot-${index}`} className="grid gap-2 rounded-lg border border-slate-800 p-3 sm:grid-cols-2" aria-label={`Lot card ${index + 2}`}>
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            Player
+            <input value={row.player} onChange={event => setExtras(current => current.map((item, itemIndex) => itemIndex === index ? { ...item, player: event.target.value } : item))} aria-label={`Player for lot card ${index + 2} at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm" />
+          </label>
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            Card ask
+            <input inputMode="decimal" value={row.ask} onChange={event => setExtras(current => current.map((item, itemIndex) => itemIndex === index ? { ...item, ask: event.target.value } : item))} aria-label={`Card ask for lot card ${index + 2} at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm" />
+          </label>
+          {cards.length > 0 ? (
+            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 sm:col-span-2">
+              Card in the book
+              <select value={row.cardId} onChange={event => {
+                const nextId = event.target.value;
+                const named = cards.find(card => card.id === nextId);
+                setExtras(current => current.map((item, itemIndex) => itemIndex === index ? {
+                  ...item,
+                  cardId: nextId,
+                  player: item.player.trim() || named?.player || '',
+                } : item));
+              }} aria-label={`Card for lot card ${index + 2} at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm">
+                <option value="">No card</option>
+                {cards.map(card => <option key={card.id} value={card.id}>{card.player}</option>)}
+              </select>
+            </label>
+          ) : null}
+          <button type="button" onClick={() => setExtras(current => current.filter((_, itemIndex) => itemIndex !== index))} className="min-h-[44px] rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100">
+            Remove lot card {index + 2}
+          </button>
+        </div>
+      ))}
+      {extras.length + 1 < LOT_LIMIT ? (
+        <button type="button" onClick={() => setExtras(current => [...current, EMPTY_EXTRA])} className="min-h-[44px] rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100">
+          Add a card to this lot
+        </button>
+      ) : null}
       {liveAsk ? <p className="text-xs text-slate-200" aria-label="Ask versus median">{liveAsk}</p> : null}
       {liveRange ? <p className="text-xs text-slate-200" aria-label="Ask versus sale range">{liveRange}</p> : null}
+      {liveGrade ? <p className="text-xs text-slate-200" aria-label="Grade split">{liveGrade}</p> : null}
       {liveLadder ? <p className="text-xs text-slate-200" aria-label="Offer ladder">{liveLadder}</p> : null}
       {liveScore ? <p className="text-xs text-slate-200" aria-label="Ladder score">{liveScore}</p> : null}
+      {liveLot ? <p className="text-xs text-slate-200" aria-label="Table lot">{liveLot}</p> : null}
+      {lotMode && draftLines ? (
+        <ul className="space-y-1" aria-label="Lot cards">
+          {draftLines.map((line, index) => {
+            const card = cardFor(line.cardId);
+            const preview = lineForCard(card, line.askUsd);
+            return (
+              <li key={`draft-${index}`} className="text-xs text-slate-300">
+                {lotLineLabel(line)}
+                {preview.range ? ` ${preview.range}` : ''}
+                {preview.grade ? ` ${preview.grade}` : ''}
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
       <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
         Result
         <select value={result} onChange={event => setResult(event.target.value as HaggleResult)} aria-label={`Result at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm">
@@ -262,13 +421,19 @@ const ShowHagglePanel: React.FC<Props> = ({
       ) : (
         <ul className="space-y-2">
           {notes.map(row => {
-            const versus = versusFor(row);
+            const versus = isLot(row) ? null : versusFor(row);
             const rangeCopy = rangeFor(row);
             const ladderCopy = ladderFor(row);
             const scoreCopy = scoreFor(row);
-            const filed = inventory.find(card => card.id === floorBuyId(row.id));
-            const draft = buildFloorBuyDraft({ note: row, showName, purchaseDate });
-            const revisit = isRevisit(row, referenceForNote(row, { medianByCardId: marks, targets }));
+            const gradeCopy = gradeFor(row);
+            const lotText = lotCopy(row);
+            const lotIds = isLot(row) ? lotDraftIds(row) : [];
+            const filed = isLot(row)
+              ? null
+              : inventory.find(card => card.id === floorBuyId(row.id));
+            const lotFiled = isLot(row) && lotIds.length > 0 && lotIds.every(id => inventory.some(card => card.id === id));
+            const draft = isLot(row) ? null : buildFloorBuyDraft({ note: row, showName, purchaseDate });
+            const revisit = !isLot(row) && isRevisit(row, referenceForNote(row, { medianByCardId: marks, targets }));
             const watched = followUps({
               notes: [row],
               shows: [{ id: showId, name: showName }],
@@ -283,14 +448,46 @@ const ShowHagglePanel: React.FC<Props> = ({
                   {row.player ? ` · ${row.player}` : ''}
                 </p>
                 {row.note ? <p className="text-xs text-slate-400">{row.note}</p> : null}
+                {lotText ? <p className="text-xs text-slate-200" aria-label={`Table lot for ${row.dealer} table ${row.table}`}>{lotText}</p> : null}
+                {isLot(row) ? (
+                  <ul className="mt-1 space-y-1" aria-label={`Lot cards for ${row.dealer} table ${row.table}`}>
+                    {(row.lines ?? []).map((line, index) => {
+                      const card = cardFor(line.cardId);
+                      const shares = boughtLotShares(row);
+                      const preview = lineForCard(card, line.askUsd, row.result, shares?.[index]);
+                      return (
+                        <li key={`${row.id}:${index}`} className="text-xs text-slate-300">
+                          {lotLineLabel(line)}
+                          {preview.range ? ` ${preview.range}` : ''}
+                          {preview.score ? ` ${preview.score}` : ''}
+                          {preview.grade ? ` ${preview.grade}` : ''}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : null}
                 {versus ? <p className="text-xs text-slate-300">{versus}</p> : null}
                 {rangeCopy ? <p className="text-xs text-slate-300">{rangeCopy}</p> : null}
+                {gradeCopy ? <p className="text-xs text-slate-300" aria-label={`Grade split for ${row.dealer} table ${row.table}`}>{gradeCopy}</p> : null}
                 {ladderCopy ? <p className="text-xs text-slate-300" aria-label={`Offer ladder for ${row.player || 'this card'}`}>{ladderCopy}</p> : null}
                 {scoreCopy ? <p className="text-xs text-slate-300" aria-label={`Ladder score for ${row.dealer} table ${row.table}`}>{scoreCopy}</p> : null}
+                {lotFiled ? (
+                  <p className="mt-2 text-[11px] text-emerald-300">This lot is in the collection.</p>
+                ) : null}
                 {filed ? (
                   <p className="mt-2 text-[11px] text-emerald-300">
                     {row.player} in the collection · cost basis ${filed.purchasePrice.toFixed(2)}
                   </p>
+                ) : null}
+                {onFileBuy && isLot(row) && row.result === 'bought' && !lotFiled ? (
+                  <button
+                    type="button"
+                    disabled={pendingId === row.id}
+                    onClick={() => { void fileNote(row); }}
+                    className="mt-2 min-h-[44px] rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-100 disabled:opacity-50"
+                  >
+                    {pendingId === row.id ? 'Filing…' : 'Add this lot to the collection'}
+                  </button>
                 ) : null}
                 {onFileBuy && draft && !filed ? (
                   <button
