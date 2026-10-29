@@ -14,6 +14,7 @@ describe('DeskNext floor week', () => {
       </MemoryRouter>,
     );
     expect(screen.getByText(/no dated floor notes this week/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Show haul this week')).toHaveTextContent(/no dated show buy this week/i);
     expect(screen.getByLabelText('Ladder this week')).toHaveTextContent(/no dated table note sits on a sale range this week/i);
     expect(screen.getByLabelText('Sell ladder')).toHaveTextContent(/Ask \$[\d,.]+, take \$[\d,.]+, pass under \$[\d,.]+ on demo sales/);
     expect(screen.getByLabelText('Ladder score')).toHaveTextContent(/Local mark \$100 is .+ on demo sales/);
@@ -48,6 +49,7 @@ describe('DeskNext floor week', () => {
       });
     });
     expect(screen.getByText(/1 bought note not in the book: Showclose Player/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Show haul this week')).toHaveTextContent(/1 show buy this week is still off the book/i);
     expect(screen.getByLabelText('Ladder this week')).toHaveTextContent(/no card in the book/i);
     act(() => {
       addHaggle({

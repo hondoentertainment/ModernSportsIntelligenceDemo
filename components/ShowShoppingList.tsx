@@ -28,6 +28,7 @@ import { SHOPPING_INGEST_DISCLOSURE } from '../lib/shows/showShoppingIngest';
 import { readCashBudget } from '../lib/shows/showTripLoop';
 import { ShoppingBuyFiles } from './ShoppingBuyFile';
 import ShowDayRecap from './ShowDayRecap';
+import ShowHaulPanel from './ShowHaulPanel';
 
 const ShowDayPanel = lazy(() => import('./DeskNext').then((mod) => ({ default: mod.ShowDayPanel })));
 
@@ -265,6 +266,7 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
           usd: line.targetBuyUsd,
         }))}
       />
+      <ShowHaulPanel showId={show.id} inventory={inventory} />
     </>
   );
 };
