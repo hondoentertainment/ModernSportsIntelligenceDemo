@@ -180,6 +180,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/collector/gradeAlert.ts',
         'lib/collector/lotPaste.ts',
         'lib/collector/showDayRecap.ts',
+        'lib/collector/showHaul.ts',
         'lib/authSessionNotice.ts',
         'lib/analytics/capitalGainsExit.ts',
         'lib/utils/syncProductDefaults.ts',
@@ -211,14 +212,14 @@ export default defineConfig(({ command, mode }) => {
       // values for v8 run-to-run stability; ratchet UP as tests are added,
       // never down. Branches lag (~91%) due to defensive branches,
       // import.meta / env splits, and optional chaining.
-      // Measured 98.84 / 94.16 / 99.28 / 99.53 after the show close
-      // (v8 is deterministic for this suite). Thresholds sit ~0.3-0.5pp under
+      // Measured 98.9 / 94.67 / 99.37 / 99.61 after the show haul
+      // (v8 is deterministic for this suite). Thresholds sit ~0.2-0.5pp under
       // that. Ratchet UP as tests are added, never down.
       thresholds: {
-        statements: 98.5,
-        branches: 93.7,
-        functions: 99.1,
-        lines: 99.3,
+        statements: 98.6,
+        branches: 94.2,
+        functions: 99.2,
+        lines: 99.4,
       },
       exclude: [
         '**/node_modules/**',

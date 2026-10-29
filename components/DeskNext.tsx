@@ -7,9 +7,11 @@ import {
   dayLeft,
   filterByPlace,
   markOf,
+  placesSnapshot,
   readChecked,
   readPlaces,
   setPlace,
+  subscribePlaces,
   tradeFairness,
   weeklyRecap,
   writeChecked,
@@ -22,6 +24,7 @@ import { SELL_LADDER_NOTE, sellLadder, sellLadderCopy } from '../lib/collector/o
 import { GRADE_RANGE_NOTE, gradeSplitCopy, rangeForSeat, rangeSeatCopy, SALE_RANGE_NOTE } from '../lib/collector/saleRange';
 import { TRADE_LADDER_NOTE, tradeLadder, tradeLadderCopy } from '../lib/collector/tradeLadder';
 import { unfiledCopy } from '../lib/collector/showClose';
+import { weekHaul } from '../lib/collector/showHaul';
 import { unfiledNotes } from '../lib/collector/tableLot';
 import { store } from '../lib/dal/syncStore';
 import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
@@ -257,11 +260,21 @@ function CardPlacePanel({ inventory }: { inventory: CardInventory[] }) {
 function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
   const recap = useMemo(() => weeklyRecap(inventory), [inventory]);
   const notes = useSyncExternalStore(subscribeHaggle, haggleSnapshot, haggleSnapshot);
+  const places = useSyncExternalStore(subscribePlaces, placesSnapshot, placesSnapshot);
   const floor = useMemo(() => floorWeek(notes), [notes]);
   const waiting = useMemo(() => unfiledNotes(notes, inventory), [notes, inventory]);
   const ladderCopy = useMemo(
     () => weekLadderCopy(weekLadder(notes, cardRanges(inventory))),
     [notes, inventory],
+  );
+  const haulCopy = useMemo(
+    () => weekHaul({
+      notes,
+      inventory,
+      places,
+      rangeForId: (id) => cardRanges(inventory)[id] ?? null,
+    }).copy,
+    [notes, inventory, places],
   );
   const floorCount = floor.bought + floor.passed + floor.open;
   return (
@@ -277,6 +290,7 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
           : `Floor notes this week: ${floor.bought} bought, ${floor.passed} passed, ${floor.open} open${floor.bought > 0 ? ` · typed spend ${usd(floor.typedSpendUsd)}` : ''}. Not a settlement.`}
       </p>
       <p className="mt-2 text-xs text-slate-300" aria-label="Ladder this week">{ladderCopy}</p>
+      <p className="mt-2 text-xs text-slate-300" aria-label="Show haul this week">{haulCopy}</p>
       <p className="mt-2 text-xs text-slate-300">{unfiledCopy(waiting)}</p>
       <Link to="/local-card-shows" className="inline-flex min-h-[44px] items-center text-xs text-brand-lime">Show desk</Link>
       {recap.movers.length === 0 ? <p className="mt-2 text-sm text-slate-400">No held cards.</p> : (
