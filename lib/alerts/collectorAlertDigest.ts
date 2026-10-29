@@ -16,6 +16,7 @@ import {
 import { compsSnapshot } from '../collector/deskNext';
 import { cardRanges, weekLadder, weekLadderCopy } from '../collector/ladderScore';
 import { buyLadder, buyLadderCopy } from '../collector/offerLadder';
+import { watchlistAlertMark } from '../collector/gradeAlert';
 import { rangeForSeat, targetRangeDesk, type RangeRow } from '../collector/saleRange';
 import { followUps, type FollowUp, type MarkRef } from '../collector/showClose';
 import { haggleSnapshot, type HaggleNote } from '../shows/showHaggleLog';
@@ -69,17 +70,17 @@ export function priceDropRows(targets: readonly TargetWatchlist[], minDrop = MIN
   const rows: Array<DigestRow & { drop: number }> = [];
   for (const target of targets) {
     if (target.status !== 'active') continue;
-    const market = target.currentMarketPrice;
     const ceiling = target.targetPrice;
-    if (typeof market !== 'number' || !Number.isFinite(market) || market <= 0) continue;
-    if (!Number.isFinite(ceiling) || ceiling <= 0 || market >= ceiling) continue;
-    const drop = (ceiling - market) / ceiling;
+    if (!Number.isFinite(ceiling) || ceiling <= 0) continue;
+    const mark = watchlistAlertMark(target);
+    if (!mark || mark.usd >= ceiling) continue;
+    const drop = (ceiling - mark.usd) / ceiling;
     if (drop + 1e-9 < minDrop) continue;
     const player = target.player.trim() || 'Watchlist card';
     rows.push({
       id: `drop:${target.id}`,
       title: `${player} under target`,
-      detail: `Local mark ${money(market)} is ${pctLabel(drop)} under your ${money(ceiling)} target. ${target.cardDescription?.trim() || 'Watchlist row'}.`,
+      detail: `${mark.label} ${money(mark.usd)} is ${pctLabel(drop)} under your ${money(ceiling)} target. ${target.cardDescription?.trim() || 'Watchlist row'}.`,
       href: '/collection',
       drop,
     });

@@ -27,6 +27,7 @@ import { store } from '../lib/dal/syncStore';
 import { SHOPPING_INGEST_DISCLOSURE } from '../lib/shows/showShoppingIngest';
 import { readCashBudget } from '../lib/shows/showTripLoop';
 import { ShoppingBuyFiles } from './ShoppingBuyFile';
+import ShowDayRecap from './ShowDayRecap';
 
 const ShowDayPanel = lazy(() => import('./DeskNext').then((mod) => ({ default: mod.ShowDayPanel })));
 
@@ -254,6 +255,16 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
           }))}
         />
       </Suspense>
+      <ShowDayRecap
+        showId={show.id}
+        inventory={inventory}
+        lines={[...list.buys, ...list.sells].map((line) => ({
+          id: line.id,
+          side: line.side,
+          player: line.player,
+          usd: line.targetBuyUsd,
+        }))}
+      />
     </>
   );
 };

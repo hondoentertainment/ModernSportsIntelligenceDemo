@@ -8,6 +8,7 @@ import {
   loadCollectorAlertDigest,
   type DigestRow,
 } from '../lib/alerts/collectorAlertDigest';
+import { GRADE_ALERT_NOTE } from '../lib/collector/gradeAlert';
 import { OFFER_LADDER_NOTE } from '../lib/collector/offerLadder';
 import { GRADE_RANGE_NOTE, SALE_RANGE_BLURB } from '../lib/collector/saleRange';
 import type { FollowUp } from '../lib/collector/showClose';
@@ -90,6 +91,7 @@ const CollectorAlertDigest: React.FC<Props> = ({ inventory = [], targets, onWatc
       <h2 className="text-sm font-black uppercase tracking-widest text-white">Watchlist and show digest</h2>
       <p className="mt-2 text-xs leading-relaxed text-slate-400">{ALERT_DIGEST_DISCLOSURE}</p>
       <h3 className="mt-4 text-xs font-black uppercase tracking-widest text-emerald-200">Price drops</h3>
+      <p className="mt-1 text-xs leading-relaxed text-slate-500">{GRADE_ALERT_NOTE}</p>
       {digest.drops.length === 0
         ? <p className="mt-1 text-sm text-slate-400">No watchlist mark is 5% or more under your target.</p>
         : <Rows rows={digest.drops} />}

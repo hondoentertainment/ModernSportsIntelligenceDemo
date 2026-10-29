@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import type { CardInventory, Sport, TargetWatchlist } from '../types';
-import { compsSnapshot } from '../lib/collector/deskNext';
-import { tableScore } from '../lib/collector/ladderScore';
+import { compsSnapshot, markOf } from '../lib/collector/deskNext';
+import { cardRanges, tableScore } from '../lib/collector/ladderScore';
+import { COUNTER_OFFER_NOTE, counterOffer } from '../lib/collector/counterOffer';
+import { DEALER_HISTORY_NOTE, dealerHistory, dealerRowCopy } from '../lib/collector/dealerHistory';
 import { buyLadder, buyLadderCopy } from '../lib/collector/offerLadder';
 import { gradeSplitCopy, rangeForSeat, rangeSeatCopy } from '../lib/collector/saleRange';
 import {
@@ -30,11 +32,13 @@ import type { HoleTarget } from '../lib/collector/floorPack';
 import {
   HAGGLE_DISCLOSURE,
   addHaggle,
+  haggleSnapshot,
   readHaggle,
   removeHaggle,
   type HaggleNote,
   type HaggleResult,
 } from '../lib/shows/showHaggleLog';
+import LotPastePanel from './LotPastePanel';
 
 interface Props {
   showId: string;
@@ -149,6 +153,22 @@ const ShowHagglePanel: React.FC<Props> = ({
   const liveGrade = !lotMode && picked ? gradeSplitCopy(picked) : null;
   const liveLot = lotMode
     ? lotCopy({ askUsd: askUsd ?? 0, lines: draftLines })
+    : null;
+  const history = dealerHistory(haggleSnapshot(), cardRanges(inventory));
+  const counterHeld = cards.map((card) => ({
+    id: card.id,
+    player: card.player,
+    usd: markOf(card),
+    range: rangeForSeat(card),
+  }));
+  const liveCounter = !lotMode && picked && seated && askUsd != null && askUsd > 0
+    ? counterOffer({
+      askUsd,
+      player: picked.player,
+      receiveId: picked.id,
+      range: seated,
+      held: counterHeld,
+    })
     : null;
 
   const save = () => {
@@ -275,6 +295,19 @@ const ShowHagglePanel: React.FC<Props> = ({
     return card ? gradeSplitCopy(card) : null;
   };
 
+  const counterFor = (row: HaggleNote): string | null => {
+    if (isLot(row) || !(row.askUsd > 0)) return null;
+    const card = cardFor(row.cardId);
+    if (!card) return null;
+    return counterOffer({
+      askUsd: row.askUsd,
+      player: card.player,
+      receiveId: card.id,
+      range: rangeForSeat(card),
+      held: counterHeld,
+    })?.copy ?? null;
+  };
+
   return (
     <div className="mt-4 space-y-3" role="tabpanel" aria-label={`Table notes for ${showName}`}>
       <p className="text-[11px] leading-relaxed text-slate-400">{HAGGLE_DISCLOSURE}</p>
@@ -373,6 +406,12 @@ const ShowHagglePanel: React.FC<Props> = ({
       {liveLadder ? <p className="text-xs text-slate-200" aria-label="Offer ladder">{liveLadder}</p> : null}
       {liveScore ? <p className="text-xs text-slate-200" aria-label="Ladder score">{liveScore}</p> : null}
       {liveLot ? <p className="text-xs text-slate-200" aria-label="Table lot">{liveLot}</p> : null}
+      {liveCounter ? (
+        <>
+          <p className="text-[11px] leading-relaxed text-slate-500">{COUNTER_OFFER_NOTE}</p>
+          <p className="text-xs text-slate-200" aria-label="Counter offer">{liveCounter.copy}</p>
+        </>
+      ) : null}
       {lotMode && draftLines ? (
         <ul className="space-y-1" aria-label="Lot cards">
           {draftLines.map((line, index) => {
@@ -415,6 +454,23 @@ const ShowHagglePanel: React.FC<Props> = ({
           </ul>
         )}
       </div>
+      <LotPastePanel inventory={inventory} targets={targets} />
+      <section aria-label="Dealer history">
+        <h3 className="text-xs font-black uppercase tracking-widest text-white">Dealer history</h3>
+        <p className="mt-1 text-[11px] leading-relaxed text-slate-400">{DEALER_HISTORY_NOTE}</p>
+        {history.length === 0 ? (
+          <p className="mt-2 text-sm text-slate-400">No dealer notes on this browser yet.</p>
+        ) : (
+          <ul className="mt-2 space-y-1">
+            {history.slice(0, 8).map((row) => (
+              <li key={row.key} className="text-xs text-slate-200">{dealerRowCopy(row)}</li>
+            ))}
+          </ul>
+        )}
+        {history.length > 8 ? (
+          <p className="mt-1 text-xs text-slate-500">{history.length - 8} more dealers stay off this list.</p>
+        ) : null}
+      </section>
       {fileError && <p className="text-[11px] text-rose-300" role="alert">{fileError}</p>}
       {notes.length === 0 ? (
         <p className="text-sm text-slate-400">No table notes for this show yet.</p>
@@ -426,6 +482,7 @@ const ShowHagglePanel: React.FC<Props> = ({
             const ladderCopy = ladderFor(row);
             const scoreCopy = scoreFor(row);
             const gradeCopy = gradeFor(row);
+            const counterCopy = counterFor(row);
             const lotText = lotCopy(row);
             const lotIds = isLot(row) ? lotDraftIds(row) : [];
             const filed = isLot(row)
@@ -471,6 +528,7 @@ const ShowHagglePanel: React.FC<Props> = ({
                 {gradeCopy ? <p className="text-xs text-slate-300" aria-label={`Grade split for ${row.dealer} table ${row.table}`}>{gradeCopy}</p> : null}
                 {ladderCopy ? <p className="text-xs text-slate-300" aria-label={`Offer ladder for ${row.player || 'this card'}`}>{ladderCopy}</p> : null}
                 {scoreCopy ? <p className="text-xs text-slate-300" aria-label={`Ladder score for ${row.dealer} table ${row.table}`}>{scoreCopy}</p> : null}
+                {counterCopy ? <p className="text-xs text-slate-300" aria-label={`Counter offer for ${row.dealer} table ${row.table}`}>{counterCopy}</p> : null}
                 {lotFiled ? (
                   <p className="mt-2 text-[11px] text-emerald-300">This lot is in the collection.</p>
                 ) : null}

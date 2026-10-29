@@ -7,7 +7,7 @@ import { store } from '../dal/syncStore';
 
 export const DESK_NOTE = 'Demo local book. Not a live tape.';
 
-const DAY_KEY = 'msi_show_day_v1';
+export const DAY_KEY = 'msi_show_day_v1';
 const PLACE_KEY = 'msi_card_place_v1';
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
