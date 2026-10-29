@@ -96,12 +96,12 @@ test.describe('Collector desk tools', () => {
     await notes.getByLabel(/result at/i).selectOption('bought');
     await notes.getByLabel(/note at/i).fill('Moved off 80');
     await notes.getByRole('button', { name: 'Add table note' }).click();
-    await expect(notes.getByText('Rivera Cards · table 12')).toBeVisible();
+    await expect(notes.getByText('Rivera Cards · table 12', { exact: true })).toBeVisible();
     await expect(notes.getByText('Ask $80.00 · offer $65.00 · bought')).toBeVisible();
 
     await page.reload();
     await page.getByRole('tab', { name: 'Table notes' }).click();
-    await expect(page.getByRole('tabpanel', { name: /table notes for/i }).getByText('Rivera Cards · table 12')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole('tabpanel', { name: /table notes for/i }).getByText('Rivera Cards · table 12', { exact: true })).toBeVisible({ timeout: 20_000 });
   });
 
   test('charts the book, names a grading submit, and round-trips CSV', async ({ page }) => {
@@ -233,6 +233,44 @@ test.describe('Collector desk tools', () => {
     await expect(notes.getByLabel('Table lot')).toContainText(/not one card's sale/i);
     await notes.getByRole('button', { name: 'Add table note' }).click();
     await expect(notes.getByLabel(/Table lot for Rivera table/i)).toContainText(/2 cards in this lot/);
+  });
+
+  test('recaps the show, counters an ask over the walk, and prices a pasted lot', async ({ page }) => {
+    test.setTimeout(120_000);
+    await enterDemoMode(page);
+    await seedBook(page);
+    await page.reload();
+    await page.goto('/#/local-card-shows');
+    const line = page.getByRole('checkbox', { name: 'buy Jayson Tatum' }).first();
+    await expect(line).toBeVisible({ timeout: 20_000 });
+    const show = line.locator('xpath=ancestor::li[contains(@class,"rounded-2xl")]').first();
+    const recap = show.getByRole('region', { name: 'Show-day recap' });
+    await expect(recap).toContainText(/Bought 0 for \$0/);
+    await expect(recap).toContainText(/Jayson Tatum buy/);
+    await expect(recap).toContainText(/not a settlement and not a live tape/i);
+
+    const plan = show.getByRole('button', { name: /plan trip, floor, and recap/i });
+    if (await plan.isVisible()) await plan.click();
+    await show.getByRole('tab', { name: 'Table notes' }).click();
+    const notes = show.getByRole('tabpanel', { name: /table notes for/i });
+    await notes.getByLabel(/dealer at/i).fill('Rivera');
+    await notes.getByLabel(/table at/i).fill('12');
+    await notes.getByLabel(/^Ask at /i).fill('200');
+    await notes.getByLabel(/offer at/i).fill('50');
+    await notes.getByLabel(/result at/i).selectOption('bought');
+    await notes.getByLabel(/card for the ask/i).selectOption('split-card');
+    await expect(notes.getByLabel('Counter offer')).toContainText(/Split the difference at \$130/);
+    await expect(notes.getByLabel('Counter offer')).toContainText(/Aaron Judge/);
+    await expect(notes.getByLabel('Counter offer')).toContainText(/you short/);
+    await notes.getByRole('button', { name: 'Add table note' }).click();
+    await expect(notes.getByLabel('Dealer history')).toContainText(/Rivera · table 12/);
+    await expect(notes.getByLabel('Dealer history')).toContainText(/Steep on this book/);
+    await notes.getByLabel('Lot list').fill('Aaron Judge, $40\nNobody Special, $10');
+    await expect(notes.getByLabel('Lot total')).toContainText(/Total offer/);
+    await expect(notes.getByLabel('Lot ladders')).toContainText(/Nobody Special stays off the ladder/);
+    await expect(notes.getByLabel('Lot total')).toContainText(/not one card's sale/i);
+    await expect(recap).toContainText(/Bought 1 for \$50/);
+    await expect(recap).toContainText(/Split Grade/);
   });
 
   test('opens a read-only want-list link with no server copy', async ({ page }) => {

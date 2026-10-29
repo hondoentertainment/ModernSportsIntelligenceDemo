@@ -134,6 +134,10 @@ Already known; do not invent Labs pages.
 
 ---
 
+## 6j. Eng-safe depth — 2026-10-29
+
+Checked against `main` @ `75b3cb2` (#196). Still owner-held: #77, including file-only `00011` and `00013` (agents must not apply them). Grade split and table lots are #196. The trade ladder is #195. The ladder score is #194. Dependabot #192 and #193 are on `main`. This change totals bought and sold at the seeded show against each card's range and names what is left on the shopping list. An ask over the walk gets a split and a trade-plus-cash scored on the trade balancer. Dealer and table history shows whether quoted asks sat at or under the walk. A watchlist target that names a grade alerts on that grade's sold-comps median. A pasted lot lists each card's ladder and a total of the fairs. A missing grade does not use the mixed mark. A demo sketch is not split. No live flags, no applied migration, gzip cap stays 3,350,000.
+
 ## 6i. Eng-safe depth — 2026-10-28 (grade split and table lots)
 
 Checked against `main` @ `faaf5a2` (#195). Still owner-held: #77, including file-only `00011` and `00013` (agents must not apply them). The trade ladder is #195. The ladder score is #194. Dependabot #192 and #193 are on `main`. This change splits stored sales by the grade named on the title or condition. A raw card, a slab, or a watchlist line that names a grade uses that band when it is not the whole tape. A missing grade stays on the mixed range. A demo sketch is not split. A lot of up to six cards stays on one table note. Each card's ask sits on that card's range. The lot price is not one card's sale. A bought lot files each card, and the paid price is split by those asks. A card with no ask stays off the book. No live flags, no applied migration, gzip cap stays 3,350,000.
