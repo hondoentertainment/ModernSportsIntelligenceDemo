@@ -100,4 +100,29 @@ describe('showHaggleLog', () => {
     }).error).toMatch(/ask/i);
     expect(readHaggle('nyc')).toHaveLength(0);
   });
+
+  it('requires one held card and a price before a sale', () => {
+    expect(addHaggle({
+      showId: 'nyc', dealer: 'Ace', table: '1', askUsd: 0, offerUsd: 0, result: 'sold', note: '', cardId: 'judge',
+    }).error).toMatch(/price you took/i);
+    expect(addHaggle({
+      showId: 'nyc', dealer: 'Ace', table: '1', askUsd: 20, offerUsd: 0, result: 'sold', note: '',
+    }).error).toMatch(/card you hold/i);
+    expect(addHaggle({
+      showId: 'nyc',
+      dealer: 'Ace',
+      table: '1',
+      askUsd: 40,
+      offerUsd: 30,
+      result: 'sold',
+      note: '',
+      cardId: 'judge',
+      lines: [{ player: 'One', askUsd: 10 }, { player: 'Two', askUsd: 20 }],
+    }).error).toMatch(/lot stays a buy/i);
+    const saved = addHaggle({
+      showId: 'nyc', dealer: 'Ace', table: '1', askUsd: 0, offerUsd: 30, result: 'sold', note: '', cardId: 'judge',
+    });
+    expect(saved.error).toBeNull();
+    expect(saved.notes[0]).toMatchObject({ result: 'sold', offerUsd: 30, cardId: 'judge' });
+  });
 });

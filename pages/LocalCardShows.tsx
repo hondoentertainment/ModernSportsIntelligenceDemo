@@ -288,6 +288,7 @@ const LocalCardShows: React.FC = () => {
                   disclose={index === 0}
                   cashUsd={readCashBudget(row.show.id) ?? tripNeed}
                   onFileBuy={addCard}
+                  onRecordSale={updateCard}
                 />
               </Suspense>
               <p className="mt-3 text-[11px] text-slate-400">

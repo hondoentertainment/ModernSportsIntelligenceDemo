@@ -173,7 +173,9 @@ describe('show haul', () => {
     expect(haul.copy).toMatch(/Haul: 8 cards/);
     expect(haul.copy).toMatch(/2 beat the fair, 1 is up to the walk, and 1 is over the walk/);
     expect(haul.copy).toMatch(/4 prices stay off the ladder/);
-    expect(haul.copy).toMatch(/5 are in the book/);
+    expect(haul.closed).toBe(1);
+    expect(haul.copy).toMatch(/4 are still held at a local mark of \$105 \(unrealized -\$68\)/);
+    expect(haul.copy).toMatch(/1 is sold/);
     expect(haul.copy).toMatch(/unrealized -\$/);
     expect(haul.copy).toMatch(/3 are still off the book/);
     expect(haul.copy).toMatch(/2 filed cards have no binder/);
@@ -184,7 +186,9 @@ describe('show haul', () => {
     expect(haulRowCopy(byPlayer.Walk)).toMatch(/up to the walk on sold comps/);
     expect(haulRowCopy(byPlayer.Walk)).toMatch(/box/);
     expect(haulRowCopy(byPlayer.Over)).toMatch(/over the walk on PSA 10 sold comps \(walk \$120\)/);
-    expect(haulRowCopy(byPlayer.Over)).toMatch(/slab case/);
+    expect(haulRowCopy(byPlayer.Over)).toMatch(/sold, no sale price on the book/);
+    expect(byPlayer.Over.closed).toBe(true);
+    expect(byPlayer.Over.place).toBe('slab');
     expect(haulRowCopy(byPlayer.Demo)).toMatch(/on demo ladder/);
     expect(haulRowCopy(byPlayer.Demo)).toMatch(/no place/);
     expect(haulRowCopy(byPlayer.Empty)).toMatch(/no ladder · still off the book/);
@@ -471,5 +475,131 @@ describe('show haul', () => {
       rangeForId: () => null,
     });
     expect(live.copy).toMatch(/1 show buy this week is still off the book/);
+  });
+
+  it('follows a sold copy into realized and leaves it off the shelf', () => {
+    const sold = card({
+      id: 'floor:sold',
+      player: 'Sold',
+      status: 'sold',
+      purchasePrice: 40,
+      gradingFees: 10,
+      shippingFees: -2,
+      insuranceFees: Number.NaN,
+      salePrice: 100,
+      currentValue: 10,
+    });
+    const haul = showHaul({
+      notes: [
+        note({ id: 'sold', player: 'Sold', offerUsd: 40, cardId: 'sold' }),
+        note({ id: 'held', player: 'Held', offerUsd: 20, cardId: 'held' }),
+        note({ id: 'bare', player: 'Bare', offerUsd: 15, cardId: 'bare' }),
+        note({ id: 'off', player: 'Off', offerUsd: 8 }),
+      ],
+      inventory: [
+        sold,
+        card({ id: 'floor:held', player: 'Held', currentValue: 30, purchasePrice: 20 }),
+        card({
+          id: 'floor:bare',
+          player: 'Bare',
+          status: 'sold',
+          purchasePrice: undefined,
+          salePrice: 50,
+          currentValue: 50,
+        }),
+        card({ id: 'floor:zero', player: 'Zero', status: 'sold', salePrice: 0, purchasePrice: 5 }),
+      ],
+      places: { 'floor:held': 'binder' },
+      rangeForId: () => null,
+    });
+    const byPlayer = Object.fromEntries(haul.rows.map((row) => [row.player, row]));
+    expect(byPlayer.Sold).toMatchObject({ closed: true, saleUsd: 100, realizedUsd: 46, markUsd: null });
+    expect(haulRowCopy(byPlayer.Sold)).toMatch(/sold at \$100 · realized \$46 after the card-show fee/);
+    expect(byPlayer.Bare).toMatchObject({ closed: true, saleUsd: 50, realizedUsd: null });
+    expect(haulRowCopy(byPlayer.Bare)).toMatch(/sold at \$50 · no cost basis/);
+    expect(haul.closed).toBe(2);
+    expect(haul.realizedRows).toBe(1);
+    expect(haul.realizedUsd).toBe(46);
+    expect(haul.saleUsd).toBe(150);
+    expect(haul.copy).toMatch(/1 is still held at a local mark of \$30 \(unrealized \$10\)/);
+    expect(haul.copy).toMatch(/2 are sold/);
+    expect(haul.copy).toMatch(/1 is still off the book/);
+    expect(haul.copy).toMatch(/Every card still held has a binder, box, or slab/);
+    expect(haulPlaceIds(haul)).toEqual([]);
+
+    const onlySold = showHaul({
+      notes: [note({ id: 'sold', player: 'Sold', offerUsd: 40 })],
+      inventory: [card({ id: 'floor:sold', player: 'Sold', status: 'sold', salePrice: 0, purchasePrice: 40 })],
+      places: {},
+      rangeForId: () => null,
+    });
+    expect(onlySold.copy).toMatch(/None of these buys are still held/);
+    expect(onlySold.copy).toMatch(/1 is sold/);
+    expect(onlySold.copy).not.toMatch(/binder/);
+    expect(haulRowCopy(onlySold.rows[0])).toMatch(/sold, no sale price on the book/);
+
+    const week = weekHaul({
+      notes: [
+        note({ id: 'sold', player: 'Sold', offerUsd: 40, savedAt: new Date(NOW).toISOString(), cardId: 'sold' }),
+        note({ id: 'sold-b', player: 'Other', offerUsd: 10, savedAt: new Date(NOW).toISOString(), cardId: 'other' }),
+        note({ id: 'held', player: 'Held', offerUsd: 20, savedAt: new Date(NOW).toISOString(), cardId: 'held' }),
+        note({ id: 'held-b', player: 'Kept', offerUsd: 12, savedAt: new Date(NOW).toISOString(), cardId: 'kept' }),
+        note({ id: 'off', player: 'Off', offerUsd: 8, savedAt: new Date(NOW).toISOString() }),
+        note({ id: 'loose', player: 'Loose', offerUsd: 3, savedAt: new Date(NOW).toISOString() }),
+      ],
+      inventory: [
+        sold,
+        card({ id: 'floor:sold-b', player: 'Other', status: 'sold', purchasePrice: undefined, salePrice: 20 }),
+        card({ id: 'floor:held', player: 'Held', currentValue: 30, purchasePrice: 20 }),
+        card({ id: 'floor:held-b', player: 'Kept', currentValue: 12, purchasePrice: 12 }),
+      ],
+      places: { 'floor:held': 'box' },
+      rangeForId: () => null,
+      now: NOW,
+    });
+    expect(week.copy).toMatch(/2 cards sold, paid \$50/);
+    expect(week.copy).toMatch(/Realized \$46 after the card-show fee/);
+    expect(week.copy).toMatch(/2 cards are still held/);
+    expect(week.copy).toMatch(/2 are still off the book/);
+
+    const oneWaiting = weekHaul({
+      notes: [
+        note({ id: 'sold', player: 'Sold', offerUsd: 40, savedAt: new Date(NOW).toISOString() }),
+        note({ id: 'off', player: 'Off', offerUsd: 8, savedAt: new Date(NOW).toISOString() }),
+      ],
+      inventory: [card({ id: 'floor:sold', player: 'Sold', status: 'sold', salePrice: undefined, purchasePrice: 40 })],
+      places: {},
+      rangeForId: () => null,
+      now: NOW,
+    });
+    expect(oneWaiting.copy).toMatch(/No sold copy has a sale price and a cost/);
+    expect(oneWaiting.copy).toMatch(/1 is still off the book/);
+    expect(oneWaiting.copy).not.toMatch(/still held/);
+
+    const booked = weekHaul({
+      notes: [note({ id: 'sold', player: 'Sold', offerUsd: 40, savedAt: new Date(NOW).toISOString() })],
+      inventory: [sold],
+      places: {},
+      rangeForId: () => null,
+      now: NOW,
+    });
+    expect(booked.copy).toMatch(/1 card sold, paid \$40/);
+    expect(booked.copy).not.toMatch(/off the book/);
+    expect(booked.copy).not.toMatch(/still held/);
+
+    const oneHeld = weekHaul({
+      notes: [
+        note({ id: 'sold', player: 'Sold', offerUsd: 40, savedAt: new Date(NOW).toISOString() }),
+        note({ id: 'held', player: 'Held', offerUsd: 20, savedAt: new Date(NOW).toISOString() }),
+      ],
+      inventory: [
+        sold,
+        card({ id: 'floor:held', player: 'Held', currentValue: 30, purchasePrice: 20 }),
+      ],
+      places: {},
+      rangeForId: () => null,
+      now: NOW,
+    });
+    expect(oneHeld.copy).toMatch(/1 card is still held/);
   });
 });

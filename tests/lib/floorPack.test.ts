@@ -156,7 +156,11 @@ describe('floor pack', () => {
       { result: 'later', askUsd: 9, offerUsd: 9, savedAt: 'not-a-date' },
       { result: 'later', askUsd: 9, offerUsd: 9, savedAt: '2026-10-14T00:00:00Z' },
     ], now);
-    expect(week).toEqual({ bought: 4, passed: 1, open: 1, typedSpendUsd: 17 });
-    expect(floorWeek([], now)).toEqual({ bought: 0, passed: 0, open: 0, typedSpendUsd: 0 });
+    expect(week).toEqual({ bought: 4, passed: 1, open: 1, sold: 0, typedSpendUsd: 17 });
+    expect(floorWeek([
+      { result: 'sold', askUsd: 50, offerUsd: 40, savedAt: '2026-10-14T00:00:00Z' },
+      { result: 'sold', askUsd: 50, offerUsd: 40, savedAt: '2026-10-01T00:00:00Z' },
+    ], now)).toEqual({ bought: 0, passed: 0, open: 0, sold: 1, typedSpendUsd: 0 });
+    expect(floorWeek([], now)).toEqual({ bought: 0, passed: 0, open: 0, sold: 0, typedSpendUsd: 0 });
   });
 });

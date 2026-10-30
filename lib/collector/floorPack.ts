@@ -35,6 +35,7 @@ export interface FloorWeek {
   bought: number;
   passed: number;
   open: number;
+  sold: number;
   typedSpendUsd: number;
 }
 
@@ -158,6 +159,7 @@ export function floorWeek(notes: readonly FloorNote[], now = Date.now()): FloorW
   let bought = 0;
   let passed = 0;
   let open = 0;
+  let sold = 0;
   let spend = 0;
   for (const note of notes) {
     const saved = Date.parse(note.savedAt ?? '');
@@ -170,7 +172,9 @@ export function floorWeek(notes: readonly FloorNote[], now = Date.now()): FloorW
       passed += 1;
     } else if (note.result === 'open') {
       open += 1;
+    } else if (note.result === 'sold') {
+      sold += 1;
     }
   }
-  return { bought, passed, open, typedSpendUsd: roundUsd(spend) };
+  return { bought, passed, open, sold, typedSpendUsd: roundUsd(spend) };
 }

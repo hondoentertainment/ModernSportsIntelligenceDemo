@@ -11,7 +11,7 @@ import { isLot } from './tableLot';
 import { paidOnNote } from './showClose';
 
 export const DEALER_HISTORY_NOTE =
-  'Prices you typed for each dealer and table on this browser. Fair means more of the scored asks sat at or under that card\'s walk than over it. A note with no card in the book stays off the score. Not a dealer rating and not a live tape.';
+  'Prices you typed for each dealer and table on this browser. Fair means more of the scored asks sat at or under that card\'s walk than over it. A note with no card in the book stays off the score. A sold note is a price you took, so it stays off that score. Not a dealer rating and not a live tape.';
 
 export type DealerCall = 'fair' | 'steep' | 'even' | 'unscored';
 
@@ -33,6 +33,7 @@ export interface DealerRow {
   bought: number;
   passed: number;
   open: number;
+  sold: number;
   paidUsd: number;
   quotedUsd: number;
   overWalk: number;
@@ -98,6 +99,7 @@ export function dealerHistory(
         bought: 0,
         passed: 0,
         open: 0,
+        sold: 0,
         paidUsd: 0,
         quotedUsd: 0,
         overWalk: 0,
@@ -108,6 +110,10 @@ export function dealerHistory(
       groups.set(key, row);
     }
     row.count += 1;
+    if (note.result === 'sold') {
+      row.sold += 1;
+      continue;
+    }
     if (note.result === 'bought') row.bought += 1;
     else if (note.result === 'passed') row.passed += 1;
     else if (note.result === 'open') row.open += 1;
@@ -138,7 +144,7 @@ function noun(count: number, singular: string, plural: string): string {
 }
 
 export function dealerRowCopy(row: DealerRow): string {
-  const results = `${row.bought} bought, ${row.passed} passed, ${row.open} open`;
+  const results = `${row.bought} bought, ${row.passed} passed, ${row.open} open${row.sold > 0 ? `, ${row.sold} sold` : ''}`;
   let fair = 'No ask on this dealer sits on a card in the book.';
   if (row.call === 'fair') {
     fair = `${noun(row.atOrUnder, 'ask sits', 'asks sit')} at or under the walk, ${row.overWalk} over. Fair on this book.`;

@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import type { CardInventory, Sport, TargetWatchlist } from '../types';
 import { compsSnapshot, markOf } from '../lib/collector/deskNext';
-import { cardRanges, tableScore } from '../lib/collector/ladderScore';
+import { cardRanges, sellScoreCopy, tableScore } from '../lib/collector/ladderScore';
 import { COUNTER_OFFER_NOTE, counterOffer } from '../lib/collector/counterOffer';
 import { DEALER_HISTORY_NOTE, dealerHistory, dealerRowCopy } from '../lib/collector/dealerHistory';
-import { buyLadder, buyLadderCopy } from '../lib/collector/offerLadder';
+import { buyLadder, buyLadderCopy, sellLadder, sellLadderCopy } from '../lib/collector/offerLadder';
+import { takenOnNote } from '../lib/collector/showExit';
 import { gradeSplitCopy, rangeForSeat, rangeSeatCopy } from '../lib/collector/saleRange';
 import {
   boughtLotShares,
@@ -139,16 +140,23 @@ const ShowHagglePanel: React.FC<Props> = ({
       { id: 'draft', showId, dealer, table, askUsd: askUsd ?? 0, offerUsd: 0, result, player },
       { medianByCardId: marks, targets },
     );
-  const liveAsk = !lotMode && askUsd != null && (picked || player.trim())
+  const offerUsd = Number(offer);
+  const takenUsd = Number.isFinite(offerUsd) && offerUsd > 0 ? offerUsd : askUsd != null && askUsd > 0 ? askUsd : null;
+  const selling = result === 'sold' && !lotMode;
+  const liveAsk = !selling && !lotMode && askUsd != null && (picked || player.trim())
     ? askVersusBookCopy(askUsd, liveReference, Boolean(picked))
     : null;
   const seated = picked ? rangeForSeat(picked) : null;
-  const liveRange = !lotMode && picked && seated && askUsd != null && askUsd > 0
-    ? rangeSeatCopy(askUsd, seated, 'This ask')
+  const liveRange = !lotMode && picked && seated && (selling ? takenUsd != null : askUsd != null && askUsd > 0)
+    ? rangeSeatCopy(selling ? takenUsd ?? 0 : askUsd ?? 0, seated, selling ? 'Taken' : 'This ask')
     : null;
-  const liveLadder = !lotMode && seated ? buyLadderCopy(buyLadder(seated)) : null;
+  const liveLadder = !lotMode && seated
+    ? selling ? sellLadderCopy(sellLadder(seated)) : buyLadderCopy(buyLadder(seated))
+    : null;
   const liveScore = !lotMode && seated
-    ? tableScore({ result, offerUsd: Number(offer), askUsd: askUsd ?? 0 }, buyLadder(seated))?.copy ?? null
+    ? selling
+      ? sellScoreCopy(takenUsd, sellLadder(seated), 'Taken')
+      : tableScore({ result, offerUsd, askUsd: askUsd ?? 0 }, buyLadder(seated))?.copy ?? null
     : null;
   const liveGrade = !lotMode && picked ? gradeSplitCopy(picked) : null;
   const liveLot = lotMode
@@ -161,7 +169,7 @@ const ShowHagglePanel: React.FC<Props> = ({
     usd: markOf(card),
     range: rangeForSeat(card),
   }));
-  const liveCounter = !lotMode && picked && seated && askUsd != null && askUsd > 0
+  const liveCounter = !selling && !lotMode && picked && seated && askUsd != null && askUsd > 0
     ? counterOffer({
       askUsd,
       player: picked.player,
@@ -257,6 +265,7 @@ const ShowHagglePanel: React.FC<Props> = ({
   };
 
   const versusFor = (row: HaggleNote): string | null => {
+    if (row.result === 'sold') return null;
     if (!row.cardId && !row.player) return null;
     const reference = referenceForNote(row, { medianByCardId: marks, targets });
     return askVersusBookCopy(row.askUsd, reference, Boolean(row.cardId));
@@ -268,10 +277,14 @@ const ShowHagglePanel: React.FC<Props> = ({
   };
 
   const rangeFor = (row: HaggleNote): string | null => {
-    if (!row.cardId || !(row.askUsd > 0)) return null;
+    if (!row.cardId || isLot(row)) return null;
     const card = cardFor(row.cardId);
     if (!card) return null;
-    if (isLot(row)) return null;
+    if (row.result === 'sold') {
+      const taken = takenOnNote(row);
+      return taken == null ? null : rangeSeatCopy(taken, rangeForSeat(card), 'Taken');
+    }
+    if (!(row.askUsd > 0)) return null;
     return rangeSeatCopy(row.askUsd, rangeForSeat(card), 'This ask');
   };
 
@@ -279,14 +292,18 @@ const ShowHagglePanel: React.FC<Props> = ({
     if (isLot(row)) return null;
     const card = cardFor(row.cardId);
     if (!card) return null;
-    return buyLadderCopy(buyLadder(rangeForSeat(card)));
+    const range = rangeForSeat(card);
+    if (row.result === 'sold') return sellLadderCopy(sellLadder(range));
+    return buyLadderCopy(buyLadder(range));
   };
 
   const scoreFor = (row: HaggleNote): string | null => {
     if (isLot(row)) return null;
     const card = cardFor(row.cardId);
     if (!card) return null;
-    return tableScore(row, buyLadder(rangeForSeat(card)))?.copy ?? null;
+    const range = rangeForSeat(card);
+    if (row.result === 'sold') return sellScoreCopy(takenOnNote(row), sellLadder(range), 'Taken');
+    return tableScore(row, buyLadder(range))?.copy ?? null;
   };
 
   const gradeFor = (row: HaggleNote): string | null => {
@@ -296,7 +313,7 @@ const ShowHagglePanel: React.FC<Props> = ({
   };
 
   const counterFor = (row: HaggleNote): string | null => {
-    if (isLot(row) || !(row.askUsd > 0)) return null;
+    if (row.result === 'sold' || isLot(row) || !(row.askUsd > 0)) return null;
     const card = cardFor(row.cardId);
     if (!card) return null;
     return counterOffer({
@@ -325,7 +342,7 @@ const ShowHagglePanel: React.FC<Props> = ({
           <input inputMode="decimal" value={ask} onChange={event => setAsk(event.target.value)} aria-label={`Ask at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm" />
         </label>
         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-          {lotMode ? 'Lot offer' : 'Offer'}
+          {selling ? 'Price taken' : lotMode ? 'Lot offer' : 'Offer'}
           <input inputMode="decimal" value={offer} onChange={event => setOffer(event.target.value)} aria-label={`Offer at ${showName}`} className="mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm" />
         </label>
         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -345,7 +362,7 @@ const ShowHagglePanel: React.FC<Props> = ({
       </label>
       {cards.length > 0 && (
         <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
-          Card for the ask
+          {selling ? 'Card you hold' : 'Card for the ask'}
           <select value={cardId} onChange={event => {
             const nextId = event.target.value;
             setCardId(nextId);
@@ -403,7 +420,7 @@ const ShowHagglePanel: React.FC<Props> = ({
       {liveAsk ? <p className="text-xs text-slate-200" aria-label="Ask versus median">{liveAsk}</p> : null}
       {liveRange ? <p className="text-xs text-slate-200" aria-label="Ask versus sale range">{liveRange}</p> : null}
       {liveGrade ? <p className="text-xs text-slate-200" aria-label="Grade split">{liveGrade}</p> : null}
-      {liveLadder ? <p className="text-xs text-slate-200" aria-label="Offer ladder">{liveLadder}</p> : null}
+      {liveLadder ? <p className="text-xs text-slate-200" aria-label={selling ? 'Sell ladder' : 'Offer ladder'}>{liveLadder}</p> : null}
       {liveScore ? <p className="text-xs text-slate-200" aria-label="Ladder score">{liveScore}</p> : null}
       {liveLot ? <p className="text-xs text-slate-200" aria-label="Table lot">{liveLot}</p> : null}
       {liveCounter ? (
@@ -433,6 +450,7 @@ const ShowHagglePanel: React.FC<Props> = ({
           <option value="open">Open</option>
           <option value="bought">Bought</option>
           <option value="passed">Passed</option>
+          <option value="sold">Sold</option>
         </select>
       </label>
       <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400">
@@ -526,7 +544,14 @@ const ShowHagglePanel: React.FC<Props> = ({
                 {versus ? <p className="text-xs text-slate-300">{versus}</p> : null}
                 {rangeCopy ? <p className="text-xs text-slate-300">{rangeCopy}</p> : null}
                 {gradeCopy ? <p className="text-xs text-slate-300" aria-label={`Grade split for ${row.dealer} table ${row.table}`}>{gradeCopy}</p> : null}
-                {ladderCopy ? <p className="text-xs text-slate-300" aria-label={`Offer ladder for ${row.player || 'this card'}`}>{ladderCopy}</p> : null}
+                {ladderCopy ? (
+                  <p
+                    className="text-xs text-slate-300"
+                    aria-label={`${row.result === 'sold' ? 'Sell ladder' : 'Offer ladder'} for ${row.player || 'this card'}`}
+                  >
+                    {ladderCopy}
+                  </p>
+                ) : null}
                 {scoreCopy ? <p className="text-xs text-slate-300" aria-label={`Ladder score for ${row.dealer} table ${row.table}`}>{scoreCopy}</p> : null}
                 {counterCopy ? <p className="text-xs text-slate-300" aria-label={`Counter offer for ${row.dealer} table ${row.table}`}>{counterCopy}</p> : null}
                 {lotFiled ? (

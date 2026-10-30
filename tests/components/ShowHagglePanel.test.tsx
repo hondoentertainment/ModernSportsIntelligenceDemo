@@ -201,4 +201,42 @@ describe('ShowHagglePanel', () => {
     expect(onFileBuy).toHaveBeenCalledTimes(3);
     expect(onFileBuy.mock.calls[2][0]).toMatchObject({ id: lotCardId(saved.id, 1), player: 'Jayson Tatum' });
   });
+
+  it('scores a sale on the sell ladder and refuses a sale with no card', async () => {
+    const user = userEvent.setup();
+    render(
+      <ShowHagglePanel
+        showId="exit-show"
+        showName="Exit Show"
+        inventory={[makeCard({
+          id: 'judge',
+          player: 'Aaron Judge',
+          purchasePrice: 40,
+          currentValue: 100,
+          salesData: [
+            { title: 'sold 80', price: 80, condition: 'raw', soldAt: '2026-09-01' },
+            { title: 'sold 100', price: 100, condition: 'raw', soldAt: '2026-09-02' },
+            { title: 'sold 120', price: 120, condition: 'raw', soldAt: '2026-09-03' },
+          ],
+        })]}
+      />,
+    );
+    await user.type(screen.getByLabelText('Dealer at Exit Show'), 'Rivera');
+    await user.type(screen.getByLabelText('Table at Exit Show'), '4');
+    await user.type(screen.getByLabelText('Offer at Exit Show'), '100');
+    await user.selectOptions(screen.getByLabelText('Card for the ask at Exit Show'), 'judge');
+    await user.selectOptions(screen.getByLabelText('Result at Exit Show'), 'sold');
+    expect(screen.getByLabelText('Sell ladder')).toHaveTextContent(/Ask \$120, take \$100, pass under \$80 on sold comps/);
+    expect(screen.getByLabelText('Ladder score')).toHaveTextContent(/Taken \$100 is down to the take/);
+    await user.click(screen.getByRole('button', { name: 'Add table note' }));
+    expect(screen.getByLabelText('Sell ladder for Aaron Judge')).toHaveTextContent(/pass under \$80/);
+    expect(screen.getByLabelText('Ladder score for Rivera table 4')).toHaveTextContent(/down to the take/);
+
+    await user.type(screen.getByLabelText('Dealer at Exit Show'), 'Ace');
+    await user.type(screen.getByLabelText('Table at Exit Show'), '2');
+    await user.type(screen.getByLabelText('Offer at Exit Show'), '40');
+    await user.selectOptions(screen.getByLabelText('Result at Exit Show'), 'sold');
+    await user.click(screen.getByRole('button', { name: 'Add table note' }));
+    expect(screen.getByRole('alert')).toHaveTextContent(/card you hold/i);
+  });
 });

@@ -123,4 +123,14 @@ describe('dealer history', () => {
     expect(dealerRowCopy(one!)).toMatch(/1 note/);
     expect(dealerRowCopy(one!)).toMatch(/1 ask sits at or under the walk, 0 over/);
   });
+
+  it('keeps a sold note off the ask score', () => {
+    const rows = dealerHistory([
+      { dealer: 'Rivera', table: '12', askUsd: 200, offerUsd: 90, result: 'sold', cardId: 'judge' },
+      { dealer: 'Rivera', table: '12', askUsd: 40, offerUsd: 0, result: 'open', cardId: 'judge' },
+    ], { judge: range });
+    expect(rows[0]).toMatchObject({ count: 2, sold: 1, open: 1, quotedUsd: 40, paidUsd: 0, call: 'fair' });
+    expect(dealerRowCopy(rows[0]!)).toMatch(/1 bought, 0 passed, 1 open, 1 sold|0 bought, 0 passed, 1 open, 1 sold/);
+    expect(dealerRowCopy(rows[0]!)).toMatch(/1 ask sits at or under the walk, 0 over/);
+  });
 });
