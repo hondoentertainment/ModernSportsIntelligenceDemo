@@ -10,9 +10,10 @@ import { buySeat } from './ladderScore';
 import { markOf, type Place } from './deskNext';
 import { cleanPlayer, floorBuyId, paidOnNote } from './showClose';
 import { boughtLotShares, isLot, lotCardId } from './tableLot';
+import { allInCost, exitMath, signedUsd } from './showExit';
 
 export const SHOW_HAUL_NOTE =
-  'Bought table notes and lots at this seeded show, followed into the book. Paid price sits on that card\'s ladder, with no watchlist target and no trip cash. The local mark is the stored value once the card is filed. A second copy matches player, year, manufacturer, set, and number. A note with no date still sits on this show. The weekly recap leaves it off. Not a settlement and not a live tape.';
+  'Bought table notes and lots at this seeded show, followed into the book. Paid price sits on that card\'s ladder, with no watchlist target and no trip cash. The local mark is the stored value once the card is filed. A sold copy shows the sale price and the realized result after the ~4% card-show fee, and it is not shelved again. A second copy matches player, year, manufacturer, set, and number. A note with no date still sits on this show. The weekly recap leaves it off. Not a settlement and not a live tape.';
 
 export const HAUL_PLACE_NOTE =
   'Unplaced cards on this haul get that place. A card already in a binder, box, or slab stays put. This browser only. Not a warehouse system.';
@@ -47,7 +48,11 @@ export interface HaulBookCard {
   cardNumber?: string;
   status?: string;
   purchasePrice?: number;
+  gradingFees?: number;
+  shippingFees?: number;
+  insuranceFees?: number;
   currentValue?: number;
+  salePrice?: number;
 }
 
 export interface HaulRow {
@@ -64,6 +69,9 @@ export interface HaulRow {
   unrealizedUsd: number | null;
   place: Place | null;
   duplicate: boolean;
+  closed: boolean;
+  saleUsd: number | null;
+  realizedUsd: number | null;
 }
 
 export interface ShowHaul {
@@ -81,6 +89,10 @@ export interface ShowHaul {
   unrealizedUsd: number;
   unplaced: number;
   duplicates: number;
+  closed: number;
+  saleUsd: number;
+  realizedUsd: number;
+  realizedRows: number;
   copy: string;
 }
 
@@ -131,6 +143,14 @@ function placeOf(places: Readonly<Record<string, string | undefined>>, id: strin
   const value = places[id];
   if (value === 'binder' || value === 'box' || value === 'slab') return value;
   return null;
+}
+
+function saleOf(card: HaulBookCard): { saleUsd: number | null; realizedUsd: number | null } {
+  if (typeof card.salePrice !== 'number' || !Number.isFinite(card.salePrice) || card.salePrice <= 0) {
+    return { saleUsd: null, realizedUsd: null };
+  }
+  const saleUsd = cents(card.salePrice);
+  return { saleUsd, realizedUsd: exitMath(saleUsd, allInCost(card)).realizedUsd };
 }
 
 function homeLabel(place: Place | null): string {
@@ -216,18 +236,34 @@ function ladderSentence(haul: ShowHaul): string {
 }
 
 function bookSentence(haul: ShowHaul): string {
-  const filed = haul.filed === 1
-    ? `1 is in the book at a local mark of ${money(haul.markUsd)} (unrealized ${signed(haul.unrealizedUsd)}).`
-    : `${haul.filed} are in the book at a local mark of ${money(haul.markUsd)} (unrealized ${signed(haul.unrealizedUsd)}).`;
-  const held = haul.filed === 0 ? 'None of these buys are in the book yet.' : filed;
-  if (haul.unfiled === 0) return held;
-  const waiting = haul.unfiled === 1 ? '1 is still off the book.' : `${haul.unfiled} are still off the book.`;
-  return `${held} ${waiting}`;
+  if (haul.closed === 0) {
+    const filed = haul.filed === 1
+      ? `1 is in the book at a local mark of ${money(haul.markUsd)} (unrealized ${signed(haul.unrealizedUsd)}).`
+      : `${haul.filed} are in the book at a local mark of ${money(haul.markUsd)} (unrealized ${signed(haul.unrealizedUsd)}).`;
+    const held = haul.filed === 0 ? 'None of these buys are in the book yet.' : filed;
+    if (haul.unfiled === 0) return held;
+    const waiting = haul.unfiled === 1 ? '1 is still off the book.' : `${haul.unfiled} are still off the book.`;
+    return `${held} ${waiting}`;
+  }
+  const heldCount = haul.filed - haul.closed;
+  const open = heldCount === 0
+    ? 'None of these buys are still held.'
+    : heldCount === 1
+      ? `1 is still held at a local mark of ${money(haul.markUsd)} (unrealized ${signed(haul.unrealizedUsd)}).`
+      : `${heldCount} are still held at a local mark of ${money(haul.markUsd)} (unrealized ${signed(haul.unrealizedUsd)}).`;
+  const sold = haul.closed === 1 ? ' 1 is sold.' : ` ${haul.closed} are sold.`;
+  if (haul.unfiled === 0) return `${open}${sold}`;
+  const waiting = haul.unfiled === 1 ? ' 1 is still off the book.' : ` ${haul.unfiled} are still off the book.`;
+  return `${open}${sold}${waiting}`;
 }
 
 function placeSentence(haul: ShowHaul): string {
-  if (haul.filed === 0) return '';
-  if (haul.unplaced === 0) return ' Every filed card has a binder, box, or slab.';
+  if (haul.filed === 0 || haul.filed === haul.closed) return '';
+  if (haul.unplaced === 0) {
+    return haul.closed > 0
+      ? ' Every card still held has a binder, box, or slab.'
+      : ' Every filed card has a binder, box, or slab.';
+  }
   if (haul.unplaced === 1) return ' 1 filed card has no binder, box, or slab.';
   return ` ${haul.unplaced} filed cards have no binder, box, or slab.`;
 }
@@ -251,16 +287,25 @@ function where(row: HaulRow): string {
   return ` on ${band}${kind}`;
 }
 
-export function haulRowCopy(row: HaulRow): string {
+function ladderPhrase(row: HaulRow): string {
   const fair = row.fairUsd;
   const walk = row.walkUsd;
-  let ladder = 'no ladder';
-  if (row.ladder !== 'no ladder' && fair != null && walk != null) {
-    const tape = where(row);
-    if (row.ladder === 'beat fair') ladder = `beat the fair${tape} (fair ${money(fair)})`;
-    else if (row.ladder === 'up to walk') ladder = `up to the walk${tape} (fair ${money(fair)}, walk ${money(walk)})`;
-    else ladder = `over the walk${tape} (walk ${money(walk)})`;
-  }
+  if (row.ladder === 'no ladder' || fair == null || walk == null) return 'no ladder';
+  const tape = where(row);
+  if (row.ladder === 'beat fair') return `beat the fair${tape} (fair ${money(fair)})`;
+  if (row.ladder === 'up to walk') return `up to the walk${tape} (fair ${money(fair)}, walk ${money(walk)})`;
+  return `over the walk${tape} (walk ${money(walk)})`;
+}
+
+function closedSale(row: HaulRow): string {
+  if (row.saleUsd == null) return 'sold, no sale price on the book';
+  if (row.realizedUsd == null) return `sold at ${money(row.saleUsd)} · no cost basis`;
+  return `sold at ${money(row.saleUsd)} · realized ${signedUsd(row.realizedUsd)} after the card-show fee`;
+}
+
+export function haulRowCopy(row: HaulRow): string {
+  const ladder = ladderPhrase(row);
+  if (row.closed) return `${row.player} · paid ${money(row.paidUsd)} · ${ladder} · ${closedSale(row)}`;
   if (!row.filed) return `${row.player} · paid ${money(row.paidUsd)} · ${ladder} · still off the book`;
   const copy = row.duplicate ? ' · second copy' : '';
   return `${row.player} · paid ${money(row.paidUsd)} · ${ladder} · in the book at ${money(row.markUsd ?? 0)} · ${homeLabel(row.place)}${copy}`;
@@ -282,7 +327,9 @@ export function showHaul(input: {
   const rows = draftRows(input.notes).map((draft) => {
     const held = byId.get(draft.id);
     const spot = ladderOf(draft.paidUsd, draft.cardId ? input.rangeForId(draft.cardId) : null);
-    const mark = held ? cents(markOf(held)) : null;
+    const closed = held != null && held.status === 'sold';
+    const sale = closed && held ? saleOf(held) : { saleUsd: null, realizedUsd: null };
+    const mark = held && !closed ? cents(markOf(held)) : null;
     const place = held ? placeOf(input.places, draft.id) : null;
     const duplicate = held != null && active(held) && (copies.get(identity(held)) ?? 0) >= 2;
     return {
@@ -292,9 +339,12 @@ export function showHaul(input: {
       ...spot,
       filed: held != null,
       markUsd: mark,
-      unrealizedUsd: held != null && mark != null ? cents(mark - draft.paidUsd) : null,
+      unrealizedUsd: held != null && !closed && mark != null ? cents(mark - draft.paidUsd) : null,
       place,
       duplicate,
+      closed,
+      saleUsd: sale.saleUsd,
+      realizedUsd: sale.realizedUsd,
     };
   });
   rows.sort((a, b) => a.player.localeCompare(b.player) || a.id.localeCompare(b.id));
@@ -309,6 +359,10 @@ export function showHaul(input: {
   let filed = 0;
   let unplaced = 0;
   let duplicates = 0;
+  let closed = 0;
+  let saleUsd = 0;
+  let realizedUsd = 0;
+  let realizedRows = 0;
   for (const row of rows) {
     paidUsd = cents(paidUsd + row.paidUsd);
     if (row.ladder === 'beat fair') beatFair += 1;
@@ -318,6 +372,15 @@ export function showHaul(input: {
     if (row.fairUsd != null) fairUsd = cents(fairUsd + row.fairUsd);
     if (!row.filed) continue;
     filed += 1;
+    if (row.closed) {
+      closed += 1;
+      if (row.saleUsd != null) saleUsd = cents(saleUsd + row.saleUsd);
+      if (row.realizedUsd != null) {
+        realizedUsd = cents(realizedUsd + row.realizedUsd);
+        realizedRows += 1;
+      }
+      continue;
+    }
     markUsd = cents(markUsd + (row.markUsd ?? 0));
     unrealizedUsd = cents(unrealizedUsd + (row.unrealizedUsd ?? 0));
     if (row.place == null) unplaced += 1;
@@ -338,12 +401,16 @@ export function showHaul(input: {
     unrealizedUsd,
     unplaced,
     duplicates,
+    closed,
+    saleUsd,
+    realizedUsd,
+    realizedRows,
   };
   return { ...haul, copy: showCopy(haul) };
 }
 
 export function haulPlaceIds(haul: ShowHaul): string[] {
-  return haul.rows.filter((row) => row.filed && row.place == null).map((row) => row.id);
+  return haul.rows.filter((row) => row.filed && !row.closed && row.place == null).map((row) => row.id);
 }
 
 function inWeek(iso: string | undefined, now: number): boolean {
@@ -353,6 +420,28 @@ function inWeek(iso: string | undefined, now: number): boolean {
 
 function weekCopy(haul: ShowHaul): string {
   if (haul.rows.length === 0) return EMPTY_WEEK;
+  if (haul.closed > 0) {
+    let paid = 0;
+    for (const row of haul.rows) {
+      if (row.closed) paid = cents(paid + row.paidUsd);
+    }
+    const sold = haul.closed === 1 ? '1 card sold' : `${haul.closed} cards sold`;
+    const realized = haul.realizedRows === 0
+      ? 'No sold copy has a sale price and a cost.'
+      : `Realized ${signedUsd(haul.realizedUsd)} after the card-show fee.`;
+    const heldCount = haul.filed - haul.closed;
+    const held = heldCount === 0
+      ? ''
+      : heldCount === 1
+        ? ' 1 card is still held.'
+        : ` ${heldCount} cards are still held.`;
+    const off = haul.unfiled === 0
+      ? ''
+      : haul.unfiled === 1
+        ? ' 1 is still off the book.'
+        : ` ${haul.unfiled} are still off the book.`;
+    return `Show haul this week: ${sold}, paid ${money(paid)}. ${realized}${held}${off} Not a settlement and not a live tape.`;
+  }
   if (haul.filed === 0) {
     const line = haul.rows.length === 1
       ? '1 show buy this week is still off the book.'

@@ -28,6 +28,7 @@ import { SHOPPING_INGEST_DISCLOSURE } from '../lib/shows/showShoppingIngest';
 import { readCashBudget } from '../lib/shows/showTripLoop';
 import { ShoppingBuyFiles } from './ShoppingBuyFile';
 import ShowDayRecap from './ShowDayRecap';
+import ShowExitPanel from './ShowExitPanel';
 import ShowHaulPanel from './ShowHaulPanel';
 
 const ShowDayPanel = lazy(() => import('./DeskNext').then((mod) => ({ default: mod.ShowDayPanel })));
@@ -40,6 +41,7 @@ interface Props {
   disclose?: boolean;
   cashUsd?: number | null;
   onFileBuy?: (card: CardInventory) => Promise<void> | void;
+  onRecordSale?: (cardId: string, patch: Partial<CardInventory>) => Promise<void> | void;
 }
 
 function usd(value: number | null): string {
@@ -152,7 +154,16 @@ function Lines({
   );
 }
 
-const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape, disclose = false, cashUsd = null, onFileBuy }) => {
+const ShowShoppingList: React.FC<Props> = ({
+  show,
+  inventory,
+  targets,
+  liveTape,
+  disclose = false,
+  cashUsd = null,
+  onFileBuy,
+  onRecordSale,
+}) => {
   const list = useMemo(
     () => buildShowShoppingList({ show, inventory, targets, liveTape }),
     [show, inventory, targets, liveTape],
@@ -267,6 +278,12 @@ const ShowShoppingList: React.FC<Props> = ({ show, inventory, targets, liveTape,
         }))}
       />
       <ShowHaulPanel showId={show.id} inventory={inventory} />
+      <ShowExitPanel
+        showId={show.id}
+        inventory={inventory}
+        purchaseDate={show.endDate}
+        onRecordSale={onRecordSale}
+      />
     </>
   );
 };

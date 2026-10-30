@@ -11,9 +11,11 @@ import {
 import { getTaxLotPreferences, subscribeTaxLotPreferences } from '../lib/utils/taxLotPreferences';
 import { placesSnapshot, subscribePlaces } from '../lib/collector/deskNext';
 import { pullCopy } from '../lib/collector/floorPack';
-import { LADDER_SCORE_NOTE, sellScoreCopy } from '../lib/collector/ladderScore';
+import { LADDER_SCORE_NOTE, cardRanges, sellScoreCopy } from '../lib/collector/ladderScore';
 import { SELL_LADDER_NOTE, sellLadder, sellLadderCopy } from '../lib/collector/offerLadder';
 import { GRADE_RANGE_NOTE, SALE_RANGE_NOTE, gradeSplitCopy, rangeForSeat, rangeSeatCopy } from '../lib/collector/saleRange';
+import { exitRowCopy, showExit, weekExit } from '../lib/collector/showExit';
+import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
 
 interface Props {
   inventory: CardInventory[];
@@ -52,6 +54,7 @@ function RowCard({
   gradeCopy,
   ladderCopy,
   scoreCopy,
+  exitCopy,
 }: {
   row: SellTradeRow;
   place: string | undefined;
@@ -59,6 +62,7 @@ function RowCard({
   gradeCopy: string | null;
   ladderCopy: string | null;
   scoreCopy: string | null;
+  exitCopy: string | null;
 }) {
   return (
     <li className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
@@ -100,6 +104,7 @@ function RowCard({
       {gradeCopy ? <p className="mt-1 text-[11px] leading-relaxed text-slate-300" aria-label={`Grade split for ${row.player}`}>{gradeCopy}</p> : null}
       {ladderCopy ? <p className="mt-1 text-[11px] leading-relaxed text-slate-300" aria-label={`Sell ladder for ${row.player}`}>{ladderCopy}</p> : null}
       {scoreCopy ? <p className="mt-1 text-[11px] leading-relaxed text-slate-300" aria-label={`Ladder score for ${row.player}`}>{scoreCopy}</p> : null}
+      {exitCopy ? <p className="mt-1 text-[11px] leading-relaxed text-slate-300" aria-label={`Open show exit for ${row.player}`}>{exitCopy}</p> : null}
     </li>
   );
 }
@@ -108,6 +113,7 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
   const [filter, setFilter] = useState<FilterId>('all');
   const prefs = useSyncExternalStore(subscribeTaxLotPreferences, getTaxLotPreferences, getTaxLotPreferences);
   const places = useSyncExternalStore(subscribePlaces, placesSnapshot, placesSnapshot);
+  const notes = useSyncExternalStore(subscribeHaggle, haggleSnapshot, haggleSnapshot);
   const plan = useMemo(
     () =>
       buildSellTradePlan(inventory, {
@@ -115,6 +121,26 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
         specificLotIds: prefs.specificLotIds,
       }),
     [inventory, prefs],
+  );
+  const openExits = useMemo(() => {
+    const ranges = cardRanges(inventory);
+    const map = new Map<string, string>();
+    for (const row of showExit({
+      notes,
+      inventory,
+      rangeForId: (id) => ranges[id] ?? null,
+    }).rows) {
+      if (row.held && row.cardId && !map.has(row.cardId)) map.set(row.cardId, exitRowCopy(row));
+    }
+    return map;
+  }, [notes, inventory]);
+  const exitWeek = useMemo(
+    () => weekExit({
+      notes,
+      inventory,
+      rangeForId: (id) => cardRanges(inventory)[id] ?? null,
+    }).copy,
+    [notes, inventory],
   );
 
   if (inventory.length === 0) return null;
@@ -144,6 +170,7 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{GRADE_RANGE_NOTE}</p>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{SELL_LADDER_NOTE}</p>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{LADDER_SCORE_NOTE}</p>
+      <p className="mb-4 text-[11px] leading-relaxed text-slate-300" aria-label="Show exit on the sell planner">{exitWeek}</p>
 
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <div className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
@@ -225,7 +252,18 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
             const ladder = range ? sellLadder(range, row.costBasis) : null;
             const ladderCopy = ladder ? sellLadderCopy(ladder) : null;
             const scoreCopy = ladder ? sellScoreCopy(row.mark, ladder, 'This mark') : null;
-            return <RowCard key={row.cardId} row={row} place={places[row.cardId]} rangeCopy={rangeCopy} gradeCopy={gradeCopy} ladderCopy={ladderCopy} scoreCopy={scoreCopy} />;
+            return (
+              <RowCard
+                key={row.cardId}
+                row={row}
+                place={places[row.cardId]}
+                rangeCopy={rangeCopy}
+                gradeCopy={gradeCopy}
+                ladderCopy={ladderCopy}
+                scoreCopy={scoreCopy}
+                exitCopy={openExits.get(row.cardId) ?? null}
+              />
+            );
           })}
         </ul>
       )}
