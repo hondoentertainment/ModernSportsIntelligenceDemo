@@ -378,7 +378,7 @@ Show alerts and the shopping list are the section above. The mobile pass does no
 
 - `npm ci` still warns that `node-domexception@1.0.0` is deprecated under `@google/genai`. That is not a trivial non-major follow-up.
 - No `@eslint/js` 10 move. No further Tailwind or ESLint major migration. Gzip cap stays 3,350,000.
-- A lot stays a buy. A passed note, an open note, and a buy stay off the exit. A note with no date stays on that show and off the week. A sale still held is not realized yet. A card with no cost basis can be marked sold, and the realized line stays off. A consignment stays put. A sold copy with no sale price stays on the haul without a realized number. A floor-log sale that was never a table note stays on the trip recap. A missing card stays off the ladder. A demo sketch can still be the ladder. The fee is the existing ~4% card-show heuristic. Those are the honest limits of this wave, not a second product pass.
+- A lot stays a buy. A second sold note on a copy already recorded stays off the realized total. A passed note, an open note, and a buy stay off the exit. A note with no date stays on that show and off the week. A sale still held is not realized yet. A card with no cost basis can be marked sold, and the realized line stays off. A consignment stays put. A sold copy with no sale price stays on the haul without a realized number. A floor-log sale that was never a table note stays on the trip recap. A missing card stays off the ladder. A demo sketch can still be the ladder. The fee is the existing ~4% card-show heuristic. Those are the honest limits of this wave, not a second product pass.
 
 ### Owner-held
 

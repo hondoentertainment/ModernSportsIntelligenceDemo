@@ -10,7 +10,7 @@ import { cleanPlayer, paidOnNote } from './showClose';
 import { isLot } from './tableLot';
 
 export const SHOW_EXIT_NOTE =
-  'Sold table notes at this seeded show, for one card you hold. The price you took, offer first, sits on that card\'s sell ladder. Ask, take, and pass come from sold comps when that card has them, otherwise a demo sketch. The card-show fee is the existing ~4% heuristic. Recording writes that price and the realized result onto the copy. A buy, a pass, an open note, and a lot stay off. Not a settlement and not a live tape.';
+  'Sold table notes at this seeded show, for one card you hold. The price you took, offer first, sits on that card\'s sell ladder. Ask, take, and pass come from sold comps when that card has them, otherwise a demo sketch. The card-show fee is the existing ~4% heuristic. Recording writes that price and the realized result onto the copy. Only that note counts as the sale. A second note on the same card stays off the realized total. A buy, a pass, an open note, and a lot stay off. Not a settlement and not a live tape.';
 
 export const EXIT_RECORD_NOTE =
   'Recording writes the price you took, the ~4% card-show fee, and the realized result onto that copy. A card already sold, and a card on consignment, stay put. Not a settlement.';
@@ -85,6 +85,7 @@ export interface ExitRow {
   realizedUsd: number | null;
   held: boolean;
   closed: boolean;
+  otherSale: boolean;
   consigned: boolean;
   missing: boolean;
 }
@@ -100,6 +101,7 @@ export interface ShowExit {
   underPass: number;
   noLadder: number;
   closed: number;
+  otherSale: number;
   stillHeld: number;
   consigned: number;
   missing: number;
@@ -169,6 +171,10 @@ function saleDay(iso: string | undefined, fallback: string): string {
   return '2026-01-01';
 }
 
+export function exitMarker(noteId: string): string {
+  return `Show exit ${noteId}:`;
+}
+
 export function buildExitPatch(input: {
   note: ExitNote;
   card: ExitBookCard | null;
@@ -180,7 +186,7 @@ export function buildExitPatch(input: {
   if (input.card.status === 'sold' || input.card.status === 'consignment') return null;
   const math = exitMath(taken, allInCost(input.card));
   const saleDate = saleDay(input.note.savedAt, input.purchaseDate ?? '');
-  const marker = `Show exit ${input.note.id}:`;
+  const marker = exitMarker(input.note.id);
   const line = `${marker} sold at ${money(taken)} on ${saleDate}. Card-show fee ${money(math.feeUsd)}. Advisory table note — not a marketplace settlement.`;
   const prior = input.existingNotes?.trim();
   const notes = prior?.includes(marker) ? prior : prior ? `${prior} ${line}` : line;
@@ -233,6 +239,7 @@ function seatPhrase(row: ExitRow): string {
 function bookPhrase(row: ExitRow): string {
   if (row.missing) return 'not in the book';
   if (row.consigned) return 'on consignment';
+  if (row.otherSale) return 'not the sale recorded on this copy';
   const realized = row.realizedUsd == null
     ? 'no cost basis'
     : `${row.closed ? 'realized' : 'would realize'} ${signedUsd(row.realizedUsd)} after the card-show fee`;
@@ -300,6 +307,8 @@ function bookSentence(exit: ShowExit): string {
   else if (exit.noBasis > 1) parts.push(`${exit.noBasis} have no cost basis`);
   if (exit.missing === 1) parts.push('1 is not in the book');
   else if (exit.missing > 1) parts.push(`${exit.missing} are not in the book`);
+  if (exit.otherSale === 1) parts.push('1 is not the sale recorded');
+  else if (exit.otherSale > 1) parts.push(`${exit.otherSale} are not the sale recorded`);
   if (exit.consigned === 1) parts.push('1 is on consignment');
   else if (exit.consigned > 1) parts.push(`${exit.consigned} are on consignment`);
   return `${joinParts(parts)}.`;
@@ -352,7 +361,9 @@ export function showExit(input: {
     const cost = card ? allInCost(card) : null;
     const math = exitMath(taken, cost);
     const spot = ladderOf(taken, cardId ? input.rangeForId(cardId) : null, cost);
-    const closed = card?.status === 'sold';
+    const sold = card?.status === 'sold';
+    const closed = card != null && sold === true && (card.notes ?? '').includes(exitMarker(note.id));
+    const otherSale = card != null && sold === true && !closed;
     const consigned = card?.status === 'consignment';
     const missing = card == null;
     rows.push({
@@ -367,8 +378,9 @@ export function showExit(input: {
       feeUsd: math.feeUsd,
       netUsd: math.netUsd,
       realizedUsd: math.realizedUsd,
-      held: card != null && !closed && !consigned,
+      held: card != null && sold !== true && !consigned,
       closed,
+      otherSale,
       consigned,
       missing,
     });
@@ -377,6 +389,7 @@ export function showExit(input: {
   let takenUsd = 0;
   let feeUsd = 0;
   let closed = 0;
+  let otherSale = 0;
   let stillHeld = 0;
   let consigned = 0;
   let missing = 0;
@@ -387,6 +400,7 @@ export function showExit(input: {
     takenUsd = cents(takenUsd + row.takenUsd);
     feeUsd = cents(feeUsd + row.feeUsd);
     if (row.closed) closed += 1;
+    else if (row.otherSale) otherSale += 1;
     else if (row.consigned) consigned += 1;
     else if (row.missing) missing += 1;
     else stillHeld += 1;
@@ -402,6 +416,7 @@ export function showExit(input: {
     feeUsd,
     ...countSeats(rows),
     closed,
+    otherSale,
     stillHeld,
     consigned,
     missing,
@@ -422,9 +437,12 @@ function inWeek(iso: string | undefined, now: number): boolean {
 function weekCopy(exit: ShowExit): string {
   if (exit.rows.length === 0) return EMPTY_WEEK;
   if (exit.closed === 0) {
-    const line = exit.rows.length === 1
+    if (exit.stillHeld === 0) {
+      return 'No dated show sale this week is the sale recorded on the book. Not a live tape.';
+    }
+    const line = exit.stillHeld === 1
       ? '1 show sale this week is still held.'
-      : `${exit.rows.length} show sales this week are still held.`;
+      : `${exit.stillHeld} show sales this week are still held.`;
     return `${line} Record the sale to put realized on the book. Not a live tape.`;
   }
   const booked = exit.rows.filter((row) => row.closed);
@@ -443,7 +461,12 @@ function weekCopy(exit: ShowExit): string {
     : exit.stillHeld === 1
       ? ' 1 is still held.'
       : ` ${exit.stillHeld} are still held.`;
-  return `Show exit this week: ${cards}, taken ${money(taken)}, fees ${money(fees)}. ${ladderSentence(booked)} ${realized}${waiting} Not a settlement and not a live tape.`;
+  const other = exit.otherSale === 0
+    ? ''
+    : exit.otherSale === 1
+      ? ' 1 is not the sale recorded.'
+      : ` ${exit.otherSale} are not the sale recorded.`;
+  return `Show exit this week: ${cards}, taken ${money(taken)}, fees ${money(fees)}. ${ladderSentence(booked)} ${realized}${waiting}${other} Not a settlement and not a live tape.`;
 }
 
 export function weekExit(input: {

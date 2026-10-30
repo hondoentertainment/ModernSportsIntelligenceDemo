@@ -22,6 +22,14 @@ const none: SaleRange = { source: 'none', low: null, median: null, high: null, c
 const NOW = Date.parse('2026-10-30T12:00:00.000Z');
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
+function recorded(noteId: string, overrides: Partial<ExitBookCard> = {}): ExitBookCard {
+  return card({
+    ...overrides,
+    status: 'sold',
+    notes: `Show exit ${noteId}: sold at the table.`,
+  });
+}
+
 function card(overrides: Partial<ExitBookCard> = {}): ExitBookCard {
   return {
     id: 'judge',
@@ -90,12 +98,12 @@ describe('show exit', () => {
         note({ id: 'ship', offerUsd: 80, player: 'Ship', cardId: 'ship' }),
       ],
       inventory: [
-        card({ id: 'judge', player: 'Amy Bee', status: 'sold', purchasePrice: 40, salePrice: 130 }),
-        card({ id: 'take', player: 'Take', status: 'sold', purchasePrice: 70 }),
-        card({ id: 'pass', player: 'Pass', status: 'sold', purchasePrice: undefined }),
+        recorded('ask', { id: 'judge', player: 'Amy Bee', purchasePrice: 40, salePrice: 130 }),
+        recorded('take', { id: 'take', player: 'Take', purchasePrice: 70 }),
+        recorded('pass', { id: 'pass', player: 'Pass', purchasePrice: undefined }),
         card({ id: 'psa', player: 'Under', status: 'active', purchasePrice: 10 }),
         card({ id: 'demo', player: 'Demo', status: 'consignment', purchasePrice: 15 }),
-        card({ id: 'ask', player: 'Ask', status: 'sold', purchasePrice: 0, gradingFees: 5 }),
+        recorded('ask-price', { id: 'ask', player: 'Ask', purchasePrice: 0, gradingFees: 5 }),
         card({ id: 'held', player: 'Held', purchasePrice: undefined }),
         card({ id: 'ship', player: 'Ship', status: 'consignment' }),
       ],
@@ -158,7 +166,7 @@ describe('show exit', () => {
 
     const single = showExit({
       notes: [note({ id: 'only', player: 'Only', offerUsd: 100, cardId: 'only' })],
-      inventory: [card({ id: 'only', player: 'Only', status: 'sold', purchasePrice: 40 })],
+      inventory: [recorded('only', { id: 'only', player: 'Only', purchasePrice: 40 })],
       rangeForId: ranges({ only: comps }),
     });
     expect(single.copy).toMatch(/Exit: 1 card, taken \$100 \(Only\)/);
@@ -254,10 +262,10 @@ describe('show exit', () => {
       note({ id: 'edge', player: 'Edge', savedAt: new Date(NOW - WEEK).toISOString(), cardId: 'edge', offerUsd: 20 }),
     ];
     const inventory = [
-      card({ id: 'booked', player: 'Booked', status: 'sold', purchasePrice: 40 }),
+      recorded('booked', { id: 'booked', player: 'Booked', purchasePrice: 40 }),
       card({ id: 'held', player: 'Held', purchasePrice: 10 }),
       card({ id: 'second', player: 'Second', purchasePrice: undefined }),
-      card({ id: 'edge', player: 'Edge', status: 'sold', purchasePrice: undefined }),
+      recorded('edge', { id: 'edge', player: 'Edge', purchasePrice: undefined }),
     ];
     const week = weekExit({
       notes,
@@ -295,7 +303,7 @@ describe('show exit', () => {
 
     const bookedOnly = weekExit({
       notes: [note({ id: 'booked', player: 'Booked', savedAt: new Date(NOW).toISOString(), cardId: 'booked', offerUsd: 100 })],
-      inventory: [card({ id: 'booked', player: 'Booked', status: 'sold', purchasePrice: 40 })],
+      inventory: [recorded('booked', { id: 'booked', player: 'Booked', purchasePrice: 40 })],
       rangeForId: () => comps,
       now: NOW,
     });
@@ -305,7 +313,7 @@ describe('show exit', () => {
 
     const noCost = weekExit({
       notes: [note({ id: 'edge', player: 'Edge', savedAt: new Date(NOW).toISOString(), cardId: 'edge', offerUsd: 20 })],
-      inventory: [card({ id: 'edge', player: 'Edge', status: 'sold', purchasePrice: undefined })],
+      inventory: [recorded('edge', { id: 'edge', player: 'Edge', purchasePrice: undefined })],
       rangeForId: () => comps,
       now: NOW,
     });
@@ -327,7 +335,7 @@ describe('show exit', () => {
         note({ id: 'held-b', player: 'Booked', savedAt: new Date(NOW).toISOString(), cardId: 'booked', offerUsd: 90 }),
       ],
       inventory: [
-        card({ id: 'booked', player: 'Booked', status: 'sold', purchasePrice: 40 }),
+        recorded('booked', { id: 'booked', player: 'Booked', purchasePrice: 40 }),
         card({ id: 'held', player: 'From Book', purchasePrice: 10 }),
       ],
       rangeForId: () => comps,
@@ -336,5 +344,37 @@ describe('show exit', () => {
     expect(oneHeld.exit.rows.find((row) => row.id === 'held')?.player).toBe('From Book');
     expect(oneHeld.exit.rows.filter((row) => row.player === 'Booked').map((row) => row.id)).toEqual(['booked', 'held-b']);
     expect(oneHeld.copy).toMatch(/1 is still held/);
+    expect(oneHeld.exit.closed).toBe(1);
+    expect(oneHeld.exit.otherSale).toBe(1);
+    expect(oneHeld.exit.realizedUsd).toBe(56);
+    expect(oneHeld.copy).toMatch(/1 is not the sale recorded/);
+  });
+
+  it('does not treat a second note on a sold copy as another sale', () => {
+    const exit = showExit({
+      notes: [
+        note({ id: 'a', player: 'Aaron Judge', offerUsd: 100, cardId: 'judge' }),
+        note({ id: 'b', player: 'Aaron Judge', offerUsd: 90, cardId: 'judge' }),
+      ],
+      inventory: [recorded('a', { id: 'judge', player: 'Aaron Judge', purchasePrice: 40 })],
+      rangeForId: () => comps,
+    });
+    expect(exit.closed).toBe(1);
+    expect(exit.otherSale).toBe(1);
+    expect(exit.realizedUsd).toBe(56);
+    expect(exit.feeUsd).toBe(7.6);
+    expect(exitRowCopy(exit.rows.find((row) => row.id === 'b')!)).toMatch(/not the sale recorded on this copy/);
+    const week = weekExit({
+      notes: [
+        note({ id: 'a', player: 'Aaron Judge', offerUsd: 100, cardId: 'judge', savedAt: new Date(NOW).toISOString() }),
+        note({ id: 'b', player: 'Aaron Judge', offerUsd: 90, cardId: 'judge', savedAt: new Date(NOW).toISOString() }),
+      ],
+      inventory: [card({ id: 'judge', player: 'Aaron Judge', status: 'sold', purchasePrice: 40, notes: 'Sold on the floor log.' })],
+      rangeForId: () => comps,
+      now: NOW,
+    });
+    expect(week.exit.closed).toBe(0);
+    expect(week.exit.stillHeld).toBe(0);
+    expect(week.copy).toMatch(/No dated show sale this week is the sale recorded on the book/);
   });
 });

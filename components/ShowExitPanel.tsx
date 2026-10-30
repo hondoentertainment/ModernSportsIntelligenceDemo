@@ -30,7 +30,8 @@ const ShowExitPanel: React.FC<Props> = ({ showId, inventory, purchaseDate = '', 
       return card ? rangeForSeat(card) : null;
     },
   }), [notes, showId, inventory]);
-  const shown = exit.rows.slice(0, 8);
+  const shown = exit.rows.filter((row, index) => index < 8 || row.held);
+  const hidden = exit.rows.length - shown.length;
 
   const record = async (row: ExitRow) => {
     if (!onRecordSale || !row.cardId) return;
@@ -78,11 +79,11 @@ const ShowExitPanel: React.FC<Props> = ({ showId, inventory, purchaseDate = '', 
           ))}
         </ul>
       ) : null}
-      {exit.rows.length > 8 ? (
+      {hidden > 0 ? (
         <p className="mt-1 text-xs text-slate-500">
-          {exit.rows.length - 8 === 1
+          {hidden === 1
             ? '1 more card stays off this list.'
-            : `${exit.rows.length - 8} more cards stay off this list.`}
+            : `${hidden} more cards stay off this list.`}
         </p>
       ) : null}
       <p className="mt-2 text-[11px] leading-relaxed text-slate-500">{EXIT_RECORD_NOTE}</p>

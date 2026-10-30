@@ -121,4 +121,31 @@ describe('Show exit panel', () => {
     expect(screen.getByLabelText('Show exit totals')).toHaveTextContent(/no sold table note/i);
     expect(screen.queryByRole('button', { name: /record/i })).not.toBeInTheDocument();
   });
+
+  it('keeps a record button for a held sale past the first eight rows', () => {
+    seed(Array.from({ length: 9 }, (_, index) => ({
+      id: `exit-${index}`,
+      showId: 'nyc',
+      dealer: 'Ace',
+      table: String(index),
+      askUsd: 10,
+      offerUsd: 10,
+      result: 'sold',
+      player: `Extra ${index}`,
+      cardId: `card-${index}`,
+      savedAt: '2026-10-30T00:00:00.000Z',
+    })));
+    render(
+      <ShowExitPanel
+        showId="nyc"
+        inventory={Array.from({ length: 9 }, (_, index) => makeCard({
+          id: `card-${index}`,
+          player: `Extra ${index}`,
+          purchasePrice: 4,
+        }))}
+        onRecordSale={async () => undefined}
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'Record Extra 8 sale' })).toBeInTheDocument();
+  });
 });
