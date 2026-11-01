@@ -69,6 +69,7 @@ describe('show floor wave', () => {
     expect(recap).toHaveTextContent(/Sold 1 for \$15 \(Pad\)/);
     expect(recap).toHaveTextContent(/Left on the list: Jayson Tatum buy/);
     expect(recap).toHaveTextContent(/Not a settlement and not a live tape/);
+    expect(screen.getByRole('region', { name: 'Show profit and loss' })).toHaveTextContent(/no demo buy or recorded sale/i);
   });
 
   it('suggests a split and keeps the dealer on the history', async () => {

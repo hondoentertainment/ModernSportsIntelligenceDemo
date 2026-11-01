@@ -10,55 +10,55 @@
 
 Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-safe; no secret or `VITE_FF_REAL_*` flips):
 
-| Item                                             | Status                                                                                                    |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| #1 Barcode / cert scan (card-show floor loop)    | **Shipped** (#119) — CameraFeed + cert/UPC resolver prefills Add Asset. Live PSA stays gated.             |
-| #3 Swipe triage (keep / sell / consign / review) | **Shipped** — Collection mobile 4-way swipe + haptics + local review queue.                               |
-| #5 Bundle / lot negotiation                      | **Shipped** (#119) — Arena lot/package pricing on existing negotiation surfaces.                          |
-| #6 Negotiation analytics                         | **Shipped** (#117) — win rate, discount, time-to-close, walk-away from local Arena history.               |
-| #12 Agent transparency / why-panels              | **Shipped** (#118) — expandable reasoning on multi-agent recommendations.                                 |
-| #18 Hobby Health Index                           | **Shipped (seeded)** — disclosed synthetic composite on Macro-Sentinel. Not a live feed.                  |
-| #19 Insurance-grade report                       | **Shipped** — timestamped FMV packet, totals, methodology, printable/PDF from Report Modal.               |
-| #24 Collection embed / vanity widget             | **Shipped** — iframe snippet + preview on Share Alpha / Public Portfolio. Custom domain still open.       |
-| Migration conflict / duplicate policy UX         | **Shipped** — merge vs skip preview on Migration Banner + Profile when local and cloud both have data.    |
-| #9 Injury / transaction impact                   | **Shipped (seeded)** — HoldingsCatalystRail + CatalystEngine. Not a live sports wire.                     |
-| #11 Seasonal buy/sell windows                    | **Shipped (seeded)** — Dashboard/Collection rails + per-card chips.                                       |
-| Priority 3.1 Pop / scarcity weighting            | **Shipped (lite)** — simulated popReport + Alpha Score low-pop premium.                                   |
-| Priority 4.2 Trade proposal / portfolio delta    | **Shipped (lite)** — advisory Card A for Card B + cash from local inventory.                              |
-| Priority 5.1 Morning briefing visual fidelity    | **Shipped (lite)** — DOM league-allocation bars + text/HTML download. No jsPDF on the live briefing path. |
-| Phase 33 Auto-Pilot idempotency                  | **Shipped (stub)** — day-bucketed local keys + duplicate-action guards.                                   |
-| #7 Thin P2P intent board                         | **Shipped (lite, 2026-09-08)** — local bids/asks on Collection + Liquidity summary. Not an exchange.      |
-| Priority 6.1 Scout-to-Acquire E2E                | **Shipped (demo smoke, 2026-09-08)** — Collection → War Room → Acquisition. No live Gemini refresh.       |
-| #15 Adjacent hobby correlation                   | **Shipped (lite, 2026-09-08)** — seeded Pokémon / MTG / memorabilia on existing correlation surfaces.     |
-| #2 Price-alert haptics                           | **Shipped (2026-09-08)** — Vibration API alongside Notification / watchlist / target-price paths.         |
-| #17 Centering / grade-probability heuristic      | **Shipped (lite, 2026-09-08)** — disclosed non-CV stub on Visual Audit + Centering Analyzer.              |
-| #2 remainder — quiet hours + channel prefs       | **Shipped (lite, Wave-2)** — `msi_alert_preferences_v1`; gates haptic + Notification API. Not Web Push.   |
-| Non-MLB Performance vs Price                     | **Shipped (partial, Wave-2)** — NBA/NFL/NHL desk + Dashboard binding. Seeded/heuristic disclosure.        |
-| Local valuation sparklines                       | **Shipped (lite, Wave-2)** — snapshots then sold comps on Collection. No new `price_history` table.       |
-| Card-show show bag                               | **Shipped (lite, Wave-2)** — review + consignment + targets + supplies packing list.                      |
-| Priority 3.2 Grading ROI lite                    | **Shipped (lite, Wave-2)** — raw vs PSA 9/10 simulated/comp estimate. Live PSA owner-held.                |
-| Phase 33 Auto-Pilot NAV + tax preview            | **Shipped (lite, Wave-2)** — advisory before/after NAV and rough ST/LT tax.                               |
-| Portfolio concentration / risk rail              | **Shipped (lite, Wave-3)** — player/league NAV shares + advisory rebalance links.                         |
-| Fee-aware break-even strip (#20 remainder)       | **Shipped (lite, Wave-3)** — Collection/sell strip with eBay/COMC/MySlabs/custom presets.                 |
-| Soccer hub player/team desks                     | **Shipped (parity, Wave-3)** — desks + Performance vs Price bind on `/soccer-hub`.                        |
-| Phase 27 capital gains year-vs-next              | **Shipped (lite, Wave-3)** — Fiscal / Tax Report / Collection sell ST/LT compare. Not IRS completeness.   |
-| Phase 33 Auto-Pilot decision replay              | **Shipped (lite, Wave-3)** — day-bucketed considered/collar/approval/NAV replay. No live execution.       |
-| Priority 2.2 SyncScheduler product defaults      | **Shipped (lite, Wave-3)** — daily signed-in/demo opt-in remembered via MSI store. Not Web Push.          |
-| Priority 2.2 Web Push client readiness           | **Shipped (lite, Wave-4)** — Push API / SW subscription UX + local endpoint. Server VAPID owner-held.    |
-| Priority 4.1 Negotiation Arena firmness UX       | **Shipped (deepen, Wave-4)** — thinking animation + seller-firmness / sentiment meter. Advisory only.    |
-| Priority 1.2 field-level migration diffs         | **Shipped (Wave-4)** — key-field local/cloud conflicts on Migration Banner + Profile.                    |
-| Holding horizon / wash-sale rail                 | **Shipped (lite, Wave-4)** — ST/LT + 30-day proximity on Collection / Fiscal / Tax. Not IRS completeness.|
-| Priority 1.1 ProtectedRoute profile hold         | **Shipped (Wave-4)** — shell until INITIAL_SESSION + profile ready.                                      |
-| Offline queue retry                              | **Shipped (lite, Wave-4)** — pending/failed counts + retry on banner + Profile.                          |
+| Item                                             | Status                                                                                                             |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| #1 Barcode / cert scan (card-show floor loop)    | **Shipped** (#119) — CameraFeed + cert/UPC resolver prefills Add Asset. Live PSA stays gated.                      |
+| #3 Swipe triage (keep / sell / consign / review) | **Shipped** — Collection mobile 4-way swipe + haptics + local review queue.                                        |
+| #5 Bundle / lot negotiation                      | **Shipped** (#119) — Arena lot/package pricing on existing negotiation surfaces.                                   |
+| #6 Negotiation analytics                         | **Shipped** (#117) — win rate, discount, time-to-close, walk-away from local Arena history.                        |
+| #12 Agent transparency / why-panels              | **Shipped** (#118) — expandable reasoning on multi-agent recommendations.                                          |
+| #18 Hobby Health Index                           | **Shipped (seeded)** — disclosed synthetic composite on Macro-Sentinel. Not a live feed.                           |
+| #19 Insurance-grade report                       | **Shipped** — timestamped FMV packet, totals, methodology, printable/PDF from Report Modal.                        |
+| #24 Collection embed / vanity widget             | **Shipped** — iframe snippet + preview on Share Alpha / Public Portfolio. Custom domain still open.                |
+| Migration conflict / duplicate policy UX         | **Shipped** — merge vs skip preview on Migration Banner + Profile when local and cloud both have data.             |
+| #9 Injury / transaction impact                   | **Shipped (seeded)** — HoldingsCatalystRail + CatalystEngine. Not a live sports wire.                              |
+| #11 Seasonal buy/sell windows                    | **Shipped (seeded)** — Dashboard/Collection rails + per-card chips.                                                |
+| Priority 3.1 Pop / scarcity weighting            | **Shipped (lite)** — simulated popReport + Alpha Score low-pop premium.                                            |
+| Priority 4.2 Trade proposal / portfolio delta    | **Shipped (lite)** — advisory Card A for Card B + cash from local inventory.                                       |
+| Priority 5.1 Morning briefing visual fidelity    | **Shipped (lite)** — DOM league-allocation bars + text/HTML download. No jsPDF on the live briefing path.          |
+| Phase 33 Auto-Pilot idempotency                  | **Shipped (stub)** — day-bucketed local keys + duplicate-action guards.                                            |
+| #7 Thin P2P intent board                         | **Shipped (lite, 2026-09-08)** — local bids/asks on Collection + Liquidity summary. Not an exchange.               |
+| Priority 6.1 Scout-to-Acquire E2E                | **Shipped (demo smoke, 2026-09-08)** — Collection → War Room → Acquisition. No live Gemini refresh.                |
+| #15 Adjacent hobby correlation                   | **Shipped (lite, 2026-09-08)** — seeded Pokémon / MTG / memorabilia on existing correlation surfaces.              |
+| #2 Price-alert haptics                           | **Shipped (2026-09-08)** — Vibration API alongside Notification / watchlist / target-price paths.                  |
+| #17 Centering / grade-probability heuristic      | **Shipped (lite, 2026-09-08)** — disclosed non-CV stub on Visual Audit + Centering Analyzer.                       |
+| #2 remainder — quiet hours + channel prefs       | **Shipped (lite, Wave-2)** — `msi_alert_preferences_v1`; gates haptic + Notification API. Not Web Push.            |
+| Non-MLB Performance vs Price                     | **Shipped (partial, Wave-2)** — NBA/NFL/NHL desk + Dashboard binding. Seeded/heuristic disclosure.                 |
+| Local valuation sparklines                       | **Shipped (lite, Wave-2)** — snapshots then sold comps on Collection. No new `price_history` table.                |
+| Card-show show bag                               | **Shipped (lite, Wave-2)** — review + consignment + targets + supplies packing list.                               |
+| Priority 3.2 Grading ROI lite                    | **Shipped (lite, Wave-2)** — raw vs PSA 9/10 simulated/comp estimate. Live PSA owner-held.                         |
+| Phase 33 Auto-Pilot NAV + tax preview            | **Shipped (lite, Wave-2)** — advisory before/after NAV and rough ST/LT tax.                                        |
+| Portfolio concentration / risk rail              | **Shipped (lite, Wave-3)** — player/league NAV shares + advisory rebalance links.                                  |
+| Fee-aware break-even strip (#20 remainder)       | **Shipped (lite, Wave-3)** — Collection/sell strip with eBay/COMC/MySlabs/custom presets.                          |
+| Soccer hub player/team desks                     | **Shipped (parity, Wave-3)** — desks + Performance vs Price bind on `/soccer-hub`.                                 |
+| Phase 27 capital gains year-vs-next              | **Shipped (lite, Wave-3)** — Fiscal / Tax Report / Collection sell ST/LT compare. Not IRS completeness.            |
+| Phase 33 Auto-Pilot decision replay              | **Shipped (lite, Wave-3)** — day-bucketed considered/collar/approval/NAV replay. No live execution.                |
+| Priority 2.2 SyncScheduler product defaults      | **Shipped (lite, Wave-3)** — daily signed-in/demo opt-in remembered via MSI store. Not Web Push.                   |
+| Priority 2.2 Web Push client readiness           | **Shipped (lite, Wave-4)** — Push API / SW subscription UX + local endpoint. Server VAPID owner-held.              |
+| Priority 4.1 Negotiation Arena firmness UX       | **Shipped (deepen, Wave-4)** — thinking animation + seller-firmness / sentiment meter. Advisory only.              |
+| Priority 1.2 field-level migration diffs         | **Shipped (Wave-4)** — key-field local/cloud conflicts on Migration Banner + Profile.                              |
+| Holding horizon / wash-sale rail                 | **Shipped (lite, Wave-4)** — ST/LT + 30-day proximity on Collection / Fiscal / Tax. Not IRS completeness.          |
+| Priority 1.1 ProtectedRoute profile hold         | **Shipped (Wave-4)** — shell until INITIAL_SESSION + profile ready.                                                |
+| Offline queue retry                              | **Shipped (lite, Wave-4)** — pending/failed counts + retry on banner + Profile.                                    |
 | Ratio intelligence                               | **Shipped (Wave-5)** — grade / player / variation rails on Collection / Dashboard / War Room. Thin tape disclosed. |
-| Collection & Favorites Top Movers                | **Shipped (Wave-5)** — snapshot/comp movers. Not a live SCI feed.                                        |
-| Deal Finder lite                                 | **Shipped (Wave-5)** — watchlist / target / scan vs consensus or fee-aware break-even.                   |
-| Market Pulse multi-segment                       | **Shipped (Wave-5)** — sport / era / sealed-vs-singles. Seeded + local. Not live SCI Pulse.              |
-| Card Compare desk (2–3)                          | **Shipped (Wave-5)** — `/compare` + Collection wire-up.                                                  |
-| Whale Collection list (Priority 6.2)             | **Shipped (Wave-5)** — tanstack virtual list above 24 rows.                                              |
-| Adjacent wax / TCG on core desks                 | **Shipped (lite, Wave-5)** — Dashboard + Collection rail. Disclosed proxies.                             |
+| Collection & Favorites Top Movers                | **Shipped (Wave-5)** — snapshot/comp movers. Not a live SCI feed.                                                  |
+| Deal Finder lite                                 | **Shipped (Wave-5)** — watchlist / target / scan vs consensus or fee-aware break-even.                             |
+| Market Pulse multi-segment                       | **Shipped (Wave-5)** — sport / era / sealed-vs-singles. Seeded + local. Not live SCI Pulse.                        |
+| Card Compare desk (2–3)                          | **Shipped (Wave-5)** — `/compare` + Collection wire-up.                                                            |
+| Whale Collection list (Priority 6.2)             | **Shipped (Wave-5)** — tanstack virtual list above 24 rows.                                                        |
+| Adjacent wax / TCG on core desks                 | **Shipped (lite, Wave-5)** — Dashboard + Collection rail. Disclosed proxies.                                       |
 
-**Owner-held / open (2026-10-12, matches #77):** optional file-only `00011` (agents must not apply), Stripe lifecycle smoke, eBay keys then `VITE_FF_REAL_EBAY`, `PSA_API_KEY` then `VITE_FF_REAL_PSA` (not with eBay), optional Sentry DSN, `/audit-trail/admin` confirm, fractional-vault legal, multi-provider key-rotation drill. Restore and Vercel Supabase env presence are done. Also still out of eng-safe scope: custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness, owner VAPID. `tailwindcss` ^4.3.3 and `eslint` ^10.12.0 are already on `main`; do not start another major. **Waves through #144 shipped** (including #141 flags-off). Forward order is Phase A (#77) → live B → C → D → E — not §4 below.
+**Owner-held / open (2026-10-31, matches #77):** optional file-only `00011`, file-only `00013` (agents must not apply either), Google sign-in provider, Stripe lifecycle smoke, eBay keys then `VITE_FF_REAL_EBAY`, `PSA_API_KEY` then `VITE_FF_REAL_PSA` (not with eBay), optional Sentry DSN, `/audit-trail/admin` confirm, fractional-vault legal, multi-provider key-rotation drill. Restore and Vercel Supabase env presence are done. Also still out of eng-safe scope: custom vanity DNS, full P2P exchange, production centering CV, IRS tax-lot regulatory completeness, owner VAPID. `tailwindcss` ^4.3.3 and `eslint` ^10.12.0 are already on `main`; do not start another major. **Waves through #144 shipped** (including #141 flags-off). Forward order is Phase A (#77) → live B → C → D → E — not §4 below.
 
 ---
 
@@ -73,15 +73,15 @@ Engineering-friendly NEXT_STEPS that are now **Shipped** in product (demo/DAL-sa
 
 ### Gaps & Risks Identified
 
-| Area                     | Gap                                                                                              | Risk Level |
-| ------------------------ | ------------------------------------------------------------------------------------------------ | ---------- |
+| Area                     | Gap                                                                                                  | Risk Level |
+| ------------------------ | ---------------------------------------------------------------------------------------------------- | ---------- |
 | **Trusted book (#77)**   | Supabase `vhbsokjqchaafluimgjh` ACTIVE_HEALTHY; live eBay/PSA tape and Stripe smoke still owner-held | High       |
-| **Data freshness**       | Sold-comp consensus + Comps Used shipped; **default-on live comps** still wait for eBay flag     | High       |
-| **Offline reliability**  | PWA + pending/failed queue retry shipped (Wave-4); not battle-tested on restored cloud           | Medium     |
-| **Test coverage**        | NAV / fiscal / Scout-to-Acquire smoke shipped; cloud/live-tape E2E still owner-held              | Medium     |
-| **Multi-sport breadth**  | NBA/NFL/NHL/Soccer desks + PvP binds shipped (seeded); live non-MLB wires still open             | Medium     |
-| **Social moat**          | Thin P2P intent board shipped; matching / escrow / exchange still open (Phase D)                 | Medium     |
-| **Regulatory readiness** | FIFO/LIFO/Specific ID **selector** exists (demo); IRS/CRA **regulatory completeness** still open | High       |
+| **Data freshness**       | Sold-comp consensus + Comps Used shipped; **default-on live comps** still wait for eBay flag         | High       |
+| **Offline reliability**  | PWA + pending/failed queue retry shipped (Wave-4); not battle-tested on restored cloud               | Medium     |
+| **Test coverage**        | NAV / fiscal / Scout-to-Acquire smoke shipped; cloud/live-tape E2E still owner-held                  | Medium     |
+| **Multi-sport breadth**  | NBA/NFL/NHL/Soccer desks + PvP binds shipped (seeded); live non-MLB wires still open                 | Medium     |
+| **Social moat**          | Thin P2P intent board shipped; matching / escrow / exchange still open (Phase D)                     | Medium     |
+| **Regulatory readiness** | FIFO/LIFO/Specific ID **selector** exists (demo); IRS/CRA **regulatory completeness** still open     | High       |
 
 ---
 

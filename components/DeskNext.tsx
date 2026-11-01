@@ -26,13 +26,23 @@ import { TRADE_LADDER_NOTE, tradeLadder, tradeLadderCopy } from '../lib/collecto
 import { unfiledCopy } from '../lib/collector/showClose';
 import { weekHaul } from '../lib/collector/showHaul';
 import { weekExit } from '../lib/collector/showExit';
+import { weekPnl } from '../lib/collector/showPnl';
 import { unfiledNotes } from '../lib/collector/tableLot';
 import { store } from '../lib/dal/syncStore';
 import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
-import { readCashBudget } from '../lib/shows/showTripLoop';
+import { SHOW_TRIP_DECISIONS_KEY, readCashBudget, readFloorDecisions } from '../lib/shows/showTripLoop';
 
 const field = 'mt-1 w-full min-h-[44px] rounded-lg border border-slate-700 bg-slate-900 px-3 text-base text-white md:text-sm';
 const btn = 'min-h-[44px] rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100';
+
+let decisionCache = '';
+
+function decisionSnapshot(): string {
+  const key = JSON.stringify(store.get(SHOW_TRIP_DECISIONS_KEY, []));
+  if (key === decisionCache) return decisionCache;
+  decisionCache = key;
+  return key;
+}
 
 function usd(value: number): string {
   return `$${Math.round(value).toLocaleString()}`;
@@ -286,6 +296,16 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
     }).copy,
     [notes, inventory, ranges],
   );
+  const decisionKey = useSyncExternalStore(
+    (listener) => store.onWrite(listener),
+    decisionSnapshot,
+    decisionSnapshot,
+  );
+  const pnlCopy = weekPnl({
+    notes,
+    decisions: decisionKey ? readFloorDecisions() : [],
+    inventory,
+  }).copy;
   const floorCount = floor.bought + floor.passed + floor.open + floor.sold;
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" aria-label="Weekly collection recap">
@@ -302,6 +322,7 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
       <p className="mt-2 text-xs text-slate-300" aria-label="Ladder this week">{ladderCopy}</p>
       <p className="mt-2 text-xs text-slate-300" aria-label="Show haul this week">{haulCopy}</p>
       <p className="mt-2 text-xs text-slate-300" aria-label="Show exit this week">{exitCopy}</p>
+      <p className="mt-2 text-xs text-slate-300" aria-label="Show profit and loss this week">{pnlCopy}</p>
       <p className="mt-2 text-xs text-slate-300">{unfiledCopy(waiting)}</p>
       <Link to="/local-card-shows" className="inline-flex min-h-[44px] items-center text-xs text-brand-lime">Show desk</Link>
       {recap.movers.length === 0 ? <p className="mt-2 text-sm text-slate-400">No held cards.</p> : (
