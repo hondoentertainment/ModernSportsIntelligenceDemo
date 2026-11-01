@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { exitMarker } from '../../lib/collector/showExit';
 import { floorBuyId } from '../../lib/collector/showClose';
 import { lotCardId } from '../../lib/collector/tableLot';
-import { collectionDraftId } from '../../lib/shows/showTripLoop';
+import { collectionDraftId, floorSaleMarker } from '../../lib/shows/showTripLoop';
 import {
   SHOW_PNL_NOTE,
   pnlCopy,
@@ -265,7 +265,7 @@ describe('show profit and loss', () => {
           status: 'sold',
           purchasePrice: 40,
           salePrice: 80,
-          notes: 'Show recap 2026-10-30: sold at $80.',
+          notes: `Show recap 2026-10-30: sold at $80. ${floorSaleMarker('nyc', 'floor-sell')}`,
         }),
         card({ id: 'parked', player: 'Parked', status: 'consignment' }),
         card({ id: 'open', player: 'Open', status: 'active' }),
@@ -409,5 +409,89 @@ describe('show profit and loss', () => {
       inventory: [],
     });
     expect(live.copy).toMatch(/Show profit and loss this week: Bought 1 card for \$3/);
+  });
+
+  it('keeps a recorded sale when a newer note for the same card is unmatched', () => {
+    const pnl = showPnl({
+      notes: [
+        note({ id: 'newer', result: 'sold', offerUsd: 70, player: 'Judge', cardId: 'judge' }),
+        note({ id: 'older', result: 'sold', offerUsd: 80, player: 'Judge', cardId: 'judge' }),
+      ],
+      inventory: [card({
+        id: 'judge',
+        player: 'Aaron Judge',
+        status: 'sold',
+        purchasePrice: 40,
+        salePrice: 80,
+        notes: `${exitMarker('older')} sold.`,
+      })],
+    });
+    expect(pnl.sold).toHaveLength(1);
+    expect(pnl.sold[0]).toMatchObject({ takenUsd: 80, feeUsd: 3.2, realizedUsd: 36.8 });
+    expect(pnl.unrecorded).toBe(0);
+    expect(pnl.otherSale).toBe(0);
+  });
+
+  it('does not give one floor sale to a second show', () => {
+    const book = [card({
+      id: 'sale',
+      player: 'Walk Sale',
+      status: 'sold',
+      purchasePrice: 40,
+      salePrice: 80,
+      notes: `Show recap 2026-10-30: sold at $80. ${floorSaleMarker('nyc', 'floor-sell')}`,
+    })];
+    const recorded = showPnl({
+      showId: 'nyc',
+      notes: [],
+      decisions: [decision({
+        opportunityId: 'floor-sell',
+        showId: 'nyc',
+        call: 'sell',
+        player: 'Walk Sale',
+        cardId: 'sale',
+        tablePriceUsd: 80,
+      })],
+      inventory: book,
+    });
+    const otherShow = showPnl({
+      showId: 'bos',
+      notes: [],
+      decisions: [decision({
+        opportunityId: 'other-sell',
+        showId: 'bos',
+        call: 'sell',
+        player: 'Walk Sale',
+        cardId: 'sale',
+        tablePriceUsd: 80,
+      })],
+      inventory: book,
+    });
+    const generic = showPnl({
+      showId: 'nyc',
+      notes: [],
+      decisions: [decision({
+        opportunityId: 'floor-sell',
+        showId: 'nyc',
+        call: 'sell',
+        player: 'Walk Sale',
+        cardId: 'sale',
+        tablePriceUsd: 80,
+      })],
+      inventory: [card({
+        id: 'sale',
+        player: 'Walk Sale',
+        status: 'sold',
+        purchasePrice: 40,
+        salePrice: 80,
+        notes: 'Show recap 2026-10-30: sold at $80.',
+      })],
+    });
+    expect(recorded.sold).toHaveLength(1);
+    expect(recorded.sold[0]).toMatchObject({ takenUsd: 80, feeUsd: 3.2 });
+    expect(otherShow.sold).toHaveLength(0);
+    expect(otherShow.unrecorded).toBe(1);
+    expect(generic.sold).toHaveLength(0);
+    expect(generic.unrecorded).toBe(1);
   });
 });

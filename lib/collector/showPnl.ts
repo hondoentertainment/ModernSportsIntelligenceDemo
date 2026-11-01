@@ -7,7 +7,7 @@
 import { allInCost, exitMarker, exitMath, signedUsd, takenOnNote } from './showExit';
 import { cleanPlayer, floorBuyId, paidOnNote } from './showClose';
 import { boughtLotShares, isLot, lotCardId } from './tableLot';
-import { collectionDraftId } from '../shows/showTripLoop';
+import { collectionDraftId, floorSaleMarker } from '../shows/showTripLoop';
 
 export const SHOW_PNL_NOTE =
   'Demo buys and recorded sales at this seeded show. The card-show fee is the existing ~4% heuristic. Realized is the price on the book, minus that fee, minus the cost. Unsold inventory is a buy you still hold, including a buy not filed yet. Sold inventory is a sale written on the book. A sale still held, a pass, an open note, and a lot that cannot be split stay off the realized total. A note with no date stays on this show and off the week. Not a settlement and not a live tape.';
@@ -355,9 +355,21 @@ export function showPnl(input: {
     if (pushBuy({ id, player, paidUsd: paid }, card, unsold, sold, seen, handled) === 'consigned') consigned += 1;
   }
 
-  for (const note of input.notes) {
+  const saleNotes = input.notes.filter((note) => takenOnNote(note) != null);
+  for (const note of saleNotes) {
     const taken = takenOnNote(note);
     if (taken == null) continue;
+    const cardId = note.cardId?.trim() || '';
+    if (cardId && handled.has(cardId)) continue;
+    const card = cardId ? byId.get(cardId) : undefined;
+    const recorded = card != null && card.status === 'sold' && (card.notes ?? '').includes(exitMarker(note.id));
+    if (!recorded || card == null) continue;
+    const price = bookSale(card) ?? taken;
+    sold.push(soldFromBook(note.id, playerName(note.player, card.player), null, { ...card, salePrice: price }));
+    handled.add(card.id);
+    if (cardId) handled.add(cardId);
+  }
+  for (const note of saleNotes) {
     const cardId = note.cardId?.trim() || '';
     if (cardId && handled.has(cardId)) continue;
     const card = cardId ? byId.get(cardId) : undefined;
@@ -366,20 +378,12 @@ export function showPnl(input: {
       if (cardId) handled.add(cardId);
       continue;
     }
-    const recorded = card != null && card.status === 'sold' && (card.notes ?? '').includes(exitMarker(note.id));
-    if (card?.status === 'sold' && !recorded) {
+    if (card?.status === 'sold') {
       otherSale += 1;
       if (cardId) handled.add(cardId);
       continue;
     }
-    if (!recorded || card == null) {
-      unrecorded += 1;
-      if (cardId) handled.add(cardId);
-      continue;
-    }
-    const price = bookSale(card) ?? taken;
-    sold.push(soldFromBook(note.id, playerName(note.player, card.player), null, { ...card, salePrice: price }));
-    handled.add(card.id);
+    unrecorded += 1;
     if (cardId) handled.add(cardId);
   }
 
@@ -389,9 +393,13 @@ export function showPnl(input: {
     if (!cardId || handled.has(cardId)) continue;
     if (positive(decision.tablePriceUsd) == null) continue;
     const card = byId.get(cardId);
+    const scope = decision.showId?.trim() || input.showId?.trim() || '';
+    const opportunity = decision.opportunityId.trim();
     const recorded = card != null
       && card.status === 'sold'
-      && (card.notes ?? '').includes('Show recap')
+      && scope.length > 0
+      && opportunity.length > 0
+      && (card.notes ?? '').includes(floorSaleMarker(scope, opportunity))
       && bookSale(card) != null;
     if (card?.status === 'consignment') {
       consigned += 1;
@@ -404,7 +412,7 @@ export function showPnl(input: {
       continue;
     }
     sold.push(soldFromBook(
-      `sell:${decision.opportunityId}`,
+      `sell:${scope}:${opportunity}`,
       playerName(decision.player, card.player),
       null,
       card,

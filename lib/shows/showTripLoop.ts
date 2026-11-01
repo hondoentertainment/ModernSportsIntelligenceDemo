@@ -531,6 +531,11 @@ export function buildCollectionDraft(input: {
   };
 }
 
+/** Ties a recorded floor sale to one show and one decision. A generic "Show recap" line is not enough. */
+export function floorSaleMarker(showId: string, opportunityId: string): string {
+  return `Show floor ${showId.trim()} ${opportunityId.trim()}:`;
+}
+
 export function buildSalePatch(input: {
   decision: FloorDecision;
   purchaseDate: string;
@@ -540,7 +545,7 @@ export function buildSalePatch(input: {
   const saleDate = /^\d{4}-\d{2}-\d{2}/.test(input.purchaseDate)
     ? input.purchaseDate.slice(0, 10)
     : '2026-01-01';
-  const line = `Show recap ${saleDate}: sold at ${formatTripUsd(input.decision.tablePriceUsd)}. Advisory floor log — not a marketplace settlement.`;
+  const line = `Show recap ${saleDate}: sold at ${formatTripUsd(input.decision.tablePriceUsd)}. ${floorSaleMarker(input.decision.showId, input.decision.opportunityId)} Advisory floor log — not a marketplace settlement.`;
   const prior = input.existingNotes?.trim();
   const patch: ShowSalePatch = {
     status: 'sold',
