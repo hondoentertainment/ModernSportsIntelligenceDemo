@@ -51,6 +51,7 @@ describe('DeskNext floor week', () => {
     expect(screen.getByText(/1 bought note not in the book: Showclose Player/i)).toBeInTheDocument();
     expect(screen.getByLabelText('Show haul this week')).toHaveTextContent(/1 show buy this week is still off the book/i);
     expect(screen.getByLabelText('Show profit and loss this week')).toHaveTextContent(/unsold inventory: 1 card, cost \$25/i);
+    expect(screen.getByLabelText('Show profit and loss this week')).toHaveTextContent(/inventory age: 1 short-term/i);
     expect(screen.getByLabelText('Show profit and loss this week')).toHaveTextContent(/sold inventory: none/i);
     expect(screen.getByLabelText('Ladder this week')).toHaveTextContent(/no card in the book/i);
     act(() => {
