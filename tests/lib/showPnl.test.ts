@@ -432,6 +432,116 @@ describe('show profit and loss', () => {
     expect(pnl.otherSale).toBe(0);
   });
 
+  it('ages a filed buy from the book and a recorded sale from both dates', () => {
+    const booked = floorBuyId('booked');
+    const pnl = showPnl({
+      now: NOW,
+      notes: [
+        note({ id: 'fresh', player: 'Fresh', savedAt: '2026-10-30T00:00:00.000Z', offerUsd: 10 }),
+        note({ id: 'booked', player: 'Booked', savedAt: '2026-10-30T00:00:00.000Z', offerUsd: 12 }),
+        note({ id: 'bad-book', player: 'Fallback', savedAt: '2026-10-30T00:00:00.000Z', offerUsd: 8 }),
+        note({ id: 'bare', player: 'Bare', savedAt: undefined, offerUsd: 9 }),
+        note({ id: 'sold-short', result: 'sold', player: 'Short', cardId: 'short', offerUsd: 20 }),
+        note({ id: 'sold-long', result: 'sold', player: 'Long', cardId: 'long', offerUsd: 30 }),
+        note({ id: 'sold-flip', result: 'sold', player: 'Flip', cardId: 'flip', offerUsd: 20 }),
+        note({ id: 'sold-nodate', result: 'sold', player: 'No Date', cardId: 'nodate', offerUsd: 15, savedAt: '2026-10-30T00:00:00.000Z' }),
+      ],
+      showId: 'nyc',
+      decisions: [
+        decision({
+          opportunityId: 'near',
+          player: 'Near',
+          tablePriceUsd: 7,
+          decidedAt: new Date(NOW - 330 * 24 * 60 * 60 * 1000).toISOString(),
+        }),
+        decision({
+          opportunityId: 'park-floor',
+          showId: 'nyc',
+          player: 'Park Floor',
+          call: 'buy',
+          tablePriceUsd: 4,
+        }),
+      ],
+      inventory: [
+        card({ id: booked, player: 'Booked', purchaseDate: '2024-01-01', purchasePrice: 12 }),
+        card({ id: floorBuyId('bad-book'), player: 'Fallback', purchaseDate: 'not-a-date', purchasePrice: 8 }),
+        card({
+          id: 'short',
+          player: 'Short',
+          status: 'sold',
+          purchasePrice: 10,
+          salePrice: 20,
+          purchaseDate: '2026-10-01',
+          saleDate: '2026-10-20',
+          notes: exitMarker('sold-short'),
+        }),
+        card({
+          id: 'long',
+          player: 'Long',
+          status: 'sold',
+          purchasePrice: 10,
+          salePrice: 30,
+          purchaseDate: '2024-01-01',
+          saleDate: '2026-10-30',
+          notes: exitMarker('sold-long'),
+        }),
+        card({
+          id: 'flip',
+          player: 'Flip',
+          status: 'sold',
+          purchasePrice: 10,
+          salePrice: 20,
+          purchaseDate: '2026-10-30',
+          saleDate: '2026-01-01',
+          notes: exitMarker('sold-flip'),
+        }),
+        card({
+          id: 'nodate',
+          player: 'No Date',
+          status: 'sold',
+          purchasePrice: 10,
+          salePrice: 15,
+          notes: exitMarker('sold-nodate'),
+        }),
+        card({
+          id: collectionDraftId('nyc', 'park-floor'),
+          player: 'Park Floor',
+          status: 'consignment',
+        }),
+      ],
+    });
+    const fresh = pnl.unsold.find((item) => item.player === 'Fresh');
+    const bookedRow = pnl.unsold.find((item) => item.player === 'Booked');
+    const fallback = pnl.unsold.find((item) => item.player === 'Fallback');
+    const bare = pnl.unsold.find((item) => item.player === 'Bare');
+    const near = pnl.unsold.find((item) => item.player === 'Near');
+    expect(fresh).toMatchObject({ treatment: 'short-term', acquiredAt: '2026-10-30' });
+    expect(bookedRow).toMatchObject({ treatment: 'long-term', acquiredAt: '2024-01-01' });
+    expect(fallback).toMatchObject({ treatment: 'short-term', acquiredAt: '2026-10-30' });
+    expect(bare).toMatchObject({ treatment: null, acquiredAt: null });
+    expect(near?.treatment).toBe('short-term');
+    expect(near?.daysToLongTerm).toBeLessThanOrEqual(45);
+    expect(pnl.sold.find((item) => item.player === 'Short')).toMatchObject({
+      treatment: 'short-term',
+      daysHeld: 19,
+      soldAt: '2026-10-20',
+    });
+    expect(pnl.sold.find((item) => item.player === 'Long')?.treatment).toBe('long-term');
+    expect(pnl.sold.find((item) => item.player === 'Flip')?.treatment).toBeNull();
+    expect(pnl.sold.find((item) => item.player === 'No Date')).toMatchObject({ treatment: null, soldAt: null });
+    expect(pnl.copy).toMatch(/Inventory age:/);
+    expect(pnl.copy).toMatch(/inside 45 days of long-term/);
+    expect(pnl.copy).toMatch(/long-term/);
+    expect(pnl.copy).toMatch(/unsold card has no date/);
+    expect(pnl.copy).toMatch(/Recorded holding:/);
+    expect(pnl.copy).toMatch(/no holding dates/);
+    expect(pnlRowCopy(fresh as PnlRow)).toMatch(/unsold · held/);
+    expect(pnlRowCopy(pnl.sold.find((item) => item.player === 'Long') as PnlRow)).toMatch(/long-term/);
+    expect(pnlRowCopy(pnl.sold.find((item) => item.player === 'Short') as PnlRow)).toMatch(/short-term/);
+    expect(pnl.consigned).toBe(1);
+    expect(pnl.unsold.map((item) => item.player)).not.toContain('Park Floor');
+  });
+
   it('does not give one floor sale to a second show', () => {
     const book = [card({
       id: 'sale',

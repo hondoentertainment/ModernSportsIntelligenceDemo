@@ -4,6 +4,11 @@ import { DAY_KEY, readChecked } from '../lib/collector/deskNext';
 import { rangeForSeat } from '../lib/collector/saleRange';
 import { SHOW_DAY_RECAP_NOTE, buildShowDayRecap } from '../lib/collector/showDayRecap';
 import { SHOW_PNL_NOTE, pnlRowCopy, showPnl } from '../lib/collector/showPnl';
+import {
+  REALIZED_EXPORT_NOTE,
+  canDownloadRealized,
+  downloadRealizedCsv,
+} from '../lib/collector/inventoryAge';
 import { store } from '../lib/dal/syncStore';
 import { haggleSnapshot } from '../lib/shows/showHaggleLog';
 import { SHOW_TRIP_DECISIONS_KEY, readFloorDecisions } from '../lib/shows/showTripLoop';
@@ -79,6 +84,18 @@ const ShowDayRecap: React.FC<Props> = ({ showId, lines, inventory }) => {
           <p className="mt-1 text-xs text-slate-500">
             {hidden === 1 ? '1 more card stays off this list.' : `${hidden} more cards stay off this list.`}
           </p>
+        ) : null}
+        {canDownloadRealized(pnl.sold) ? (
+          <div className="mt-3">
+            <button
+              type="button"
+              className="min-h-[44px] rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100"
+              onClick={() => downloadRealizedCsv(pnl.sold, 'msi-show-realized.csv')}
+            >
+              Download realized results
+            </button>
+            <p className="mt-2 text-[11px] leading-relaxed text-slate-500">{REALIZED_EXPORT_NOTE}</p>
+          </div>
         ) : null}
       </section>
     </section>

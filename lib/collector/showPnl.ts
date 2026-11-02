@@ -1,16 +1,19 @@
 /**
  * Show-day profit and loss for the local card-show loop.
  * Demo buys and recorded sales, the ~4% card-show fee, and the realized
- * result. Sold inventory and unsold inventory stay apart.
+ * result. Sold inventory and unsold inventory stay apart. Unsold inventory
+ * says how long it has been held. A recorded sale says short-term or
+ * long-term when the book has both dates.
  * Not a settlement and not a live tape.
  */
 import { allInCost, exitMarker, exitMath, signedUsd, takenOnNote } from './showExit';
 import { cleanPlayer, floorBuyId, paidOnNote } from './showClose';
 import { boughtLotShares, isLot, lotCardId } from './tableLot';
 import { collectionDraftId, floorSaleMarker } from '../shows/showTripLoop';
+import { acquiredDay, ageRowBit, applyHold, inventoryAgeCopy, soldDay } from './inventoryAge';
 
 export const SHOW_PNL_NOTE =
-  'Demo buys and recorded sales at this seeded show. The card-show fee is the existing ~4% heuristic. Realized is the price on the book, minus that fee, minus the cost. Unsold inventory is a buy you still hold, including a buy not filed yet. Sold inventory is a sale written on the book. A sale still held, a pass, an open note, and a lot that cannot be split stay off the realized total. A note with no date stays on this show and off the week. Not a settlement and not a live tape.';
+  'Demo buys and recorded sales at this seeded show. The card-show fee is the existing ~4% heuristic. Realized is the price on the book, minus that fee, minus the cost. Unsold inventory is a buy you still hold, including a buy not filed yet. Sold inventory is a sale written on the book. Inventory age counts days from the note, or from the book purchase date when that copy is filed. Short-term and long-term use the same 365.25-day line as the holding-horizon rail. Inside 45 days of that line is called out. A recorded sale says the same when the book has both dates. A missing date stays off the age line. A sale still held, a pass, an open note, and a lot that cannot be split stay off the realized total. A note with no date stays on this show and off the week. Not a settlement and not a live tape.';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const NAME_LIMIT = 4;
@@ -39,6 +42,8 @@ export interface PnlBookCard {
   shippingFees?: number;
   insuranceFees?: number;
   salePrice?: number;
+  purchaseDate?: string;
+  saleDate?: string;
   notes?: string;
 }
 
@@ -63,6 +68,11 @@ export interface PnlRow {
   takenUsd: number | null;
   feeUsd: number | null;
   realizedUsd: number | null;
+  acquiredAt?: string | null;
+  soldAt?: string | null;
+  daysHeld?: number | null;
+  treatment?: 'short-term' | 'long-term' | null;
+  daysToLongTerm?: number | null;
 }
 
 export interface ShowPnl {
@@ -90,6 +100,7 @@ interface BuyDraft {
   id: string;
   player: string;
   paidUsd: number;
+  notedAt?: string;
 }
 
 function cents(value: number): number {
@@ -120,14 +131,14 @@ function buyDrafts(notes: readonly PnlNote[]): BuyDraft[] {
         const paid = shares[index];
         const player = cleanPlayer(line.player);
         if (!player || !(paid > 0)) return;
-        rows.push({ id: lotCardId(note.id, index), player, paidUsd: paid });
+        rows.push({ id: lotCardId(note.id, index), player, paidUsd: paid, notedAt: note.savedAt });
       });
       continue;
     }
     const player = cleanPlayer(note.player);
     const paid = paidOnNote(note);
     if (!player || !paid) continue;
-    rows.push({ id: floorBuyId(note.id), player, paidUsd: paid.usd });
+    rows.push({ id: floorBuyId(note.id), player, paidUsd: paid.usd, notedAt: note.savedAt });
   }
   return rows;
 }
@@ -174,12 +185,12 @@ function unsoldRow(id: string, player: string, paid: number): PnlRow {
 }
 
 export function pnlRowCopy(row: PnlRow): string {
-  if (row.side === 'unsold') return `${row.player} · paid ${money(row.paidUsd ?? 0)} · unsold`;
+  if (row.side === 'unsold') return `${row.player} · paid ${money(row.paidUsd ?? 0)} · unsold${ageRowBit(row)}`;
   if (row.takenUsd == null || row.feeUsd == null) return `${row.player} · sold, no sale price`;
   if (row.realizedUsd == null) {
-    return `${row.player} · taken ${money(row.takenUsd)} · card-show fee ${money(row.feeUsd)} · no cost basis`;
+    return `${row.player} · taken ${money(row.takenUsd)} · card-show fee ${money(row.feeUsd)} · no cost basis${ageRowBit(row)}`;
   }
-  return `${row.player} · taken ${money(row.takenUsd)} · card-show fee ${money(row.feeUsd)} · realized ${signedUsd(row.realizedUsd)}`;
+  return `${row.player} · taken ${money(row.takenUsd)} · card-show fee ${money(row.feeUsd)} · realized ${signedUsd(row.realizedUsd)}${ageRowBit(row)}`;
 }
 
 function nameList(rows: readonly PnlRow[]): string {
@@ -274,7 +285,8 @@ function quiet(pnl: ShowPnl): boolean {
 export function pnlCopy(pnl: ShowPnl, scope: 'show' | 'week'): string {
   if (quiet(pnl)) return scope === 'week' ? EMPTY_WEEK : EMPTY_SHOW;
   const lead = scope === 'week' ? 'Show profit and loss this week' : 'Show profit and loss';
-  return `${lead}: ${buySentence(pnl, scope)} ${recordedSentence(pnl)} ${unsoldSentence(pnl.unsold)} ${soldSentence(pnl.sold)}${aside(pnl)} Not a settlement and not a live tape.`;
+  const extra = [aside(pnl).trim(), inventoryAgeCopy(pnl)].filter(Boolean).join(' ');
+  return `${lead}: ${buySentence(pnl, scope)} ${recordedSentence(pnl)} ${unsoldSentence(pnl.unsold)} ${soldSentence(pnl.sold)}${extra ? ` ${extra}` : ''} Not a settlement and not a live tape.`;
 }
 
 function totals(unsold: PnlRow[], sold: PnlRow[]): Pick<
@@ -305,6 +317,19 @@ function totals(unsold: PnlRow[], sold: PnlRow[]): Pick<
   return { buyCount, buyUsd, takenUsd, feeUsd, realizedUsd, realizedRows, noBasis };
 }
 
+function stamp(
+  row: PnlRow,
+  card: PnlBookCard | undefined,
+  notedAt: string | undefined,
+  now: number,
+): PnlRow {
+  const open = row.side === 'unsold';
+  return {
+    ...row,
+    ...applyHold(acquiredDay(card?.purchaseDate, notedAt), soldDay(card?.saleDate), now, open),
+  };
+}
+
 function pushBuy(
   draft: BuyDraft,
   card: PnlBookCard | undefined,
@@ -312,16 +337,17 @@ function pushBuy(
   sold: PnlRow[],
   seen: Set<string>,
   handled: Set<string>,
+  now: number,
 ): 'consigned' | 'kept' {
   if (seen.has(draft.id)) return 'kept';
   seen.add(draft.id);
   if (card?.status === 'consignment') return 'consigned';
   if (card?.status === 'sold') {
-    sold.push(soldFromBook(draft.id, draft.player, draft.paidUsd, card));
+    sold.push(stamp(soldFromBook(draft.id, draft.player, draft.paidUsd, card), card, draft.notedAt, now));
     handled.add(card.id);
     return 'kept';
   }
-  unsold.push(unsoldRow(draft.id, draft.player, draft.paidUsd));
+  unsold.push(stamp(unsoldRow(draft.id, draft.player, draft.paidUsd), card, draft.notedAt, now));
   return 'kept';
 }
 
@@ -330,7 +356,9 @@ export function showPnl(input: {
   decisions?: readonly PnlDecision[];
   inventory: readonly PnlBookCard[];
   showId?: string;
+  now?: number;
 }): ShowPnl {
+  const now = input.now ?? Date.now();
   const byId = new Map(input.inventory.map((card) => [card.id, card]));
   const unsold: PnlRow[] = [];
   const sold: PnlRow[] = [];
@@ -342,7 +370,7 @@ export function showPnl(input: {
 
   for (const draft of buyDrafts(input.notes)) {
     const card = byId.get(draft.id);
-    if (pushBuy(draft, card, unsold, sold, seen, handled) === 'consigned') consigned += 1;
+    if (pushBuy(draft, card, unsold, sold, seen, handled, now) === 'consigned') consigned += 1;
   }
 
   for (const decision of input.decisions ?? []) {
@@ -352,7 +380,9 @@ export function showPnl(input: {
     if (paid == null || !player) continue;
     const id = floorKey(decision, input.showId) ?? `buy:${decision.opportunityId.trim() || player}`;
     const card = byId.get(id);
-    if (pushBuy({ id, player, paidUsd: paid }, card, unsold, sold, seen, handled) === 'consigned') consigned += 1;
+    if (pushBuy({ id, player, paidUsd: paid, notedAt: decision.decidedAt }, card, unsold, sold, seen, handled, now) === 'consigned') {
+      consigned += 1;
+    }
   }
 
   const saleNotes = input.notes.filter((note) => takenOnNote(note) != null);
@@ -365,7 +395,12 @@ export function showPnl(input: {
     const recorded = card != null && card.status === 'sold' && (card.notes ?? '').includes(exitMarker(note.id));
     if (!recorded || card == null) continue;
     const price = bookSale(card) ?? taken;
-    sold.push(soldFromBook(note.id, playerName(note.player, card.player), null, { ...card, salePrice: price }));
+    sold.push(stamp(
+      soldFromBook(note.id, playerName(note.player, card.player), null, { ...card, salePrice: price }),
+      card,
+      undefined,
+      now,
+    ));
     handled.add(card.id);
     if (cardId) handled.add(cardId);
   }
@@ -411,12 +446,12 @@ export function showPnl(input: {
       handled.add(cardId);
       continue;
     }
-    sold.push(soldFromBook(
+    sold.push(stamp(soldFromBook(
       `sell:${scope}:${opportunity}`,
       playerName(decision.player, card.player),
       null,
       card,
-    ));
+    ), card, undefined, now));
     handled.add(cardId);
   }
 
@@ -450,6 +485,7 @@ export function weekPnl(input: {
   const now = input.now ?? Date.now();
   const pnl = showPnl({
     ...input,
+    now,
     notes: input.notes.filter((note) => inWeek(note.savedAt, now)),
     decisions: (input.decisions ?? []).filter((decision) => inWeek(decision.decidedAt, now)),
   });

@@ -27,6 +27,11 @@ import { unfiledCopy } from '../lib/collector/showClose';
 import { weekHaul } from '../lib/collector/showHaul';
 import { weekExit } from '../lib/collector/showExit';
 import { weekPnl } from '../lib/collector/showPnl';
+import {
+  REALIZED_EXPORT_NOTE,
+  canDownloadRealized,
+  downloadRealizedCsv,
+} from '../lib/collector/inventoryAge';
 import { unfiledNotes } from '../lib/collector/tableLot';
 import { store } from '../lib/dal/syncStore';
 import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
@@ -301,11 +306,11 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
     decisionSnapshot,
     decisionSnapshot,
   );
-  const pnlCopy = weekPnl({
+  const weekBook = useMemo(() => weekPnl({
     notes,
     decisions: decisionKey ? readFloorDecisions() : [],
     inventory,
-  }).copy;
+  }), [notes, decisionKey, inventory]);
   const floorCount = floor.bought + floor.passed + floor.open + floor.sold;
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-950/40 p-4" aria-label="Weekly collection recap">
@@ -322,7 +327,19 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
       <p className="mt-2 text-xs text-slate-300" aria-label="Ladder this week">{ladderCopy}</p>
       <p className="mt-2 text-xs text-slate-300" aria-label="Show haul this week">{haulCopy}</p>
       <p className="mt-2 text-xs text-slate-300" aria-label="Show exit this week">{exitCopy}</p>
-      <p className="mt-2 text-xs text-slate-300" aria-label="Show profit and loss this week">{pnlCopy}</p>
+      <p className="mt-2 text-xs text-slate-300" aria-label="Show profit and loss this week">{weekBook.copy}</p>
+      {canDownloadRealized(weekBook.pnl.sold) ? (
+        <div className="mt-2">
+          <button
+            type="button"
+            className="min-h-[44px] rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-100"
+            onClick={() => downloadRealizedCsv(weekBook.pnl.sold, 'msi-week-realized.csv')}
+          >
+            Download this week&apos;s realized results
+          </button>
+          <p className="mt-2 text-[11px] leading-relaxed text-slate-500">{REALIZED_EXPORT_NOTE}</p>
+        </div>
+      ) : null}
       <p className="mt-2 text-xs text-slate-300">{unfiledCopy(waiting)}</p>
       <Link to="/local-card-shows" className="inline-flex min-h-[44px] items-center text-xs text-brand-lime">Show desk</Link>
       {recap.movers.length === 0 ? <p className="mt-2 text-sm text-slate-400">No held cards.</p> : (
