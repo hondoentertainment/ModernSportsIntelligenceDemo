@@ -604,4 +604,108 @@ describe('show profit and loss', () => {
     expect(generic.sold).toHaveLength(0);
     expect(generic.unrecorded).toBe(1);
   });
+
+  it('buckets recorded sales and calls the unsold cards that are near the line', () => {
+    const nearAt = new Date(NOW - 330 * 24 * 60 * 60 * 1000).toISOString();
+    const nearId = floorBuyId('near-buy');
+    const clearId = floorBuyId('clear-buy');
+    const underId = floorBuyId('under-buy');
+    const farId = floorBuyId('far-buy');
+    const bareId = floorBuyId('bare-buy');
+    const zeroId = floorBuyId('zero-buy');
+    const pnl = showPnl({
+      now: NOW,
+      notes: [
+        note({ id: 'near-buy', player: 'Near', offerUsd: 20, savedAt: nearAt }),
+        note({ id: 'clear-buy', player: 'Booked', offerUsd: 12, savedAt: '2024-06-01T00:00:00.000Z' }),
+        note({ id: 'under-buy', player: 'Insured', offerUsd: 50, savedAt: '2024-06-01T00:00:00.000Z' }),
+        note({ id: 'far-buy', player: 'Far', offerUsd: 10, savedAt: '2026-10-01T00:00:00.000Z' }),
+        note({ id: 'bare-buy', player: 'Bare', offerUsd: 8, savedAt: '2024-06-01T00:00:00.000Z' }),
+        note({ id: 'zero-buy', player: 'Zero Mark', offerUsd: 20, savedAt: '2024-06-01T00:00:00.000Z' }),
+        note({ id: 'loose', player: 'Loose', offerUsd: 9, savedAt: '2026-10-30T00:00:00.000Z' }),
+        note({ id: 'sold-short', result: 'sold', offerUsd: 20, player: 'Short', cardId: 'short' }),
+        note({ id: 'sold-long', result: 'sold', offerUsd: 30, player: 'Long', cardId: 'long' }),
+        note({ id: 'sold-bare', result: 'sold', offerUsd: 15, player: 'No Date', cardId: 'nodate' }),
+      ],
+      inventory: [
+        card({ id: nearId, player: 'Near', purchasePrice: 20, currentValue: 80, purchaseDate: nearAt }),
+        card({ id: clearId, player: 'Booked', purchasePrice: 12, currentValue: 80, purchaseDate: '2024-01-01' }),
+        card({
+          id: underId,
+          player: 'Insured',
+          purchasePrice: 50,
+          insuranceFees: 10,
+          currentValue: 62,
+          purchaseDate: '2024-01-01',
+        }),
+        card({ id: farId, player: 'Far', purchasePrice: 10, currentValue: 100, purchaseDate: '2026-10-01' }),
+        card({ id: bareId, player: 'Bare', purchasePrice: 8, purchaseDate: '2024-01-01' }),
+        card({ id: zeroId, player: 'Zero Mark', purchasePrice: 20, currentValue: 0, purchaseDate: '2024-01-01' }),
+        card({
+          id: 'short',
+          player: 'Short',
+          status: 'sold',
+          purchasePrice: 10,
+          salePrice: 20,
+          purchaseDate: '2026-10-01',
+          saleDate: '2026-10-20',
+          notes: exitMarker('sold-short'),
+        }),
+        card({
+          id: 'long',
+          player: 'Long',
+          status: 'sold',
+          purchasePrice: 10,
+          salePrice: 30,
+          purchaseDate: '2024-01-01',
+          saleDate: '2026-10-30',
+          notes: exitMarker('sold-long'),
+        }),
+        card({
+          id: 'nodate',
+          player: 'No Date',
+          status: 'sold',
+          purchasePrice: 10,
+          salePrice: 15,
+          notes: exitMarker('sold-bare'),
+        }),
+      ],
+    });
+    expect(pnl.unsold.find((row) => row.player === 'Near')).toMatchObject({ holdCall: 'hold', holdMarkUsd: 80 });
+    expect(pnl.unsold.find((row) => row.player === 'Booked')).toMatchObject({ holdCall: 'clear', holdMarkUsd: 80 });
+    expect(pnl.unsold.find((row) => row.player === 'Insured')).toMatchObject({ holdCall: 'under', holdMarkUsd: 62 });
+    expect(pnl.unsold.find((row) => row.player === 'Far')?.holdCall).toBeNull();
+    expect(pnl.unsold.find((row) => row.player === 'Bare')?.holdCall).toBeNull();
+    expect(pnl.unsold.find((row) => row.player === 'Zero Mark')).toMatchObject({ holdCall: 'under', holdMarkUsd: 0 });
+    expect(pnl.unsold.find((row) => row.player === 'Loose')?.holdCall).toBeNull();
+    expect(pnl.sold.find((row) => row.player === 'Short')?.holdCall).toBeNull();
+    expect(pnl.copy).toMatch(/Holding buckets: short-term 1 card, taken \$20, card-show fee \$0.8, realized \$9.2 and long-term 1 card, taken \$30, card-show fee \$1.2, realized \$18.8/);
+    expect(pnl.copy).toMatch(/No holding dates: 1 card, taken \$15, card-show fee \$0.6, realized \$4.4/);
+    expect(pnl.copy).toMatch(/Hold call: hold 1 card inside 45 days of long-term \(Near\), clear 1 card already long-term and still ahead after the card-show fee \(Booked\), and under 2 cards not ahead after the card-show fee \(Insured, Zero Mark\)/);
+    expect(pnl.copy).toMatch(/unsold cards stay off this call/);
+    expect(pnlRowCopy(pnl.unsold.find((row) => row.player === 'Near') as PnlRow)).toMatch(/hold until long-term · mark \$80/);
+    expect(pnlRowCopy(pnl.unsold.find((row) => row.player === 'Booked') as PnlRow)).toMatch(/clear after the card-show fee · mark \$80/);
+    expect(pnlRowCopy(pnl.unsold.find((row) => row.player === 'Insured') as PnlRow)).toMatch(/under after the card-show fee · mark \$62/);
+    expect(pnlRowCopy(pnl.unsold.find((row) => row.player === 'Far') as PnlRow)).not.toMatch(/hold until long-term/);
+
+    const week = weekPnl({
+      now: NOW,
+      notes: [note({
+        id: 'near-buy',
+        player: 'Near',
+        offerUsd: 20,
+        savedAt: new Date(NOW - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      })],
+      inventory: [card({
+        id: nearId,
+        player: 'Near',
+        purchasePrice: 20,
+        currentValue: 80,
+        purchaseDate: nearAt,
+      })],
+    });
+    expect(week.copy).toMatch(/Show profit and loss this week/);
+    expect(week.copy).toMatch(/Hold call: hold 1 card inside 45 days of long-term \(Near\)/);
+    expect(week.pnl.unsold[0]?.holdCall).toBe('hold');
+  });
 });
