@@ -184,6 +184,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/collector/showExit.ts',
         'lib/collector/showPnl.ts',
         'lib/collector/inventoryAge.ts',
+        'lib/collector/holdingBuckets.ts',
         'lib/authSessionNotice.ts',
         'lib/analytics/capitalGainsExit.ts',
         'lib/utils/syncProductDefaults.ts',
@@ -215,12 +216,12 @@ export default defineConfig(({ command, mode }) => {
       // values for v8 run-to-run stability; ratchet UP as tests are added,
       // never down. Branches lag (~91%) due to defensive branches,
       // import.meta / env splits, and optional chaining.
-      // Measured 98.89 / 94.74 / 99.42 / 99.63 after inventory age
+      // Measured 98.94 / 94.90 / 99.43 / 99.65 after holding buckets
       // (v8 is deterministic for this suite). Thresholds sit ~0.2-0.5pp under
       // that. Ratchet UP as tests are added, never down.
       thresholds: {
         statements: 98.6,
-        branches: 94.2,
+        branches: 94.4,
         functions: 99.2,
         lines: 99.4,
       },

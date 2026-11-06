@@ -79,6 +79,7 @@ test.describe('Show profit and loss', () => {
     await expect(pnl.getByRole('list', { name: 'Sold inventory', exact: true })).toContainText(card.player);
     await expect(pnl.getByRole('list', { name: 'Sold inventory', exact: true })).toContainText(/short-term|long-term/);
     await expect(pnl.getByLabel('Show profit and loss totals')).toContainText(/recorded holding/i);
+    await expect(pnl.getByLabel('Show profit and loss totals')).toContainText(/holding buckets:/i);
     await expect(pnl.getByLabel('Show profit and loss totals')).toContainText(/not a settlement and not a live tape/i);
     const downloadPromise = page.waitForEvent('download');
     await pnl.getByRole('button', { name: 'Download realized results' }).click();
@@ -101,6 +102,7 @@ test.describe('Show profit and loss', () => {
     await expect(week).toContainText(/not a settlement and not a live tape/i);
     await expect(week).toContainText(/inventory age/i);
     await expect(week).toContainText(/recorded holding/i);
+    await expect(week).toContainText(/holding buckets:/i);
     const weekDownloadPromise = page.waitForEvent('download');
     await recap.getByRole('button', { name: /download this week's realized results/i }).click();
     const weekDownload = await weekDownloadPromise;

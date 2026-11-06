@@ -10,10 +10,17 @@ import { allInCost, exitMarker, exitMath, signedUsd, takenOnNote } from './showE
 import { cleanPlayer, floorBuyId, paidOnNote } from './showClose';
 import { boughtLotShares, isLot, lotCardId } from './tableLot';
 import { collectionDraftId, floorSaleMarker } from '../shows/showTripLoop';
+import {
+  holdCallCopy,
+  holdCallFor,
+  holdRowBit,
+  holdingBucketCopy,
+  storedMarkUsd,
+} from './holdingBuckets';
 import { acquiredDay, ageRowBit, applyHold, inventoryAgeCopy, soldDay } from './inventoryAge';
 
 export const SHOW_PNL_NOTE =
-  'Demo buys and recorded sales at this seeded show. The card-show fee is the existing ~4% heuristic. Realized is the price on the book, minus that fee, minus the cost. Unsold inventory is a buy you still hold, including a buy not filed yet. Sold inventory is a sale written on the book. Inventory age counts days from the note, or from the book purchase date when that copy is filed. Short-term and long-term use the same 365.25-day line as the holding-horizon rail. Inside 45 days of that line is called out. A recorded sale says the same when the book has both dates. A missing date stays off the age line. A sale still held, a pass, an open note, and a lot that cannot be split stay off the realized total. A note with no date stays on this show and off the week. Not a settlement and not a live tape.';
+  'Demo buys and recorded sales at this seeded show. The card-show fee is the existing ~4% heuristic. Realized is the price on the book, minus that fee, minus the cost. Unsold inventory is a buy you still hold, including a buy not filed yet. Sold inventory is a sale written on the book. Inventory age counts days from the note, or from the book purchase date when that copy is filed. Short-term and long-term use the same 365.25-day line as the holding-horizon rail. Inside 45 days of that line is called out. A recorded sale says the same when the book has both dates. Holding buckets add those recorded sales up by short-term, long-term, and no holding dates. The hold call uses the stored mark and that same fee. Inside 45 days of long-term, and still ahead after the fee, is a hold. Already long-term and still ahead is clear. Not ahead after the fee is under. A missing mark, a buy that is not filed, and a short-term gain more than 45 days from the line stay off the call. A missing date stays off the age line. A sale still held, a pass, an open note, and a lot that cannot be split stay off the realized total. A note with no date stays on this show and off the week. Not a settlement and not a live tape.';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const NAME_LIMIT = 4;
@@ -44,6 +51,7 @@ export interface PnlBookCard {
   salePrice?: number;
   purchaseDate?: string;
   saleDate?: string;
+  currentValue?: number;
   notes?: string;
 }
 
@@ -73,6 +81,8 @@ export interface PnlRow {
   daysHeld?: number | null;
   treatment?: 'short-term' | 'long-term' | null;
   daysToLongTerm?: number | null;
+  holdCall?: 'hold' | 'clear' | 'under' | null;
+  holdMarkUsd?: number | null;
 }
 
 export interface ShowPnl {
@@ -185,7 +195,9 @@ function unsoldRow(id: string, player: string, paid: number): PnlRow {
 }
 
 export function pnlRowCopy(row: PnlRow): string {
-  if (row.side === 'unsold') return `${row.player} · paid ${money(row.paidUsd ?? 0)} · unsold${ageRowBit(row)}`;
+  if (row.side === 'unsold') {
+    return `${row.player} · paid ${money(row.paidUsd ?? 0)} · unsold${ageRowBit(row)}${holdRowBit(row)}`;
+  }
   if (row.takenUsd == null || row.feeUsd == null) return `${row.player} · sold, no sale price`;
   if (row.realizedUsd == null) {
     return `${row.player} · taken ${money(row.takenUsd)} · card-show fee ${money(row.feeUsd)} · no cost basis${ageRowBit(row)}`;
@@ -285,7 +297,12 @@ function quiet(pnl: ShowPnl): boolean {
 export function pnlCopy(pnl: ShowPnl, scope: 'show' | 'week'): string {
   if (quiet(pnl)) return scope === 'week' ? EMPTY_WEEK : EMPTY_SHOW;
   const lead = scope === 'week' ? 'Show profit and loss this week' : 'Show profit and loss';
-  const extra = [aside(pnl).trim(), inventoryAgeCopy(pnl)].filter(Boolean).join(' ');
+  const extra = [
+    aside(pnl).trim(),
+    inventoryAgeCopy(pnl),
+    holdingBucketCopy(pnl.sold),
+    holdCallCopy(pnl.unsold),
+  ].filter(Boolean).join(' ');
   return `${lead}: ${buySentence(pnl, scope)} ${recordedSentence(pnl)} ${unsoldSentence(pnl.unsold)} ${soldSentence(pnl.sold)}${extra ? ` ${extra}` : ''} Not a settlement and not a live tape.`;
 }
 
@@ -324,10 +341,20 @@ function stamp(
   now: number,
 ): PnlRow {
   const open = row.side === 'unsold';
-  return {
+  const aged: PnlRow = {
     ...row,
     ...applyHold(acquiredDay(card?.purchaseDate, notedAt), soldDay(card?.saleDate), now, open),
   };
+  if (!open) return { ...aged, holdCall: null, holdMarkUsd: null };
+  const markUsd = storedMarkUsd(card?.currentValue);
+  const costUsd = card ? allInCost(card) : null;
+  const holdCall = holdCallFor({
+    treatment: aged.treatment ?? null,
+    daysToLongTerm: aged.daysToLongTerm ?? null,
+    markUsd,
+    costUsd,
+  });
+  return { ...aged, holdCall, holdMarkUsd: holdCall == null ? null : markUsd };
 }
 
 function pushBuy(
