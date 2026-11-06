@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import HoldCallAlerts from '../../components/HoldCallAlerts';
@@ -20,7 +20,14 @@ const row = (overrides: Partial<HoldCallAlert> = {}): HoldCallAlert => ({
   ...overrides,
 });
 
+const AS_OF = new Date('2026-10-31T12:00:00.000Z');
+const DAY = 24 * 60 * 60 * 1000;
+
 describe('Hold call alerts', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('names the card, the call, the days, and links to that card', () => {
     render(
       <MemoryRouter>
@@ -55,7 +62,9 @@ describe('Hold call alerts', () => {
   });
 
   it('shows a filed unsold card on the alert digest', () => {
-    const boughtAt = new Date(Date.parse('2026-10-31T12:00:00.000Z') - 330 * 24 * 60 * 60 * 1000).toISOString();
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(AS_OF);
+    const boughtAt = new Date(AS_OF.getTime() - 330 * DAY).toISOString();
     store.set(HAGGLE_KEY, [{
       id: 'near-buy',
       showId: 'nyc',
