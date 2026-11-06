@@ -185,6 +185,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/collector/showPnl.ts',
         'lib/collector/inventoryAge.ts',
         'lib/collector/holdingBuckets.ts',
+        'lib/collector/holdCallAlert.ts',
         'lib/authSessionNotice.ts',
         'lib/analytics/capitalGainsExit.ts',
         'lib/utils/syncProductDefaults.ts',
