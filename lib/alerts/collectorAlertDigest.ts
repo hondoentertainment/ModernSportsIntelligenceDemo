@@ -17,9 +17,12 @@ import { compsSnapshot } from '../collector/deskNext';
 import { cardRanges, weekLadder, weekLadderCopy } from '../collector/ladderScore';
 import { buyLadder, buyLadderCopy } from '../collector/offerLadder';
 import { watchlistAlertMark } from '../collector/gradeAlert';
+import { holdCallAlerts, type HoldCallAlert } from '../collector/holdCallAlert';
 import { rangeForSeat, targetRangeDesk, type RangeRow } from '../collector/saleRange';
 import { followUps, type FollowUp, type MarkRef } from '../collector/showClose';
+import type { PnlDecision } from '../collector/showPnl';
 import { haggleSnapshot, type HaggleNote } from '../shows/showHaggleLog';
+import { readFloorDecisions } from '../shows/showTripLoop';
 import { store } from '../dal/syncStore';
 
 export const ALERT_DIGEST_DISCLOSURE =
@@ -36,6 +39,7 @@ export interface DigestRow {
 
 export interface CollectorAlertDigest {
   drops: DigestRow[];
+  holds: HoldCallAlert[];
   shows: DigestRow[];
   follows: FollowUp[];
   ranges: RangeRow[];
@@ -123,7 +127,9 @@ export function buildCollectorAlertDigest(input: {
   shows: readonly ResolvedLocalCardShow[];
   prefs: ShowAlertPrefs;
   notes?: readonly HaggleNote[];
+  decisions?: readonly PnlDecision[];
   inventory?: readonly CardInventory[];
+  now?: number;
 }): CollectorAlertDigest {
   const armed = input.prefs.enabled && input.prefs.home != null;
   const notes = input.notes ?? [];
@@ -131,6 +137,12 @@ export function buildCollectorAlertDigest(input: {
   const ranges = targetRangeDesk(input.targets);
   return {
     drops: priceDropRows(input.targets),
+    holds: holdCallAlerts({
+      notes,
+      decisions: input.decisions,
+      inventory,
+      now: input.now,
+    }),
     ranges: ranges.rows.map((row) => {
       const id = row.id.startsWith('range:') ? row.id.slice('range:'.length) : row.id;
       const target = input.targets.find((item) => item.id === id);
@@ -168,6 +180,8 @@ export function loadCollectorAlertDigest(
     shows: listResolvedLocalCardShows(now),
     prefs: getShowAlertPrefs(),
     notes: haggleSnapshot(),
+    decisions: readFloorDecisions(),
     inventory: readInventory(inventory),
+    now: now.getTime(),
   });
 }
