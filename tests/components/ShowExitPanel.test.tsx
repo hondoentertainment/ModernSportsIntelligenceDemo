@@ -63,11 +63,15 @@ describe('Show exit panel', () => {
           salesData: sales,
         })]}
         purchaseDate="2026-10-30"
+        now={Date.parse('2026-10-31T12:00:00.000Z')}
         onRecordSale={onRecordSale}
       />,
     );
     expect(screen.getByLabelText('Show exit totals')).toHaveTextContent(/Exit: 9 cards/i);
     expect(screen.getByLabelText('Show exit totals')).toHaveTextContent(/not a settlement and not a live tape/i);
+    expect(screen.getByLabelText('Hold worth on this exit')).toHaveTextContent(/already long-term/i);
+    expect(screen.getByLabelText('Hold worth on this exit')).toHaveTextContent('Aaron Judge');
+    expect(screen.getByLabelText('Hold worth on this exit')).toHaveTextContent(/not a tax determination/i);
     expect(screen.getByText(/1 more card stays off this list/i)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Record Aaron Judge sale' }));
     expect(onRecordSale).toHaveBeenCalledWith('judge', expect.objectContaining({

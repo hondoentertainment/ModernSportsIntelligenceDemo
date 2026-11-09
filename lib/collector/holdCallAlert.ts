@@ -10,10 +10,11 @@ import { store } from '../dal/syncStore';
 import { haggleSnapshot } from '../shows/showHaggleLog';
 import { readFloorDecisions } from '../shows/showTripLoop';
 import type { ShowHoldCall } from './holdingBuckets';
+import { gainWorth, holdWorthLine } from './holdWorth';
 import { showPnl, type PnlBookCard, type PnlDecision, type PnlNote } from './showPnl';
 
 export const HOLD_CALL_ALERT_NOTE =
-  'An unsold card on the watchlist hub and the alert digest. Inside 45 days of long-term, and still ahead after the ~4% card-show fee, is a hold. Already long-term and still ahead is clear. Not ahead after that fee is under. A missing mark, a buy that is not filed, and a short-term gain more than 45 days from the line stay off. Not a tax determination and not a live tape.';
+  'An unsold card on the watchlist hub and the alert digest. Inside 45 days of long-term, and still ahead after the ~4% card-show fee, is a hold. Already long-term and still ahead is clear. Not ahead after that fee is under. Waiting on a listed card names the dollars kept at the sell planner\'s 35% short-term and 20% long-term rates on that same gain. A missing mark, a buy that is not filed, and a short-term gain more than 45 days from the line stay off. Not a tax determination and not a live tape.';
 
 export interface HoldCallAlert {
   id: string;
@@ -23,6 +24,7 @@ export interface HoldCallAlert {
   daysToLongTerm: number | null;
   title: string;
   detail: string;
+  worth: string;
   href: string;
 }
 
@@ -92,6 +94,7 @@ export function holdCallAlerts(input: {
       call: row.holdCall,
       daysToLongTerm: row.daysToLongTerm,
     });
+    const worth = gainWorth(row.holdRealizedUsd, row.treatment);
     rows.push({
       id: `hold:${row.id}`,
       cardId: row.id,
@@ -100,6 +103,7 @@ export function holdCallAlerts(input: {
       daysToLongTerm: row.daysToLongTerm ?? null,
       title: copy.title,
       detail: copy.detail,
+      worth: holdWorthLine(row.holdCall, worth),
       href: holdCallAlertHref(row.id),
     });
   }

@@ -14,6 +14,7 @@ import { pullCopy } from '../lib/collector/floorPack';
 import { LADDER_SCORE_NOTE, cardRanges, sellScoreCopy } from '../lib/collector/ladderScore';
 import { SELL_LADDER_NOTE, sellLadder, sellLadderCopy } from '../lib/collector/offerLadder';
 import { GRADE_RANGE_NOTE, SALE_RANGE_NOTE, gradeSplitCopy, rangeForSeat, rangeSeatCopy } from '../lib/collector/saleRange';
+import { exitHoldWorthCopy } from '../lib/collector/holdWorth';
 import { exitRowCopy, showExit, weekExit } from '../lib/collector/showExit';
 import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
 
@@ -134,13 +135,18 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
     }
     return map;
   }, [notes, inventory]);
-  const exitWeek = useMemo(
+  const exitWeekBook = useMemo(
     () => weekExit({
       notes,
       inventory,
       rangeForId: (id) => cardRanges(inventory)[id] ?? null,
-    }).copy,
+    }),
     [notes, inventory],
+  );
+  const exitWeek = exitWeekBook.copy;
+  const exitWorth = useMemo(
+    () => exitHoldWorthCopy({ rows: exitWeekBook.exit.rows, cards: inventory }),
+    [exitWeekBook, inventory],
   );
 
   if (inventory.length === 0) return null;
@@ -171,6 +177,9 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{SELL_LADDER_NOTE}</p>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-500">{LADDER_SCORE_NOTE}</p>
       <p className="mb-4 text-[11px] leading-relaxed text-slate-300" aria-label="Show exit on the sell planner">{exitWeek}</p>
+      {exitWorth ? (
+        <p className="mb-4 text-[11px] leading-relaxed text-slate-300" aria-label="Hold worth on the sell planner">{exitWorth}</p>
+      ) : null}
 
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <div className="min-w-0 rounded-xl border border-slate-800/80 bg-brand-slate/30 px-3 py-3">
