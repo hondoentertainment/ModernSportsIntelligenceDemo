@@ -8,6 +8,7 @@ import {
   showExit,
   type ExitRow,
 } from '../lib/collector/showExit';
+import { exitHoldWorthCopy } from '../lib/collector/holdWorth';
 import { rangeForSeat } from '../lib/collector/saleRange';
 import { haggleSnapshot, subscribeHaggle } from '../lib/shows/showHaggleLog';
 
@@ -15,10 +16,11 @@ interface Props {
   showId: string;
   inventory: CardInventory[];
   purchaseDate?: string;
+  now?: number;
   onRecordSale?: (cardId: string, patch: Partial<CardInventory>) => Promise<void> | void;
 }
 
-const ShowExitPanel: React.FC<Props> = ({ showId, inventory, purchaseDate = '', onRecordSale }) => {
+const ShowExitPanel: React.FC<Props> = ({ showId, inventory, purchaseDate = '', now, onRecordSale }) => {
   const notes = useSyncExternalStore(subscribeHaggle, haggleSnapshot, haggleSnapshot);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +32,11 @@ const ShowExitPanel: React.FC<Props> = ({ showId, inventory, purchaseDate = '', 
       return card ? rangeForSeat(card) : null;
     },
   }), [notes, showId, inventory]);
+  const worth = useMemo(() => exitHoldWorthCopy({
+    rows: exit.rows,
+    cards: inventory,
+    now,
+  }), [exit.rows, inventory, now]);
   const shown = exit.rows.filter((row, index) => index < 8 || row.held);
   const hidden = exit.rows.length - shown.length;
 
@@ -60,6 +67,7 @@ const ShowExitPanel: React.FC<Props> = ({ showId, inventory, purchaseDate = '', 
       <h3 className="text-xs font-black uppercase tracking-widest text-white">Show exit</h3>
       <p className="mt-1 text-[11px] leading-relaxed text-slate-400">{SHOW_EXIT_NOTE}</p>
       <p className="mt-2 text-xs text-slate-200" aria-label="Show exit totals">{exit.copy}</p>
+      {worth ? <p className="mt-2 text-xs text-slate-300" aria-label="Hold worth on this exit">{worth}</p> : null}
       {shown.length > 0 ? (
         <ul className="mt-2 space-y-2" aria-label="Show exit cards">
           {shown.map((row) => (

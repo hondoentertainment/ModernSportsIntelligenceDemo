@@ -10,7 +10,7 @@ import { cleanPlayer, paidOnNote } from './showClose';
 import { isLot } from './tableLot';
 
 export const SHOW_EXIT_NOTE =
-  'Sold table notes at this seeded show, for one card you hold. The price you took, offer first, sits on that card\'s sell ladder. Ask, take, and pass come from sold comps when that card has them, otherwise a demo sketch. The card-show fee is the existing ~4% heuristic. Recording writes that price and the realized result onto the copy. Only that note counts as the sale. A second note on the same card stays off the realized total. A buy, a pass, an open note, and a lot stay off. Not a settlement and not a live tape.';
+  'Sold table notes at this seeded show, for one card you hold. The price you took, offer first, sits on that card\'s sell ladder. Ask, take, and pass come from sold comps when that card has them, otherwise a demo sketch. The card-show fee is the existing ~4% heuristic. A price you have not recorded yet says what waiting keeps at the sell planner\'s 35% short-term and 20% long-term rates when the book has a purchase date. Recording writes that price and the realized result onto the copy. Only that note counts as the sale. A second note on the same card stays off the realized total. A buy, a pass, an open note, and a lot stay off. Not a settlement and not a live tape.';
 
 export const EXIT_RECORD_NOTE =
   'Recording writes the price you took, the ~4% card-show fee, and the realized result onto that copy. A card already sold, and a card on consignment, stay put. Not a settlement.';

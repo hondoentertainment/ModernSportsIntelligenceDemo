@@ -671,7 +671,11 @@ describe('show profit and loss', () => {
         }),
       ],
     });
-    expect(pnl.unsold.find((row) => row.player === 'Near')).toMatchObject({ holdCall: 'hold', holdMarkUsd: 80 });
+    expect(pnl.unsold.find((row) => row.player === 'Near')).toMatchObject({
+      holdCall: 'hold',
+      holdMarkUsd: 80,
+      holdRealizedUsd: 56.8,
+    });
     expect(pnl.unsold.find((row) => row.player === 'Booked')).toMatchObject({ holdCall: 'clear', holdMarkUsd: 80 });
     expect(pnl.unsold.find((row) => row.player === 'Insured')).toMatchObject({ holdCall: 'under', holdMarkUsd: 62 });
     expect(pnl.unsold.find((row) => row.player === 'Far')?.holdCall).toBeNull();
@@ -683,6 +687,10 @@ describe('show profit and loss', () => {
     expect(pnl.copy).toMatch(/No holding dates: 1 card, taken \$15, card-show fee \$0.6, realized \$4.4/);
     expect(pnl.copy).toMatch(/Hold call: hold 1 card inside 45 days of long-term \(Near\), clear 1 card already long-term and still ahead after the card-show fee \(Booked\), and under 2 cards not ahead after the card-show fee \(Insured, Zero Mark\)/);
     expect(pnl.copy).toMatch(/unsold cards stay off this call/);
+    expect(pnl.copy).toMatch(/Hold worth: waiting keeps \$8\.52 on the stored mark for 1 card inside the hold window \(Near\)/);
+    expect(pnl.copy).toMatch(/3 cards already long-term or under the fee keep nothing more \(Booked, Insured, Zero Mark\)/);
+    expect(pnl.copy).toMatch(/a recorded short-term sale left \$1\.38 versus the 20% long-term rate \(Short\)/);
+    expect(pnl.copy).toMatch(/Not a tax determination/);
     expect(pnlRowCopy(pnl.unsold.find((row) => row.player === 'Near') as PnlRow)).toMatch(/hold until long-term · mark \$80/);
     expect(pnlRowCopy(pnl.unsold.find((row) => row.player === 'Booked') as PnlRow)).toMatch(/clear after the card-show fee · mark \$80/);
     expect(pnlRowCopy(pnl.unsold.find((row) => row.player === 'Insured') as PnlRow)).toMatch(/under after the card-show fee · mark \$62/);
@@ -706,6 +714,7 @@ describe('show profit and loss', () => {
     });
     expect(week.copy).toMatch(/Show profit and loss this week/);
     expect(week.copy).toMatch(/Hold call: hold 1 card inside 45 days of long-term \(Near\)/);
+    expect(week.copy).toMatch(/Hold worth: waiting keeps \$8\.52/);
     expect(week.pnl.unsold[0]?.holdCall).toBe('hold');
   });
 });

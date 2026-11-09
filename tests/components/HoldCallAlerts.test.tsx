@@ -16,6 +16,7 @@ const row = (overrides: Partial<HoldCallAlert> = {}): HoldCallAlert => ({
   daysToLongTerm: 20,
   title: 'Near · hold',
   detail: 'Entered the hold window. 20 days to long-term. Still ahead after the ~4% card-show fee. Not a tax determination.',
+  worth: 'Waiting on this mark keeps $8.52 versus the 20% long-term rate. Estimated tax is $19.88 while it is short-term. Not a tax determination.',
   href: '/audit-dossier?cardId=floor%3Anear',
   ...overrides,
 });
@@ -46,6 +47,7 @@ describe('Hold call alerts', () => {
     const section = screen.getByRole('region', { name: 'Hold call alerts' });
     expect(section).toHaveTextContent(/not a tax determination/i);
     expect(section).toHaveTextContent('Near · hold');
+    expect(section).toHaveTextContent(/Waiting on this mark keeps \$8\.52/);
     expect(section).toHaveTextContent(/20 days to long-term/);
     expect(section).toHaveTextContent('Booked · clear');
     expect(screen.getByRole('link', { name: 'Open Near' })).toHaveAttribute('href', '/audit-dossier?cardId=floor%3Anear');
@@ -104,6 +106,7 @@ describe('Hold call alerts', () => {
     expect(digest).toHaveTextContent('Near · hold');
     expect(digest).toHaveTextContent(/days to long-term/);
     expect(digest).toHaveTextContent(/not a tax determination/i);
+    expect(digest).toHaveTextContent(/Waiting on this mark keeps \$8\.52/);
     expect(screen.getByRole('link', { name: 'Open Near' })).toHaveAttribute('href', '/audit-dossier?cardId=floor%3Anear-buy');
   });
 });

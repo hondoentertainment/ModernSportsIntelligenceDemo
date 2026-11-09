@@ -26,6 +26,7 @@ import { TRADE_LADDER_NOTE, tradeLadder, tradeLadderCopy } from '../lib/collecto
 import { unfiledCopy } from '../lib/collector/showClose';
 import { weekHaul } from '../lib/collector/showHaul';
 import { weekExit } from '../lib/collector/showExit';
+import { exitHoldWorthCopy } from '../lib/collector/holdWorth';
 import { weekPnl } from '../lib/collector/showPnl';
 import {
   REALIZED_EXPORT_NOTE,
@@ -293,13 +294,18 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
     }).copy,
     [notes, inventory, places, ranges],
   );
-  const exitCopy = useMemo(
+  const exitBook = useMemo(
     () => weekExit({
       notes,
       inventory,
       rangeForId: (id) => ranges[id] ?? null,
-    }).copy,
+    }),
     [notes, inventory, ranges],
+  );
+  const exitCopy = exitBook.copy;
+  const exitWorth = useMemo(
+    () => exitHoldWorthCopy({ rows: exitBook.exit.rows, cards: inventory }),
+    [exitBook, inventory],
   );
   const decisionKey = useSyncExternalStore(
     (listener) => store.onWrite(listener),
@@ -327,6 +333,9 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
       <p className="mt-2 text-xs text-slate-300" aria-label="Ladder this week">{ladderCopy}</p>
       <p className="mt-2 text-xs text-slate-300" aria-label="Show haul this week">{haulCopy}</p>
       <p className="mt-2 text-xs text-slate-300" aria-label="Show exit this week">{exitCopy}</p>
+      {exitWorth ? (
+        <p className="mt-2 text-xs text-slate-300" aria-label="Hold worth on this week's exit">{exitWorth}</p>
+      ) : null}
       <p className="mt-2 text-xs text-slate-300" aria-label="Show profit and loss this week">{weekBook.copy}</p>
       {canDownloadRealized(weekBook.pnl.sold) ? (
         <div className="mt-2">

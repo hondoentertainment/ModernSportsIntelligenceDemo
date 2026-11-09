@@ -195,10 +195,13 @@ test.describe('Hold-call alerts', () => {
     await expect(watch.getByText(/not a tax determination/i).first()).toBeVisible();
     await expect(watch.getByText('Near Card · hold')).toBeVisible();
     await expect(watch.getByText(/days to long-term/)).toBeVisible();
+    await expect(watch.getByText(/Waiting on this mark keeps \$8\.52/)).toBeVisible();
     await expect(watch.getByText('Clear Card · clear')).toBeVisible();
     await expect(watch.getByText(/crossed into long-term/i)).toBeVisible();
+    await expect(watch.getByText(/already on the 20% long-term rate/i)).toBeVisible();
     await expect(watch.getByText('Under Card · under')).toBeVisible();
     await expect(watch.getByText(/no longer clears the ~4% card-show fee/i)).toBeVisible();
+    await expect(watch.getByText(/estimated tax stays off/i)).toBeVisible();
     await expect(watch.getByText(/Far Card/)).toHaveCount(0);
     await expect(watch.getByText(/Loose Card/)).toHaveCount(0);
     await expect(watch.getByText(/No Mark Card/)).toHaveCount(0);

@@ -55,6 +55,7 @@ describe('hold-call alerts', () => {
     expect(HOLD_CALL_ALERT_NOTE).toMatch(/missing mark/i);
     expect(HOLD_CALL_ALERT_NOTE).toMatch(/not filed/i);
     expect(HOLD_CALL_ALERT_NOTE).toMatch(/more than 45 days/i);
+    expect(HOLD_CALL_ALERT_NOTE).toMatch(/35%/);
     expect(holdCallAlertHref('floor:near buy')).toBe('/audit-dossier?cardId=floor%3Anear%20buy');
   });
 
@@ -120,6 +121,12 @@ describe('hold-call alerts', () => {
     expect(soon.daysToLongTerm).toBeLessThan(near.daysToLongTerm ?? 0);
     expect(soon.detail).toContain(`${soon.daysToLongTerm} days to long-term`);
     expect(near.title).toBe('Near · hold');
+    expect(near.worth).toBe(
+      'Waiting on this mark keeps $8.52 versus the 20% long-term rate. Estimated tax is $19.88 while it is short-term. Not a tax determination.',
+    );
+    expect(soon.worth).toMatch(/Waiting on this mark keeps \$9\.27/);
+    expect(alerts[2].worth).toMatch(/already on the 20% long-term rate/);
+    expect(alerts.find((row) => row.player === 'Insured')?.worth).toMatch(/estimated tax stays off/);
     expect(near.href).toBe(holdCallAlertHref(nearId));
     expect(alerts[2].detail).toMatch(/Crossed into long-term and is clear/);
     expect(alerts[2].detail).not.toMatch(/days to long-term/);
