@@ -107,6 +107,10 @@ describe('Hold call alerts', () => {
     expect(digest).toHaveTextContent(/days to long-term/);
     expect(digest).toHaveTextContent(/not a tax determination/i);
     expect(digest).toHaveTextContent(/Waiting on this mark keeps \$8\.52/);
+    expect(screen.getByLabelText('Hold queue')).toHaveTextContent(/gives up \$8\.52/);
+    expect(screen.getByLabelText('Hold queue')).toHaveTextContent('line 2026-12-04');
+    expect(screen.getByLabelText('Hold queue')).toHaveTextContent('$0.25 a day');
+    expect(screen.getByRole('textbox', { name: 'Cash the table needs' })).toHaveClass('min-h-[44px]');
     expect(screen.getByRole('link', { name: 'Open Near' })).toHaveAttribute('href', '/audit-dossier?cardId=floor%3Anear-buy');
   });
 });

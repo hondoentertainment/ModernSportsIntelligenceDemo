@@ -48,6 +48,7 @@ describe('realized results export', () => {
     expect(screen.getByLabelText('Show profit and loss totals')).toHaveTextContent(
       /holding buckets: long-term 1 card, taken \$80, card-show fee \$3\.2, realized \$36\.8/i,
     );
+    expect(screen.queryByRole('textbox', { name: 'Cash the table needs' })).not.toBeInTheDocument();
     expect(screen.getByText(/not a tax form and not a live tape/i)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Download realized results' }));
     expect(createObjectURL).toHaveBeenCalledTimes(1);
@@ -97,6 +98,8 @@ describe('realized results export', () => {
     expect(screen.getByLabelText('Show profit and loss totals')).toHaveTextContent(
       /hold call: hold 1 card inside 45 days of long-term \(Hold Player\)/i,
     );
+    expect(screen.getByLabelText('Hold queue')).toHaveTextContent(/Hold Player/);
+    expect(screen.getByLabelText('Hold queue')).toHaveTextContent(/gives up/i);
     store.remove(HAGGLE_KEY);
   });
 });

@@ -9,6 +9,7 @@ import {
   canDownloadRealized,
   downloadRealizedCsv,
 } from '../lib/collector/inventoryAge';
+import HoldQueueField from './HoldQueueField';
 import { store } from '../lib/dal/syncStore';
 import { haggleSnapshot } from '../lib/shows/showHaggleLog';
 import { SHOW_TRIP_DECISIONS_KEY, readFloorDecisions } from '../lib/shows/showTripLoop';
@@ -66,6 +67,7 @@ const ShowDayRecap: React.FC<Props> = ({ showId, lines, inventory }) => {
         <h4 className="text-xs font-black uppercase tracking-widest text-white">Show profit and loss</h4>
         <p className="mt-1 text-[11px] leading-relaxed text-slate-400">{SHOW_PNL_NOTE}</p>
         <p className="mt-2 text-xs text-slate-200" aria-label="Show profit and loss totals">{pnl.copy}</p>
+        <HoldQueueField unsold={pnl.unsold} />
         {unsold.length > 0 ? (
           <ul className="mt-2 space-y-1" aria-label="Unsold inventory">
             {unsold.map((row) => (

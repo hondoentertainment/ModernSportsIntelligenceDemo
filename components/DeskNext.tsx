@@ -26,6 +26,7 @@ import { TRADE_LADDER_NOTE, tradeLadder, tradeLadderCopy } from '../lib/collecto
 import { unfiledCopy } from '../lib/collector/showClose';
 import { weekHaul } from '../lib/collector/showHaul';
 import { weekExit } from '../lib/collector/showExit';
+import HoldQueueField from './HoldQueueField';
 import { exitHoldWorthCopy } from '../lib/collector/holdWorth';
 import { weekPnl } from '../lib/collector/showPnl';
 import {
@@ -337,6 +338,7 @@ function WeeklyRecapPanel({ inventory }: { inventory: CardInventory[] }) {
         <p className="mt-2 text-xs text-slate-300" aria-label="Hold worth on this week's exit">{exitWorth}</p>
       ) : null}
       <p className="mt-2 text-xs text-slate-300" aria-label="Show profit and loss this week">{weekBook.copy}</p>
+      <HoldQueueField unsold={weekBook.pnl.unsold} />
       {canDownloadRealized(weekBook.pnl.sold) ? (
         <div className="mt-2">
           <button
