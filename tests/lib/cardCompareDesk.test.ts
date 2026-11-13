@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   CARD_COMPARE_DESK_DISCLOSURE,
   COMPARE_DESK_MAX,
@@ -17,6 +17,10 @@ function comps(): MarketComp[] {
 }
 
 describe('cardCompareDesk', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('requires two cards and caps at three', () => {
     const one = buildCardCompareDesk([makeCard({ id: 'a' })]);
     expect(one.incomplete).toBe(true);
@@ -45,6 +49,8 @@ describe('cardCompareDesk', () => {
 
   it('fills mark, comps, horizon, ratio, and concentration columns', () => {
     const asOf = new Date('2026-09-10T00:00:00.000Z');
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(asOf);
     const a = makeCard({
       id: 'a',
       player: 'Trout',

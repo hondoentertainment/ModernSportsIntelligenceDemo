@@ -1,14 +1,20 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   HOLD_QUEUE_CASH_KEY,
   HOLD_QUEUE_NOTE,
+  HOLD_SLIP_CSV_HEADER,
+  HOLD_SLIP_NOTE,
   cashNeedDraft,
+  downloadHoldSlip,
   holdQueueCopy,
   holdQueueRows,
+  holdSlip,
+  holdSlipCsv,
   loadHoldQueueUnsold,
   parseCashNeed,
   readHoldQueueNeed,
   type HoldQueueSource,
+  type HoldSlip,
 } from '../../lib/collector/holdQueue';
 import { floorBuyId } from '../../lib/collector/showClose';
 import { store } from '../../lib/dal/syncStore';
@@ -31,6 +37,7 @@ function source(overrides: Partial<HoldQueueSource> = {}): HoldQueueSource {
 
 describe('hold queue', () => {
   afterEach(() => {
+    vi.unstubAllGlobals();
     store.remove(HOLD_QUEUE_CASH_KEY);
     store.remove(HAGGLE_KEY);
   });
@@ -219,5 +226,217 @@ describe('hold queue', () => {
       keptUsd: 8.52,
       lineOn: '2026-12-04',
     });
+  });
+});
+
+describe('hold slip', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  const book = [
+    source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
+    source({ id: 'tiny', player: 'Tiny', holdCall: 'under', holdMarkUsd: 10, holdRealizedUsd: -1, daysToLongTerm: 0 }),
+    source(),
+    source({ id: 'far', player: 'Far', holdMarkUsd: 50, holdRealizedUsd: 133.33, daysToLongTerm: 40 }),
+  ];
+
+  it('keeps the realized file, the eBay fee, and Web Push off the note', () => {
+    expect(HOLD_SLIP_NOTE).toMatch(/next, take, stay, later, or off/);
+    expect(HOLD_SLIP_NOTE).toMatch(/not the realized-results download/i);
+    expect(HOLD_SLIP_NOTE).toMatch(/Unsold cards stay off that file/);
+    expect(HOLD_SLIP_NOTE).toMatch(/not the eBay fee/i);
+    expect(HOLD_SLIP_NOTE).toMatch(/not Web Push/i);
+    expect(HOLD_SLIP_NOTE).toMatch(/need of \$0 takes no card/);
+    expect(HOLD_SLIP_NOTE).toMatch(/not a live tape/i);
+  });
+
+  it('stays quiet when the queue has no card', () => {
+    expect(holdSlip([])).toBeNull();
+    expect(holdSlip([source({ holdCall: null })])).toBeNull();
+    expect(holdSlip([source({ holdMarkUsd: null })])).toBeNull();
+    expect(holdSlip([source()], Number.NaN, NOW)?.bookCopy).toMatch(/No cash need is typed/);
+    expect(holdSlip([source()], -5, NOW)?.copy).toMatch(/sell Near/);
+    expect(holdSlip([source()], 1_000_001, NOW)?.alert).toBeNull();
+  });
+
+  it('names the next card and the book when no cash need is typed', () => {
+    const slip = holdSlip(book, null, NOW);
+    expect(slip?.rows.map((row) => row.place)).toEqual(['next', 'later', 'later', 'later']);
+    expect(slip?.copy).toBe(
+      'Next: sell Cheap. It raises $59.52 after the card-show fee. Waiting keeps nothing more.',
+    );
+    expect(slip?.bookCopy).toBe(
+      'Book: the order raises $193.92 after the card-show fee. Waiting does not pay to keep $69.12 of that. Paying holds are worth $28.52 if you wait. The soonest line is 2026-11-20. No cash need is typed, so this book does not take a card.',
+    );
+    expect(slip?.alert).toBeNull();
+    expect(slip?.book).toMatchObject({
+      orderCashUsd: 193.92,
+      freeCashUsd: 69.12,
+      holdWorthUsd: 28.52,
+      takeCount: 0,
+      shortUsd: 0,
+    });
+    expect(holdSlip([
+      source({ id: 'booked', player: 'Booked', holdCall: 'clear', treatment: 'long-term', daysToLongTerm: 0, holdRealizedUsd: 40 }),
+    ], null, NOW)?.copy).toBe(
+      'Next: sell Booked. It raises $76.8 after the card-show fee. Waiting keeps nothing more.',
+    );
+    expect(holdSlip([source({ player: '  ' })], null, NOW)?.copy).toBe(
+      'Next: sell Unsold card. It raises $76.8 after the card-show fee and gives up $8.52. The line is 2026-11-20, $0.43 a day.',
+    );
+    expect(holdSlip([
+      source({ holdRealizedUsd: 0.05, daysToLongTerm: 45 }),
+    ], null, NOW)?.copy).toMatch(/gives up \$0\.01\. The line is 2026-12-15, under \$0\.01 a day/);
+    expect(holdSlip([source({ daysToLongTerm: null })], null, NOW)?.copy).toBe(
+      'Next: sell Near. It raises $76.8 after the card-show fee and gives up $8.52.',
+    );
+    expect(holdSlip([source({ daysToLongTerm: null })], null, NOW)?.bookCopy).toBe(
+      'Book: the order raises $76.8 after the card-show fee. All of that breaks a paying hold, worth $8.52 if you wait. No cash need is typed, so this book does not take a card.',
+    );
+    expect(holdSlip([
+      source({ holdRealizedUsd: 0.01, daysToLongTerm: 20 }),
+    ], null, NOW)?.copy).toBe(
+      'Next: sell Near. It raises $76.8 after the card-show fee and gives up nothing.',
+    );
+  });
+
+  it('covers a typed need, leaves the holds, and alerts when the take gives up hold worth', () => {
+    expect(holdSlip(book, 0, NOW)?.copy).toBe('Next: a table need of $0 takes no card.');
+    expect(holdSlip(book, 0, NOW)?.bookCopy).toMatch(/A need of \$0 takes no card off this book\./);
+    expect(holdSlip(book, 0, NOW)?.rows.every((row) => row.place === 'off')).toBe(true);
+    expect(holdSlip(book, 0, NOW)?.alert).toBeNull();
+
+    const covered = holdSlip(book, 50, NOW);
+    expect(covered?.copy).toBe('Next: sell Cheap. That covers $50 and gives up nothing.');
+    expect(covered?.rows.map((row) => [row.player, row.place])).toEqual([
+      ['Cheap', 'next'],
+      ['Tiny', 'off'],
+      ['Near', 'stay'],
+      ['Far', 'stay'],
+    ]);
+    expect(covered?.bookCopy).toMatch(/A need of \$50 takes 1 card, raises \$59\.52, and gives up nothing\. 2 holds stay, and waiting keeps \$28\.52\. The soonest line left is 2026-11-20\./);
+    expect(covered?.alert).toBeNull();
+
+    const pair = holdSlip(book, 60, NOW);
+    expect(pair?.copy).toBe('Next: sell Cheap and Tiny. That covers $60 and gives up nothing.');
+    expect(pair?.alert).toBeNull();
+
+    const give = holdSlip(book, 80, NOW);
+    expect(give?.copy).toBe('Next: sell Cheap, Tiny, and Near. That covers $80 and gives up $8.52.');
+    expect(give?.bookCopy).toMatch(/takes 3 cards, raises \$145\.92, and gives up \$8\.52\. 1 hold stays, and waiting keeps \$20\. The soonest line left is 2026-12-10\./);
+    expect(give?.alert).toEqual({
+      copy: 'Hold slip: a table need of $80 covers and gives up $8.52 by selling Cheap, Tiny, and Near. Not a tax determination and not a live tape.',
+      player: 'Near',
+      href: '/audit-dossier?cardId=near',
+    });
+
+    const short = holdSlip(book, 200, NOW);
+    expect(short?.copy).toBe(
+      'Next: sell Cheap, Tiny, Near, and Far. That raises $193.92 toward $200 and is still short $6.08. Gives up $28.52.',
+    );
+    expect(short?.bookCopy).toMatch(/The book is still short \$6\.08\./);
+    expect(short?.bookCopy).not.toMatch(/stays/);
+    expect(short?.alert?.copy).toBe(
+      'Hold slip: a table need of $200 is still short $6.08. Selling Cheap, Tiny, Near, and Far gives up $28.52. Not a tax determination and not a live tape.',
+    );
+    expect(short?.alert?.href).toBe('/audit-dossier?cardId=near');
+  });
+
+  it('warns when the need stays short without breaking a hold, and when nothing raises cash', () => {
+    const short = holdSlip([
+      source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
+    ], 100, NOW);
+    expect(short?.copy).toBe(
+      'Next: sell Cheap. That raises $59.52 toward $100 and is still short $40.48. Gives up nothing.',
+    );
+    expect(short?.alert).toEqual({
+      copy: 'Hold slip: a table need of $100 is still short $40.48 after Cheap. Waiting keeps nothing more on that take. Not a tax determination and not a live tape.',
+      player: 'Cheap',
+      href: '/audit-dossier?cardId=cheap',
+    });
+
+    const quiet = holdSlip([
+      source({ id: 'quiet', player: 'Quiet', daysToLongTerm: null, holdMarkUsd: 0 }),
+      source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
+    ], 10, NOW);
+    expect(quiet?.bookCopy).toMatch(/1 hold stays, and waiting keeps \$8\.52\./);
+    expect(quiet?.bookCopy).not.toMatch(/line left/);
+    expect(quiet?.alert).toBeNull();
+
+    const uncovered = holdSlip([
+      source({ id: 'zero', player: 'Zero', holdCall: 'under', holdMarkUsd: 0, holdRealizedUsd: -2, daysToLongTerm: 0 }),
+    ], 10, NOW);
+    expect(uncovered?.copy).toBe(
+      'Next: $10 at the table stays uncovered. No listed card raises cash after the card-show fee.',
+    );
+    expect(uncovered?.bookCopy).toMatch(/Waiting does not pay to keep any of it\. A need of \$10 stays uncovered\. This book takes no card\./);
+    expect(uncovered?.alert).toEqual({
+      copy: 'Hold slip: a table need of $10 stays uncovered. No listed card raises cash after the card-show fee. Not a tax determination and not a live tape.',
+      player: null,
+      href: null,
+    });
+  });
+
+  it('cuts the next card list after four names', () => {
+    const rows = ['Ada', 'Bea', 'Cara', 'Dee', 'Eve'].map((player) => source({
+      id: player,
+      player,
+      holdCall: 'under',
+      holdMarkUsd: 10,
+      holdRealizedUsd: -1,
+      daysToLongTerm: 0,
+    }));
+    const slip = holdSlip(rows, 1_000, NOW);
+    expect(slip?.copy).toMatch(/sell Ada, Bea, Cara, Dee, and 1 more/);
+    expect(slip?.alert?.copy).toMatch(/after Ada, Bea, Cara, Dee, and 1 more/);
+    expect(slip?.alert?.player).toBe('Ada');
+  });
+
+  it('downloads the order and leaves a card with no call off the file', () => {
+    const slip = holdSlip([
+      ...book,
+      source({ id: 'skip', player: '=Cheap, "A"', holdCall: null }),
+    ], 80, NOW);
+    expect(slip).not.toBeNull();
+    const csv = holdSlipCsv(slip as HoldSlip);
+    expect(csv.startsWith(`${HOLD_SLIP_CSV_HEADER}\n`)).toBe(true);
+    expect(csv).toContain('1,Cheap,under,59.52,0,,,next');
+    expect(csv).toContain('2,Tiny,under,9.6,0,,,take');
+    expect(csv).toContain('3,Near,hold,76.8,8.52,2026-11-20,0.43,take');
+    expect(csv).toContain('4,Far,hold,48,20,2026-12-10,0.5,stay');
+    expect(csv).not.toContain('=Cheap');
+    const blank = holdSlip([
+      source({ id: 'odd', player: '=Cheap, "A"', holdCall: 'under', holdMarkUsd: 10, holdRealizedUsd: -1, daysToLongTerm: 0 }),
+    ], null, NOW);
+    expect(holdSlipCsv(blank as HoldSlip)).toContain(`"'=Cheap, ""A""",under,9.6,0,,,next`);
+    expect(holdSlipCsv({
+      ...(blank as HoldSlip),
+      rows: [{
+        ...(blank as HoldSlip).rows[0],
+        cashUsd: Number.NaN,
+        keptUsd: Number.POSITIVE_INFINITY,
+        perDayUsd: Number.NaN,
+      }],
+    })).toContain('1,');
+    expect(holdSlipCsv({
+      ...(blank as HoldSlip),
+      rows: [{
+        ...(blank as HoldSlip).rows[0],
+        cashUsd: Number.NaN,
+        keptUsd: Number.POSITIVE_INFINITY,
+        perDayUsd: Number.NaN,
+      }],
+    })).toMatch(/,under,,,,,next/);
+    expect(downloadHoldSlip(slip as HoldSlip, 'msi-hold-slip.csv', null)).toBeUndefined();
+
+    const createObjectURL = vi.fn(() => 'blob:slip');
+    const revokeObjectURL = vi.fn();
+    vi.stubGlobal('URL', { ...URL, createObjectURL, revokeObjectURL });
+    downloadHoldSlip(slip as HoldSlip);
+    expect(createObjectURL).toHaveBeenCalled();
+    const blob = createObjectURL.mock.calls[0]?.[0] as Blob;
+    expect(blob.type).toMatch(/text\/csv/);
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:slip');
   });
 });
