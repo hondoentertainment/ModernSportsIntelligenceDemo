@@ -1,0 +1,223 @@
+import { afterEach, describe, expect, it } from 'vitest';
+import {
+  HOLD_QUEUE_CASH_KEY,
+  HOLD_QUEUE_NOTE,
+  cashNeedDraft,
+  holdQueueCopy,
+  holdQueueRows,
+  loadHoldQueueUnsold,
+  parseCashNeed,
+  readHoldQueueNeed,
+  type HoldQueueSource,
+} from '../../lib/collector/holdQueue';
+import { floorBuyId } from '../../lib/collector/showClose';
+import { store } from '../../lib/dal/syncStore';
+import { HAGGLE_KEY } from '../../lib/shows/showHaggleLog';
+
+const NOW = Date.parse('2026-10-31T12:00:00.000Z');
+
+function source(overrides: Partial<HoldQueueSource> = {}): HoldQueueSource {
+  return {
+    id: 'near',
+    player: 'Near',
+    holdCall: 'hold',
+    treatment: 'short-term',
+    daysToLongTerm: 20,
+    holdMarkUsd: 80,
+    holdRealizedUsd: 56.8,
+    ...overrides,
+  };
+}
+
+describe('hold queue', () => {
+  afterEach(() => {
+    store.remove(HOLD_QUEUE_CASH_KEY);
+    store.remove(HAGGLE_KEY);
+  });
+
+  it('keeps the eBay fee and a tax determination off the note', () => {
+    expect(HOLD_QUEUE_NOTE).toMatch(/35% versus 20%/);
+    expect(HOLD_QUEUE_NOTE).toMatch(/~4% card-show fee/);
+    expect(HOLD_QUEUE_NOTE).toMatch(/not the eBay fee/i);
+    expect(HOLD_QUEUE_NOTE).toMatch(/not a tax determination, not the eBay fee, and not a live tape/i);
+    expect(HOLD_QUEUE_NOTE).toMatch(/more than 45 days/);
+    expect(HOLD_QUEUE_NOTE).toMatch(/need of \$0 takes no card/);
+  });
+
+  it('parses a typed cash need and ignores anything else', () => {
+    expect(parseCashNeed('')).toBeNull();
+    expect(parseCashNeed('   ')).toBeNull();
+    expect(parseCashNeed('0')).toBe(0);
+    expect(parseCashNeed('0.00')).toBe(0);
+    expect(parseCashNeed('$1,200.50')).toBe(1200.5);
+    expect(parseCashNeed('00.10')).toBe(0.1);
+    expect(parseCashNeed('1000000')).toBe(1_000_000);
+    expect(parseCashNeed('1000000.01')).toBeNull();
+    expect(parseCashNeed('-1')).toBeNull();
+    expect(parseCashNeed('12.')).toBeNull();
+    expect(parseCashNeed('12.345')).toBeNull();
+    expect(parseCashNeed('1e2')).toBeNull();
+    expect(parseCashNeed('abc')).toBeNull();
+    expect(cashNeedDraft(null)).toBe('');
+    expect(cashNeedDraft(76.8)).toBe('76.8');
+  });
+
+  it('reads a stored need and drops a value this desk will not use', () => {
+    expect(readHoldQueueNeed()).toBeNull();
+    store.set(HOLD_QUEUE_CASH_KEY, 40);
+    expect(readHoldQueueNeed()).toBe(40);
+    store.set(HOLD_QUEUE_CASH_KEY, 12.344);
+    expect(readHoldQueueNeed()).toBe(12.34);
+    store.set(HOLD_QUEUE_CASH_KEY, '100');
+    expect(readHoldQueueNeed()).toBeNull();
+    store.set(HOLD_QUEUE_CASH_KEY, -5);
+    expect(readHoldQueueNeed()).toBeNull();
+    store.set(HOLD_QUEUE_CASH_KEY, 1_000_001);
+    expect(readHoldQueueNeed()).toBeNull();
+    store.set(HOLD_QUEUE_CASH_KEY, Number.NaN);
+    expect(readHoldQueueNeed()).toBeNull();
+    store.set(HOLD_QUEUE_CASH_KEY, Number.POSITIVE_INFINITY);
+    expect(readHoldQueueNeed()).toBeNull();
+  });
+
+  it('stays quiet when no unsold card has a call or a mark', () => {
+    expect(holdQueueRows([])).toEqual([]);
+    expect(holdQueueCopy([])).toBe('');
+    expect(holdQueueCopy([source({ holdCall: null })])).toBe('');
+    expect(holdQueueCopy([source({ holdMarkUsd: null })])).toBe('');
+    expect(holdQueueCopy([source({ holdMarkUsd: -1 })])).toBe('');
+    expect(holdQueueCopy([source({ holdMarkUsd: Number.NaN })])).toBe('');
+    expect(holdQueueCopy([source()], Number.NaN, NOW)).toMatch(/sell under and clear before a hold/);
+    expect(holdQueueCopy([source()], -5, NOW)).toMatch(/sell under and clear before a hold/);
+    expect(holdQueueCopy([source()], 1_000_001, NOW)).toMatch(/sell under and clear before a hold/);
+  });
+
+  it('sells under and clear before a hold and breaks the cheaper hold first', () => {
+    const rows = holdQueueRows([
+      source({ id: 'far', player: 'Far', holdMarkUsd: 50, holdRealizedUsd: 133.33, daysToLongTerm: 40 }),
+      source({ id: 'near-b', player: 'Near', holdMarkUsd: 30, holdRealizedUsd: 56.8, daysToLongTerm: 20 }),
+      source(),
+      source({ id: 'cheap', player: 'Cheap', holdCall: 'under', treatment: 'short-term', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
+      source({ id: 'rich', player: 'Rich', holdCall: 'under', treatment: 'long-term', holdMarkUsd: 10, holdRealizedUsd: -1, daysToLongTerm: 0 }),
+      source({ id: 'booked', player: 'Booked', holdCall: 'clear', treatment: 'long-term', holdMarkUsd: 80, holdRealizedUsd: 40, daysToLongTerm: 0 }),
+    ], NOW);
+    expect(rows.map((row) => row.player)).toEqual(['Cheap', 'Rich', 'Booked', 'Near', 'Near', 'Far']);
+    expect(rows[0]).toMatchObject({ call: 'under', cashUsd: 59.52, lineOn: null, keptUsd: 0 });
+    expect(rows[2]).toMatchObject({ call: 'clear', cashUsd: 76.8, lineOn: null });
+    expect(rows[3]).toMatchObject({
+      call: 'hold',
+      cashUsd: 76.8,
+      keptUsd: 8.52,
+      lineOn: '2026-11-20',
+      perDayUsd: 0.43,
+    });
+    expect(rows[4]?.cashUsd).toBe(28.8);
+    expect(rows[5]).toMatchObject({ keptUsd: 20, lineOn: '2026-12-10' });
+    expect(rows.map((row) => row.id)).toEqual(['cheap', 'rich', 'booked', 'near', 'near-b', 'far']);
+    const tied = holdQueueRows([
+      source({ id: 'b', player: 'Twin' }),
+      source({ id: 'a', player: 'Twin' }),
+    ], NOW);
+    expect(tied.map((row) => row.id)).toEqual(['a', 'b']);
+    expect(holdQueueCopy([source()], Number.NaN)).toMatch(/sell under and clear before a hold/);
+  });
+
+  it('names the line, the dollars a day, and a hold that keeps nothing', () => {
+    expect(holdQueueCopy([source({ player: '  ' })], null, NOW)).toBe(
+      'Hold queue: sell under and clear before a hold, because waiting keeps nothing more. Order: Unsold card (raises $76.8 after the card-show fee, gives up $8.52, line 2026-11-20, $0.43 a day). Not a tax determination and not a live tape.',
+    );
+    expect(holdQueueCopy([
+      source({ holdRealizedUsd: 0.05, daysToLongTerm: 45 }),
+    ], null, NOW)).toMatch(/gives up \$0\.01, line 2026-12-15, under \$0\.01 a day/);
+    expect(holdQueueCopy([
+      source({ holdRealizedUsd: 0.01, daysToLongTerm: 20 }),
+    ], null, NOW)).toMatch(/gives up nothing\)/);
+    expect(holdQueueCopy([
+      source({ daysToLongTerm: null }),
+    ], null, NOW)).toBe(
+      'Hold queue: sell under and clear before a hold, because waiting keeps nothing more. Order: Near (raises $76.8 after the card-show fee, gives up $8.52). Not a tax determination and not a live tape.',
+    );
+    expect(holdQueueCopy([
+      source({ id: 'booked', player: 'Booked', holdCall: 'clear', treatment: 'long-term', daysToLongTerm: 0, holdRealizedUsd: 40 }),
+    ], null, NOW)).toMatch(/Booked \(raises \$76\.8 after the card-show fee, clear, waiting keeps nothing more\)/);
+    const year = holdQueueCopy([source({ daysToLongTerm: 20 })], null, Date.parse('2026-12-20T12:00:00.000Z'));
+    expect(year).toMatch(/line 2027-01-09/);
+  });
+
+  it('covers a typed need with whole cards and leaves the holds that still pay', () => {
+    const book = [
+      source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
+      source(),
+      source({ id: 'far', player: 'Far', holdMarkUsd: 50, holdRealizedUsd: 133.33, daysToLongTerm: 40 }),
+    ];
+    expect(holdQueueCopy(book, 0, NOW)).toMatch(/a table need of \$0 takes no card/);
+    expect(holdQueueCopy(book, 50, NOW)).toBe(
+      'Hold queue: $50 at the table takes Cheap. Gives up nothing. Near and Far stay holds. Waiting keeps $28.52. The soonest line is 2026-11-20. Order: Cheap (raises $59.52 after the card-show fee, under, waiting keeps nothing more), Near (raises $76.8 after the card-show fee, gives up $8.52, line 2026-11-20, $0.43 a day), and Far (raises $48 after the card-show fee, gives up $20, line 2026-12-10, $0.5 a day). Not a tax determination and not a live tape.',
+    );
+    expect(holdQueueCopy(book, 60, NOW)).toMatch(
+      /\$60 at the table takes Cheap and Near\. Gives up \$8\.52\. Far stays a hold\. Waiting keeps \$20 until 2026-12-10, \$0\.5 a day/,
+    );
+    expect(holdQueueCopy(book, 200, NOW)).toMatch(
+      /\$200 at the table takes Cheap, Near, and Far\. Gives up \$28\.52 and is still short \$15\.68/,
+    );
+    expect(holdQueueCopy(book, 200, NOW)).not.toMatch(/stays a hold/);
+    expect(holdQueueCopy([
+      source({ id: 'zero', player: 'Zero', holdCall: 'under', holdMarkUsd: 0, holdRealizedUsd: -2, daysToLongTerm: 0 }),
+    ], 10, NOW)).toBe(
+      'Hold queue: $10 at the table stays uncovered. No listed card raises cash after the card-show fee. Order: Zero (raises $0 after the card-show fee, under, waiting keeps nothing more). Not a tax determination and not a live tape.',
+    );
+    expect(holdQueueCopy([
+      source({ id: 'quiet', player: 'Quiet', daysToLongTerm: null, holdMarkUsd: 0 }),
+      source({ id: 'also', player: 'Also', daysToLongTerm: null, holdRealizedUsd: 56.8, holdMarkUsd: 0 }),
+    ], 10, NOW)).toMatch(/Also and Quiet stay holds\. Waiting keeps \$17\.04\./);
+    expect(holdQueueCopy([
+      source({ id: 'quiet', player: 'Quiet', daysToLongTerm: null, holdMarkUsd: 0 }),
+    ], 10, NOW)).toMatch(/Quiet stays a hold\. Waiting keeps \$8\.52\./);
+  });
+
+  it('cuts the order after four cards', () => {
+    const rows = ['Ada', 'Bea', 'Cara', 'Dee', 'Eve'].map((player, index) => source({
+      id: player,
+      player,
+      holdCall: 'under',
+      holdMarkUsd: 24 - index,
+      holdRealizedUsd: -1,
+      daysToLongTerm: 0,
+    }));
+    const copy = holdQueueCopy(rows, 1_000, NOW);
+    expect(copy).toMatch(/Ada \(raises \$23\.04 after the card-show fee, under, waiting keeps nothing more\), Bea \(raises \$22\.08 after the card-show fee, under, waiting keeps nothing more\), Cara \(raises \$21\.12 after the card-show fee, under, waiting keeps nothing more\), Dee \(raises \$20\.16 after the card-show fee, under, waiting keeps nothing more\), and 1 more/);
+    expect(copy).toMatch(/takes Ada, Bea, Cara, Dee, and 1 more/);
+    expect(copy).toMatch(/still short/);
+  });
+
+  it('loads unsold show cards and ignores a book with no call', () => {
+    expect(holdQueueCopy(loadHoldQueueUnsold([]), null, NOW)).toBe('');
+    const boughtAt = new Date(NOW - 330 * 24 * 60 * 60 * 1000).toISOString();
+    store.set(HAGGLE_KEY, [{
+      id: 'near-buy',
+      showId: 'nyc',
+      dealer: 'Ada',
+      table: '1',
+      askUsd: 20,
+      offerUsd: 20,
+      result: 'bought',
+      note: '',
+      player: 'Near',
+      savedAt: boughtAt,
+    }]);
+    const unsold = loadHoldQueueUnsold([{
+      id: floorBuyId('near-buy'),
+      player: 'Near',
+      purchasePrice: 20,
+      purchaseDate: boughtAt,
+      currentValue: 80,
+      status: 'active',
+    }], NOW);
+    expect(holdQueueRows(unsold, NOW)[0]).toMatchObject({
+      player: 'Near',
+      call: 'hold',
+      keptUsd: 8.52,
+      lineOn: '2026-12-04',
+    });
+  });
+});

@@ -97,7 +97,7 @@ const CollectorAlertDigest: React.FC<Props> = ({ inventory = [], targets, onWatc
         ? <p className="mt-1 text-sm text-slate-400">No watchlist mark is 5% or more under your target.</p>
         : <Rows rows={digest.drops} />}
       <div className="mt-4">
-        <HoldCallAlerts rows={digest.holds} />
+        <HoldCallAlerts rows={digest.holds} inventory={inventory} />
       </div>
       <h3 className="mt-4 text-xs font-black uppercase tracking-widest text-cyan-200">Target versus the sale range</h3>
       <p className="mt-1 text-xs leading-relaxed text-slate-500">{SALE_RANGE_BLURB} {GRADE_RANGE_NOTE} {OFFER_LADDER_NOTE}</p>

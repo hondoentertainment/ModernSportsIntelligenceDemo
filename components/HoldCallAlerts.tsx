@@ -7,6 +7,8 @@ import {
   loadHoldCallAlerts,
   type HoldCallAlert,
 } from '../lib/collector/holdCallAlert';
+import { loadHoldQueueUnsold } from '../lib/collector/holdQueue';
+import HoldQueueField from './HoldQueueField';
 
 interface Props {
   inventory?: CardInventory[];
@@ -15,6 +17,7 @@ interface Props {
 
 const HoldCallAlerts: React.FC<Props> = ({ inventory = [], rows }) => {
   const [live, setLive] = useState<HoldCallAlert[]>(() => rows ?? loadHoldCallAlerts(inventory));
+  const unsold = inventory.length === 0 ? [] : loadHoldQueueUnsold(inventory);
   useEffect(() => {
     if (rows) {
       setLive(rows);
@@ -33,6 +36,7 @@ const HoldCallAlerts: React.FC<Props> = ({ inventory = [], rows }) => {
     <section className="rounded-2xl border border-slate-800 bg-brand-slate p-4" aria-label="Hold call alerts">
       <h3 className="text-xs font-black uppercase tracking-widest text-amber-100">Hold call</h3>
       <p className="mt-1 text-xs leading-relaxed text-slate-500">{HOLD_CALL_ALERT_NOTE}</p>
+      <HoldQueueField unsold={unsold} />
       {live.length === 0 ? (
         <p className="mt-1 text-sm text-slate-400">No unsold card is in the hold window, newly long-term, or under the card-show fee.</p>
       ) : (

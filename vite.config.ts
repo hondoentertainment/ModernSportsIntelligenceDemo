@@ -187,6 +187,7 @@ export default defineConfig(({ command, mode }) => {
         'lib/collector/holdingBuckets.ts',
         'lib/collector/holdCallAlert.ts',
         'lib/collector/holdWorth.ts',
+        'lib/collector/holdQueue.ts',
         'lib/authSessionNotice.ts',
         'lib/analytics/capitalGainsExit.ts',
         'lib/utils/syncProductDefaults.ts',
@@ -218,12 +219,12 @@ export default defineConfig(({ command, mode }) => {
       // values for v8 run-to-run stability; ratchet UP as tests are added,
       // never down. Branches lag (~91%) due to defensive branches,
       // import.meta / env splits, and optional chaining.
-      // Measured 98.97 / 95.00 / 99.44 / 99.66 after hold worth
+      // Measured 98.99 / 95.11 / 99.45 / 99.67 after the hold queue
       // (v8 is deterministic for this suite). Thresholds sit ~0.2-0.5pp under
       // that. Ratchet UP as tests are added, never down.
       thresholds: {
-        statements: 98.6,
-        branches: 94.6,
+        statements: 98.7,
+        branches: 94.8,
         functions: 99.2,
         lines: 99.4,
       },
