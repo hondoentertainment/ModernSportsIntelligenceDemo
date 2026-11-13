@@ -428,11 +428,11 @@ describe('hold slip', () => {
         perDayUsd: Number.NaN,
       }],
     })).toMatch(/,under,,,,,next/);
-    expect(downloadHoldSlip(slip as HoldSlip, 'msi-hold-slip.csv', null)).toBeUndefined();
-
     const createObjectURL = vi.fn(() => 'blob:slip');
     const revokeObjectURL = vi.fn();
     vi.stubGlobal('URL', { ...URL, createObjectURL, revokeObjectURL });
+    downloadHoldSlip(slip as HoldSlip, 'msi-hold-slip.csv', null);
+    expect(createObjectURL).not.toHaveBeenCalled();
     downloadHoldSlip(slip as HoldSlip);
     expect(createObjectURL).toHaveBeenCalled();
     const blob = createObjectURL.mock.calls[0]?.[0] as Blob;
