@@ -1,9 +1,12 @@
 /**
- * Which unsold card to sell first when the table needs cash.
- * Under and clear come off before a hold, because waiting keeps
- * nothing more. A hold breaks from the smallest dollars kept, the
- * same difference hold worth already prices after the ~4% card-show
- * fee. The line is the UTC day that hold crosses into long-term.
+ * Which unsold card to sell first when the table needs cash, and the
+ * hold slip that says the next card to pull. Under and clear come off
+ * before a hold, because waiting keeps nothing more. A hold breaks
+ * from the smallest dollars kept, the same difference hold worth
+ * already prices after the ~4% card-show fee. The line is the UTC day
+ * that hold crosses into long-term. The slip names that next card,
+ * what the order does to the book, and a file of the order. An alert
+ * appears when a typed need is short or the take gives up hold worth.
  * The eBay fee stays off this desk. Not a tax determination and not
  * a live tape.
  */
@@ -20,6 +23,53 @@ export const HOLD_QUEUE_CASH_KEY = 'msi_hold_queue_cash_need';
 
 export const HOLD_QUEUE_NOTE =
   'Hold queue names which unsold card to sell first when the table needs cash. Under and clear come off before a hold, because waiting keeps nothing more. A hold breaks from the smallest dollars kept, the same 35% versus 20% difference after the ~4% card-show fee. The line is the UTC day that hold crosses the 365-day line, and the daily figure is those dollars divided by the days left. Cash is the stored mark after that fee. A typed need on this browser takes whole cards until the cash is covered and names what that gives up. A blank amount lists the order. A need of $0 takes no card. A card that raises nothing does not cover the need. A missing mark, a buy that is not filed, and a short-term gain more than 45 days from the line stay off. A price you have not recorded yet stays on the show exit. Not a tax determination, not the eBay fee, and not a live tape.';
+
+export const HOLD_SLIP_NOTE =
+  'The hold slip names the next card to pull from that order, the cash the order raises after the ~4% card-show fee, and what a typed need does to the book. Waiting does not pay to keep an under card or a clear card. A paying hold is worth the dollars waiting keeps. The file is that order: next, take, stay, later, or off. A blank amount does not pretend a need. A need of $0 takes no card. A card that raises nothing does not cover the need. An alert appears when that need is short or gives up hold worth, and it stays quiet when the need covers and gives up nothing. A missing mark, a buy that is not filed, and a short-term gain more than 45 days from the line stay off. This file is not the realized-results download. Unsold cards stay off that file. Not a tax determination, not the eBay fee, not Web Push, and not a live tape.';
+
+export const HOLD_SLIP_CSV_HEADER = 'order,player,call,cash_after_fee,hold_worth_given_up,line_date,dollars_a_day,place';
+
+export type HoldSlipPlace = 'next' | 'take' | 'stay' | 'later' | 'off';
+
+export interface HoldSlipRow {
+  order: number;
+  id: string;
+  player: string;
+  call: ShowHoldCall;
+  cashUsd: number;
+  keptUsd: number;
+  lineOn: string | null;
+  perDayUsd: number | null;
+  place: HoldSlipPlace;
+}
+
+export interface HoldSlipBook {
+  orderCashUsd: number;
+  freeCashUsd: number;
+  holdWorthUsd: number;
+  soonestLine: string | null;
+  takeCount: number;
+  takeCashUsd: number;
+  giveUpUsd: number;
+  stayCount: number;
+  stayKeptUsd: number;
+  stayLine: string | null;
+  shortUsd: number;
+}
+
+export interface HoldSlipAlert {
+  copy: string;
+  player: string | null;
+  href: string | null;
+}
+
+export interface HoldSlip {
+  rows: HoldSlipRow[];
+  copy: string;
+  bookCopy: string;
+  book: HoldSlipBook;
+  alert: HoldSlipAlert | null;
+}
 
 const NAME_LIMIT = 4;
 const CASH_CAP = 1_000_000;
@@ -215,6 +265,210 @@ export function holdQueueCopy(
       ? 'a table need of $0 takes no card. Sell under and clear before a hold, because waiting keeps nothing more.'
       : coverSentence(rows, need);
   return `Hold queue: ${lead} ${order} Not a tax determination and not a live tape.`;
+}
+
+function payingHolds(rows: readonly HoldQueueRow[]): HoldQueueRow[] {
+  return rows.filter((row) => row.call === 'hold' && row.keptUsd > 0);
+}
+
+function soonestLine(rows: readonly HoldQueueRow[]): string | null {
+  return rows.map((row) => row.lineOn).filter((day): day is string => Boolean(day)).sort()[0] ?? null;
+}
+
+function cardsTaken(rows: readonly HoldQueueRow[], need: number): HoldQueueRow[] {
+  const taken: HoldQueueRow[] = [];
+  let cash = 0;
+  for (const row of rows) {
+    if (row.cashUsd <= 0) continue;
+    taken.push(row);
+    cash = cents(cash + row.cashUsd);
+    if (cash >= need) break;
+  }
+  return taken;
+}
+
+function slipPlace(row: HoldQueueRow, index: number, need: number | null, taken: readonly HoldQueueRow[]): HoldSlipPlace {
+  if (need == null) return index === 0 ? 'next' : 'later';
+  if (need === 0) return 'off';
+  const at = taken.indexOf(row);
+  if (at === 0) return 'next';
+  if (at > 0) return 'take';
+  if (row.call === 'hold' && row.keptUsd > 0) return 'stay';
+  return 'off';
+}
+
+function cardCount(count: number): string {
+  return count === 1 ? '1 card' : `${count} cards`;
+}
+
+function holdCount(count: number): string {
+  return count === 1 ? '1 hold stays' : `${count} holds stay`;
+}
+
+function blankNext(row: HoldQueueRow): string {
+  const cash = `It raises ${money(row.cashUsd)} after the card-show fee`;
+  if (row.call === 'hold' && row.keptUsd > 0 && row.lineOn) {
+    return `Next: sell ${row.player}. ${cash} and gives up ${money(row.keptUsd)}. The line is ${row.lineOn}, ${perDayPhrase(row)}.`;
+  }
+  if (row.call === 'hold' && row.keptUsd > 0) {
+    return `Next: sell ${row.player}. ${cash} and gives up ${money(row.keptUsd)}.`;
+  }
+  if (row.call === 'hold') {
+    return `Next: sell ${row.player}. ${cash} and gives up nothing.`;
+  }
+  return `Next: sell ${row.player}. ${cash}. Waiting keeps nothing more.`;
+}
+
+function nextCopy(rows: readonly HoldSlipRow[], need: number | null, book: HoldSlipBook): string {
+  if (need === 0) return 'Next: a table need of $0 takes no card.';
+  const taken = rows.filter((row) => row.place === 'next' || row.place === 'take');
+  if (need != null && taken.length === 0) {
+    return `Next: ${money(need)} at the table stays uncovered. No listed card raises cash after the card-show fee.`;
+  }
+  if (need == null) return blankNext(rows[0]);
+  const names = listed(taken.map((row) => row.player));
+  const give = book.giveUpUsd > 0 ? `gives up ${money(book.giveUpUsd)}` : 'gives up nothing';
+  if (book.shortUsd > 0) {
+    return `Next: sell ${names}. That raises ${money(book.takeCashUsd)} toward ${money(need)} and is still short ${money(book.shortUsd)}. ${give.charAt(0).toUpperCase()}${give.slice(1)}.`;
+  }
+  return `Next: sell ${names}. That covers ${money(need)} and ${give}.`;
+}
+
+function bookLead(book: HoldSlipBook): string {
+  const order = `Book: the order raises ${money(book.orderCashUsd)} after the card-show fee.`;
+  if (book.holdWorthUsd <= 0) return `${order} Waiting does not pay to keep any of it.`;
+  const line = book.soonestLine ? ` The soonest line is ${book.soonestLine}.` : '';
+  if (book.freeCashUsd <= 0) {
+    return `${order} All of that breaks a paying hold, worth ${money(book.holdWorthUsd)} if you wait.${line}`;
+  }
+  return `${order} Waiting does not pay to keep ${money(book.freeCashUsd)} of that. Paying holds are worth ${money(book.holdWorthUsd)} if you wait.${line}`;
+}
+
+function needCopy(need: number | null, book: HoldSlipBook): string {
+  if (need == null) return 'No cash need is typed, so this book does not take a card.';
+  if (need === 0) return 'A need of $0 takes no card off this book.';
+  if (book.takeCount === 0) return `A need of ${money(need)} stays uncovered. This book takes no card.`;
+  const give = book.giveUpUsd > 0 ? `gives up ${money(book.giveUpUsd)}` : 'gives up nothing';
+  const stay = book.stayCount > 0
+    ? ` ${holdCount(book.stayCount)}, and waiting keeps ${money(book.stayKeptUsd)}.${book.stayLine ? ` The soonest line left is ${book.stayLine}.` : ''}`
+    : '';
+  const short = book.shortUsd > 0 ? ` The book is still short ${money(book.shortUsd)}.` : '';
+  return `A need of ${money(need)} takes ${cardCount(book.takeCount)}, raises ${money(book.takeCashUsd)}, and ${give}.${stay}${short}`;
+}
+
+function slipHref(id: string): string {
+  return `/audit-dossier?cardId=${encodeURIComponent(id)}`;
+}
+
+function alertFor(rows: readonly HoldSlipRow[], need: number | null, book: HoldSlipBook): HoldSlipAlert | null {
+  if (need == null || need === 0 || (book.shortUsd === 0 && book.giveUpUsd === 0)) return null;
+  const taken = rows.filter((row) => row.place === 'next' || row.place === 'take');
+  const tail = ' Not a tax determination and not a live tape.';
+  if (taken.length === 0) {
+    return {
+      copy: `Hold slip: a table need of ${money(need)} stays uncovered. No listed card raises cash after the card-show fee.${tail}`,
+      player: null,
+      href: null,
+    };
+  }
+  const names = listed(taken.map((row) => row.player));
+  const target = taken.find((row) => row.call === 'hold' && row.keptUsd > 0) ?? taken[0];
+  const copy = book.shortUsd > 0 && book.giveUpUsd > 0
+    ? `Hold slip: a table need of ${money(need)} is still short ${money(book.shortUsd)}. Selling ${names} gives up ${money(book.giveUpUsd)}.${tail}`
+    : book.shortUsd > 0
+      ? `Hold slip: a table need of ${money(need)} is still short ${money(book.shortUsd)} after ${names}. Waiting keeps nothing more on that take.${tail}`
+      : `Hold slip: a table need of ${money(need)} covers and gives up ${money(book.giveUpUsd)} by selling ${names}.${tail}`;
+  return { copy, player: target.player, href: slipHref(target.id) };
+}
+
+export function holdSlip(
+  unsold: readonly HoldQueueSource[],
+  cashNeed: number | null = null,
+  now?: number,
+): HoldSlip | null {
+  const queued = holdQueueRows(unsold, asOf(now));
+  if (queued.length === 0) return null;
+  const need = usableNeed(cashNeed);
+  const taken = need != null && need > 0 ? cardsTaken(queued, need) : [];
+  const takenSet = new Set(taken);
+  const rows = queued.map((row, index): HoldSlipRow => ({
+    order: index + 1,
+    id: row.id,
+    player: row.player,
+    call: row.call,
+    cashUsd: row.cashUsd,
+    keptUsd: row.keptUsd,
+    lineOn: row.lineOn,
+    perDayUsd: row.perDayUsd,
+    place: slipPlace(row, index, need, taken),
+  }));
+  const stays = payingHolds(queued).filter((row) => !takenSet.has(row));
+  const takeCashUsd = cents(taken.reduce((total, row) => total + row.cashUsd, 0));
+  const book: HoldSlipBook = {
+    orderCashUsd: cents(queued.reduce((total, row) => total + row.cashUsd, 0)),
+    freeCashUsd: cents(queued.reduce((total, row) => total + (row.keptUsd > 0 ? 0 : row.cashUsd), 0)),
+    holdWorthUsd: cents(queued.reduce((total, row) => total + (row.keptUsd > 0 ? row.keptUsd : 0), 0)),
+    soonestLine: soonestLine(payingHolds(queued)),
+    takeCount: taken.length,
+    takeCashUsd,
+    giveUpUsd: cents(taken.reduce((total, row) => total + (row.call === 'hold' ? row.keptUsd : 0), 0)),
+    stayCount: stays.length,
+    stayKeptUsd: cents(stays.reduce((total, row) => total + row.keptUsd, 0)),
+    stayLine: soonestLine(stays),
+    shortUsd: need != null && need > 0 ? Math.max(0, cents(need - takeCashUsd)) : 0,
+  };
+  return {
+    rows,
+    copy: nextCopy(rows, need, book),
+    bookCopy: `${bookLead(book)} ${needCopy(need, book)}`,
+    book,
+    alert: alertFor(rows, need, book),
+  };
+}
+
+function textCell(value: string): string {
+  const safe = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+  if (/[",\n\r]/.test(safe)) return `"${safe.replace(/"/g, '""')}"`;
+  return safe;
+}
+
+function numCell(value: number | null): string {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return '';
+  return String(cents(value));
+}
+
+export function holdSlipCsv(slip: HoldSlip): string {
+  const lines = [HOLD_SLIP_CSV_HEADER];
+  for (const row of slip.rows) {
+    lines.push([
+      String(row.order),
+      textCell(row.player),
+      textCell(row.call),
+      numCell(row.cashUsd),
+      numCell(row.keptUsd),
+      textCell(row.lineOn ?? ''),
+      numCell(row.perDayUsd),
+      textCell(row.place),
+    ].join(','));
+  }
+  return `${lines.join('\n')}\n`;
+}
+
+export function downloadHoldSlip(
+  slip: HoldSlip,
+  filename = 'msi-hold-slip.csv',
+  host: Document | null = typeof document !== 'undefined' ? document : null,
+): void {
+  if (!host) return;
+  const blob = new Blob([holdSlipCsv(slip)], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const anchor = host.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  host.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 }
 
 export function loadHoldQueueUnsold(inventory: readonly PnlBookCard[], now?: number) {
