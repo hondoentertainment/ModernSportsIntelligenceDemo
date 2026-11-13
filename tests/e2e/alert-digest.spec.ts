@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { enterDemoMode } from '../helpers/e2eAuth';
+import { enterDemoMode, restoreLocalKeysOnNextLoad } from '../helpers/e2eAuth';
 
 test.describe('Watchlist and show alert digest', () => {
   test('lists a local price drop and a nearby seeded show', async ({ page }) => {
     test.setTimeout(120_000);
     await enterDemoMode(page);
-    await page.evaluate(() => {
-      localStorage.setItem('cardx_targets', JSON.stringify([{
+    const entries = {
+      cardx_targets: JSON.stringify([{
         id: 'tatum-gap',
         player: 'Jayson Tatum',
         cardDescription: '2024 Prizm Silver',
@@ -17,14 +17,18 @@ test.describe('Watchlist and show alert digest', () => {
         league: 'NBA',
         status: 'active',
         createdAt: '2026-01-01T00:00:00.000Z',
-      }]));
-      localStorage.setItem('msi_show_alert_prefs_v1', JSON.stringify({
+      }]),
+      msi_show_alert_prefs_v1: JSON.stringify({
         enabled: true,
         home: { label: 'New York, NY', lat: 40.7571, lng: -74.0023 },
         radiusMiles: 40,
         leadDays: 366,
-      }));
-    });
+      }),
+    };
+    await page.evaluate((next) => {
+      for (const [key, value] of Object.entries(next)) localStorage.setItem(key, value);
+    }, entries);
+    await restoreLocalKeysOnNextLoad(page, entries);
     await page.reload();
     await page.goto('/#/alerts');
     const digest = page.getByRole('region', { name: 'Watchlist and show alert digest' });
@@ -43,8 +47,8 @@ test.describe('Watchlist and show alert digest', () => {
   test('alerts a graded watchlist target on that grade band', async ({ page }) => {
     test.setTimeout(120_000);
     await enterDemoMode(page);
-    await page.evaluate(() => {
-      localStorage.setItem('cardx_targets', JSON.stringify([{
+    const entries = {
+      cardx_targets: JSON.stringify([{
         id: 'psa-judge',
         player: 'Aaron Judge',
         cardDescription: '2017 Update PSA 10',
@@ -61,8 +65,12 @@ test.describe('Watchlist and show alert digest', () => {
           { title: 'slab', price: 200, condition: 'PSA 10', soldAt: '2026-09-03' },
           { title: 'slab 2', price: 240, condition: 'PSA 10', soldAt: '2026-09-04' },
         ],
-      }]));
-    });
+      }]),
+    };
+    await page.evaluate((next) => {
+      for (const [key, value] of Object.entries(next)) localStorage.setItem(key, value);
+    }, entries);
+    await restoreLocalKeysOnNextLoad(page, entries);
     await page.reload();
     await page.goto('/#/alerts');
     const digest = page.getByRole('region', { name: 'Watchlist and show alert digest' });
