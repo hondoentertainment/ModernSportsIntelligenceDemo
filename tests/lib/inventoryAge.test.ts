@@ -10,6 +10,7 @@ import {
   downloadRealizedCsv,
   holdAge,
   inventoryAgeCopy,
+  longTermOn,
   realizedCsv,
   soldDay,
   type AgedRow,
@@ -77,6 +78,16 @@ describe('inventory age', () => {
       treatment: 'short-term',
       daysToLongTerm: 0,
     });
+    expect(longTermOn(undefined)).toBeNull();
+    expect(longTermOn('not-a-date')).toBeNull();
+    expect(longTermOn('2025-11-20')).toBe('2026-11-20');
+    const countdown = Date.parse('2026-10-31T12:00:00.000Z');
+    expect(holdAge('2025-11-20', countdown, null, true)).toMatchObject({
+      treatment: 'short-term',
+      daysToLongTerm: 19,
+    });
+    expect(holdAge('2025-11-20', Date.parse('2026-11-19T23:00:00.000Z'), null, true)?.treatment).toBe('short-term');
+    expect(holdAge('2025-11-20', Date.parse('2026-11-20T06:00:00.000Z'), null, true)?.treatment).toBe('long-term');
     const closed = holdAge('2026-10-01', START, '2026-10-20', false);
     expect(closed).toEqual({ daysHeld: 19, treatment: 'short-term', daysToLongTerm: 346 });
     expect(applyHold('2024-01-01', '2026-10-30', START, true)).toMatchObject({

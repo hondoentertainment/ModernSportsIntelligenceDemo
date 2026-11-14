@@ -219,7 +219,7 @@ export default defineConfig(({ command, mode }) => {
       // values for v8 run-to-run stability; ratchet UP as tests are added,
       // never down. Branches lag (~91%) due to defensive branches,
       // import.meta / env splits, and optional chaining.
-      // Measured 98.99 / 95.11 / 99.45 / 99.67 after the hold queue
+      // Measured 99.02 / 95.21 / 99.48 / 99.68 after the hold wait
       // (v8 is deterministic for this suite). Thresholds sit ~0.2-0.5pp under
       // that. Ratchet UP as tests are added, never down.
       thresholds: {

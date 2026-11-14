@@ -5,10 +5,12 @@ import {
   HOLD_QUEUE_CASH_KEY,
   HOLD_QUEUE_NOTE,
   HOLD_SLIP_NOTE,
+  HOLD_WAIT_NOTE,
   cashNeedDraft,
   downloadHoldSlip,
   holdQueueCopy,
   holdSlip,
+  holdWait,
   parseCashNeed,
   readHoldQueueNeed,
   type HoldQueueSource,
@@ -35,7 +37,8 @@ const HoldQueueField: React.FC<Props> = ({ unsold, now }) => {
   const [draft, setDraft] = useState(() => cashNeedDraft(readHoldQueueNeed()));
   const need = parseCashNeed(draft);
   const slip = holdSlip(unsold, need, now);
-  if (!slip) return null;
+  const wait = holdWait(unsold, need, now);
+  if (!slip || !wait) return null;
   const copy = holdQueueCopy(unsold, need, now);
   return (
     <div className="mt-3">
@@ -66,6 +69,14 @@ const HoldQueueField: React.FC<Props> = ({ unsold, now }) => {
           Open the hold slip for {slip.alert.player}
         </Link>
       ) : null}
+      <p className="mt-2 text-xs text-slate-200" aria-label="Hold wait">{wait.copy}</p>
+      {wait.alert ? <p className="mt-1 text-xs text-amber-100" aria-label="Hold wait alert">{wait.alert.copy}</p> : null}
+      {wait.alert?.href && wait.alert.player ? (
+        <Link to={wait.alert.href} className="inline-flex min-h-[44px] items-center text-xs text-brand-lime">
+          Open the hold wait for {wait.alert.player}
+        </Link>
+      ) : null}
+      <p className="mt-1 text-[11px] leading-relaxed text-slate-500">{HOLD_WAIT_NOTE}</p>
       <div className="mt-2">
         <button
           type="button"
