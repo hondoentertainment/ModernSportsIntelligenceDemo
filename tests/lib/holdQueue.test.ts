@@ -18,6 +18,7 @@ import {
   type HoldQueueSource,
   type HoldSlip,
 } from '../../lib/collector/holdQueue';
+import { holdAge } from '../../lib/collector/inventoryAge';
 import { floorBuyId } from '../../lib/collector/showClose';
 import { store } from '../../lib/dal/syncStore';
 import { HAGGLE_KEY } from '../../lib/shows/showHaggleLog';
@@ -447,8 +448,8 @@ describe('hold wait', () => {
   const book = [
     source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
     source({ id: 'tiny', player: 'Tiny', holdCall: 'under', holdMarkUsd: 10, holdRealizedUsd: -1, daysToLongTerm: 0 }),
-    source(),
-    source({ id: 'far', player: 'Far', holdMarkUsd: 50, holdRealizedUsd: 133.33, daysToLongTerm: 40 }),
+    source({ acquiredAt: '2025-11-20' }),
+    source({ id: 'far', player: 'Far', holdMarkUsd: 50, holdRealizedUsd: 133.33, daysToLongTerm: 40, acquiredAt: '2025-12-10' }),
   ];
 
   it('keeps the slip file, the eBay fee, and Web Push off the note', () => {
@@ -456,7 +457,9 @@ describe('hold wait', () => {
     expect(HOLD_WAIT_NOTE).toMatch(/not the eBay fee/i);
     expect(HOLD_WAIT_NOTE).toMatch(/not Web Push/i);
     expect(HOLD_WAIT_NOTE).toMatch(/need of \$0 does not wait/);
-    expect(HOLD_WAIT_NOTE).toMatch(/no line date/);
+    expect(HOLD_WAIT_NOTE).toMatch(/365\.25-day line/);
+    expect(HOLD_WAIT_NOTE).toMatch(/rounded countdown/);
+    expect(HOLD_WAIT_NOTE).toMatch(/no purchase date/);
     expect(HOLD_WAIT_NOTE).toMatch(/not a live tape/i);
   });
 
@@ -509,8 +512,8 @@ describe('hold wait', () => {
   it('sells a later clear card instead of the hold that is cheapest today', () => {
     const wait = holdWait([
       source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 10, holdRealizedUsd: -1, daysToLongTerm: 0 }),
-      source({ id: 'near', player: 'Near', holdMarkUsd: 10, daysToLongTerm: 20 }),
-      source({ id: 'far', player: 'Far', holdMarkUsd: 80, holdRealizedUsd: 133.33, daysToLongTerm: 40 }),
+      source({ id: 'near', player: 'Near', holdMarkUsd: 10, daysToLongTerm: 20, acquiredAt: '2025-11-20' }),
+      source({ id: 'far', player: 'Far', holdMarkUsd: 80, holdRealizedUsd: 133.33, daysToLongTerm: 40, acquiredAt: '2025-12-10' }),
     ], 70, NOW);
     expect(wait?.copy).toBe(
       'Wait: wait until 2026-12-10. Sell Cheap and Far. That covers $70 and keeps the $28.52 selling today would give up. Near is clear by then and stays off the take.',
@@ -523,9 +526,9 @@ describe('hold wait', () => {
 
   it('leaves holds that cross together off the take when one of them covers', () => {
     const wait = holdWait([
-      source({ id: 'ada', player: 'Ada', holdMarkUsd: 80, daysToLongTerm: 20 }),
-      source({ id: 'bea', player: 'Bea', holdMarkUsd: 50, holdRealizedUsd: 133.33, daysToLongTerm: 20 }),
-      source({ id: 'cara', player: 'Cara', holdMarkUsd: 10, daysToLongTerm: 20 }),
+      source({ id: 'ada', player: 'Ada', holdMarkUsd: 80, daysToLongTerm: 20, acquiredAt: '2025-11-20' }),
+      source({ id: 'bea', player: 'Bea', holdMarkUsd: 50, holdRealizedUsd: 133.33, daysToLongTerm: 20, acquiredAt: '2025-11-20' }),
+      source({ id: 'cara', player: 'Cara', holdMarkUsd: 10, daysToLongTerm: 20, acquiredAt: '2025-11-20' }),
     ], 70, NOW);
     expect(wait?.copy).toBe(
       'Wait: wait until 2026-11-20. Sell Ada. That covers $70 and keeps the $8.52 selling today would give up. Cara and Bea are clear by then and stay off the take.',
@@ -536,9 +539,9 @@ describe('hold wait', () => {
   it('keeps a later hold and a hold with no line when an earlier line covers', () => {
     const stayed = holdWait([
       source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
-      source(),
-      source({ id: 'mid', player: 'Mid', holdMarkUsd: 20, daysToLongTerm: 25 }),
-      source({ id: 'far', player: 'Far', holdMarkUsd: 50, holdRealizedUsd: 133.33, daysToLongTerm: 40 }),
+      source({ acquiredAt: '2025-11-20' }),
+      source({ id: 'mid', player: 'Mid', holdMarkUsd: 20, daysToLongTerm: 25, acquiredAt: '2025-11-25' }),
+      source({ id: 'far', player: 'Far', holdMarkUsd: 50, holdRealizedUsd: 133.33, daysToLongTerm: 40, acquiredAt: '2025-12-10' }),
     ], 60, NOW);
     expect(stayed?.copy).toBe(
       'Wait: wait until 2026-11-20. Sell Cheap and Near. That covers $60 and keeps the $8.52 selling today would give up. Mid and Far stay holds. The soonest line left is 2026-11-25.',
@@ -546,15 +549,15 @@ describe('hold wait', () => {
 
     const quiet = holdWait([
       source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
-      source(),
+      source({ acquiredAt: '2025-11-20' }),
       source({ id: 'quiet', player: 'Quiet', daysToLongTerm: null, holdMarkUsd: 0 }),
     ], 60, NOW);
     expect(quiet?.copy).toBe(
-      'Wait: wait until 2026-11-20. Sell Cheap and Near. That covers $60 and keeps the $8.52 selling today would give up. Quiet stays a hold and has no line date.',
+      'Wait: wait until 2026-11-20. Sell Cheap and Near. That covers $60 and keeps the $8.52 selling today would give up. Quiet stays a hold and has no purchase date.',
     );
     expect(holdWait([
       source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
-      source(),
+      source({ acquiredAt: '2025-11-20' }),
       source({ id: 'quiet', player: 'Quiet', daysToLongTerm: null, holdMarkUsd: 0 }),
       source({ id: 'also', player: 'Also', daysToLongTerm: null, holdMarkUsd: 0 }),
     ], 60, NOW)?.copy).toBe(
@@ -567,14 +570,38 @@ describe('hold wait', () => {
       source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
       source({ daysToLongTerm: null }),
     ], 60, NOW)?.copy).toBe(
-      'Wait: no wait covers $60 without giving up hold worth. Near has no line date.',
+      'Wait: no wait covers $60 without giving up hold worth. Near has no purchase date.',
     );
     expect(holdWait([
       source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 10, holdRealizedUsd: -1, daysToLongTerm: 0 }),
       source({ id: 'near', player: 'Near', holdMarkUsd: 10, daysToLongTerm: null }),
       source({ id: 'far', player: 'Far', holdMarkUsd: 80, holdRealizedUsd: 133.33, daysToLongTerm: null }),
     ], 80, NOW)?.copy).toBe(
-      'Wait: no wait covers $80 without giving up hold worth. Near and Far have no line date.',
+      'Wait: no wait covers $80 without giving up hold worth. Near and Far have no purchase date.',
     );
+    expect(holdWait([
+      source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
+      source({ daysToLongTerm: 20 }),
+    ], 60, NOW)?.copy).not.toMatch(/2026-11-20/);
+  });
+
+  it('waits for the 365.25-day line when the rounded countdown is a day early', () => {
+    const acquired = '2025-11-20';
+    const age = holdAge(acquired, NOW, null, true);
+    const rows = [
+      source({ id: 'cheap', player: 'Cheap', holdCall: 'under', holdMarkUsd: 62, holdRealizedUsd: -4, daysToLongTerm: 12 }),
+      source({ acquiredAt: acquired, daysToLongTerm: age?.daysToLongTerm }),
+    ];
+    expect(holdQueueRows(rows, NOW).find((row) => row.id === 'near')).toMatchObject({
+      lineOn: '2026-11-19',
+      clearsOn: '2026-11-20',
+    });
+    const wait = holdWait(rows, 60, NOW);
+    expect(wait?.day).toBe('2026-11-20');
+    expect(wait?.copy).toBe(
+      'Wait: wait until 2026-11-20. Sell Cheap and Near. That covers $60 and keeps the $8.52 selling today would give up.',
+    );
+    expect(wait?.copy).not.toMatch(/2026-11-19/);
+    expect(holdWait([source({ acquiredAt: '2020-01-01' })], 50, NOW)?.day).toBe('2026-10-31');
   });
 });

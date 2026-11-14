@@ -16,7 +16,7 @@ import { haggleSnapshot } from '../shows/showHaggleLog';
 import { readFloorDecisions } from '../shows/showTripLoop';
 import type { ShowHoldCall } from './holdingBuckets';
 import { gainWorth } from './holdWorth';
-import type { HoldTreatment } from './inventoryAge';
+import { longTermOn, type HoldTreatment } from './inventoryAge';
 import { exitMath } from './showExit';
 import { showPnl, type PnlBookCard } from './showPnl';
 
@@ -29,7 +29,7 @@ export const HOLD_SLIP_NOTE =
   'The hold slip names the next card to pull from that order, the cash the order raises after the ~4% card-show fee, and what a typed need does to the book. Waiting does not pay to keep an under card or a clear card. A paying hold is worth the dollars waiting keeps. The file is that order: next, take, stay, later, or off. A blank amount does not pretend a need. A need of $0 takes no card. A card that raises nothing does not cover the need. An alert appears when that need is short or gives up hold worth, and it stays quiet when the need covers and gives up nothing. A missing mark, a buy that is not filed, and a short-term gain more than 45 days from the line stay off. This file is not the realized-results download. Unsold cards stay off that file. Not a tax determination, not the eBay fee, not Web Push, and not a live tape.';
 
 export const HOLD_WAIT_NOTE =
-  'Hold wait names the earliest day a typed cash need is covered by cards waiting no longer pays to keep. Under and clear are already in that set. A hold joins it on the UTC day it crosses the 365-day line, and the cash is still the stored mark after the ~4% card-show fee. Selling today when that day exists gives up hold worth this wait keeps. A blank amount does not name a day. A need of $0 does not wait. A need selling today already covers without giving up hold worth does not wait. Waiting does not raise more than the order. A hold with no line date does not become free by waiting. This is not the hold slip file. A missing mark, a buy that is not filed, and a short-term gain more than 45 days from the line stay off. Not a tax determination, not the eBay fee, not Web Push, and not a live tape.';
+  'Hold wait names the earliest day a typed cash need is covered by cards waiting no longer pays to keep. Under and clear are already in that set. A hold joins it on the UTC day the purchase reaches the 365.25-day line. The rounded countdown on the hold queue is not that day. The cash is still the stored mark after the ~4% card-show fee. Selling today when that day exists gives up hold worth this wait keeps. A blank amount does not name a day. A need of $0 does not wait. A need selling today already covers without giving up hold worth does not wait. Waiting does not raise more than the order. A hold with no purchase date does not become free by waiting. This is not the hold slip file. A missing mark, a buy that is not filed, and a short-term gain more than 45 days from the line stay off. Not a tax determination, not the eBay fee, not Web Push, and not a live tape.';
 
 export const HOLD_SLIP_CSV_HEADER = 'order,player,call,cash_after_fee,hold_worth_given_up,line_date,dollars_a_day,place';
 
@@ -93,6 +93,7 @@ export interface HoldQueueSource {
   holdCall?: ShowHoldCall | null;
   treatment?: HoldTreatment | null;
   daysToLongTerm?: number | null;
+  acquiredAt?: string | null;
   holdMarkUsd?: number | null;
   holdRealizedUsd?: number | null;
 }
@@ -105,6 +106,7 @@ export interface HoldQueueRow {
   keptUsd: number;
   daysToLongTerm: number | null;
   lineOn: string | null;
+  clearsOn: string | null;
   perDayUsd: number | null;
 }
 
@@ -149,6 +151,13 @@ function lineOn(now: number, days: number): string {
   return new Date(start + days * DAY_MS).toISOString().slice(0, 10);
 }
 
+function projectedClear(acquiredAt: string | null | undefined, now: number): string | null {
+  const day = longTermOn(acquiredAt);
+  if (!day) return null;
+  const today = new Date(now).toISOString().slice(0, 10);
+  return day < today ? today : day;
+}
+
 function finiteMark(value: number | null | undefined): number | null {
   if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) return null;
   return cents(value);
@@ -188,6 +197,7 @@ export function holdQueueRows(unsold: readonly HoldQueueSource[], now?: number):
       keptUsd,
       daysToLongTerm: dated ? days : null,
       lineOn: dated ? lineOn(clock, days) : null,
+      clearsOn: row.holdCall === 'hold' && keptUsd > 0 ? projectedClear(row.acquiredAt, clock) : null,
       perDayUsd: dated ? cents(keptUsd / days) : null,
     });
   }
@@ -453,15 +463,15 @@ function cleared(row: HoldQueueRow): HoldQueueRow {
 
 function rowsOnDay(rows: readonly HoldQueueRow[], day: string): HoldQueueRow[] {
   return rows
-    .map((row) => (row.call === 'hold' && row.lineOn != null && row.lineOn <= day ? cleared(row) : row))
+    .map((row) => (row.call === 'hold' && row.clearsOn != null && row.clearsOn <= day ? cleared(row) : row))
     .sort(queueOrder);
 }
 
 function lineDays(rows: readonly HoldQueueRow[]): string[] {
   return [...new Set(
     rows
-      .filter((row) => row.call === 'hold' && row.keptUsd > 0 && row.lineOn)
-      .map((row) => row.lineOn as string),
+      .filter((row) => row.call === 'hold' && row.keptUsd > 0 && row.clearsOn)
+      .map((row) => row.clearsOn as string),
   )].sort();
 }
 
@@ -481,15 +491,15 @@ function stayRows(rows: readonly HoldQueueRow[], takenIds: ReadonlySet<string>, 
     row.call === 'hold'
     && row.keptUsd > 0
     && !takenIds.has(row.id)
-    && (row.lineOn == null || row.lineOn > day)
+    && (row.clearsOn == null || row.clearsOn > day)
   ));
 }
 
 function crossedAside(rows: readonly HoldQueueRow[], takenIds: ReadonlySet<string>, day: string): HoldQueueRow[] {
   return rows.filter((row) => (
     row.call === 'hold'
-    && row.lineOn != null
-    && row.lineOn <= day
+    && row.clearsOn != null
+    && row.clearsOn <= day
     && !takenIds.has(row.id)
   ));
 }
@@ -498,11 +508,11 @@ function stayClause(rows: readonly HoldQueueRow[]): string {
   if (rows.length === 0) return '';
   if (rows.length === 1) {
     const row = rows[0];
-    return row.lineOn
-      ? ` ${row.player} stays a hold until ${row.lineOn}.`
-      : ` ${row.player} stays a hold and has no line date.`;
+    return row.clearsOn
+      ? ` ${row.player} stays a hold until ${row.clearsOn}.`
+      : ` ${row.player} stays a hold and has no purchase date.`;
   }
-  const soonest = soonestLine(rows);
+  const soonest = rows.map((row) => row.clearsOn).filter((day): day is string => Boolean(day)).sort()[0];
   const line = soonest ? ` The soonest line left is ${soonest}.` : '';
   return ` ${listed(rows.map((row) => row.player))} stay holds.${line}`;
 }
@@ -529,7 +539,7 @@ function waitCoverCopy(
 function noLineCopy(need: number, blocked: readonly HoldQueueRow[]): string {
   const names = listed(blocked.map((row) => row.player));
   const verb = blocked.length === 1 ? 'has' : 'have';
-  return `Wait: no wait covers ${money(need)} without giving up hold worth. ${names} ${verb} no line date.`;
+  return `Wait: no wait covers ${money(need)} without giving up hold worth. ${names} ${verb} no purchase date.`;
 }
 
 function waitAlert(
@@ -543,7 +553,7 @@ function waitAlert(
   const byId = new Map(rows.map((row) => [row.id, row]));
   const target = taken
     .map((row) => byId.get(row.id))
-    .find((row): row is HoldQueueRow => row != null && row.lineOn === day) ?? taken[0];
+    .find((row): row is HoldQueueRow => row != null && row.clearsOn === day) ?? taken[0];
   return {
     copy: `Hold wait: waiting until ${day} covers ${money(need)} and keeps ${money(kept)}. Selling ${listed(today.map((row) => row.player))} today gives that up. Not a tax determination and not a live tape.`,
     player: target.player,
@@ -580,7 +590,7 @@ export function holdWait(
   if (!cover) {
     const takenIds = new Set(today.map((row) => row.id));
     const blocked = rows.filter((row) => (
-      takenIds.has(row.id) && row.call === 'hold' && row.keptUsd > 0 && row.lineOn == null
+      takenIds.has(row.id) && row.call === 'hold' && row.keptUsd > 0 && row.clearsOn == null
     ));
     return quietWait(noLineCopy(need, blocked));
   }

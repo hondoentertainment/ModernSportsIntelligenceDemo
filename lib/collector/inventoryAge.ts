@@ -62,6 +62,15 @@ export function acquiredDay(bookDate: string | undefined, noteDate: string | und
   return calendarDay(bookDate) ?? calendarDay(noteDate);
 }
 
+/** UTC day the open hold reaches the same 365.25-day line `holdAge` uses. */
+export function longTermOn(acquired: string | null | undefined): string | null {
+  const start = calendarDay(acquired ?? undefined);
+  if (start == null) return null;
+  const startMs = Date.parse(start);
+  if (!Number.isFinite(startMs)) return null;
+  return new Date(startMs + ONE_YEAR_MS).toISOString().slice(0, 10);
+}
+
 export function soldDay(bookDate: string | undefined): string | null {
   return calendarDay(bookDate);
 }

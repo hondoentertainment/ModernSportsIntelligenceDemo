@@ -20,6 +20,7 @@ function source(overrides: Partial<HoldQueueSource> = {}): HoldQueueSource {
     holdCall: 'hold',
     treatment: 'short-term',
     daysToLongTerm: 20,
+    acquiredAt: '2025-11-20',
     holdMarkUsd: 80,
     holdRealizedUsd: 56.8,
     ...overrides,
