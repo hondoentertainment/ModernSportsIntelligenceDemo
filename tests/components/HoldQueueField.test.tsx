@@ -50,12 +50,14 @@ describe('Hold queue field', () => {
     expect(input).toHaveClass('min-h-[44px]', 'text-base');
     expect(screen.getByLabelText('Hold queue')).toHaveTextContent(/sell under and clear before a hold/i);
     expect(screen.getByLabelText('Hold queue')).toHaveTextContent(/not a live tape/i);
-    expect(screen.getAllByText(/not the eBay fee/i)).toHaveLength(2);
+    expect(screen.getAllByText(/not the eBay fee/i)).toHaveLength(3);
 
     await user.type(input, '50');
     expect(screen.getByLabelText('Hold queue')).toHaveTextContent('$50 at the table takes Cheap');
     expect(screen.getByLabelText('Hold queue')).toHaveTextContent('Gives up nothing');
     expect(screen.getByLabelText('Hold queue')).toHaveTextContent('Near stays a hold');
+    expect(screen.getByLabelText('Hold wait')).toHaveTextContent('selling today covers $50 and gives up nothing');
+    expect(screen.queryByLabelText('Hold wait alert')).not.toBeInTheDocument();
     expect(store.get(HOLD_QUEUE_CASH_KEY, null)).toBe(50);
 
     view.unmount();
@@ -64,6 +66,7 @@ describe('Hold queue field', () => {
 
     await user.clear(screen.getByRole('textbox', { name: 'Cash the table needs' }));
     expect(screen.getByLabelText('Hold queue')).toHaveTextContent(/sell under and clear before a hold/i);
+    expect(screen.getByLabelText('Hold wait')).toHaveTextContent('no cash need is typed');
     expect(store.get(HOLD_QUEUE_CASH_KEY, null)).toBeNull();
   });
 
@@ -78,6 +81,8 @@ describe('Hold queue field', () => {
     const input = screen.getByRole('textbox', { name: 'Cash the table needs' });
     expect(input).toHaveValue('100');
     expect(screen.getByLabelText('Hold slip alert')).toHaveTextContent(/still short/);
+    expect(screen.getByLabelText('Hold wait')).toHaveTextContent('does not raise more than the order');
+    expect(screen.queryByLabelText('Hold wait alert')).not.toBeInTheDocument();
     await user.type(input, 'x');
     expect(input).toHaveValue('100x');
     expect(screen.getByLabelText('Hold queue')).toHaveTextContent(/sell under and clear before a hold/i);
@@ -150,6 +155,12 @@ describe('Hold queue field', () => {
     expect(screen.getByLabelText('Hold slip alert')).toHaveTextContent(/gives up \$8\.52 by selling Cheap and Near/);
     expect(screen.getByRole('link', { name: 'Open the hold slip for Near' })).toHaveAttribute('href', '/audit-dossier?cardId=near');
     expect(screen.getByRole('link', { name: 'Open the hold slip for Near' })).toHaveClass('min-h-[44px]');
+    expect(screen.getByLabelText('Hold wait')).toHaveTextContent(
+      'Wait: wait until 2026-11-20. Sell Cheap and Near. That covers $60 and keeps the $8.52 selling today would give up.',
+    );
+    expect(screen.getByLabelText('Hold wait alert')).toHaveTextContent(/keeps \$8\.52/);
+    expect(screen.getByRole('link', { name: 'Open the hold wait for Near' })).toHaveAttribute('href', '/audit-dossier?cardId=near');
+    expect(screen.getByRole('link', { name: 'Open the hold wait for Near' })).toHaveClass('min-h-[44px]');
     await user.click(screen.getByRole('button', { name: 'Download the hold slip' }));
     expect(createObjectURL).toHaveBeenCalled();
     const blob = createObjectURL.mock.calls[0]?.[0] as Blob;
