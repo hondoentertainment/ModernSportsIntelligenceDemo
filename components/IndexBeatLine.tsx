@@ -1,15 +1,36 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { CardInventory } from '../types';
-import { INDEX_BEAT_NOTE, indexBeat } from '../lib/analytics/indexBeat';
+import { store } from '../lib/dal/syncStore';
+import { INDEX_BEAT_NOTE, indexBeat, type IndexBeat } from '../lib/analytics/indexBeat';
 
 interface Props {
   inventory: readonly CardInventory[];
   ids?: readonly string[];
 }
 
+function sameBeat(prev: IndexBeat, next: IndexBeat): boolean {
+  return prev.copy === next.copy
+    && prev.call === next.call
+    && prev.alert?.copy === next.alert?.copy
+    && prev.alert?.href === next.alert?.href;
+}
+
 const IndexBeatLine: React.FC<Props> = ({ inventory, ids }) => {
-  const beat = useMemo(() => indexBeat(inventory, ids), [inventory, ids]);
+  const [beat, setBeat] = useState(() => indexBeat(inventory, ids));
+  useEffect(() => {
+    const refresh = () => {
+      const next = indexBeat(inventory, ids);
+      setBeat((prev) => (sameBeat(prev, next) ? prev : next));
+    };
+    refresh();
+    const stopWrite = store.onWrite(refresh);
+    const stopStatus = store.onStatusChange(refresh);
+    return () => {
+      stopWrite();
+      stopStatus();
+    };
+  }, [inventory, ids]);
   const label = beat.scoped ? 'Favorites index beat' : 'Index beat';
   return (
     <div className="mt-3">
