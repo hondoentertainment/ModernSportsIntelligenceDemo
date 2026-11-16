@@ -913,12 +913,12 @@ upgrade** — `npm ci` will refuse the engine constraint.
 
 ## Priority 1 — Remaining owner-held launch actions
 
-> **Superseded as a checklist by the 2026-10-12 #77 section at the top.** `vhbsokjqchaafluimgjh` is **ACTIVE_HEALTHY**. Migrations `00001`–`00010`, Edge Functions, and the July 18 auth redirect allowlist still stand. Vercel Supabase env presence is confirmed. Optional `00011_price_history_freshness_sla.sql` is file-only — the owner may apply it in the SQL editor; **agents must not**. Abandoned project `iwxqemiqtusgmemlnrby` is unused. **Do not pause from an engineering PR.**
+> **Superseded as a checklist by the 2026-10-12 #77 section at the top.** `vhbsokjqchaafluimgjh` is **ACTIVE_HEALTHY**. Migrations `00001`–`00011`, Edge Functions, and the July 18 auth redirect allowlist still stand. Vercel Supabase env presence is confirmed. `00011_price_history_freshness_sla.sql` is **applied**. `00012` and `00013` stay file-only; **agents must not apply them**. Abandoned project `iwxqemiqtusgmemlnrby` is unused. **Do not pause from an engineering PR.**
 
 **CI hygiene shipped (engineering):** Deployed E2E on push to `main`; RLS verification fails closed when secrets missing; all workflows now run Node 22 via `.nvmrc`. Tracked in [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77).
 
 0. **Phase 31 activation** (infra done; one owner check left — item 3):
-   1. ~~Apply migrations / deploy Edge Functions~~ — done on `vhbsokjqchaafluimgjh` (2026-07-18). `00001`–`00010` are applied. Do not apply `00011` from an agent.
+   1. ~~Apply migrations / deploy Edge Functions~~ — done on `vhbsokjqchaafluimgjh` (2026-07-18). `00001`–`00011` are applied. Do not re-apply `00011`, and do not apply `00012` or `00013`, from an agent.
    2. ~~Assign first admin~~ — `msi-launch-admin@example.com` promoted (`npm run ops:promote-admin`). Promote a personal email the same way after signup.
    3. Confirm `/audit-trail/admin` + `audit.cross_user_read` row while signed in as an admin.
    4. ~~First key-rotation drill~~ — Supabase cutover logged in `plans/incidents/key-rotation-drill.md` (full multi-provider quarterly drill still needs Stripe staging keys).
@@ -958,7 +958,7 @@ upgrade** — `npm ci` will refuse the engine constraint.
 4. **Don't let `main` idle behind open PRs again.** The deployed-E2E gate exists precisely so merging is cheap. As of 2026-10-12 there are none.
 5. **Don't pause Supabase from an engineering PR.** The project is ACTIVE_HEALTHY. Owner-held dashboard action only.
 6. **Don't set real API keys or `VITE_FF_REAL_*` in git or in this class of PR.**
-7. **Don't apply `00011_price_history_freshness_sla.sql` or `00013_profiles_username_login.sql`.** Both stay file-only until the owner chooses the SQL editor. `00013` is the username sign-in migration.
+7. **Don't re-apply `00011_price_history_freshness_sla.sql`, and don't apply `00012_audit_events_append_only.sql` or `00013_profiles_username_login.sql`.** `00011` is applied. `00012` and `00013` stay file-only until the owner chooses the SQL editor. `00013` is the username sign-in migration.
 8. **Don't put secrets in git, jsPDF on live briefing paths, or live Market Movers / SCI parity claims in copy** before eBay is live.
 9. **Don't start another Tailwind or ESLint major migration.** `tailwindcss` ^4.3.3 and `eslint` ^10.14.0 are already on `main`; `@eslint/js` stays 9.x.
 
