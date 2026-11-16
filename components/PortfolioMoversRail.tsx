@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import type { CardInventory } from '../types';
 import { listPortfolioMovers, PORTFOLIO_MOVERS_DISCLOSURE } from '../lib/analytics/portfolioMovers';
+import IndexBeatLine from './IndexBeatLine';
 
 interface Props {
   inventory: CardInventory[];
@@ -83,6 +84,7 @@ const PortfolioMoversRail: React.FC<Props> = ({ inventory, favoriteIds, compact 
       {report.thinCount > 0 && !report.emptyReason && (
         <p className="mt-3 text-[10px] text-slate-500">{report.thinCount} holdings still have thin tape and are omitted.</p>
       )}
+      {favoriteIds ? <IndexBeatLine inventory={inventory} ids={favoriteIds} /> : null}
     </section>
   );
 };
