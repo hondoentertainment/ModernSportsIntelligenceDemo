@@ -50,7 +50,7 @@ describe('weightGap', () => {
     expect(gap.alert).toBeNull();
     expect(gap.disclosure).toBe(WEIGHT_GAP_DISCLOSURE);
     expect(gap.copy).toBe(
-      'Weight gap: The book is $105 ahead of the equal-weighted index on the $500 start. That gap is 21.0 points. 2 cards stay off. Heavy is 80.0% of that start. The equal share is 50.0%. That extra weight carried 71.4% of this lead. Not a live Sports Card Investor or Market Movers index.',
+      'Weight gap: The book is $105 ahead of the equal-weighted index on the $500 start. That gap is 21.0 points. 2 cards stay off. Heavy is 80.0% of that start. The equal share is 50.0%. That extra weight carried 71.4% of this net lead. Not a live Sports Card Investor or Market Movers index.',
     );
   });
 
@@ -65,7 +65,7 @@ describe('weightGap', () => {
     expect(gap.gapUsd).toBe(-105);
     expect(gap.carry).toMatchObject({ id: 'lift', player: 'Lift', sharePct: 20, partPct: 57.1 });
     expect(gap.alert).toEqual({
-      copy: 'Weight gap: The book lagged, and Lift carried 57.1% of that weight. Not a live tape.',
+      copy: 'Weight gap: The book lagged, and Lift carried 57.1% of that net lag. Not a live tape.',
       player: 'Lift',
       cardId: 'lift',
       href: '/audit-dossier?cardId=lift',
@@ -85,7 +85,10 @@ describe('weightGap', () => {
     expect(match.gapUsd).toBe(8);
     expect(match.alert).toBeNull();
     expect(match.copy).toMatch(/inside the 2-point band, so the dollars matched/);
+    expect(match.offsetUsd).toBe(12);
     expect(match.copy).toMatch(/Heavy is 75.0% of that start/);
+    expect(match.copy).toMatch(/That extra weight pulled \$20, and other cards offset \$12/);
+    expect(match.copy).not.toMatch(/100\.0% of this/);
 
     clearPriceHistory();
     snap('big', 300, 300);
@@ -100,7 +103,7 @@ describe('weightGap', () => {
     expect(tied.carry).toBeNull();
     expect(tied.tied.map((card) => card.player)).toEqual(['Ada', 'Bea']);
     expect(tied.alert).toBeNull();
-    expect(tied.copy).toMatch(/Ada and Bea each carried 50.0% of this lag/);
+    expect(tied.copy).toMatch(/Ada and Bea each carried 50.0% of this net lag/);
     expect(tied.copy).toMatch(/The percent drag is a different card/);
   });
 
@@ -137,5 +140,25 @@ describe('weightGap', () => {
     expect(gap.carry?.id).toBe('heavy');
     expect(gap.alert?.cardId).toBe('heavy');
     expect(gap.copy).not.toMatch(/different card/);
+  });
+
+  it('names an offset instead of calling one card the whole lag', () => {
+    snap('heavy', 600, 480);
+    snap('mid', 300, 240);
+    snap('light', 100, 90);
+    const gap = weightGap([
+      makeCard({ id: 'heavy', player: 'Heavy', currentValue: 480 }),
+      makeCard({ id: 'mid', player: 'Mid', currentValue: 240 }),
+      makeCard({ id: 'light', player: 'Light', currentValue: 90 }),
+    ]);
+    expect(gap.call).toBe('lag');
+    expect(gap.gapUsd).toBe(-23);
+    expect(gap.offsetUsd).toBe(30.33);
+    expect(gap.carry).toMatchObject({ id: 'heavy', partPct: 231.9 });
+    expect(gap.copy).toMatch(/That extra weight pulled \$53\.33, and other cards offset \$30\.33/);
+    expect(gap.copy).not.toMatch(/100\.0% of this/);
+    expect(gap.alert?.copy).toBe(
+      'Weight gap: The book lagged, and Heavy pulled more than that net lag. Other cards offset $30.33. Not a live tape.',
+    );
   });
 });

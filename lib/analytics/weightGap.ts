@@ -9,10 +9,10 @@ import type { CardInventory } from '../../types';
 import { readIndexTape, type IndexBeatCall, type IndexBeatCard } from './indexBeat';
 
 export const WEIGHT_GAP_DISCLOSURE =
-  'The dollars are the index gap times the sparkline start on this desk. The card is its share of that start against an equal share, and the part of the lead or the lag that extra weight carried. Not a live Sports Card Investor or Market Movers index.';
+  'The dollars are the index gap times the sparkline start on this desk. The card is its share of that start against an equal share. A percent is that card\'s share of the net gap. When other cards offset the pull, the line names those dollars. Not a live Sports Card Investor or Market Movers index.';
 
 export const WEIGHT_GAP_NOTE =
-  'A sold card, thin tape, and a sparkline that does not start above zero stay off. One usable card stays off. A match stays off the alert. A tie does not name one card as more than half. Not a live tape.';
+  'A sold card, thin tape, and a sparkline that does not start above zero stay off. One usable card stays off. A percent is a share of the net gap. An offset is named in dollars. A match stays off the alert. A tie does not name one card as more than half. Not a live tape.';
 
 export interface WeightGapCarry {
   id: string;
@@ -40,6 +40,7 @@ export interface WeightGap {
   gapUsd: number | null;
   carry: WeightGapCarry | null;
   tied: WeightGapCarry[];
+  offsetUsd: number;
   copy: string;
   alert: WeightGapAlert | null;
   disclosure: string;
@@ -88,6 +89,7 @@ function quiet(scoped: boolean, held: number, off: number, copy: string): Weight
     gapUsd: null,
     carry: null,
     tied: [],
+    offsetUsd: 0,
     copy,
     alert: null,
     disclosure: WEIGHT_GAP_DISCLOSURE,
@@ -132,12 +134,17 @@ function toCarry(card: Weighted, equalPct: number, partPct: number): WeightGapCa
   };
 }
 
-function carriersFor(cards: readonly IndexBeatCard[], gapPct: number): WeightGapCarry[] {
-  if (gapPct === 0) return [];
+function carriersFor(
+  cards: readonly IndexBeatCard[],
+  gapPct: number,
+  startUsd: number,
+  gapUsd: number,
+): { carriers: WeightGapCarry[]; offsetUsd: number; pullUsd: number } {
+  const empty = { carriers: [], offsetUsd: 0, pullUsd: 0 };
+  if (gapPct === 0) return empty;
   const weighted = weightCards(cards);
   const side = weighted.filter((card) => (gapPct > 0 ? card.contribution > 0 : card.contribution < 0));
-  const sideTotal = side.reduce((sum, card) => sum + Math.abs(card.contribution), 0);
-  if (!(sideTotal > 0)) return [];
+  if (side.length === 0) return empty;
   const ranked = [...side].sort((a, b) => {
     const gap = Math.abs(b.contribution) - Math.abs(a.contribution);
     if (!nearlyEqual(Math.abs(a.contribution), Math.abs(b.contribution)) && gap !== 0) return gap;
@@ -149,10 +156,18 @@ function carriersFor(cards: readonly IndexBeatCard[], gapPct: number): WeightGap
   const top = ranked[0];
   const equalPct = round1(100 / cards.length);
   const tied = ranked.filter((card) => nearlyEqual(Math.abs(card.contribution), Math.abs(top.contribution)));
-  const partPct = round1((Math.abs(top.contribution) / sideTotal) * 100);
-  return [...tied]
-    .sort((a, b) => a.player.localeCompare(b.player) || a.id.localeCompare(b.id))
-    .map((card) => toCarry(card, equalPct, partPct));
+  const sideTotal = side.reduce((sum, card) => sum + Math.abs(card.contribution), 0);
+  const partPct = round1((Math.abs(top.contribution) / Math.abs(gapPct)) * 100);
+  const pullUsd = cents((startUsd * Math.abs(top.contribution)) / 100);
+  const sideUsd = cents((startUsd * sideTotal) / 100);
+  const offsetUsd = Math.max(0, cents(sideUsd - Math.abs(gapUsd)));
+  return {
+    carriers: [...tied]
+      .sort((a, b) => a.player.localeCompare(b.player) || a.id.localeCompare(b.id))
+      .map((card) => toCarry(card, equalPct, partPct)),
+    offsetUsd,
+    pullUsd,
+  };
 }
 
 function names(cards: readonly WeightGapCarry[]): string {
@@ -162,15 +177,26 @@ function names(cards: readonly WeightGapCarry[]): string {
   return `${cards.length} cards`;
 }
 
-function carrySentence(cards: readonly WeightGapCarry[], gapPct: number): string {
+function carrySentence(
+  cards: readonly WeightGapCarry[],
+  gapPct: number,
+  offsetUsd: number,
+  pullUsd: number,
+): string {
   const side = gapPct > 0 ? 'lead' : 'lag';
+  const share = cards.length === 1
+    ? `${cards[0].player} is ${percent(cards[0].sharePct)} of that start. The equal share is ${percent(cards[0].equalPct)}. `
+    : '';
+  if (offsetUsd > 0) {
+    const who = cards.length === 1 ? 'That extra weight' : `${names(cards)} each`;
+    return `${share}${who} pulled ${money(pullUsd)}, and other cards offset ${money(offsetUsd)}.`;
+  }
   const part = percent(cards[0].partPct);
   if (cards.length === 1) {
-    const card = cards[0];
-    return `${card.player} is ${percent(card.sharePct)} of that start. The equal share is ${percent(card.equalPct)}. That extra weight carried ${part} of this ${side}.`;
+    return `${share}That extra weight carried ${part} of this net ${side}.`;
   }
   const verb = cards.length === 2 || cards.length === 3 ? 'each carried' : 'tied and each carried';
-  return `${names(cards)} ${verb} ${part} of this ${side}.`;
+  return `${names(cards)} ${verb} ${part} of this net ${side}.`;
 }
 
 function scoredCopy(
@@ -182,6 +208,8 @@ function scoredCopy(
   off: number,
   carriers: readonly WeightGapCarry[],
   dragId: string | null,
+  offsetUsd: number,
+  pullUsd: number,
 ): string {
   const who = scoped ? 'These favorites are' : 'The book is';
   const where = gapPct > 0 ? 'ahead of' : 'behind';
@@ -194,7 +222,7 @@ function scoredCopy(
     line += ` That gap is ${points(gapPct)}.`;
   }
   if (off > 0) line += ` ${off} ${off === 1 ? 'card stays' : 'cards stay'} off.`;
-  if (carriers.length > 0) line += ` ${carrySentence(carriers, gapPct)}`;
+  if (carriers.length > 0) line += ` ${carrySentence(carriers, gapPct, offsetUsd, pullUsd)}`;
   else if (gapPct !== 0) line += ' No card\'s extra weight explains that gap.';
   const different = carriers.length > 0
     && dragId != null
@@ -204,12 +232,20 @@ function scoredCopy(
   return `${line} Not a live Sports Card Investor or Market Movers index.`;
 }
 
-function alertFor(scoped: boolean, carriers: readonly WeightGapCarry[], call: IndexBeatCall): WeightGapAlert | null {
+function alertFor(
+  scoped: boolean,
+  carriers: readonly WeightGapCarry[],
+  call: IndexBeatCall,
+  offsetUsd: number,
+): WeightGapAlert | null {
   const carry = carriers.length === 1 ? carriers[0] : null;
   if (call !== 'lag' || carry == null || !(carry.partPct > 50)) return null;
   const who = scoped ? 'These favorites' : 'The book';
+  const detail = offsetUsd > 0
+    ? `${carry.player} pulled more than that net lag. Other cards offset ${money(offsetUsd)}.`
+    : `${carry.player} carried ${percent(carry.partPct)} of that net lag.`;
   return {
-    copy: `Weight gap: ${who} lagged, and ${carry.player} carried ${percent(carry.partPct)} of that weight. Not a live tape.`,
+    copy: `Weight gap: ${who} lagged, and ${detail} Not a live tape.`,
     player: carry.player,
     cardId: carry.id,
     href: `/audit-dossier?cardId=${encodeURIComponent(carry.id)}`,
@@ -223,7 +259,8 @@ export function weightGap(inventory: readonly CardInventory[], ids?: readonly st
   }
   const startUsd = cents(tape.cards.reduce((sum, card) => sum + card.from, 0));
   const gapUsd = cents((startUsd * tape.gapPct) / 100);
-  const carriers = carriersFor(tape.cards, tape.gapPct);
+  const weighed = carriersFor(tape.cards, tape.gapPct, startUsd, gapUsd);
+  const carriers = weighed.carriers;
   return {
     scoped: tape.scoped,
     call: tape.call,
@@ -235,8 +272,20 @@ export function weightGap(inventory: readonly CardInventory[], ids?: readonly st
     gapUsd,
     carry: carriers.length === 1 ? carriers[0] : null,
     tied: carriers.length > 1 ? carriers : [],
-    copy: scoredCopy(tape.scoped, tape.gapPct, gapUsd, startUsd, tape.call, tape.off, carriers, tape.drag?.id ?? null),
-    alert: alertFor(tape.scoped, carriers, tape.call),
+    offsetUsd: weighed.offsetUsd,
+    copy: scoredCopy(
+      tape.scoped,
+      tape.gapPct,
+      gapUsd,
+      startUsd,
+      tape.call,
+      tape.off,
+      carriers,
+      tape.drag?.id ?? null,
+      weighed.offsetUsd,
+      weighed.pullUsd,
+    ),
+    alert: alertFor(tape.scoped, carriers, tape.call, weighed.offsetUsd),
     disclosure: WEIGHT_GAP_DISCLOSURE,
   };
 }
