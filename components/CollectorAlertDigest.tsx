@@ -11,6 +11,7 @@ import {
 import { GRADE_ALERT_NOTE } from '../lib/collector/gradeAlert';
 import HoldCallAlerts from './HoldCallAlerts';
 import IndexBeatLine from './IndexBeatLine';
+import WeightGapLine from './WeightGapLine';
 import { OFFER_LADDER_NOTE } from '../lib/collector/offerLadder';
 import { GRADE_RANGE_NOTE, SALE_RANGE_BLURB } from '../lib/collector/saleRange';
 import type { FollowUp } from '../lib/collector/showClose';
@@ -102,6 +103,7 @@ const CollectorAlertDigest: React.FC<Props> = ({ inventory = [], targets, onWatc
       </div>
       <h3 className="mt-4 text-xs font-black uppercase tracking-widest text-lime-200">Book versus the index</h3>
       <IndexBeatLine inventory={inventory} />
+      <WeightGapLine inventory={inventory} />
       <h3 className="mt-4 text-xs font-black uppercase tracking-widest text-cyan-200">Target versus the sale range</h3>
       <p className="mt-1 text-xs leading-relaxed text-slate-500">{SALE_RANGE_BLURB} {GRADE_RANGE_NOTE} {OFFER_LADDER_NOTE}</p>
       {digest.ranges.length === 0

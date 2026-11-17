@@ -55,5 +55,6 @@ describe('CollectorAlertDigest sale range', () => {
     expect(
       screen.getByText(/no active target has stored sales or a local mark/i)
     ).toBeInTheDocument();
+    expect(screen.getByLabelText('Weight gap')).toHaveTextContent(/no held card is on this desk/);
   });
 });
