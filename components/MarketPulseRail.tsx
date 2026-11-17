@@ -4,6 +4,7 @@ import type { CardInventory } from '../types';
 import { computeMarketPulse, MARKET_PULSE_DISCLOSURE } from '../lib/analytics/marketPulse';
 import FreshnessSlaBadge from './FreshnessSlaBadge';
 import IndexBeatLine from './IndexBeatLine';
+import WeightGapLine from './WeightGapLine';
 
 interface Props {
   inventory: CardInventory[];
@@ -39,6 +40,7 @@ const MarketPulseRail: React.FC<Props> = ({ inventory, compact }) => {
       </div>
       {!compact && <p className="mb-4 text-[11px] leading-relaxed text-slate-400">{MARKET_PULSE_DISCLOSURE}</p>}
       <IndexBeatLine inventory={inventory} />
+      <WeightGapLine inventory={inventory} />
       <div className={`grid grid-cols-1 gap-4 ${compact ? '' : 'md:grid-cols-3'}`}>
         <PulseGroup title="Sport" rows={sports.length ? sports : report.segments.filter((row) => row.kind === 'sport').slice(0, 3)} />
         <PulseGroup title="Era" rows={eras} />

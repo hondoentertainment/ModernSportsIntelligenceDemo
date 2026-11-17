@@ -39,5 +39,6 @@ describe('PortfolioMoversRail', () => {
     expect(screen.getByRole('region', { name: /favorites top movers/i })).toBeInTheDocument();
     expect(screen.getByText('Gainer')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /favorites/i })).toHaveAttribute('href', '/favorites');
+    expect(screen.getByLabelText('Favorites weight gap')).toHaveTextContent(/one favorite cannot show a weight gap/);
   });
 });

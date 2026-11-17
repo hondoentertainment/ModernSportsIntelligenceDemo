@@ -66,6 +66,20 @@ export interface IndexBeat {
   disclosure: string;
 }
 
+/** The same usable tape the index beat scores. Sold cards, thin tape, and a sparkline that does not start above zero stay off. */
+export interface IndexTape {
+  scoped: boolean;
+  held: number;
+  off: number;
+  cards: IndexBeatCard[];
+  startUsd: number;
+  bookPct: number | null;
+  indexPct: number | null;
+  gapPct: number | null;
+  call: IndexBeatCall;
+  drag: IndexBeatCard | null;
+}
+
 interface Weighed {
   startUsd: number;
   bookPct: number;
@@ -259,27 +273,64 @@ function quiet(scoped: boolean, held: number, off: number, copy: string): IndexB
   };
 }
 
-export function indexBeat(inventory: readonly CardInventory[], ids?: readonly string[]): IndexBeat {
+export function readIndexTape(inventory: readonly CardInventory[], ids?: readonly string[]): IndexTape {
   const scoped = ids != null;
   const allowed = scoped ? new Set(ids) : null;
   const heldCards = inventory.filter((card) => card.status !== 'sold' && (allowed == null || allowed.has(card.id)));
-  const usable = heldCards
+  const cards = heldCards
     .map((card) => usableCard(card))
     .filter((card): card is IndexBeatCard => card != null);
-  const off = heldCards.length - usable.length;
-  if (usable.length < 2) {
-    return quiet(scoped, heldCards.length, off, offCopy(scoped, heldCards.length, usable.length));
+  const off = heldCards.length - cards.length;
+  if (cards.length < 2) {
+    return {
+      scoped,
+      held: heldCards.length,
+      off,
+      cards,
+      startUsd: 0,
+      bookPct: null,
+      indexPct: null,
+      gapPct: null,
+      call: 'off',
+      drag: null,
+    };
   }
-  const weighed = weigh(usable);
-  const slices = buildSlices(usable);
-  const widest = slices[0] ?? null;
-  const drag = dragCard(usable);
+  const weighed = weigh(cards);
   return {
     scoped,
-    call: weighed.call,
     held: heldCards.length,
-    cards: usable.length,
     off,
+    cards,
+    startUsd: weighed.startUsd,
+    bookPct: weighed.bookPct,
+    indexPct: weighed.indexPct,
+    gapPct: weighed.gapPct,
+    call: weighed.call,
+    drag: dragCard(cards),
+  };
+}
+
+export function indexBeat(inventory: readonly CardInventory[], ids?: readonly string[]): IndexBeat {
+  const tape = readIndexTape(inventory, ids);
+  if (tape.call === 'off' || tape.gapPct == null || tape.bookPct == null || tape.indexPct == null) {
+    return quiet(tape.scoped, tape.held, tape.off, offCopy(tape.scoped, tape.held, tape.cards.length));
+  }
+  const weighed: Weighed = {
+    startUsd: tape.startUsd,
+    bookPct: tape.bookPct,
+    indexPct: tape.indexPct,
+    gapPct: tape.gapPct,
+    call: tape.call,
+  };
+  const slices = buildSlices(tape.cards);
+  const widest = slices[0] ?? null;
+  const drag = tape.drag ?? dragCard(tape.cards);
+  return {
+    scoped: tape.scoped,
+    call: weighed.call,
+    held: tape.held,
+    cards: tape.cards.length,
+    off: tape.off,
     startUsd: weighed.startUsd,
     bookPct: weighed.bookPct,
     indexPct: weighed.indexPct,
@@ -287,8 +338,8 @@ export function indexBeat(inventory: readonly CardInventory[], ids?: readonly st
     slices,
     widest,
     drag,
-    copy: scoredCopy(scoped, usable, weighed, widest, off),
-    alert: alertFor(scoped, weighed, drag),
+    copy: scoredCopy(tape.scoped, tape.cards, weighed, widest, tape.off),
+    alert: alertFor(tape.scoped, weighed, drag),
     disclosure: INDEX_BEAT_DISCLOSURE,
   };
 }
