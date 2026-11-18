@@ -284,10 +284,10 @@ const repeatedExtglobRecursion = pattern => {
   return depth;
 };
 
-// GHSA-fc5q-39xc-vjpf: a wildcard star in a single-branch repeated extglob
-// (`+(*)`, `+(*a)`, `*(*.js)`) compiles to a nested quantifier and backtracks
-// exponentially. Escaped, quoted, and bracketed stars are literals. Standard
-// globs such as `**/*.js` never reach analyzeRepeatedExtglob.
+// GHSA-fc5q-39xc-vjpf: a wildcard star in a repeated extglob alternative
+// (`+(*)`, `+(*a)`, `+(*a|b)`, `*(*.js)`) compiles to a nested quantifier and
+// backtracks exponentially. Escaped, quoted, and bracketed stars are literals.
+// Standard globs such as `**/*.js` never reach analyzeRepeatedExtglob.
 const branchHasExtglobStar = branch => {
   let escaped = false;
   let bracket = false;
@@ -391,9 +391,11 @@ const analyzeRepeatedExtglob = (body, options) => {
       : { risky: true };
   }
 
-  // Literalize the vulnerable shape through the existing risky path. That
-  // keeps ordinary globs unchanged and cannot hang on `+(**/a)`-style input.
-  if (branches.length === 1 && branchHasExtglobStar(branches[0])) {
+  // Literalize every alternative that still contains a wildcard star.
+  // Multi-branch bodies such as `+(*a|b)` skip the single-branch check and
+  // otherwise compile to `(?:[^/]*?a|b)+`, which hangs on a short near-miss.
+  // `*(a)|*(b)` already returned above as a flat character class.
+  if (branches.some(branchHasExtglobStar)) {
     return { risky: true };
   }
 
