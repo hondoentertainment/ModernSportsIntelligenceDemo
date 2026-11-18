@@ -3,10 +3,32 @@
 
 const {
   REGEX_BACKSLASH,
-  REGEX_REMOVE_BACKSLASH,
   REGEX_SPECIAL_CHARS,
   REGEX_SPECIAL_CHARS_GLOBAL
 } = require('./constants');
+
+// Keep a bracket group through its first non-escaped "]", and otherwise drop
+// a backslash that escapes the next character. A backslash before a line
+// terminator stays. One forward scan, so a long run of "[" cannot backtrack.
+const isLineTerminator = ch => ch === '\n' || ch === '\r' || ch === '\u2028' || ch === '\u2029';
+
+const scanBracketGroup = (str, open) => {
+  let j = open + 1;
+  const end = str.length;
+
+  while (j < end - 1) {
+    const ch = str[j];
+    if (ch !== '\\' && str[j + 1] === ']') {
+      return { end: j + 2 };
+    }
+    if (isLineTerminator(ch)) {
+      return { blindUntil: j };
+    }
+    j++;
+  }
+
+  return { blindUntil: end };
+};
 
 exports.isObject = val => val !== null && typeof val === 'object' && !Array.isArray(val);
 exports.hasRegexChars = str => REGEX_SPECIAL_CHARS.test(str);
@@ -28,9 +50,32 @@ exports.isWindows = () => {
 };
 
 exports.removeBackslashes = str => {
-  return str.replace(REGEX_REMOVE_BACKSLASH, match => {
-    return match === '\\' ? '' : match;
-  });
+  const parts = [];
+  let i = 0;
+  let blindUntil = -1;
+  const end = str.length;
+
+  while (i < end) {
+    if (i >= blindUntil && str[i] === '[') {
+      const scan = scanBracketGroup(str, i);
+      if (scan.end !== undefined) {
+        parts.push(str.slice(i, scan.end));
+        i = scan.end;
+        continue;
+      }
+      blindUntil = scan.blindUntil;
+    }
+
+    if (str[i] === '\\' && i + 1 < end && !isLineTerminator(str[i + 1])) {
+      i++;
+      continue;
+    }
+
+    parts.push(str[i]);
+    i++;
+  }
+
+  return parts.join('');
 };
 
 exports.escapeLast = (input, char, lastIdx) => {
