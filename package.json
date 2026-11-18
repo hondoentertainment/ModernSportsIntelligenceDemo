@@ -108,6 +108,7 @@
     "husky": "^9.1.7",
     "jsdom": "^31.0.1",
     "lint-staged": "^17.6.0",
+    "picomatch": "file:vendor/picomatch",
     "playwright": "^1.64.0",
     "postcss": "^8.5.32",
     "prettier": "^3.10.1",
@@ -130,6 +131,7 @@
   },
   "overrides": {
     "react-router": "8.3.0",
-    "brace-expansion": "5.0.12"
+    "brace-expansion": "5.0.12",
+    "picomatch": "$picomatch"
   }
 }

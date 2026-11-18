@@ -1,0 +1,11 @@
+{
+  "name": "picomatch",
+  "version": "4.0.8-msi.1",
+  "description": "Local build of picomatch 4.0.7 with GHSA-fc5q-39xc-vjpf single-branch repeated extglobs literalized. Not an upstream release. Remove this pin when micromatch/picomatch publishes a fixed version outside <=4.0.7.",
+  "license": "MIT",
+  "main": "index.js",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=12"
+  }
+}
