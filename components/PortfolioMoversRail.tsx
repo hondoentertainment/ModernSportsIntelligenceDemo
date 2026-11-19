@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import type { CardInventory } from '../types';
 import { listPortfolioMovers, PORTFOLIO_MOVERS_DISCLOSURE } from '../lib/analytics/portfolioMovers';
+import EqualShareLine from './EqualShareLine';
 import IndexBeatLine from './IndexBeatLine';
 import WeightGapLine from './WeightGapLine';
 
@@ -87,6 +88,7 @@ const PortfolioMoversRail: React.FC<Props> = ({ inventory, favoriteIds, compact 
       )}
       {favoriteIds ? <IndexBeatLine inventory={inventory} ids={favoriteIds} /> : null}
       {favoriteIds ? <WeightGapLine inventory={inventory} ids={favoriteIds} /> : null}
+      {favoriteIds ? <EqualShareLine inventory={inventory} ids={favoriteIds} /> : null}
     </section>
   );
 };
