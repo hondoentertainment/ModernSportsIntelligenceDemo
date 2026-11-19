@@ -40,5 +40,6 @@ describe('PortfolioMoversRail', () => {
     expect(screen.getByText('Gainer')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /favorites/i })).toHaveAttribute('href', '/favorites');
     expect(screen.getByLabelText('Favorites weight gap')).toHaveTextContent(/one favorite cannot show a weight gap/);
+    expect(screen.getByLabelText('Favorites equal share')).toHaveTextContent(/one favorite cannot move to an equal share/);
   });
 });

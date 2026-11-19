@@ -20,5 +20,6 @@ describe('MarketPulseRail', () => {
     expect(screen.getByText(/sealed vs singles/i)).toBeInTheDocument();
     expect(screen.getByTestId('freshness-sla-badge')).toBeInTheDocument();
     expect(screen.getByLabelText('Weight gap')).toHaveTextContent(/does not price a weight gap/);
+    expect(screen.getByLabelText('Equal share')).toHaveTextContent(/does not name an equal share/);
   });
 });
