@@ -2,7 +2,7 @@ import { showToast } from './toast';
 import { serverApiRequestAuthenticated } from '../serverApi';
 import { GeminiResponseSchema, safeParse } from '../schemas';
 import { geminiCircuit } from '../apiResilience';
-import { DEMO_AI_CANNED, DemoSessionBlockedError, isActiveDemoSession } from '../demoSession';
+import { DemoSessionBlockedError, isActiveDemoSession } from '../demoSession';
 
 interface GeminiGenerateConfig {
     responseMimeType?: string;
