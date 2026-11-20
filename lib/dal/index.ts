@@ -61,6 +61,7 @@ export function initDAL(userId: string | null): void {
     const adapter = new LocalStorageAdapter('');
     setAdapter(adapter, 'local');
     store.setAdapter(adapter);
+    store.markLocalHydrationComplete();
     logger.info('[DAL] Initialized with localStorage adapter (demo mode)');
   }
 }

@@ -25,9 +25,12 @@ import {
   getAnnotations,
   calculateMovingAverage,
   calculateBollingerBands,
+  chartPointsFromSnapshots,
   ChartTimeRange,
   ChartAnnotation,
 } from '../lib/analytics/priceChartService';
+import { DEMO_SYNTHETIC_SOURCE, getCardHistory } from '../lib/analytics/priceHistory';
+import { isActiveDemoSession } from '../lib/demoSession';
 
 interface PriceHistoryModalProps {
   isOpen: boolean;
@@ -133,10 +136,19 @@ const PriceHistoryModal: React.FC<PriceHistoryModalProps> = ({
   const [showMA, setShowMA] = useState(false);
   const [showBB, setShowBB] = useState(false);
 
+  const demoSession = Boolean(card) && isActiveDemoSession();
+  const seededChart = useMemo(() => {
+    if (!card || !demoSession) return null;
+    const tape = getCardHistory(card.id).filter((row) => row.source === DEMO_SYNTHETIC_SOURCE);
+    if (tape.length === 0) return null;
+    return chartPointsFromSnapshots(tape, range);
+  }, [card, demoSession, range]);
+
   const priceData = useMemo(() => {
     if (!card) return [];
+    if (seededChart && seededChart.points.length > 0) return seededChart.points;
     return generatePriceHistory(card, range);
-  }, [card, range]);
+  }, [card, range, seededChart]);
 
   const stats = useMemo(() => calculateStatistics(priceData), [priceData]);
 
@@ -237,6 +249,16 @@ const PriceHistoryModal: React.FC<PriceHistoryModalProps> = ({
                 {card.player} &bull; {card.year} {card.manufacturer} {card.set}{' '}
                 #{card.cardNumber}
               </p>
+              {demoSession && (
+                <p
+                  className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-300"
+                  data-testid="price-history-demo-label"
+                  role="status"
+                >
+                  {seededChart ? 'Demo data — seeded price history' : 'Demo data'}
+                  {seededChart?.usedFullTape ? ' · full seeded tape' : ''}
+                </p>
+              )}
             </div>
           </div>
           <button

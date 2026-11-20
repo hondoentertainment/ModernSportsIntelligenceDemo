@@ -51,6 +51,7 @@ function collectionWiredHandlers(): CardItemActionHandlers {
     onOpenGradingCalc: vi.fn(),
     onOpenDossier: vi.fn(),
     onOpenConsignment: vi.fn(),
+    onOpenPriceHistory: vi.fn(),
   });
 }
 
@@ -71,6 +72,7 @@ describe('getCardItemActions', () => {
       'updatePrice',
       'exitStrategy',
       'gradingCalc',
+      'priceHistory',
       'consignment',
       'dossier',
       'compare',
@@ -98,7 +100,7 @@ describe('getCardItemActions', () => {
     expect(ids).not.toContain('gradePrediction');
     expect(ids).not.toContain('breakEven');
     expect(ids).not.toContain('taxLot');
-    expect(ids).not.toContain('priceHistory');
+    expect(ids).toContain('priceHistory');
     expect(ids).not.toContain('anomaly');
     expect(ids).not.toContain('instantBuy');
   });
@@ -120,6 +122,22 @@ describe('getCardItemActions', () => {
       (action) => action.id === 'ebay',
     );
     expect(ebay?.external).toBe(true);
+  });
+
+  it('opens price history from the collection-wired grid and list actions', () => {
+    const handlers = collectionWiredHandlers();
+    const card = makeCard();
+
+    for (const surface of ['body', 'list'] as const) {
+      const action = getCardItemActionsForSurface(card, handlers, surface).find(
+        (item) => item.id === 'priceHistory',
+      );
+      expect(action?.label).toBe('Price History');
+      action?.onClick?.();
+    }
+
+    expect(handlers.onOpenPriceHistory).toHaveBeenCalledTimes(2);
+    expect(handlers.onOpenPriceHistory).toHaveBeenCalledWith(card);
   });
 
   it('includes optional body actions when those handlers are provided', () => {

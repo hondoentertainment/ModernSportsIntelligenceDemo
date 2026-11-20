@@ -12,6 +12,7 @@ import {
 } from "./warRoomThesisAudit.ts";
 import { buildWarRoomLedgerContext } from "./warRoomLedgerContext.ts";
 import { formatAgentPreferencesForPrompt, getAgentPreferences } from "./agentPreferences.ts";
+import { DemoSessionBlockedError, isActiveDemoSession } from "../demoSession";
 
 const ai = createGeminiClient();
 
@@ -52,6 +53,11 @@ export class MultiAgentService {
         if (inventory.length === 0) {
             showToast('warning', 'Inventory empty. Ingest assets to unlock War Room intelligence.');
             return null;
+        }
+
+        if (isActiveDemoSession()) {
+            const { buildDemoCollaborativeThesis } = await import('../demo/demoAi');
+            return buildDemoCollaborativeThesis(inventory, includeStrategist);
         }
 
         const inventorySummary = inventory.map(c =>
@@ -221,6 +227,10 @@ export class MultiAgentService {
 
             return thesis;
         } catch (error) {
+            if (isActiveDemoSession() || error instanceof DemoSessionBlockedError) {
+                const { buildDemoCollaborativeThesis } = await import('../demo/demoAi');
+                return buildDemoCollaborativeThesis(inventory, includeStrategist);
+            }
             logger.error("Multi-Agent Intelligence Error:", error);
             showToast('error', 'Intelligence committee failed to convene. Try again later.');
             return null;

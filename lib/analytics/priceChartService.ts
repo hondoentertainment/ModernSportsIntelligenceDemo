@@ -483,6 +483,40 @@ function priceHistoryFromEbaySales(
 }
 
 /**
+ * Turn stored snapshots into chart points.
+ * When the selected window holds fewer than two points, the full series is
+ * returned so a short seeded demo tape still draws.
+ */
+export function chartPointsFromSnapshots(
+  snapshots: Array<{ timestamp: string; value: number; source?: string }>,
+  range: ChartTimeRange,
+  nowMs: number = Date.now(),
+): { points: PriceDataPoint[]; usedFullTape: boolean } {
+  const rows = snapshots
+    .filter((row) => Number.isFinite(row.value) && Number.isFinite(Date.parse(row.timestamp)))
+    .slice()
+    .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
+
+  if (rows.length === 0) return { points: [], usedFullTape: false };
+
+  const cutoff = nowMs - daysForRange(range) * 86_400_000;
+  const inRange = rows.filter((row) => Date.parse(row.timestamp) >= cutoff);
+  const chosen = inRange.length >= 2 ? inRange : rows;
+
+  return {
+    usedFullTape: chosen.length !== inRange.length,
+    points: chosen.map((row) => ({
+      date: row.timestamp.slice(0, 10),
+      price: row.value,
+      volume: 0,
+      high: row.value,
+      low: row.value,
+      source: 'valuation' as const,
+    })),
+  };
+}
+
+/**
  * Primary entry: real eBay comps when flagged, otherwise deterministic simulation.
  */
 export async function getPriceHistory(

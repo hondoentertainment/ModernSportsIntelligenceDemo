@@ -23,6 +23,7 @@ const RatioIntelligenceRail = lazy(() => import('./RatioIntelligenceRail'));
 const PortfolioMoversRail = lazy(() => import('./PortfolioMoversRail'));
 const DealFinderLiteRail = lazy(() => import('./DealFinderLiteRail'));
 import { formatAgentPreferencesSummary } from '../lib/utils/agentPreferences';
+import { isActiveDemoSession } from '../lib/demoSession';
 
 const WAR_ROOM_THESIS_STORAGE_KEY = 'msi_war_room_last_thesis_v1';
 
@@ -48,7 +49,9 @@ const AnalystWarRoom: React.FC = () => {
 
             if (result) {
                 setThesis(result);
-                store.set(WAR_ROOM_THESIS_STORAGE_KEY, result);
+                if (!isActiveDemoSession()) {
+                    store.set(WAR_ROOM_THESIS_STORAGE_KEY, result);
+                }
                 if (config.isActive) {
                     // If autopilot is active, also trigger the execution cycle logic in the background
                     AutonomousExecutionService.runAutonomousCycle(inventory);

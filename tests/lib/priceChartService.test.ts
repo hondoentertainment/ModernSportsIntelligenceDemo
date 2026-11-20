@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import {
   generatePriceHistory,
+  chartPointsFromSnapshots,
   calculateStatistics,
   getAnnotations,
   calculateMovingAverage,
@@ -12,6 +13,44 @@ import type { PriceDataPoint } from '../../lib/analytics/priceChartService';
 import { makeCard } from '../helpers';
 
 describe('priceChartService', () => {
+  describe('chartPointsFromSnapshots', () => {
+    it('shows the full seeded tape when the window holds fewer than two points', () => {
+      const now = Date.parse('2026-11-20T00:00:00.000Z');
+      const result = chartPointsFromSnapshots(
+        [
+          { timestamp: '2026-08-01T00:00:00.000Z', value: 800, source: 'demo_synthetic' },
+          { timestamp: '2026-09-01T00:00:00.000Z', value: 2000, source: 'demo_synthetic' },
+        ],
+        '1W',
+        now,
+      );
+
+      expect(result.usedFullTape).toBe(true);
+      expect(result.points.map((point) => point.price)).toEqual([800, 2000]);
+      expect(result.points[0]).toMatchObject({ date: '2026-08-01', source: 'valuation', volume: 0 });
+    });
+
+    it('keeps only the points inside a range that already has two samples', () => {
+      const now = Date.parse('2026-09-15T00:00:00.000Z');
+      const result = chartPointsFromSnapshots(
+        [
+          { timestamp: '2026-08-01T00:00:00.000Z', value: 800 },
+          { timestamp: '2026-09-01T00:00:00.000Z', value: 2000 },
+          { timestamp: '2026-09-10T00:00:00.000Z', value: 1800 },
+        ],
+        '1M',
+        now,
+      );
+
+      expect(result.usedFullTape).toBe(false);
+      expect(result.points.map((point) => point.date)).toEqual(['2026-09-01', '2026-09-10']);
+    });
+
+    it('returns no points for an empty tape', () => {
+      expect(chartPointsFromSnapshots([], '3M').points).toEqual([]);
+    });
+  });
+
   describe('generatePriceHistory', () => {
     it('generates data points for 1W range', () => {
       const data = generatePriceHistory(makeCard(), '1W');

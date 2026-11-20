@@ -93,7 +93,8 @@ import {
 import { preferredValueForCard } from '../lib/pricing/compConsensus.ts';
 import { buildPricingTruthForCard, chipsFromPricingTruth } from '../lib/pricing/pricingTruth';
 import ValuationProvenanceChips from '../components/ValuationProvenanceChips';
-import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAlerts.ts';
+import { trackCoverageHealthTransition, visitorCoverageAnnouncement } from '../lib/utils/valuationCoverageAlerts.ts';
+import { isActiveDemoSession } from '../lib/demoSession';
 import { showToast } from '../lib/utils/toast.ts';
 import LazyErrorBoundary from '../components/LazyErrorBoundary.tsx';
 import { WidgetLoadingFallback } from '../components/LazyLoadFallback.tsx';
@@ -307,6 +308,7 @@ const Dashboard: React.FC = () => {
 
   const recentCards = inventory.slice(-3).reverse();
 
+  const demoSession = isActiveDemoSession();
   const freshVerifiedCoverage = useMemo(
     () => computeFreshVerifiableCoverage(inventory.filter(card => card.status !== 'sold')),
     [inventory],
@@ -322,8 +324,13 @@ const Dashboard: React.FC = () => {
       freshVerifiedCoverage.total,
       FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
     );
+    const announcement = visitorCoverageAnnouncement({
+      event: transition.event,
+      scope: 'inventory',
+      demoSession,
+    });
 
-    if (transition.event === 'degraded') {
+    if (announcement === 'degraded') {
       showToast(
         'warning',
         `Pricing truth degraded: ${freshVerifiedCoverage.coveragePct}% fresh verifiable coverage in inventory.`,
@@ -332,14 +339,14 @@ const Dashboard: React.FC = () => {
       return;
     }
 
-    if (transition.event === 'recovered') {
+    if (announcement === 'recovered') {
       showToast(
         'success',
         `Pricing truth recovered: inventory coverage returned to ${freshVerifiedCoverage.coveragePct}%.`,
         { dedupeKey: 'coverage_inventory_recovered' },
       );
     }
-  }, [freshVerifiedCoverage.coveragePct, freshVerifiedCoverage.total]);
+  }, [demoSession, freshVerifiedCoverage.coveragePct, freshVerifiedCoverage.total]);
 
   const _sportData = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -581,6 +588,7 @@ const Dashboard: React.FC = () => {
           {hasCoverageGap && (
             <ValuationCoverageBanner
               scope="inventory"
+              tone={demoSession ? 'demo' : 'sla'}
               coveragePct={freshVerifiedCoverage.coveragePct}
               covered={freshVerifiedCoverage.covered}
               total={freshVerifiedCoverage.total}

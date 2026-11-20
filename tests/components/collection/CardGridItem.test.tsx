@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 import CardGridItem from '../../../components/collection/CardGridItem';
@@ -48,6 +49,16 @@ function makeProps(card: CardInventory) {
 }
 
 describe('CardGridItem — DataSourceBadge regression guard', () => {
+  it('opens price history from the card body when the handler is wired', async () => {
+    const user = userEvent.setup();
+    const onOpenPriceHistory = vi.fn();
+    const card = makeCard();
+    render(<CardGridItem {...makeProps(card)} onOpenPriceHistory={onOpenPriceHistory} />);
+
+    await user.click(screen.getByRole('button', { name: 'Price History' }));
+    expect(onOpenPriceHistory).toHaveBeenCalledWith(card);
+  });
+
   it('renders the "live" DataSourceBadge variant for a fresh ebay-api card', () => {
     const card = makeCard({
       valuationSource: 'ebay-api',

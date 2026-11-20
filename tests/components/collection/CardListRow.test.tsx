@@ -44,6 +44,7 @@ function makeHandlers(overrides: Partial<CardItemActionHandlers> = {}): CardItem
     onOpenGradingCalc: vi.fn(),
     onOpenDossier: vi.fn(),
     onOpenConsignment: vi.fn(),
+    onOpenPriceHistory: vi.fn(),
     ...overrides,
   };
 }
@@ -81,6 +82,7 @@ describe('CardListRow — grid action parity', () => {
     expect(screen.getByRole('button', { name: 'Intelligence Check' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Exit strategy' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Grade Premium Calc' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Price History' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Consignment' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Audit Dossier' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Verify on eBay' })).toHaveAttribute(
@@ -112,6 +114,9 @@ describe('CardListRow — grid action parity', () => {
 
     await user.click(screen.getByRole('button', { name: 'Consignment' }));
     expect(handlers.onOpenConsignment).toHaveBeenCalledWith(expect.objectContaining({ id: 'card-1' }));
+
+    await user.click(screen.getByRole('button', { name: 'Price History' }));
+    expect(handlers.onOpenPriceHistory).toHaveBeenCalledWith(expect.objectContaining({ id: 'card-1' }));
   });
 
   it('shows source, stale, and thin-market provenance chips', () => {

@@ -290,10 +290,11 @@ describe('initDAL', () => {
     vi.restoreAllMocks();
   });
 
-  it('uses local adapter in demo mode', async () => {
+  it('uses local adapter in demo mode and resolves hydration', async () => {
     const { logger } = await import('../../lib/logger');
     initDAL('user-1');
     expect(logger.info).toHaveBeenCalled();
+    expect(store.getSyncStatus().hydrated).toBe(true);
   });
 
   it('uses supabase adapter when authenticated and not demo', async () => {
@@ -302,6 +303,7 @@ describe('initDAL', () => {
     const { logger } = await import('../../lib/logger');
     expect(logger.info).toHaveBeenCalled();
     expect(store.setAdapter).toHaveBeenCalled();
+    expect(store.getSyncStatus().hydrated).toBe(false);
   });
 
   it('logs when store hydration fails', async () => {

@@ -3,6 +3,7 @@ import { CrossAssetInsight, AgentInsight } from "../../types.ts";
 import { showToast } from "../utils/toast.ts";
 import { createGeminiClient } from "../utils/geminiClient.ts";
 import { logger } from "../logger";
+import { DemoSessionBlockedError, isActiveDemoSession } from "../demoSession";
 
 const ai = createGeminiClient();
 
@@ -26,6 +27,11 @@ const ARBITRAGE_PERSONAS = {
 
 export class ArbitrageAgentService {
     static async getCrossAssetAnalysis(): Promise<CrossAssetInsight | null> {
+        if (isActiveDemoSession()) {
+            const { buildDemoCrossAssetInsight } = await import('../demo/demoAi');
+            return buildDemoCrossAssetInsight();
+        }
+
         const prompt = `Act as an Institutional Cross-Asset Arbitrage Swarm. Analyze the current intersection of Sports Cards, Luxury Watches, and Fine Art markets.
 
         SYSTEM INSTRUCTIONS:
@@ -129,6 +135,10 @@ export class ArbitrageAgentService {
                 createdAt: new Date().toISOString()
             };
         } catch (error) {
+            if (isActiveDemoSession() || error instanceof DemoSessionBlockedError) {
+                const { buildDemoCrossAssetInsight } = await import('../demo/demoAi');
+                return buildDemoCrossAssetInsight();
+            }
             logger.error("Arbitrage Intelligence Error:", error);
             showToast('error', 'Arbitrage committee failed to convene. Retrying link...');
             return null;
