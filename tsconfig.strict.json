@@ -5,6 +5,7 @@
     "types": ["node", "vitest/globals", "@testing-library/jest-dom/vitest"]
   },
   "exclude": [
+    "archive",
     "scripts/**",
     "scripts/templates/**",
     "dist/**",

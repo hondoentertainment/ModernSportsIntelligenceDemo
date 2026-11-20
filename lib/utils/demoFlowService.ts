@@ -62,10 +62,10 @@ export interface DemoProgress {
 
 const STEP_CARD_GENOME: DemoStep = {
   id: 'step-card-genome',
-  title: 'Card Genome Sequencer',
-  description: 'DNA-level card analysis breaking every card into measurable genetic markers for condition, rarity, and valuation.',
-  route: '/card-genome-sequencer',
-  featureName: 'Card Genome',
+  title: 'Vision Grading Lab',
+  description: 'In-session vision grading for a raw card, on the live grading lab.',
+  route: '/grading-vision-engine',
+  featureName: 'Vision Grading',
   investorPitch: 'Our proprietary Card Genome engine is the "23andMe of trading cards" — it decomposes every card into 47 measurable traits, creating a unique fingerprint that powers pricing, authentication, and portfolio optimization across the platform.',
   keyMetric: { label: 'Genome Accuracy', value: '99.2%' },
   duration: 90,
@@ -80,10 +80,10 @@ const STEP_CARD_GENOME: DemoStep = {
 
 const STEP_FORENSICS_LAB: DemoStep = {
   id: 'step-forensics-lab',
-  title: 'Forensics Lab',
-  description: 'AI-powered authentication and counterfeit detection using multi-spectral imaging analysis.',
-  route: '/forensics-lab',
-  featureName: 'Forensics Lab',
+  title: 'Provenance Chain',
+  description: 'Ownership and verification history for a card, on the live provenance page.',
+  route: '/provenance',
+  featureName: 'Provenance',
   investorPitch: 'Counterfeit cards cost the hobby $500M+ annually. Our Forensics Lab uses AI multi-spectral analysis to detect fakes with 98.7% accuracy — turning authentication from a weeks-long bottleneck into an instant, scalable service.',
   keyMetric: { label: 'Fraud Detection Rate', value: '98.7%' },
   duration: 75,
@@ -98,10 +98,10 @@ const STEP_FORENSICS_LAB: DemoStep = {
 
 const STEP_CROSS_ASSET: DemoStep = {
   id: 'step-cross-asset',
-  title: 'Cross-Asset Correlation',
-  description: 'Institutional-grade correlation engine mapping card prices against equities, crypto, luxury goods, and macro indicators.',
-  route: '/cross-asset-correlation',
-  featureName: 'Cross-Asset Correlation',
+  title: 'Compare Desk',
+  description: 'Side-by-side compare of two or three holdings on the live compare page.',
+  route: '/compare',
+  featureName: 'Compare',
   investorPitch: 'For the first time, sports cards are analyzed as a true asset class. Our cross-asset correlation engine maps card prices against the S&P 500, Bitcoin, luxury indices, and 40+ macro indicators — giving institutional allocators the tools they expect.',
   keyMetric: { label: 'Asset Classes Tracked', value: '47' },
   duration: 90,
@@ -116,10 +116,10 @@ const STEP_CROSS_ASSET: DemoStep = {
 
 const STEP_STRESS_TESTER: DemoStep = {
   id: 'step-stress-tester',
-  title: 'Portfolio Stress Tester',
-  description: 'Monte Carlo simulation engine stress-testing card portfolios against historical market shocks.',
-  route: '/portfolio-stress-tester',
-  featureName: 'Portfolio Stress Tester',
+  title: 'Scenario Theater',
+  description: 'Persisted scenario snapshots and projected portfolio value.',
+  route: '/portfolio-scenario-theater',
+  featureName: 'Scenario Theater',
   investorPitch: 'Borrowed from Wall Street: our Monte Carlo stress tester runs 10,000 simulations across historical market shocks — from the 2008 crash to the 2021 bubble pop — giving collectors and funds quantified downside risk for the first time.',
   keyMetric: { label: 'Simulations per Run', value: '10,000' },
   duration: 90,
@@ -134,10 +134,10 @@ const STEP_STRESS_TESTER: DemoStep = {
 
 const STEP_GRAIL_INDEX: DemoStep = {
   id: 'step-grail-index',
-  title: 'Grail Index Constructor',
-  description: 'Build and track custom indices of blue-chip "grail" cards like an S&P 500 for the hobby.',
-  route: '/grail-index-constructor',
-  featureName: 'Grail Index Constructor',
+  title: 'Portfolio Audit',
+  description: 'ROI, diversification, and risk on the live portfolio audit.',
+  route: '/audit',
+  featureName: 'Portfolio Audit',
   investorPitch: 'We built the "S&P 500 of sports cards." The Grail Index Constructor lets anyone create, backtest, and track custom indices of blue-chip cards — enabling passive investing strategies and benchmarking that the hobby has never had.',
   keyMetric: { label: 'Index YTD Return', value: '+18.4%' },
   duration: 75,
@@ -170,10 +170,10 @@ const STEP_FRACTIONAL_VAULT: DemoStep = {
 
 const STEP_YIELD_FARMING: DemoStep = {
   id: 'step-yield-farming',
-  title: 'Card Yield Farming',
-  description: 'Generate passive yield from card inventory through lending, staking, and liquidity provision.',
-  route: '/card-yield-farming',
-  featureName: 'Card Yield Farming',
+  title: 'Copy Trading',
+  description: 'Follow other collectors and mirror portfolio signals. Still flag-gated with Labs.',
+  route: '/copy-trading',
+  featureName: 'Copy Trading',
   investorPitch: 'Dead inventory earns zero. Our Yield Farming engine turns idle cards into productive assets — through lending to dealers, staking in showcase pools, and providing liquidity for fractional markets. Average yield: 8.2% APY on blue-chip holdings.',
   keyMetric: { label: 'Average APY', value: '8.2%' },
   duration: 75,
@@ -188,10 +188,10 @@ const STEP_YIELD_FARMING: DemoStep = {
 
 const STEP_CHAOS_THEORY: DemoStep = {
   id: 'step-chaos-theory',
-  title: 'Chaos Theory Simulator',
-  description: 'Butterfly-effect modeling showing how micro-events cascade into macro market movements.',
-  route: '/chaos-theory-simulator',
-  featureName: 'Chaos Theory Simulator',
+  title: 'Catalyst Market',
+  description: 'Holdings-linked event windows that reprice the book.',
+  route: '/catalyst-market',
+  featureName: 'Catalyst Market',
   investorPitch: 'Markets are non-linear. Our Chaos Theory Simulator models butterfly effects — how a single injury, trade rumor, or social media post cascades through interconnected card markets. This is predictive alpha no one else has.',
   keyMetric: { label: 'Cascade Accuracy', value: '87.3%' },
   duration: 60,
@@ -206,10 +206,10 @@ const STEP_CHAOS_THEORY: DemoStep = {
 
 const STEP_ROOKIE_PIPELINE: DemoStep = {
   id: 'step-rookie-pipeline',
-  title: 'Rookie Pipeline Scanner',
-  description: 'Scout the next generation of valuable rookie cards with AI-powered prospect analysis.',
-  route: '/rookie-pipeline-scanner',
-  featureName: 'Prospect Pipeline',
+  title: 'Prospect Trends',
+  description: 'MiLB prospect trend scores and breakout signals.',
+  route: '/prospects',
+  featureName: 'Prospects',
   investorPitch: 'Get ahead of the market by identifying breakout rookies before card prices spike. Our pipeline scanner analyzes 1,200+ minor league and draft prospects with real-time performance correlation to card valuations.',
   keyMetric: { label: 'Prospects Tracked', value: '1,247' },
   duration: 75,
@@ -224,10 +224,10 @@ const STEP_ROOKIE_PIPELINE: DemoStep = {
 
 const STEP_INJURY_ORACLE: DemoStep = {
   id: 'step-injury-oracle',
-  title: 'Injury Oracle',
-  description: 'Predict injury impacts on card values using biomechanical and historical injury data.',
-  route: '/injury-oracle',
-  featureName: 'Injury Oracle',
+  title: 'Game Intelligence',
+  description: 'Live games, matchups, and impact scoring.',
+  route: '/games',
+  featureName: 'Games',
   investorPitch: 'Injuries are the single biggest risk factor in sports card investing. Our Injury Oracle predicts recovery timelines and card price impacts using biomechanical data, giving collectors a 48-hour information edge.',
   keyMetric: { label: 'Prediction Lead Time', value: '48 hrs' },
   duration: 60,
@@ -242,10 +242,10 @@ const STEP_INJURY_ORACLE: DemoStep = {
 
 const STEP_NARRATIVE_ARC: DemoStep = {
   id: 'step-narrative-arc',
-  title: 'Narrative Arc Engine',
-  description: 'Map the story-driven value cycles of athletes and how narratives drive card prices.',
-  route: '/narrative-arc-engine',
-  featureName: 'Narrative Arcs',
+  title: 'Collection Narrative',
+  description: 'The story of the collection, on the live narrative page.',
+  route: '/collection-narrative',
+  featureName: 'Collection Narrative',
   investorPitch: 'Card prices follow stories, not just stats. Our Narrative Arc Engine tracks 15 career archetypes — from "Comeback King" to "Dynasty Builder" — and predicts which narrative phase an athlete is in to time buy/sell decisions.',
   keyMetric: { label: 'Arc Patterns', value: '15' },
   duration: 60,
@@ -260,10 +260,10 @@ const STEP_NARRATIVE_ARC: DemoStep = {
 
 const STEP_LIQUIDITY_SCANNER: DemoStep = {
   id: 'step-liquidity-scanner',
-  title: 'Liquidity Depth Scanner',
-  description: 'Real-time order book analysis showing true market depth for any card.',
-  route: '/liquidity-depth-scanner',
-  featureName: 'Liquidity Scanner',
+  title: 'Liquidity Twin',
+  description: 'Venue-aware exit planning for the book.',
+  route: '/liquidity-twin',
+  featureName: 'Liquidity Twin',
   investorPitch: 'Illiquidity is the hidden risk in card investing. Our Liquidity Scanner aggregates order books across eBay, COMC, MySlabs, and 12 other marketplaces to show true market depth — preventing collectors from buying cards they cannot sell.',
   keyMetric: { label: 'Markets Scanned', value: '15' },
   duration: 60,
@@ -278,10 +278,10 @@ const STEP_LIQUIDITY_SCANNER: DemoStep = {
 
 const STEP_RESTORATION_SIM: DemoStep = {
   id: 'step-restoration-sim',
-  title: 'Restoration Simulator',
-  description: 'AI-powered simulation of card restoration outcomes and ROI calculations.',
-  route: '/restoration-simulator',
-  featureName: 'Restoration Sim',
+  title: 'Deep Search',
+  description: 'Semantic search across comparable cards.',
+  route: '/deep-search',
+  featureName: 'Deep Search',
   investorPitch: 'Should you restore that off-center vintage card? Our Restoration Simulator predicts the outcome — including grade improvement probability, cost, and expected ROI — using our proprietary condition-to-value model trained on 500K+ grading submissions.',
   keyMetric: { label: 'ROI Accuracy', value: '91.4%' },
   duration: 60,
@@ -296,10 +296,10 @@ const STEP_RESTORATION_SIM: DemoStep = {
 
 const STEP_CONTAGION_MAPPER: DemoStep = {
   id: 'step-contagion-mapper',
-  title: 'Contagion Mapper',
-  description: 'Track how price movements spread across related cards, players, and markets.',
-  route: '/contagion-mapper',
-  featureName: 'Contagion Map',
+  title: 'Market Trends',
+  description: 'Trend movement across sports, eras, and card types.',
+  route: '/trends',
+  featureName: 'Trends',
   investorPitch: 'When a star player gets traded, it does not just affect their cards — it ripples across teammates, rivals, and entire markets. Our Contagion Mapper visualizes these ripple effects in real time, enabling proactive portfolio hedging.',
   keyMetric: { label: 'Ripple Detection', value: '<30s' },
   duration: 60,
@@ -314,10 +314,10 @@ const STEP_CONTAGION_MAPPER: DemoStep = {
 
 const STEP_TEMPORAL_ARBITRAGE: DemoStep = {
   id: 'step-temporal-arbitrage',
-  title: 'Temporal Arbitrage Radar',
-  description: 'Detect time-based pricing inefficiencies across markets and time zones.',
-  route: '/temporal-arbitrage-radar',
-  featureName: 'Time Arbitrage',
+  title: 'Local Card Shows',
+  description: 'Seeded show calendar ranked into buy calls from the book.',
+  route: '/local-card-shows',
+  featureName: 'Local Shows',
   investorPitch: 'Card markets are fragmented across time zones, platforms, and information speeds. Our Temporal Arbitrage Radar detects pricing dislocations that exist for minutes to hours — generating risk-free profit opportunities for active collectors.',
   keyMetric: { label: 'Avg Arb Spread', value: '12.6%' },
   duration: 60,

@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { Clock, Gavel, Percent, TrendingUp, XCircle } from 'lucide-react';
 import {
   formatDurationMs,
@@ -56,14 +55,6 @@ const NegotiationAnalyticsPanel: React.FC<NegotiationAnalyticsPanelProps> = ({
             Win rate, discount, time-to-close
           </h3>
         </div>
-        {variant === 'dashboard' && (
-          <Link
-            to="/autonomous-acquisition"
-            className="text-[10px] font-black uppercase tracking-widest text-brand-orange hover:text-white"
-          >
-            Open agent desk
-          </Link>
-        )}
       </div>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

@@ -41,7 +41,7 @@ async function enterDemoMode(page: Page): Promise<void> {
     await expect(page).toHaveURL(/#\/?$/, { timeout: 15_000 });
 }
 
-test.describe('War Room, predictive engine, autonomous acquisition', () => {
+test.describe('War Room', () => {
     test('War Room loads after demo login, shows AI disclaimer, refresh does not crash', async ({ page }) => {
         test.setTimeout(60_000);
         await enterDemoMode(page);
@@ -127,44 +127,5 @@ test.describe('War Room, predictive engine, autonomous acquisition', () => {
         expect(parsed.thesis?.runMetadata?.inputHash).toBe('0'.repeat(32));
     });
 
-    test('Predictive Price Engine stays stable when filtered forecasts are empty (sparse)', async ({ page }) => {
-        await enterDemoMode(page);
 
-        const jsErrors: string[] = [];
-        page.on('pageerror', (err) => jsErrors.push(err.message));
-
-        await page.goto('/#/predictive-price-engine');
-        await expect(page.getByRole('heading', { name: /^Predictive Price Engine$/i })).toBeVisible({ timeout: 15_000 });
-
-        const confidenceSlider = page.locator('input[type="range"]');
-        await expect(confidenceSlider).toBeVisible();
-        await confidenceSlider.fill('90');
-
-        await expect(page.getByText('Price Forecasts (0)')).toBeVisible();
-        await expect(page.getByRole('heading', { name: /^Predictive Price Engine$/i })).toBeVisible();
-        expect(jsErrors, jsErrors.join('; ')).toHaveLength(0);
-    });
-
-    test('Autonomous acquisition shows simulated disclosure and persists new campaign after reload', async ({ page }) => {
-        await enterDemoMode(page);
-
-        const uniquePlayer = `MSI E2E ${Date.now()}`;
-        await page.goto('/#/autonomous-acquisition');
-
-        await expect(
-            page.getByText(/simulated demo data/i),
-        ).toBeVisible({ timeout: 15_000 });
-
-        await page.getByRole('button', { name: /new campaign/i }).click();
-        await page.getByPlaceholder(/e\.g\. Mike Trout/i).fill(uniquePlayer);
-        await page.getByPlaceholder('$').fill('250');
-        await page.getByRole('button', { name: /launch campaign/i }).click();
-
-        await expect(page.getByText(uniquePlayer).first()).toBeVisible();
-
-        await page.reload();
-
-        await expect(page.getByText(/simulated demo data/i)).toBeVisible({ timeout: 15_000 });
-        await expect(page.getByText(uniquePlayer).first()).toBeVisible();
-    });
 });

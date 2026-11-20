@@ -73,7 +73,7 @@ describe('SellTradePlannerPanel', () => {
     expect(screen.getByText(SELL_TRADE_PLANNER_DISCLOSURE)).toBeInTheDocument();
     expect(screen.getByText(/not IRS Form 8949 completeness/i)).toBeInTheDocument();
     expect(screen.queryByText(/live market movers/i)).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /tax-lot method/i })).toHaveAttribute('href', '/tax-report');
+    expect(screen.getByRole('link', { name: /audit dossier/i })).toHaveAttribute('href', '/audit-dossier');
     expect(screen.getByRole('link', { name: /card-show desk/i })).toHaveAttribute('href', '/local-card-shows');
     expect(screen.getByRole('radio', { name: 'All' })).toHaveClass('min-h-[44px]');
     expect(screen.getAllByText(/Julio Rodriguez/).length).toBeGreaterThan(0);

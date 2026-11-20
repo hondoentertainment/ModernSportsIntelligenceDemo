@@ -35,22 +35,22 @@ describe('routeTierConfig', () => {
       expect(getRouteTier('')).toBeNull();
     });
 
-    it('/api-platform maps to alpha tier', () => {
-      const result = getRouteTier('/api-platform');
+    it('/copy-trading maps to alpha tier', () => {
+      const result = getRouteTier('/copy-trading');
       expect(result).not.toBeNull();
       expect(result!.tier).toBe('alpha');
     });
 
-    it('/tax-calculator maps to pro tier', () => {
-      const result = getRouteTier('/tax-calculator');
+    it('/live-breaks maps to pro tier', () => {
+      const result = getRouteTier('/live-breaks');
       expect(result).not.toBeNull();
       expect(result!.tier).toBe('pro');
     });
 
-    it('/price-prediction maps to basic tier', () => {
-      const result = getRouteTier('/price-prediction');
-      expect(result).not.toBeNull();
-      expect(result!.tier).toBe('basic');
+    it('archived labs paths are not tier-gated', () => {
+      expect(getRouteTier('/api-platform')).toBeNull();
+      expect(getRouteTier('/tax-calculator')).toBeNull();
+      expect(getRouteTier('/price-prediction')).toBeNull();
     });
 
     it('returns an object with tier and featureName', () => {
