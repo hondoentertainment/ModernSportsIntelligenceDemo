@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getFriendlyAuthMessage } from '../lib/utils/authErrors';
 import { getPasswordChecks, passwordRuleError, validateAuthUsername } from '../lib/authCredentials';
 import PasswordRulesHint from '../components/PasswordRulesHint';
+import PublicDemoEntry from '../components/PublicDemoEntry';
 import {
   Eye,
   EyeOff,
@@ -311,6 +312,9 @@ const Signup: React.FC = () => {
                             Sign In
                         </Link>
                     </p>
+                    <div className="mt-4">
+                        <PublicDemoEntry />
+                    </div>
                 </div>
             </div>
         </div>

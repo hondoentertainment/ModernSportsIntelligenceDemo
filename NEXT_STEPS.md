@@ -1,6 +1,12 @@
 # Recommended Next Steps — Modern Sports Intelligence
 
-> Refreshed **2026-11-19**. Production on `main` was healthy on 2026-11-10. Canonical owner checklist: [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (body refreshed 2026-09-27). Forward narrative: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). Launch ops: [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md).
+> Refreshed **2026-11-20**. Production on `main` was healthy on 2026-11-10. Canonical owner checklist: [#77](https://github.com/hondoentertainment/ModernSportsIntelligenceDemo/issues/77) (body refreshed 2026-09-27). Forward narrative: [`plans/PRODUCT_ROADMAP_2026Q4.md`](plans/PRODUCT_ROADMAP_2026Q4.md). Launch ops: [`docs/LAUNCH_OPS_PUNCH_LIST.md`](docs/LAUNCH_OPS_PUNCH_LIST.md).
+
+## Public demo — this branch
+
+Production can open without an account. `/login` (and signup, forgot-password, and a public portfolio) shows **Try the demo — no account needed** when `VITE_PUBLIC_DEMO` is on. Unset means on for a production build and off for dev, test, and e2e. `false` turns it off. It does not change `VITE_FF_REAL_*`.
+
+The demo session is a local flag. It uses the seeded book, shows a **Demo mode** banner and a **Sign up** link, and does not read or write Supabase user data, start Stripe checkout, or call paid AI. A real sign-in clears the flag and discards the seeded rows before any migration. Labs routes stay off for that session. The seeded tape is synthetic (`demo_synthetic`): the book names an equal-share **trim**, and the two seeded favorites name a **fill**, so index beat, weight gap, and equal share are not stuck on their off copy.
 
 ## Current state
 

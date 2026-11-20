@@ -5,6 +5,8 @@ import {
   ServerApiError,
   serverApiRequest,
 } from '../../lib/serverApi';
+import { store } from '../../lib/dal/syncStore';
+import { DEMO_SESSION_KEY } from '../../lib/demoSession';
 
 describe('serverApi', () => {
   beforeEach(() => {
@@ -44,6 +46,14 @@ describe('serverApi', () => {
     expect(err.name).toBe('ServerApiError');
     expect(err.message).toBe('Bad request');
     expect(err.status).toBe(400);
+  });
+
+  it('does not call fetch during a demo session', async () => {
+    store.set(DEMO_SESSION_KEY, true);
+    global.fetch = vi.fn();
+    await expect(serverApiRequest('/api/ai/generate')).rejects.toThrow(/demo mode/i);
+    expect(global.fetch).not.toHaveBeenCalled();
+    store.remove(DEMO_SESSION_KEY);
   });
 
   it('ServerApiError is instance of Error', () => {

@@ -1,7 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, type SetStateAction } from 'react';
 import { CardInventory, TargetWatchlist } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
 import { isDemoMode } from '../supabase';
+import { DEMO_USER_ID, isActiveDemoSession, isPublicDemoSession } from '../demoSession';
+import { seedDemoCollectorTape } from '../analytics/demoTape';
+import { showToast } from './toast';
 import {
   fetchCards,
   fetchTargets,
@@ -99,7 +102,13 @@ function calculateSyncMeta(inventory: CardInventory[], lastSyncTime: string | nu
 export function useSupabaseInventory() {
     const { user } = useAuth();
     const userId = user?.id || null;
-    const isAuthenticated = !!userId && !isDemoMode;
+    const isAuthenticated = !!userId && userId !== DEMO_USER_ID && !isDemoMode && !isActiveDemoSession();
+
+    const rejectDemoWrite = useCallback((): boolean => {
+        if (!isPublicDemoSession()) return false;
+        showToast('info', 'Demo mode is read-only. Sign up to save a collection.', { dedupeKey: 'demo-readonly' });
+        return true;
+    }, []);
 
     const [inventory, setInventory] = useState<CardInventory[]>(() => readLocalRows<CardInventory>(STORAGE_KEY));
     const [targets, setTargets] = useState<TargetWatchlist[]>(() => readLocalRows<TargetWatchlist>(TARGETS_KEY));
@@ -240,6 +249,7 @@ export function useSupabaseInventory() {
     }, [isAuthenticated, userId, markCloudFailure, markCloudHealthy]);
 
     const addCard = useCallback(async (card: CardInventory) => {
+        if (rejectDemoWrite()) return;
         setInventory(prev => [card, ...prev]);
         await runCloudMutation(
             () => upsertCard(card, userId!),
@@ -259,9 +269,10 @@ export function useSupabaseInventory() {
                 set: card.set,
             },
         });
-    }, [runCloudMutation, userId]);
+    }, [rejectDemoWrite, runCloudMutation, userId]);
 
     const updateCard = useCallback(async (id: string, updates: Partial<CardInventory>) => {
+        if (rejectDemoWrite()) return;
         const previousCard = inventory.find(card => card.id === id);
         if (!previousCard) return;
 
@@ -282,9 +293,10 @@ export function useSupabaseInventory() {
             entityId: id,
             metadata: { changedKeys: Object.keys(updates) },
         });
-    }, [inventory, runCloudMutation, userId]);
+    }, [inventory, rejectDemoWrite, runCloudMutation, userId]);
 
     const removeCard = useCallback(async (id: string) => {
+        if (rejectDemoWrite()) return;
         const removedCard = inventory.find(card => card.id === id);
         if (!removedCard) return;
 
@@ -303,9 +315,10 @@ export function useSupabaseInventory() {
             entityType: 'card',
             entityId: id,
         });
-    }, [inventory, runCloudMutation, userId]);
+    }, [inventory, rejectDemoWrite, runCloudMutation, userId]);
 
     const addTarget = useCallback(async (targetInput: TargetDraft | TargetWatchlist) => {
+        if (rejectDemoWrite()) return;
         const target = coerceTargetWatchlist(targetInput);
         setTargets(prev => [target, ...prev]);
 
@@ -326,9 +339,10 @@ export function useSupabaseInventory() {
                 description: target.cardDescription,
             },
         });
-    }, [runCloudMutation, userId]);
+    }, [rejectDemoWrite, runCloudMutation, userId]);
 
     const updateTarget = useCallback(async (id: string, updates: Partial<TargetWatchlist>) => {
+        if (rejectDemoWrite()) return;
         const previousTarget = targets.find(target => target.id === id);
         if (!previousTarget) return;
 
@@ -349,9 +363,10 @@ export function useSupabaseInventory() {
             entityId: id,
             metadata: { changedKeys: Object.keys(updates) },
         });
-    }, [targets, runCloudMutation, userId]);
+    }, [rejectDemoWrite, targets, runCloudMutation, userId]);
 
     const removeTarget = useCallback(async (id: string) => {
+        if (rejectDemoWrite()) return;
         const removedTarget = targets.find(target => target.id === id);
         if (!removedTarget) return;
 
@@ -370,13 +385,14 @@ export function useSupabaseInventory() {
             entityType: 'target',
             entityId: id,
         });
-    }, [targets, runCloudMutation, userId]);
+    }, [rejectDemoWrite, targets, runCloudMutation, userId]);
 
     const markAcquired = useCallback((id: string) => {
         void updateTarget(id, { status: 'acquired' });
     }, [updateTarget]);
 
     const initializeFullInventory = useCallback(async () => {
+        if (!isAuthenticated) seedDemoCollectorTape();
         if (inventory.length > 0 && inventory.length >= MOCK_CARDS.length) return;
 
         const previousInventory = inventory;
@@ -393,6 +409,16 @@ export function useSupabaseInventory() {
             setSyncStatus('local');
         }
     }, [inventory, isAuthenticated, runCloudMutation, userId]);
+
+    const setInventoryIfWritable = useCallback((value: SetStateAction<CardInventory[]>) => {
+        if (rejectDemoWrite()) return;
+        setInventory(value);
+    }, [rejectDemoWrite]);
+
+    const setTargetsIfWritable = useCallback((value: SetStateAction<TargetWatchlist[]>) => {
+        if (rejectDemoWrite()) return;
+        setTargets(value);
+    }, [rejectDemoWrite]);
 
     const refreshFromStorage = useCallback(() => {
         setInventory(readLocalRows<CardInventory>(STORAGE_KEY));
@@ -455,9 +481,9 @@ export function useSupabaseInventory() {
 
     return {
         inventory,
-        setInventory,
+        setInventory: setInventoryIfWritable,
         targets,
-        setTargets,
+        setTargets: setTargetsIfWritable,
         loading,
         isMigrating,
         syncStatus,

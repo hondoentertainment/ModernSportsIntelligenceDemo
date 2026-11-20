@@ -32,6 +32,8 @@ import CommandPalette from './components/CommandPalette.tsx';
 import { validateEnv } from './lib/utils/env';
 import { initDAL } from './lib/dal';
 import { isBetaSurfacesEnabled } from './lib/productionLaunch';
+import { isPublicDemoSession } from './lib/demoSession';
+import DemoModeBanner from './components/DemoModeBanner';
 
 // Labs routes (everything outside the curated product surface) only mount when
 // the beta-surfaces flag is on. Dev builds keep them on for convenience; see
@@ -190,6 +192,7 @@ const DALInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>> }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const location = useLocation();
+  const showLabs = labsEnabled && !isPublicDemoSession();
   const { inventory } = useSupabaseInventory();
   const [isWallHUDOpen, setIsWallHUDOpen] = useState(false);
   const [selectedGrail, setSelectedGrail] = useState<any>(null);
@@ -225,6 +228,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
       <Sidebar isOpen={isSidebarOpen} toggle={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       <div className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
+        <DemoModeBanner />
         <Header onToggleWallHUD={() => setIsWallHUDOpen(true)} />
         <MarketTicker inventory={inventory} />
         <MigrationBanner />
@@ -322,8 +326,8 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                 <Route path="/local-card-shows" element={<LocalCardShows />} />
                 {/* Labs surface — five flag-gated routes kept (see docs/LABS_ARCHIVE.md).
                     Still off unless VITE_FF_ENABLE_BETA_SURFACES is set; dev builds
-                    mount them via import.meta.env.DEV. */}
-                {labsEnabled && (<>
+                    mount them via import.meta.env.DEV. Public demo sessions hide them. */}
+                {showLabs && (<>
                 <Route path="/set-completion" element={<SetCompletionPage />} />
                 <Route path="/slab-verification" element={<SlabVerification />} />
                 <Route path="/fractional-vault" element={<FractionalVault />} />

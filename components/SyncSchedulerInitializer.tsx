@@ -14,6 +14,7 @@ import {
 import { initInstantBuyService } from '../lib/trading/instantBuyService.ts';
 import { initProvenanceService } from '../lib/core/provenanceChainService.ts';
 import { isDemoMode } from '../lib/supabase.ts';
+import { DEMO_USER_ID, isActiveDemoSession } from '../lib/demoSession.ts';
 import { showToast } from '../lib/utils/toast.ts';
 import { logger } from '../lib/logger';
 import type { CardInventory, TargetWatchlist } from '../types.ts';
@@ -48,7 +49,10 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
 
     useEffect(() => {
         if (inventory.length > 0 && !isMigrating) {
-            applyProductSyncDefaults({ signedIn: !!user?.id, isDemo: isDemoMode });
+            applyProductSyncDefaults({
+                signedIn: !!user?.id && user.id !== DEMO_USER_ID && !isDemoMode && !isActiveDemoSession(),
+                isDemo: isDemoMode || isActiveDemoSession(),
+            });
             if (import.meta.env.DEV) logger.log('Initializing Automated Sync Scheduler...');
             const _scheduler = initializeScheduler(inventory, targets, {
                 onProgress: (p) => {
@@ -68,7 +72,7 @@ const SyncSchedulerInitializer: React.FC<{ children: React.ReactNode }> = ({ chi
                         assetCount: updatedInventory.length,
                     });
 
-                    if (user?.id && !isDemoMode) {
+                    if (user?.id && user.id !== DEMO_USER_ID && !isDemoMode && !isActiveDemoSession()) {
                         await persistSyncToCloud(updatedInventory as CardInventory[], updatedTargets as TargetWatchlist[]);
                     }
 

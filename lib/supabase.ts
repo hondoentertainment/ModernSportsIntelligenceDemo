@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { logger } from './logger';
+import { guardSupabaseClient } from './demoSession';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -53,5 +54,5 @@ const createMockClient = (): SupabaseClient => {
 
 export const supabase: SupabaseClient = isDemoMode
     ? createMockClient()
-    : createClient(supabaseUrl, supabaseAnonKey);
+    : guardSupabaseClient(createClient(supabaseUrl, supabaseAnonKey));
 

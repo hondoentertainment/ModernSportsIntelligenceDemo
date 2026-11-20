@@ -24,6 +24,7 @@ import { LocalStorageAdapter } from './LocalStorageAdapter';
 import { SupabaseStorageAdapter } from './SupabaseStorageAdapter';
 import { store } from './syncStore';
 import { isDemoMode } from '../supabase';
+import { DEMO_USER_ID, isActiveDemoSession } from '../demoSession';
 import { logger } from '../logger';
 
 /** Dedupe `initDAL` across React re-renders; includes demo flag so tests can switch modes. */
@@ -39,7 +40,8 @@ export function resetDalInitKeyForTests(): void {
  * Call once at app startup (e.g. in App.tsx or AuthContext).
  */
 export function initDAL(userId: string | null): void {
-  const key = `${userId ?? ''}|${isDemoMode ? 'demo' : 'live'}`;
+  const remote = Boolean(userId) && userId !== DEMO_USER_ID && !isDemoMode && !isActiveDemoSession();
+  const key = `${userId ?? ''}|${remote ? 'live' : 'demo'}`;
   if (key === lastDalInitKey) {
     return;
   }
@@ -47,7 +49,7 @@ export function initDAL(userId: string | null): void {
 
   store.clear();
 
-  if (userId && !isDemoMode) {
+  if (remote && userId) {
     const adapter = new SupabaseStorageAdapter(userId);
     setAdapter(adapter, 'supabase');
     store.setAdapter(adapter);

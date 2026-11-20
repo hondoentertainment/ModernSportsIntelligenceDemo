@@ -16,6 +16,7 @@
 
 import { CardInventory, TargetWatchlist } from '../types';
 import { isDemoMode } from './supabase';
+import { isActiveDemoSession } from './demoSession';
 import * as supabaseData from './supabaseData';
 import { logger } from './logger';
 import { store } from './dal/syncStore';
@@ -114,7 +115,7 @@ class SupabaseDAL implements IDataAccessLayer {
   constructor(private readonly userId: string) {}
 
   async getCards(): Promise<CardInventory[]> {
-    if (isDemoMode) return this.fallbackCards();
+    if (isDemoMode || isActiveDemoSession()) return this.fallbackCards();
     const cards = await supabaseData.fetchCards(this.userId);
     return cards;
   }
@@ -126,14 +127,14 @@ class SupabaseDAL implements IDataAccessLayer {
 
   async setCards(cards: CardInventory[]): Promise<void> {
     writeLocal(DAL_KEYS.INVENTORY, cards);
-    if (!isDemoMode) {
+    if (!isDemoMode && !isActiveDemoSession()) {
       const ok = await supabaseData.bulkUpsertCards(cards, this.userId);
       if (!ok) logger.warn('[DAL] Supabase bulk upsert failed; local cache remains');
     }
   }
 
   async getTargets(): Promise<TargetWatchlist[]> {
-    if (isDemoMode) return this.fallbackTargets();
+    if (isDemoMode || isActiveDemoSession()) return this.fallbackTargets();
     return supabaseData.fetchTargets(this.userId);
   }
 
@@ -144,7 +145,7 @@ class SupabaseDAL implements IDataAccessLayer {
 
   async setTargets(targets: TargetWatchlist[]): Promise<void> {
     writeLocal(DAL_KEYS.TARGETS, targets);
-    if (!isDemoMode) {
+    if (!isDemoMode && !isActiveDemoSession()) {
       const ok = await supabaseData.bulkUpsertTargets(targets, this.userId);
       if (!ok) logger.warn('[DAL] Supabase targets upsert failed; local cache remains');
     }
@@ -169,7 +170,7 @@ class SupabaseDAL implements IDataAccessLayer {
  * Otherwise returns localStorage-backed DAL.
  */
 export function createDataAccessLayer(userId: string | null): IDataAccessLayer {
-  if (userId && !isDemoMode) {
+  if (userId && !isDemoMode && !isActiveDemoSession()) {
     return new SupabaseDAL(userId);
   }
   return new LocalStorageDAL();

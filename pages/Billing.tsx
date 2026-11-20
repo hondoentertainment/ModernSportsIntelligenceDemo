@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { CreditCard, Check, Zap, ChevronRight, Loader2 } from 'lucide-react';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice';
 import { useAuth } from '../contexts/AuthContext';
+import { DEMO_STRIPE_MESSAGE, isActiveDemoSession } from '../lib/demoSession';
 import {
   getUserSubscription,
   getSubscriptionPricing,
@@ -15,6 +16,7 @@ import {
 
 const Billing: React.FC = () => {
   const { user, isDemoMode } = useAuth();
+  const demoLocked = isDemoMode || isActiveDemoSession();
   const [searchParams, setSearchParams] = useSearchParams();
   const [subscription, setSubscription] = useState<{
     subscription_tier: string;
@@ -60,7 +62,10 @@ const Billing: React.FC = () => {
   }, [user?.id, subscriptionRefreshToken]);
 
   const handleUpgrade = async (tier: SubscriptionTier) => {
-    if (!user?.id || isDemoMode) return;
+    if (!user?.id || demoLocked) {
+      if (demoLocked) setMessage({ type: 'info', text: DEMO_STRIPE_MESSAGE });
+      return;
+    }
     const tierKey = tier as 'basic' | 'pro' | 'alpha';
     if ((tierKey as string) === 'free') return;
     setActionLoading(tier);
@@ -80,7 +85,10 @@ const Billing: React.FC = () => {
   };
 
   const handleManageSubscription = async () => {
-    if (!user?.id || isDemoMode) return;
+    if (!user?.id || demoLocked) {
+      if (demoLocked) setMessage({ type: 'info', text: DEMO_STRIPE_MESSAGE });
+      return;
+    }
     setActionLoading('manage');
     try {
       const base = window.location.href.split('#')[0];
@@ -155,7 +163,7 @@ const Billing: React.FC = () => {
         </div>
       )}
 
-      {isDemoMode && (
+      {demoLocked && (
         <PricingProvenanceNotice
           title="Demo billing — pricing quotas are simulated"
           detail="Plan limits and AI valuation usage shown here are illustrative. Upgrade flows and live comp-backed pricing require a signed-in production account."
@@ -164,7 +172,7 @@ const Billing: React.FC = () => {
         />
       )}
 
-      {!isDemoMode && aiQuotaDegraded && (
+      {!demoLocked && aiQuotaDegraded && (
         <PricingProvenanceNotice
           title="AI valuation quota is near or at limit"
           detail={`${aiUsed} of ${aiLimit === -1 ? 'unlimited' : aiLimit} AI valuations used this month. New pricing may fall back to estimates until quota resets or you upgrade.`}
@@ -225,7 +233,7 @@ const Billing: React.FC = () => {
           </div>
         </div>
 
-        {!isDemoMode && subscription?.subscription_status === 'active' && currentTier !== 'free' && (
+        {!demoLocked && subscription?.subscription_status === 'active' && currentTier !== 'free' && (
           <button
             onClick={handleManageSubscription}
             disabled={!!actionLoading}
@@ -241,7 +249,7 @@ const Billing: React.FC = () => {
           </button>
         )}
 
-        {isDemoMode && (
+        {demoLocked && (
           <p className="text-sm text-amber-400">Subscription management is disabled in Demo Mode.</p>
         )}
       </section>
@@ -285,7 +293,7 @@ const Billing: React.FC = () => {
                   <span className="block py-3 text-center font-bold text-brand-lime text-sm uppercase">
                     Current Plan
                   </span>
-                ) : isUpgrade && !isDemoMode ? (
+                ) : isUpgrade && !demoLocked ? (
                   <button
                     onClick={() => handleUpgrade(plan.id as SubscriptionTier)}
                     disabled={!!actionLoading}

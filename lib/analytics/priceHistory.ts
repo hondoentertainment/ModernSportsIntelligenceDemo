@@ -13,6 +13,7 @@
 import { logger } from '../logger';
 import { store } from '../dal/syncStore';
 import { isDemoMode } from '../supabase';
+import { isActiveDemoSession } from '../demoSession';
 import {
     fetchAllPriceHistory,
     insertPriceSnapshot,
@@ -33,6 +34,13 @@ export type CardPriceHistory = Record<string, PriceSnapshot[]>;
 
 const STORAGE_KEY = 'cardx_price_history';
 const MAX_SNAPSHOTS = 30;
+
+/** Tagged on seeded demo sparklines. Not a live tape. */
+export const DEMO_SYNTHETIC_SOURCE = 'demo_synthetic';
+
+function remoteHistoryBlocked(): boolean {
+    return isDemoMode || isActiveDemoSession();
+}
 
 // Module-level state for the current user (set via initPriceHistory)
 let _currentUserId: string | null = null;
@@ -57,7 +65,7 @@ function saveAllHistory(history: CardPriceHistory): void {
  * Errors are logged but don't block the caller.
  */
 function persistToCloud(cardId: string, snapshot: PriceSnapshot): void {
-    if (!_currentUserId || isDemoMode) return;
+    if (!_currentUserId || remoteHistoryBlocked()) return;
     insertPriceSnapshot(_currentUserId, { cardId, ...snapshot }).catch(err => {
         logger.warn('[PriceHistory] Cloud persist failed for', cardId, err);
     });
@@ -67,7 +75,7 @@ function persistToCloud(cardId: string, snapshot: PriceSnapshot): void {
  * Persist a batch of snapshots to Supabase in the background.
  */
 function persistBatchToCloud(snapshots: Array<{ cardId: string } & PriceSnapshot>): void {
-    if (!_currentUserId || isDemoMode || snapshots.length === 0) return;
+    if (!_currentUserId || remoteHistoryBlocked() || snapshots.length === 0) return;
     insertBatchPriceSnapshots(_currentUserId, snapshots).catch(err => {
         logger.warn('[PriceHistory] Cloud batch persist failed:', err);
     });
@@ -83,7 +91,7 @@ function persistBatchToCloud(snapshots: Array<{ cardId: string } & PriceSnapshot
 export async function initPriceHistory(userId: string): Promise<void> {
     _currentUserId = userId;
 
-    if (isDemoMode) {
+    if (remoteHistoryBlocked()) {
         _initialized = true;
         return;
     }
@@ -138,7 +146,7 @@ export async function initPriceHistory(userId: string): Promise<void> {
  * Optionally prunes old cloud data.
  */
 export async function teardownPriceHistory(): Promise<void> {
-    if (_currentUserId && !isDemoMode) {
+    if (_currentUserId && !remoteHistoryBlocked()) {
         // Best-effort prune of old cloud snapshots
         prunePriceHistory(_currentUserId, MAX_SNAPSHOTS).catch(() => { });
     }
@@ -306,16 +314,28 @@ function compsToValues(
  * Local sparkline from stored snapshots, then dated sold comps.
  * Honest thin state when fewer than two real points exist. No simulated tape.
  */
+function snapshotValues(cardId: string, limit: number): { values: number[]; synthetic: boolean } {
+    const history = getCardHistory(cardId);
+    const synthetic = history.filter((row) => row.source === DEMO_SYNTHETIC_SOURCE);
+    const chosen = synthetic.length >= 2 ? synthetic : history;
+    return {
+        synthetic: synthetic.length >= 2,
+        values: chosen.slice(0, limit).map((row) => row.value).reverse(),
+    };
+}
+
 export function getCardSparkline(
     card: { id: string; salesData?: Array<{ price: number; totalPrice?: number; soldAt: string }> },
     limit: number = 10,
 ): CardSparkline {
-    const snapshots = getSparklineData(card.id, limit);
-    if (snapshots.length >= 2) {
+    const snapshots = snapshotValues(card.id, limit);
+    if (snapshots.values.length >= 2) {
         return {
-            values: snapshots,
+            values: snapshots.values,
             source: 'snapshots',
-            disclosure: 'Local valuation snapshots — not a live exchange tape.',
+            disclosure: snapshots.synthetic
+                ? 'Synthetic demo tape for this card — not a live exchange tape.'
+                : 'Local valuation snapshots — not a live exchange tape.',
         };
     }
     const comps = compsToValues(card.salesData, limit);
@@ -327,7 +347,7 @@ export function getCardSparkline(
         };
     }
     return {
-        values: snapshots.length === 1 ? snapshots : comps,
+        values: snapshots.values.length === 1 ? snapshots.values : comps,
         source: 'thin',
         disclosure: 'Not enough local points yet — awaiting snapshots or dated comps.',
     };
