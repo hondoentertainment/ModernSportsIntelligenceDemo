@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import {
   generatePriceHistory,
   chartPointsFromSnapshots,
+  seriesFromStoredSnapshots,
   calculateStatistics,
   getAnnotations,
   calculateMovingAverage,
@@ -48,6 +49,40 @@ describe('priceChartService', () => {
 
     it('returns no points for an empty tape', () => {
       expect(chartPointsFromSnapshots([], '3M').points).toEqual([]);
+    });
+  });
+
+  describe('seriesFromStoredSnapshots', () => {
+    const now = Date.parse('2026-11-20T00:00:00.000Z');
+    const tape = [
+      { timestamp: '2026-08-01T00:00:00.000Z', value: 800, source: 'demo_synthetic' },
+      { timestamp: '2026-09-01T00:00:00.000Z', value: 2000, source: 'demo_synthetic' },
+    ];
+    const recorded = [
+      { timestamp: '2026-11-01T00:00:00.000Z', value: 140, source: 'valuation' },
+      { timestamp: '2026-11-10T00:00:00.000Z', value: 160, source: 'valuation' },
+    ];
+
+    it('uses the seeded tape in a demo session and ignores recorded rows', () => {
+      const series = seriesFromStoredSnapshots([...tape, ...recorded], 'ALL', {
+        demoSession: true,
+        nowMs: now,
+      });
+      expect(series?.kind).toBe('demo-tape');
+      expect(series?.points.map((point) => point.price)).toEqual([800, 2000]);
+    });
+
+    it('uses recorded snapshots for a signed-in collector and ignores the demo tape', () => {
+      const series = seriesFromStoredSnapshots([...tape, ...recorded], '1M', {
+        demoSession: false,
+        nowMs: now,
+      });
+      expect(series?.kind).toBe('snapshots');
+      expect(series?.points.map((point) => point.price)).toEqual([140, 160]);
+    });
+
+    it('does not invent a series when a signed-in card has only demo tape', () => {
+      expect(seriesFromStoredSnapshots(tape, 'ALL', { demoSession: false, nowMs: now })).toBeNull();
     });
   });
 

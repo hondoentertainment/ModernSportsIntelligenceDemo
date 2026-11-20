@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   AreaChart,
   Area,
@@ -20,12 +20,15 @@ import {
 } from 'lucide-react';
 import { CardInventory } from '../types';
 import {
-  generatePriceHistory,
   calculateStatistics,
   getAnnotations,
   calculateMovingAverage,
   calculateBollingerBands,
-  chartPointsFromSnapshots,
+  seriesFromStoredSnapshots,
+  resolveFallbackPriceSeries,
+  type FallbackPriceSeriesKind,
+  type PriceDataPoint,
+  type StoredPriceSeriesKind,
   ChartTimeRange,
   ChartAnnotation,
 } from '../lib/analytics/priceChartService';
@@ -137,18 +140,36 @@ const PriceHistoryModal: React.FC<PriceHistoryModalProps> = ({
   const [showBB, setShowBB] = useState(false);
 
   const demoSession = Boolean(card) && isActiveDemoSession();
-  const seededChart = useMemo(() => {
-    if (!card || !demoSession) return null;
-    const tape = getCardHistory(card.id).filter((row) => row.source === DEMO_SYNTHETIC_SOURCE);
-    if (tape.length === 0) return null;
-    return chartPointsFromSnapshots(tape, range);
+  const storedSeries = useMemo(() => {
+    if (!card) return null;
+    return seriesFromStoredSnapshots(getCardHistory(card.id), range, {
+      demoSession,
+      demoSource: DEMO_SYNTHETIC_SOURCE,
+    });
   }, [card, demoSession, range]);
+  const [fallback, setFallback] = useState<{
+    points: PriceDataPoint[];
+    kind: FallbackPriceSeriesKind;
+  } | null>(null);
 
-  const priceData = useMemo(() => {
-    if (!card) return [];
-    if (seededChart && seededChart.points.length > 0) return seededChart.points;
-    return generatePriceHistory(card, range);
-  }, [card, range, seededChart]);
+  useEffect(() => {
+    if (!card || storedSeries) {
+      setFallback(null);
+      return;
+    }
+    let cancelled = false;
+    setFallback(null);
+    resolveFallbackPriceSeries(card, range, { allowComps: !demoSession }).then((result) => {
+      if (!cancelled) setFallback(result);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [card, demoSession, range, storedSeries]);
+
+  const priceData = storedSeries?.points ?? fallback?.points ?? [];
+  const seriesKind: StoredPriceSeriesKind | FallbackPriceSeriesKind | null =
+    storedSeries?.kind ?? fallback?.kind ?? null;
 
   const stats = useMemo(() => calculateStatistics(priceData), [priceData]);
 
@@ -249,14 +270,21 @@ const PriceHistoryModal: React.FC<PriceHistoryModalProps> = ({
                 {card.player} &bull; {card.year} {card.manufacturer} {card.set}{' '}
                 #{card.cardNumber}
               </p>
-              {demoSession && (
+              {seriesKind && (
                 <p
                   className="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-300"
-                  data-testid="price-history-demo-label"
+                  data-testid={seriesKind === 'demo-tape' ? 'price-history-demo-label' : 'price-history-source-label'}
                   role="status"
                 >
-                  {seededChart ? 'Demo data — seeded price history' : 'Demo data'}
-                  {seededChart?.usedFullTape ? ' · full seeded tape' : ''}
+                  {seriesKind === 'demo-tape'
+                    ? `Demo data — seeded price history${storedSeries?.usedFullTape ? ' · full seeded tape' : ''}`
+                    : seriesKind === 'snapshots'
+                      ? 'Recorded valuations'
+                      : seriesKind === 'comps'
+                        ? 'Sold comps'
+                        : demoSession
+                          ? 'Demo data — simulated history'
+                          : 'Simulated history — not recorded sales or account snapshots.'}
                 </p>
               )}
             </div>
@@ -277,22 +305,24 @@ const PriceHistoryModal: React.FC<PriceHistoryModalProps> = ({
               <span className="text-3xl font-mono font-bold text-white">
                 ${currentPrice.toFixed(2)}
               </span>
-              <div
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-mono font-bold ${
-                  isPositive
-                    ? 'bg-green-500/10 text-green-400'
-                    : 'bg-red-500/10 text-red-400'
-                }`}
-              >
-                {isPositive ? (
-                  <TrendingUp size={16} />
-                ) : (
-                  <TrendingDown size={16} />
-                )}
-                {isPositive ? '+' : ''}
-                ${change.toFixed(2)} ({isPositive ? '+' : ''}
-                {changePct.toFixed(2)}%)
-              </div>
+              {seriesKind && (
+                <div
+                  className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-mono font-bold ${
+                    isPositive
+                      ? 'bg-green-500/10 text-green-400'
+                      : 'bg-red-500/10 text-red-400'
+                  }`}
+                >
+                  {isPositive ? (
+                    <TrendingUp size={16} />
+                  ) : (
+                    <TrendingDown size={16} />
+                  )}
+                  {isPositive ? '+' : ''}
+                  ${change.toFixed(2)} ({isPositive ? '+' : ''}
+                  {changePct.toFixed(2)}%)
+                </div>
+              )}
             </div>
 
             {/* Overlay Toggles */}
