@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, ChevronRight, ChevronLeft, Sparkles, Zap, Radio, ScanEye, Landmark, BarChart3, Layers } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Sparkles, Zap, ScanEye, Landmark, BarChart3, Layers } from 'lucide-react';
 import { store } from '../lib/dal/syncStore';
 
 const TOUR_STORAGE_KEY = 'msi-guided-tour-completed';
@@ -57,16 +57,6 @@ const TOUR_STEPS: TourStep[] = [
     icon: <Zap size={24} className="text-brand-lime" />,
     path: '/',
     highlight: 'Differentiated',
-  },
-  {
-    id: 'live-impact',
-    title: 'Live Game Impact Engine',
-    description: 'The industry first: see card values shift in real-time during live games. When a player hits a walk-off HR, instantly see your portfolio impact.',
-    tier: 'Industry-First',
-    tierColor: 'text-red-400',
-    icon: <Radio size={24} className="text-red-400" />,
-    path: '/live-impact',
-    highlight: 'Industry-First',
   },
   {
     id: 'vision-grading',

@@ -214,11 +214,11 @@ const SellTradePlannerPanel: React.FC<Props> = ({ inventory }) => {
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <Link
-          to="/tax-report"
+          to="/audit-dossier"
           className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border border-slate-600 px-3 text-xs font-bold text-slate-100"
         >
           <Scale size={14} aria-hidden />
-          Tax-lot method
+          Audit dossier
         </Link>
         <Link
           to="/local-card-shows"

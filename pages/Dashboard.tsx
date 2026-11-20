@@ -126,7 +126,6 @@ const ConsignmentWidget = lazy(() => import('../components/ConsignmentWidget.tsx
 const AchievementWidget = lazy(() => import('../components/AchievementWidget.tsx'));
 const AnomalyWidget = lazy(() => import('../components/AnomalyWidget.tsx'));
 const RecentlyIngested = lazy(() => import('../components/dashboard/RecentlyIngested.tsx'));
-const DashboardFeatureWidgets = lazy(() => import('../components/DashboardFeatureWidgets.tsx'));
 const ArbitrageSwarmDashboard = lazy(() => import('../components/ArbitrageSwarmDashboard.tsx'));
 const WarRoomWidget = lazy(() => import('../components/WarRoomWidget.tsx'));
 
@@ -827,12 +826,6 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Intelligence Signals - Feature Metric Widgets */}
-          <LazyErrorBoundary compact>
-            <Suspense fallback={<WidgetLoadingFallback />}>
-              <DashboardFeatureWidgets />
-            </Suspense>
-          </LazyErrorBoundary>
           <PricingTruthHealthPanel inventory={inventory} />
 
           {/* Strategic Signals Feed */}

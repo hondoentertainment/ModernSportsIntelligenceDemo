@@ -52,6 +52,6 @@ export default [
     },
   },
   {
-    ignores: ['dist/', 'node_modules/', 'loadInventory.js', 'scripts/templates/'],
+    ignores: ['dist/', 'node_modules/', 'loadInventory.js', 'scripts/templates/', 'archive/**'],
   },
 ];

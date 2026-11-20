@@ -32,6 +32,9 @@ export default defineConfig(({ command, mode }) => {
   server: {
     port: 3000,
     host: '0.0.0.0',
+    watch: {
+      ignored: ['**/archive/**'],
+    },
   },
   plugins: [react()],
   resolve: {
@@ -97,7 +100,7 @@ export default defineConfig(({ command, mode }) => {
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
-    exclude: ['**/node_modules/**', '**/e2e/**', '**/*.spec.ts', '**/.claude/**', '**/ModernSportsIntelligenceDemo/**'],
+    exclude: ['**/node_modules/**', '**/e2e/**', '**/*.spec.ts', '**/.claude/**', '**/ModernSportsIntelligenceDemo/**', '**/archive/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov', 'json-summary'],
@@ -229,6 +232,7 @@ export default defineConfig(({ command, mode }) => {
         lines: 99.4,
       },
       exclude: [
+        '**/archive/**',
         '**/node_modules/**',
         'api/lib/logger.ts',
         '**/e2e/**',

@@ -34,5 +34,5 @@
     "tests/lib/fiveDifferentiatorService.test.ts",
     "tests/e2e/**/*.ts"
   ],
-  "exclude": ["scripts/**", "node_modules/**"]
+  "exclude": ["archive", "scripts/**", "node_modules/**"]
 }
