@@ -12,9 +12,12 @@ import { supabase, isDemoMode } from '../lib/supabase';
 import {
     DEMO_USER_EMAIL,
     DEMO_USER_ID,
-    discardPublicDemoData,
+    parkCollectorCacheForPublicDemo,
+    publicDemoDataIsLocal,
+    restoreCollectorCacheAfterDemo,
     isActiveDemoSession,
     isPublicDemoEnabled,
+    isPublicDemoSession,
     readDemoSessionFlag,
 } from '../lib/demoSession';
 import { seedDemoCollectorTape } from '../lib/analytics/demoTape';
@@ -261,7 +264,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const adoptSession = (currentSession: Session | null): boolean => {
             if (currentSession?.user) {
                 store.remove(LS_DEMO_SESSION);
-                discardPublicDemoData();
+                restoreCollectorCacheAfterDemo();
                 setSession(currentSession);
                 setUser(currentSession.user);
                 return true;
@@ -446,8 +449,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const signOut = async () => {
         const demoSession = isDemoMode || isActiveDemoSession() || user?.id === DEMO_USER_ID;
+        const leavingPublicDemo = isPublicDemoSession() || publicDemoDataIsLocal();
         store.remove(LS_DEMO_SESSION);
         if (demoSession && !session?.access_token) {
+            if (leavingPublicDemo) restoreCollectorCacheAfterDemo();
             setUser(null);
             setSession(null);
             resetProfileState();
@@ -667,6 +672,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const demoLogin = () => {
         if (session?.user && session.user.id !== DEMO_USER_ID) return;
         if (!isDemoMode && !isPublicDemoEnabled()) return;
+        parkCollectorCacheForPublicDemo();
         store.set(LS_DEMO_SESSION, true);
         seedDemoCollectorTape();
         setSession(null);

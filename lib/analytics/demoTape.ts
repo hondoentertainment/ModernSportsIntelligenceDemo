@@ -80,7 +80,7 @@ export function seedDemoCollectorTape(): void {
   }
 
   const favorites = store.get<StoredFavorite[]>(DEMO_FAVORITES_KEY, []);
-  if (!Array.isArray(favorites) || favorites.length === 0) {
+  if (isPublicDemoSession() || !Array.isArray(favorites) || favorites.length === 0) {
     store.set(DEMO_FAVORITES_KEY, favoriteRows());
   }
 

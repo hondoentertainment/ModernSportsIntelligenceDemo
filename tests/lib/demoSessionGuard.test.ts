@@ -9,8 +9,11 @@ import {
   guardSupabaseClient,
   isActiveDemoSession,
   markPublicDemoData,
+  parkCollectorCacheForPublicDemo,
+  PRE_DEMO_STASH_KEY,
   publicDemoDataIsLocal,
   publicDemoDefault,
+  restoreCollectorCacheAfterDemo,
   runRemoteOrDemo,
 } from '../../lib/demoSession';
 
@@ -33,6 +36,7 @@ vi.mock('../../lib/supabase', () => ({
   },
 }));
 
+import { seedDemoCollectorTape } from '../../lib/analytics/demoTape';
 import { createGeminiClient } from '../../lib/utils/geminiClient';
 import { createCheckoutSession } from '../../lib/utils/billingService';
 import { fetchCards } from '../../lib/supabaseData';
@@ -41,6 +45,7 @@ import { supabase } from '../../lib/supabase';
 
 afterEach(() => {
   store.remove(DEMO_SESSION_KEY);
+  store.remove(PRE_DEMO_STASH_KEY);
   vi.unstubAllEnvs();
   vi.clearAllMocks();
 });
@@ -165,5 +170,46 @@ describe('demo session guard', () => {
     expect(publicDemoDataIsLocal()).toBe(false);
     expect(store.get('cardx_inventory', null)).toBeNull();
     expect(store.get('cardx_price_history', null)).toBeNull();
+  });
+
+  it('parks a collector cache and restores it after the public demo', () => {
+    store.set('cardx_inventory', [{ id: 'real-card' }]);
+    store.set('msi_card_favorites', [{ cardId: 'real-fav' }]);
+    store.set('cardx_targets', [{ id: 'real-target' }]);
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://example.supabase.co');
+    vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'anon-key');
+    vi.stubEnv('VITE_PUBLIC_DEMO', 'true');
+
+    parkCollectorCacheForPublicDemo();
+    expect(store.get('cardx_inventory', null)).toBeNull();
+    expect(store.get('msi_card_favorites', null)).toBeNull();
+    expect(store.get('cardx_targets', null)).toBeNull();
+    const parked = store.get<Record<string, { id?: string; cardId?: string }[]>>(PRE_DEMO_STASH_KEY, {});
+    expect(parked.cardx_inventory?.[0]?.id).toBe('real-card');
+
+    store.set(DEMO_SESSION_KEY, true);
+    seedDemoCollectorTape();
+    const demoFavorites = store.get<{ cardId: string }[]>('msi_card_favorites', []);
+    expect(demoFavorites.map(row => row.cardId).sort()).toEqual(['48', '5']);
+    expect(publicDemoDataIsLocal()).toBe(true);
+
+    store.set('cardx_inventory', [{ id: 'demo-book' }]);
+    parkCollectorCacheForPublicDemo();
+    expect(store.get<Record<string, { id?: string }[]>>(PRE_DEMO_STASH_KEY, {}).cardx_inventory?.[0]?.id).toBe('real-card');
+    expect(store.get<{ id: string }[]>('cardx_inventory', [])[0]?.id).toBe('demo-book');
+
+    restoreCollectorCacheAfterDemo();
+    expect(publicDemoDataIsLocal()).toBe(false);
+    expect(store.has(PRE_DEMO_STASH_KEY)).toBe(false);
+    expect(store.get<{ id: string }[]>('cardx_inventory', [])[0]?.id).toBe('real-card');
+    expect(store.get<{ cardId: string }[]>('msi_card_favorites', [])[0]?.cardId).toBe('real-fav');
+    expect(store.get<{ id: string }[]>('cardx_targets', [])[0]?.id).toBe('real-target');
+  });
+
+  it('does not park the local book when Supabase is not configured', () => {
+    store.set('cardx_inventory', [{ id: 'keep' }]);
+    parkCollectorCacheForPublicDemo();
+    expect(store.get<{ id: string }[]>('cardx_inventory', [])[0]?.id).toBe('keep');
+    expect(store.has(PRE_DEMO_STASH_KEY)).toBe(false);
   });
 });

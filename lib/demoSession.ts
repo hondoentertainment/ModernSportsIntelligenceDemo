@@ -15,6 +15,19 @@ export const DEMO_SESSION_KEY = 'msi_demo_session';
 export const DEMO_USER_ID = 'demo-user';
 export const DEMO_USER_EMAIL = 'demo@sportsintel.io';
 export const DEMO_DATA_MARK = 'msi_public_demo_data';
+/** Collector cache parked while a public demo uses the shared local keys. */
+export const PRE_DEMO_STASH_KEY = 'msi_pre_demo_cache';
+
+/** Keys the public demo shares with a signed-in collector's on-device cache. */
+export const DEMO_CACHE_KEYS = [
+  'cardx_inventory',
+  'cardx_targets',
+  'cardx_favorites',
+  'cardx_price_history',
+  'cardx_sync_meta',
+  'msi_card_favorites',
+  'msi_demo_tape_version',
+] as const;
 
 export const DEMO_AI_CANNED =
   'Demo mode keeps AI offline. This is a canned note, not a model reply. Sign up to run live analysis.';
@@ -99,21 +112,45 @@ export function markPublicDemoData(): void {
   store.set(DEMO_DATA_MARK, true);
 }
 
+/**
+ * Move a signed-out collector's on-device book aside before the public demo
+ * writes into the same keys. A second entry does not overwrite that stash
+ * with demo rows. Local builds without Supabase are left alone.
+ */
+export function parkCollectorCacheForPublicDemo(): void {
+  if (isBuildDemoMode() || !isPublicDemoEnabled()) return;
+  if (publicDemoDataIsLocal()) return;
+  if (!store.has(PRE_DEMO_STASH_KEY)) {
+    const stash: Record<string, unknown> = {};
+    for (const key of DEMO_CACHE_KEYS) {
+      if (!store.has(key)) continue;
+      stash[key] = store.get(key, null);
+    }
+    if (Object.keys(stash).length > 0) store.set(PRE_DEMO_STASH_KEY, stash);
+  }
+  for (const key of DEMO_CACHE_KEYS) store.remove(key);
+}
+
 /** Drop seeded demo rows before a real account reads or migrates local data. */
 export function discardPublicDemoData(): void {
   if (!publicDemoDataIsLocal()) return;
-  for (const key of [
-    'cardx_inventory',
-    'cardx_targets',
-    'cardx_favorites',
-    'cardx_price_history',
-    'cardx_sync_meta',
-    'msi_card_favorites',
-    'msi_demo_tape_version',
-    DEMO_DATA_MARK,
-  ]) {
+  for (const key of [...DEMO_CACHE_KEYS, DEMO_DATA_MARK]) {
     store.remove(key);
   }
+}
+
+/**
+ * Put the parked collector cache back and drop the demo book. Safe when
+ * there was no previous cache: the demo keys are removed and nothing is restored.
+ */
+export function restoreCollectorCacheAfterDemo(): void {
+  const stash = store.get<Record<string, unknown> | null>(PRE_DEMO_STASH_KEY, null);
+  discardPublicDemoData();
+  if (!stash || typeof stash !== 'object') return;
+  for (const key of DEMO_CACHE_KEYS) {
+    if (Object.prototype.hasOwnProperty.call(stash, key)) store.set(key, stash[key]);
+  }
+  store.remove(PRE_DEMO_STASH_KEY);
 }
 
 /**
