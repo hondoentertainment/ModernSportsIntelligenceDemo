@@ -73,10 +73,7 @@ describe('NegotiationAnalyticsPanel', () => {
     expect(screen.getByText('Walk / incomplete')).toBeInTheDocument();
     expect(screen.getAllByText('—').length).toBeGreaterThanOrEqual(4);
     expect(screen.getByText(/no negotiation outcomes yet/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /open agent desk/i })).toHaveAttribute(
-      'href',
-      '/autonomous-acquisition',
-    );
+    expect(screen.queryByRole('link', { name: /open agent desk/i })).not.toBeInTheDocument();
   });
 
   it('renders populated KPIs and simulated disclosure', () => {

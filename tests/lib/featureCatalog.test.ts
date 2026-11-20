@@ -171,8 +171,8 @@ describe('featureCatalog', () => {
     });
   });
 
-  describe('v5.2 Frontier feature ids', () => {
-    const FRONTIER_IDS = [
+  describe('archived v5.2 frontier routes', () => {
+    const ARCHIVED_FRONTIER_IDS = [
       'bid-ask-spread-predictor',
       'wash-sale-horizon',
       'seller-urgency-score',
@@ -185,9 +185,9 @@ describe('featureCatalog', () => {
       'agent-confidence-history',
     ];
 
-    it('FEATURE_CATALOG contains all v5.2 Frontier feature ids', () => {
-      for (const id of FRONTIER_IDS) {
-        expect(FEATURE_CATALOG.some(f => f.id === id)).toBe(true);
+    it('leaves archived v5.2 frontier routes out of the live catalog', () => {
+      for (const id of ARCHIVED_FRONTIER_IDS) {
+        expect(FEATURE_CATALOG.some(f => f.id === id)).toBe(false);
       }
     });
   });

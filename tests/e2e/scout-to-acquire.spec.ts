@@ -17,7 +17,7 @@ async function enterDemoMode(page: Page): Promise<void> {
 }
 
 test.describe('Scout-to-Acquire happy path (demo smoke)', () => {
-    test('Collection add-asset → War Room scout desk → acquisition campaign persists', async ({ page }) => {
+    test('Collection add-asset lands on the Analyst War Room', async ({ page }) => {
         test.setTimeout(120_000);
         await enterDemoMode(page);
 
@@ -49,19 +49,6 @@ test.describe('Scout-to-Acquire happy path (demo smoke)', () => {
         await expect(page.getByRole('heading', { name: 'Analyst War Room', level: 1 })).toBeVisible({ timeout: 15_000 });
         await expect(page.getByText(/Multi-agent output is AI-generated guidance/i)).toBeVisible();
 
-        await page.getByRole('link', { name: /open acquisition desk/i }).click();
-        await expect(page).toHaveURL(/autonomous-acquisition/);
-        await expect(page.getByText(/simulated demo data/i)).toBeVisible({ timeout: 15_000 });
-
-        const campaignPlayer = `MSI Scout Acquire ${Date.now()}`;
-        await page.getByRole('button', { name: /new campaign/i }).click();
-        await page.getByPlaceholder(/e\.g\. Mike Trout/i).fill(campaignPlayer);
-        await page.getByPlaceholder('$').fill('150');
-        await page.getByRole('button', { name: /launch campaign/i }).click();
-        await expect(page.getByText(campaignPlayer).first()).toBeVisible();
-
-        await page.reload();
-        await expect(page.getByText(/simulated demo data/i)).toBeVisible({ timeout: 15_000 });
-        await expect(page.getByText(campaignPlayer).first()).toBeVisible();
+        await expect(page.getByRole('link', { name: /open acquisition desk/i })).toHaveCount(0);
     });
 });

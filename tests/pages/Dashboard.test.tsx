@@ -165,7 +165,6 @@ vi.mock('../../components/WarRoomWidget.tsx', () => ({ default: () => null }));
 vi.mock('../../components/FiscalHealthWidget.tsx', () => ({ default: () => null }));
 vi.mock('../../components/StrategyMap.tsx', () => ({ default: () => null }));
 vi.mock('../../components/ArbitrageSwarmDashboard.tsx', () => ({ default: () => null }));
-vi.mock('../../components/DashboardFeatureWidgets.tsx', () => ({ default: () => null }));
 vi.mock('../../components/PricingTruthHealthPanel.tsx', () => ({ default: () => null }));
 vi.mock('../../components/CorrelationTerminal.tsx', () => ({
     CorrelationTerminal: () => null,

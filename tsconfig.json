@@ -19,5 +19,5 @@
     "allowImportingTsExtensions": true,
     "noEmit": true
   },
-  "exclude": ["scripts/templates/**"]
+  "exclude": ["scripts/templates/**", "archive"]
 }
