@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { clearPriceHistory } from '../../lib/analytics/priceHistory';
-import { seedDemoCollectorTape, DEMO_TAPE_FAVORITE_IDS } from '../../lib/analytics/demoTape';
+import { seedDemoCollectorTape, seededDemoTapeCoverage, DEMO_TAPE_FAVORITE_IDS } from '../../lib/analytics/demoTape';
 import { equalShare } from '../../lib/analytics/equalShare';
 import { indexBeat } from '../../lib/analytics/indexBeat';
 import { weightGap } from '../../lib/analytics/weightGap';
@@ -31,6 +31,16 @@ describe('demo collector tape', () => {
     expect(favorites.copy).toMatch(/fill, not a buy/);
     expect(favorites.copy).not.toMatch(/no favorite is on this desk/);
     expect(favorites.copy).toMatch(/Synthetic|Jairo Pomares|not a live/i);
+  });
+
+  it('counts only cards that received the synthetic tape', () => {
+    seedDemoCollectorTape();
+    expect(seededDemoTapeCoverage(['11', '15', 'missing'])).toEqual({
+      total: 3,
+      covered: 2,
+      coveragePct: 67,
+    });
+    expect(seededDemoTapeCoverage([])).toEqual({ total: 0, covered: 0, coveragePct: 0 });
   });
 
   it('is deterministic and does not stack snapshots on a second seed', () => {

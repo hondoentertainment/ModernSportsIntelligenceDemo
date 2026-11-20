@@ -12,6 +12,8 @@ interface ValuationCoverageBannerProps {
   targetPct?: number;
   actions?: React.ReactNode;
   className?: string;
+  /** Demo sessions show a calm seeded-tape label instead of an SLA breach. */
+  tone?: 'sla' | 'demo';
 }
 
 const SCOPE_COPY: Record<
@@ -38,8 +40,24 @@ const ValuationCoverageBanner: React.FC<ValuationCoverageBannerProps> = ({
   targetPct = FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
   actions,
   className = '',
+  tone = 'sla',
 }) => {
   if (total <= 0 || coveragePct >= targetPct) return null;
+
+  if (tone === 'demo') {
+    return (
+      <section
+        className={`rounded-2xl border border-slate-700 bg-slate-900/60 px-5 py-4 text-sm text-slate-200 ${className}`}
+        role="status"
+        data-testid="demo-pricing-notice"
+      >
+        <p className="font-semibold">Demo data</p>
+        <p className="mt-1 text-xs text-slate-400">
+          Seeded demo price history is on this book. Live verifiable coverage is not scored in a demo session.
+        </p>
+      </section>
+    );
+  }
 
   const copy = SCOPE_COPY[scope];
   const Wrapper = actions ? 'section' : 'div';

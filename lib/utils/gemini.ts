@@ -8,6 +8,7 @@ import { createGeminiClient } from './geminiClient.ts';
 import { logger } from '../logger';
 import { preferRealCompsWhenConfigured } from '../featureFlags';
 import { AgenticOfferResponseSchema, NegotiationSellerResponseSchema, safeParse } from '../schemas.ts';
+import { DemoSessionBlockedError, isActiveDemoSession } from '../demoSession';
 
 const ai = createGeminiClient();
 
@@ -405,6 +406,10 @@ export async function getRealTimeLeagueTrends(league: string, _signal?: AbortSig
 
 export async function generatePortfolioSentiment(inventory: CardInventory[], _signal?: AbortSignal): Promise<string> {
   if (inventory.length === 0) return "Awaiting data ingestion to generate market signals.";
+  if (isActiveDemoSession()) {
+    const { DEMO_PORTFOLIO_SENTIMENT } = await import('../demo/demoAi');
+    return DEMO_PORTFOLIO_SENTIMENT;
+  }
 
   const inventorySummary = inventory.map(c =>
     `${c.year} ${c.player} ${c.set} (${c.league})`
@@ -425,6 +430,10 @@ export async function generatePortfolioSentiment(inventory: CardInventory[], _si
     return response.text || "Stable market conditions observed across all sectors.";
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') return "Market analysis cancelled.";
+    if (isActiveDemoSession() || error instanceof DemoSessionBlockedError) {
+      const { DEMO_PORTFOLIO_SENTIMENT } = await import('../demo/demoAi');
+      return DEMO_PORTFOLIO_SENTIMENT;
+    }
     logger.error("Gemini Sentiment Error:", error);
     showToast('warning', 'AI sentiment analysis unavailable.', { dedupeKey: 'sentiment' });
     return "Market volatility detected. Institutional hold signals recommended.";

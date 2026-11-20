@@ -11,6 +11,8 @@ import { preferredValuationForCard } from '../lib/pricing/compConsensus';
 import { PRICING_TRUTH_SLA_NOTE, PRICING_TRUTH_THRESHOLDS } from '../lib/pricing/pricingTruth';
 import { summarizeInventorySla } from '../lib/pricing/freshnessSla';
 import FreshnessSlaBadge from './FreshnessSlaBadge';
+import { isActiveDemoSession } from '../lib/demoSession';
+import { seededDemoTapeCoverage } from '../lib/analytics/demoTape';
 
 interface PricingTruthHealthPanelProps {
   inventory: CardInventory[];
@@ -57,6 +59,30 @@ const PricingTruthHealthPanel: React.FC<PricingTruthHealthPanelProps> = ({ inven
 
   const sla = useMemo(() => summarizeInventorySla(activeCards), [activeCards]);
   const healthy = coverage.coveragePct >= FRESH_VERIFIABLE_COVERAGE_TARGET_PCT;
+  const demoSession = isActiveDemoSession();
+  const tape = useMemo(
+    () => seededDemoTapeCoverage(activeCards.map((card) => card.id)),
+    [activeCards],
+  );
+
+  if (demoSession) {
+    return (
+      <div className="luminous-card rounded-4xl p-6 border border-slate-800/70" data-testid="demo-pricing-health">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest text-brand-muted">Pricing truth</p>
+            <h3 className="text-xl font-bebas tracking-wide text-white">Seeded price history</h3>
+          </div>
+          <div className="inline-flex items-center gap-1 rounded-full border border-slate-700 bg-slate-800 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-slate-200">
+            Demo data
+          </div>
+        </div>
+        <p className="mt-4 text-sm text-slate-300">
+          {tape.covered} of {tape.total} held cards carry the synthetic demo tape. Live verifiable comps stay off in this session.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="luminous-card rounded-4xl p-6 border border-slate-800/70">

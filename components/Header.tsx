@@ -3,7 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, ChevronDown, User, LogOut, Settings, Zap, Maximize2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { headerSyncCopy, resolveHeaderSyncLabel } from '../lib/dal/headerSyncLabel';
 import { useDALSyncStatus } from '../lib/dal/useDALSyncStatus';
+import { isActiveDemoSession } from '../lib/demoSession';
 import { useAlerts } from '../lib/utils/useAlerts';
 import { useShortcutGlyph } from '../lib/utils/useShortcutGlyph';
 import SwarmFeed from './SwarmFeed';
@@ -20,9 +22,29 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
   const { syncing, hydrated, lastError } = useDALSyncStatus();
   const { unreadCount } = useAlerts();
   const glyph = useShortcutGlyph();
-  const syncLabel = syncing ? 'saving' : !hydrated ? 'loading' : lastError ? 'error' : 'synced';
-  const syncDotClass = syncing || !hydrated ? 'bg-brand-blue animate-bounce' : lastError ? 'bg-red-500' : 'bg-brand-lime animate-pulse';
-  const syncTextClass = syncing || !hydrated ? 'text-brand-blue' : lastError ? 'text-red-400' : 'text-brand-lime';
+  const syncLabel = resolveHeaderSyncLabel({
+    demoSession: isActiveDemoSession(),
+    syncing,
+    hydrated,
+    lastError,
+  });
+  const syncCopy = headerSyncCopy(syncLabel, lastError);
+  const syncDotClass =
+    syncLabel === 'demo'
+      ? 'bg-amber-300'
+      : syncLabel === 'saving' || syncLabel === 'loading'
+        ? 'bg-brand-blue animate-bounce'
+        : syncLabel === 'error'
+          ? 'bg-red-500'
+          : 'bg-brand-lime animate-pulse';
+  const syncTextClass =
+    syncLabel === 'demo'
+      ? 'text-amber-200'
+      : syncLabel === 'saving' || syncLabel === 'loading'
+        ? 'text-brand-blue'
+        : syncLabel === 'error'
+          ? 'text-red-400'
+          : 'text-brand-lime';
   const navigate = useNavigate();
   const userMenuButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -121,15 +143,16 @@ const Header: React.FC<HeaderProps> = ({ onToggleWallHUD }) => {
         <div
           role="status"
           aria-live="polite"
-          aria-label={syncLabel === 'synced' ? 'Cloud sync active' : syncLabel === 'saving' ? 'Saving data' : syncLabel === 'loading' ? 'Loading data' : `Sync error: ${lastError}`}
+          aria-label={syncCopy.ariaLabel}
+          data-testid="header-sync-status"
           className="flex items-center gap-2 px-3 py-1.5 bg-brand-charcoal border border-slate-800 rounded-full group cursor-help transition-all hover:bg-brand-slate"
-          title={syncLabel === 'synced' ? 'Cloud Sync Active' : syncLabel === 'saving' ? 'Saving...' : syncLabel === 'loading' ? 'Loading...' : lastError ?? 'Sync Error'}
+          title={syncCopy.title}
         >
           <div className={`w-1.5 h-1.5 rounded-full ${syncDotClass}`}></div>
           <span className={`text-[9px] font-black uppercase tracking-[0.15em] ${syncTextClass}`}>
             {syncLabel}
           </span>
-          {lastError && (
+          {syncLabel === 'error' && lastError && (
             <div className="w-4 h-4 rounded-full bg-red-500/20 flex items-center justify-center" title={lastError}>
               <span className="text-[8px] text-red-500 font-bold">!</span>
             </div>

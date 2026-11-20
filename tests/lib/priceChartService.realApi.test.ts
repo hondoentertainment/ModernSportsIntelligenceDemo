@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getPriceHistory, generatePriceHistory } from '../../lib/analytics/priceChartService';
+import { getPriceHistory, generatePriceHistory, resolveFallbackPriceSeries } from '../../lib/analytics/priceChartService';
 import type { CardInventory } from '../../types';
 
 vi.mock('../../lib/integrations/ebayAdapter', () => ({
@@ -13,6 +13,8 @@ vi.mock('../../lib/featureFlags', () => ({
 }));
 
 import { ebayAdapter } from '../../lib/integrations/ebayAdapter';
+
+const daysAgo = (offset: number) => new Date(Date.now() - offset * 86_400_000).toISOString();
 
 const sampleCard: CardInventory = {
   id: 'card-1',
@@ -46,9 +48,9 @@ describe('priceChartService getPriceHistory', () => {
       soldListings: 5,
       trendPercent: 2,
       recentSales: [
-        { price: 110, date: '2026-05-20T00:00:00.000Z', condition: 'PSA 10', title: 'Trout', itemId: '1', isSold: true },
-        { price: 115, date: '2026-05-21T00:00:00.000Z', condition: 'PSA 10', title: 'Trout', itemId: '2', isSold: true },
-        { price: 120, date: '2026-05-22T00:00:00.000Z', condition: 'PSA 10', title: 'Trout', itemId: '3', isSold: true },
+        { price: 110, date: daysAgo(3), condition: 'PSA 10', title: 'Trout', itemId: '1', isSold: true },
+        { price: 115, date: daysAgo(2), condition: 'PSA 10', title: 'Trout', itemId: '2', isSold: true },
+        { price: 120, date: daysAgo(1), condition: 'PSA 10', title: 'Trout', itemId: '3', isSold: true },
       ],
       lastUpdated: new Date().toISOString(),
     });
@@ -57,6 +59,7 @@ describe('priceChartService getPriceHistory', () => {
     expect(history.length).toBeGreaterThanOrEqual(3);
     expect(history[0].source).toBe('market');
     expect(ebayAdapter.getMarketData).toHaveBeenCalled();
+    await expect(resolveFallbackPriceSeries(sampleCard, '1M')).resolves.toMatchObject({ kind: 'comps' });
   });
 
   it('falls back to simulated history when eBay returns too few sales', async () => {
@@ -69,7 +72,7 @@ describe('priceChartService getPriceHistory', () => {
       soldListings: 1,
       trendPercent: 0,
       recentSales: [
-        { price: 110, date: '2026-05-20T00:00:00.000Z', condition: 'PSA 10', title: 'Trout', itemId: '1', isSold: true },
+        { price: 110, date: daysAgo(1), condition: 'PSA 10', title: 'Trout', itemId: '1', isSold: true },
       ],
       lastUpdated: new Date().toISOString(),
     });
@@ -77,5 +80,12 @@ describe('priceChartService getPriceHistory', () => {
     const history = await getPriceHistory(sampleCard, '1M');
     const simulated = generatePriceHistory(sampleCard, '1M');
     expect(history.length).toBe(simulated.length);
+    await expect(resolveFallbackPriceSeries(sampleCard, '1M')).resolves.toMatchObject({ kind: 'simulated' });
+  });
+
+  it('does not call eBay comps for a demo fallback', async () => {
+    const series = await resolveFallbackPriceSeries(sampleCard, '1M', { allowComps: false });
+    expect(series.kind).toBe('simulated');
+    expect(ebayAdapter.getMarketData).not.toHaveBeenCalled();
   });
 });

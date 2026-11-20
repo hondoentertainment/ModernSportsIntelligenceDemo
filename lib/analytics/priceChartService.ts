@@ -482,14 +482,76 @@ function priceHistoryFromEbaySales(
   }));
 }
 
+export type StoredPriceSeriesKind = 'demo-tape' | 'snapshots';
+export type FallbackPriceSeriesKind = 'comps' | 'simulated';
+
 /**
- * Primary entry: real eBay comps when flagged, otherwise deterministic simulation.
+ * Turn stored snapshots into chart points.
+ * When the selected window holds fewer than two points, the full series is
+ * returned so a short seeded demo tape still draws.
  */
-export async function getPriceHistory(
+export function chartPointsFromSnapshots(
+  snapshots: Array<{ timestamp: string; value: number; source?: string }>,
+  range: ChartTimeRange,
+  nowMs: number = Date.now(),
+): { points: PriceDataPoint[]; usedFullTape: boolean } {
+  const rows = snapshots
+    .filter((row) => Number.isFinite(row.value) && Number.isFinite(Date.parse(row.timestamp)))
+    .slice()
+    .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
+
+  if (rows.length === 0) return { points: [], usedFullTape: false };
+
+  const cutoff = nowMs - daysForRange(range) * 86_400_000;
+  const inRange = rows.filter((row) => Date.parse(row.timestamp) >= cutoff);
+  const chosen = inRange.length >= 2 ? inRange : rows;
+
+  return {
+    usedFullTape: chosen.length !== inRange.length,
+    points: chosen.map((row) => ({
+      date: row.timestamp.slice(0, 10),
+      price: row.value,
+      volume: 0,
+      high: row.value,
+      low: row.value,
+      source: 'valuation' as const,
+    })),
+  };
+}
+
+/**
+ * Prefer recorded rows over a generated curve.
+ * Demo sessions use the synthetic tape. Signed-in sessions ignore that tape
+ * and use the collector's own snapshots.
+ */
+export function seriesFromStoredSnapshots(
+  snapshots: Array<{ timestamp: string; value: number; source?: string }>,
+  range: ChartTimeRange,
+  options: { demoSession: boolean; demoSource?: string; nowMs?: number },
+): { points: PriceDataPoint[]; kind: StoredPriceSeriesKind; usedFullTape: boolean } | null {
+  const demoSource = options.demoSource ?? 'demo_synthetic';
+  const rows = options.demoSession
+    ? snapshots.filter((row) => row.source === demoSource)
+    : snapshots.filter((row) => row.source !== demoSource);
+  if (rows.length === 0) return null;
+  const chart = chartPointsFromSnapshots(rows, range, options.nowMs);
+  if (chart.points.length === 0) return null;
+  return {
+    ...chart,
+    kind: options.demoSession ? 'demo-tape' : 'snapshots',
+  };
+}
+
+/**
+ * Sold comps when the real eBay flag is on and the book is thick enough.
+ * Otherwise a disclosed simulation. Pass allowComps: false for a demo session.
+ */
+export async function resolveFallbackPriceSeries(
   card: CardInventory,
   range: ChartTimeRange,
-): Promise<PriceDataPoint[]> {
-  if (isFeatureEnabled('USE_REAL_EBAY')) {
+  options: { allowComps?: boolean } = {},
+): Promise<{ points: PriceDataPoint[]; kind: FallbackPriceSeriesKind }> {
+  if (options.allowComps !== false && isFeatureEnabled('USE_REAL_EBAY')) {
     try {
       const market = await ebayAdapter.getMarketData({
         playerName: card.player,
@@ -503,12 +565,23 @@ export async function getPriceHistory(
 
       const fromSales = priceHistoryFromEbaySales(card, range, market.recentSales);
       if (fromSales.length >= 3) {
-        return fromSales;
+        return { points: fromSales, kind: 'comps' };
       }
     } catch (err) {
       logger.warn('[priceChart] Real eBay comps unavailable, using simulated history', err);
     }
   }
 
-  return generatePriceHistory(card, range);
+  return { points: generatePriceHistory(card, range), kind: 'simulated' };
+}
+
+/**
+ * Primary entry: real eBay comps when flagged, otherwise deterministic simulation.
+ */
+export async function getPriceHistory(
+  card: CardInventory,
+  range: ChartTimeRange,
+): Promise<PriceDataPoint[]> {
+  const series = await resolveFallbackPriceSeries(card, range);
+  return series.points;
 }

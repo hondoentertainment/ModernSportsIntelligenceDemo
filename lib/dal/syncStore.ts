@@ -312,6 +312,19 @@ class SyncedStore {
     this.dirty.clear();
     this.writtenSinceHydration.clear();
     this.hydrated = false;
+    this.pendingWrites = 0;
+    this.lastSyncError = null;
+    this.notifyStatusListeners();
+  }
+
+  /**
+   * Local and demo adapters have no remote hydrate. The on-device cache is
+   * the source of truth, so the header can leave "loading".
+   */
+  markLocalHydrationComplete(): void {
+    this.hydrated = true;
+    this.lastSyncError = null;
+    this.notifyStatusListeners();
   }
 }
 

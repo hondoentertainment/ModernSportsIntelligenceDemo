@@ -162,6 +162,24 @@ describe('syncStore', () => {
     });
   });
 
+  describe('markLocalHydrationComplete', () => {
+    it('resolves hydration without a remote read', () => {
+      const listener = vi.fn();
+      const unsubscribe = store.onStatusChange(listener);
+      expect(store.getSyncStatus().hydrated).toBe(false);
+
+      store.markLocalHydrationComplete();
+
+      expect(store.getSyncStatus()).toMatchObject({
+        hydrated: true,
+        syncing: false,
+        lastError: null,
+      });
+      expect(listener).toHaveBeenCalled();
+      unsubscribe();
+    });
+  });
+
   describe('hydrate', () => {
     it('does nothing when no adapter', async () => {
       await store.hydrate();

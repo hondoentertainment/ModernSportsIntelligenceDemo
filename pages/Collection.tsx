@@ -55,7 +55,9 @@ import {
   computeFreshVerifiableCoverage,
   FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
 } from '../lib/utils/valuationProvenance';
-import { trackCoverageHealthTransition } from '../lib/utils/valuationCoverageAlerts';
+import { trackCoverageHealthTransition, visitorCoverageAnnouncement } from '../lib/utils/valuationCoverageAlerts';
+import { isActiveDemoSession } from '../lib/demoSession';
+import { seededDemoTapeCoverage } from '../lib/analytics/demoTape';
 import { showToast } from '../lib/utils/toast';
 import ValuationCoverageBanner from '../components/ValuationCoverageBanner';
 import PricingProvenanceNotice from '../components/PricingProvenanceNotice';
@@ -86,6 +88,7 @@ const PortfolioSeriesChart = lazy(() => import('../components/PortfolioSeriesCha
 const GradingSubmitPanel = lazy(() => import('../components/GradingSubmitPanel'));
 const CollectionCsvPanel = lazy(() => import('../components/CollectionCsvPanel'));
 const DeskNext = lazy(() => import('../components/DeskNext'));
+const PriceHistoryModal = lazy(() => import('../components/PriceHistoryModal'));
 
 const VIRTUAL_THRESHOLD = 24;
 const GRID_COLS = 4;
@@ -160,6 +163,7 @@ const Collection: React.FC = () => {
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
   const [premiumCard, setPremiumCard] = useState<CardInventory | null>(null);
   const [consignmentCard, setConsignmentCard] = useState<CardInventory | null>(null);
+  const [priceHistoryCard, setPriceHistoryCard] = useState<CardInventory | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const { user, isDemoMode } = useAuth();
   const localBook = isDemoMode || !user || user.id === 'demo-user';
@@ -379,6 +383,7 @@ const Collection: React.FC = () => {
     onOpenBreakEven: openBreakEven,
     onOpenDossier: openDossier,
     onOpenConsignment: openConsignment,
+    onOpenPriceHistory: (card) => setPriceHistoryCard(card),
   };
 
   const sparklineForId = useCallback((id: string, limit?: number) => {
@@ -419,9 +424,18 @@ const Collection: React.FC = () => {
     };
   }, [inventory]);
 
-  const freshVerifiedCoverage = useMemo(
-    () => computeFreshVerifiableCoverage(inventory.filter(card => card.status !== 'sold')),
+  const demoSession = isActiveDemoSession();
+  const activeHoldings = useMemo(
+    () => inventory.filter(card => card.status !== 'sold'),
     [inventory],
+  );
+  const freshVerifiedCoverage = useMemo(
+    () => computeFreshVerifiableCoverage(activeHoldings),
+    [activeHoldings],
+  );
+  const tapeCoverage = useMemo(
+    () => seededDemoTapeCoverage(activeHoldings.map(card => card.id)),
+    [activeHoldings],
   );
   const hasCoverageGap =
     freshVerifiedCoverage.total > 0 &&
@@ -434,8 +448,13 @@ const Collection: React.FC = () => {
       freshVerifiedCoverage.total,
       FRESH_VERIFIABLE_COVERAGE_TARGET_PCT,
     );
+    const announcement = visitorCoverageAnnouncement({
+      event: transition.event,
+      scope: 'inventory',
+      demoSession,
+    });
 
-    if (transition.event === 'degraded') {
+    if (announcement === 'degraded') {
       showToast(
         'warning',
         `Pricing truth degraded: ${freshVerifiedCoverage.coveragePct}% fresh verifiable coverage in inventory.`,
@@ -444,14 +463,14 @@ const Collection: React.FC = () => {
       return;
     }
 
-    if (transition.event === 'recovered') {
+    if (announcement === 'recovered') {
       showToast(
         'success',
         `Pricing truth recovered: inventory coverage returned to ${freshVerifiedCoverage.coveragePct}%.`,
         { dedupeKey: 'coverage_inventory_recovered' },
       );
     }
-  }, [freshVerifiedCoverage.coveragePct, freshVerifiedCoverage.total]);
+  }, [demoSession, freshVerifiedCoverage.coveragePct, freshVerifiedCoverage.total]);
 
   return (
     <div className="space-y-12 animate-in fade-in duration-700 pb-20 relative">
@@ -495,6 +514,7 @@ const Collection: React.FC = () => {
       {hasCoverageGap && (
         <ValuationCoverageBanner
           scope="inventory"
+          tone={demoSession ? 'demo' : 'sla'}
           coveragePct={freshVerifiedCoverage.coveragePct}
           covered={freshVerifiedCoverage.covered}
           total={freshVerifiedCoverage.total}
@@ -592,13 +612,21 @@ const Collection: React.FC = () => {
           { label: 'Capital Invested', val: stats.totalCost, color: 'text-white', isCurrency: true },
           { label: 'Unrealized G/L', val: stats.profit, color: stats.profit >= 0 ? 'text-brand-green' : 'text-brand-red', isCurrency: true, showSign: true },
           { label: 'Total Holdings', val: stats.cardCount, color: 'text-brand-muted', suffix: ' Units' },
-          {
-            label: 'Verified Fresh',
-            val: freshVerifiedCoverage.coveragePct,
-            color: freshVerifiedCoverage.coveragePct >= FRESH_VERIFIABLE_COVERAGE_TARGET_PCT ? 'text-brand-green' : 'text-amber-300',
-            suffix: '%',
-            meta: `${freshVerifiedCoverage.covered}/${freshVerifiedCoverage.total}`,
-          },
+          demoSession
+            ? {
+              label: 'Demo tape',
+              val: tapeCoverage.covered,
+              color: 'text-slate-200',
+              suffix: `/${tapeCoverage.total}`,
+              meta: 'Seeded price history',
+            }
+            : {
+              label: 'Verified Fresh',
+              val: freshVerifiedCoverage.coveragePct,
+              color: freshVerifiedCoverage.coveragePct >= FRESH_VERIFIABLE_COVERAGE_TARGET_PCT ? 'text-brand-green' : 'text-amber-300',
+              suffix: '%',
+              meta: `${freshVerifiedCoverage.covered}/${freshVerifiedCoverage.total}`,
+            },
         ].map((s, i) => (
           <div key={i} className="bg-brand-slate border border-slate-800 p-6 rounded-3xl relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-24 h-24 bg-brand-lime/5 blur-3xl rounded-full group-hover:bg-brand-lime/10 transition-all"></div>
@@ -1079,6 +1107,16 @@ const Collection: React.FC = () => {
           alt={lightboxCard?.player ?? ''}
           caption={lightboxCard ? `${lightboxCard.player} • ${lightboxCard.year} ${lightboxCard.manufacturer}` : undefined}
         />
+
+        {priceHistoryCard && (
+          <Suspense fallback={null}>
+            <PriceHistoryModal
+              isOpen
+              onClose={() => setPriceHistoryCard(null)}
+              card={priceHistoryCard}
+            />
+          </Suspense>
+        )}
 
         <ConsignmentModal
           isOpen={!!consignmentCard}

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getCoverageHistory,
   trackCoverageHealthTransition,
+  visitorCoverageAnnouncement,
 } from '../../lib/utils/valuationCoverageAlerts';
 import { store } from '../../lib/dal/syncStore';
 import { incrementCounter, recordMetric } from '../../lib/utils/telemetryService';
@@ -55,6 +56,29 @@ describe('valuationCoverageAlerts', () => {
     expect(result.event).toBeNull();
     expect(result.status).toBeNull();
     expect(store.has(INVENTORY_KEY)).toBe(false);
+  });
+
+  it('keeps inventory coverage quiet in a demo session and audible for a signed-in book', () => {
+    expect(visitorCoverageAnnouncement({
+      event: 'degraded',
+      scope: 'inventory',
+      demoSession: true,
+    })).toBeNull();
+    expect(visitorCoverageAnnouncement({
+      event: 'recovered',
+      scope: 'inventory',
+      demoSession: true,
+    })).toBeNull();
+    expect(visitorCoverageAnnouncement({
+      event: 'degraded',
+      scope: 'inventory',
+      demoSession: false,
+    })).toBe('degraded');
+    expect(visitorCoverageAnnouncement({
+      event: 'degraded',
+      scope: 'watchlist',
+      demoSession: true,
+    })).toBe('degraded');
   });
 
   it('persists hourly coverage history snapshots', () => {

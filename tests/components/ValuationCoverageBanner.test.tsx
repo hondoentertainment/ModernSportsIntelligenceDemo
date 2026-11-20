@@ -27,6 +27,25 @@ describe('ValuationCoverageBanner', () => {
     expect(screen.getByRole('button', { name: 'Refresh' })).toBeInTheDocument();
   });
 
+  it('uses a calm demo label instead of an SLA breach', () => {
+    render(
+      <ValuationCoverageBanner
+        scope="inventory"
+        tone="demo"
+        coveragePct={0}
+        covered={0}
+        total={12}
+        actions={<button type="button">Refresh</button>}
+      />,
+    );
+
+    expect(screen.getByTestId('demo-pricing-notice')).toHaveTextContent(/demo data/i);
+    expect(screen.getByTestId('demo-pricing-notice')).toHaveTextContent(/seeded demo price history/i);
+    expect(screen.queryByText(/below SLA/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/degraded/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Refresh' })).not.toBeInTheDocument();
+  });
+
   it('returns null when coverage meets target', () => {
     const { container } = render(
       <ValuationCoverageBanner scope="inventory" coveragePct={96} covered={96} total={100} />,

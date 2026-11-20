@@ -8,7 +8,7 @@
  * sits below an equal share and those favorites lag the index).
  */
 import { store } from '../dal/syncStore';
-import { DEMO_SYNTHETIC_SOURCE, recordBatchSnapshots } from './priceHistory';
+import { DEMO_SYNTHETIC_SOURCE, getCardHistory, recordBatchSnapshots } from './priceHistory';
 import { isPublicDemoSession, markPublicDemoData } from '../demoSession';
 
 export const DEMO_TAPE_KEY = 'msi_demo_tape_version';
@@ -85,4 +85,23 @@ export function seedDemoCollectorTape(): void {
   }
 
   if (isPublicDemoSession()) markPublicDemoData();
+}
+
+/** How many of these cards carry the synthetic demo tape. */
+export function seededDemoTapeCoverage(cardIds: readonly string[]): {
+  total: number;
+  covered: number;
+  coveragePct: number;
+} {
+  const total = cardIds.length;
+  if (total === 0) return { total: 0, covered: 0, coveragePct: 0 };
+  let covered = 0;
+  for (const id of cardIds) {
+    if (getCardHistory(id).some((row) => row.source === DEMO_SYNTHETIC_SOURCE)) covered += 1;
+  }
+  return {
+    total,
+    covered,
+    coveragePct: Math.round((covered / total) * 100),
+  };
 }

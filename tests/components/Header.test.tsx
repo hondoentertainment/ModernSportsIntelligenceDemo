@@ -40,6 +40,8 @@ vi.mock('../../components/SwarmFeed', () => ({
 }));
 
 import Header from '../../components/Header';
+import { store } from '../../lib/dal/syncStore';
+import { DEMO_SESSION_KEY } from '../../lib/demoSession';
 
 function renderHeader() {
   return render(
@@ -53,6 +55,31 @@ describe('Header', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     useAlertsMock.mockReturnValue({ unreadCount: 0 });
+    store.remove(DEMO_SESSION_KEY);
+    vi.stubEnv('VITE_PUBLIC_DEMO', 'false');
+  });
+
+  it('resolves a demo session to demo data instead of a stuck loading label', () => {
+    vi.stubEnv('VITE_PUBLIC_DEMO', 'true');
+    store.set(DEMO_SESSION_KEY, true);
+    renderHeader();
+    const status = screen.getByTestId('header-sync-status');
+    expect(status).toHaveAccessibleName('Demo data on this device');
+    expect(status).toHaveTextContent(/demo/i);
+    expect(status).not.toHaveTextContent(/loading/i);
+  });
+
+  it('keeps a loading label until a signed-in session hydrates', () => {
+    renderHeader();
+    const status = screen.getByTestId('header-sync-status');
+    expect(status).toHaveAccessibleName('Loading data');
+    expect(status).toHaveTextContent(/loading/i);
+  });
+
+  it('shows cloud sync once a signed-in session has hydrated', () => {
+    store.markLocalHydrationComplete();
+    renderHeader();
+    expect(screen.getByTestId('header-sync-status')).toHaveTextContent(/synced/i);
   });
 
   it('does not show a notification badge when there are 0 unread alerts', () => {

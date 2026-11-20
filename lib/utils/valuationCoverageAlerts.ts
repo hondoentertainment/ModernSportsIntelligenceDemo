@@ -129,3 +129,16 @@ export function trackCoverageHealthTransition(
 
   return { event: null, status };
 }
+
+/**
+ * Inventory coverage in a demo session is seeded tape, not a live SLA breach.
+ * Watchlist probes and signed-in books still announce degraded and recovered.
+ */
+export function visitorCoverageAnnouncement(input: {
+  event: 'degraded' | 'recovered' | null;
+  scope: ValuationCoverageScope;
+  demoSession: boolean;
+}): 'degraded' | 'recovered' | null {
+  if (input.demoSession && input.scope === 'inventory') return null;
+  return input.event;
+}
