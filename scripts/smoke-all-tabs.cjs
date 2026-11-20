@@ -47,17 +47,18 @@ function extractNavRoutes() {
 async function ensureDemoLogin(page) {
     await page.goto(`${BASE_URL}/#/login`, { waitUntil: 'domcontentloaded' });
     // Try the demo button; fall back to direct localStorage flag if not visible.
-    const demoBtn = page.getByRole('button', { name: /enter demo mode|^demo$/i });
+    const demoBtn = page.getByRole('button', { name: /try the demo|enter demo mode|^demo$/i });
     try {
         await demoBtn.waitFor({ state: 'visible', timeout: 8000 });
         await demoBtn.click();
     } catch {
-        // Demo button not present — Supabase likely configured. Use evaluate to
-        // seed a demo session token so ProtectedRoute lets us through.
+        // Demo button not present — Supabase likely configured. Seed the demo
+        // flag and force a full load so AuthProvider reads it. A hash-only
+        // navigation does not remount the session.
         await page.evaluate(() => {
             localStorage.setItem('msi_demo_session', 'true');
         });
-        await page.goto(`${BASE_URL}/#/`, { waitUntil: 'domcontentloaded' });
+        await page.goto(`${BASE_URL}/?demo=1#/`, { waitUntil: 'domcontentloaded' });
     }
     await page.waitForURL(/#\/?$/, { timeout: 15000 }).catch(() => { });
     // Wait for dashboard surface to indicate auth is settled.

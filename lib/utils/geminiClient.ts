@@ -2,7 +2,7 @@ import { showToast } from './toast';
 import { serverApiRequestAuthenticated } from '../serverApi';
 import { GeminiResponseSchema, safeParse } from '../schemas';
 import { geminiCircuit } from '../apiResilience';
-import { DEMO_AI_CANNED, isActiveDemoSession } from '../demoSession';
+import { DEMO_AI_CANNED, DemoSessionBlockedError, isActiveDemoSession } from '../demoSession';
 
 interface GeminiGenerateConfig {
     responseMimeType?: string;
@@ -35,7 +35,10 @@ export function createGeminiClient(): GeminiClientLike {
         models: {
             async generateContent(request: GeminiGenerateRequest): Promise<GeminiGenerateResponse> {
                 if (isActiveDemoSession()) {
-                    return { text: DEMO_AI_CANNED };
+                    // Callers JSON.parse the text. A sentence becomes a SyntaxError in the
+                    // console, and an empty object crashes widgets that map missing arrays.
+                    // Throw the demo error so existing catch paths show their canned state.
+                    throw new DemoSessionBlockedError('ai');
                 }
                 try {
                     const raw = await geminiCircuit.execute(() =>

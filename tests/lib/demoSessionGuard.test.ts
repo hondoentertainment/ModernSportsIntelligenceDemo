@@ -102,9 +102,14 @@ describe('demo session guard', () => {
     const client = createGeminiClient();
     await expect(
       client.models.generateContent({ model: 'gemini-pro', contents: 'hi' })
-    ).resolves.toEqual({
-      text: DEMO_AI_CANNED,
-    });
+    ).rejects.toThrow(DEMO_AI_CANNED);
+    await expect(
+      client.models.generateContent({
+        model: 'gemini-pro',
+        contents: 'hi',
+        config: { responseMimeType: 'application/json', responseSchema: { type: 'ARRAY' } },
+      })
+    ).rejects.toThrow(DEMO_AI_CANNED);
     expect(serverApiRequestAuthenticated).not.toHaveBeenCalled();
   });
 
