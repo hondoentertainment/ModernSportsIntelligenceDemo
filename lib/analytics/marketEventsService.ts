@@ -5,6 +5,7 @@
 
 import { store } from '../dal/syncStore';
 import { isDemoMode } from '../supabase';
+import { isActiveDemoSession } from '../demoSession';
 import { logger } from '../logger';
 import {
     fetchMarketEventsFromCloud,
@@ -41,7 +42,7 @@ function mergeById(cloud: MarketEvent[], local: MarketEvent[]): MarketEvent[] {
 
 export async function initMarketEvents(userId: string): Promise<void> {
     _currentUserId = userId;
-    if (isDemoMode) {
+    if (isDemoMode || isActiveDemoSession()) {
         _initialized = true;
         return;
     }

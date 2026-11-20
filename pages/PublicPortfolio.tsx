@@ -12,6 +12,7 @@ import { withRetry } from '../lib/retry';
 import { validateUsername } from '../lib/apiValidation';
 import { buildIframeEmbedSnippet, isPortfolioEmbedView, PORTFOLIO_EMBED_DISCLOSURE } from '../lib/social/portfolioEmbed';
 import { buildShareableCollectionPreview, generateEmbedCode } from '../lib/social/collectionShare';
+import PublicDemoEntry from '../components/PublicDemoEntry';
 
 const PublicPortfolio: React.FC = () => {
     const { username: usernameParam } = useParams<{ username: string }>();
@@ -151,6 +152,9 @@ const PublicPortfolio: React.FC = () => {
         <div className={`mx-auto space-y-8 ${isEmbed ? 'max-w-xl p-3' : 'max-w-[1920px]'}`}>
             {isEmbed && (
                 <p className="text-[10px] text-slate-500 font-semibold">{PORTFOLIO_EMBED_DISCLOSURE}</p>
+            )}
+            {!isEmbed && (
+                <PublicDemoEntry className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/15 px-4 text-sm font-bold text-amber-100" />
             )}
             {/* Profile Header */}
             <div className="bg-slate-900/50 border border-slate-800 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8 backdrop-blur-xs">

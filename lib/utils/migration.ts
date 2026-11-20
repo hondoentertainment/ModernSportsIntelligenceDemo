@@ -7,6 +7,7 @@ import { logger } from '../logger';
 import { store } from '../dal/syncStore';
 import { CardInventory, TargetWatchlist } from '../../types.ts';
 import { isDemoMode, supabase } from '../supabase';
+import { isActiveDemoSession, publicDemoDataIsLocal } from '../demoSession';
 import { fetchCards, fetchTargets } from '../supabaseData';
 import {
     type MigrationConflictPolicy,
@@ -224,6 +225,7 @@ export async function previewMigrationConflicts(userId?: string): Promise<Migrat
  * Check if migration is needed
  */
 export function needsMigration(): boolean {
+    if (publicDemoDataIsLocal() || isActiveDemoSession()) return false;
     const hasLocalData = store.has(STORAGE_KEYS.INVENTORY) ||
         store.has(STORAGE_KEYS.TARGETS) ||
         store.has(STORAGE_KEYS.FAVORITES);
@@ -239,6 +241,9 @@ function getPersistedData<T>(key: string): T | null {
  * Perform full migration from persisted MSI data to Supabase
  */
 export async function migrateToSupabase(userId: string): Promise<MigrationResult> {
+    if (isActiveDemoSession() || publicDemoDataIsLocal()) {
+        return deniedMigrationResult(['Demo data is not written to Supabase.']);
+    }
     const policy = getMigrationConflictPolicy();
     const result: MigrationResult = {
         success: false,

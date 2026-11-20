@@ -55,7 +55,7 @@ export async function prepareFreshBrowserSession(page: Page): Promise<void> {
  */
 export async function isDemoModeBuild(page: Page): Promise<boolean> {
     await prepareFreshBrowserSession(page);
-    const demoButton = page.getByRole('button', { name: /enter demo mode/i });
+    const demoButton = page.getByRole('button', { name: /try the demo|enter demo mode/i });
     try {
         await expect(demoButton).toBeVisible({ timeout: 5_000 });
         return true;
@@ -93,7 +93,7 @@ export async function signInWithTestCredentials(
     await page.getByPlaceholder('••••••••').fill(password);
     await page.getByRole('button', { name: /^sign in$/i }).click();
     await expect(page).toHaveURL(/#\/?$/, { timeout: 20_000 });
-    await expect(page.getByRole('button', { name: /enter demo mode/i })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /try the demo|enter demo mode/i })).toHaveCount(0);
 }
 
 /**

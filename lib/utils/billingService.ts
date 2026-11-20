@@ -2,6 +2,7 @@
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { logger } from '../logger';
 import { supabase } from '../supabase';
+import { DemoSessionBlockedError, isActiveDemoSession } from '../demoSession';
 
 // Initialize Stripe
 let stripePromise: Promise<Stripe | null> | null = null;
@@ -73,6 +74,15 @@ const STRIPE_PRICE_IDS = {
 
 // Get user subscription status
 export async function getUserSubscription(userId: string) {
+  if (isActiveDemoSession()) {
+    return {
+      subscription_tier: 'free',
+      subscription_status: 'demo',
+      ai_valuations_used: 0,
+      card_tracking_limit: 50,
+      billing_cycle_start: null,
+    };
+  }
   const { data, error } = await supabase
     .from('profiles')
     .select('subscription_tier, subscription_status, ai_valuations_used, card_tracking_limit, billing_cycle_start')
@@ -137,6 +147,7 @@ export async function createCheckoutSession(
   cancelUrl?: string,
   idempotencyKey?: string
 ) {
+  if (isActiveDemoSession()) throw new DemoSessionBlockedError('stripe');
   const stripe = await getStripe();
   if (!stripe) {
     throw new Error('Stripe not configured');
@@ -192,6 +203,7 @@ function idempotencyKeyForPortal(userId: string): string {
  * Stripe Customer Portal via Edge Function `create-billing-portal-session` (JWT-bound; optional body `userId` must match).
  */
 export async function createBillingPortalSession(userId: string, returnUrl?: string, idempotencyKey?: string) {
+  if (isActiveDemoSession()) throw new DemoSessionBlockedError('stripe');
   const key = idempotencyKey ?? idempotencyKeyForPortal(userId);
   const { data, error } = await supabase.functions.invoke('create-billing-portal-session', {
     body: {
@@ -221,6 +233,7 @@ export async function updateUserSubscription(
     trial_end_date?: string;
   }
 ) {
+  if (isActiveDemoSession()) throw new DemoSessionBlockedError('stripe');
   const { data, error } = await supabase
     .from('profiles')
     .update({
@@ -240,6 +253,7 @@ export async function updateUserSubscription(
 
 // Reset monthly usage counters
 export async function resetMonthlyUsage(userId: string) {
+  if (isActiveDemoSession()) throw new DemoSessionBlockedError('stripe');
   const { data, error } = await supabase
     .from('profiles')
     .update({
@@ -260,6 +274,7 @@ export async function resetMonthlyUsage(userId: string) {
 
 // Increment usage counters
 export async function incrementUsage(userId: string, type: 'ai_valuations') {
+  if (isActiveDemoSession()) throw new DemoSessionBlockedError('stripe');
   const { data, error } = await supabase.rpc('increment_usage', {
     p_user_id: userId,
     p_usage_type: type,

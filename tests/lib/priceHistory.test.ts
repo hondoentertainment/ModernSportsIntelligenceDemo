@@ -23,6 +23,8 @@ import {
   insertBatchPriceSnapshots,
   prunePriceHistory,
 } from '../../lib/supabaseData';
+import { store } from '../../lib/dal/syncStore';
+import { DEMO_SESSION_KEY } from '../../lib/demoSession';
 
 vi.mock('../../lib/supabaseData', () => ({
   fetchAllPriceHistory: vi.fn(),
@@ -213,6 +215,17 @@ describe('priceHistory', () => {
       expect(spark.values).toEqual([50, 90]);
     });
 
+    it('prefers the synthetic demo tape over a later non-demo point', () => {
+      recordBatchSnapshots([
+        { id: 'demo-card', value: 800, timestamp: '2026-08-01T00:00:00.000Z', source: 'demo_synthetic' },
+        { id: 'demo-card', value: 2000, timestamp: '2026-09-01T00:00:00.000Z', source: 'demo_synthetic' },
+      ]);
+      recordPriceSnapshot('demo-card', 12, { source: 'sync' });
+      const spark = getCardSparkline({ id: 'demo-card' });
+      expect(spark.values).toEqual([800, 2000]);
+      expect(spark.disclosure).toMatch(/Synthetic demo tape/);
+    });
+
     it('stays thin with one snapshot or no dated comps', () => {
       recordPriceSnapshot('thin-1', 25);
       expect(getCardSparkline({ id: 'thin-1' }).source).toBe('thin');
@@ -284,6 +297,21 @@ describe('priceHistory', () => {
       expect(fetchAllPriceHistory).toHaveBeenCalledWith('user-123');
       const history = getCardHistory('card-1');
       expect(history.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('demo session', () => {
+    it('does not read or write cloud price history', async () => {
+      store.set(DEMO_SESSION_KEY, true);
+      vi.mocked(fetchAllPriceHistory).mockClear();
+      vi.mocked(insertPriceSnapshot).mockClear();
+      await initPriceHistory('demo-user');
+      recordPriceSnapshot('demo-card', 10, { source: 'demo_synthetic' });
+      expect(fetchAllPriceHistory).not.toHaveBeenCalled();
+      expect(insertPriceSnapshot).not.toHaveBeenCalled();
+      expect(getCardHistory('demo-card')).toHaveLength(1);
+      store.remove(DEMO_SESSION_KEY);
+      await teardownPriceHistory();
     });
   });
 

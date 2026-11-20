@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { consumeSessionExpiredNotice } from '../lib/authSessionNotice';
 import { getFriendlyAuthMessage } from '../lib/utils/authErrors';
 import { Eye, EyeOff, Loader2, TrendingUp, Zap, Shield } from 'lucide-react';
+import PublicDemoEntry from '../components/PublicDemoEntry';
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ const Login: React.FC = () => {
     const [googleLoading, setGoogleLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const { signIn, signInWithGoogle, demoLogin, isDemoMode } = useAuth();
+    const { signIn, signInWithGoogle, isDemoMode } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -54,11 +55,6 @@ const Login: React.FC = () => {
         } finally {
             setGoogleLoading(false);
         }
-    };
-
-    const handleDemoLogin = () => {
-        demoLogin();
-        navigate('/');
     };
 
     return (
@@ -253,14 +249,7 @@ const Login: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-1 gap-3">
-                        {isDemoMode ? (
-                            <button
-                                onClick={handleDemoLogin}
-                                className="w-full py-3 px-4 rounded-xl bg-linear-to-r from-amber-500 to-orange-500 text-white font-bebas text-lg tracking-wider hover:opacity-90 transition-all flex items-center justify-center gap-3"
-                            >
-                                <Zap size={18} /> ENTER DEMO MODE
-                            </button>
-                        ) : (
+                        {!isDemoMode && (
                             <button
                                 type="button"
                                 onClick={handleGoogleLogin}
@@ -277,6 +266,7 @@ const Login: React.FC = () => {
                                 Google Auth
                             </button>
                         )}
+                        <PublicDemoEntry className="w-full py-3 px-4 rounded-xl bg-linear-to-r from-amber-500 to-orange-500 text-white font-bebas text-lg tracking-wider hover:opacity-90 transition-all flex items-center justify-center gap-3" />
                     </div>
                 </div>
             </div>

@@ -11,6 +11,7 @@
  */
 
 import { supabase, isDemoMode } from '../supabase';
+import { isActiveDemoSession } from '../demoSession';
 import { logger } from '../logger';
 import type { GradingCompany, VerificationResult, VerificationStatus } from './slabVerificationService';
 
@@ -46,7 +47,7 @@ export interface PsaLookupResponse {
  * Returns null fields on demo mode, missing configuration, or network failure.
  */
 export async function lookupPsaCert(certNumber: string): Promise<PsaLookupResponse> {
-  if (isDemoMode) {
+  if (isDemoMode || isActiveDemoSession()) {
     logger.info('[psaCertService] Demo mode — skipping real PSA lookup');
     return { result: null, notFound: false, error: null };
   }

@@ -32,6 +32,8 @@ import CommandPalette from './components/CommandPalette.tsx';
 import { validateEnv } from './lib/utils/env';
 import { initDAL } from './lib/dal';
 import { isBetaSurfacesEnabled } from './lib/productionLaunch';
+import { isPublicDemoSession } from './lib/demoSession';
+import DemoModeBanner from './components/DemoModeBanner';
 
 // Labs routes (everything outside the curated product surface) only mount when
 // the beta-surfaces flag is on. Dev builds keep them on for convenience; see
@@ -473,6 +475,7 @@ const DALInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Dispatch<React.SetStateAction<boolean>> }> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const location = useLocation();
+  const showLabs = labsEnabled && !isPublicDemoSession();
   const { inventory } = useSupabaseInventory();
   const [isWallHUDOpen, setIsWallHUDOpen] = useState(false);
   const [selectedGrail, setSelectedGrail] = useState<any>(null);
@@ -508,6 +511,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
       <Sidebar isOpen={isSidebarOpen} toggle={() => setIsSidebarOpen(!isSidebarOpen)} />
 
       <div className={`flex-1 flex flex-col h-screen overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
+        <DemoModeBanner />
         <Header onToggleWallHUD={() => setIsWallHUDOpen(true)} />
         <MarketTicker inventory={inventory} />
         <MigrationBanner />
@@ -607,7 +611,7 @@ const AppLayout: React.FC<{ isSidebarOpen: boolean, setIsSidebarOpen: React.Disp
                     is set (see lib/productionLaunch.ts and docs/MVP_LAUNCH_SCOPE.md).
                     Production hides these routes; unknown paths fall through to the
                     catch-all below. */}
-                {labsEnabled && (<>
+                {showLabs && (<>
                 <Route path="/portfolio-copilot" element={<PortfolioCopilot />} />
                 <Route path="/marketplace-aggregator" element={<MarketplaceAggregator />} />
                 <Route path="/subscription-box" element={<SubscriptionBox />} />

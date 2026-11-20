@@ -18,6 +18,8 @@ interface ImportMetaEnv {
     readonly VITE_FF_REAL_SPORTS?: string;
     readonly VITE_FF_REAL_COMC?: string;
     readonly VITE_FF_REAL_GEMINI?: string;
+    /** Non-secret. Unset defaults on for production builds. `false` hides the public demo entry. */
+    readonly VITE_PUBLIC_DEMO?: string;
     readonly VITE_WEB_PUSH_VAPID_PUBLIC?: string;
 }
 

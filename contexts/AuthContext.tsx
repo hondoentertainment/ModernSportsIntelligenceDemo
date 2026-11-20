@@ -9,6 +9,15 @@ import React, {
 } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, isDemoMode } from '../lib/supabase';
+import {
+    DEMO_USER_EMAIL,
+    DEMO_USER_ID,
+    discardPublicDemoData,
+    isActiveDemoSession,
+    isPublicDemoEnabled,
+    readDemoSessionFlag,
+} from '../lib/demoSession';
+import { seedDemoCollectorTape } from '../lib/analytics/demoTape';
 import { beginGoogleSignIn } from '../lib/googleOAuth';
 import { logger } from '../lib/logger';
 import { store } from '../lib/dal/syncStore';
@@ -151,7 +160,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Proactive session refresh to prevent token expiry
     const startSessionRefreshTimer = useCallback(() => {
         if (refreshTimerRef.current) clearInterval(refreshTimerRef.current);
-        if (isDemoMode) return;
+        if (isDemoMode || isActiveDemoSession()) return;
 
         refreshTimerRef.current = setInterval(async () => {
             try {
@@ -208,10 +217,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         let mounted = true;
 
         // Check for demo mode session (store + DAL path; legacy raw string still readable via JSON.parse)
-        const demoSession = store.get<boolean | string | null>(LS_DEMO_SESSION, null);
-        const demoActive = demoSession === true || demoSession === 'true';
+        const demoActive = readDemoSessionFlag();
         if (isDemoMode && demoActive) {
-            setUser({ id: 'demo-user', email: 'demo@sportsintel.io' } as User);
+            seedDemoCollectorTape();
+            setUser({ id: DEMO_USER_ID, email: DEMO_USER_EMAIL } as User);
+            setUserTier('alpha');
+            setOperatorRole('member');
+            setLoadedProfileForUserId(DEMO_USER_ID);
             setLoading(false);
             return;
         }
@@ -246,13 +258,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setLoading(false);
         };
 
+        const adoptSession = (currentSession: Session | null): boolean => {
+            if (currentSession?.user) {
+                store.remove(LS_DEMO_SESSION);
+                discardPublicDemoData();
+                setSession(currentSession);
+                setUser(currentSession.user);
+                return true;
+            }
+            if (!isDemoMode && isPublicDemoEnabled() && readDemoSessionFlag()) {
+                seedDemoCollectorTape();
+                setSession(null);
+                setUser({ id: DEMO_USER_ID, email: DEMO_USER_EMAIL } as User);
+                setUserTier('alpha');
+                setOperatorRole('member');
+                setLoadedProfileForUserId(DEMO_USER_ID);
+                return false;
+            }
+            setSession(currentSession);
+            setUser(null);
+            return false;
+        };
+
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
             if (mounted) {
-                setSession(currentSession);
-                setUser(currentSession?.user ?? null);
+                const realSession = adoptSession(currentSession);
 
                 if (event === 'INITIAL_SESSION') {
-                    if (currentSession) startSessionRefreshTimer();
+                    if (realSession) startSessionRefreshTimer();
                     resolveInitialLoad();
                 }
 
@@ -266,13 +299,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                         break;
                     case 'SIGNED_IN':
                         setRecoveryMode(false);
-                        startSessionRefreshTimer();
+                        if (realSession) startSessionRefreshTimer();
                         resolveInitialLoad();
                         break;
                     case 'SIGNED_OUT':
                         setRecoveryMode(false);
                         stopSessionRefreshTimer();
-                        resetProfileState('free');
+                        if (!(isPublicDemoEnabled() && readDemoSessionFlag())) {
+                            resetProfileState('free');
+                        }
                         store.remove(LS_USER_PROFILE);
                         resolveInitialLoad();
                         break;
@@ -291,9 +326,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 if (!mounted) return;
                 if (error) {
                     logger.warn('[Auth] getSession error during init:', error.message);
-                } else if (data.session) {
-                    setSession(data.session);
-                    setUser(data.session.user);
+                } else if (adoptSession(data.session)) {
                     startSessionRefreshTimer();
                 }
                 resolveInitialLoad();
@@ -412,10 +445,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const signOut = async () => {
-        if (isDemoMode) {
-            store.remove(LS_DEMO_SESSION);
+        const demoSession = isDemoMode || isActiveDemoSession() || user?.id === DEMO_USER_ID;
+        store.remove(LS_DEMO_SESSION);
+        if (demoSession && !session?.access_token) {
             setUser(null);
             setSession(null);
+            resetProfileState();
             return;
         }
         await supabase.auth.signOut();
@@ -529,7 +564,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const refreshSession = async () => {
-        if (isDemoMode) return;
+        if (isDemoMode || isActiveDemoSession()) return;
         try {
             const { data, error } = await refreshSessionWithTimeout(SESSION_REFRESH_TIMEOUT_MS);
             if (error) {
@@ -551,12 +586,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const clearRecoveryMode = () => setRecoveryMode(false);
 
     const fetchUserProfile = useCallback(async () => {
-        if (isDemoMode) {
+        if (isDemoMode || isActiveDemoSession() || user?.id === DEMO_USER_ID) {
             setUserTier('alpha');
             setOperatorRole('member');
-            // Demo mode has a synthetic 'demo-user' — mark it loaded so
-            // downstream `<AdminRoute>` doesn't spin.
-            setLoadedProfileForUserId('demo-user');
+            // Demo mode has a synthetic user — mark it loaded so
+            // downstream `<AdminRoute>` doesn't spin or read profiles.
+            setLoadedProfileForUserId(DEMO_USER_ID);
             return;
         }
         if (!user) return;
@@ -630,13 +665,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }, [user, fetchUserProfile]);
 
     const demoLogin = () => {
+        if (session?.user && session.user.id !== DEMO_USER_ID) return;
+        if (!isDemoMode && !isPublicDemoEnabled()) return;
         store.set(LS_DEMO_SESSION, true);
-        setUser({ id: 'demo-user', email: 'demo@sportsintel.io' } as User);
+        seedDemoCollectorTape();
+        setSession(null);
+        setUser({ id: DEMO_USER_ID, email: DEMO_USER_EMAIL } as User);
         setUserTier('alpha');
         setOperatorRole('member');
         // Mark the synthetic demo profile "loaded" so <AdminRoute> doesn't
-        // hang on a demo session.
-        setLoadedProfileForUserId('demo-user');
+        // hang on a demo session or query Supabase.
+        setLoadedProfileForUserId(DEMO_USER_ID);
     };
 
     return (

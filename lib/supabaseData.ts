@@ -1,4 +1,5 @@
 import { supabase, isDemoMode } from './supabase';
+import { isActiveDemoSession } from './demoSession';
 import { logger } from './logger';
 import { CardInventory, TargetWatchlist } from '../types';
 import type { PriceSnapshot } from './analytics/priceHistory';
@@ -261,7 +262,7 @@ function targetToDb(target: TargetWatchlist, userId: string): DbTargetRow & { us
 // === CARD OPERATIONS ===
 
 export async function fetchCards(userId: string): Promise<CardInventory[]> {
-    if (isDemoMode) return [];
+    if (isDemoMode || isActiveDemoSession()) return [];
 
     const { data, error } = await supabase
         .from('cards')
@@ -278,7 +279,7 @@ export async function fetchCards(userId: string): Promise<CardInventory[]> {
 }
 
 export async function upsertCard(card: CardInventory, userId: string): Promise<boolean> {
-    if (isDemoMode) return true;
+    if (isDemoMode || isActiveDemoSession()) return true;
 
     const { error } = await supabase
         .from('cards')
@@ -292,7 +293,7 @@ export async function upsertCard(card: CardInventory, userId: string): Promise<b
 }
 
 export async function deleteCard(cardId: string): Promise<boolean> {
-    if (isDemoMode) return true;
+    if (isDemoMode || isActiveDemoSession()) return true;
 
     const { error } = await supabase
         .from('cards')
@@ -307,7 +308,7 @@ export async function deleteCard(cardId: string): Promise<boolean> {
 }
 
 export async function bulkUpsertCards(cards: CardInventory[], userId: string): Promise<boolean> {
-    if (isDemoMode) return true;
+    if (isDemoMode || isActiveDemoSession()) return true;
 
     const rows = cards.map(c => cardToDb(c, userId));
     const { error } = await supabase
@@ -324,7 +325,7 @@ export async function bulkUpsertCards(cards: CardInventory[], userId: string): P
 // === TARGET OPERATIONS ===
 
 export async function fetchTargets(userId: string): Promise<TargetWatchlist[]> {
-    if (isDemoMode) return [];
+    if (isDemoMode || isActiveDemoSession()) return [];
 
     const { data, error } = await supabase
         .from('targets')
@@ -341,7 +342,7 @@ export async function fetchTargets(userId: string): Promise<TargetWatchlist[]> {
 }
 
 export async function upsertTarget(target: TargetWatchlist, userId: string): Promise<boolean> {
-    if (isDemoMode) return true;
+    if (isDemoMode || isActiveDemoSession()) return true;
 
     const { error } = await supabase
         .from('targets')
@@ -355,7 +356,7 @@ export async function upsertTarget(target: TargetWatchlist, userId: string): Pro
 }
 
 export async function bulkUpsertTargets(targets: TargetWatchlist[], userId: string): Promise<boolean> {
-    if (isDemoMode) return true;
+    if (isDemoMode || isActiveDemoSession()) return true;
 
     const rows = targets.map(t => targetToDb(t, userId));
     const { error } = await supabase
@@ -370,7 +371,7 @@ export async function bulkUpsertTargets(targets: TargetWatchlist[], userId: stri
 }
 
 export async function deleteTarget(targetId: string): Promise<boolean> {
-    if (isDemoMode) return true;
+    if (isDemoMode || isActiveDemoSession()) return true;
 
     const { error } = await supabase
         .from('targets')
@@ -391,7 +392,7 @@ export async function deleteTarget(targetId: string): Promise<boolean> {
  * Returns a map of card_id -> PriceSnapshot[] (newest first).
  */
 export async function fetchAllPriceHistory(userId: string): Promise<Record<string, PriceSnapshot[]>> {
-    if (isDemoMode) return {};
+    if (isDemoMode || isActiveDemoSession()) return {};
 
     const { data, error } = await supabase
         .from('price_history')
@@ -437,7 +438,7 @@ export async function insertPriceSnapshot(
         metadata?: Record<string, unknown>;
     }
 ): Promise<boolean> {
-    if (isDemoMode) return true;
+    if (isDemoMode || isActiveDemoSession()) return true;
 
     const { error } = await supabase
         .from('price_history')
@@ -476,7 +477,7 @@ export async function insertBatchPriceSnapshots(
         metadata?: Record<string, unknown>;
     }>
 ): Promise<boolean> {
-    if (isDemoMode) return true;
+    if (isDemoMode || isActiveDemoSession()) return true;
     if (snapshots.length === 0) return true;
 
     const rows = snapshots.map(s => ({
@@ -508,7 +509,7 @@ export async function insertBatchPriceSnapshots(
  * This prevents unbounded growth in the database.
  */
 export async function prunePriceHistory(userId: string, keepPerCard: number = 30): Promise<void> {
-    if (isDemoMode) return;
+    if (isDemoMode || isActiveDemoSession()) return;
 
     // Fetch all snapshots ordered newest-first, then delete extras
     const { data, error } = await supabase
@@ -551,7 +552,7 @@ export type MarketEventRow = {
 };
 
 export async function fetchMarketEventsFromCloud(userId: string): Promise<MarketEventRow[]> {
-    if (isDemoMode) return [];
+    if (isDemoMode || isActiveDemoSession()) return [];
 
     const { data, error } = await supabase
         .from('market_events')
@@ -585,7 +586,7 @@ export async function insertMarketEventToCloud(
         occurredAt: string;
     }
 ): Promise<MarketEventRow | null> {
-    if (isDemoMode) {
+    if (isDemoMode || isActiveDemoSession()) {
         return {
             id: `demo_${Date.now()}`,
             kind: event.kind,

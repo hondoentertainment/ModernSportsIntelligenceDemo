@@ -7,6 +7,7 @@
 
 import { logger } from '../logger';
 import { supabase, isDemoMode } from '../supabase';
+import { isActiveDemoSession } from '../demoSession';
 import { LocalStorageAdapter } from './LocalStorageAdapter';
 import type { StorageAdapter } from './StorageAdapter';
 
@@ -25,7 +26,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
 
   async get<T>(key: string): Promise<T | null> {
     // Always try cloud first when authenticated
-    if (this.userId && !isDemoMode) {
+    if (this.userId && !isDemoMode && !isActiveDemoSession()) {
       try {
         const { data, error } = await supabase
           .from('user_data')
@@ -54,7 +55,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
     // Always write to local cache first (optimistic)
     await this.fallback.set(key, value);
 
-    if (this.userId && !isDemoMode) {
+    if (this.userId && !isDemoMode && !isActiveDemoSession()) {
       try {
         const { error } = await supabase
           .from('user_data')
@@ -75,7 +76,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   async remove(key: string): Promise<void> {
     await this.fallback.remove(key);
 
-    if (this.userId && !isDemoMode) {
+    if (this.userId && !isDemoMode && !isActiveDemoSession()) {
       try {
         const { error } = await supabase
           .from('user_data')
@@ -93,7 +94,7 @@ export class SupabaseStorageAdapter implements StorageAdapter {
   }
 
   async keys(): Promise<string[]> {
-    if (this.userId && !isDemoMode) {
+    if (this.userId && !isDemoMode && !isActiveDemoSession()) {
       try {
         const { data, error } = await supabase
           .from('user_data')

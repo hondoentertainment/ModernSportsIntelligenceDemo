@@ -1,5 +1,6 @@
 import { withRetry, type RetryOptions } from './apiResilience';
 import { getServerApiAuthHeaders } from './serverApiAuth';
+import { isActiveDemoSession } from './demoSession';
 
 interface ApiErrorPayload {
   error?: string;
@@ -49,6 +50,9 @@ export async function serverApiRequest<T>(
   init: RequestInit = {},
   retryOptions?: RetryOptions
 ): Promise<T> {
+  if (isActiveDemoSession()) {
+    throw new ServerApiError('Demo mode does not call paid or AI backends.', 0);
+  }
   return withRetry(async () => {
     const response = await fetch(getServerApiUrl(path), {
       ...init,

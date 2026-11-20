@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { getFriendlyAuthMessage } from '../lib/utils/authErrors';
 import { Mail, ArrowLeft, Loader2, Check, TrendingUp, Shield } from 'lucide-react';
+import PublicDemoEntry from '../components/PublicDemoEntry';
 
 const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -141,6 +142,9 @@ const ForgotPassword: React.FC = () => {
                         Sign in
                     </Link>
                 </p>
+                <div className="mt-4">
+                    <PublicDemoEntry />
+                </div>
             </div>
         </div>
     );

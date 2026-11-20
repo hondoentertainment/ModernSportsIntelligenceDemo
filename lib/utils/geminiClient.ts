@@ -2,6 +2,7 @@ import { showToast } from './toast';
 import { serverApiRequestAuthenticated } from '../serverApi';
 import { GeminiResponseSchema, safeParse } from '../schemas';
 import { geminiCircuit } from '../apiResilience';
+import { DEMO_AI_CANNED, isActiveDemoSession } from '../demoSession';
 
 interface GeminiGenerateConfig {
     responseMimeType?: string;
@@ -33,6 +34,9 @@ export function createGeminiClient(): GeminiClientLike {
     return {
         models: {
             async generateContent(request: GeminiGenerateRequest): Promise<GeminiGenerateResponse> {
+                if (isActiveDemoSession()) {
+                    return { text: DEMO_AI_CANNED };
+                }
                 try {
                     const raw = await geminiCircuit.execute(() =>
                         serverApiRequestAuthenticated<unknown>('/api/ai/generate', {
