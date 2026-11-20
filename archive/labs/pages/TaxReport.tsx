@@ -15,7 +15,6 @@ import {
   buildScheduleDStyleExport,
   formatCurrency,
   formatDate,
-  getHoldingPeriodLabel,
   type TaxYear,
   type TaxableTransaction,
   type TaxSummary,

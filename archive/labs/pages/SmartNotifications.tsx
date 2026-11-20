@@ -3,8 +3,6 @@ import { Bell, BellRing, DollarSign, TrendingUp, TrendingDown, Filter, Settings,
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import {
   getNotifications,
-  getUnreadNotifications,
-  getDealAlerts,
   getActiveDealAlerts,
   getNotificationRules,
   getNotificationStats,
